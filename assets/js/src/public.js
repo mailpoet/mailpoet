@@ -1,12 +1,10 @@
 define([
   'mailpoet',
-  'jquery',
-  'parsleyjs'
+  'jquery'
 ],
 function (
   MailPoet,
-  jQuery,
-  Parsley
+  jQuery
 ) {
   jQuery(function ($) {
     function isSameDomain(url) {
@@ -20,7 +18,7 @@ function (
       $('form.mailpoet_form').each(function () {
         var form = $(this);
 
-        form.parsley().on('form:validated', function (parsley) {
+        form.parsley().on('form:validated', function() {
           // clear messages
           form.find('.mailpoet_message > p').hide();
 

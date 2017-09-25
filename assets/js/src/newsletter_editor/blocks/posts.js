@@ -94,7 +94,6 @@ define([
       };
     },
     initialize: function() {
-      var that = this;
       var POST_REFRESH_DELAY_MS = 500;
       var refreshAvailablePosts = _.debounce(this.fetchAvailablePosts.bind(this), POST_REFRESH_DELAY_MS);
       var refreshTransformedPosts = _.debounce(this._refreshTransformedPosts.bind(this), POST_REFRESH_DELAY_MS);
@@ -163,7 +162,6 @@ define([
       });
     },
     _insertSelectedPosts: function() {
-      var that = this;
       var data = this.toJSON();
       var index = this.collection.indexOf(this);
       var collection = this.collection;
@@ -245,7 +243,7 @@ define([
     },
     onRender: function() {
       var that = this;
-      var blockView = this.model.request('blockView');
+      this.model.request('blockView');
 
       this.showChildView('selectionRegion', this.selectionView);
       this.showChildView('displayOptionsRegion', this.displayOptionsView);
@@ -497,7 +495,7 @@ define([
         model: this.model.toJSON()
       };
     },
-    showButtonSettings: function (event) {
+    showButtonSettings: function() {
       var buttonModule = ButtonBlock;
       (new buttonModule.ButtonBlockSettingsView({
         model: this.model.get('readMoreButton'),
@@ -508,7 +506,7 @@ define([
         }
       })).render();
     },
-    showDividerSettings: function (event) {
+    showDividerSettings: function() {
       var dividerModule = DividerBlock;
       (new dividerModule.DividerBlockSettingsView({
         model: this.model.get('divider'),
@@ -584,7 +582,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     App.registerBlockType('posts', {
       blockModel: Module.PostsBlockModel,
       blockView: Module.PostsBlockView

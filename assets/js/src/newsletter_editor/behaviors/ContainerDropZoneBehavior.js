@@ -25,7 +25,7 @@ define([
         this.addDropZone();
       }
     },
-    addDropZone: function(_event) {
+    addDropZone: function() {
       var that = this;
       var view = this.view;
       var domElement = that.$el.get(0);
@@ -47,11 +47,11 @@ define([
       interact(domElement).dropzone({
         accept: acceptableElementSelector,
         overlap: 'pointer', // Mouse pointer denotes location of a droppable
-        ondragenter: function (event) {
+        ondragenter: function() {
           // 1. Visually mark block as active for dropping
           view.$el.addClass('mailpoet_drop_active');
         },
-        ondragleave: function (event) {
+        ondragleave: function() {
           // 1. Remove visual markings of active dropping container
           // 2. Remove visual markings of drop position visualization
           that.cleanup();
@@ -193,7 +193,6 @@ define([
           var droppableModel = event.draggable.getDropModel();
           var viewCollection = that.getCollection();
           var droppedView; 
-          var droppedModel; 
           var index; 
           var tempCollection; 
           var tempCollection2;

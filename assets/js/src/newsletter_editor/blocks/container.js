@@ -23,9 +23,8 @@ define([
     initialize: function () {
       this.on('add change remove', function () { App.getChannel().trigger('autoSave'); });
     },
-    parse: function (response) {
-      var self = this;
-      return _.map(response, function (block) {
+    parse: function(response) {
+      return _.map(response, function(block) {
         var Type = App.getBlockTypeModel(block.type);
         // TODO: If type has no registered model, use a backup one
         return new Type(block, { parse: true });
@@ -65,8 +64,8 @@ define([
       }
       return response;
     },
-    getChildren: function () {
-      var models = this.get('blocks').map(function (model, index, list) {
+    getChildren: function() {
+      var models = this.get('blocks').map(function(model) {
         return [model, model.getChildren()];
       });
 
@@ -337,7 +336,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     App.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
       blockView: Module.ContainerBlockView

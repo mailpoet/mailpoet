@@ -266,7 +266,7 @@ define([
         }
       }).trigger('change');
     },
-    toggleDisplayOptions: function(event) {
+    toggleDisplayOptions: function() {
       var el = this.$('.mailpoet_automated_latest_content_display_options');
       var showControl = this.$('.mailpoet_automated_latest_content_show_display_options');
       if (el.hasClass('mailpoet_closed')) {
@@ -277,7 +277,7 @@ define([
         showControl.removeClass('mailpoet_hidden');
       }
     },
-    showButtonSettings: function (event) {
+    showButtonSettings: function() {
       var buttonModule = ButtonBlock;
       (new buttonModule.ButtonBlockSettingsView({
         model: this.model.get('readMoreButton'),
@@ -288,7 +288,7 @@ define([
         }
       })).render();
     },
-    showDividerSettings: function (event) {
+    showDividerSettings: function() {
       var dividerModule = DividerBlock;
       (new dividerModule.DividerBlockSettingsView({
         model: this.model.get('divider'),
@@ -380,7 +380,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     App.registerBlockType('automatedLatestContent', {
       blockModel: Module.AutomatedLatestContentBlockModel,
       blockView: Module.AutomatedLatestContentBlockView
@@ -393,7 +393,7 @@ define([
     });
   });
 
-  App.on('start', function (App, options) {
+  App.on('start', function(App) {
     var Application = App;
     Application._ALCSupervisor = new Module.ALCSupervisor();
     Application._ALCSupervisor.refresh();

@@ -47,8 +47,7 @@ define([
           right: false,
           bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector
         }
-      })
-      .on('resizestart', function (event) {
+      }).on('resizestart', function() {
         that.isBeingResized = true;
         that.$el.addClass('mailpoet_resize_active');
       }).on('resizemove', function(event) {
@@ -59,11 +58,7 @@ define([
 
         that.view.model.set(that.options.modelField, newLength + 'px');
       })
-      .on('resizemove', function (event) {
-        var onResize = that.options.onResize.bind(that);
-        return onResize(event);
-      })
-      .on('resizeend', function (event) {
+      .on('resizeend', function() {
         that.isBeingResized = null;
         that.$el.removeClass('mailpoet_resize_active');
       });

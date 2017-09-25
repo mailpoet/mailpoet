@@ -179,8 +179,8 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      initOverlay: function (toggle) {
-        if (jQuery('#mailpoet_modal_overlay').length === 0) {
+      initOverlay: function() {
+        if(jQuery('#mailpoet_modal_overlay').length === 0) {
             // insert overlay into the DOM
           jQuery('body').append(this.templates.overlay);
             // insert loading indicator into overlay
@@ -438,7 +438,7 @@ define('modal', ['mailpoet', 'jquery'],
             .removeClass('mailpoet_modal_highlight');
         return this;
       },
-      hideModal: function (callback) {
+      hideModal: function() {
           // set modal as closed
         this.opened = false;
 
@@ -453,7 +453,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      showOverlay: function (force) {
+      showOverlay: function() {
         jQuery('#mailpoet_modal_overlay').show();
         return this;
       },

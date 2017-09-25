@@ -42,7 +42,7 @@ define([
         relative_urls: false,
         remove_script_host: false,
         convert_urls: true,
-        urlconverter_callback: function (url, node, on_save, name) {
+        urlconverter_callback: function(url) {
           if (url.match(/\[.+\]/g)) {
             // Do not convert URLs with shortcodes
             return url;
@@ -56,8 +56,8 @@ define([
 
         plugins: this.options.plugins,
 
-        setup: function (editor) {
-          editor.on('change', function (e) {
+        setup: function(editor) {
+          editor.on('change', function() {
             that.view.triggerMethod('text:editor:change', editor.getContent());
           });
 
@@ -71,12 +71,12 @@ define([
             }
           });
 
-          editor.on('focus', function (e) {
+          editor.on('focus', function() {
             that.view.triggerMethod('text:editor:focus');
             that._isActivationClick = true;
           });
 
-          editor.on('blur', function (e) {
+          editor.on('blur', function() {
             that.view.triggerMethod('text:editor:blur');
           });
         }

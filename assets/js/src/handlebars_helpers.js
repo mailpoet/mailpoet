@@ -10,7 +10,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return output;
   });
 
-  Handlebars.registerHelper('number_format', function (value, block) {
+  Handlebars.registerHelper('number_format', function(value) {
     return Number(value).toLocaleString();
   });
   Handlebars.registerHelper('date_format', function(timestamp, block) {
@@ -39,7 +39,6 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   });
 
   Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
-    var values;
     switch (operator) {
       case '==':
         return (v1 == v2) ? options.fn(this) : options.inverse(this);
@@ -62,25 +61,24 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       case '||':
         return (v1 || v2) ? options.fn(this) : options.inverse(this);
       case 'in':
-        values = v2.split(',');
         return (v2.indexOf(v1) !== -1) ? options.fn(this) : options.inverse(this);
       default:
         return options.inverse(this);
     }
   });
 
-  Handlebars.registerHelper('nl2br', function (value, block) {
+  Handlebars.registerHelper('nl2br', function(value) {
     return value.gsub('\n', '<br />');
   });
 
-  Handlebars.registerHelper('json_encode', function (value, block) {
+  Handlebars.registerHelper('json_encode', function(value) {
     return JSON.stringify(value);
   });
 
-  Handlebars.registerHelper('json_decode', function (value, block) {
+  Handlebars.registerHelper('json_decode', function(value) {
     return JSON.parse(value);
   });
-  Handlebars.registerHelper('url', function (value, block) {
+  Handlebars.registerHelper('url', function(value) {
     var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
     return url + value;
@@ -93,12 +91,12 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       return value;
     }
   });
-  Handlebars.registerHelper('lookup', function (obj, field, options) {
+  Handlebars.registerHelper('lookup', function(obj, field) {
     return obj && obj[field];
   });
 
 
-  Handlebars.registerHelper('rsa_key', function(value, block) {
+  Handlebars.registerHelper('rsa_key', function(value) {
     var lines;
     // extract all lines into an array
     if(value === undefined) return '';
@@ -113,8 +111,8 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return lines.join('');
   });
 
-  Handlebars.registerHelper('trim', function (value, block) {
-    if (value === null || value === undefined) return '';
+  Handlebars.registerHelper('trim', function(value) {
+    if(value === null || value === undefined) return '';
     return value.trim();
   });
 

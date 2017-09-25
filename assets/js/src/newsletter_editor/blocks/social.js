@@ -34,7 +34,7 @@ define([
         text: defaultValues.get('title')
       };
     },
-    initialize: function (options) {
+    initialize: function() {
       var that = this;
       // Make model swap to default values for that type when iconType changes
       this.on('change:iconType', function() {
@@ -298,7 +298,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     App.registerBlockType('social', {
       blockModel: Module.SocialBlockModel,
       blockView: Module.SocialBlockView

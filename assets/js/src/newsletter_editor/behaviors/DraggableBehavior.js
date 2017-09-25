@@ -28,8 +28,8 @@ define([
         throw "Missing 'drop' function for DraggableBehavior";
       },
 
-      onDrop: function (model, view) {},
-      testAttachToInstance: function (model, view) { return true; }
+      onDrop: function() {},
+      testAttachToInstance: function() { return true; }
     },
     onRender: function() {
       var that = this;
@@ -51,10 +51,8 @@ define([
           var event = startEvent;
           var centerXOffset; 
           var centerYOffset; 
-          var parentOffset;
           var tempClone;
           var clone;
-          var $original;
           var $clone;
 
           if (that.options.cloneOriginal === true) {
@@ -62,7 +60,7 @@ define([
             tempClone = (_.isFunction(that.options.onDragSubstituteBy)) ? that.options.onDragSubstituteBy(that) : undefined;
             // Or use a clone
             clone = tempClone || event.target.cloneNode(true);
-            $original = jQuery(event.target);
+            jQuery(event.target);
             $clone = jQuery(clone);
 
             $clone.addClass('mailpoet_droppable_active');

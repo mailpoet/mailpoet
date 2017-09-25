@@ -10,9 +10,8 @@ define([
   'backbone.supermodel',
   'underscore',
   'jquery',
-  'mailpoet',
-  'modal'
-], function (App, Marionette, SuperModel, _, jQuery, MailPoet, Modal) {
+  'mailpoet'
+], function(App, Marionette, SuperModel, _, jQuery, MailPoet) {
 
   'use strict';
 
@@ -21,9 +20,8 @@ define([
 
   Module.BlockModel = SuperModel.extend({
     stale: [], // Attributes to be removed upon saving
-    initialize: function () {
-      var that = this;
-      this.on('change', function () {
+    initialize: function() {
+      this.on('change', function() {
         App.getChannel().trigger('autoSave');
       });
     },
@@ -99,13 +97,13 @@ define([
       this.on('dom:refresh', this.showBlock, this);
       this._isFirstRender = true;
     },
-    showTools: function (_event) {
+    showTools: function() {
       if (!this.showingToolsDisabled) {
         this.$('> .mailpoet_tools').addClass('mailpoet_display_tools');
         this.toolsView.triggerMethod('showTools');
       }
     },
-    hideTools: function (e) {
+    hideTools: function() {
       this.$('> .mailpoet_tools').removeClass('mailpoet_display_tools');
       this.toolsView.triggerMethod('hideTools');
     },
@@ -264,7 +262,7 @@ define([
         model: this.model.toJSON()
       };
     },
-    close: function (event) {
+    close: function() {
       this.destroy();
     },
     changeField: function (field, event) {

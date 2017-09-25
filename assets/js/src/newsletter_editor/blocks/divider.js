@@ -5,9 +5,8 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/base',
   'underscore',
-  'jquery',
-  'mailpoet'
-], function (App, BaseBlock, _, jQuery, MailPoet) {
+  'jquery'
+], function(App, BaseBlock, _, jQuery) {
 
   'use strict';
 
@@ -119,7 +118,7 @@ define([
     repaintDividerStyleOptions: function () {
       this.$('.mailpoet_field_divider_style > div').css('border-top-color', this.model.get('styles.block.borderColor'));
     },
-    applyToAll: function (event) {
+    applyToAll: function() {
       App.getChannel().trigger('replaceAllDividers', this.model.toJSON());
     },
     updateValueAndCall: function (fieldToUpdate, callable, event) {
@@ -139,7 +138,7 @@ define([
       }
     }
   });
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     App.registerBlockType('divider', {
       blockModel: Module.DividerBlockModel,
       blockView: Module.DividerBlockView

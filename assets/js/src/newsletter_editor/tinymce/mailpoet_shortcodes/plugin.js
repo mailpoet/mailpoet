@@ -10,7 +10,7 @@
 
 /*jshint unused:false */
 /*global tinymce:true */
-tinymce.PluginManager.add('mailpoet_shortcodes', function(editor, url) {
+tinymce.PluginManager.add('mailpoet_shortcodes', function(editor) {
   var appendLabelAndClose = function(shortcode) {
     editor.insertContent(shortcode);
     editor.windowManager.close();

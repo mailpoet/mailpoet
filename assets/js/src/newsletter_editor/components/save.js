@@ -76,7 +76,6 @@ define([
       // Temporary workaround for html2canvas-alpha2.
       // Removes 1px left transparent border from resulting canvas.
 
-      var oldContext = oldCanvas.getContext('2d');
       var newCanvas = document.createElement('canvas');
       var newContext = newCanvas.getContext('2d');
       var leftBorderWidth = 1;
@@ -95,7 +94,6 @@ define([
   };
 
   Module.saveTemplate = function(options) {
-    var that = this;
     var promise = jQuery.Deferred();
 
     promise.then(function (thumbnail) {
@@ -121,8 +119,7 @@ define([
     return promise;
   };
 
-  Module.exportTemplate = function (options) {
-    var that = this;
+  Module.exportTemplate = function(options) {
     return Module.getThumbnail(
       jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
     ).then(function (thumbnail) {
@@ -155,7 +152,7 @@ define([
       'click .mailpoet_save_export': 'toggleExportTemplate',
       'click .mailpoet_export_template': 'exportTemplate'
     },
-    initialize: function (options) {
+    initialize: function() {
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
       App.getChannel().on('afterEditorSave', this.afterSave, this);
     },
@@ -170,7 +167,7 @@ define([
       // TODO: Add a loading animation instead
       this.$('.mailpoet_autosaved_at').text(MailPoet.I18n.t('saving'));
     },
-    afterSave: function (json, response) {
+    afterSave: function(json) {
       this.validateNewsletter(json);
       // Update 'Last saved timer'
       this.$('.mailpoet_editor_last_saved').removeClass('mailpoet_hidden');
@@ -285,7 +282,7 @@ define([
       this.hideOptionContents();
       if (!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
         Module._cancelAutosave();
-        Module.save().done(function (response) {
+        Module.save().done(function() {
           window.location.href = App.getConfig().get('urls.send');
         });
       }
@@ -355,7 +352,7 @@ define([
     }
   };
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     var Application = App;
     Application.save = Module.save;
     Application.getChannel().on('autoSave', Module.autoSave);
@@ -365,7 +362,7 @@ define([
     Application.getChannel().reply('save', Application.save);
   });
 
-  App.on('start', function (App, options) {
+  App.on('start', function(App) {
     var saveView = new Module.SaveView();
     App._appView.showChildView('bottomRegion', saveView);
   });
