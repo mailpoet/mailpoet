@@ -9,7 +9,7 @@ class FoodBox {
   private $social_icon_url;
 
   function __construct($assets_url) {
-    $this->template_image_url = '//ps.w.org/mailpoet/assets/newsletter-templates/food_box';
+     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/food_box';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
