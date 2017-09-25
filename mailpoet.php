@@ -12,7 +12,6 @@ if(!defined('ABSPATH')) exit;
  * Requires at least: 4.6
  * Tested up to: 4.8
  *
- * Text Domain: mailpoet
  * Domain Path: /lang/
  *
  * @package WordPress
