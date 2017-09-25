@@ -47,9 +47,9 @@ define([
       ResizableBehavior: {
         elementSelector: '.mailpoet_image',
         resizeHandleSelector: '.mailpoet_image_resize_handle',
-        onResize: function(event) {
+        onResize: function (event) {
           var corner = this.$('.mailpoet_image').offset(),
-            width    = event.pageX - corner.left;
+            width = event.pageX - corner.left;
           this.view.model.set('width', width + 'px');
         }
       },
@@ -57,7 +57,7 @@ define([
         ignoreFrom: '.mailpoet_image_resize_handle'
       }
     }),
-    onRender: function() {
+    onRender: function () {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       if (this.model.get('fullWidth')) {
@@ -99,27 +99,27 @@ define([
         'input .mailpoet_field_image_width_input': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width', _.partial(this.changePixelField, 'width').bind(this))
       };
     },
-    modelEvents: function() {
+    modelEvents: function () {
       return {
         'change:maxWidth': 'updateMaxWidth',
         'change:width': 'updateWidth'
       };
     },
-    updateValueAndCall: function(fieldToUpdate, callable, event) {
+    updateValueAndCall: function (fieldToUpdate, callable, event) {
       this.$(fieldToUpdate).val(jQuery(event.target).val());
       callable(event);
     },
-    updateMaxWidth: function() {
+    updateMaxWidth: function () {
       var maxWidth = parseInt(this.model.get('maxWidth'));
       this.$('.mailpoet_field_image_width').attr('max', maxWidth);
-      this.$('.mailpoet_field_image_width_input').attr('max', maxWidth);      
+      this.$('.mailpoet_field_image_width_input').attr('max', maxWidth);
     },
-    updateWidth: function() {
+    updateWidth: function () {
       var width = parseInt(this.model.get('width'));
       this.$('.mailpoet_field_image_width').val(width);
-      this.$('.mailpoet_field_image_width_input').val(width);      
+      this.$('.mailpoet_field_image_width_input').val(width);
     },
-    initialize: function(options) {
+    initialize: function (options) {
       base.BlockSettingsView.prototype.initialize.apply(this, arguments);
 
       if (options.showImageManager) {
