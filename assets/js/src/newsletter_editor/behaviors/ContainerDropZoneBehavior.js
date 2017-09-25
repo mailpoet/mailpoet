@@ -74,9 +74,15 @@ define([
             markerHeight = '',
             containerOffset = element.offset(),
             viewCollection = that.getCollection(),
-            marker, targetModel, targetView, targetElement,
-            topOffset, leftOffset, isLastBlockInsertion,
-            $targetBlock, margin;
+            marker, 
+            targetModel, 
+            targetView, 
+            targetElement,
+            topOffset, 
+            leftOffset, 
+            isLastBlockInsertion,
+            $targetBlock, 
+            margin;
 
           if (dropPosition === undefined) return;
 
@@ -186,7 +192,11 @@ define([
             ),
             droppableModel = event.draggable.getDropModel(),
             viewCollection = that.getCollection(),
-            droppedView, droppedModel, index, tempCollection, tempCollection2;
+            droppedView, 
+            droppedModel, 
+            index, 
+            tempCollection, 
+            tempCollection2;
 
           if (dropPosition === undefined) return;
 
@@ -286,12 +296,16 @@ define([
         relativeX = eventX - elementPageX,
         relativeY = eventY - elementPageY,
 
-        relativeOffset, elementLength,
+        relativeOffset, 
+        elementLength,
 
         canAcceptNormalInsertion = this._canAcceptNormalInsertion(),
         canAcceptSpecialInsertion = this._canAcceptSpecialInsertion(),
 
-        insertionType, index, position, indexAndPosition;
+        insertionType, 
+        index, 
+        position, 
+        indexAndPosition;
 
       var unsafe = !!is_unsafe;
 
@@ -364,7 +378,9 @@ define([
         targetView = this.getChildren().findByModel(this.getCollection().at(index)),
         orientation = this.view.model.get('orientation'),
         element = targetView.$el,
-        eventOffset, closeOffset, elementDimension;
+        eventOffset, 
+        closeOffset, 
+        elementDimension;
 
       if (orientation === 'vertical') {
         eventOffset = eventY;
@@ -398,7 +414,8 @@ define([
         eventOffset = (orientation === 'vertical') ? eventY : eventX,
         resultView = this.getChildren().find(function (view) {
           var element = view.$el,
-            closeOffset, farOffset;
+            closeOffset, 
+            farOffset;
 
           if (orientation === 'vertical') {
             closeOffset = element.offset().top;

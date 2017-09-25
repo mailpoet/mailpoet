@@ -120,8 +120,9 @@ define([
           // and destroy self
           options.dragBehavior.view.model.destroy();
         },
-        onDragSubstituteBy: function (behavior) {
-          var WidgetView, node;
+        onDragSubstituteBy: function(behavior) {
+          var WidgetView, 
+            node;
           // When block is being dragged, display the widget icon instead.
           // This will create an instance of block's widget view and
           // use it's rendered DOM element instead of the content block

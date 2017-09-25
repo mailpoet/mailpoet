@@ -113,7 +113,8 @@ define([
       // position of the sidebar would be scrollable and not fixed
       // partially out of visible screen
       this.$el.parent().each(function () {
-        var calculated_left, self;
+        var calculated_left, 
+          self;
 
         self = jQuery(this);
 
