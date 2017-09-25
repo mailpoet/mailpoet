@@ -10,8 +10,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock;
+  var Module = {};
+  var base = BaseBlock;
 
   Module.TextBlockModel = base.BlockModel.extend({
     defaults: function () {

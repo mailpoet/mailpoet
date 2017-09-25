@@ -9,8 +9,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock;
+  var Module = {};
+  var base = BaseBlock;
 
   Module.SpacerBlockModel = base.BlockModel.extend({
     defaults: function () {

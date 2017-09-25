@@ -35,9 +35,9 @@ define([
         this.hideResizeHandle();
       }
     },
-    attachResize: function () {
-      var domElement = (this.options.elementSelector === null) ? this.view.$el.get(0) : this.view.$(this.options.elementSelector).get(0),
-        that = this;
+    attachResize: function() {
+      var domElement = (this.options.elementSelector === null) ? this.view.$el.get(0) : this.view.$(this.options.elementSelector).get(0);
+      var that = this;
       interact(domElement).resizable({
         // axis: 'y',
         edges: {
@@ -50,6 +50,13 @@ define([
       .on('resizestart', function (event) {
         that.isBeingResized = true;
         that.$el.addClass('mailpoet_resize_active');
+      }).on('resizemove', function(event) {
+        var currentLength = parseFloat(that.view.model.get(that.options.modelField));
+        var newLength = currentLength + that.options.transformationFunction(event.dy);
+
+        if (newLength < that.options.minLength) newLength = that.options.minLength;
+
+        that.view.model.set(that.options.modelField, newLength + 'px');
       })
       .on('resizemove', function (event) {
         var onResize = that.options.onResize.bind(that);

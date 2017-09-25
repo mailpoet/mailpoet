@@ -28,8 +28,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    saveTimeout;
+  var Module = {};
+  var saveTimeout;
 
   // Save editor contents to server
   Module.save = function () {
@@ -76,10 +76,10 @@ define([
       // Temporary workaround for html2canvas-alpha2.
       // Removes 1px left transparent border from resulting canvas.
 
-      var oldContext = oldCanvas.getContext('2d'),
-        newCanvas = document.createElement('canvas'),
-        newContext = newCanvas.getContext('2d'),
-        leftBorderWidth = 1;
+      var oldContext = oldCanvas.getContext('2d');
+      var newCanvas = document.createElement('canvas');
+      var newContext = newCanvas.getContext('2d');
+      var leftBorderWidth = 1;
 
       newCanvas.width = oldCanvas.width;
       newCanvas.height = oldCanvas.height;
@@ -94,9 +94,9 @@ define([
     });
   };
 
-  Module.saveTemplate = function (options) {
-    var that = this,
-      promise = jQuery.Deferred();
+  Module.saveTemplate = function(options) {
+    var that = this;
+    var promise = jQuery.Deferred();
 
     promise.then(function (thumbnail) {
       var data = _.extend(options || {}, {
@@ -191,10 +191,10 @@ define([
     hideSaveAsTemplate: function () {
       this.$('.mailpoet_save_as_template_container').addClass('mailpoet_hidden');
     },
-    saveAsTemplate: function () {
-      var templateName = this.$('.mailpoet_save_as_template_name').val(),
-        templateDescription = this.$('.mailpoet_save_as_template_description').val(),
-        that = this;
+    saveAsTemplate: function() {
+      var templateName = this.$('.mailpoet_save_as_template_name').val();
+      var templateDescription = this.$('.mailpoet_save_as_template_description').val();
+      var that = this;
 
       if (templateName === '') {
         MailPoet.Notice.error(
@@ -247,10 +247,10 @@ define([
     hideExportTemplate: function () {
       this.$('.mailpoet_export_template_container').addClass('mailpoet_hidden');
     },
-    exportTemplate: function () {
-      var templateName = this.$('.mailpoet_export_template_name').val(),
-        templateDescription = this.$('.mailpoet_export_template_description').val(),
-        that = this;
+    exportTemplate: function() {
+      var templateName = this.$('.mailpoet_export_template_name').val();
+      var templateDescription = this.$('.mailpoet_export_template_description').val();
+      var that = this;
 
       if (templateName === '') {
         MailPoet.Notice.error(

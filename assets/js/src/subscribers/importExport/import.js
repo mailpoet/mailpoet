@@ -68,31 +68,29 @@ define(
           jQuery('.mailpoet_method_process').html(methodProcessContainerTemplate());
 
           // define reusable variables
-          var currentStepE = jQuery(location.hash),
-            methodSelectionElement = jQuery('#select_method'),
-            pasteInputElement = jQuery('#paste_input'),
-            pasteInputPlaceholderElement =
-                  pasteInputElement.data('placeholder').replace(/\\n/g, '\n'),
-            pasteProcessButtonElement =
-                  jQuery('#method_paste > div.mailpoet_method_process')
-                      .find('a.mailpoet_process'),
-            mailChimpKeyInputElement = jQuery('#mailchimp_key'),
-            mailChimpKeyVerifyButtonElement = jQuery('#mailchimp_key_verify'),
-            mailChimpListsContainerElement = jQuery('#mailchimp_lists'),
-            mailChimpProcessButtonElement =
-                  jQuery('#method_mailchimp > div.mailpoet_method_process')
-                      .find('a.mailpoet_process'),
-            uploadElement = jQuery('#file_local'),
-            uploadProcessButtonElement =
-                  jQuery('#method_file > div.mailpoet_method_process')
-                      .find('a.mailpoet_process');
+          var currentStepE = jQuery(location.hash);
+          var methodSelectionElement = jQuery('#select_method');
+          var pasteInputElement = jQuery('#paste_input');
+          var pasteInputPlaceholderElement =
+                pasteInputElement.data('placeholder').replace(/\\n/g, '\n');
+          var pasteProcessButtonElement =
+                jQuery('#method_paste > div.mailpoet_method_process')
+                  .find('a.mailpoet_process');
+          var mailChimpKeyInputElement = jQuery('#mailchimp_key');
+          var mailChimpKeyVerifyButtonElement = jQuery('#mailchimp_key_verify');
+          var mailChimpListsContainerElement = jQuery('#mailchimp_lists');
+          var mailChimpProcessButtonElement = jQuery('#method_mailchimp > div.mailpoet_method_process')
+            .find('a.mailpoet_process');
+          var uploadElement = jQuery('#file_local');
+          var uploadProcessButtonElement =
+            jQuery('#method_file > div.mailpoet_method_process')
+              .find('a.mailpoet_process');
 
           // define method change behavior
           methodSelectionElement.change(function () {
             MailPoet.Notice.hide();
-            var available_methods = jQuery(':radio[name="select_method"]'),
-              selected_method =
-                    available_methods.index(available_methods.filter(':checked'));
+            var available_methods = jQuery(':radio[name="select_method"]');
+            var selected_method = available_methods.index(available_methods.filter(':checked'));
             // hide all methods
             currentStepE.find('.inside')
                 .children('div[id^="method_"]')
@@ -294,48 +292,48 @@ define(
           }
 
           function parseCSV(isFile) {
-            var processedSubscribers = [],
-              parsedEmails = [],
-              duplicateEmails = [],
-              invalidEmails = [],
-              emailColumnPosition = null,
-              columnCount = null,
-              isHeaderFound = false,
-              advancedOptionHeader = true,
-              advancedOptionDelimiter = '',
-              advancedOptionNewline = '',
-              advancedOptionComments = false,
-                // trim spaces, commas, periods,
-                // single/double quotes and convert to lowercase
-              detectAndCleanupEmail = function (emailString) {
-                var test;
-                  // decode HTML entities
-                var email = jQuery('<div />').html(emailString).text();
-                email = email
-                    .toLowerCase()
-                    // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
-                    // right trim non-printable characters (e.g., "email@email.com�")
-                    .replace(/^["';.,\s]+|[^\x20-\x7E]+$|["';.,_\s]+$/g, '')
-                    // remove spaces (e.g., "email @ email . com")
-                    // remove urlencoded characters
-                    .replace(/\s+|%\d+|,+/g, '');
-                  // detect e-mails that will be otherwise rejected by email regex
-                test = /<(.*?)>/.exec(email);
-                if (test) {
-                    // is the email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
-                  email = test[1].trim();
-                }
-                test = /mailto:(?:\s+)?(.*)/.exec(email);
-                if (test) {
-                    // is the email in 'mailto:email' format?
-                  email = test[1].trim();
-                }
-                  // test for valid characters using WP's rule (https://core.trac.wordpress.org/browser/tags/4.7.3/src/wp-includes/formatting.php#L2902)
-                if (!/^[a-zA-Z0-9!#$%&\'*+\/=?^_`{|}~\.\-@]+$/.test(email)) {
-                  return false;
-                }
-                return email;
-              };
+            var processedSubscribers = [];
+            var parsedEmails = [];
+            var duplicateEmails = [];
+            var invalidEmails = [];
+            var emailColumnPosition = null;
+            var columnCount = null;
+            var isHeaderFound = false;
+            var advancedOptionHeader = true;
+            var advancedOptionDelimiter = '';
+            var advancedOptionNewline = '';
+            var advancedOptionComments = false;
+            // trim spaces, commas, periods,
+            // single/double quotes and convert to lowercase
+            var detectAndCleanupEmail = function (emailString) {
+              var test;
+                // decode HTML entities
+              var email = jQuery('<div />').html(emailString).text();
+              email = email
+                  .toLowerCase()
+                  // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
+                  // right trim non-printable characters (e.g., "email@email.com�")
+                  .replace(/^["';.,\s]+|[^\x20-\x7E]+$|["';.,_\s]+$/g, '')
+                  // remove spaces (e.g., "email @ email . com")
+                  // remove urlencoded characters
+                  .replace(/\s+|%\d+|,+/g, '');
+                // detect e-mails that will be otherwise rejected by email regex
+              test = /<(.*?)>/.exec(email);
+              if (test) {
+                  // is the email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
+                email = test[1].trim();
+              }
+              test = /mailto:(?:\s+)?(.*)/.exec(email);
+              if (test) {
+                  // is the email in 'mailto:email' format?
+                email = test[1].trim();
+              }
+                // test for valid characters using WP's rule (https://core.trac.wordpress.org/browser/tags/4.7.3/src/wp-includes/formatting.php#L2902)
+              if (!/^[a-zA-Z0-9!#$%&\'*+\/=?^_`{|}~\.\-@]+$/.test(email) ) {
+                return false;
+              }
+              return email;
+            };
 
             return {
               skipEmptyLines: true,
@@ -443,32 +441,23 @@ define(
             return;
           }
           // define reusable variables
-          var nextStepButton = jQuery('#step2_process'),
-            previousStepButton = jQuery('#return_to_step1'),
+          var nextStepButton = jQuery('#step2_process');
+          var previousStepButton = jQuery('#return_to_step1');
           // create a copy of subscribers object for further manipulation
-            subscribers = jQuery.extend(true, {}, window.importData.step1),
-            subscribersDataTemplate =
-                  Handlebars
-                      .compile(jQuery('#subscribers_data_template')
-                          .html()),
-            subscribersDataTemplatePartial =
-                  Handlebars
-                      .compile(jQuery('#subscribers_data_template_partial')
-                          .html()),
-            subscribersDataParseResultsTemplate =
-                  Handlebars
-                      .compile(jQuery('#subscribers_data_parse_results_template')
-                          .html()),
-            segmentSelectElement = jQuery('#mailpoet_segments_select'),
-            maxRowsToShow = 10,
-            filler = '. . .',
+          var subscribers = jQuery.extend(true, {}, window.importData.step1);
+          var subscribersDataTemplate = Handlebars.compile(jQuery('#subscribers_data_template').html());
+          var subscribersDataTemplatePartial = Handlebars.compile(jQuery('#subscribers_data_template_partial').html());
+          var subscribersDataParseResultsTemplate = Handlebars.compile(jQuery('#subscribers_data_parse_results_template').html());
+          var segmentSelectElement = jQuery('#mailpoet_segments_select');
+          var maxRowsToShow = 10;
+          var filler = '. . .';
           // create an array of filler data with the same number of
           // elements as in the subscribers' data row
-            fillerArray = Array.apply(
-                  null,
-                  new Array(subscribers.subscribers[0].length)
-              ).map(String.prototype.valueOf, filler),
-            fillerPosition;
+          var fillerArray = Array.apply(
+              null,
+              new Array(subscribers.subscribers[0].length)
+          ).map(String.prototype.valueOf, filler);
+          var fillerPosition;
 
           showCurrentStep();
 
@@ -642,20 +631,20 @@ define(
           Handlebars.registerHelper(
               'show_and_match_columns',
               function (subscribers, options) {
-                var displayedColumns = [],
-                  displayedColumnsIds = [];
+                var displayedColumns = [];
+                var displayedColumnsIds = [];
                 // go through all elements of the first row in subscribers data
                 for (var i in subscribers.subscribers[0]) {
-                  var columnData = subscribers.subscribers[0][i],
-                    columnId = 'ignore'; // set default column type
+                  var columnData = subscribers.subscribers[0][i];
+                  var columnId = 'ignore'; // set default column type
                   // if the column is not undefined and has a valid e-mail, set type as email
                   if (columnData % 1 !== 0 && window.emailRegex.test(columnData)) {
                     columnId = 'email';
                   } else if (subscribers.header) {
-                    var headerName = subscribers.header[i],
-                      headerNameMatch = window.mailpoetColumns.map(function (el) {
-                        return el.name;
-                      }).indexOf(headerName);
+                    var headerName = subscribers.header[i];
+                    var headerNameMatch = window.mailpoetColumns.map(function (el) {
+                      return el.name;
+                    }).indexOf(headerName);
                     // set column type using header
                     if (headerNameMatch !== -1) {
                       columnId = window.mailpoetColumns[headerNameMatch].id;
@@ -733,8 +722,8 @@ define(
                 }
               })
               .on('select2:selecting', function (selectEvent) {
-                var selectElement = this,
-                  selectedOptionId = selectEvent.params.args.data.id;
+                var selectElement = this;
+                var selectedOptionId = selectEvent.params.args.data.id;
                 // CREATE CUSTOM FIELD
                 if (selectedOptionId === 'create') {
                   selectEvent.preventDefault();
@@ -807,8 +796,8 @@ define(
                   // check for duplicate values in all select options
                   jQuery('select.mailpoet_subscribers_column_data_match')
                       .each(function () {
-                        var element = this,
-                          elementId = jQuery(element).val();
+                        var element = this;
+                        var elementId = jQuery(element).val();
                         // if another column has the same value and it's not an 'ignore', prompt user
                         if (elementId === selectedOptionId
                             && elementId !== 'ignore') {
@@ -824,8 +813,8 @@ define(
                 }
               })
               .on('select2:select', function (selectEvent) {
-                var selectElement = this,
-                  selectedOptionId = selectEvent.params.data.id;
+                var selectElement = this;
+                var selectedOptionId = selectEvent.params.data.id;
                 jQuery(selectElement).data('column-id', selectedOptionId);
                 filterSubscribers();
               });
@@ -835,15 +824,15 @@ define(
             jQuery(
                 '[data-id="notice_invalidEmail"], [data-id="notice_invalidDate"]')
                 .remove();
-            var subscribersClone = jQuery.extend(true, {}, subscribers),
-              preventNextStep = false,
-              displayedColumns = jQuery.map(
-                    jQuery('.mailpoet_subscribers_column_data_match'), function (element, elementIndex) {
-                      var columnId = jQuery(element).data('column-id');
-                      var validationRule = jQuery(element).data('validation-rule');
-                      jQuery(element).val(columnId).trigger('change');
-                      return { id: columnId, index: elementIndex, validationRule: validationRule, element: element };
-                    });
+            var subscribersClone = jQuery.extend(true, {}, subscribers);
+            var preventNextStep = false;
+            var displayedColumns = jQuery.map(
+              jQuery('.mailpoet_subscribers_column_data_match'), function (element, elementIndex) {
+                var columnId = jQuery(element).data('column-id');
+                var validationRule = jQuery(element).data('validation-rule');
+                jQuery(element).val(columnId).trigger('change');
+                return { id: columnId, index: elementIndex, validationRule: validationRule, element: element };
+              });
             // iterate through the object of mailpoet columns
             jQuery.map(window.mailpoetColumns, function (column, columnIndex) {
               // check if the column id matches the selected id of one of the
@@ -976,28 +965,28 @@ define(
             }
             MailPoet.Modal.loading(true);
 
-            var columns = {},
-              queue = new jQuery.AsyncQueue(),
-              batchNumber = 0,
-              batchSize = 2000,
-              timestamp = Date.now() / 1000,
-              subscribers = [],
-              importResults = {
-                created: 0,
-                updated: 0,
-                errors: [],
-                segments: []
-              },
-              splitSubscribers = function (subscribers, size) {
-                return subscribers.reduce(function (res, item, index) {
-                  if (index % size === 0) {
-                    res.push([]);
-                  }
-                  res[res.length - 1].push(item);
-                  return res;
-                }, []);
-              },
-              subscribers = splitSubscribers(window.importData.step1.subscribers, batchSize);
+            var columns = {};
+            var queue = new jQuery.AsyncQueue();
+            var batchNumber = 0;
+            var batchSize = 2000;
+            var timestamp = Date.now() / 1000;
+            var subscribers = [];
+            var importResults = {
+              created: 0,
+              updated: 0,
+              errors: [],
+              segments: []
+            };
+            var splitSubscribers = function (subscribers, size) {
+              return subscribers.reduce(function (res, item, index) {
+                if (index % size === 0) {
+                  res.push([]);
+                }
+                res[res.length - 1].push(item);
+                return res;
+              }, []);
+            };
+            var subscribers = splitSubscribers(window.importData.step1.subscribers, batchSize);
 
             _.each(jQuery('select.mailpoet_subscribers_column_data_match'),
               function (column, columnIndex) {
@@ -1086,25 +1075,23 @@ define(
           });
 
           // display statistics
-          var subscribersDataImportResultsTemplate =
-                  Handlebars
-                      .compile(jQuery('#subscribers_data_import_results_template')
-                          .html()),
-            exportMenuElement = jQuery('span.mailpoet_export'),
-            importResults = {
-              created: (window.importData.step2.created)
-                    ? MailPoet.I18n.t('subscribersCreated')
-                    .replace('%1$s', '<strong>' + window.importData.step2.created.toLocaleString() + '</strong>')
-                    .replace('%2$s', '"' + window.importData.step2.segments.join('", "') + '"')
-                    : false,
-              updated: (window.importData.step2.updated)
-                    ? MailPoet.I18n.t('subscribersUpdated')
-                    .replace('%1$s', '<strong>' + window.importData.step2.updated.toLocaleString() + '</strong>')
-                    .replace('%2$s', '"' + window.importData.step2.segments.join('", "') + '"')
-                    : false,
-              no_action: (!window.importData.step2.created && !window.importData.step2.updated),
-              added_to_segment_with_welcome_notification: window.importData.step2.added_to_segment_with_welcome_notification
-            };
+          var subscribersDataImportResultsTemplate = 
+            Handlebars.compile(jQuery('#subscribers_data_import_results_template').html());
+          var exportMenuElement = jQuery('span.mailpoet_export');
+          var importResults = {
+            created: (window.importData.step2.created)
+                  ? MailPoet.I18n.t('subscribersCreated')
+                  .replace('%1$s', '<strong>' + window.importData.step2.created.toLocaleString() + '</strong>')
+                  .replace('%2$s', '"' + window.importData.step2.segments.join('", "') + '"')
+                  : false,
+            updated: (window.importData.step2.updated)
+                  ? MailPoet.I18n.t('subscribersUpdated')
+                  .replace('%1$s', '<strong>' + window.importData.step2.updated.toLocaleString() + '</strong>')
+                  .replace('%2$s', '"' + window.importData.step2.segments.join('", "') + '"')
+                  : false,
+            no_action: (!window.importData.step2.created && !window.importData.step2.updated),
+            added_to_segment_with_welcome_notification: window.importData.step2.added_to_segment_with_welcome_notification
+          };
 
           jQuery('#subscribers_data_import_results')
               .html(subscribersDataImportResultsTemplate(importResults))

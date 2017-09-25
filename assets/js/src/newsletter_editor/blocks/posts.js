@@ -39,8 +39,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock;
+  var Module = {};
+  var base = BaseBlock;
 
   Module.PostsBlockModel = base.BlockModel.extend({
     stale: ['_selectedPosts', '_availablePosts', '_transformedPosts'],
@@ -88,11 +88,11 @@ define([
         _transformedPosts: App.getBlockTypeModel('container')
       };
     },
-    initialize: function () {
-      var that = this,
-        POST_REFRESH_DELAY_MS = 500,
-        refreshAvailablePosts = _.debounce(this.fetchAvailablePosts.bind(this), POST_REFRESH_DELAY_MS),
-        refreshTransformedPosts = _.debounce(this._refreshTransformedPosts.bind(this), POST_REFRESH_DELAY_MS);
+    initialize: function() {
+      var that = this;
+      var POST_REFRESH_DELAY_MS = 500;
+      var refreshAvailablePosts = _.debounce(this.fetchAvailablePosts.bind(this), POST_REFRESH_DELAY_MS);
+      var refreshTransformedPosts = _.debounce(this._refreshTransformedPosts.bind(this), POST_REFRESH_DELAY_MS);
 
       // Attach Radio.Requests API primarily for highlighting
       _.extend(this, Radio.Requests);
@@ -119,10 +119,10 @@ define([
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
       });
     },
-    _loadMorePosts: function () {
-      var that = this,
-        postCount = this.get('_availablePosts').length,
-        nextOffset = this.get('offset') + Number(this.get('amount'));
+    _loadMorePosts: function() {
+      var that = this;
+      var postCount = this.get('_availablePosts').length;
+      var nextOffset = this.get('offset') + Number(this.get('amount'));
 
       if (postCount === 0 || postCount < nextOffset) {
         // No more posts to load
@@ -140,9 +140,9 @@ define([
         that.trigger('morePostsLoaded');
       });
     },
-    _refreshTransformedPosts: function () {
-      var that = this,
-        data = this.toJSON();
+    _refreshTransformedPosts: function() {
+      var that = this;
+      var data = this.toJSON();
 
       data.posts = this.get('_selectedPosts').pluck('ID');
 
@@ -157,11 +157,11 @@ define([
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
     },
-    _insertSelectedPosts: function () {
-      var that = this,
-        data = this.toJSON(),
-        index = this.collection.indexOf(this),
-        collection = this.collection;
+    _insertSelectedPosts: function() {
+      var that = this;
+      var data = this.toJSON();
+      var index = this.collection.indexOf(this);
+      var collection = this.collection;
 
       data.posts = this.get('_selectedPosts').pluck('ID');
 
@@ -195,12 +195,12 @@ define([
       }
       this.trigger('showSettings');
 
-      var ContainerView = App.getBlockTypeView('container'),
-        renderOptions = {
-          disableTextEditor: true,
-          disableDragAndDrop: true,
-          emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay')
-        };
+      var ContainerView = App.getBlockTypeView('container');
+      var renderOptions = {
+        disableTextEditor: true,
+        disableDragAndDrop: true,
+        emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay')
+      };
       this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
     },
     notifyAboutSelf: function () {
@@ -236,9 +236,9 @@ define([
       this.selectionView = new PostSelectionSettingsView({ model: this.model });
       this.displayOptionsView = new PostsDisplayOptionsSettingsView({ model: this.model });
     },
-    onRender: function () {
-      var that = this,
-        blockView = this.model.request('blockView');
+    onRender: function() {
+      var that = this;
+      var blockView = this.model.request('blockView');
 
       this.showChildView('selectionRegion', this.selectionView);
       this.showChildView('displayOptionsRegion', this.displayOptionsView);
@@ -412,9 +412,9 @@ define([
     changeField: function (field, event) {
       this.model.set(field, jQuery(event.target).val());
     },
-    _updateContentTypes: function (postTypes) {
-      var select = this.$('.mailpoet_settings_posts_content_type'),
-        selectedValue = this.model.get('contentType');
+    _updateContentTypes: function(postTypes) {
+      var select = this.$('.mailpoet_settings_posts_content_type');
+      var selectedValue = this.model.get('contentType');
 
       select.find('option').remove();
       _.each(postTypes, function (type) {
@@ -447,9 +447,9 @@ define([
     initialize: function (options) {
       this.blockModel = options.blockModel;
     },
-    postSelectionChange: function (event) {
-      var checkBox = jQuery(event.target),
-        selectedPostsCollection = this.blockModel.get('_selectedPosts');
+    postSelectionChange: function(event) {
+      var checkBox = jQuery(event.target);
+      var selectedPostsCollection = this.blockModel.get('_selectedPosts');
       if (checkBox.prop('checked')) {
         selectedPostsCollection.add(this.model);
       } else {

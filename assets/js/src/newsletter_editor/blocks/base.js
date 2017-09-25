@@ -16,8 +16,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    AugmentedView = Marionette.View.extend({});
+  var Module = {};
+  var AugmentedView = Marionette.View.extend({});
 
   Module.BlockModel = SuperModel.extend({
     stale: [], // Attributes to be removed upon saving
@@ -68,8 +68,8 @@ define([
           options.dragBehavior.view.model.destroy();
         },
         onDragSubstituteBy: function(behavior) {
-          var WidgetView, 
-            node;
+          var WidgetView;
+          var node;
           // When block is being dragged, display the widget icon instead.
           // This will create an instance of block's widget view and
           // use it's rendered DOM element instead of the content block
