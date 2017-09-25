@@ -7,7 +7,7 @@ class SimpleText {
 
   function __construct($assets_url) {
     $this->assets_url = $assets_url;
-    $this->external_template_image_url = '//ps.w.org/mailpoet/assets/newsletter-templates/simple-text';
+    $this->external_template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/simple-text';
     $this->template_image_url = $this->assets_url . '/img/blank_templates';
     $this->social_icon_url = $this->assets_url . '/img/newsletter_editor/social-icons';
   }
