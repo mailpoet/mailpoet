@@ -187,7 +187,8 @@ class Migrator {
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY subscriber_segment (subscriber_id,segment_id)'
+      'UNIQUE KEY subscriber_segment (subscriber_id,segment_id),',
+      'KEY segment_id (segment_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
