@@ -294,13 +294,7 @@ define([
 
     describe('replaceAllButtonStyles', function () {
       var model;
-      var view;
-      var module;
       var onStub;
-
-      before(function() {
-        module = AutomatedLatestContentBlock;
-      });
 
       beforeEach(function () {
         onStub = sinon.stub();
@@ -309,7 +303,6 @@ define([
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
         model = {set: sinon.stub()};
-        view = new (module.AutomatedLatestContentBlockView)({model: model});
       });
 
       it('listens to the event', function () {
