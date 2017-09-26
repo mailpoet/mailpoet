@@ -55,7 +55,7 @@ define([
   describe('getTaxonomies', function() {
     it('sends post type to endpoint', function() {
       var spy;
-      var post = function(params) {
+      var post = function() {
         var deferred = jQuery.Deferred();
         deferred.resolve({
           category: 'val1',
@@ -119,7 +119,7 @@ define([
   describe('getTerms', function() {
     it('sends terms to endpoint', function() {
       var spy;
-      var post = function(params) {
+      var post = function() {
         var deferred = jQuery.Deferred();
         deferred.resolve({});
         return deferred;
@@ -183,7 +183,7 @@ define([
   describe('getPosts', function() {
     it('sends options to endpoint', function() {
       var spy;
-      var post = function(params) {
+      var post = function() {
         var deferred = jQuery.Deferred();
         deferred.resolve({});
         return deferred;
@@ -254,7 +254,7 @@ define([
   describe('getTransformedPosts', function() {
     it('sends options to endpoint', function() {
       var spy;
-      var post = function(params) {
+      var post = function() {
         var deferred = jQuery.Deferred();
         deferred.resolve({});
         return deferred;

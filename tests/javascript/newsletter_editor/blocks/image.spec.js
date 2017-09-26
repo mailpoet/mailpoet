@@ -207,7 +207,6 @@ define([
         });
 
         it('updates the model when padding changes', function () {
-          var newValue = 'false';
           view.$('.mailpoet_field_image_full_width').prop('checked', false).change();
           expect(model.get('fullWidth')).to.equal(false);
         });
