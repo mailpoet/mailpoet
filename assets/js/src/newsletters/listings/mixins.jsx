@@ -179,11 +179,11 @@ const _StatisticsMixin = {
     const percentage_opened_display = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
     const percentage_unsubscribed_display = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
 
-    let show_stats_timeout,
-      newsletter_date,
-      sent_hours_ago,
-      too_early_for_stats,
-      show_kb_link;
+    let show_stats_timeout;
+    let newsletter_date;
+    let sent_hours_ago;
+    let too_early_for_stats;
+    let show_kb_link;
     if (current_time !== undefined) {
       // standard emails and post notifications:
       // display green box for newsletters that were just sent
