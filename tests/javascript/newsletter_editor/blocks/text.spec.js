@@ -38,8 +38,8 @@ define([
 
     describe('block view', function () {
       global.stubConfig(EditorApplication);
-      var model = new (TextBlock.TextBlockModel)(),
-        view = new (TextBlock.TextBlockView)({model: model});
+      var model = new (TextBlock.TextBlockModel)();
+      var view = new (TextBlock.TextBlockView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -47,8 +47,8 @@ define([
       });
 
       describe('once rendered', function () {
-        var model = new (TextBlock.TextBlockModel)(),
-          view;
+        var model = new (TextBlock.TextBlockModel)();
+        var view;
 
         beforeEach(function () {
           global.stubConfig(EditorApplication);

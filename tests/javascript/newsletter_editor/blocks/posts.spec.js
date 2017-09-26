@@ -261,7 +261,8 @@ define([
     });
 
     describe('block view', function () {
-      var model, view;
+      var model;
+      var view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
@@ -285,7 +286,8 @@ define([
     });
 
     describe('block settings view', function () {
-      var model, view;
+      var model;
+      var view;
 
       before(function () {
         CommunicationComponent.getPostTypes = function() {
@@ -421,7 +423,8 @@ define([
         });
 
         describe('when "title only" display type is selected', function() {
-          var model, view;
+          var model;
+          var view;
           beforeEach(function() {
             model = new (PostsBlock.PostsBlockModel)();
             model.request = sinon.stub().returns({$el: {}});

@@ -52,10 +52,10 @@ define([
 
       describe('when creating with children', function () {
         var testModel = {
-            type: 'sampleType',
-            someField: 'Some Content'
-          },
-          model;
+          type: 'sampleType',
+          someField: 'Some Content'
+        };
+        var model;
 
         it('will recursively create children', function () {
           EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
@@ -109,8 +109,8 @@ define([
     describe('block view', function () {
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (ContainerBlock.ContainerBlockModel)(),
-        view = new (ContainerBlock.ContainerBlockView)({model: model});
+      var model = new (ContainerBlock.ContainerBlockModel)();
+      var view = new (ContainerBlock.ContainerBlockView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -119,8 +119,8 @@ define([
       describe('once rendered', function () {
 
         describe('on root level', function () {
-          var model = new (ContainerBlock.ContainerBlockModel)(),
-            view;
+          var model = new (ContainerBlock.ContainerBlockModel)();
+          var view;
 
           beforeEach(function () {
             global.stubChannel(EditorApplication);
@@ -151,8 +151,8 @@ define([
         });
 
         describe.skip('on non-root levels', function () {
-          var model = new (ContainerBlock.ContainerBlockModel)(),
-            view;
+          var model = new (ContainerBlock.ContainerBlockModel)();
+          var view;
 
           beforeEach(function () {
             global.stubChannel(EditorApplication);
@@ -189,15 +189,16 @@ define([
     describe('settings view', function () {
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (ContainerBlock.ContainerBlockModel)(),
-        view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+      var model = new (ContainerBlock.ContainerBlockModel)();
+      var view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
       });
 
       describe('once rendered', function () {
-        var model, view;
+        var model;
+        var view;
         beforeEach(function() {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);

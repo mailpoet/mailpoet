@@ -35,7 +35,8 @@ define([
     });
 
     describe('view', function() {
-      var model, view;
+      var model;
+      var view;
       beforeEach(function() {
         model = new (StylesComponent.StylesModel)();
         view = new (StylesComponent.StylesView)({ model: model });

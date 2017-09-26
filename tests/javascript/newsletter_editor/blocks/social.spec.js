@@ -130,7 +130,8 @@ define([
       });
 
       describe('once rendered', function () {
-        var model, view;
+        var model;
+        var view;
 
         before(function () {
           global.stubChannel(EditorApplication);
@@ -215,7 +216,8 @@ define([
       });
 
       describe('once rendered', function () {
-        var model, view;
+        var model;
+        var view;
         beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
