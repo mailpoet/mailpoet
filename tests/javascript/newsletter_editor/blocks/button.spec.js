@@ -173,7 +173,8 @@ define([
       });
 
       describe('once rendered', function () {
-        var model, view;
+        var model;
+        var view;
 
         before(function () {
           global.stubChannel(EditorApplication);
@@ -264,8 +265,9 @@ define([
     });
 
     describe('replaceAllButtonStyles', function () {
-      var model, view, onStub;
-
+      var model;
+      var view;
+      var onStub;
 
       beforeEach(function () {
         onStub = sinon.stub();
@@ -317,7 +319,8 @@ define([
       });
 
       describe('once rendered', function () {
-        var model, view;
+        var model;
+        var view;
         before(function() {
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);

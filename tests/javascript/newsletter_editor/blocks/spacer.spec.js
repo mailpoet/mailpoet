@@ -122,8 +122,8 @@ define([
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
 
-      var model = new (SpacerBlock.SpacerBlockModel)(),
-        view;
+      var model = new (SpacerBlock.SpacerBlockModel)();
+      var view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
@@ -135,7 +135,8 @@ define([
       });
 
       describe('once rendered', function () {
-        var view, model;
+        var view;
+        var model;
         beforeEach(function() {
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);

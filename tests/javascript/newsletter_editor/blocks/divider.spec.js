@@ -142,8 +142,8 @@ define([
       global.stubAvailableStyles(EditorApplication, {
         dividers: ['solid', 'inset']
       });
-      var model = new (DividerBlock.DividerBlockModel)(),
-        view = new (DividerBlock.DividerBlockSettingsView)({model: model});
+      var model = new (DividerBlock.DividerBlockModel)();
+      var view = new (DividerBlock.DividerBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -151,7 +151,8 @@ define([
       });
 
       describe('once rendered', function () {
-        var model, view;
+        var model;
+        var view;
 
         before(function() {
           global.stubChannel(EditorApplication);

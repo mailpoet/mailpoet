@@ -107,8 +107,8 @@ define([
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (ImageBlock.ImageBlockModel)(),
-        view;
+      var model = new (ImageBlock.ImageBlockModel)();
+      var view;
 
       beforeEach(function () {
         view = new (ImageBlock.ImageBlockView)({model: model});
@@ -158,7 +158,8 @@ define([
     });
 
     describe('block settings view', function () {
-      var model, view;
+      var model;
+      var view;
       var newWidth = 123;
       var newHeight = 456;
       var newLink = 'http://example.org/someNewLink';

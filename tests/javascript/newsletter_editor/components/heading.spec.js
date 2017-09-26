@@ -23,7 +23,8 @@ define([
       });
 
       describe('once rendered', function() {
-        var view, model;
+        var view;
+        var model;
         beforeEach(function() {
           model = new Backbone.SuperModel({
             subject: 'a test subject',

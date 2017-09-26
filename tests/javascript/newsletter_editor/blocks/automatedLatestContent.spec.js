@@ -45,17 +45,17 @@ define([
     });
 
     it('refreshes posts for given blocks', function() {
-      var block1 = new Backbone.SuperModel(),
-        block2 = new Backbone.SuperModel(),
-        postsSet1 = [
-          { type: 'customTypeOne' }
-        ],
-        postsSet2 = [
-          { type: 'customTypeTwo' },
-          { type: 'customTypeTwo' }
-        ],
-        mock1 = sinon.mock(block1),
-        mock2 = sinon.mock(block2);
+      var block1 = new Backbone.SuperModel();
+      var block2 = new Backbone.SuperModel();
+      var postsSet1 = [
+        { type: 'customTypeOne' }
+      ];
+      var postsSet2 = [
+        { type: 'customTypeTwo' },
+        { type: 'customTypeTwo' }
+      ];
+      var mock1 = sinon.mock(block1);
+      var mock2 = sinon.mock(block2);
 
       mock1.expects('trigger').once().withArgs('refreshPosts', postsSet1);
       mock2.expects('trigger').once().withArgs('refreshPosts', postsSet2);
@@ -69,7 +69,8 @@ define([
 
   describe('Automated latest content', function () {
     describe('model', function () {
-      var model, module;
+      var model;
+      var module;
 
       before(function() {
         module = AutomatedLatestContentBlock;
@@ -264,7 +265,9 @@ define([
     });
 
     describe('block view', function () {
-      var model, view, module;
+      var model;
+      var view;
+      var module;
 
       before(function() {
         module = AutomatedLatestContentBlock;
@@ -290,7 +293,10 @@ define([
     });
 
     describe('replaceAllButtonStyles', function () {
-      var model, view, module, onStub;
+      var model;
+      var view;
+      var module;
+      var onStub;
 
       before(function() {
         module = AutomatedLatestContentBlock;
@@ -327,7 +333,9 @@ define([
     });
 
     describe('block settings view', function () {
-      var model, view, module;
+      var model;
+      var view;
+      var module;
 
       before(function() {
         module = AutomatedLatestContentInjector({
@@ -496,7 +504,8 @@ define([
         });
 
         describe('when "title only" display type is selected', function() {
-          var model, view;
+          var model;
+          var view;
           beforeEach(function() {
             model = new (module.AutomatedLatestContentBlockModel)();
             view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
@@ -509,7 +518,8 @@ define([
           });
 
           describe('when "title as list" is selected', function() {
-            var model, view;
+            var model;
+            var view;
             beforeEach(function() {
               model = new (module.AutomatedLatestContentBlockModel)();
               view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});

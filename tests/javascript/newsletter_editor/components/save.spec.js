@@ -38,8 +38,8 @@ define([
       });
 
       it('triggers afterEditorSave event', function() {
-        var spy = sinon.spy(),
-          promise = jQuery.Deferred();
+        var spy = sinon.spy();
+        var promise = jQuery.Deferred();
         global.stubChannel(EditorApplication, {
           trigger: spy
         });
@@ -74,13 +74,13 @@ define([
       });
 
       it('encodes newsletter body in JSON format', function() {
-        var body = {type: 'testType'},
-          mock = sinon.mock()
-            .once()
-            .withArgs({
-              body: JSON.stringify(body)
-            })
-            .returns(jQuery.Deferred());
+        var body = {type: 'testType'};
+        var mock = sinon.mock()
+          .once()
+          .withArgs({
+            body: JSON.stringify(body)
+          })
+          .returns(jQuery.Deferred());
         global.stubChannel(EditorApplication);
 
         EditorApplication.toJSON = sinon.stub().returns({
@@ -134,8 +134,8 @@ define([
         });
 
         it('triggers template saving when clicked on "save as template" button', function() {
-          var mock = sinon.mock({ post: function() {} }).expects('post').once().returns(jQuery.Deferred()),
-            html2canvasMock = jQuery.Deferred();
+          var mock = sinon.mock({ post: function() {} }).expects('post').once().returns(jQuery.Deferred());
+          var html2canvasMock = jQuery.Deferred();
 
           html2canvasMock.resolve({
             toDataURL: function() { return 'somedataurl'; }
@@ -174,14 +174,14 @@ define([
         });
 
         it('saves newsletter when clicked on "next" button', function() {
-          var spy = sinon.spy(),
-            module = SaveInjector({
-              'newsletter_editor/components/communication': {
-                saveNewsletter: function() {
-                  return jQuery.Deferred();
-                }
+          var spy = sinon.spy();
+          var module = SaveInjector({
+            'newsletter_editor/components/communication': {
+              saveNewsletter: function() {
+                return jQuery.Deferred();
               }
-            });
+            }
+          });
           global.stubChannel(EditorApplication, {
             trigger: spy
           });

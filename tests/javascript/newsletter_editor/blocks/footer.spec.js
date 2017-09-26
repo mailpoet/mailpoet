@@ -119,8 +119,8 @@ define([
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (FooterBlock.FooterBlockModel)(),
-        view;
+      var model = new (FooterBlock.FooterBlockModel)();
+      var view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
@@ -139,8 +139,8 @@ define([
         fonts: ['Arial', 'Tahoma'],
         textSizes: ['16px', '20px']
       });
-      var model = new (FooterBlock.FooterBlockModel)(),
-        view = new (FooterBlock.FooterBlockSettingsView)({model: model});
+      var model = new (FooterBlock.FooterBlockModel)();
+      var view = new (FooterBlock.FooterBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -148,7 +148,8 @@ define([
       });
 
       describe('once rendered', function () {
-        var model, view;
+        var model;
+        var view;
 
         beforeEach(function() {
           global.stubChannel(EditorApplication);
