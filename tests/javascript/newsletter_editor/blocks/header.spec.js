@@ -79,6 +79,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model = new (HeaderBlock.HeaderBlockModel)();
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             header: {
@@ -101,7 +102,6 @@ define([
             }
           }
         });
-        var model = new (HeaderBlock.HeaderBlockModel)();
 
         expect(model.get('text')).to.equal('some custom config text');
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
@@ -115,11 +115,11 @@ define([
     });
 
     describe('block view', function () {
+      var model = new (HeaderBlock.HeaderBlockModel)();
+      var view;
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (HeaderBlock.HeaderBlockModel)();
-      var view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
@@ -133,14 +133,14 @@ define([
     });
 
     describe('settings view', function () {
+      var model = new (HeaderBlock.HeaderBlockModel)();
+      var view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         fonts: ['Arial', 'Tahoma'],
         textSizes: ['16px', '20px']
       });
-      var model = new (HeaderBlock.HeaderBlockModel)();
-      var view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();

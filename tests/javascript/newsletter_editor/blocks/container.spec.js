@@ -13,8 +13,8 @@ define([
 
     describe('model', function () {
       describe('by default', function () {
-        global.stubConfig(EditorApplication);
         var model = new ModelClass();
+        global.stubConfig(EditorApplication);
 
         it('has container type', function () {
           expect(model.get('type')).to.equal('container');
@@ -33,6 +33,7 @@ define([
         });
 
         it('uses defaults from config when they are set', function () {
+          var model = new (ContainerBlock.ContainerBlockModel)();
           global.stubConfig(EditorApplication, {
             blockDefaults: {
               container: {
@@ -44,7 +45,6 @@ define([
               }
             }
           });
-          var model = new (ContainerBlock.ContainerBlockModel)();
 
           expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
         });
@@ -107,10 +107,10 @@ define([
     });
 
     describe('block view', function () {
-      global.stubChannel(EditorApplication);
-      global.stubAvailableStyles(EditorApplication);
       var model = new (ContainerBlock.ContainerBlockModel)();
       var view = new (ContainerBlock.ContainerBlockView)({model: model});
+      global.stubChannel(EditorApplication);
+      global.stubAvailableStyles(EditorApplication);
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -187,10 +187,10 @@ define([
     });
 
     describe('settings view', function () {
-      global.stubChannel(EditorApplication);
-      global.stubAvailableStyles(EditorApplication);
       var model = new (ContainerBlock.ContainerBlockModel)();
       var view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+      global.stubChannel(EditorApplication);
+      global.stubAvailableStyles(EditorApplication);
 
       it('renders', function () {
         expect(view.render).to.not.throw();

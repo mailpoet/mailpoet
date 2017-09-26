@@ -87,6 +87,7 @@ define([
         var newsletterFields = {
           subject: 'test newsletter subject'
         };
+        var json;
         EditorApplication._contentContainer = {
           toJSON: function() {
             return dataField;
@@ -106,7 +107,7 @@ define([
             }
           };
         };
-        var json = ContentComponent.toJSON();
+        json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
           body: {
             content: dataField,

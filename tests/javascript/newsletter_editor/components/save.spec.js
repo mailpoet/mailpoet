@@ -40,6 +40,7 @@ define([
       it('triggers afterEditorSave event', function() {
         var spy = sinon.spy();
         var promise = jQuery.Deferred();
+        var module;
         global.stubChannel(EditorApplication, {
           trigger: spy
         });
@@ -48,7 +49,7 @@ define([
             type: 'container'
           }
         });
-        var module = SaveInjector({
+        module = SaveInjector({
           'newsletter_editor/components/communication': {
             saveNewsletter: sinon.stub().returns(promise)
           }
@@ -81,12 +82,13 @@ define([
             body: JSON.stringify(body)
           })
           .returns(jQuery.Deferred());
+        var module;
         global.stubChannel(EditorApplication);
 
         EditorApplication.toJSON = sinon.stub().returns({
           body: body
         });
-        var module = SaveInjector({
+        module = SaveInjector({
           'newsletter_editor/components/communication': {
             saveNewsletter: mock
           }
@@ -136,13 +138,15 @@ define([
         it('triggers template saving when clicked on "save as template" button', function() {
           var mock = sinon.mock({ post: function() {} }).expects('post').once().returns(jQuery.Deferred());
           var html2canvasMock = jQuery.Deferred();
+          var module;
+          var view;
 
           html2canvasMock.resolve({
             toDataURL: function() { return 'somedataurl'; }
           });
 
           EditorApplication.getBody = sinon.stub();
-          var module = SaveInjector({
+          module = SaveInjector({
             mailpoet: {
               Ajax: {
                 post: mock
@@ -163,7 +167,7 @@ define([
               };
             }
           });
-          var view = new (module.SaveView)();
+          view = new (module.SaveView)();
           view.render();
 
           view.$('.mailpoet_save_as_template_name').val('A sample template');
@@ -182,10 +186,11 @@ define([
               }
             }
           });
+          var view;
           global.stubChannel(EditorApplication, {
             trigger: spy
           });
-          var view = new (module.SaveView)();
+          view = new (module.SaveView)();
           view.render();
 
           view.$('.mailpoet_save_next').click();

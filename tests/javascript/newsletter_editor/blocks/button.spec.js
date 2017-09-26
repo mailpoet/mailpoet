@@ -108,6 +108,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             button: {
@@ -131,7 +132,7 @@ define([
             }
           }
         });
-        var model = new (ButtonBlock.ButtonBlockModel)();
+        model = new (ButtonBlock.ButtonBlockModel)();
 
         expect(model.get('text')).to.equal('Some new text');
         expect(model.get('url')).to.equal('http://somenewurl.com');

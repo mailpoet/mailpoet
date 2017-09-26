@@ -9,10 +9,10 @@ define([
 
   describe('Styles', function () {
     it('loads and stores globally available styles', function() {
+      var model = StylesComponent.getGlobalStyles();
       StylesComponent.setGlobalStyles({
         testStyle: 'testValue'
       });
-      var model = StylesComponent.getGlobalStyles();
       expect(model.get('testStyle')).to.equal('testValue');
     });
 

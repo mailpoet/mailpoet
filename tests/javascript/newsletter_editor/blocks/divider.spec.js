@@ -70,6 +70,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model = new (DividerBlock.DividerBlockModel)();
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             divider: {
@@ -85,7 +86,6 @@ define([
             }
           }
         });
-        var model = new (DividerBlock.DividerBlockModel)();
 
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
         expect(model.get('styles.block.padding')).to.equal('37px');
@@ -137,13 +137,13 @@ define([
     });
 
     describe('settings view', function () {
+      var model = new (DividerBlock.DividerBlockModel)();
+      var view = new (DividerBlock.DividerBlockSettingsView)({model: model});
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         dividers: ['solid', 'inset']
       });
-      var model = new (DividerBlock.DividerBlockModel)();
-      var view = new (DividerBlock.DividerBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();

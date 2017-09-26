@@ -74,6 +74,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model = new (ImageBlock.ImageBlockModel)();
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             image: {
@@ -91,7 +92,6 @@ define([
             }
           }
         });
-        var model = new (ImageBlock.ImageBlockModel)();
 
         expect(model.get('link')).to.equal('http://example.org/customConfigPage');
         expect(model.get('src')).to.equal('http://example.org/someCustomConfigImage.png');
@@ -104,11 +104,11 @@ define([
     });
 
     describe('block view', function () {
+      var model = new (ImageBlock.ImageBlockModel)();
+      var view;
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (ImageBlock.ImageBlockModel)();
-      var view;
 
       beforeEach(function () {
         view = new (ImageBlock.ImageBlockView)({model: model});

@@ -26,19 +26,22 @@ define([
     });
 
     it('fetches posts in bulk from the server', function() {
+      var mock;
+      var module;
+      var model;
       global.stubChannel(EditorApplication);
       EditorApplication.findModels = sinon.stub().returns([new Backbone.SuperModel()]);
 
-      var mock = sinon.mock({ getBulkTransformedPosts: function() {} })
+      mock = sinon.mock({ getBulkTransformedPosts: function() {} })
         .expects('getBulkTransformedPosts').once().returns(jQuery.Deferred());
 
-      var module = AutomatedLatestContentInjector({
+      module = AutomatedLatestContentInjector({
         'newsletter_editor/components/communication': {
           getBulkTransformedPosts: mock
         }
       });
 
-      var model = new module.ALCSupervisor();
+      model = new module.ALCSupervisor();
       model.refresh();
 
       mock.verify();
@@ -173,6 +176,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             automatedLatestContent: {
@@ -220,7 +224,7 @@ define([
             }
           }
         });
-        var model = new (module.AutomatedLatestContentBlockModel)();
+        model = new (module.AutomatedLatestContentBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -252,8 +256,8 @@ define([
       });
 
       it('accepts displayable posts', function() {
-        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
         var model = new (module.AutomatedLatestContentBlockModel)();
+        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
 
         model.updatePosts([{
           type: 'someCustomType'

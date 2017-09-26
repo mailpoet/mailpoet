@@ -132,6 +132,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model = new (PostsBlock.PostsBlockModel)();
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             posts: {
@@ -179,7 +180,6 @@ define([
             }
           }
         });
-        var model = new (PostsBlock.PostsBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
