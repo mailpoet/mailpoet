@@ -658,8 +658,8 @@ const Listing = React.createClass({
     });
   },
   handleSelectItem: function (id, is_checked) {
-    let selected_ids = this.state.selected_ids,
-      selection = false;
+    let selected_ids = this.state.selected_ids;
+    let selection = false;
 
     if (is_checked) {
       selected_ids = jQuery.merge(selected_ids, [id]);
