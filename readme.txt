@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.1 - 2017-09-26 =
+* Added: images can be resized in newsletter editor;
+* Fixed: scheduled newsletters that are unscheduled will not be mistakenly sent. Thx Georges in Provence;
+* Fixed: plugin does not time out on sites with a large number of lists and subscribers. Thanks Roy;
+* Fixed: long email addresses no longer trigger MySQL errors during subscription. Thank you Sameer Bhatt and Bits of Freedom!
 
 = 3.0.0 - 2017-09-20 =
 * Official launch of the new MailPoet. :)
