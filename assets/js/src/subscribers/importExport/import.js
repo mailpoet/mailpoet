@@ -243,7 +243,7 @@ define(
                 api_key: mailChimpKeyInputElement.val(),
                 lists: mailChimpListsContainerElement.find('select').val()
               }
-            }).always(function() {
+            }).always(function () {
               MailPoet.Modal.loading(false);
             }).done(function (response) {
               window.importData.step1 = response.data;
@@ -340,7 +340,7 @@ define(
                 email = test[1].trim();
               }
                 // test for valid characters using WP's rule (https://core.trac.wordpress.org/browser/tags/4.7.3/src/wp-includes/formatting.php#L2902)
-              if (!/^[a-zA-Z0-9!#$%&\'*+\/=?^_`{|}~\.\-@]+$/.test(email) ) {
+              if (!/^[a-zA-Z0-9!#$%&\'*+\/=?^_`{|}~\.\-@]+$/.test(email)) {
                 return false;
               }
               return email;
@@ -618,7 +618,7 @@ define(
                   name: segmentName,
                   description: segmentDescription
                 }
-              }).done(function(response) {
+              }).done(function (response) {
                 var selected_values;
                 window.mailpoetSegments.push({
                   id: response.data.id,
@@ -769,7 +769,7 @@ define(
                     title: MailPoet.I18n.t('addNewField'),
                     template: jQuery('#form_template_field_form').html()
                   });
-                  jQuery('#form_field_new').parsley().on('form:submit', function() {
+                  jQuery('#form_field_new').parsley().on('form:submit', function () {
                     // get data
                     var data = jQuery(this.$element).serializeObject();
 
@@ -927,7 +927,7 @@ define(
                   for (format in allowedDateFormats) {
                     testedFormat = allowedDateFormats[format];
                     if (Moment(firstRowData, testedFormat, true).isValid()) {
-                      validationRule = (typeof(testedFormat) === 'function') ?
+                      validationRule = (typeof (testedFormat) === 'function') ?
                         'datetime' :
                         testedFormat;
                       // set validation on the column element
@@ -1122,7 +1122,7 @@ define(
           });
 
           // display statistics
-          subscribersDataImportResultsTemplate = 
+          subscribersDataImportResultsTemplate =
             Handlebars.compile(jQuery('#subscribers_data_import_results_template').html());
           exportMenuElement = jQuery('span.mailpoet_export');
           importResults = {

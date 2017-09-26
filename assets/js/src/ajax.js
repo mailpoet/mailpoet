@@ -52,7 +52,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
         data: this.options.data || {}
       };
     },
-    request: function(method, options) {
+    request: function (method, options) {
       var params;
       var deferred;
       // set options

@@ -1,29 +1,29 @@
 define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   // Handlebars helpers
-  Handlebars.registerHelper('concat', function() {
+  Handlebars.registerHelper('concat', function () {
     var size = (arguments.length - 1);
     var output = '';
     var i;
-    for(i = 0; i < size; i++) {
+    for (i = 0; i < size; i++) {
       output += arguments[i];
     }
     return output;
   });
 
-  Handlebars.registerHelper('number_format', function(value) {
+  Handlebars.registerHelper('number_format', function (value) {
     return Number(value).toLocaleString();
   });
-  Handlebars.registerHelper('date_format', function(timestamp, block) {
+  Handlebars.registerHelper('date_format', function (timestamp, block) {
     var f;
-    if(window.moment) {
-      if(timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
+    if (window.moment) {
+      if (timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
         return;
       }
 
       // set date format
       f = block.hash.format || 'MMM Do, YYYY';
       // check if we passed a timestamp
-      if(parseInt(timestamp, 10) == timestamp) {
+      if (parseInt(timestamp, 10) == timestamp) {
         return window.moment.unix(timestamp).format(f);
       } else {
         return window.moment.utc(timestamp).format(f);
@@ -67,18 +67,18 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     }
   });
 
-  Handlebars.registerHelper('nl2br', function(value) {
+  Handlebars.registerHelper('nl2br', function (value) {
     return value.gsub('\n', '<br />');
   });
 
-  Handlebars.registerHelper('json_encode', function(value) {
+  Handlebars.registerHelper('json_encode', function (value) {
     return JSON.stringify(value);
   });
 
-  Handlebars.registerHelper('json_decode', function(value) {
+  Handlebars.registerHelper('json_decode', function (value) {
     return JSON.parse(value);
   });
-  Handlebars.registerHelper('url', function(value) {
+  Handlebars.registerHelper('url', function (value) {
     var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
     return url + value;
@@ -91,15 +91,15 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       return value;
     }
   });
-  Handlebars.registerHelper('lookup', function(obj, field) {
+  Handlebars.registerHelper('lookup', function (obj, field) {
     return obj && obj[field];
   });
 
 
-  Handlebars.registerHelper('rsa_key', function(value) {
+  Handlebars.registerHelper('rsa_key', function (value) {
     var lines;
     // extract all lines into an array
-    if(value === undefined) return '';
+    if (value === undefined) return '';
 
     lines = value.trim().split('\n');
 
@@ -111,8 +111,8 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return lines.join('');
   });
 
-  Handlebars.registerHelper('trim', function(value) {
-    if(value === null || value === undefined) return '';
+  Handlebars.registerHelper('trim', function (value) {
+    if (value === null || value === undefined) return '';
     return value.trim();
   });
 

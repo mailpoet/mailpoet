@@ -8,22 +8,22 @@
  * its placeholder into editor text.
  */
 
-/*jshint unused:false */
-/*global tinymce:true */
-tinymce.PluginManager.add('mailpoet_shortcodes', function(editor) {
-  var appendLabelAndClose = function(shortcode) {
+/* jshint unused:false */
+/* global tinymce:true */
+tinymce.PluginManager.add('mailpoet_shortcodes', function (editor) {
+  var appendLabelAndClose = function (shortcode) {
     editor.insertContent(shortcode);
     editor.windowManager.close();
   };
-  var generateOnClickFunc = function(shortcode) {
-    return function() {
+  var generateOnClickFunc = function (shortcode) {
+    return function () {
       appendLabelAndClose(shortcode);
     };
   };
 
   editor.addButton('mailpoet_shortcodes', {
     icon: 'mailpoet_shortcodes',
-    onclick: function() {
+    onclick: function () {
       var shortcodes = [];
       var configShortcodes = editor.settings.mailpoet_shortcodes;
       var segment;

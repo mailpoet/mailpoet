@@ -8,11 +8,11 @@ define([
   'newsletter_editor/behaviors/BehaviorsLookup',
   'mailpoet',
   'spectrum'
-], function(Marionette, BehaviorsLookup, MailPoet) {
+], function (Marionette, BehaviorsLookup, MailPoet) {
   var BL = BehaviorsLookup;
 
   BL.ColorPickerBehavior = Marionette.Behavior.extend({
-    onRender: function() {
+    onRender: function () {
       var that = this;
       var preferredFormat = 'hex6';
       this.view.$('.mailpoet_color').each(function () {

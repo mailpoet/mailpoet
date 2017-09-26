@@ -115,9 +115,9 @@ define('modal', ['mailpoet', 'jquery'],
           return window.Handlebars.compile(template);
         }
       },
-      init: function(options) {
+      init: function (options) {
         var modal;
-        if(this.initialized === true) {
+        if (this.initialized === true) {
           this.close();
         }
         // merge options
@@ -134,7 +134,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         if (this.options.type !== null) {
           // insert modal depending on its type
-          if(this.options.type === 'popup') {
+          if (this.options.type === 'popup') {
             modal = this.compileTemplate(
               this.templates[this.options.type]
             );
@@ -179,8 +179,8 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      initOverlay: function() {
-        if(jQuery('#mailpoet_modal_overlay').length === 0) {
+      initOverlay: function () {
+        if (jQuery('#mailpoet_modal_overlay').length === 0) {
             // insert overlay into the DOM
           jQuery('body').append(this.templates.overlay);
             // insert loading indicator into overlay
@@ -343,17 +343,17 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      setPosition: function() {
+      setPosition: function () {
         var screenWidth;
         var screenHeight;
         var modalWidth;
         var modalHeight;
-        switch(this.options.type) {
+        switch (this.options.type) {
           case 'popup':
             screenWidth = jQuery(window).width();
             screenHeight = jQuery(window).height();
-            modalWidth = jQuery('.mailpoet_'+ this.options.type +'_wrapper').width();
-            modalHeight = jQuery('.mailpoet_'+ this.options.type +'_wrapper').height();
+            modalWidth = jQuery('.mailpoet_' + this.options.type + '_wrapper').width();
+            modalHeight = jQuery('.mailpoet_' + this.options.type + '_wrapper').height();
 
             // set position of popup depending on screen dimensions.
             jQuery('#mailpoet_popup').css({
@@ -438,7 +438,7 @@ define('modal', ['mailpoet', 'jquery'],
             .removeClass('mailpoet_modal_highlight');
         return this;
       },
-      hideModal: function() {
+      hideModal: function () {
           // set modal as closed
         this.opened = false;
 
@@ -453,7 +453,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      showOverlay: function() {
+      showOverlay: function () {
         jQuery('#mailpoet_modal_overlay').show();
         return this;
       },

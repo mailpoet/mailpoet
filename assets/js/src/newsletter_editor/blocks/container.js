@@ -23,8 +23,8 @@ define([
     initialize: function () {
       this.on('add change remove', function () { App.getChannel().trigger('autoSave'); });
     },
-    parse: function(response) {
-      return _.map(response, function(block) {
+    parse: function (response) {
+      return _.map(response, function (block) {
         var Type = App.getBlockTypeModel(block.type);
         // TODO: If type has no registered model, use a backup one
         return new Type(block, { parse: true });
@@ -64,8 +64,8 @@ define([
       }
       return response;
     },
-    getChildren: function() {
-      var models = this.get('blocks').map(function(model) {
+    getChildren: function () {
+      var models = this.get('blocks').map(function (model) {
         return [model, model.getChildren()];
       });
 
@@ -119,7 +119,7 @@ define([
           // and destroy self
           options.dragBehavior.view.model.destroy();
         },
-        onDragSubstituteBy: function(behavior) {
+        onDragSubstituteBy: function (behavior) {
           var WidgetView;
           var node;
           // When block is being dragged, display the widget icon instead.
@@ -189,19 +189,19 @@ define([
         this.toolsView.triggerMethod('hideTools');
       }
     },
-    toggleEditingLayer: function(event) {
+    toggleEditingLayer: function (event) {
       var that = this;
       var $toggleButton = this.$('> .mailpoet_tools .mailpoet_newsletter_layer_selector');
       var $overlay = jQuery('.mailpoet_layer_overlay');
       var $container = this.$('> .mailpoet_container');
-      var enableContainerLayer = function() {
+      var enableContainerLayer = function () {
         that.$el.addClass('mailpoet_container_layer_active');
         $toggleButton.addClass('mailpoet_container_layer_active');
         $container.addClass('mailpoet_layer_highlight');
         $overlay.click(disableContainerLayer);
         $overlay.show();
       };
-      var disableContainerLayer = function() {
+      var disableContainerLayer = function () {
         that.$el.removeClass('mailpoet_container_layer_active');
         $toggleButton.removeClass('mailpoet_container_layer_active');
         $container.removeClass('mailpoet_layer_highlight');
@@ -336,7 +336,7 @@ define([
     }
   });
 
-  App.on('before:start', function(App) {
+  App.on('before:start', function (App) {
     App.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
       blockView: Module.ContainerBlockView

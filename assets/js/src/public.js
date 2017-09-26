@@ -18,7 +18,7 @@ function (
       $('form.mailpoet_form').each(function () {
         var form = $(this);
 
-        form.parsley().on('form:validated', function() {
+        form.parsley().on('form:validated', function () {
           // clear messages
           form.find('.mailpoet_message > p').hide();
 

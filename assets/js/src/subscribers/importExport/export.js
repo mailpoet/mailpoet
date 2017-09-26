@@ -156,7 +156,7 @@ define(
            segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
            subscriber_fields: subscriberFieldsContainerElement.val()
          })
-       }).always(function() {
+       }).always(function () {
          MailPoet.Modal.loading(false);
        }).done(function (response) {
          var resultMessage = MailPoet.I18n.t('exportMessage')

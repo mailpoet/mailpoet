@@ -94,7 +94,7 @@ define([
     }
   });
 
-  App.on('before:start', function(App) {
+  App.on('before:start', function (App) {
     App.registerBlockType('text', {
       blockModel: Module.TextBlockModel,
       blockView: Module.TextBlockView
