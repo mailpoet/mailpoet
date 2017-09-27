@@ -303,6 +303,7 @@ define([
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
         model = {set: sinon.stub()};
+        new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({model: model});
       });
 
       it('listens to the event', function () {
