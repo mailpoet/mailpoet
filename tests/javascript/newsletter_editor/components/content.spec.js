@@ -78,6 +78,7 @@ define([
 
     describe('transformation to json', function() {
       it('includes content, globalStyles and initial newsletter fields', function() {
+        var json;
         var dataField = {
           containerModelField: 'containerModelValue'
         };
@@ -106,7 +107,7 @@ define([
             }
           };
         };
-        var json = ContentComponent.toJSON();
+        json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
           body: {
             content: dataField,

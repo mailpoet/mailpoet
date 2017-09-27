@@ -21,6 +21,8 @@ define([
 
   describe('Automated Latest Content Supervisor', function() {
     var model;
+    var mock;
+    var module;
     beforeEach(function() {
       model = new AutomatedLatestContentBlock.ALCSupervisor();
     });
@@ -29,16 +31,16 @@ define([
       global.stubChannel(EditorApplication);
       EditorApplication.findModels = sinon.stub().returns([new Backbone.SuperModel()]);
 
-      var mock = sinon.mock({ getBulkTransformedPosts: function() {} })
+      mock = sinon.mock({ getBulkTransformedPosts: function() {} })
         .expects('getBulkTransformedPosts').once().returns(jQuery.Deferred());
 
-      var module = AutomatedLatestContentInjector({
+      module = AutomatedLatestContentInjector({
         'newsletter_editor/components/communication': {
           getBulkTransformedPosts: mock
         }
       });
 
-      var model = new module.ALCSupervisor();
+      model = new module.ALCSupervisor();
       model.refresh();
 
       mock.verify();
@@ -173,6 +175,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             automatedLatestContent: {
@@ -220,7 +223,7 @@ define([
             }
           }
         });
-        var model = new (module.AutomatedLatestContentBlockModel)();
+        model = new (module.AutomatedLatestContentBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -252,8 +255,9 @@ define([
       });
 
       it('accepts displayable posts', function() {
+        var model;
         EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
-        var model = new (module.AutomatedLatestContentBlockModel)();
+        model = new (module.AutomatedLatestContentBlockModel)();
 
         model.updatePosts([{
           type: 'someCustomType'
@@ -293,8 +297,8 @@ define([
     });
 
     describe('replaceAllButtonStyles', function () {
-      var model;
       var onStub;
+      var view;
 
       beforeEach(function () {
         onStub = sinon.stub();
@@ -302,8 +306,7 @@ define([
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-        model = {set: sinon.stub()};
-        new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({model: model});
+        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({model: {set: sinon.stub()}});
       });
 
       it('listens to the event', function () {
@@ -321,8 +324,8 @@ define([
           }
         };
         callback(data);
-        expect(model.set).to.have.been.callCount(1);
-        expect(model.set).to.have.been.calledWithMatch(sinon.match.has('readMoreButton', data));
+        expect(view.model.set).to.have.been.callCount(1);
+        expect(view.model.set).to.have.been.calledWithMatch(sinon.match.has('readMoreButton', data));
       });
     });
 

@@ -29,6 +29,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             social: {
@@ -36,7 +37,7 @@ define([
             }
           }
         });
-        var model = new (SocialBlock.SocialBlockModel)();
+        model = new (SocialBlock.SocialBlockModel)();
 
         expect(model.get('iconSet')).to.equal('customConfigIconSet');
       });
