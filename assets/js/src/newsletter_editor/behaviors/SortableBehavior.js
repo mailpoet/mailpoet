@@ -24,9 +24,9 @@ define([
             ui.item.removeData('previousIndex');
           },
           update: function (event, ui) {
-            var previousIndex = ui.item.data('previousIndex'),
-              newIndex = ui.item.index(),
-              model = collection.at(previousIndex);
+            var previousIndex = ui.item.data('previousIndex');
+            var newIndex = ui.item.index();
+            var model = collection.at(previousIndex);
 
             // Replicate DOM changes. Move target model to a new position
             // within the collection

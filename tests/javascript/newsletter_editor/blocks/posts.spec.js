@@ -132,6 +132,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             posts: {
@@ -179,7 +180,7 @@ define([
             }
           }
         });
-        var model = new (PostsBlock.PostsBlockModel)();
+        model = new (PostsBlock.PostsBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -261,7 +262,8 @@ define([
     });
 
     describe('block view', function () {
-      var model, view;
+      var model;
+      var view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
@@ -285,7 +287,8 @@ define([
     });
 
     describe('block settings view', function () {
-      var model, view;
+      var model;
+      var view;
 
       before(function () {
         CommunicationComponent.getPostTypes = function() {
@@ -421,7 +424,8 @@ define([
         });
 
         describe('when "title only" display type is selected', function() {
-          var model, view;
+          var model;
+          var view;
           beforeEach(function() {
             model = new (PostsBlock.PostsBlockModel)();
             model.request = sinon.stub().returns({$el: {}});

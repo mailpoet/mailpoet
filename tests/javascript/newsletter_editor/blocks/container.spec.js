@@ -13,8 +13,9 @@ define([
 
     describe('model', function () {
       describe('by default', function () {
+        var model;
         global.stubConfig(EditorApplication);
-        var model = new ModelClass();
+        model = new ModelClass();
 
         it('has container type', function () {
           expect(model.get('type')).to.equal('container');
@@ -33,6 +34,7 @@ define([
         });
 
         it('uses defaults from config when they are set', function () {
+          var model;
           global.stubConfig(EditorApplication, {
             blockDefaults: {
               container: {
@@ -44,7 +46,7 @@ define([
               }
             }
           });
-          var model = new (ContainerBlock.ContainerBlockModel)();
+          model = new (ContainerBlock.ContainerBlockModel)();
 
           expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
         });
@@ -52,10 +54,10 @@ define([
 
       describe('when creating with children', function () {
         var testModel = {
-            type: 'sampleType',
-            someField: 'Some Content'
-          },
-          model;
+          type: 'sampleType',
+          someField: 'Some Content'
+        };
+        var model;
 
         it('will recursively create children', function () {
           EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
@@ -107,10 +109,12 @@ define([
     });
 
     describe('block view', function () {
+      var model;
+      var view;
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (ContainerBlock.ContainerBlockModel)(),
-        view = new (ContainerBlock.ContainerBlockView)({model: model});
+      view = new (ContainerBlock.ContainerBlockView)({model: model});
+      model = new (ContainerBlock.ContainerBlockModel)();
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -119,8 +123,8 @@ define([
       describe('once rendered', function () {
 
         describe('on root level', function () {
-          var model = new (ContainerBlock.ContainerBlockModel)(),
-            view;
+          var model = new (ContainerBlock.ContainerBlockModel)();
+          var view;
 
           beforeEach(function () {
             global.stubChannel(EditorApplication);
@@ -151,8 +155,8 @@ define([
         });
 
         describe.skip('on non-root levels', function () {
-          var model = new (ContainerBlock.ContainerBlockModel)(),
-            view;
+          var model = new (ContainerBlock.ContainerBlockModel)();
+          var view;
 
           beforeEach(function () {
             global.stubChannel(EditorApplication);
@@ -187,17 +191,20 @@ define([
     });
 
     describe('settings view', function () {
+      var model;
+      var view;
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (ContainerBlock.ContainerBlockModel)(),
-        view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+      view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+      model = new (ContainerBlock.ContainerBlockModel)();
 
       it('renders', function () {
         expect(view.render).to.not.throw();
       });
 
       describe('once rendered', function () {
-        var model, view;
+        var model;
+        var view;
         beforeEach(function() {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
@@ -211,8 +218,9 @@ define([
         });
 
         it.skip('closes the sidepanel after "Done" is clicked', function () {
-          var mock = sinon.mock().once();
+          var mock;
           global.MailPoet.Modal.cancel = mock;
+          mock = sinon.mock().once();
           view.$('.mailpoet_done_editing').click();
           mock.verify();
           delete(global.MailPoet.Modal.cancel);

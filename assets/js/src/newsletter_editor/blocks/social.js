@@ -13,12 +13,13 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock,
-    SocialBlockSettingsIconSelectorView,
-    SocialBlockSettingsIconView,
-    SocialBlockSettingsIconCollectionView,
-    SocialBlockSettingsStylesView;
+  var Module = {};
+  var base = BaseBlock;
+  var SocialBlockSettingsIconSelectorView;
+  var SocialBlockSettingsIconView;
+  var SocialBlockSettingsIconCollectionView;
+  var SocialBlockSettingsStylesView;
+  var SocialIconView;
 
   Module.SocialIconModel = SuperModel.extend({
     defaults: function () {
@@ -33,12 +34,12 @@ define([
         text: defaultValues.get('title')
       };
     },
-    initialize: function (options) {
+    initialize: function () {
       var that = this;
       // Make model swap to default values for that type when iconType changes
       this.on('change:iconType', function () {
-        var defaultValues = App.getConfig().get('socialIcons').get(that.get('iconType')),
-          iconSet = that.collection.iconBlockModel.getIconSet();
+        var defaultValues = App.getConfig().get('socialIcons').get(that.get('iconType'));
+        var iconSet = that.collection.iconBlockModel.getIconSet();
         this.set({
           link: defaultValues.get('defaultLink'),
           image: iconSet.get(that.get('iconType')),
@@ -83,7 +84,7 @@ define([
     }
   });
 
-  var SocialIconView = Marionette.View.extend({
+  SocialIconView = Marionette.View.extend({
     tagName: 'span',
     getTemplate: function () { return window.templates.socialIconBlock; },
     modelEvents: {
@@ -175,10 +176,10 @@ define([
       }
     },
     templateContext: function () {
-      var icons = App.getConfig().get('socialIcons'),
-        // Construct icon type list of format [{iconType: 'type', title: 'Title'}, ...]
-        availableIconTypes = _.map(_.keys(icons.attributes), function (key) { return { iconType: key, title: icons.get(key).get('title') }; }),
-        allIconSets = App.getAvailableStyles().get('socialIconSets');
+      var icons = App.getConfig().get('socialIcons');
+      // Construct icon type list of format [{iconType: 'type', title: 'Title'}, ...]
+      var availableIconTypes = _.map(_.keys(icons.attributes), function (key) { return { iconType: key, title: icons.get(key).get('title') }; });
+      var allIconSets = App.getAvailableStyles().get('socialIconSets');
       return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         iconTypes: availableIconTypes,
         currentType: icons.get(this.model.get('iconType')).toJSON(),
@@ -297,7 +298,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function (App) {
     App.registerBlockType('social', {
       blockModel: Module.SocialBlockModel,
       blockView: Module.SocialBlockView

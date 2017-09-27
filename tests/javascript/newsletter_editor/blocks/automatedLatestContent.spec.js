@@ -26,36 +26,39 @@ define([
     });
 
     it('fetches posts in bulk from the server', function() {
+      var mock;
+      var module;
+      var model;
       global.stubChannel(EditorApplication);
       EditorApplication.findModels = sinon.stub().returns([new Backbone.SuperModel()]);
 
-      var mock = sinon.mock({ getBulkTransformedPosts: function() {} })
+      mock = sinon.mock({ getBulkTransformedPosts: function() {} })
         .expects('getBulkTransformedPosts').once().returns(jQuery.Deferred());
 
-      var module = AutomatedLatestContentInjector({
+      module = AutomatedLatestContentInjector({
         'newsletter_editor/components/communication': {
           getBulkTransformedPosts: mock
         }
       });
 
-      var model = new module.ALCSupervisor();
+      model = new module.ALCSupervisor();
       model.refresh();
 
       mock.verify();
     });
 
     it('refreshes posts for given blocks', function() {
-      var block1 = new Backbone.SuperModel(),
-        block2 = new Backbone.SuperModel(),
-        postsSet1 = [
-          { type: 'customTypeOne' }
-        ],
-        postsSet2 = [
-          { type: 'customTypeTwo' },
-          { type: 'customTypeTwo' }
-        ],
-        mock1 = sinon.mock(block1),
-        mock2 = sinon.mock(block2);
+      var block1 = new Backbone.SuperModel();
+      var block2 = new Backbone.SuperModel();
+      var postsSet1 = [
+        { type: 'customTypeOne' }
+      ];
+      var postsSet2 = [
+        { type: 'customTypeTwo' },
+        { type: 'customTypeTwo' }
+      ];
+      var mock1 = sinon.mock(block1);
+      var mock2 = sinon.mock(block2);
 
       mock1.expects('trigger').once().withArgs('refreshPosts', postsSet1);
       mock2.expects('trigger').once().withArgs('refreshPosts', postsSet2);
@@ -69,7 +72,8 @@ define([
 
   describe('Automated latest content', function () {
     describe('model', function () {
-      var model, module;
+      var model;
+      var module;
 
       before(function() {
         module = AutomatedLatestContentBlock;
@@ -172,6 +176,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             automatedLatestContent: {
@@ -219,7 +224,7 @@ define([
             }
           }
         });
-        var model = new (module.AutomatedLatestContentBlockModel)();
+        model = new (module.AutomatedLatestContentBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -251,8 +256,8 @@ define([
       });
 
       it('accepts displayable posts', function() {
-        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
         var model = new (module.AutomatedLatestContentBlockModel)();
+        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
 
         model.updatePosts([{
           type: 'someCustomType'
@@ -264,7 +269,9 @@ define([
     });
 
     describe('block view', function () {
-      var model, view, module;
+      var model;
+      var view;
+      var module;
 
       before(function() {
         module = AutomatedLatestContentBlock;
@@ -290,11 +297,8 @@ define([
     });
 
     describe('replaceAllButtonStyles', function () {
-      var model, view, module, onStub;
-
-      before(function() {
-        module = AutomatedLatestContentBlock;
-      });
+      var model;
+      var onStub;
 
       beforeEach(function () {
         onStub = sinon.stub();
@@ -303,7 +307,7 @@ define([
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
         model = {set: sinon.stub()};
-        view = new (module.AutomatedLatestContentBlockView)({model: model});
+        new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({model: model});
       });
 
       it('listens to the event', function () {
@@ -327,7 +331,9 @@ define([
     });
 
     describe('block settings view', function () {
-      var model, view, module;
+      var model;
+      var view;
+      var module;
 
       before(function() {
         module = AutomatedLatestContentInjector({
@@ -496,7 +502,8 @@ define([
         });
 
         describe('when "title only" display type is selected', function() {
-          var model, view;
+          var model;
+          var view;
           beforeEach(function() {
             model = new (module.AutomatedLatestContentBlockModel)();
             view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
@@ -509,7 +516,8 @@ define([
           });
 
           describe('when "title as list" is selected', function() {
-            var model, view;
+            var model;
+            var view;
             beforeEach(function() {
               model = new (module.AutomatedLatestContentBlockModel)();
               view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});

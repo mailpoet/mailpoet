@@ -51,7 +51,7 @@ define(
           jQuery('#mailpoet_sending_method_setup').fadeIn();
         }
       },
-      tabs: function (tabStr, section) {
+      tabs: function (tabStr) {
         // set default tab
         var tab = tabStr || 'mta';
 

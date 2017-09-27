@@ -47,7 +47,9 @@ define([
       });
 
       describe('once rendered', function() {
-        var model, availableStyles, view;
+        var model;
+        var availableStyles;
+        var view;
         before(function() {
           model = new Backbone.SuperModel({
             text: {
