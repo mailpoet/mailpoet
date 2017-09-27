@@ -191,7 +191,7 @@ class Initializer {
   }
 
   function setupCapabilities() {
-    $caps = new Capabilities();
+    $caps = new Capabilities($this->renderer);
     $caps->init();
   }
 

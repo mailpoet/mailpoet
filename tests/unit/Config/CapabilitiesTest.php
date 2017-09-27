@@ -6,10 +6,12 @@ use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Capabilities;
+use MailPoet\Config\Renderer;
 
 class CapabilitiesTest extends \MailPoetTest {
   function _before() {
-    $this->caps = new Capabilities();
+    $renderer = new Renderer();
+    $this->caps = new Capabilities($renderer);
   }
 
   function testItInitializes() {

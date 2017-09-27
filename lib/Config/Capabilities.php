@@ -7,6 +7,14 @@ use MailPoet\WP\Hooks;
 class Capabilities {
   const MEMBERS_CAP_GROUP_NAME = 'mailpoet';
 
+  private $renderer = null;
+
+  function __construct($renderer = null) {
+    if($renderer !== null) {
+      $this->renderer = $renderer;
+    }
+  }
+
   function init() {
     $this->setupMembersCapabilities();
   }
@@ -38,7 +46,10 @@ class Capabilities {
   }
 
   function setupMembersCapabilities() {
-    wp_enqueue_style('mailpoet-admin-global', Env::$assets_url . '/css/admin-global.css');
+    wp_enqueue_style(
+      'mailpoet-admin-global',
+      Env::$assets_url . '/css/' . $this->renderer->getCssAsset('admin-global.css')
+    );
     Hooks::addAction('members_register_cap_groups', array($this, 'registerMembersCapGroup'));
     Hooks::addAction('members_register_caps', array($this, 'registerMembersCapabilities'));
   }
