@@ -10,7 +10,8 @@ define([
   'backbone.supermodel',
   'underscore',
   'jquery',
-  'mailpoet'
+  'mailpoet',
+  'modal'
 ], function (App, Marionette, SuperModel, _, jQuery, MailPoet) {
 
   'use strict';

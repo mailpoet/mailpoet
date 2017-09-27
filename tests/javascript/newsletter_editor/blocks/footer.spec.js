@@ -79,7 +79,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model = new (FooterBlock.FooterBlockModel)();
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             footer: {
@@ -102,6 +102,7 @@ define([
             }
           }
         });
+        model = new (FooterBlock.FooterBlockModel)();
 
         expect(model.get('text')).to.equal('some custom config text');
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
@@ -116,11 +117,12 @@ define([
     });
 
     describe('block view', function () {
-      var model = new (FooterBlock.FooterBlockModel)();
+      var model;
       var view;
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
+      model = new (FooterBlock.FooterBlockModel)();
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
@@ -134,13 +136,15 @@ define([
     });
 
     describe('settings view', function () {
-      var model = new (FooterBlock.FooterBlockModel)();
-      var view = new (FooterBlock.FooterBlockSettingsView)({model: model});
+      var model;
+      var view;
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         fonts: ['Arial', 'Tahoma'],
         textSizes: ['16px', '20px']
       });
+      model = new (FooterBlock.FooterBlockModel)();
+      view = new (FooterBlock.FooterBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();

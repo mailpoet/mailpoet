@@ -55,7 +55,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model = new (SpacerBlock.SpacerBlockModel)();
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             spacer: {
@@ -68,6 +68,7 @@ define([
             }
           }
         });
+        model = new (SpacerBlock.SpacerBlockModel)();
 
         expect(model.get('styles.block.backgroundColor')).to.equal('#567890');
         expect(model.get('styles.block.height')).to.equal('19px');

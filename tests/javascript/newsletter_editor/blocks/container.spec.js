@@ -13,8 +13,9 @@ define([
 
     describe('model', function () {
       describe('by default', function () {
-        var model = new ModelClass();
+        var model;
         global.stubConfig(EditorApplication);
+        model = new ModelClass();
 
         it('has container type', function () {
           expect(model.get('type')).to.equal('container');
@@ -33,7 +34,7 @@ define([
         });
 
         it('uses defaults from config when they are set', function () {
-          var model = new (ContainerBlock.ContainerBlockModel)();
+          var model;
           global.stubConfig(EditorApplication, {
             blockDefaults: {
               container: {
@@ -45,6 +46,7 @@ define([
               }
             }
           });
+          model = new (ContainerBlock.ContainerBlockModel)();
 
           expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
         });
@@ -107,10 +109,12 @@ define([
     });
 
     describe('block view', function () {
-      var model = new (ContainerBlock.ContainerBlockModel)();
-      var view = new (ContainerBlock.ContainerBlockView)({model: model});
+      var model;
+      var view;
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
+      view = new (ContainerBlock.ContainerBlockView)({model: model});
+      model = new (ContainerBlock.ContainerBlockModel)();
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -187,10 +191,12 @@ define([
     });
 
     describe('settings view', function () {
-      var model = new (ContainerBlock.ContainerBlockModel)();
-      var view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+      var model;
+      var view;
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
+      view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+      model = new (ContainerBlock.ContainerBlockModel)();
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -212,8 +218,9 @@ define([
         });
 
         it.skip('closes the sidepanel after "Done" is clicked', function () {
-          var mock = sinon.mock().once();
+          var mock;
           global.MailPoet.Modal.cancel = mock;
+          mock = sinon.mock().once();
           view.$('.mailpoet_done_editing').click();
           mock.verify();
           delete(global.MailPoet.Modal.cancel);

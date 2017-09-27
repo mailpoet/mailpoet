@@ -70,7 +70,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model = new (DividerBlock.DividerBlockModel)();
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             divider: {
@@ -86,6 +86,7 @@ define([
             }
           }
         });
+        model = new (DividerBlock.DividerBlockModel)();
 
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
         expect(model.get('styles.block.padding')).to.equal('37px');
@@ -137,13 +138,15 @@ define([
     });
 
     describe('settings view', function () {
-      var model = new (DividerBlock.DividerBlockModel)();
-      var view = new (DividerBlock.DividerBlockSettingsView)({model: model});
+      var model;
+      var view;
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         dividers: ['solid', 'inset']
       });
+      model = new (DividerBlock.DividerBlockModel)();
+      view = new (DividerBlock.DividerBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -215,8 +218,9 @@ define([
         });
 
         it.skip('closes the sidepanel after "Done" is clicked', function () {
-          var mock = sinon.mock().once();
+          var mock;
           global.MailPoet.Modal.cancel = mock;
+          mock = sinon.mock().once();
           view.$('.mailpoet_done_editing').click();
           mock.verify();
           delete(global.MailPoet.Modal.cancel);

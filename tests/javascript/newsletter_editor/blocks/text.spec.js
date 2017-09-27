@@ -23,7 +23,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model = new (TextBlock.TextBlockModel)();
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             text: {
@@ -31,15 +31,18 @@ define([
             }
           }
         });
+        model = new (TextBlock.TextBlockModel)();
 
         expect(model.get('text')).to.equal('some custom config text');
       });
     });
 
     describe('block view', function () {
-      var model = new (TextBlock.TextBlockModel)();
-      var view = new (TextBlock.TextBlockView)({model: model});
+      var model;
+      var view;
       global.stubConfig(EditorApplication);
+      model = new (TextBlock.TextBlockModel)();
+      view = new (TextBlock.TextBlockView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
