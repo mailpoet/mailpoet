@@ -200,7 +200,7 @@ define([
           expect(model.get('styles.block.backgroundColor')).to.equal('#cccccc');
         });
 
-        it ('changes color of available divider styles when actual divider color changes', function() {
+        it('changes color of available divider styles when actual divider color changes', function() {
           var newColor = '#889912';
           view.$('.mailpoet_field_divider_border_color').val(newColor).change();
           expect(view.$('.mailpoet_field_divider_style div')).to.have.$css('border-top-color', newColor);
