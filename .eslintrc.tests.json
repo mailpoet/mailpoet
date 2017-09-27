@@ -14,7 +14,6 @@
     "no-bitwise": 0,
     "func-call-spacing": 0,
     "max-len": 0,
-    "space-unary-ops": 0,
     "no-underscore-dangle": 0,
     "no-shadow": 0,
     "padded-blocks": 0,

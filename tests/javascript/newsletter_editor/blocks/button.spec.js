@@ -480,7 +480,7 @@ define([
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });
