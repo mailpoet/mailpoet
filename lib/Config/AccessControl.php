@@ -78,7 +78,7 @@ class AccessControl {
 
   static function getPermissionLabels() {
     return array(
-      self::PERMISSION_ACCESS_PLUGIN_ADMIN => __('Access plugin admin', 'mailpoet'),
+      self::PERMISSION_ACCESS_PLUGIN_ADMIN => __('Admin menu item', 'mailpoet'),
       self::PERMISSION_MANAGE_SETTINGS => __('Manage settings', 'mailpoet'),
       self::PERMISSION_MANAGE_EMAILS => __('Manage emails', 'mailpoet'),
       self::PERMISSION_MANAGE_SUBSCRIBERS => __('Manage subscribers', 'mailpoet'),
