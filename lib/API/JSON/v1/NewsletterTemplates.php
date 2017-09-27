@@ -29,7 +29,7 @@ class NewsletterTemplates extends APIEndpoint {
   }
 
   function getAll() {
-    $collection = NewsletterTemplate::findMany();
+    $collection = NewsletterTemplate::orderByDesc('created_at')->orderByAsc('name')->findMany();
     $templates = array_map(function($item) {
       return $item->asArray();
     }, $collection);
