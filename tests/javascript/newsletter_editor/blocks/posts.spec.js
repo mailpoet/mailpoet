@@ -270,7 +270,7 @@ define([
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         model = new (PostsBlock.PostsBlockModel)();
-        view = new (PostsBlock.PostsBlockView)({model: model});
+        view = new (PostsBlock.PostsBlockView)({ model: model });
 
         // Disable auto-opening of settings view
         view.off('showSettings');
@@ -322,12 +322,12 @@ define([
         });
         EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
         model = new (PostsBlock.PostsBlockModel)();
-        view = new (PostsBlock.PostsBlockSettingsView)({model: model});
+        view = new (PostsBlock.PostsBlockSettingsView)({ model: model });
       });
 
       it('renders', function () {
         // Stub out block view requests
-        model.request = sinon.stub().returns({$el: {}});
+        model.request = sinon.stub().returns({ $el: {} });
 
         expect(view.render).to.not.throw();
       });
@@ -428,8 +428,8 @@ define([
           var view;
           beforeEach(function () {
             model = new (PostsBlock.PostsBlockModel)();
-            model.request = sinon.stub().returns({$el: {}});
-            view = new (PostsBlock.PostsBlockSettingsView)({model: model});
+            model.request = sinon.stub().returns({ $el: {} });
+            view = new (PostsBlock.PostsBlockSettingsView)({ model: model });
             view.render();
             view.$('.mailpoet_posts_display_type').val('titleOnly').change();
           });

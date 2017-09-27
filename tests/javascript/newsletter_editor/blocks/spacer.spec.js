@@ -84,7 +84,7 @@ define([
         global.stubConfig(EditorApplication);
         global.stubAvailableStyles(EditorApplication);
         model = new (SpacerBlock.SpacerBlockModel)();
-        view = new (SpacerBlock.SpacerBlockView)({model: model});
+        view = new (SpacerBlock.SpacerBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -129,7 +129,7 @@ define([
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (SpacerBlock.SpacerBlockSettingsView)({model: model});
+        view = new (SpacerBlock.SpacerBlockSettingsView)({ model: model });
       });
 
       it('renders', function () {
@@ -143,7 +143,7 @@ define([
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);
           model = new (SpacerBlock.SpacerBlockModel)();
-          view = new (SpacerBlock.SpacerBlockSettingsView)({model: model});
+          view = new (SpacerBlock.SpacerBlockSettingsView)({ model: model });
           view.render();
         });
 

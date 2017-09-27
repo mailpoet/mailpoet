@@ -65,7 +65,7 @@ define([
           model = new (ContainerBlock.ContainerBlockModel)({
             type: 'container',
             blocks: [testModel]
-          }, {parse: true});
+          }, { parse: true });
 
           expect(model.get('blocks')).to.have.length(1);
           expect(model.get('blocks').at(0).get('type')).to.equal(testModel.type);
@@ -95,7 +95,7 @@ define([
                 ]
               }
             ]
-          }, {parse: true});
+          }, { parse: true });
 
           expect(model.get('blocks')).to.have.length(1);
           expect(model.get('blocks').at(0).get('blocks')).to.have.length(2);
@@ -114,7 +114,7 @@ define([
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
       model = new (ContainerBlock.ContainerBlockModel)();
-      view = new (ContainerBlock.ContainerBlockView)({model: model});
+      view = new (ContainerBlock.ContainerBlockView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -196,7 +196,7 @@ define([
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
       model = new (ContainerBlock.ContainerBlockModel)();
-      view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+      view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -209,7 +209,7 @@ define([
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
           model = new (ContainerBlock.ContainerBlockModel)();
-          view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+          view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
         });
 
         it('updates the model when background color changes', function () {

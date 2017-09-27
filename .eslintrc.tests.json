@@ -15,7 +15,6 @@
     "no-underscore-dangle": 0,
     "no-shadow": 0,
     "padded-blocks": 0,
-    "object-curly-spacing": 0,
     "func-names": 0
   }
 }

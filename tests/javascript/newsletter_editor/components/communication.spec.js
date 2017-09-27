@@ -216,8 +216,8 @@ define([
               var deferred = jQuery.Deferred();
               deferred.resolve({
                 data: [
-                    {post_title: 'title 1'},
-                    {post_title: 'post title 2'}
+                    { post_title: 'title 1' },
+                    { post_title: 'post title 2' }
                 ]
               });
               return deferred;
@@ -226,7 +226,7 @@ define([
         }
       });
       module.getPosts().done(function (posts) {
-        expect(posts).to.eql([{post_title: 'title 1'}, {post_title: 'post title 2'}]);
+        expect(posts).to.eql([{ post_title: 'title 1' }, { post_title: 'post title 2' }]);
       });
     });
 
@@ -287,8 +287,8 @@ define([
               var deferred = jQuery.Deferred();
               deferred.resolve({
                 data: [
-                    {type: 'text', text: 'something'},
-                    {type: 'text', text: 'something else'}
+                    { type: 'text', text: 'something' },
+                    { type: 'text', text: 'something else' }
                 ]
               });
               return deferred;
@@ -297,7 +297,7 @@ define([
         }
       });
       module.getTransformedPosts().done(function (posts) {
-        expect(posts).to.eql([{type: 'text', text: 'something'}, {type: 'text', text: 'something else'}]);
+        expect(posts).to.eql([{ type: 'text', text: 'something' }, { type: 'text', text: 'something else' }]);
       });
     });
 

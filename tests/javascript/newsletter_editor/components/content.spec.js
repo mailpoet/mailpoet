@@ -40,7 +40,7 @@ define([
 
       it('does not include styles and content properties in its JSON', function () {
         var json = model.toJSON();
-        expect(json).to.deep.equal({subject: 'my test subject'});
+        expect(json).to.deep.equal({ subject: 'my test subject' });
       });
 
       describe('toJSON()', function () {

@@ -125,7 +125,7 @@ define([
       });
 
       it('renders', function () {
-        var view = new (SocialBlock.SocialBlockView)({model: model});
+        var view = new (SocialBlock.SocialBlockView)({ model: model });
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_social')).to.have.length(1);
       });
@@ -156,7 +156,7 @@ define([
               }
             ]
           });
-          view = new (SocialBlock.SocialBlockView)({model: model});
+          view = new (SocialBlock.SocialBlockView)({ model: model });
           view.render();
         });
 
@@ -212,7 +212,7 @@ define([
       });
 
       it('renders', function () {
-        var view = new (SocialBlock.SocialBlockSettingsView)({model: model});
+        var view = new (SocialBlock.SocialBlockSettingsView)({ model: model });
         expect(view.render).to.not.throw();
       });
 
@@ -253,7 +253,7 @@ define([
               }
             ]
           });
-          view = new (SocialBlock.SocialBlockSettingsView)({model: model});
+          view = new (SocialBlock.SocialBlockSettingsView)({ model: model });
           view.render();
         });
 

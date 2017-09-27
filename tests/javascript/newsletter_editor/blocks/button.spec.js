@@ -159,13 +159,13 @@ define([
       });
 
       it('renders', function () {
-        var view = new (ButtonBlock.ButtonBlockView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockView)({ model: model });
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_editor_button')).to.have.length(1);
       });
 
       it('rerenders when attributes change', function () {
-        var view = new (ButtonBlock.ButtonBlockView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockView)({ model: model });
         view.render();
 
         model.set('text', 'Some new text');
@@ -198,7 +198,7 @@ define([
               }
             }
           });
-          view = new (ButtonBlock.ButtonBlockView)({model: model});
+          view = new (ButtonBlock.ButtonBlockView)({ model: model });
           view.render();
         });
 
@@ -272,9 +272,9 @@ define([
 
       beforeEach(function () {
         onStub = sinon.stub();
-        global.stubChannel(EditorApplication, {on: onStub});
-        model = {set: sinon.stub(), toJSON: sinon.stub()};
-        view = new (ButtonBlock.ButtonBlockView)({model: model});
+        global.stubChannel(EditorApplication, { on: onStub });
+        model = { set: sinon.stub(), toJSON: sinon.stub() };
+        view = new (ButtonBlock.ButtonBlockView)({ model: model });
         view.render();
       });
 
@@ -315,7 +315,7 @@ define([
       });
 
       it('renders', function () {
-        var view = new (ButtonBlock.ButtonBlockSettingsView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
         expect(view.render).to.not.throw();
       });
 
@@ -336,7 +336,7 @@ define([
             type: 'button',
             text: 'Some random text'
           });
-          view = new (ButtonBlock.ButtonBlockSettingsView)({model: model});
+          view = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
 
           view.render();
         });

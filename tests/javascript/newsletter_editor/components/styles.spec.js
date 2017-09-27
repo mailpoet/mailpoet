@@ -24,7 +24,7 @@ define([
       });
 
       it('triggers autoSave when changed', function () {
-        var mock = sinon.mock({ trigger: function () {}}).expects('trigger').once().withExactArgs('autoSave');
+        var mock = sinon.mock({ trigger: function () {} }).expects('trigger').once().withExactArgs('autoSave');
         EditorApplication.getChannel = function () {
           return {
             trigger: mock

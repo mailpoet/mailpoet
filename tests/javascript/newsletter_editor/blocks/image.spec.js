@@ -113,7 +113,7 @@ define([
       model = new (ImageBlock.ImageBlockModel)();
 
       beforeEach(function () {
-        view = new (ImageBlock.ImageBlockView)({model: model});
+        view = new (ImageBlock.ImageBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -133,7 +133,7 @@ define([
             src: 'http://example.org/someimage.png',
             alt: 'some alt'
           });
-          view = new (ImageBlock.ImageBlockView)({model: model});
+          view = new (ImageBlock.ImageBlockView)({ model: model });
           view.render();
         });
 
@@ -174,7 +174,7 @@ define([
         });
         global.stubImage(newWidth, newHeight);
         model = new (ImageBlock.ImageBlockModel)();
-        view = new (ImageBlock.ImageBlockSettingsView)({model: model});
+        view = new (ImageBlock.ImageBlockSettingsView)({ model: model });
       });
 
       it('renders', function () {

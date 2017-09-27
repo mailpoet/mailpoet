@@ -125,7 +125,7 @@ define([
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (HeaderBlock.HeaderBlockView)({model: model});
+        view = new (HeaderBlock.HeaderBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -144,7 +144,7 @@ define([
         textSizes: ['16px', '20px']
       });
       model = new (HeaderBlock.HeaderBlockModel)();
-      view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
+      view = new (HeaderBlock.HeaderBlockSettingsView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -162,7 +162,7 @@ define([
             textSizes: ['16px', '20px']
           });
           model = new (HeaderBlock.HeaderBlockModel)({});
-          view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
+          view = new (HeaderBlock.HeaderBlockSettingsView)({ model: model });
           view.render();
         });
 

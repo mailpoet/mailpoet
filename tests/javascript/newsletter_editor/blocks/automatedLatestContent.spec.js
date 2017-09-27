@@ -283,7 +283,7 @@ define([
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
         model = new (module.AutomatedLatestContentBlockModel)();
-        view = new (module.AutomatedLatestContentBlockView)({model: model});
+        view = new (module.AutomatedLatestContentBlockView)({ model: model });
       });
 
       afterEach(function () {
@@ -302,11 +302,11 @@ define([
 
       beforeEach(function () {
         onStub = sinon.stub();
-        global.stubChannel(EditorApplication, {on: onStub});
+        global.stubChannel(EditorApplication, { on: onStub });
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({model: {set: sinon.stub()}});
+        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({ model: { set: sinon.stub() } });
       });
 
       it('listens to the event', function () {
@@ -380,7 +380,7 @@ define([
 
       beforeEach(function () {
         model = new (module.AutomatedLatestContentBlockModel)();
-        view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
+        view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
       });
 
       after(function () {
@@ -394,7 +394,7 @@ define([
       describe('once rendered', function () {
         beforeEach(function () {
           model = new (module.AutomatedLatestContentBlockModel)();
-          view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
+          view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
           view.render();
         });
 
@@ -505,7 +505,7 @@ define([
           var view;
           beforeEach(function () {
             model = new (module.AutomatedLatestContentBlockModel)();
-            view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
+            view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
             view.render();
             view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
           });
@@ -519,7 +519,7 @@ define([
             var view;
             beforeEach(function () {
               model = new (module.AutomatedLatestContentBlockModel)();
-              view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
+              view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
               view.render();
               view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
               view.$('.mailpoet_automated_latest_content_title_format').val('ul').change();

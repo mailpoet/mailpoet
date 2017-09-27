@@ -42,7 +42,7 @@ define([
       var view;
       global.stubConfig(EditorApplication);
       model = new (TextBlock.TextBlockModel)();
-      view = new (TextBlock.TextBlockView)({model: model});
+      view = new (TextBlock.TextBlockView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -55,7 +55,7 @@ define([
 
         beforeEach(function () {
           global.stubConfig(EditorApplication);
-          view = new (TextBlock.TextBlockView)({model: model});
+          view = new (TextBlock.TextBlockView)({ model: model });
           view.render();
         });
 

@@ -104,7 +104,7 @@ define([
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         model = new (DividerBlock.DividerBlockModel)();
-        view = new (DividerBlock.DividerBlockView)({model: model});
+        view = new (DividerBlock.DividerBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -146,7 +146,7 @@ define([
         dividers: ['solid', 'inset']
       });
       model = new (DividerBlock.DividerBlockModel)();
-      view = new (DividerBlock.DividerBlockSettingsView)({model: model});
+      view = new (DividerBlock.DividerBlockSettingsView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -166,7 +166,7 @@ define([
 
         beforeEach(function () {
           model = new (DividerBlock.DividerBlockModel)();
-          view = new (DividerBlock.DividerBlockSettingsView)({model: model});
+          view = new (DividerBlock.DividerBlockSettingsView)({ model: model });
           view.render();
         });
 

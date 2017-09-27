@@ -76,7 +76,7 @@ define([
 
       it('encodes newsletter body in JSON format', function () {
         var module;
-        var body = {type: 'testType'};
+        var body = { type: 'testType' };
         var mock = sinon.mock()
           .once()
           .withArgs({

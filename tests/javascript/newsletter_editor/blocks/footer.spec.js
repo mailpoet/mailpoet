@@ -126,7 +126,7 @@ define([
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (FooterBlock.FooterBlockView)({model: model});
+        view = new (FooterBlock.FooterBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -144,7 +144,7 @@ define([
         textSizes: ['16px', '20px']
       });
       model = new (FooterBlock.FooterBlockModel)();
-      view = new (FooterBlock.FooterBlockSettingsView)({model: model});
+      view = new (FooterBlock.FooterBlockSettingsView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -162,7 +162,7 @@ define([
             textSizes: ['16px', '20px']
           });
           model = new (FooterBlock.FooterBlockModel)({});
-          view = new (FooterBlock.FooterBlockSettingsView)({model: model});
+          view = new (FooterBlock.FooterBlockSettingsView)({ model: model });
           view.render();
         });
 
