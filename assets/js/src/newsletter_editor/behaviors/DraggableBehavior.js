@@ -28,10 +28,10 @@ define([
         throw "Missing 'drop' function for DraggableBehavior";
       },
 
-      onDrop: function() {},
-      testAttachToInstance: function() { return true; }
+      onDrop: function () {},
+      testAttachToInstance: function () { return true; }
     },
-    onRender: function() {
+    onRender: function () {
       var that = this;
       var interactable;
 
@@ -49,8 +49,8 @@ define([
 
         onstart: function (startEvent) {
           var event = startEvent;
-          var centerXOffset; 
-          var centerYOffset; 
+          var centerXOffset;
+          var centerYOffset;
           var tempClone;
           var clone;
           var $clone;

@@ -23,7 +23,7 @@ define([
           end: function (event, ui) {
             ui.item.removeData('previousIndex');
           },
-          update: function(event, ui) {
+          update: function (event, ui) {
             var previousIndex = ui.item.data('previousIndex');
             var newIndex = ui.item.index();
             var model = collection.at(previousIndex);

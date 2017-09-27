@@ -12,7 +12,7 @@ define([
   'jquery',
   'mailpoet',
   'modal'
-], function(App, Marionette, SuperModel, _, jQuery, MailPoet) {
+], function (App, Marionette, SuperModel, _, jQuery, MailPoet) {
 
   'use strict';
 
@@ -21,8 +21,8 @@ define([
 
   Module.BlockModel = SuperModel.extend({
     stale: [], // Attributes to be removed upon saving
-    initialize: function() {
-      this.on('change', function() {
+    initialize: function () {
+      this.on('change', function () {
         App.getChannel().trigger('autoSave');
       });
     },
@@ -66,7 +66,7 @@ define([
           // and destroy self
           options.dragBehavior.view.model.destroy();
         },
-        onDragSubstituteBy: function(behavior) {
+        onDragSubstituteBy: function (behavior) {
           var WidgetView;
           var node;
           // When block is being dragged, display the widget icon instead.
@@ -98,13 +98,13 @@ define([
       this.on('dom:refresh', this.showBlock, this);
       this._isFirstRender = true;
     },
-    showTools: function() {
+    showTools: function () {
       if (!this.showingToolsDisabled) {
         this.$('> .mailpoet_tools').addClass('mailpoet_display_tools');
         this.toolsView.triggerMethod('showTools');
       }
     },
-    hideTools: function() {
+    hideTools: function () {
       this.$('> .mailpoet_tools').removeClass('mailpoet_display_tools');
       this.toolsView.triggerMethod('hideTools');
     },
@@ -239,7 +239,7 @@ define([
     behaviors: {
       ColorPickerBehavior: {}
     },
-    initialize: function(params) {
+    initialize: function (params) {
       var panelParams;
       this.model.trigger('startEditing');
       panelParams = {
@@ -263,7 +263,7 @@ define([
         model: this.model.toJSON()
       };
     },
-    close: function() {
+    close: function () {
       this.destroy();
     },
     changeField: function (field, event) {

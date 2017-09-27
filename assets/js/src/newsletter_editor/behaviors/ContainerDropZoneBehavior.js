@@ -25,7 +25,7 @@ define([
         this.addDropZone();
       }
     },
-    addDropZone: function() {
+    addDropZone: function () {
       var that = this;
       var view = this.view;
       var domElement = that.$el.get(0);
@@ -47,11 +47,11 @@ define([
       interact(domElement).dropzone({
         accept: acceptableElementSelector,
         overlap: 'pointer', // Mouse pointer denotes location of a droppable
-        ondragenter: function() {
+        ondragenter: function () {
           // 1. Visually mark block as active for dropping
           view.$el.addClass('mailpoet_drop_active');
         },
-        ondragleave: function() {
+        ondragleave: function () {
           // 1. Remove visual markings of active dropping container
           // 2. Remove visual markings of drop position visualization
           that.cleanup();
@@ -74,14 +74,14 @@ define([
           var markerHeight = '';
           var containerOffset = element.offset();
           var viewCollection = that.getCollection();
-          var marker; 
-          var targetModel; 
-          var targetView; 
+          var marker;
+          var targetModel;
+          var targetView;
           var targetElement;
-          var topOffset; 
-          var leftOffset; 
+          var topOffset;
+          var leftOffset;
           var isLastBlockInsertion;
-          var $targetBlock; 
+          var $targetBlock;
           var margin;
 
           if (dropPosition === undefined) return;
@@ -192,9 +192,9 @@ define([
           );
           var droppableModel = event.draggable.getDropModel();
           var viewCollection = that.getCollection();
-          var droppedView; 
-          var index; 
-          var tempCollection; 
+          var droppedView;
+          var index;
+          var tempCollection;
           var tempCollection2;
           var tempModel;
 
@@ -281,7 +281,7 @@ define([
       // 2. Remove visual markings of drop position visualization
       this.view.$('.mailpoet_drop_marker').remove();
     },
-    getDropPosition: function(eventX, eventY, is_unsafe) {
+    getDropPosition: function (eventX, eventY, is_unsafe) {
       var SPECIAL_AREA_INSERTION_WIDTH = 0.00; // Disable special insertion. Default: 0.3
 
       var element = this.view.$el;
@@ -296,15 +296,15 @@ define([
       var relativeX = eventX - elementPageX;
       var relativeY = eventY - elementPageY;
 
-      var relativeOffset; 
+      var relativeOffset;
       var elementLength;
 
       var canAcceptNormalInsertion = this._canAcceptNormalInsertion();
       var canAcceptSpecialInsertion = this._canAcceptSpecialInsertion();
 
-      var insertionType; 
-      var index; 
-      var position; 
+      var insertionType;
+      var index;
+      var position;
       var indexAndPosition;
 
       var unsafe = !!is_unsafe;
@@ -409,10 +409,10 @@ define([
     _computeSpecialIndex: function (eventX, eventY) {
       return this._computeCellIndex(eventX, eventY);
     },
-    _computeCellIndex: function(eventX, eventY) {
+    _computeCellIndex: function (eventX, eventY) {
       var orientation = this.view.model.get('orientation');
       var eventOffset = (orientation === 'vertical') ? eventY : eventX;
-      var resultView = this.getChildren().find(function(view) {
+      var resultView = this.getChildren().find(function (view) {
         var element = view.$el;
         var closeOffset;
         var farOffset;
@@ -433,14 +433,14 @@ define([
 
       return index;
     },
-    _canAcceptNormalInsertion: function() {
+    _canAcceptNormalInsertion: function () {
       var orientation = this.view.model.get('orientation');
       var depth = this.view.renderOptions.depth;
       var childCount = this.getChildren().length;
       // Note that depth is zero indexed. Root container has depth=0
       return orientation === 'vertical' || (orientation === 'horizontal' && depth === 1 && childCount < this.options.columnLimit);
     },
-    _canAcceptSpecialInsertion: function() {
+    _canAcceptSpecialInsertion: function () {
       var orientation = this.view.model.get('orientation');
       var depth = this.view.renderOptions.depth;
       var childCount = this.getChildren().length;

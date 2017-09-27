@@ -71,7 +71,7 @@ define('date',
           format: 'H:i:s'
         });
       },
-      convertFormat: function(format) {
+      convertFormat: function (format) {
         var replacements;
         var convertedFormat;
         var escapeToken;
@@ -150,7 +150,7 @@ define('date',
         convertedFormat = [];
         escapeToken = false;
 
-        for(index = 0, token = ''; format.charAt(index); index += 1){
+        for (index = 0, token = ''; format.charAt(index); index += 1) {
           token = format.charAt(index);
           if (escapeToken === true) {
             convertedFormat.push('[' + token + ']');

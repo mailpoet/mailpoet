@@ -23,12 +23,12 @@ define(
      * Dual licensed under the MIT and GPL licenses.
      * http://benalman.com/about/license/
      */
-    $.fn.serializeObject = function(coerce) {
+    $.fn.serializeObject = function (coerce) {
       var obj = {};
       var coerce_types = { true: !0, false: !1, null: null };
 
       // Iterate over all name=value pairs.
-      $.each( this.serializeArray(), function(j, v){
+      $.each(this.serializeArray(), function (j, v) {
         var key = v.name;
         var val = v.value;
         var cur = obj;
@@ -36,7 +36,7 @@ define(
 
         // If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
         // into its component parts.
-        var keys = key.split( '][' );
+        var keys = key.split('][');
         var keys_last = keys.length - 1;
 
         // If the first keys part contains [ and the last ends with ], then []

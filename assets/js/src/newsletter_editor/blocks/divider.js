@@ -6,7 +6,7 @@ define([
   'newsletter_editor/blocks/base',
   'underscore',
   'jquery'
-], function(App, BaseBlock, _, jQuery) {
+], function (App, BaseBlock, _, jQuery) {
 
   'use strict';
 
@@ -46,8 +46,8 @@ define([
         ignoreFrom: '.mailpoet_resize_handle'
       }
     }, base.BlockView.prototype.behaviors),
-    onDragSubstituteBy: function() { return Module.DividerWidgetView; },
-    initialize: function() {
+    onDragSubstituteBy: function () { return Module.DividerWidgetView; },
+    initialize: function () {
       var that = this;
       base.BlockView.prototype.initialize.apply(this, arguments);
 
@@ -118,7 +118,7 @@ define([
     repaintDividerStyleOptions: function () {
       this.$('.mailpoet_field_divider_style > div').css('border-top-color', this.model.get('styles.block.borderColor'));
     },
-    applyToAll: function() {
+    applyToAll: function () {
       App.getChannel().trigger('replaceAllDividers', this.model.toJSON());
     },
     updateValueAndCall: function (fieldToUpdate, callable, event) {
@@ -138,7 +138,7 @@ define([
       }
     }
   });
-  App.on('before:start', function(App) {
+  App.on('before:start', function (App) {
     App.registerBlockType('divider', {
       blockModel: Module.DividerBlockModel,
       blockView: Module.DividerBlockView

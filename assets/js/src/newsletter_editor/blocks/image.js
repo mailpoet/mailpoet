@@ -48,8 +48,8 @@ define([
         elementSelector: '.mailpoet_image',
         resizeHandleSelector: '.mailpoet_image_resize_handle',
         onResize: function (event) {
-          var corner = this.$('.mailpoet_image').offset(),
-            width = event.pageX - corner.left;
+          var corner = this.$('.mailpoet_image').offset();
+          var width = event.pageX - corner.left;
           this.view.model.set('width', width + 'px');
         }
       },
@@ -126,7 +126,7 @@ define([
         this.showMediaManager();
       }
     },
-    showMediaManager: function() {
+    showMediaManager: function () {
       var that = this;
       var MediaManager;
       var theFrame;
@@ -198,7 +198,7 @@ define([
           }
         },
 
-        bindHandlers: function() {
+        bindHandlers: function () {
           var handlers;
           // from Select
           this.on('router:create:browse', this.createRouter, this);
@@ -247,7 +247,7 @@ define([
           view.url.focus();
         },
 
-        editSelectionContent: function() {
+        editSelectionContent: function () {
           var state = this.state();
           var selection = state.get('selection');
           var view;
@@ -305,7 +305,7 @@ define([
             text: 'Select Image',
             requires: { selection: true },
 
-            click: function() {
+            click: function () {
               var state = controller.state();
               var selection = state.get('selection');
 
@@ -344,7 +344,7 @@ define([
       this._mediaManager.on('insert', function () {
         // Append media manager image selections to Images tab
         var selection = theFrame.state().get('selection');
-        selection.each(function(attachment) {
+        selection.each(function (attachment) {
           var sizes = attachment.get('sizes');
           // Following advice from Becs, the target width should
           // be a double of one column width to render well on
@@ -354,13 +354,13 @@ define([
           // Pick the width that is closest to target width
           var increasingByWidthDifference = _.sortBy(
             _.keys(sizes),
-            function(size) { return Math.abs(targetImageWidth - sizes[size].width); }
+            function (size) { return Math.abs(targetImageWidth - sizes[size].width); }
           );
           var bestWidth = sizes[_.first(increasingByWidthDifference)].width;
-          var imagesOfBestWidth = _.filter(_.values(sizes), function(size) { return size.width === bestWidth; });
+          var imagesOfBestWidth = _.filter(_.values(sizes), function (size) { return size.width === bestWidth; });
 
           // Maximize the height if there are multiple images with same width
-          var mainSize = _.max(imagesOfBestWidth, function(size) { return size.height; });
+          var mainSize = _.max(imagesOfBestWidth, function (size) { return size.height; });
 
           that.model.set({
             height: mainSize.height + 'px',
@@ -413,7 +413,7 @@ define([
   });
   Module.ImageWidgetView = ImageWidgetView;
 
-  App.on('before:start', function(App) {
+  App.on('before:start', function (App) {
     App.registerBlockType('image', {
       blockModel: Module.ImageBlockModel,
       blockView: Module.ImageBlockView

@@ -46,7 +46,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
 
       return this;
     },
-    createNotice: function() {
+    createNotice: function () {
       var onClose;
       var positionAfter;
       // clone element
@@ -177,7 +177,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
         this.options.onOpen(this.element);
       }
     },
-    hide: function(all) {
+    hide: function (all) {
       var id;
       if (all !== undefined && all === true) {
         // all notices

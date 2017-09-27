@@ -34,10 +34,10 @@ define([
         text: defaultValues.get('title')
       };
     },
-    initialize: function() {
+    initialize: function () {
       var that = this;
       // Make model swap to default values for that type when iconType changes
-      this.on('change:iconType', function() {
+      this.on('change:iconType', function () {
         var defaultValues = App.getConfig().get('socialIcons').get(that.get('iconType'));
         var iconSet = that.collection.iconBlockModel.getIconSet();
         this.set({
@@ -175,10 +175,10 @@ define([
         this.$('.mailpoet_social_icon_image').attr('alt', this.model.get('text'));
       }
     },
-    templateContext: function() {
+    templateContext: function () {
       var icons = App.getConfig().get('socialIcons');
       // Construct icon type list of format [{iconType: 'type', title: 'Title'}, ...]
-      var availableIconTypes = _.map(_.keys(icons.attributes), function(key) { return { iconType: key, title: icons.get(key).get('title') }; });
+      var availableIconTypes = _.map(_.keys(icons.attributes), function (key) { return { iconType: key, title: icons.get(key).get('title') }; });
       var allIconSets = App.getAvailableStyles().get('socialIconSets');
       return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         iconTypes: availableIconTypes,
@@ -298,7 +298,7 @@ define([
     }
   });
 
-  App.on('before:start', function(App) {
+  App.on('before:start', function (App) {
     App.registerBlockType('social', {
       blockModel: Module.SocialBlockModel,
       blockView: Module.SocialBlockView

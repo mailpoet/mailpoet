@@ -7,7 +7,7 @@ define([
   'backbone.supermodel',
   'underscore',
   'jquery'
-], function(
+], function (
   App,
   CommunicationComponent,
   MailPoet,
@@ -51,7 +51,7 @@ define([
   Module.getLayoutWidgets = function () { return Module._layoutWidgets; };
 
   SidebarView = Marionette.View.extend({
-    getTemplate: function() { return window.templates.sidebar; },
+    getTemplate: function () { return window.templates.sidebar; },
     regions: {
       contentRegion: '.mailpoet_content_region',
       layoutRegion: '.mailpoet_layout_region',
@@ -59,7 +59,7 @@ define([
       previewRegion: '.mailpoet_preview_region'
     },
     events: {
-      'click .mailpoet_sidebar_region h3, .mailpoet_sidebar_region .handlediv': function(event) {
+      'click .mailpoet_sidebar_region h3, .mailpoet_sidebar_region .handlediv': function (event) {
         var $openRegion = this.$el.find('.mailpoet_sidebar_region:not(.closed)');
         var $targetRegion = this.$el.find(event.target).closest('.mailpoet_sidebar_region');
 
@@ -88,7 +88,7 @@ define([
         }
       }
     },
-    initialize: function() {
+    initialize: function () {
       jQuery(window)
         .on('resize', this.updateHorizontalScroll.bind(this))
         .on('scroll', this.updateHorizontalScroll.bind(this));
@@ -111,7 +111,7 @@ define([
       // position of the sidebar would be scrollable and not fixed
       // partially out of visible screen
       this.$el.parent().each(function () {
-        var calculated_left; 
+        var calculated_left;
         var self = jQuery(this);
 
         if (self.css('position') === 'fixed') {
@@ -263,7 +263,7 @@ define([
         data: json
       }).always(function () {
         MailPoet.Modal.loading(false);
-      }).done(function(response) {
+      }).done(function (response) {
         this.previewView = new Module.NewsletterPreviewView({
           previewUrl: response.meta.preview_url
         });
@@ -321,7 +321,7 @@ define([
       App.getChannel().request('save').always(function () {
         CommunicationComponent.previewNewsletter(data).always(function () {
           MailPoet.Modal.loading(false);
-        }).done(function() {
+        }).done(function () {
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterPreviewSent'),
             { scroll: true }
@@ -360,7 +360,7 @@ define([
     }
   });
 
-  App.on('before:start', function(App) {
+  App.on('before:start', function (App) {
     var Application = App;
     Application.registerWidget = Module.registerWidget;
     Application.getWidgets = Module.getWidgets;
@@ -368,7 +368,7 @@ define([
     Application.getLayoutWidgets = Module.getLayoutWidgets;
   });
 
-  App.on('start', function(App) {
+  App.on('start', function (App) {
     var sidebarView = new SidebarView();
 
     App._appView.showChildView('sidebarRegion', sidebarView);

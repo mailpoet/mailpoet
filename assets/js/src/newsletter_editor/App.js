@@ -2,7 +2,7 @@ define([
   'backbone',
   'backbone.marionette',
   'backbone.radio'
-], function(Backbone, Marionette, BackboneRadio) {
+], function (Backbone, Marionette, BackboneRadio) {
   var Radio = BackboneRadio;
 
   var AppView = Marionette.View.extend({
