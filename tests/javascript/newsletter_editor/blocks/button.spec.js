@@ -20,7 +20,7 @@ define([
       });
 
       afterEach(function () {
-        if(EditorApplication.getChannel) {
+        if (EditorApplication.getChannel) {
           delete EditorApplication.getChannel;
         }
       });

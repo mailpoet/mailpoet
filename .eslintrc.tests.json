@@ -10,7 +10,6 @@
   "rules": {
     "import/no-amd": 0,
     "global-require": 0,
-    "keyword-spacing": 0,
     "no-bitwise": 0,
     "func-call-spacing": 0,
     "max-len": 0,
