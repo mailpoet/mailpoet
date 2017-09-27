@@ -11,7 +11,6 @@
     "import/no-amd": 0,
     "global-require": 0,
     "no-bitwise": 0,
-    "func-call-spacing": 0,
     "max-len": 0,
     "no-underscore-dangle": 0,
     "no-shadow": 0,
