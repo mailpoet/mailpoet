@@ -12,7 +12,7 @@ define([
       var model;
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        global. stubConfig(EditorApplication, {
+        global.stubConfig(EditorApplication, {
           blockDefaults: {}
         });
         model = new (HeaderBlock.HeaderBlockModel)();

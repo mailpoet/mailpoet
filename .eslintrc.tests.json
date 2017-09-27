@@ -9,7 +9,6 @@
   },
   "rules": {
     "import/no-amd": 0,
-    "no-whitespace-before-property": 0,
     "global-require": 0,
     "keyword-spacing": 0,
     "no-bitwise": 0,
