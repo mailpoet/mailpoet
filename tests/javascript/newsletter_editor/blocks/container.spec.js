@@ -5,7 +5,7 @@ const Backbone = global.Backbone;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/container'
-], function(App, ContainerBlock) {
+], function (App, ContainerBlock) {
   var EditorApplication = App;
 
   describe('Container', function () {
@@ -205,7 +205,7 @@ define([
       describe('once rendered', function () {
         var model;
         var view;
-        beforeEach(function() {
+        beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
           model = new (ContainerBlock.ContainerBlockModel)();

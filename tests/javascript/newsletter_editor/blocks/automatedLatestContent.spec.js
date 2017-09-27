@@ -9,7 +9,7 @@ define([
   'newsletter_editor/blocks/container',
   'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
   'newsletter_editor/components/communication'
-], function(
+], function (
   App,
   AutomatedLatestContentBlock,
   ContainerBlock,
@@ -19,19 +19,19 @@ define([
   var EditorApplication = App;
   var CommunicationComponent = Communication;
 
-  describe('Automated Latest Content Supervisor', function() {
+  describe('Automated Latest Content Supervisor', function () {
     var model;
     var mock;
     var module;
-    beforeEach(function() {
+    beforeEach(function () {
       model = new AutomatedLatestContentBlock.ALCSupervisor();
     });
 
-    it('fetches posts in bulk from the server', function() {
+    it('fetches posts in bulk from the server', function () {
       global.stubChannel(EditorApplication);
       EditorApplication.findModels = sinon.stub().returns([new Backbone.SuperModel()]);
 
-      mock = sinon.mock({ getBulkTransformedPosts: function() {} })
+      mock = sinon.mock({ getBulkTransformedPosts: function () {} })
         .expects('getBulkTransformedPosts').once().returns(jQuery.Deferred());
 
       module = AutomatedLatestContentInjector({
@@ -46,7 +46,7 @@ define([
       mock.verify();
     });
 
-    it('refreshes posts for given blocks', function() {
+    it('refreshes posts for given blocks', function () {
       var block1 = new Backbone.SuperModel();
       var block2 = new Backbone.SuperModel();
       var postsSet1 = [
@@ -74,7 +74,7 @@ define([
       var model;
       var module;
 
-      before(function() {
+      before(function () {
         module = AutomatedLatestContentBlock;
       });
 
@@ -254,7 +254,7 @@ define([
         expect(model.get('divider.styles.block.padding')).to.equal('38px');
       });
 
-      it('accepts displayable posts', function() {
+      it('accepts displayable posts', function () {
         var model;
         EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
         model = new (module.AutomatedLatestContentBlockModel)();
@@ -273,7 +273,7 @@ define([
       var view;
       var module;
 
-      before(function() {
+      before(function () {
         module = AutomatedLatestContentBlock;
       });
 
@@ -334,10 +334,10 @@ define([
       var view;
       var module;
 
-      before(function() {
+      before(function () {
         module = AutomatedLatestContentInjector({
           'newsletter_editor/components/communication': {
-            getPostTypes: function() {
+            getPostTypes: function () {
               return jQuery.Deferred();
             }
           }
@@ -345,7 +345,7 @@ define([
       });
 
       before(function () {
-        CommunicationComponent.getPostTypes = function() {
+        CommunicationComponent.getPostTypes = function () {
           var deferred = jQuery.Deferred();
           deferred.resolve([
             {
@@ -378,7 +378,7 @@ define([
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
       });
 
-      beforeEach(function() {
+      beforeEach(function () {
         model = new (module.AutomatedLatestContentBlockModel)();
         view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
       });
@@ -392,7 +392,7 @@ define([
       });
 
       describe('once rendered', function () {
-        beforeEach(function() {
+        beforeEach(function () {
           model = new (module.AutomatedLatestContentBlockModel)();
           view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
           view.render();
@@ -500,10 +500,10 @@ define([
           expect(model.get('showDivider')).to.equal(newValue);
         });
 
-        describe('when "title only" display type is selected', function() {
+        describe('when "title only" display type is selected', function () {
           var model;
           var view;
-          beforeEach(function() {
+          beforeEach(function () {
             model = new (module.AutomatedLatestContentBlockModel)();
             view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
             view.render();
@@ -514,10 +514,10 @@ define([
             expect(view.$('.mailpoet_automated_latest_content_title_as_list')).to.not.have.$class('mailpoet_hidden');
           });
 
-          describe('when "title as list" is selected', function() {
+          describe('when "title as list" is selected', function () {
             var model;
             var view;
-            beforeEach(function() {
+            beforeEach(function () {
               model = new (module.AutomatedLatestContentBlockModel)();
               view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
               view.render();
@@ -530,14 +530,14 @@ define([
                 expect(view.$('.mailpoet_automated_latest_content_title_as_link')).to.have.$class('mailpoet_hidden');
               });
 
-              it('is set to "yes"', function() {
+              it('is set to "yes"', function () {
                 expect(model.get('titleIsLink')).to.equal(true);
               });
             });
           });
 
-          describe('when "title as list" is deselected', function() {
-            before(function() {
+          describe('when "title as list" is deselected', function () {
+            before(function () {
               view.$('.mailpoet_automated_latest_content_title_format').val('ul').change();
               view.$('.mailpoet_automated_latest_content_title_format').val('h3').change();
             });

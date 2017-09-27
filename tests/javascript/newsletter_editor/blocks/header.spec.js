@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/header'
-], function(App, HeaderBlock) {
+], function (App, HeaderBlock) {
   var EditorApplication = App;
 
   describe('Header', function () {
@@ -155,7 +155,7 @@ define([
         var model;
         var view;
 
-        beforeEach(function() {
+        beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
             fonts: ['Arial', 'Tahoma'],

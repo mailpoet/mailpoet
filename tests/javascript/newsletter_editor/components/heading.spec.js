@@ -4,12 +4,12 @@ const Backbone = global.Backbone;
 define([
   'newsletter_editor/App',
   'newsletter_editor/components/heading'
-], function(EditorApplication, HeadingComponent) {
+], function (EditorApplication, HeadingComponent) {
 
-  describe('Heading', function() {
-    describe('view', function() {
+  describe('Heading', function () {
+    describe('view', function () {
       var view;
-      beforeEach(function() {
+      beforeEach(function () {
         var model = new Backbone.SuperModel({
           subject: 'a test subject'
         });
@@ -18,14 +18,14 @@ define([
         });
       });
 
-      it('renders', function() {
+      it('renders', function () {
         expect(view.render).to.not.throw();
       });
 
-      describe('once rendered', function() {
+      describe('once rendered', function () {
         var view;
         var model;
-        beforeEach(function() {
+        beforeEach(function () {
           model = new Backbone.SuperModel({
             subject: 'a test subject',
             preheader: 'a test preheader'
@@ -36,12 +36,12 @@ define([
           view.render();
         });
 
-        it('changes the model when subject field is changed', function() {
+        it('changes the model when subject field is changed', function () {
           view.$('.mailpoet_input_title').val('a new testing subject').keyup();
           expect(model.get('subject')).to.equal('a new testing subject');
         });
 
-        it('changes the model when preheader field is changed', function() {
+        it('changes the model when preheader field is changed', function () {
           view.$('.mailpoet_input_preheader').val('a new testing preheader').keyup();
           expect(model.get('preheader')).to.equal('a new testing preheader');
         });

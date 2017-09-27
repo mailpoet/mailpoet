@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/spacer'
-], function(App, SpacerBlock) {
+], function (App, SpacerBlock) {
   var EditorApplication = App;
 
   describe('Spacer', function () {
@@ -139,7 +139,7 @@ define([
       describe('once rendered', function () {
         var view;
         var model;
-        beforeEach(function() {
+        beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);
           model = new (SpacerBlock.SpacerBlockModel)();

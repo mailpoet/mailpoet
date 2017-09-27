@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/image'
-], function(App, ImageBlock) {
+], function (App, ImageBlock) {
   var EditorApplication = App;
 
   describe('Image', function () {

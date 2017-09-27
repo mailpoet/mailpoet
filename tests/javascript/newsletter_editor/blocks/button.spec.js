@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/button'
-], function(App, ButtonBlock) {
+], function (App, ButtonBlock) {
   var EditorApplication = App;
 
   describe('Button', function () {
@@ -322,7 +322,7 @@ define([
       describe('once rendered', function () {
         var model;
         var view;
-        before(function() {
+        before(function () {
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
@@ -331,7 +331,7 @@ define([
           });
         });
 
-        beforeEach(function() {
+        beforeEach(function () {
           model = new (ButtonBlock.ButtonBlockModel)({
             type: 'button',
             text: 'Some random text'
@@ -453,7 +453,7 @@ define([
           expect(view.$('.mailpoet_field_button_line_height_input').val()).to.equal('37');
         });
 
-        it('does not display link option when `hideLink` option is active', function() {
+        it('does not display link option when `hideLink` option is active', function () {
           view = new (ButtonBlock.ButtonBlockSettingsView)({
             model: model,
             renderOptions: {
@@ -464,7 +464,7 @@ define([
           expect(view.$('.mailpoet_field_button_url').length).to.equal(0);
         });
 
-        it('does not display "Apply to all" option when `hideApplyToAll` option is active', function() {
+        it('does not display "Apply to all" option when `hideApplyToAll` option is active', function () {
           view = new (ButtonBlock.ButtonBlockSettingsView)({
             model: model,
             renderOptions: {

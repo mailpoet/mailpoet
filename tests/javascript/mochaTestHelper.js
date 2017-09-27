@@ -52,9 +52,9 @@ global.interact = function () {
     styleCursor: global.interact
   };
 };
-global.spectrum = function() { return this; };
+global.spectrum = function () { return this; };
 jQuery.fn.spectrum = global.spectrum;
-jQuery.fn.stick_in_parent = function() { return this; };
+jQuery.fn.stick_in_parent = function () { return this; };
 
 // Add global stubs for convenience
 // TODO: Extract those to a separate file
@@ -78,18 +78,18 @@ global.stubAvailableStyles = function (EditorApplication, styles) {
   App.getAvailableStyles = sinon.stub().returns(new global.Backbone.SuperModel(styles || {}));
 };
 
-global.stubImage = function(defaultWidth, defaultHeight) {
-  global.Image = function() {
-    this.onload = function() {};
+global.stubImage = function (defaultWidth, defaultHeight) {
+  global.Image = function () {
+    this.onload = function () {};
     this.naturalWidth = defaultWidth;
     this.naturalHeight = defaultHeight;
     this.address = '';
 
     Object.defineProperty(this, 'src', {
-      get: function() {
+      get: function () {
         return this.address;
       },
-      set: function(src) {
+      set: function (src) {
         this.address = src;
         this.onload();
       }
