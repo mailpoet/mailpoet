@@ -64,7 +64,7 @@ class Pages {
     $subscriber_data = $this->subscriber->getUnconfirmedData();
 
     $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $this->subscriber->confirmed_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : null;
+    $this->subscriber->confirmed_ip = Helpers::getIP();
     $this->subscriber->setExpr('confirmed_at', 'NOW()');
     $this->subscriber->unconfirmed_data = null;
     $this->subscriber->save();
