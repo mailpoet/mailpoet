@@ -146,4 +146,9 @@ class Helpers {
     return explode(self::DIVIDER, $object);
   }
 
+  static function getIP() {
+    return (isset($_SERVER['REMOTE_ADDR']))
+      ? $_SERVER['REMOTE_ADDR']
+      : null;
+  }
 }
