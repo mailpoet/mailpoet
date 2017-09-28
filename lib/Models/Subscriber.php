@@ -184,8 +184,8 @@ class Subscriber extends Model {
         'subscribed_ip',
         $subscriber_data['subscribed_ip']
       )->whereRaw(
-        'TIME_TO_SEC(TIMEDIFF(NOW(), created_at)) < ?',
-        self::SUBSCRIPTION_LIMIT_COOLDOWN
+        '(TIME_TO_SEC(TIMEDIFF(NOW(), created_at)) < ? OR TIME_TO_SEC(TIMEDIFF(NOW(), updated_at)) < ?)',
+        array(self::SUBSCRIPTION_LIMIT_COOLDOWN, self::SUBSCRIPTION_LIMIT_COOLDOWN)
       )->count();
 
     if($subscription_count > 0) {
@@ -205,6 +205,7 @@ class Subscriber extends Model {
     } else {
       // store subscriber data to be updated after confirmation
       $subscriber->setUnconfirmedData($subscriber_data);
+      $subscriber->setExpr('updated_at', 'NOW()');
     }
 
     // restore trashed subscriber
