@@ -32,6 +32,19 @@ class WPTest extends \MailPoetTest  {
     expect($subscribersCount)->equals(3);
   }
 
+  function testItSynchronizesPresubscribedUsers() {
+    $random_number = 12345;
+    $subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'user-sync-test' . $random_number . '@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED
+    ));
+    $id = $this->insertUser($random_number);
+    WP::synchronizeUsers();
+    $wp_subscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
+    expect($wp_subscriber)->notEmpty();
+    expect($wp_subscriber->id)->equals($subscriber->id);
+  }
+
   function testItSynchronizeEmails() {
     $id = $this->insertUser();
     WP::synchronizeUsers();
@@ -216,16 +229,17 @@ class WPTest extends \MailPoetTest  {
    *
    * @return string
    */
-  private function insertUser() {
+  private function insertUser($number = null) {
     global $wpdb;
     $db = \ORM::getDb();
+    $number_sql = !is_null($number) ? (int)$number : 'rand()';
     $db->exec(sprintf('
          INSERT INTO
            %s (user_login, user_email, user_registered)
            VALUES
            (
-             CONCAT("user-sync-test", rand()),
-             CONCAT("user-sync-test", rand(), "@example.com"),
+             CONCAT("user-sync-test", ' . $number_sql . '),
+             CONCAT("user-sync-test", ' . $number_sql . ', "@example.com"),
              "2017-01-02 12:31:12"
            )', $wpdb->users));
     $id = $db->lastInsertId();
