@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\API\JSON\v1;
 
+use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\API\JSON\Response as APIResponse;
@@ -514,6 +515,34 @@ class SubscribersTest extends \MailPoetTest {
         $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
       ));
       $this->fail('It should not be possible to subscribe a second time so soon');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('You need to wait before subscribing again.');
+    }
+  }
+
+  function testItCannotMassResubscribe() {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'form_id' => $this->form->id,
+      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+    ));
+
+    // Try to resubscribe an existing subscriber that was updated just now
+    $subscriber = Subscriber::findOne($response->data['id']);
+    $subscriber->created_at = Carbon::yesterday();
+    $subscriber->updated_at = Carbon::now();
+    $subscriber->save();
+
+    try {
+      $response = $router->subscribe(array(
+        $this->obfuscatedEmail => $subscriber->email,
+        'form_id' => $this->form->id,
+        $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+      ));
+      $this->fail('It should not be possible to resubscribe a second time so soon');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('You need to wait before subscribing again.');
     }
