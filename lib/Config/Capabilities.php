@@ -46,12 +46,16 @@ class Capabilities {
   }
 
   function setupMembersCapabilities() {
+    Hooks::addAction('admin_enqueue_scripts', array($this, 'enqueueMembersStyles'));
+    Hooks::addAction('members_register_cap_groups', array($this, 'registerMembersCapGroup'));
+    Hooks::addAction('members_register_caps', array($this, 'registerMembersCapabilities'));
+  }
+
+  function enqueueMembersStyles() {
     wp_enqueue_style(
       'mailpoet-admin-global',
       Env::$assets_url . '/css/' . $this->renderer->getCssAsset('admin-global.css')
     );
-    Hooks::addAction('members_register_cap_groups', array($this, 'registerMembersCapGroup'));
-    Hooks::addAction('members_register_caps', array($this, 'registerMembersCapabilities'));
   }
 
   function registerMembersCapGroup() {
