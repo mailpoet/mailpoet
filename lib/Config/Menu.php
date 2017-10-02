@@ -422,6 +422,7 @@ class Menu {
       'premium_key_valid' => !empty($this->premium_key_valid),
       'mss_active' => Bridge::isMPSendingServiceEnabled(),
       'mss_key_valid' => !empty($mp_api_key_valid),
+      'members_plugin_active' => is_plugin_active('members/members.php'),
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),

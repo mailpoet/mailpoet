@@ -67,6 +67,27 @@
         </p>
       </td>
     </tr>
+    <!-- roles and capabilities -->
+    <tr>
+      <th scope="row">
+        <%= __('Roles and capabilities') %>
+        <p class="description">
+          <%= __('Manage which WordPress roles access which features of MailPoet.') %>
+        </p>
+      </th>
+      <td>
+        <% if (members_plugin_active) %>
+        <p>
+          <a href="<%= admin_url('users.php?page=roles') %>"><%= __('Manage using the Members plugin') %></a>
+        </p>
+        <% else %>
+          <%= __('Install the plugin [link]Members[/link] (free) to manage permissions.')
+            |replaceLinkTags('https://wordpress.org/plugins/members/', {'target' : '_blank'})
+            |raw
+          %>
+        <% endif %>
+      </td>
+    </tr>
     <!-- link tracking -->
     <tr>
       <th scope="row">
