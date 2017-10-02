@@ -14,7 +14,6 @@ class AccessControl {
   const PERMISSION_MANAGE_SUBSCRIBERS = 'mailpoet_manage_subscribers';
   const PERMISSION_MANAGE_FORMS = 'mailpoet_manage_forms';
   const PERMISSION_MANAGE_SEGMENTS = 'mailpoet_manage_segments';
-  const PERMISSION_UPDATE_PLUGIN = 'mailpoet_update_plugin';
   const NO_ACCESS_RESTRICTION = 'mailpoet_no_access_restriction';
 
   public $permissions;
@@ -67,12 +66,6 @@ class AccessControl {
           'administrator'
         )
       ),
-      self::PERMISSION_UPDATE_PLUGIN => WPHooks::applyFilters(
-        'mailpoet_permission_update_plugin',
-        array(
-          'administrator'
-        )
-      ),
     );
   }
 
@@ -84,7 +77,6 @@ class AccessControl {
       self::PERMISSION_MANAGE_SUBSCRIBERS => __('Manage subscribers', 'mailpoet'),
       self::PERMISSION_MANAGE_FORMS => __('Manage forms', 'mailpoet'),
       self::PERMISSION_MANAGE_SEGMENTS => __('Manage segments', 'mailpoet'),
-      self::PERMISSION_UPDATE_PLUGIN => __('Update plugin', 'mailpoet'),
     );
   }
 

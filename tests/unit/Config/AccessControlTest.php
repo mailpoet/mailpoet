@@ -29,9 +29,6 @@ class AccessControlTest extends \MailPoetTest {
       AccessControl::PERMISSION_MANAGE_SEGMENTS => array(
         'administrator'
       ),
-      AccessControl::PERMISSION_UPDATE_PLUGIN => array(
-        'administrator'
-      )
     );
     $access_control = new AccessControl();
     expect($access_control->permissions)->equals($default_permissions);
@@ -74,12 +71,6 @@ class AccessControlTest extends \MailPoetTest {
         return array('custom_manage_segments_role');
       }
     );
-    Hooks::addFilter(
-      'mailpoet_permission_update_plugin',
-      function() {
-        return array('custom_update_plugin_role');
-      }
-    );
 
     $access_control = new AccessControl();
     expect($access_control->permissions)->equals(
@@ -101,9 +92,6 @@ class AccessControlTest extends \MailPoetTest {
         ),
         AccessControl::PERMISSION_MANAGE_SEGMENTS => array(
           'custom_manage_segments_role'
-        ),
-        AccessControl::PERMISSION_UPDATE_PLUGIN => array(
-          'custom_update_plugin_role'
         ),
       )
     );
