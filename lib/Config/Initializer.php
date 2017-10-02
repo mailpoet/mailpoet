@@ -153,9 +153,6 @@ class Initializer {
 
     // if current db version and plugin version differ
     if(version_compare($current_db_version, Env::$version) !== 0) {
-      if(!$this->access_control->validatePermission(AccessControl::PERMISSION_UPDATE_PLUGIN)) {
-        throw new \Exception(__('You do not have permission to activate/deactivate MailPoet plugin.', 'mailpoet'));
-      }
       $this->runActivator();
     }
   }
