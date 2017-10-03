@@ -80,7 +80,6 @@ class WP {
 
   static function synchronizeUsers() {
 
-    self::updateSubscriberWPUserIds();
     self::updateSubscribersEmails();
     self::insertSubscribers();
     self::removeFromTrash();
@@ -91,17 +90,6 @@ class WP {
     self::removeOrphanedSubscribers();
 
     return true;
-  }
-
-  private static function updateSubscriberWPUserIds() {
-    global $wpdb;
-    $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
-      UPDATE IGNORE %s mps
-        JOIN %s as wu ON mps.email = wu.user_email
-      SET mps.wp_user_id = wu.ID
-        WHERE mps.wp_user_id IS NULL
-    ', $subscribers_table, $wpdb->users));
   }
 
   private static function updateSubscribersEmails() {
@@ -123,6 +111,7 @@ class WP {
         SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %s wu
           LEFT JOIN %s mps ON wu.id = mps.wp_user_id
           WHERE mps.wp_user_id IS NULL
+      ON DUPLICATE KEY UPDATE wp_user_id = wu.id
     ', $subscribers_table, $wpdb->users, $subscribers_table));
   }
 
