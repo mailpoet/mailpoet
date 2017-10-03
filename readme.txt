@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.3 - 2017-10-03 =
+* Fixed: mixed collation error in WordPress user synchronization. Thanks Chris, Till, Robin, Robero, @Seph, @kaiwen and others for the reports!
 
 = 3.0.2 - 2017-10-03 =
 * Improved: plugin capabilities can be managed with Members plugin;
