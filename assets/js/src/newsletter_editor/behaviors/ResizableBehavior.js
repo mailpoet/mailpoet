@@ -14,12 +14,13 @@ define([
     defaults: {
       elementSelector: null,
       resizeHandleSelector: true, // true will use edges of the element itself
+      transformationFunction: function (y) { return y; }, // for blocks that use the default onResize function
       minLength: 0,
       maxLength: Infinity,
       modelField: 'styles.block.height',
       onResize: function (event) {
         var currentLength = parseFloat(this.view.model.get(this.options.modelField)),
-          newLength = currentLength + event.y;
+          newLength = currentLength + this.options.transformationFunction(event.dy);
         newLength = Math.min(this.options.maxLength, Math.max(this.options.minLength, newLength));
         this.view.model.set(this.options.modelField, newLength + 'px');
       }
