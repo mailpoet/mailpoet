@@ -87,7 +87,7 @@ class Migrator {
       'segment_id int(11) unsigned NOT NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'filter_data LONGTEXT,',
+      'filter_data LONGBLOB,',
       'PRIMARY KEY (id),',
       'KEY segment_id (segment_id)',
     );

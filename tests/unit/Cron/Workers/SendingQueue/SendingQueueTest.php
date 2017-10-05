@@ -446,7 +446,7 @@ class SendingQueueTest extends \MailPoetTest {
       array(
         'to_process' => array(
           $this->subscriber->id(),
-          123
+          12345645454
         ),
         'processed' => array()
       )

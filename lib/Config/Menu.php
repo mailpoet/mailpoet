@@ -462,7 +462,12 @@ class Menu {
     $data = array();
 
     $data['items_per_page'] = $this->getLimitPerPage('subscribers');
-    $data['segments'] = Segment::getSegmentsWithSubscriberCount($type = false);
+    $segments = Segment::getSegmentsWithSubscriberCount($type = false);
+    $segments = apply_filters('mailpoet_segments_with_subscriber_count', $segments);
+    usort($segments, function ($a, $b) {
+      return strcasecmp($a["name"], $b["name"]);
+    });
+    $data['segments'] = $segments;
 
     $data['custom_fields'] = array_map(function($field) {
       $field['params'] = unserialize($field['params']);
@@ -517,7 +522,7 @@ class Menu {
 
     $data['items_per_page'] = $this->getLimitPerPage('newsletters');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
-    $segments = apply_filters('mailpoet_newsletters_segments_with_subscriber_count', $segments);
+    $segments = apply_filters('mailpoet_segments_with_subscriber_count', $segments);
     usort($segments, function ($a, $b) {
       return strcasecmp($a["name"], $b["name"]);
     });

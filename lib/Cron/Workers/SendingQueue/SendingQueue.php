@@ -10,6 +10,7 @@ use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Segments\SubscribersFinder;
 
 if(!defined('ABSPATH')) exit;
 
@@ -51,10 +52,11 @@ class SendingQueue {
       foreach($subscriber_batches as $subscribers_to_process_ids) {
         if(!empty($newsletter_segments_ids[0])) {
           // Check that subscribers are in segments
-          $found_subscribers = SubscriberModel::findSubscribersInSegments(
-            $subscribers_to_process_ids, $newsletter_segments_ids
-          )->findMany();
-          $found_subscribers_ids = SubscriberModel::extractSubscribersIds($found_subscribers);
+          $finder = new SubscribersFinder();
+          $found_subscribers_ids = $finder->findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids);
+          $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
+            ->whereNull('deleted_at')
+            ->findMany();
         } else {
           // No segments = Welcome emails
           $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)

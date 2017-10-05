@@ -10,6 +10,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -75,10 +76,8 @@ class SendingQueue extends APIEndpoint {
       $queue->count_total = $queue->count_to_process = 0;
     } else {
       $segments = $newsletter->segments()->findArray();
-      $segment_ids = array_map(function($segment) {
-        return $segment['id'];
-      }, $segments);
-      $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
+      $finder = new SubscribersFinder();
+      $subscribers = $finder->getSubscribersByList($segments);
       $subscribers = Helpers::flattenArray($subscribers);
       if(!count($subscribers)) {
         return $this->errorResponse(array(
