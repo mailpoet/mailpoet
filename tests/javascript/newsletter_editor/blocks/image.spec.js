@@ -211,6 +211,11 @@ define([
           expect(model.get('fullWidth')).to.equal(false);
         });
 
+        it('updates the model when alignment changes', function () {
+          view.$('.mailpoet_field_image_alignment').first().prop('checked', true).change();
+          expect(model.get('styles.block.textAlign')).to.equal('left');
+        });
+
         it.skip('closes the sidepanel after "Done" is clicked', function() {
           var mock = sinon.mock().once();
           global.MailPoet.Modal.cancel = mock;
