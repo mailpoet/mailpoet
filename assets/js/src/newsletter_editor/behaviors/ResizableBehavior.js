@@ -20,7 +20,7 @@ define([
       modelField: 'styles.block.height',
       onResize: function (event) {
         var currentLength = parseFloat(this.view.model.get(this.options.modelField));
-        var newLength = currentLength + event.y;
+        var newLength = currentLength + this.options.transformationFunction(event.dy);
         newLength = Math.min(this.options.maxLength, Math.max(this.options.minLength, newLength));
         this.view.model.set(this.options.modelField, newLength + 'px');
       }
