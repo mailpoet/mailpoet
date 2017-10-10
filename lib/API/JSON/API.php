@@ -57,7 +57,7 @@ class API {
     $this->setRequestData($_POST);
 
     if($this->checkToken() === false) {
-      $error_message = __('The security token is invalid, please refresh the page and try again.', 'mailpoet');
+      $error_message = __('Sorry, but we couldn\'t connect to the MailPoet server. Please refresh the web page and try again.', 'mailpoet');
       $error_response = $this->createErrorResponse(Error::UNAUTHORIZED, $error_message, Response::STATUS_UNAUTHORIZED);
       return $error_response->send();
     }
