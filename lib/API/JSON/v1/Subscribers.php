@@ -10,7 +10,7 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
-use MailPoet\Util\Helpers;
+use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 
 if(!defined('ABSPATH')) exit;
 
@@ -98,16 +98,10 @@ class Subscribers extends APIEndpoint {
     $data = array_intersect_key($data, array_flip($form_fields));
 
     // make sure we don't allow too many subscriptions with the same ip address
-    $subscription_count = Subscriber::where(
-        'subscribed_ip',
-        Helpers::getIP()
-      )->whereRaw(
-        '(TIME_TO_SEC(TIMEDIFF(NOW(), created_at)) < ? OR TIME_TO_SEC(TIMEDIFF(NOW(), updated_at)) < ?)',
-        array(self::SUBSCRIPTION_LIMIT_COOLDOWN, self::SUBSCRIPTION_LIMIT_COOLDOWN)
-      )->count();
+    $timeout = SubscriptionThrottling::throttle();
 
-    if($subscription_count > 0) {
-      throw new \Exception(__('You need to wait before subscribing again.', 'mailpoet'));
+    if($timeout > 0) {
+      throw new \Exception(sprintf(__('You need to wait %d seconds before subscribing again.', 'mailpoet'), $timeout));
     }
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);

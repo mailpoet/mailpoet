@@ -10,12 +10,20 @@ class Hooks {
     return self::callWithFallback('apply_filters', func_get_args());
   }
 
+  static function removeFilter() {
+    return self::callWithFallback('remove_filter', func_get_args());
+  }
+
   static function addAction() {
     return self::callWithFallback('add_action', func_get_args());
   }
 
   static function doAction() {
     return self::callWithFallback('do_action', func_get_args());
+  }
+
+  static function removeAction() {
+    return self::callWithFallback('remove_action', func_get_args());
   }
 
   private static function callWithFallback($func, $args) {

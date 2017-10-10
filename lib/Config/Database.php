@@ -68,6 +68,7 @@ class Database {
       $subscribers = Env::$db_prefix . 'subscribers';
       $subscriber_segment = Env::$db_prefix . 'subscriber_segment';
       $subscriber_custom_field = Env::$db_prefix . 'subscriber_custom_field';
+      $subscriber_ips = Env::$db_prefix . 'subscriber_ips';
       $newsletter_segment = Env::$db_prefix . 'newsletter_segment';
       $scheduled_tasks = Env::$db_prefix . 'scheduled_tasks';
       $scheduled_task_subscribers = Env::$db_prefix . 'scheduled_task_subscribers';
@@ -92,6 +93,7 @@ class Database {
       define('MP_SUBSCRIBERS_TABLE', $subscribers);
       define('MP_SUBSCRIBER_SEGMENT_TABLE', $subscriber_segment);
       define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', $subscriber_custom_field);
+      define('MP_SUBSCRIBER_IPS_TABLE', $subscriber_ips);
       define('MP_SCHEDULED_TASKS_TABLE', $scheduled_tasks);
       define('MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE', $scheduled_task_subscribers);
       define('MP_SENDING_QUEUES_TABLE', $sending_queues);
