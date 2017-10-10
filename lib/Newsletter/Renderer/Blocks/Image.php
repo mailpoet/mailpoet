@@ -20,9 +20,13 @@ class Image {
     if(!empty($element['link'])) {
       $image_template = '<a href="' . $element['link'] . '">' . $image_template . '</a>';
     }
+    $align = 'center';
+    if(!empty($element['styles']['block']['textAlign']) && in_array($element['styles']['block']['textAlign'], array('left', 'right'))) {
+      $align = $element['styles']['block']['textAlign'];
+    }
     $template = '
       <tr>
-        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_bottom mailpoet_padded_side' : '') . '" align="center" valign="top">
+        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_bottom mailpoet_padded_side' : '') . '" align="' . $align . '" valign="top">
           ' . $image_template . '
         </td>
       </tr>';

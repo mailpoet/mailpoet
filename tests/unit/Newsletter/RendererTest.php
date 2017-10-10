@@ -133,6 +133,29 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('tr > td > img', 0)->attr('style'))->notEmpty();
   }
 
+  function testItRendersAlignedImage() {
+    $newsletter = $this->newsletter['body'];
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
+    // default alignment (center)
+    unset($template['styles']['block']['textAlign']);
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    expect($DOM('tr > td', 0)->attr('align'))->equals('center');
+    $template['styles']['block']['textAlign'] = 'center';
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    expect($DOM('tr > td', 0)->attr('align'))->equals('center');
+    $template['styles']['block']['textAlign'] = 'something odd';
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    expect($DOM('tr > td', 0)->attr('align'))->equals('center');
+    // left alignment
+    $template['styles']['block']['textAlign'] = 'left';
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    expect($DOM('tr > td', 0)->attr('align'))->equals('left');
+    // right alignment
+    $template['styles']['block']['textAlign'] = 'right';
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    expect($DOM('tr > td', 0)->attr('align'))->equals('right');
+  }
+
   function testItDoesNotRenderImageWithoutSrc() {
     $image = array(
       'src' => '',

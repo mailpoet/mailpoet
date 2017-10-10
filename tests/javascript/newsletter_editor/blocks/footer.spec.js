@@ -188,7 +188,7 @@ define([
           expect(model.get('styles.link.textDecoration')).to.equal('underline');
         });
 
-        it('updates the model when background color changes', function () {
+        it('updates the model when text alignment changes', function () {
           view.$('.mailpoet_field_footer_alignment').last().prop('checked', true).change();
           expect(model.get('styles.text.textAlign')).to.equal('right');
         });
