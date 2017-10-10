@@ -114,6 +114,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 == Changelog ==
 
+= 3.0.6 - 2017-10-10 =
+* Fixed: subscription forms to not throw form validation engine errors;
+
 = 3.0.5 - 2017-10-10 =
 * Added: images can now be aligned left, center or right in email designer;
 
