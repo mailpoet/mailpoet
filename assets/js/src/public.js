@@ -1,6 +1,7 @@
 define([
   'mailpoet',
-  'jquery'
+  'jquery',
+  'parsleyjs'
 ],
 function (
   MailPoet,
