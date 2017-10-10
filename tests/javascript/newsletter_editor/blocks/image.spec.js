@@ -218,7 +218,7 @@ define([
           expect(model.get('styles.block.textAlign')).to.equal('left');
         });
 
-        it.skip('closes the sidepanel after "Done" is clicked', function() {
+        it.skip('closes the sidepanel after "Done" is clicked', function () {
           var mock = sinon.mock().once();
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
