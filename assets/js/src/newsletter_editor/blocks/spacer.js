@@ -9,8 +9,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock;
+  var Module = {};
+  var base = BaseBlock;
 
   Module.SpacerBlockModel = base.BlockModel.extend({
     defaults: function () {
@@ -87,7 +87,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function (App) {
     App.registerBlockType('spacer', {
       blockModel: Module.SpacerBlockModel,
       blockView: Module.SpacerBlockView

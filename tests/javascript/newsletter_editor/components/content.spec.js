@@ -65,8 +65,8 @@ define([
 
     describe('block types', function() {
       it('registers a block type view and model', function() {
-        var blockModel = new Backbone.SuperModel(),
-          blockView = new Backbone.View();
+        var blockModel = new Backbone.SuperModel();
+        var blockView = new Backbone.View();
         ContentComponent.registerBlockType('testType', {
           blockModel: blockModel,
           blockView: blockView
@@ -78,13 +78,16 @@ define([
 
     describe('transformation to json', function() {
       it('includes content, globalStyles and initial newsletter fields', function() {
+        var json;
         var dataField = {
-            containerModelField: 'containerModelValue'
-          }, stylesField = {
-            globalStylesField: 'globalStylesValue'
-          }, newsletterFields = {
-            subject: 'test newsletter subject'
-          };
+          containerModelField: 'containerModelValue'
+        };
+        var stylesField = {
+          globalStylesField: 'globalStylesValue'
+        };
+        var newsletterFields = {
+          subject: 'test newsletter subject'
+        };
         EditorApplication._contentContainer = {
           toJSON: function() {
             return dataField;
@@ -104,7 +107,7 @@ define([
             }
           };
         };
-        var json = ContentComponent.toJSON();
+        json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
           body: {
             content: dataField,

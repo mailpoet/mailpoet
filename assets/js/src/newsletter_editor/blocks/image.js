@@ -11,9 +11,9 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock,
-    ImageWidgetView;
+  var Module = {};
+  var base = BaseBlock;
+  var ImageWidgetView;
 
   Module.ImageBlockModel = base.BlockModel.extend({
     defaults: function () {
@@ -48,8 +48,8 @@ define([
         elementSelector: '.mailpoet_image',
         resizeHandleSelector: '.mailpoet_image_resize_handle',
         onResize: function (event) {
-          var corner = this.$('.mailpoet_image').offset(),
-            width = event.pageX - corner.left;
+          var corner = this.$('.mailpoet_image').offset();
+          var width = event.pageX - corner.left;
           this.view.model.set('width', width + 'px');
         }
       },
@@ -127,13 +127,16 @@ define([
       }
     },
     showMediaManager: function () {
+      var that = this;
+      var MediaManager;
+      var theFrame;
       if (this._mediaManager) {
         this._mediaManager.resetSelections();
         this._mediaManager.open();
         return;
       }
 
-      var MediaManager = window.wp.media.view.MediaFrame.Select.extend({
+      MediaManager = window.wp.media.view.MediaFrame.Select.extend({
 
         initialize: function () {
           window.wp.media.view.MediaFrame.prototype.initialize.apply(this, arguments);
@@ -196,6 +199,7 @@ define([
         },
 
         bindHandlers: function () {
+          var handlers;
           // from Select
           this.on('router:create:browse', this.createRouter, this);
           this.on('router:render:browse', this.browseRouter, this);
@@ -210,7 +214,7 @@ define([
 
           this.on('updateExcluded', this.browseContent, this);
 
-          var handlers = {
+          handlers = {
             content: {
               embed: 'embedContent',
               'edit-selection': 'editSelectionContent'
@@ -244,9 +248,9 @@ define([
         },
 
         editSelectionContent: function () {
-          var state = this.state(),
-            selection = state.get('selection'),
-            view;
+          var state = this.state();
+          var selection = state.get('selection');
+          var view;
 
           view = new window.wp.media.view.AttachmentsBrowser({
             controller: this,
@@ -302,8 +306,8 @@ define([
             requires: { selection: true },
 
             click: function () {
-              var state = controller.state(),
-                selection = state.get('selection');
+              var state = controller.state();
+              var selection = state.get('selection');
 
               controller.close();
               state.trigger('insert', selection).reset();
@@ -321,46 +325,42 @@ define([
 
       });
 
-      var theFrame = new MediaManager({
-          id: 'mailpoet-media-manager',
-          frame: 'select',
-          title: 'Select image',
-          editing: false,
-          multiple: false,
-          library: {
-            type: 'image'
-          },
-          displaySettings: false,
-          button: {
-            text: 'Select'
-          }
-        }),
-        that = this;
+      theFrame = new MediaManager({
+        id: 'mailpoet-media-manager',
+        frame: 'select',
+        title: 'Select image',
+        editing: false,
+        multiple: false,
+        library: {
+          type: 'image'
+        },
+        displaySettings: false,
+        button: {
+          text: 'Select'
+        }
+      });
       this._mediaManager = theFrame;
 
       this._mediaManager.on('insert', function () {
         // Append media manager image selections to Images tab
         var selection = theFrame.state().get('selection');
         selection.each(function (attachment) {
-          var sizes = attachment.get('sizes'),
-            // Following advice from Becs, the target width should
-            // be a double of one column width to render well on
-            // retina screen devices
-            targetImageWidth = 1320,
+          var sizes = attachment.get('sizes');
+          // Following advice from Becs, the target width should
+          // be a double of one column width to render well on
+          // retina screen devices
+          var targetImageWidth = 1320;
 
-            // For main image use the size, that's closest to being 660px in width
-            sizeKeys = _.keys(sizes),
+          // Pick the width that is closest to target width
+          var increasingByWidthDifference = _.sortBy(
+            _.keys(sizes),
+            function (size) { return Math.abs(targetImageWidth - sizes[size].width); }
+          );
+          var bestWidth = sizes[_.first(increasingByWidthDifference)].width;
+          var imagesOfBestWidth = _.filter(_.values(sizes), function (size) { return size.width === bestWidth; });
 
-            // Pick the width that is closest to target width
-            increasingByWidthDifference = _.sortBy(
-              _.keys(sizes),
-              function (size) { return Math.abs(targetImageWidth - sizes[size].width); }
-            ),
-            bestWidth = sizes[_.first(increasingByWidthDifference)].width,
-            imagesOfBestWidth = _.filter(_.values(sizes), function (size) { return size.width === bestWidth; }),
-
-            // Maximize the height if there are multiple images with same width
-            mainSize = _.max(imagesOfBestWidth, function (size) { return size.height; });
+          // Maximize the height if there are multiple images with same width
+          var mainSize = _.max(imagesOfBestWidth, function (size) { return size.height; });
 
           that.model.set({
             height: mainSize.height + 'px',
@@ -413,7 +413,7 @@ define([
   });
   Module.ImageWidgetView = ImageWidgetView;
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function (App) {
     App.registerBlockType('image', {
       blockModel: Module.ImageBlockModel,
       blockView: Module.ImageBlockView

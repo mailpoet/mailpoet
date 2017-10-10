@@ -19,8 +19,8 @@ define([
       maxLength: Infinity,
       modelField: 'styles.block.height',
       onResize: function (event) {
-        var currentLength = parseFloat(this.view.model.get(this.options.modelField)),
-          newLength = currentLength + this.options.transformationFunction(event.dy);
+        var currentLength = parseFloat(this.view.model.get(this.options.modelField));
+        var newLength = currentLength + this.options.transformationFunction(event.dy);
         newLength = Math.min(this.options.maxLength, Math.max(this.options.minLength, newLength));
         this.view.model.set(this.options.modelField, newLength + 'px');
       }
@@ -37,8 +37,8 @@ define([
       }
     },
     attachResize: function () {
-      var domElement = (this.options.elementSelector === null) ? this.view.$el.get(0) : this.view.$(this.options.elementSelector).get(0),
-        that = this;
+      var domElement = (this.options.elementSelector === null) ? this.view.$el.get(0) : this.view.$(this.options.elementSelector).get(0);
+      var that = this;
       interact(domElement).resizable({
         // axis: 'y',
         edges: {
@@ -48,7 +48,7 @@ define([
           bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector
         }
       })
-      .on('resizestart', function (event) {
+      .on('resizestart', function () {
         that.isBeingResized = true;
         that.$el.addClass('mailpoet_resize_active');
       })
@@ -56,7 +56,7 @@ define([
         var onResize = that.options.onResize.bind(that);
         return onResize(event);
       })
-      .on('resizeend', function (event) {
+      .on('resizeend', function () {
         that.isBeingResized = null;
         that.$el.removeClass('mailpoet_resize_active');
       });

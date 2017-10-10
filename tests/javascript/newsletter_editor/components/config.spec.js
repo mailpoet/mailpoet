@@ -7,10 +7,11 @@ define([
 
   describe('Config', function () {
     it('loads and stores configuration', function() {
+      var model;
       ConfigComponent.setConfig({
         testConfig: 'testValue'
       });
-      var model = ConfigComponent.getConfig();
+      model = ConfigComponent.getConfig();
       expect(model.get('testConfig')).to.equal('testValue');
     });
   });

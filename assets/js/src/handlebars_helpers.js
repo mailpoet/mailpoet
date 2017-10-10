@@ -1,26 +1,28 @@
 define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   // Handlebars helpers
   Handlebars.registerHelper('concat', function () {
-    var size = (arguments.length - 1),
-      output = '';
-    for (var i = 0; i < size; i++) {
+    var size = (arguments.length - 1);
+    var output = '';
+    var i;
+    for (i = 0; i < size; i++) {
       output += arguments[i];
     }
     return output;
   });
 
-  Handlebars.registerHelper('number_format', function (value, block) {
+  Handlebars.registerHelper('number_format', function (value) {
     return Number(value).toLocaleString();
   });
   Handlebars.registerHelper('date_format', function (timestamp, block) {
+    var f;
     if (window.moment) {
       if (timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
         return;
       }
 
-          // set date format
-      var f = block.hash.format || 'MMM Do, YYYY';
-          // check if we passed a timestamp
+      // set date format
+      f = block.hash.format || 'MMM Do, YYYY';
+      // check if we passed a timestamp
       if (parseInt(timestamp, 10) == timestamp) {
         return window.moment.unix(timestamp).format(f);
       } else {
@@ -59,25 +61,24 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       case '||':
         return (v1 || v2) ? options.fn(this) : options.inverse(this);
       case 'in':
-        var values = v2.split(',');
         return (v2.indexOf(v1) !== -1) ? options.fn(this) : options.inverse(this);
       default:
         return options.inverse(this);
     }
   });
 
-  Handlebars.registerHelper('nl2br', function (value, block) {
+  Handlebars.registerHelper('nl2br', function (value) {
     return value.gsub('\n', '<br />');
   });
 
-  Handlebars.registerHelper('json_encode', function (value, block) {
+  Handlebars.registerHelper('json_encode', function (value) {
     return JSON.stringify(value);
   });
 
-  Handlebars.registerHelper('json_decode', function (value, block) {
+  Handlebars.registerHelper('json_decode', function (value) {
     return JSON.parse(value);
   });
-  Handlebars.registerHelper('url', function (value, block) {
+  Handlebars.registerHelper('url', function (value) {
     var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
     return url + value;
@@ -90,16 +91,17 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       return value;
     }
   });
-  Handlebars.registerHelper('lookup', function (obj, field, options) {
+  Handlebars.registerHelper('lookup', function (obj, field) {
     return obj && obj[field];
   });
 
 
-  Handlebars.registerHelper('rsa_key', function (value, block) {
-      // extract all lines into an array
+  Handlebars.registerHelper('rsa_key', function (value) {
+    var lines;
+    // extract all lines into an array
     if (value === undefined) return '';
 
-    var lines = value.trim().split('\n');
+    lines = value.trim().split('\n');
 
       // remove header & footer
     lines.shift();
@@ -109,7 +111,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return lines.join('');
   });
 
-  Handlebars.registerHelper('trim', function (value, block) {
+  Handlebars.registerHelper('trim', function (value) {
     if (value === null || value === undefined) return '';
     return value.trim();
   });
@@ -126,10 +128,10 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
    */
   Handlebars.registerHelper('ellipsis', function (str, limit, append) {
     var strAppend = append;
+    var sanitized = str.replace(/(<([^>]+)>)/g, '');
     if (strAppend === undefined) {
       strAppend = '';
     }
-    var sanitized = str.replace(/(<([^>]+)>)/g, '');
     if (sanitized.length > limit) {
       return sanitized.substr(0, limit - strAppend.length) + strAppend;
     } else {

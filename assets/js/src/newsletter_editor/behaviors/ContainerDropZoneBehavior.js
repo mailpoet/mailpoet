@@ -25,11 +25,11 @@ define([
         this.addDropZone();
       }
     },
-    addDropZone: function (_event) {
-      var that = this,
-        view = this.view,
-        domElement = that.$el.get(0),
-        acceptableElementSelector;
+    addDropZone: function () {
+      var that = this;
+      var view = this.view;
+      var domElement = that.$el.get(0);
+      var acceptableElementSelector;
 
       // TODO: Extract this limitation code to be controlled from containers
       if (this.view.renderOptions.depth === 0) {
@@ -47,11 +47,11 @@ define([
       interact(domElement).dropzone({
         accept: acceptableElementSelector,
         overlap: 'pointer', // Mouse pointer denotes location of a droppable
-        ondragenter: function (event) {
+        ondragenter: function () {
           // 1. Visually mark block as active for dropping
           view.$el.addClass('mailpoet_drop_active');
         },
-        ondragleave: function (event) {
+        ondragleave: function () {
           // 1. Remove visual markings of active dropping container
           // 2. Remove visual markings of drop position visualization
           that.cleanup();
@@ -63,20 +63,26 @@ define([
           // 3b. If insertion is special, compute position (which side) and which cell the insertion belongs to
           // 4. If insertion at that position is not visualized, display position visualization there, remove other visualizations from this container
           var dropPosition = that.getDropPosition(
-              event.dragmove.pageX,
-              event.dragmove.pageY,
-              view.$el,
-              view.model.get('orientation'),
-              view.model.get('blocks').length
-            ),
-            element = view.$el,
-            markerWidth = '',
-            markerHeight = '',
-            containerOffset = element.offset(),
-            viewCollection = that.getCollection(),
-            marker, targetModel, targetView, targetElement,
-            topOffset, leftOffset, isLastBlockInsertion,
-            $targetBlock, margin;
+            event.dragmove.pageX,
+            event.dragmove.pageY,
+            view.$el,
+            view.model.get('orientation'),
+            view.model.get('blocks').length
+          );
+          var element = view.$el;
+          var markerWidth = '';
+          var markerHeight = '';
+          var containerOffset = element.offset();
+          var viewCollection = that.getCollection();
+          var marker;
+          var targetModel;
+          var targetView;
+          var targetElement;
+          var topOffset;
+          var leftOffset;
+          var isLastBlockInsertion;
+          var $targetBlock;
+          var margin;
 
           if (dropPosition === undefined) return;
 
@@ -178,15 +184,19 @@ define([
           // 4. Perform cleanup actions
 
           var dropPosition = that.getDropPosition(
-              event.dragEvent.pageX,
-              event.dragEvent.pageY,
-              view.$el,
-              view.model.get('orientation'),
-              view.model.get('blocks').length
-            ),
-            droppableModel = event.draggable.getDropModel(),
-            viewCollection = that.getCollection(),
-            droppedView, droppedModel, index, tempCollection, tempCollection2;
+            event.dragEvent.pageX,
+            event.dragEvent.pageY,
+            view.$el,
+            view.model.get('orientation'),
+            view.model.get('blocks').length
+          );
+          var droppableModel = event.draggable.getDropModel();
+          var viewCollection = that.getCollection();
+          var droppedView;
+          var index;
+          var tempCollection;
+          var tempCollection2;
+          var tempModel;
 
           if (dropPosition === undefined) return;
 
@@ -210,7 +220,7 @@ define([
           } else {
             // Special insertion by replacing target block with collection
             // and inserting dropModel into that
-            var tempModel = viewCollection.at(dropPosition.index);
+            tempModel = viewCollection.at(dropPosition.index);
 
             tempCollection = new (window.EditorApplication.getBlockTypeModel('container'))({
               orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical'
@@ -272,26 +282,30 @@ define([
       this.view.$('.mailpoet_drop_marker').remove();
     },
     getDropPosition: function (eventX, eventY, is_unsafe) {
-      var SPECIAL_AREA_INSERTION_WIDTH = 0.00, // Disable special insertion. Default: 0.3
+      var SPECIAL_AREA_INSERTION_WIDTH = 0.00; // Disable special insertion. Default: 0.3
 
-        element = this.view.$el,
-        orientation = this.view.model.get('orientation'),
+      var element = this.view.$el;
+      var orientation = this.view.model.get('orientation');
 
-        elementOffset = element.offset(),
-        elementPageX = elementOffset.left,
-        elementPageY = elementOffset.top,
-        elementWidth = element.outerWidth(true),
-        elementHeight = element.outerHeight(true),
+      var elementOffset = element.offset();
+      var elementPageX = elementOffset.left;
+      var elementPageY = elementOffset.top;
+      var elementWidth = element.outerWidth(true);
+      var elementHeight = element.outerHeight(true);
 
-        relativeX = eventX - elementPageX,
-        relativeY = eventY - elementPageY,
+      var relativeX = eventX - elementPageX;
+      var relativeY = eventY - elementPageY;
 
-        relativeOffset, elementLength,
+      var relativeOffset;
+      var elementLength;
 
-        canAcceptNormalInsertion = this._canAcceptNormalInsertion(),
-        canAcceptSpecialInsertion = this._canAcceptSpecialInsertion(),
+      var canAcceptNormalInsertion = this._canAcceptNormalInsertion();
+      var canAcceptSpecialInsertion = this._canAcceptSpecialInsertion();
 
-        insertionType, index, position, indexAndPosition;
+      var insertionType;
+      var index;
+      var position;
+      var indexAndPosition;
 
       var unsafe = !!is_unsafe;
 
@@ -359,12 +373,14 @@ define([
       // target element if event happens on the second half of the element.
       // Halves depend on orientation.
 
-      var index = this._computeCellIndex(eventX, eventY),
-        // TODO: Handle case when there are no children, container is empty
-        targetView = this.getChildren().findByModel(this.getCollection().at(index)),
-        orientation = this.view.model.get('orientation'),
-        element = targetView.$el,
-        eventOffset, closeOffset, elementDimension;
+      var index = this._computeCellIndex(eventX, eventY);
+      // TODO: Handle case when there are no children, container is empty
+      var targetView = this.getChildren().findByModel(this.getCollection().at(index));
+      var orientation = this.view.model.get('orientation');
+      var element = targetView.$el;
+      var eventOffset;
+      var closeOffset;
+      var elementDimension;
 
       if (orientation === 'vertical') {
         eventOffset = eventY;
@@ -394,39 +410,40 @@ define([
       return this._computeCellIndex(eventX, eventY);
     },
     _computeCellIndex: function (eventX, eventY) {
-      var orientation = this.view.model.get('orientation'),
-        eventOffset = (orientation === 'vertical') ? eventY : eventX,
-        resultView = this.getChildren().find(function (view) {
-          var element = view.$el,
-            closeOffset, farOffset;
+      var orientation = this.view.model.get('orientation');
+      var eventOffset = (orientation === 'vertical') ? eventY : eventX;
+      var resultView = this.getChildren().find(function (view) {
+        var element = view.$el;
+        var closeOffset;
+        var farOffset;
 
-          if (orientation === 'vertical') {
-            closeOffset = element.offset().top;
-            farOffset = element.outerHeight(true);
-          } else {
-            closeOffset = element.offset().left;
-            farOffset = element.outerWidth(true);
-          }
-          farOffset += closeOffset;
+        if (orientation === 'vertical') {
+          closeOffset = element.offset().top;
+          farOffset = element.outerHeight(true);
+        } else {
+          closeOffset = element.offset().left;
+          farOffset = element.outerWidth(true);
+        }
+        farOffset += closeOffset;
 
-          return closeOffset <= eventOffset && eventOffset <= farOffset;
-        });
+        return closeOffset <= eventOffset && eventOffset <= farOffset;
+      });
 
       var index = (typeof resultView === 'object') ? resultView._index : 0;
 
       return index;
     },
     _canAcceptNormalInsertion: function () {
-      var orientation = this.view.model.get('orientation'),
-        depth = this.view.renderOptions.depth,
-        childCount = this.getChildren().length;
+      var orientation = this.view.model.get('orientation');
+      var depth = this.view.renderOptions.depth;
+      var childCount = this.getChildren().length;
       // Note that depth is zero indexed. Root container has depth=0
       return orientation === 'vertical' || (orientation === 'horizontal' && depth === 1 && childCount < this.options.columnLimit);
     },
     _canAcceptSpecialInsertion: function () {
-      var orientation = this.view.model.get('orientation'),
-        depth = this.view.renderOptions.depth,
-        childCount = this.getChildren().length;
+      var orientation = this.view.model.get('orientation');
+      var depth = this.view.renderOptions.depth;
+      var childCount = this.getChildren().length;
       return depth === 0 || (depth === 1 && orientation === 'horizontal' && childCount <= this.options.columnLimit);
     },
     getCollectionView: function () {

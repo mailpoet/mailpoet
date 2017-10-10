@@ -74,6 +74,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
+        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             image: {
@@ -91,7 +92,7 @@ define([
             }
           }
         });
-        var model = new (ImageBlock.ImageBlockModel)();
+        model = new (ImageBlock.ImageBlockModel)();
 
         expect(model.get('link')).to.equal('http://example.org/customConfigPage');
         expect(model.get('src')).to.equal('http://example.org/someCustomConfigImage.png');
@@ -104,11 +105,12 @@ define([
     });
 
     describe('block view', function () {
+      var model;
+      var view;
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (ImageBlock.ImageBlockModel)(),
-        view;
+      model = new (ImageBlock.ImageBlockModel)();
 
       beforeEach(function () {
         view = new (ImageBlock.ImageBlockView)({model: model});
@@ -158,7 +160,8 @@ define([
     });
 
     describe('block settings view', function () {
-      var model, view;
+      var model;
+      var view;
       var newWidth = 123;
       var newHeight = 456;
       var newLink = 'http://example.org/someNewLink';
@@ -206,7 +209,6 @@ define([
         });
 
         it('updates the model when padding changes', function () {
-          var newValue = 'false';
           view.$('.mailpoet_field_image_full_width').prop('checked', false).change();
           expect(model.get('fullWidth')).to.equal(false);
         });

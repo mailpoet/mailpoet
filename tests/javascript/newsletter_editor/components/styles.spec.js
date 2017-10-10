@@ -9,10 +9,11 @@ define([
 
   describe('Styles', function () {
     it('loads and stores globally available styles', function() {
+      var model;
       StylesComponent.setGlobalStyles({
         testStyle: 'testValue'
       });
-      var model = StylesComponent.getGlobalStyles();
+      model = StylesComponent.getGlobalStyles();
       expect(model.get('testStyle')).to.equal('testValue');
     });
 
@@ -35,7 +36,8 @@ define([
     });
 
     describe('view', function() {
-      var model, view;
+      var model;
+      var view;
       beforeEach(function() {
         model = new (StylesComponent.StylesModel)();
         view = new (StylesComponent.StylesView)({ model: model });

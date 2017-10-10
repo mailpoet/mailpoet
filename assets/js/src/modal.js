@@ -116,6 +116,7 @@ define('modal', ['mailpoet', 'jquery'],
         }
       },
       init: function (options) {
+        var modal;
         if (this.initialized === true) {
           this.close();
         }
@@ -134,7 +135,7 @@ define('modal', ['mailpoet', 'jquery'],
         if (this.options.type !== null) {
           // insert modal depending on its type
           if (this.options.type === 'popup') {
-            var modal = this.compileTemplate(
+            modal = this.compileTemplate(
               this.templates[this.options.type]
             );
             // create modal
@@ -178,7 +179,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      initOverlay: function (toggle) {
+      initOverlay: function () {
         if (jQuery('#mailpoet_modal_overlay').length === 0) {
             // insert overlay into the DOM
           jQuery('body').append(this.templates.overlay);
@@ -343,20 +344,21 @@ define('modal', ['mailpoet', 'jquery'],
         return this;
       },
       setPosition: function () {
+        var screenWidth;
+        var screenHeight;
+        var modalWidth;
+        var modalHeight;
         switch (this.options.type) {
           case 'popup':
-            var screenWidth = jQuery(window).width(),
-              screenHeight = jQuery(window).height(),
-              modalWidth = jQuery('.mailpoet_' + this.options.type + '_wrapper').width(),
-              modalHeight = jQuery('.mailpoet_' + this.options.type + '_wrapper').height();
+            screenWidth = jQuery(window).width();
+            screenHeight = jQuery(window).height();
+            modalWidth = jQuery('.mailpoet_'+ this.options.type +'_wrapper').width();
+            modalHeight = jQuery('.mailpoet_'+ this.options.type +'_wrapper').height();
 
-            var top = Math.max(48, parseInt((screenHeight / 2) - (modalHeight / 2))),
-              left = Math.max(0, parseInt((screenWidth / 2) - (modalWidth / 2)));
-
-              // set position of popup depending on screen dimensions.
+            // set position of popup depending on screen dimensions.
             jQuery('#mailpoet_popup').css({
-              top: top,
-              left: left
+              top: Math.max(48, parseInt((screenHeight / 2) - (modalHeight / 2))),
+              left: Math.max(0, parseInt((screenWidth / 2) - (modalWidth / 2)))
             });
             break;
           case 'panel':
@@ -436,7 +438,7 @@ define('modal', ['mailpoet', 'jquery'],
             .removeClass('mailpoet_modal_highlight');
         return this;
       },
-      hideModal: function (callback) {
+      hideModal: function () {
           // set modal as closed
         this.opened = false;
 
@@ -451,7 +453,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      showOverlay: function (force) {
+      showOverlay: function () {
         jQuery('#mailpoet_modal_overlay').show();
         return this;
       },

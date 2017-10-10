@@ -28,12 +28,12 @@ define([
         throw "Missing 'drop' function for DraggableBehavior";
       },
 
-      onDrop: function (model, view) {},
-      testAttachToInstance: function (model, view) { return true; }
+      onDrop: function () {},
+      testAttachToInstance: function () { return true; }
     },
     onRender: function () {
-      var that = this,
-        interactable;
+      var that = this;
+      var interactable;
 
       // Give instances more control over whether Draggable should be applied
       if (!this.options.testAttachToInstance(this.view.model, this.view)) return;
@@ -49,16 +49,19 @@ define([
 
         onstart: function (startEvent) {
           var event = startEvent;
+          var centerXOffset;
+          var centerYOffset;
+          var tempClone;
+          var clone;
+          var $clone;
 
           if (that.options.cloneOriginal === true) {
             // Use substitution instead of a clone
-            var tempClone = (_.isFunction(that.options.onDragSubstituteBy)) ? that.options.onDragSubstituteBy(that) : undefined,
-              // Or use a clone
-              clone = tempClone || event.target.cloneNode(true),
-
-              $original = jQuery(event.target),
-              $clone = jQuery(clone),
-              centerXOffset, centerYOffset, parentOffset;
+            tempClone = (_.isFunction(that.options.onDragSubstituteBy)) ? that.options.onDragSubstituteBy(that) : undefined;
+            // Or use a clone
+            clone = tempClone || event.target.cloneNode(true);
+            jQuery(event.target);
+            $clone = jQuery(clone);
 
             $clone.addClass('mailpoet_droppable_active');
             $clone.css('position', 'absolute');
@@ -85,10 +88,10 @@ define([
         },
         // call this function on every dragmove event
         onmove: function (event) {
-          var target = event.target,
-            // keep the dragged position in the data-x/data-y attributes
-            x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-            y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+          var target = event.target;
+          // keep the dragged position in the data-x/data-y attributes
+          var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+          var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
           // translate the element
           target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';

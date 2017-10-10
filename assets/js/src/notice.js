@@ -47,6 +47,8 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       return this;
     },
     createNotice: function () {
+      var onClose;
+      var positionAfter;
       // clone element
       this.element = jQuery('#mailpoet_notice_' + this.options.type).clone();
 
@@ -62,7 +64,6 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       this.element.removeAttr('id');
 
       // insert notice after its parent
-      var positionAfter;
       if (typeof this.options.positionAfter === 'object') {
         positionAfter = this.options.positionAfter;
       } else if (typeof this.options.positionAfter === 'string') {
@@ -73,7 +74,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       positionAfter.after(this.element);
 
       // setup onClose callback
-      var onClose = null;
+      onClose = null;
       if (this.options.onClose !== null) {
         onClose = this.options.onClose;
       }
@@ -177,12 +178,13 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       }
     },
     hide: function (all) {
+      var id;
       if (all !== undefined && all === true) {
         // all notices
         jQuery('.mailpoet_notice:not([id])').trigger('close');
       } else if (all !== undefined && jQuery.isArray(all)) {
         // array of ids
-        for (var id in all) {
+        for (id in all) {
           jQuery('[data-id="' + all[id] + '"]').trigger('close');
         }
       } if (all !== undefined) {

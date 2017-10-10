@@ -39,8 +39,13 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock;
+  var Module = {};
+  var base = BaseBlock;
+  var PostsDisplayOptionsSettingsView;
+  var SinglePostSelectionSettingsView;
+  var EmptyPostSelectionSettingsView;
+  var PostSelectionSettingsView;
+  var PostsSelectionCollectionView;
 
   Module.PostsBlockModel = base.BlockModel.extend({
     stale: ['_selectedPosts', '_availablePosts', '_transformedPosts'],
@@ -89,10 +94,9 @@ define([
       };
     },
     initialize: function () {
-      var that = this,
-        POST_REFRESH_DELAY_MS = 500,
-        refreshAvailablePosts = _.debounce(this.fetchAvailablePosts.bind(this), POST_REFRESH_DELAY_MS),
-        refreshTransformedPosts = _.debounce(this._refreshTransformedPosts.bind(this), POST_REFRESH_DELAY_MS);
+      var POST_REFRESH_DELAY_MS = 500;
+      var refreshAvailablePosts = _.debounce(this.fetchAvailablePosts.bind(this), POST_REFRESH_DELAY_MS);
+      var refreshTransformedPosts = _.debounce(this._refreshTransformedPosts.bind(this), POST_REFRESH_DELAY_MS);
 
       // Attach Radio.Requests API primarily for highlighting
       _.extend(this, Radio.Requests);
@@ -120,9 +124,9 @@ define([
       });
     },
     _loadMorePosts: function () {
-      var that = this,
-        postCount = this.get('_availablePosts').length,
-        nextOffset = this.get('offset') + Number(this.get('amount'));
+      var that = this;
+      var postCount = this.get('_availablePosts').length;
+      var nextOffset = this.get('offset') + Number(this.get('amount'));
 
       if (postCount === 0 || postCount < nextOffset) {
         // No more posts to load
@@ -141,8 +145,8 @@ define([
       });
     },
     _refreshTransformedPosts: function () {
-      var that = this,
-        data = this.toJSON();
+      var that = this;
+      var data = this.toJSON();
 
       data.posts = this.get('_selectedPosts').pluck('ID');
 
@@ -158,10 +162,9 @@ define([
       });
     },
     _insertSelectedPosts: function () {
-      var that = this,
-        data = this.toJSON(),
-        index = this.collection.indexOf(this),
-        collection = this.collection;
+      var data = this.toJSON();
+      var index = this.collection.indexOf(this);
+      var collection = this.collection;
 
       data.posts = this.get('_selectedPosts').pluck('ID');
 
@@ -190,17 +193,19 @@ define([
       this.model.reply('blockView', this.notifyAboutSelf, this);
     },
     onRender: function () {
+      var ContainerView;
+      var renderOptions;
       if (!this.getRegion('toolsRegion').hasView()) {
         this.showChildView('toolsRegion', this.toolsView);
       }
       this.trigger('showSettings');
 
-      var ContainerView = App.getBlockTypeView('container'),
-        renderOptions = {
-          disableTextEditor: true,
-          disableDragAndDrop: true,
-          emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay')
-        };
+      ContainerView = App.getBlockTypeView('container');
+      renderOptions = {
+        disableTextEditor: true,
+        disableDragAndDrop: true,
+        emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay')
+      };
       this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
     },
     notifyAboutSelf: function () {
@@ -237,8 +242,8 @@ define([
       this.displayOptionsView = new PostsDisplayOptionsSettingsView({ model: this.model });
     },
     onRender: function () {
-      var that = this,
-        blockView = this.model.request('blockView');
+      var that = this;
+      this.model.request('blockView');
 
       this.showChildView('selectionRegion', this.selectionView);
       this.showChildView('displayOptionsRegion', this.displayOptionsView);
@@ -283,7 +288,7 @@ define([
     }
   });
 
-  var PostsSelectionCollectionView = Marionette.CollectionView.extend({
+  PostsSelectionCollectionView = Marionette.CollectionView.extend({
     className: 'mailpoet_post_scroll_container',
     childView: function () { return SinglePostSelectionSettingsView; },
     emptyView: function () { return EmptyPostSelectionSettingsView; },
@@ -307,7 +312,7 @@ define([
     }
   });
 
-  var PostSelectionSettingsView = Marionette.View.extend({
+  PostSelectionSettingsView = Marionette.View.extend({
     getTemplate: function () { return window.templates.postSelectionPostsBlockSettings; },
     regions: {
       posts: '.mailpoet_post_selection_container'
@@ -334,9 +339,10 @@ define([
       }
     },
     onRender: function () {
+      var postsView;
       // Dynamically update available post types
       CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
-      var postsView = new PostsSelectionCollectionView({
+      postsView = new PostsSelectionCollectionView({
         collection: this.model.get('_availablePosts'),
         blockModel: this.model
       });
@@ -358,12 +364,13 @@ define([
           },
           transport: function (options, success, failure) {
             var taxonomies;
+            var termsPromise;
             var promise = CommunicationComponent.getTaxonomies(
               that.model.get('contentType')
             ).then(function (tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
-              var promise = CommunicationComponent.getTerms({
+              termsPromise = CommunicationComponent.getTerms({
                 search: options.data.term,
                 taxonomies: _.keys(taxonomies)
               }).then(function (terms) {
@@ -372,7 +379,7 @@ define([
                   terms: terms
                 };
               });
-              return promise;
+              return termsPromise;
             });
 
             promise.then(success);
@@ -413,8 +420,8 @@ define([
       this.model.set(field, jQuery(event.target).val());
     },
     _updateContentTypes: function (postTypes) {
-      var select = this.$('.mailpoet_settings_posts_content_type'),
-        selectedValue = this.model.get('contentType');
+      var select = this.$('.mailpoet_settings_posts_content_type');
+      var selectedValue = this.model.get('contentType');
 
       select.find('option').remove();
       _.each(postTypes, function (type) {
@@ -427,11 +434,11 @@ define([
     }
   });
 
-  var EmptyPostSelectionSettingsView = Marionette.View.extend({
+  EmptyPostSelectionSettingsView = Marionette.View.extend({
     getTemplate: function () { return window.templates.emptyPostPostsBlockSettings; }
   });
 
-  var SinglePostSelectionSettingsView = Marionette.View.extend({
+  SinglePostSelectionSettingsView = Marionette.View.extend({
     getTemplate: function () { return window.templates.singlePostPostsBlockSettings; },
     events: function () {
       return {
@@ -448,8 +455,8 @@ define([
       this.blockModel = options.blockModel;
     },
     postSelectionChange: function (event) {
-      var checkBox = jQuery(event.target),
-        selectedPostsCollection = this.blockModel.get('_selectedPosts');
+      var checkBox = jQuery(event.target);
+      var selectedPostsCollection = this.blockModel.get('_selectedPosts');
       if (checkBox.prop('checked')) {
         selectedPostsCollection.add(this.model);
       } else {
@@ -458,7 +465,7 @@ define([
     }
   });
 
-  var PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
+  PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
     getTemplate: function () { return window.templates.displayOptionsPostsBlockSettings; },
     events: function () {
       return {
@@ -488,7 +495,7 @@ define([
         model: this.model.toJSON()
       };
     },
-    showButtonSettings: function (event) {
+    showButtonSettings: function () {
       var buttonModule = ButtonBlock;
       (new buttonModule.ButtonBlockSettingsView({
         model: this.model.get('readMoreButton'),
@@ -499,7 +506,7 @@ define([
         }
       })).render();
     },
-    showDividerSettings: function (event) {
+    showDividerSettings: function () {
       var dividerModule = DividerBlock;
       (new dividerModule.DividerBlockSettingsView({
         model: this.model.get('divider'),
@@ -575,7 +582,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function (App) {
     App.registerBlockType('posts', {
       blockModel: Module.PostsBlockModel,
       blockView: Module.PostsBlockView

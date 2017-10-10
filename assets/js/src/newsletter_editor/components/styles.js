@@ -71,17 +71,19 @@ define([
 
   App.on('before:start', function (App, options) {
     var Application = App;
+    var body;
+    var globalStyles;
     // Expose style methods to global application
     Application.getGlobalStyles = Module.getGlobalStyles;
     Application.setGlobalStyles = Module.setGlobalStyles;
     Application.getAvailableStyles = Module.getAvailableStyles;
 
-    var body = options.newsletter.body;
-    var globalStyles = (_.has(body, 'globalStyles')) ? body.globalStyles : {};
+    body = options.newsletter.body;
+    globalStyles = (_.has(body, 'globalStyles')) ? body.globalStyles : {};
     this.setGlobalStyles(globalStyles);
   });
 
-  App.on('start', function (App, options) {
+  App.on('start', function (App) {
     var stylesView = new Module.StylesView({ model: App.getGlobalStyles() });
     App._appView.showChildView('stylesRegion', stylesView);
   });

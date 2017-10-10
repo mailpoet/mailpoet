@@ -13,7 +13,7 @@ define([
   // handled by other components.
   Module.NewsletterModel = SuperModel.extend({
     whitelisted: ['id', 'subject', 'preheader'],
-    initialize: function (options) {
+    initialize: function () {
       this.on('change', function () {
         App.getChannel().trigger('autoSave');
       });

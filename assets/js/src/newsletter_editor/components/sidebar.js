@@ -6,8 +6,7 @@ define([
   'backbone.marionette',
   'backbone.supermodel',
   'underscore',
-  'jquery',
-  'sticky-kit'
+  'jquery'
 ], function (
   App,
   CommunicationComponent,
@@ -16,14 +15,13 @@ define([
   Marionette,
   SuperModel,
   _,
-  jQuery,
-  StickyKit
+  jQuery
   ) {
 
   'use strict';
 
   var Module = {};
-
+  var SidebarView;
   // Widget handlers for use to create new content blocks via drag&drop
   Module._contentWidgets = new (Backbone.Collection.extend({
     model: SuperModel.extend({
@@ -52,7 +50,7 @@ define([
   Module.registerLayoutWidget = function (widget) { return Module._layoutWidgets.add(widget); };
   Module.getLayoutWidgets = function () { return Module._layoutWidgets; };
 
-  var SidebarView = Marionette.View.extend({
+  SidebarView = Marionette.View.extend({
     getTemplate: function () { return window.templates.sidebar; },
     regions: {
       contentRegion: '.mailpoet_content_region',
@@ -62,8 +60,8 @@ define([
     },
     events: {
       'click .mailpoet_sidebar_region h3, .mailpoet_sidebar_region .handlediv': function (event) {
-        var $openRegion = this.$el.find('.mailpoet_sidebar_region:not(.closed)'),
-          $targetRegion = this.$el.find(event.target).closest('.mailpoet_sidebar_region');
+        var $openRegion = this.$el.find('.mailpoet_sidebar_region:not(.closed)');
+        var $targetRegion = this.$el.find(event.target).closest('.mailpoet_sidebar_region');
 
         $openRegion.find('.mailpoet_region_content').velocity(
           'slideUp',
@@ -90,7 +88,7 @@ define([
         }
       }
     },
-    initialize: function (options) {
+    initialize: function () {
       jQuery(window)
         .on('resize', this.updateHorizontalScroll.bind(this))
         .on('scroll', this.updateHorizontalScroll.bind(this));
@@ -113,9 +111,8 @@ define([
       // position of the sidebar would be scrollable and not fixed
       // partially out of visible screen
       this.$el.parent().each(function () {
-        var calculated_left, self;
-
-        self = jQuery(this);
+        var calculated_left;
+        var self = jQuery(this);
 
         if (self.css('position') === 'fixed') {
           calculated_left = self.parent().offset().left - jQuery(window).scrollLeft();
@@ -271,7 +268,7 @@ define([
           previewUrl: response.meta.preview_url
         });
 
-        var view = this.previewView.render();
+        this.previewView.render();
         this.previewView.$el.css('height', '100%');
 
         MailPoet.Modal.popup({
@@ -324,7 +321,7 @@ define([
       App.getChannel().request('save').always(function () {
         CommunicationComponent.previewNewsletter(data).always(function () {
           MailPoet.Modal.loading(false);
-        }).done(function (response) {
+        }).done(function () {
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterPreviewSent'),
             { scroll: true }
@@ -363,7 +360,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function (App) {
     var Application = App;
     Application.registerWidget = Module.registerWidget;
     Application.getWidgets = Module.getWidgets;
@@ -371,9 +368,8 @@ define([
     Application.getLayoutWidgets = Module.getLayoutWidgets;
   });
 
-  App.on('start', function (App, options) {
-    var stylesModel = App.getGlobalStyles(),
-      sidebarView = new SidebarView();
+  App.on('start', function (App) {
+    var sidebarView = new SidebarView();
 
     App._appView.showChildView('sidebarRegion', sidebarView);
 

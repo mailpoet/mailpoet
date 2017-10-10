@@ -11,8 +11,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock;
+  var Module = {};
+  var base = BaseBlock;
 
   Module.ButtonBlockModel = base.BlockModel.extend({
     defaults: function () {
@@ -132,7 +132,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function (App) {
     App.registerBlockType('button', {
       blockModel: Module.ButtonBlockModel,
       blockView: Module.ButtonBlockView

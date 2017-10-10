@@ -28,8 +28,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    saveTimeout;
+  var Module = {};
+  var saveTimeout;
 
   // Save editor contents to server
   Module.save = function () {
@@ -76,10 +76,9 @@ define([
       // Temporary workaround for html2canvas-alpha2.
       // Removes 1px left transparent border from resulting canvas.
 
-      var oldContext = oldCanvas.getContext('2d'),
-        newCanvas = document.createElement('canvas'),
-        newContext = newCanvas.getContext('2d'),
-        leftBorderWidth = 1;
+      var newCanvas = document.createElement('canvas');
+      var newContext = newCanvas.getContext('2d');
+      var leftBorderWidth = 1;
 
       newCanvas.width = oldCanvas.width;
       newCanvas.height = oldCanvas.height;
@@ -95,8 +94,7 @@ define([
   };
 
   Module.saveTemplate = function (options) {
-    var that = this,
-      promise = jQuery.Deferred();
+    var promise = jQuery.Deferred();
 
     promise.then(function (thumbnail) {
       var data = _.extend(options || {}, {
@@ -122,7 +120,6 @@ define([
   };
 
   Module.exportTemplate = function (options) {
-    var that = this;
     return Module.getThumbnail(
       jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
     ).then(function (thumbnail) {
@@ -155,7 +152,7 @@ define([
       'click .mailpoet_save_export': 'toggleExportTemplate',
       'click .mailpoet_export_template': 'exportTemplate'
     },
-    initialize: function (options) {
+    initialize: function () {
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
       App.getChannel().on('afterEditorSave', this.afterSave, this);
     },
@@ -170,7 +167,7 @@ define([
       // TODO: Add a loading animation instead
       this.$('.mailpoet_autosaved_at').text(MailPoet.I18n.t('saving'));
     },
-    afterSave: function (json, response) {
+    afterSave: function (json) {
       this.validateNewsletter(json);
       // Update 'Last saved timer'
       this.$('.mailpoet_editor_last_saved').removeClass('mailpoet_hidden');
@@ -192,9 +189,9 @@ define([
       this.$('.mailpoet_save_as_template_container').addClass('mailpoet_hidden');
     },
     saveAsTemplate: function () {
-      var templateName = this.$('.mailpoet_save_as_template_name').val(),
-        templateDescription = this.$('.mailpoet_save_as_template_description').val(),
-        that = this;
+      var templateName = this.$('.mailpoet_save_as_template_name').val();
+      var templateDescription = this.$('.mailpoet_save_as_template_description').val();
+      var that = this;
 
       if (templateName === '') {
         MailPoet.Notice.error(
@@ -248,9 +245,9 @@ define([
       this.$('.mailpoet_export_template_container').addClass('mailpoet_hidden');
     },
     exportTemplate: function () {
-      var templateName = this.$('.mailpoet_export_template_name').val(),
-        templateDescription = this.$('.mailpoet_export_template_description').val(),
-        that = this;
+      var templateName = this.$('.mailpoet_export_template_name').val();
+      var templateDescription = this.$('.mailpoet_export_template_description').val();
+      var that = this;
 
       if (templateName === '') {
         MailPoet.Notice.error(
@@ -285,18 +282,19 @@ define([
       this.hideOptionContents();
       if (!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
         Module._cancelAutosave();
-        Module.save().done(function (response) {
+        Module.save().done(function () {
           window.location.href = App.getConfig().get('urls.send');
         });
       }
     },
     validateNewsletter: function (jsonObject) {
+      var contents;
       if (!App._contentContainer.isValid()) {
         this.showValidationError(App._contentContainer.validationError);
         return;
       }
 
-      var contents = JSON.stringify(jsonObject);
+      contents = JSON.stringify(jsonObject);
       if (App.getConfig().get('validation.validateUnsubscribeLinkPresent') &&
           contents.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
           contents.indexOf('[link:subscription_unsubscribe]') < 0) {
@@ -340,9 +338,11 @@ define([
   };
 
   Module.beforeExitWithUnsavedChanges = function (e) {
+    var message;
+    var event;
     if (saveTimeout) {
-      var message = MailPoet.I18n.t('unsavedChangesWillBeLost');
-      var event = e || window.event;
+      message = MailPoet.I18n.t('unsavedChangesWillBeLost');
+      event = e || window.event;
 
       if (event) {
         event.returnValue = message;
@@ -352,7 +352,7 @@ define([
     }
   };
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function (App) {
     var Application = App;
     Application.save = Module.save;
     Application.getChannel().on('autoSave', Module.autoSave);
@@ -362,7 +362,7 @@ define([
     Application.getChannel().reply('save', Application.save);
   });
 
-  App.on('start', function (App, options) {
+  App.on('start', function (App) {
     var saveView = new Module.SaveView();
     App._appView.showChildView('bottomRegion', saveView);
   });
