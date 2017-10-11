@@ -52,9 +52,9 @@ global.interact = function () {
     styleCursor: global.interact
   };
 };
-global.spectrum = function() { return this; };
+global.spectrum = function () { return this; };
 jQuery.fn.spectrum = global.spectrum;
-jQuery.fn.stick_in_parent = function() { return this; };
+jQuery.fn.stick_in_parent = function () { return this; };
 
 // Add global stubs for convenience
 // TODO: Extract those to a separate file
@@ -78,18 +78,18 @@ global.stubAvailableStyles = function (EditorApplication, styles) {
   App.getAvailableStyles = sinon.stub().returns(new global.Backbone.SuperModel(styles || {}));
 };
 
-global.stubImage = function(defaultWidth, defaultHeight) {
-  global.Image = function() {
-    this.onload = function() {};
+global.stubImage = function (defaultWidth, defaultHeight) {
+  global.Image = function () {
+    this.onload = function () {};
     this.naturalWidth = defaultWidth;
     this.naturalHeight = defaultHeight;
     this.address = '';
 
     Object.defineProperty(this, 'src', {
-      get: function() {
+      get: function () {
         return this.address;
       },
-      set: function(src) {
+      set: function (src) {
         this.address = src;
         this.onload();
       }
@@ -98,73 +98,73 @@ global.stubImage = function(defaultWidth, defaultHeight) {
 };
 
 
-testHelpers.loadTemplate('blocks/base/toolsGeneric.hbs', window, {id: 'newsletter_editor_template_tools_generic'});
+testHelpers.loadTemplate('blocks/base/toolsGeneric.hbs', window, { id: 'newsletter_editor_template_tools_generic' });
 
-testHelpers.loadTemplate('blocks/automatedLatestContent/block.hbs', window, {id: 'newsletter_editor_template_automated_latest_content_block'});
-testHelpers.loadTemplate('blocks/automatedLatestContent/widget.hbs', window, {id: 'newsletter_editor_template_automated_latest_content_widget'});
-testHelpers.loadTemplate('blocks/automatedLatestContent/settings.hbs', window, {id: 'newsletter_editor_template_automated_latest_content_settings'});
+testHelpers.loadTemplate('blocks/automatedLatestContent/block.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_block' });
+testHelpers.loadTemplate('blocks/automatedLatestContent/widget.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_widget' });
+testHelpers.loadTemplate('blocks/automatedLatestContent/settings.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_settings' });
 
-testHelpers.loadTemplate('blocks/button/block.hbs', window, {id: 'newsletter_editor_template_button_block'});
-testHelpers.loadTemplate('blocks/button/widget.hbs', window, {id: 'newsletter_editor_template_button_widget'});
-testHelpers.loadTemplate('blocks/button/settings.hbs', window, {id: 'newsletter_editor_template_button_settings'});
+testHelpers.loadTemplate('blocks/button/block.hbs', window, { id: 'newsletter_editor_template_button_block' });
+testHelpers.loadTemplate('blocks/button/widget.hbs', window, { id: 'newsletter_editor_template_button_widget' });
+testHelpers.loadTemplate('blocks/button/settings.hbs', window, { id: 'newsletter_editor_template_button_settings' });
 
-testHelpers.loadTemplate('blocks/container/block.hbs', window, {id: 'newsletter_editor_template_container_block'});
-testHelpers.loadTemplate('blocks/container/emptyBlock.hbs', window, {id: 'newsletter_editor_template_container_block_empty'});
-testHelpers.loadTemplate('blocks/container/oneColumnLayoutWidget.hbs', window, {id: 'newsletter_editor_template_container_one_column_widget'});
-testHelpers.loadTemplate('blocks/container/twoColumnLayoutWidget.hbs', window, {id: 'newsletter_editor_template_container_two_column_widget'});
-testHelpers.loadTemplate('blocks/container/threeColumnLayoutWidget.hbs', window, {id: 'newsletter_editor_template_container_three_column_widget'});
-testHelpers.loadTemplate('blocks/container/settings.hbs', window, {id: 'newsletter_editor_template_container_settings'});
-testHelpers.loadTemplate('blocks/container/columnSettings.hbs', window, {id: 'newsletter_editor_template_container_column_settings'});
+testHelpers.loadTemplate('blocks/container/block.hbs', window, { id: 'newsletter_editor_template_container_block' });
+testHelpers.loadTemplate('blocks/container/emptyBlock.hbs', window, { id: 'newsletter_editor_template_container_block_empty' });
+testHelpers.loadTemplate('blocks/container/oneColumnLayoutWidget.hbs', window, { id: 'newsletter_editor_template_container_one_column_widget' });
+testHelpers.loadTemplate('blocks/container/twoColumnLayoutWidget.hbs', window, { id: 'newsletter_editor_template_container_two_column_widget' });
+testHelpers.loadTemplate('blocks/container/threeColumnLayoutWidget.hbs', window, { id: 'newsletter_editor_template_container_three_column_widget' });
+testHelpers.loadTemplate('blocks/container/settings.hbs', window, { id: 'newsletter_editor_template_container_settings' });
+testHelpers.loadTemplate('blocks/container/columnSettings.hbs', window, { id: 'newsletter_editor_template_container_column_settings' });
 
-testHelpers.loadTemplate('blocks/divider/block.hbs', window, {id: 'newsletter_editor_template_divider_block'});
-testHelpers.loadTemplate('blocks/divider/widget.hbs', window, {id: 'newsletter_editor_template_divider_widget'});
-testHelpers.loadTemplate('blocks/divider/settings.hbs', window, {id: 'newsletter_editor_template_divider_settings'});
+testHelpers.loadTemplate('blocks/divider/block.hbs', window, { id: 'newsletter_editor_template_divider_block' });
+testHelpers.loadTemplate('blocks/divider/widget.hbs', window, { id: 'newsletter_editor_template_divider_widget' });
+testHelpers.loadTemplate('blocks/divider/settings.hbs', window, { id: 'newsletter_editor_template_divider_settings' });
 
-testHelpers.loadTemplate('blocks/footer/block.hbs', window, {id: 'newsletter_editor_template_footer_block'});
-testHelpers.loadTemplate('blocks/footer/widget.hbs', window, {id: 'newsletter_editor_template_footer_widget'});
-testHelpers.loadTemplate('blocks/footer/settings.hbs', window, {id: 'newsletter_editor_template_footer_settings'});
+testHelpers.loadTemplate('blocks/footer/block.hbs', window, { id: 'newsletter_editor_template_footer_block' });
+testHelpers.loadTemplate('blocks/footer/widget.hbs', window, { id: 'newsletter_editor_template_footer_widget' });
+testHelpers.loadTemplate('blocks/footer/settings.hbs', window, { id: 'newsletter_editor_template_footer_settings' });
 
-testHelpers.loadTemplate('blocks/header/block.hbs', window, {id: 'newsletter_editor_template_header_block'});
-testHelpers.loadTemplate('blocks/header/widget.hbs', window, {id: 'newsletter_editor_template_header_widget'});
-testHelpers.loadTemplate('blocks/header/settings.hbs', window, {id: 'newsletter_editor_template_header_settings'});
+testHelpers.loadTemplate('blocks/header/block.hbs', window, { id: 'newsletter_editor_template_header_block' });
+testHelpers.loadTemplate('blocks/header/widget.hbs', window, { id: 'newsletter_editor_template_header_widget' });
+testHelpers.loadTemplate('blocks/header/settings.hbs', window, { id: 'newsletter_editor_template_header_settings' });
 
-testHelpers.loadTemplate('blocks/image/block.hbs', window, {id: 'newsletter_editor_template_image_block'});
-testHelpers.loadTemplate('blocks/image/widget.hbs', window, {id: 'newsletter_editor_template_image_widget'});
-testHelpers.loadTemplate('blocks/image/settings.hbs', window, {id: 'newsletter_editor_template_image_settings'});
+testHelpers.loadTemplate('blocks/image/block.hbs', window, { id: 'newsletter_editor_template_image_block' });
+testHelpers.loadTemplate('blocks/image/widget.hbs', window, { id: 'newsletter_editor_template_image_widget' });
+testHelpers.loadTemplate('blocks/image/settings.hbs', window, { id: 'newsletter_editor_template_image_settings' });
 
-testHelpers.loadTemplate('blocks/posts/block.hbs', window, {id: 'newsletter_editor_template_posts_block'});
-testHelpers.loadTemplate('blocks/posts/widget.hbs', window, {id: 'newsletter_editor_template_posts_widget'});
-testHelpers.loadTemplate('blocks/posts/settings.hbs', window, {id: 'newsletter_editor_template_posts_settings'});
-testHelpers.loadTemplate('blocks/posts/settingsDisplayOptions.hbs', window, {id: 'newsletter_editor_template_posts_settings_display_options'});
-testHelpers.loadTemplate('blocks/posts/settingsSelection.hbs', window, {id: 'newsletter_editor_template_posts_settings_selection'});
-testHelpers.loadTemplate('blocks/posts/settingsSelectionEmpty.hbs', window, {id: 'newsletter_editor_template_posts_settings_selection_empty'});
-testHelpers.loadTemplate('blocks/posts/settingsSinglePost.hbs', window, {id: 'newsletter_editor_template_posts_settings_single_post'});
+testHelpers.loadTemplate('blocks/posts/block.hbs', window, { id: 'newsletter_editor_template_posts_block' });
+testHelpers.loadTemplate('blocks/posts/widget.hbs', window, { id: 'newsletter_editor_template_posts_widget' });
+testHelpers.loadTemplate('blocks/posts/settings.hbs', window, { id: 'newsletter_editor_template_posts_settings' });
+testHelpers.loadTemplate('blocks/posts/settingsDisplayOptions.hbs', window, { id: 'newsletter_editor_template_posts_settings_display_options' });
+testHelpers.loadTemplate('blocks/posts/settingsSelection.hbs', window, { id: 'newsletter_editor_template_posts_settings_selection' });
+testHelpers.loadTemplate('blocks/posts/settingsSelectionEmpty.hbs', window, { id: 'newsletter_editor_template_posts_settings_selection_empty' });
+testHelpers.loadTemplate('blocks/posts/settingsSinglePost.hbs', window, { id: 'newsletter_editor_template_posts_settings_single_post' });
 
-testHelpers.loadTemplate('blocks/social/block.hbs', window, {id: 'newsletter_editor_template_social_block'});
-testHelpers.loadTemplate('blocks/social/blockIcon.hbs', window, {id: 'newsletter_editor_template_social_block_icon'});
-testHelpers.loadTemplate('blocks/social/widget.hbs', window, {id: 'newsletter_editor_template_social_widget'});
-testHelpers.loadTemplate('blocks/social/settings.hbs', window, {id: 'newsletter_editor_template_social_settings'});
-testHelpers.loadTemplate('blocks/social/settingsIcon.hbs', window, {id: 'newsletter_editor_template_social_settings_icon'});
-testHelpers.loadTemplate('blocks/social/settingsIconSelector.hbs', window, {id: 'newsletter_editor_template_social_settings_icon_selector'});
-testHelpers.loadTemplate('blocks/social/settingsStyles.hbs', window, {id: 'newsletter_editor_template_social_settings_styles'});
+testHelpers.loadTemplate('blocks/social/block.hbs', window, { id: 'newsletter_editor_template_social_block' });
+testHelpers.loadTemplate('blocks/social/blockIcon.hbs', window, { id: 'newsletter_editor_template_social_block_icon' });
+testHelpers.loadTemplate('blocks/social/widget.hbs', window, { id: 'newsletter_editor_template_social_widget' });
+testHelpers.loadTemplate('blocks/social/settings.hbs', window, { id: 'newsletter_editor_template_social_settings' });
+testHelpers.loadTemplate('blocks/social/settingsIcon.hbs', window, { id: 'newsletter_editor_template_social_settings_icon' });
+testHelpers.loadTemplate('blocks/social/settingsIconSelector.hbs', window, { id: 'newsletter_editor_template_social_settings_icon_selector' });
+testHelpers.loadTemplate('blocks/social/settingsStyles.hbs', window, { id: 'newsletter_editor_template_social_settings_styles' });
 
-testHelpers.loadTemplate('blocks/spacer/block.hbs', window, {id: 'newsletter_editor_template_spacer_block'});
-testHelpers.loadTemplate('blocks/spacer/widget.hbs', window, {id: 'newsletter_editor_template_spacer_widget'});
-testHelpers.loadTemplate('blocks/spacer/settings.hbs', window, {id: 'newsletter_editor_template_spacer_settings'});
+testHelpers.loadTemplate('blocks/spacer/block.hbs', window, { id: 'newsletter_editor_template_spacer_block' });
+testHelpers.loadTemplate('blocks/spacer/widget.hbs', window, { id: 'newsletter_editor_template_spacer_widget' });
+testHelpers.loadTemplate('blocks/spacer/settings.hbs', window, { id: 'newsletter_editor_template_spacer_settings' });
 
-testHelpers.loadTemplate('blocks/text/block.hbs', window, {id: 'newsletter_editor_template_text_block'});
-testHelpers.loadTemplate('blocks/text/widget.hbs', window, {id: 'newsletter_editor_template_text_widget'});
-testHelpers.loadTemplate('blocks/text/settings.hbs', window, {id: 'newsletter_editor_template_text_settings'});
+testHelpers.loadTemplate('blocks/text/block.hbs', window, { id: 'newsletter_editor_template_text_block' });
+testHelpers.loadTemplate('blocks/text/widget.hbs', window, { id: 'newsletter_editor_template_text_widget' });
+testHelpers.loadTemplate('blocks/text/settings.hbs', window, { id: 'newsletter_editor_template_text_settings' });
 
-testHelpers.loadTemplate('components/heading.hbs', window, {id: 'newsletter_editor_template_heading'});
-testHelpers.loadTemplate('components/save.hbs', window, {id: 'newsletter_editor_template_save'});
-testHelpers.loadTemplate('components/styles.hbs', window, {id: 'newsletter_editor_template_styles'});
+testHelpers.loadTemplate('components/heading.hbs', window, { id: 'newsletter_editor_template_heading' });
+testHelpers.loadTemplate('components/save.hbs', window, { id: 'newsletter_editor_template_save' });
+testHelpers.loadTemplate('components/styles.hbs', window, { id: 'newsletter_editor_template_styles' });
 
-testHelpers.loadTemplate('components/sidebar/sidebar.hbs', window, {id: 'newsletter_editor_template_sidebar'});
-testHelpers.loadTemplate('components/sidebar/content.hbs', window, {id: 'newsletter_editor_template_sidebar_content'});
-testHelpers.loadTemplate('components/sidebar/layout.hbs', window, {id: 'newsletter_editor_template_sidebar_layout'});
-testHelpers.loadTemplate('components/sidebar/preview.hbs', window, {id: 'newsletter_editor_template_sidebar_preview'});
-testHelpers.loadTemplate('components/sidebar/styles.hbs', window, {id: 'newsletter_editor_template_sidebar_styles'});
+testHelpers.loadTemplate('components/sidebar/sidebar.hbs', window, { id: 'newsletter_editor_template_sidebar' });
+testHelpers.loadTemplate('components/sidebar/content.hbs', window, { id: 'newsletter_editor_template_sidebar_content' });
+testHelpers.loadTemplate('components/sidebar/layout.hbs', window, { id: 'newsletter_editor_template_sidebar_layout' });
+testHelpers.loadTemplate('components/sidebar/preview.hbs', window, { id: 'newsletter_editor_template_sidebar_preview' });
+testHelpers.loadTemplate('components/sidebar/styles.hbs', window, { id: 'newsletter_editor_template_sidebar_styles' });
 
 
 global.templates = {

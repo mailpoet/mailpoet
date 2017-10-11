@@ -5,7 +5,7 @@ const Backbone = global.Backbone;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/container'
-], function(App, ContainerBlock) {
+], function (App, ContainerBlock) {
   var EditorApplication = App;
 
   describe('Container', function () {
@@ -65,7 +65,7 @@ define([
           model = new (ContainerBlock.ContainerBlockModel)({
             type: 'container',
             blocks: [testModel]
-          }, {parse: true});
+          }, { parse: true });
 
           expect(model.get('blocks')).to.have.length(1);
           expect(model.get('blocks').at(0).get('type')).to.equal(testModel.type);
@@ -95,7 +95,7 @@ define([
                 ]
               }
             ]
-          }, {parse: true});
+          }, { parse: true });
 
           expect(model.get('blocks')).to.have.length(1);
           expect(model.get('blocks').at(0).get('blocks')).to.have.length(2);
@@ -114,7 +114,7 @@ define([
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
       model = new (ContainerBlock.ContainerBlockModel)();
-      view = new (ContainerBlock.ContainerBlockView)({model: model});
+      view = new (ContainerBlock.ContainerBlockView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -196,7 +196,7 @@ define([
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
       model = new (ContainerBlock.ContainerBlockModel)();
-      view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+      view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -205,11 +205,11 @@ define([
       describe('once rendered', function () {
         var model;
         var view;
-        beforeEach(function() {
+        beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
           model = new (ContainerBlock.ContainerBlockModel)();
-          view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+          view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
         });
 
         it('updates the model when background color changes', function () {
@@ -222,7 +222,7 @@ define([
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });

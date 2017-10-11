@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/divider'
-], function(App, DividerBlock) {
+], function (App, DividerBlock) {
   var EditorApplication = App;
 
   describe('Divider', function () {
@@ -104,7 +104,7 @@ define([
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         model = new (DividerBlock.DividerBlockModel)();
-        view = new (DividerBlock.DividerBlockView)({model: model});
+        view = new (DividerBlock.DividerBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -146,7 +146,7 @@ define([
         dividers: ['solid', 'inset']
       });
       model = new (DividerBlock.DividerBlockModel)();
-      view = new (DividerBlock.DividerBlockSettingsView)({model: model});
+      view = new (DividerBlock.DividerBlockSettingsView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -157,7 +157,7 @@ define([
         var model;
         var view;
 
-        before(function() {
+        before(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
             dividers: ['solid', 'inset']
@@ -166,7 +166,7 @@ define([
 
         beforeEach(function () {
           model = new (DividerBlock.DividerBlockModel)();
-          view = new (DividerBlock.DividerBlockSettingsView)({model: model});
+          view = new (DividerBlock.DividerBlockSettingsView)({ model: model });
           view.render();
         });
 
@@ -200,13 +200,13 @@ define([
           expect(model.get('styles.block.backgroundColor')).to.equal('#cccccc');
         });
 
-        it ('changes color of available divider styles when actual divider color changes', function() {
+        it('changes color of available divider styles when actual divider color changes', function () {
           var newColor = '#889912';
           view.$('.mailpoet_field_divider_border_color').val(newColor).change();
           expect(view.$('.mailpoet_field_divider_style div')).to.have.$css('border-top-color', newColor);
         });
 
-        it('does not display "Apply to all" option when `hideApplyToAll` option is active', function() {
+        it('does not display "Apply to all" option when `hideApplyToAll` option is active', function () {
           view = new (DividerBlock.DividerBlockSettingsView)({
             model: model,
             renderOptions: {
@@ -222,7 +222,7 @@ define([
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });

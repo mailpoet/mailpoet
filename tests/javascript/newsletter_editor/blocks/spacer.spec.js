@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/spacer'
-], function(App, SpacerBlock) {
+], function (App, SpacerBlock) {
   var EditorApplication = App;
 
   describe('Spacer', function () {
@@ -84,7 +84,7 @@ define([
         global.stubConfig(EditorApplication);
         global.stubAvailableStyles(EditorApplication);
         model = new (SpacerBlock.SpacerBlockModel)();
-        view = new (SpacerBlock.SpacerBlockView)({model: model});
+        view = new (SpacerBlock.SpacerBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -129,7 +129,7 @@ define([
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (SpacerBlock.SpacerBlockSettingsView)({model: model});
+        view = new (SpacerBlock.SpacerBlockSettingsView)({ model: model });
       });
 
       it('renders', function () {
@@ -139,11 +139,11 @@ define([
       describe('once rendered', function () {
         var view;
         var model;
-        beforeEach(function() {
+        beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);
           model = new (SpacerBlock.SpacerBlockModel)();
-          view = new (SpacerBlock.SpacerBlockSettingsView)({model: model});
+          view = new (SpacerBlock.SpacerBlockSettingsView)({ model: model });
           view.render();
         });
 
@@ -157,7 +157,7 @@ define([
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });

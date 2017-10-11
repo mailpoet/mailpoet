@@ -8,7 +8,7 @@ define([
   'newsletter_editor/components/communication',
   'newsletter_editor/blocks/posts',
   'newsletter_editor/blocks/container'
-], function(App, Communication, PostsBlock, ContainerBlock) {
+], function (App, Communication, PostsBlock, ContainerBlock) {
   var EditorApplication = App;
   var CommunicationComponent = Communication;
 
@@ -24,8 +24,8 @@ define([
     describe('model', function () {
       var model;
 
-      before(function() {
-        CommunicationComponent.getPosts = function() {
+      before(function () {
+        CommunicationComponent.getPosts = function () {
           var deferred = jQuery.Deferred();
           return deferred;
         };
@@ -238,7 +238,7 @@ define([
       });
 
       it('triggers loading and loaded events for more posts', function () {
-        var stub = sinon.stub(CommunicationComponent, 'getPosts', function() {
+        var stub = sinon.stub(CommunicationComponent, 'getPosts', function () {
           var deferred = jQuery.Deferred();
           deferred.resolve([{}]); // 1 post
           return deferred;
@@ -270,7 +270,7 @@ define([
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         model = new (PostsBlock.PostsBlockModel)();
-        view = new (PostsBlock.PostsBlockView)({model: model});
+        view = new (PostsBlock.PostsBlockView)({ model: model });
 
         // Disable auto-opening of settings view
         view.off('showSettings');
@@ -291,7 +291,7 @@ define([
       var view;
 
       before(function () {
-        CommunicationComponent.getPostTypes = function() {
+        CommunicationComponent.getPostTypes = function () {
           var deferred = jQuery.Deferred();
           deferred.resolve([
             {
@@ -322,12 +322,12 @@ define([
         });
         EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
         model = new (PostsBlock.PostsBlockModel)();
-        view = new (PostsBlock.PostsBlockSettingsView)({model: model});
+        view = new (PostsBlock.PostsBlockSettingsView)({ model: model });
       });
 
       it('renders', function () {
         // Stub out block view requests
-        model.request = sinon.stub().returns({$el: {}});
+        model.request = sinon.stub().returns({ $el: {} });
 
         expect(view.render).to.not.throw();
       });
@@ -423,13 +423,13 @@ define([
           expect(model.get('readMoreText')).to.equal(newValue);
         });
 
-        describe('when "title only" display type is selected', function() {
+        describe('when "title only" display type is selected', function () {
           var model;
           var view;
-          beforeEach(function() {
+          beforeEach(function () {
             model = new (PostsBlock.PostsBlockModel)();
-            model.request = sinon.stub().returns({$el: {}});
-            view = new (PostsBlock.PostsBlockSettingsView)({model: model});
+            model.request = sinon.stub().returns({ $el: {} });
+            view = new (PostsBlock.PostsBlockSettingsView)({ model: model });
             view.render();
             view.$('.mailpoet_posts_display_type').val('titleOnly').change();
           });
@@ -438,8 +438,8 @@ define([
             expect(view.$('.mailpoet_posts_title_as_list')).to.not.have.$class('mailpoet_hidden');
           });
 
-          describe('when "title as list" is selected', function() {
-            beforeEach(function() {
+          describe('when "title as list" is selected', function () {
+            beforeEach(function () {
               view.$('.mailpoet_posts_display_type').val('titleOnly').change();
               view.$('.mailpoet_posts_title_format').val('ul').change();
             });
@@ -449,14 +449,14 @@ define([
                 expect(view.$('.mailpoet_posts_title_as_link')).to.have.$class('mailpoet_hidden');
               });
 
-              it('is set to "yes"', function() {
+              it('is set to "yes"', function () {
                 expect(model.get('titleIsLink')).to.equal(true);
               });
             });
           });
 
-          describe('when "title as list" is deselected', function() {
-            before(function() {
+          describe('when "title as list" is deselected', function () {
+            before(function () {
               view.$('.mailpoet_posts_title_format').val('ul').change();
               view.$('.mailpoet_posts_title_format').val('h3').change();
             });

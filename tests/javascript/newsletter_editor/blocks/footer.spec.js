@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/footer'
-], function(App, FooterBlock) {
+], function (App, FooterBlock) {
   var EditorApplication = App;
 
   describe('Footer', function () {
@@ -126,7 +126,7 @@ define([
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (FooterBlock.FooterBlockView)({model: model});
+        view = new (FooterBlock.FooterBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -144,7 +144,7 @@ define([
         textSizes: ['16px', '20px']
       });
       model = new (FooterBlock.FooterBlockModel)();
-      view = new (FooterBlock.FooterBlockSettingsView)({model: model});
+      view = new (FooterBlock.FooterBlockSettingsView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -155,14 +155,14 @@ define([
         var model;
         var view;
 
-        beforeEach(function() {
+        beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
             fonts: ['Arial', 'Tahoma'],
             textSizes: ['16px', '20px']
           });
           model = new (FooterBlock.FooterBlockModel)({});
-          view = new (FooterBlock.FooterBlockSettingsView)({model: model});
+          view = new (FooterBlock.FooterBlockSettingsView)({ model: model });
           view.render();
         });
 
@@ -203,7 +203,7 @@ define([
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });

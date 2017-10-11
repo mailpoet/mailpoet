@@ -6,14 +6,14 @@ const _ = global._;
 define([
   'newsletter_editor/App',
   'newsletter_editor/components/content'
-], function(App, ContentComponent) {
+], function (App, ContentComponent) {
   var EditorApplication = App;
 
-  describe('Content', function() {
-    describe('newsletter model', function() {
+  describe('Content', function () {
+    describe('newsletter model', function () {
       var model;
 
-      beforeEach(function() {
+      beforeEach(function () {
         model = new (ContentComponent.NewsletterModel)({
           body: {
             globalStyles: {
@@ -29,8 +29,8 @@ define([
         });
       });
 
-      it('triggers autosave on change', function() {
-        var mock = sinon.mock({ trigger: function() {} }).expects('trigger').once().withArgs('autoSave');
+      it('triggers autosave on change', function () {
+        var mock = sinon.mock({ trigger: function () {} }).expects('trigger').once().withArgs('autoSave');
         global.stubChannel(EditorApplication, {
           trigger: mock
         });
@@ -38,13 +38,13 @@ define([
         mock.verify();
       });
 
-      it('does not include styles and content properties in its JSON', function() {
+      it('does not include styles and content properties in its JSON', function () {
         var json = model.toJSON();
-        expect(json).to.deep.equal({subject: 'my test subject'});
+        expect(json).to.deep.equal({ subject: 'my test subject' });
       });
 
-      describe('toJSON()', function() {
-        it('will only contain properties modifiable by the editor', function() {
+      describe('toJSON()', function () {
+        it('will only contain properties modifiable by the editor', function () {
           var model = new (ContentComponent.NewsletterModel)({
             id: 19,
             subject: 'some subject',
@@ -63,8 +63,8 @@ define([
       });
     });
 
-    describe('block types', function() {
-      it('registers a block type view and model', function() {
+    describe('block types', function () {
+      it('registers a block type view and model', function () {
         var blockModel = new Backbone.SuperModel();
         var blockView = new Backbone.View();
         ContentComponent.registerBlockType('testType', {
@@ -76,8 +76,8 @@ define([
       });
     });
 
-    describe('transformation to json', function() {
-      it('includes content, globalStyles and initial newsletter fields', function() {
+    describe('transformation to json', function () {
+      it('includes content, globalStyles and initial newsletter fields', function () {
         var json;
         var dataField = {
           containerModelField: 'containerModelValue'
@@ -89,20 +89,20 @@ define([
           subject: 'test newsletter subject'
         };
         EditorApplication._contentContainer = {
-          toJSON: function() {
+          toJSON: function () {
             return dataField;
           }
         };
-        EditorApplication.getGlobalStyles = function() {
+        EditorApplication.getGlobalStyles = function () {
           return {
-            toJSON: function() {
+            toJSON: function () {
               return stylesField;
             }
           };
         };
-        EditorApplication.getNewsletter = function() {
+        EditorApplication.getNewsletter = function () {
           return {
-            toJSON: function() {
+            toJSON: function () {
               return newsletterFields;
             }
           };

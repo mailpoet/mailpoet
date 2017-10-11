@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/header'
-], function(App, HeaderBlock) {
+], function (App, HeaderBlock) {
   var EditorApplication = App;
 
   describe('Header', function () {
@@ -12,7 +12,7 @@ define([
       var model;
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        global. stubConfig(EditorApplication, {
+        global.stubConfig(EditorApplication, {
           blockDefaults: {}
         });
         model = new (HeaderBlock.HeaderBlockModel)();
@@ -125,7 +125,7 @@ define([
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (HeaderBlock.HeaderBlockView)({model: model});
+        view = new (HeaderBlock.HeaderBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -144,7 +144,7 @@ define([
         textSizes: ['16px', '20px']
       });
       model = new (HeaderBlock.HeaderBlockModel)();
-      view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
+      view = new (HeaderBlock.HeaderBlockSettingsView)({ model: model });
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -155,14 +155,14 @@ define([
         var model;
         var view;
 
-        beforeEach(function() {
+        beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
             fonts: ['Arial', 'Tahoma'],
             textSizes: ['16px', '20px']
           });
           model = new (HeaderBlock.HeaderBlockModel)({});
-          view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
+          view = new (HeaderBlock.HeaderBlockSettingsView)({ model: model });
           view.render();
         });
 
@@ -203,7 +203,7 @@ define([
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });

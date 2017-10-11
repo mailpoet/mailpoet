@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/image'
-], function(App, ImageBlock) {
+], function (App, ImageBlock) {
   var EditorApplication = App;
 
   describe('Image', function () {
@@ -113,7 +113,7 @@ define([
       model = new (ImageBlock.ImageBlockModel)();
 
       beforeEach(function () {
-        view = new (ImageBlock.ImageBlockView)({model: model});
+        view = new (ImageBlock.ImageBlockView)({ model: model });
       });
 
       it('renders', function () {
@@ -133,7 +133,7 @@ define([
             src: 'http://example.org/someimage.png',
             alt: 'some alt'
           });
-          view = new (ImageBlock.ImageBlockView)({model: model});
+          view = new (ImageBlock.ImageBlockView)({ model: model });
           view.render();
         });
 
@@ -174,7 +174,7 @@ define([
         });
         global.stubImage(newWidth, newHeight);
         model = new (ImageBlock.ImageBlockModel)();
-        view = new (ImageBlock.ImageBlockSettingsView)({model: model});
+        view = new (ImageBlock.ImageBlockSettingsView)({ model: model });
       });
 
       it('renders', function () {
@@ -218,12 +218,12 @@ define([
           expect(model.get('styles.block.textAlign')).to.equal('left');
         });
 
-        it.skip('closes the sidepanel after "Done" is clicked', function() {
+        it.skip('closes the sidepanel after "Done" is clicked', function () {
           var mock = sinon.mock().once();
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });

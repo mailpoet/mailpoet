@@ -51,8 +51,7 @@ define([
       .on('resizestart', function () {
         that.isBeingResized = true;
         that.$el.addClass('mailpoet_resize_active');
-      })
-      .on('resizemove', function (event) {
+      }).on('resizemove', function (event) {
         var onResize = that.options.onResize.bind(that);
         return onResize(event);
       })

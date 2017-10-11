@@ -4,7 +4,7 @@ const sinon = global.sinon;
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/button'
-], function(App, ButtonBlock) {
+], function (App, ButtonBlock) {
   var EditorApplication = App;
 
   describe('Button', function () {
@@ -20,7 +20,7 @@ define([
       });
 
       afterEach(function () {
-        if(EditorApplication.getChannel) {
+        if (EditorApplication.getChannel) {
           delete EditorApplication.getChannel;
         }
       });
@@ -159,13 +159,13 @@ define([
       });
 
       it('renders', function () {
-        var view = new (ButtonBlock.ButtonBlockView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockView)({ model: model });
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_editor_button')).to.have.length(1);
       });
 
       it('rerenders when attributes change', function () {
-        var view = new (ButtonBlock.ButtonBlockView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockView)({ model: model });
         view.render();
 
         model.set('text', 'Some new text');
@@ -198,7 +198,7 @@ define([
               }
             }
           });
-          view = new (ButtonBlock.ButtonBlockView)({model: model});
+          view = new (ButtonBlock.ButtonBlockView)({ model: model });
           view.render();
         });
 
@@ -272,9 +272,9 @@ define([
 
       beforeEach(function () {
         onStub = sinon.stub();
-        global.stubChannel(EditorApplication, {on: onStub});
-        model = {set: sinon.stub(), toJSON: sinon.stub()};
-        view = new (ButtonBlock.ButtonBlockView)({model: model});
+        global.stubChannel(EditorApplication, { on: onStub });
+        model = { set: sinon.stub(), toJSON: sinon.stub() };
+        view = new (ButtonBlock.ButtonBlockView)({ model: model });
         view.render();
       });
 
@@ -315,14 +315,14 @@ define([
       });
 
       it('renders', function () {
-        var view = new (ButtonBlock.ButtonBlockSettingsView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
         expect(view.render).to.not.throw();
       });
 
       describe('once rendered', function () {
         var model;
         var view;
-        before(function() {
+        before(function () {
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
@@ -331,12 +331,12 @@ define([
           });
         });
 
-        beforeEach(function() {
+        beforeEach(function () {
           model = new (ButtonBlock.ButtonBlockModel)({
             type: 'button',
             text: 'Some random text'
           });
-          view = new (ButtonBlock.ButtonBlockSettingsView)({model: model});
+          view = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
 
           view.render();
         });
@@ -453,7 +453,7 @@ define([
           expect(view.$('.mailpoet_field_button_line_height_input').val()).to.equal('37');
         });
 
-        it('does not display link option when `hideLink` option is active', function() {
+        it('does not display link option when `hideLink` option is active', function () {
           view = new (ButtonBlock.ButtonBlockSettingsView)({
             model: model,
             renderOptions: {
@@ -464,7 +464,7 @@ define([
           expect(view.$('.mailpoet_field_button_url').length).to.equal(0);
         });
 
-        it('does not display "Apply to all" option when `hideApplyToAll` option is active', function() {
+        it('does not display "Apply to all" option when `hideApplyToAll` option is active', function () {
           view = new (ButtonBlock.ButtonBlockSettingsView)({
             model: model,
             renderOptions: {
@@ -480,7 +480,7 @@ define([
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });

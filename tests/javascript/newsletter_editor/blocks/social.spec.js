@@ -5,7 +5,7 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/social',
   'backbone'
-], function(EditorApplication, SocialBlock, Backbone) {
+], function (EditorApplication, SocialBlock, Backbone) {
 
   describe('Social', function () {
     describe('block model', function () {
@@ -125,7 +125,7 @@ define([
       });
 
       it('renders', function () {
-        var view = new (SocialBlock.SocialBlockView)({model: model});
+        var view = new (SocialBlock.SocialBlockView)({ model: model });
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_social')).to.have.length(1);
       });
@@ -156,7 +156,7 @@ define([
               }
             ]
           });
-          view = new (SocialBlock.SocialBlockView)({model: model});
+          view = new (SocialBlock.SocialBlockView)({ model: model });
           view.render();
         });
 
@@ -212,7 +212,7 @@ define([
       });
 
       it('renders', function () {
-        var view = new (SocialBlock.SocialBlockSettingsView)({model: model});
+        var view = new (SocialBlock.SocialBlockSettingsView)({ model: model });
         expect(view.render).to.not.throw();
       });
 
@@ -253,22 +253,22 @@ define([
               }
             ]
           });
-          view = new (SocialBlock.SocialBlockSettingsView)({model: model});
+          view = new (SocialBlock.SocialBlockSettingsView)({ model: model });
           view.render();
         });
 
-        it('updates icons in settings if iconset changes', function() {
+        it('updates icons in settings if iconset changes', function () {
           view.$('.mailpoet_social_icon_set').last().click();
           expect(view.$('.mailpoet_social_icon_field_image').val()).to.equal(EditorApplication.getAvailableStyles().get('socialIconSets.light.custom'));
         });
 
-        it('removes the icon when "remove" is clicked', function() {
+        it('removes the icon when "remove" is clicked', function () {
           view.$('.mailpoet_delete_block').click();
           expect(model.get('icons').length).to.equal(0);
           expect(view.$('.mailpoet_social_icon_settings').length).to.equal(0);
         });
 
-        it('adds another icon when "Add another social network" is pressed', function() {
+        it('adds another icon when "Add another social network" is pressed', function () {
           view.$('.mailpoet_add_social_icon').click();
           expect(model.get('icons').length).to.equal(2);
         });
@@ -278,7 +278,7 @@ define([
           global.MailPoet.Modal.cancel = mock;
           view.$('.mailpoet_done_editing').click();
           mock.verify();
-          delete(global.MailPoet.Modal.cancel);
+          delete (global.MailPoet.Modal.cancel);
         });
       });
     });
