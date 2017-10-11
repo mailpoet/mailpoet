@@ -54,6 +54,25 @@ class WPTest extends \MailPoetTest  {
     expect($subscriber->email)->equals('user-sync-test-xx@email.com');
   }
 
+  function testItDoesNotSynchronizeEmptyEmailsForExistingUsers() {
+    $id = $this->insertUser();
+    WP::synchronizeUsers();
+    $this->updateWPUserEmail($id, '');
+    WP::synchronizeUsers();
+    $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
+    expect($subscriber->email)->notEmpty();
+    $this->deleteWPUser($id);
+  }
+
+  function testItDoesNotSynchronizeEmptyEmailsForNewUsers() {
+    $id = $this->insertUser();
+    $this->updateWPUserEmail($id, '');
+    WP::synchronizeUsers();
+    $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
+    expect($subscriber)->isEmpty();
+    $this->deleteWPUser($id);
+  }
+
   function testItSynchronizeFirstNames() {
     $id = $this->insertUser();
     WP::synchronizeUsers();
