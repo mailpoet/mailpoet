@@ -159,20 +159,6 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($rendered_body)->contains('<a href="http://google.com">');
   }
 
-  function testReplacesLinkShortcodesWithUrlHashWhenPreviewIsEnabledAndNewsletterWasSent() {
-    $queue = $this->queue;
-    $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
-    $rendered_body = $this->view_in_browser->renderNewsletter(
-      $this->newsletter,
-      $this->subscriber,
-      $queue,
-      $preview = true
-    );
-    // link shortcodes should be replaced with a hash (#)
-    expect($rendered_body)->notContains('[mailpoet_click_data]');
-    expect($rendered_body)->contains('<a href="#">');
-  }
-
   function testRemovesOpenTrackingTagWhenPreviewIsEnabledAndNewsletterWasSent() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
