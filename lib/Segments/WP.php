@@ -180,7 +180,7 @@ class WP {
 
     $wp_segment->subscribers()
       ->leftOuterJoin($wpdb->users, array(MP_SUBSCRIBERS_TABLE . '.wp_user_id', '=', 'wu.id'), 'wu')
-      ->whereNull('wu.id')
+      ->whereRaw('(wu.id IS NULL OR ' . MP_SUBSCRIBERS_TABLE . '.email = "")')
       ->findResultSet()
       ->set('wp_user_id', null)
       ->delete();

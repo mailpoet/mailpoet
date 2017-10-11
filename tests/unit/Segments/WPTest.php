@@ -171,9 +171,22 @@ class WPTest extends \MailPoetTest  {
     ));
     $subscriber2->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber2->save();
+    // email is empty
+    $subscriber3 = Subscriber::create();
+    $subscriber3->hydrate(array(
+      'first_name' => 'Dave',
+      'last_name' => 'Dave',
+      'email' => 'user-sync-test3' . rand() . '@example.com', // need to pass validation
+    ));
+    $subscriber3->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber3->save();
+    $this->clearEmail($subscriber3);
     WP::synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(3);
+    $db_subscriber = Subscriber::findOne($subscriber3->id);
+    expect($db_subscriber)->notEmpty();
+    $subscriber3->delete();
   }
 
   function testItRemovesSubscribersInWPSegmentWithoutWPId() {
@@ -196,6 +209,31 @@ class WPTest extends \MailPoetTest  {
     WP::synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount(0);
     expect($subscribersCount)->equals(0);
+  }
+
+  function testItRemovesSubscribersInWPSegmentWithoutEmail() {
+    $id = $this->insertUser();
+    $this->updateWPUserEmail($id, '');
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(array(
+      'first_name' => 'Mike',
+      'last_name' => 'Mike',
+      'email' => 'user-sync-test' . rand() . '@example.com', // need to pass validation
+      'wp_user_id' => $id,
+    ));
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+    $this->clearEmail($subscriber);
+    $wp_segment = Segment::getWPSegment();
+    $association = SubscriberSegment::create();
+    $association->subscriber_id = $subscriber->id;
+    $association->segment_id = $wp_segment->id;
+    $association->save();
+    $db_subscriber = Subscriber::findOne($subscriber->id);
+    expect($db_subscriber)->notEmpty();
+    WP::synchronizeUsers();
+    $db_subscriber = Subscriber::findOne($subscriber->id);
+    expect($db_subscriber)->isEmpty();
   }
 
   function _before() {
@@ -299,6 +337,13 @@ class WPTest extends \MailPoetTest  {
        WHERE
          id = %s
     ', $wpdb->users, $id));
+  }
+
+  private function clearEmail($subscriber) {
+    \ORM::raw_execute('
+      UPDATE ' . MP_SUBSCRIBERS_TABLE . '
+      SET `email` = "" WHERE `id` = ' . $subscriber->id
+    );
   }
 
 }
