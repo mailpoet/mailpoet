@@ -379,6 +379,13 @@ define([
       var src = jQuery(event.target).val();
       var image = new Image();
 
+      if (src.startsWith('/')) { // if the link is relative
+        src = window.location.href
+          .split('/')
+          .slice(0, 3)
+          .join('/') + src;
+      }
+
       image.onload = function () {
         this.model.set({
           src: src,
