@@ -295,6 +295,10 @@ class RoboFile extends \Robo\Tasks {
     $plugin_version = $this->getPluginVersion('mailpoet.php');
     $plugin_dist_name = 'mailpoet';
     $plugin_dist_file = $plugin_dist_name . '.zip';
+
+    if(!$plugin_version) {
+      throw new \Exception('Could not parse plugin version, check the plugin header');
+    }
     $this->say('Publishing version: ' . $plugin_version);
 
     // Sanity checks
