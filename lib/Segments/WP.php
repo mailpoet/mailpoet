@@ -99,7 +99,7 @@ class WP {
       UPDATE IGNORE %s
         JOIN %s as wu ON %s.wp_user_id = wu.id
       SET email = user_email
-        WHERE %s.wp_user_id IS NOT NULL
+        WHERE %s.wp_user_id IS NOT NULL AND wu.user_email != ""
     ', $subscribers_table, $wpdb->users, $subscribers_table, $subscribers_table));
   }
 
@@ -110,7 +110,7 @@ class WP {
       INSERT IGNORE INTO %s(wp_user_id, email, status, created_at)
         SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %s wu
           LEFT JOIN %s mps ON wu.id = mps.wp_user_id
-          WHERE mps.wp_user_id IS NULL
+          WHERE mps.wp_user_id IS NULL AND wu.user_email != ""
       ON DUPLICATE KEY UPDATE wp_user_id = wu.id
     ', $subscribers_table, $wpdb->users, $subscribers_table));
   }
