@@ -289,15 +289,16 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function svnPublish($opts = ['force' => false]) {
-    $this->loadWPFunctions();
+    $this->loadEnv();
 
     $svn_dir = ".mp_svn";
-    $plugin_data = get_plugin_data('mailpoet.php', false, false);
-    $plugin_version = $plugin_data['Version'];
-    $plugin_dist_name = sanitize_title_with_dashes($plugin_data['Name']);
-    $plugin_dist_name = explode('-', $plugin_dist_name);
-    $plugin_dist_name = $plugin_dist_name[0];
+    $plugin_version = $this->getPluginVersion('mailpoet.php');
+    $plugin_dist_name = 'mailpoet';
     $plugin_dist_file = $plugin_dist_name . '.zip';
+
+    if(!$plugin_version) {
+      throw new \Exception('Could not parse plugin version, check the plugin header');
+    }
     $this->say('Publishing version: ' . $plugin_version);
 
     // Sanity checks
@@ -416,13 +417,9 @@ class RoboFile extends \Robo\Tasks {
     $dotenv->load();
   }
 
-  protected function loadWPFunctions() {
-    $this->loadEnv();
-    define('ABSPATH', getenv('WP_TEST_PATH') . '/');
-    define('WPINC', 'wp-includes');
-    require_once(ABSPATH . WPINC . '/functions.php');
-    require_once(ABSPATH . WPINC . '/formatting.php');
-    require_once(ABSPATH . WPINC . '/plugin.php');
-    require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+  protected function getPluginVersion($file) {
+    $data = file_get_contents($file);
+    preg_match('/^[ \t*]*Version:(.*)$/mi', $data, $m);
+    return !empty($m[1]) ? trim($m[1]) : false;
   }
 }
