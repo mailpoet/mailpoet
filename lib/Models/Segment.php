@@ -213,7 +213,7 @@ class Segment extends Model {
   static function listingQuery(array $data = array()) {
     $query = self::select('*');
     $query->whereIn('type', array(Segment::TYPE_WP_USERS, Segment::TYPE_DEFAULT));
-    if (isset($data['group'])) {
+    if(isset($data['group'])) {
       $query->filter('groupBy', $data['group']);
     }
     return $query;
