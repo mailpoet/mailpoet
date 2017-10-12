@@ -393,7 +393,7 @@ class Pages {
     $form_html .= '</p>';
 
     // subscription form
-    $form_html .= FormRenderer::renderBlocks($form, $honeypot = false);
+    $form_html .= FormRenderer::renderBlocks($form);
     $form_html .= '</form>';
     return $form_html;
   }

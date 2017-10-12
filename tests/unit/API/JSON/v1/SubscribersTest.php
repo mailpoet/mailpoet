@@ -5,7 +5,6 @@ use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\API\JSON\Response as APIResponse;
-use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
@@ -13,9 +12,6 @@ use MailPoet\Models\Setting;
 
 class SubscribersTest extends \MailPoetTest {
   function _before() {
-    $obfuscator = new FieldNameObfuscator();
-    $this->obfuscatedEmail = $obfuscator->obfuscate('email');
-    $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
 
@@ -395,18 +391,6 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->contains('has no method');
   }
 
-  function testItFailsWithEmailFilled() {
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
-      'form_id' => $this->form->id,
-      'email' => 'toto@mailpoet.com'
-      // no form ID specified
-    ));
-
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please leave the first field empty.');
-  }
-
   function testItCannotSubscribeWithoutFormID() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
@@ -421,7 +405,7 @@ class SubscribersTest extends \MailPoetTest {
   function testItCannotSubscribeWithoutSegmentsIfTheyAreSelectedByUser() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'email' => 'toto@mailpoet.com',
       'form_id' => $this->form->id
       // no segments specified
     ));
@@ -433,9 +417,9 @@ class SubscribersTest extends \MailPoetTest {
   function testItCanSubscribe() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'email' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+      'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
@@ -448,7 +432,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'email' => 'toto@mailpoet.com',
       'form_id' => $this->form->id
       // no segments specified
     ));
@@ -470,9 +454,9 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'email' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+      'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
@@ -482,9 +466,9 @@ class SubscribersTest extends \MailPoetTest {
   function testItCanFilterOutNonFormFieldsWhenSubscribing() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'email' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id),
+      'segments' => array($this->segment_1->id, $this->segment_2->id),
       // exists in table and in the form
       'first_name' => 'aaa',
       // exists in table, but not in the form
@@ -503,16 +487,16 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'email' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+      'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     try {
       $response = $router->subscribe(array(
-        $this->obfuscatedEmail => 'tata@mailpoet.com',
+        'email' => 'tata@mailpoet.com',
         'form_id' => $this->form->id,
-        $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+        'segments' => array($this->segment_1->id, $this->segment_2->id)
       ));
       $this->fail('It should not be possible to subscribe a second time so soon');
     } catch(\Exception $e) {
@@ -525,9 +509,9 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'email' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+      'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     // Try to resubscribe an existing subscriber that was updated just now
@@ -538,9 +522,9 @@ class SubscribersTest extends \MailPoetTest {
 
     try {
       $response = $router->subscribe(array(
-        $this->obfuscatedEmail => $subscriber->email,
+        'email' => $subscriber->email,
         'form_id' => $this->form->id,
-        $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+        'segments' => array($this->segment_1->id, $this->segment_2->id)
       ));
       $this->fail('It should not be possible to resubscribe a second time so soon');
     } catch(\Exception $e) {
