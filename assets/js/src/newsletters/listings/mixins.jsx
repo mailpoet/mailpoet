@@ -143,6 +143,13 @@ const _QueueMixin = {
   },
 };
 
+const trackStatsCTAClicked = function () {
+  MailPoet.trackEvent(
+    'User has clicked a CTA to view detailed stats',
+    { 'MailPoet Free version': window.mailpoet_version }
+  );
+};
+
 const _StatisticsMixin = {
   renderStatistics: function (newsletter, is_sent, current_time) {
     let sent = is_sent;
@@ -159,6 +166,7 @@ const _StatisticsMixin = {
     }
 
     let params = {};
+    Hooks.addFilter('mailpoet_newsletters_listing_stats_before', this.addStatsCTALink);
     params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
 
     // welcome emails provide explicit total_sent value
@@ -282,18 +290,33 @@ const _StatisticsMixin = {
 
     if (total_sent > 0 && params.link) {
       // wrap content in a link
-      return (
-        <div>
-          <Link
-            key={`stats-${newsletter.id}`}
-            to={params.link}
-            onClick={params.onClick || null}
-          >
-            {content}
-          </Link>
-          {after_content}
-        </div>
-      );
+      if (params.externalLink) {
+        return (
+          <div>
+            <a
+              key={`stats-${newsletter.id}`}
+              href={params.link}
+              onClick={params.onClick || null}
+            >
+              {content}
+            </a>
+            {after_content}
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            <Link
+              key={`stats-${newsletter.id}`}
+              to={params.link}
+              onClick={params.onClick || null}
+            >
+              {content}
+            </Link>
+            {after_content}
+          </div>
+        );
+      }
     }
 
     return (
@@ -302,6 +325,37 @@ const _StatisticsMixin = {
         {after_content}
       </div>
     );
+  },
+  addStatsCTAAction: function (actions) {
+    if (window.mailpoet_premium_active) {
+      return actions;
+    }
+    actions.unshift({
+      name: 'stats',
+      link: function () {
+        return (
+          <a href={'admin.php?page=mailpoet-premium'} onClick={trackStatsCTAClicked}>
+            {MailPoet.I18n.t('statsListingActionTitle')}
+          </a>
+        );
+      },
+      display: function (newsletter) {
+        // welcome emails provide explicit total_sent value
+        const count_processed = newsletter.queue && newsletter.queue.count_processed;
+        return ~~(newsletter.total_sent || count_processed) > 0;
+      },
+    });
+    return actions;
+  },
+  addStatsCTALink: function (params) {
+    if (window.mailpoet_premium_active) {
+      return params;
+    }
+    const newParams = params;
+    newParams.link = 'admin.php?page=mailpoet-premium';
+    newParams.externalLink = true;
+    newParams.onClick = trackStatsCTAClicked;
+    return newParams;
   },
 };
 
