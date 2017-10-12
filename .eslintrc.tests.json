@@ -8,13 +8,13 @@
     "ecmaVersion": 6
   },
   "rules": {
-    "import/no-amd": 0,
-    "global-require": 0,
+    // Exceptions
+    "func-names": 0,
+    // To add
     "no-bitwise": 0,
     "max-len": 0,
     "no-underscore-dangle": 0,
     "no-shadow": 0,
-    "padded-blocks": 0,
-    "func-names": 0
+    "padded-blocks": 0
   }
 }
