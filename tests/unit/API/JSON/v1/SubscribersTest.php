@@ -8,6 +8,7 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 
@@ -516,7 +517,7 @@ class SubscribersTest extends \MailPoetTest {
       ));
       $this->fail('It should not be possible to subscribe a second time so soon');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals('You need to wait before subscribing again.');
+      expect($e->getMessage())->equals('You need to wait 60 seconds before subscribing again.');
     }
   }
 
@@ -544,12 +545,13 @@ class SubscribersTest extends \MailPoetTest {
       ));
       $this->fail('It should not be possible to resubscribe a second time so soon');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals('You need to wait before subscribing again.');
+      expect($e->getMessage())->equals('You need to wait 60 seconds before subscribing again.');
     }
   }
 
   function _after() {
     Segment::deleteMany();
     Subscriber::deleteMany();
+    SubscriberIP::deleteMany();
   }
 }

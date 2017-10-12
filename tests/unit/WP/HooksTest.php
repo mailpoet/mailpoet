@@ -24,6 +24,11 @@ class HooksTest extends \MailPoetTest {
     Hooks::doAction($this->action, $test_value, $test_value2);
 
     expect($called)->true();
+
+    $called = false;
+    Hooks::removeAction($this->action, $callback);
+    Hooks::doAction($this->action);
+    expect($called)->false();
   }
 
   function testItCanProcessFilters() {
@@ -41,5 +46,10 @@ class HooksTest extends \MailPoetTest {
 
     expect($called)->true();
     expect($result)->equals($test_value);
+
+    $called = false;
+    Hooks::removeFilter($this->filter, $callback);
+    Hooks::applyFilters($this->filter, $test_value);
+    expect($called)->false();
   }
 }

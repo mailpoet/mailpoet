@@ -23,6 +23,7 @@ class Migrator {
       'subscribers',
       'subscriber_segment',
       'subscriber_custom_field',
+      'subscriber_ips',
       'newsletters',
       'newsletter_templates',
       'newsletter_option_fields',
@@ -203,6 +204,16 @@ class Migrator {
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY subscriber_id_custom_field_id (subscriber_id,custom_field_id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function subscriberIps() {
+    $attributes = array(
+      'ip varchar(45) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (created_at, ip),',
+      'KEY ip (ip)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }

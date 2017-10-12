@@ -25,6 +25,7 @@ $models = array(
   'Subscriber',
   'SubscriberCustomField',
   'SubscriberSegment',
+  'SubscriberIP',
   'StatisticsOpens',
   'StatisticsClicks',
   'StatisticsNewsletters',
