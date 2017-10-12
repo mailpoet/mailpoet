@@ -8,8 +8,6 @@
     "ecmaVersion": 6
   },
   "rules": {
-    "import/no-amd": 0,
-    "global-require": 0,
     "no-bitwise": 0,
     "max-len": 0,
     "no-underscore-dangle": 0,
