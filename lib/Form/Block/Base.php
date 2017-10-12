@@ -2,7 +2,6 @@
 
 namespace MailPoet\Form\Block;
 
-use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\ModelValidator;
 
 abstract class Base {
@@ -110,8 +109,7 @@ abstract class Base {
     if((int)$block['id'] > 0) {
       return 'cf_'.$block['id'];
     } else {
-      $obfuscator = new FieldNameObfuscator();
-      return $obfuscator->obfuscate($block['id']);//obfuscate field name for spambots
+      return $block['id'];
     }
   }
 

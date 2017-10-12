@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Util\Url;
 
@@ -16,8 +15,6 @@ class Manage {
       Url::redirectBack();
     }
     $subscriber_data = $_POST['data'];
-    $obfuscator = new FieldNameObfuscator();
-    $subscriber_data = $obfuscator->deobfuscateFormPayload($subscriber_data);
 
     if(!empty($subscriber_data['email']) && Subscriber::verifyToken($subscriber_data['email'], $token)) {
       if($subscriber_data['email'] !== Pages::DEMO_EMAIL) {
