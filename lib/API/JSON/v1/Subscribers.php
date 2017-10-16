@@ -54,11 +54,6 @@ class Subscribers extends APIEndpoint {
         ->asArray();
     }
 
-    $listing_data['filters']['segment'] = apply_filters(
-      'mailpoet_subscribers_filters_segments_with_subscriber_count',
-      $listing_data['filters']['segment']
-    );
-
     return $this->successResponse($data, array(
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
