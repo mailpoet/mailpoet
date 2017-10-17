@@ -29,6 +29,7 @@ class SubscribersFinder {
         return $subscribers;
       }
     }
+    return array();
   }
 
   function getSubscribersByList($segments) {
@@ -50,6 +51,7 @@ class SubscribersFinder {
         return $subscribers;
       }
     }
+    return array();
   }
 
   private function unique($subscribers) {

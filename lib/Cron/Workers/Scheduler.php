@@ -7,6 +7,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Util\Helpers;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 
@@ -73,12 +74,11 @@ class Scheduler {
     if(empty($segments)) {
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
-    $segment_ids = array_map(function($segment) {
-      return (int)$segment['id'];
-    }, $segments);
 
     // ensure that subscribers are in segments
-    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
+
+    $finder = new SubscribersFinder();
+    $subscribers = $finder->getSubscribersByList($segments);
     $subscribers = Helpers::flattenArray($subscribers);
 
     if(empty($subscribers)) {
