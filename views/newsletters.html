@@ -15,6 +15,7 @@
     var mailpoet_date_display_format = "<%= wp_date_format() %>";
     var mailpoet_date_storage_format = "Y-m-d";
     var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
+    var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
   </script>
 <% endblock %>
 
@@ -60,6 +61,7 @@
 
     'subject': __('Subject'),
     'status': __('Status'),
+    'statsListingActionTitle': __('Statistics'),
     'statistics': __('Opened, Clicked'),
     'lists': __('Lists'),
     'settings': __('Settings'),

@@ -529,6 +529,7 @@ class Menu {
     );
 
     $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
+    $data['premium_plugin_active'] = License::getLicense();
 
     wp_enqueue_script('jquery-ui');
     wp_enqueue_script('jquery-ui-datepicker');
