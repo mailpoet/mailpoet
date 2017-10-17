@@ -1,10 +1,11 @@
 <?php
+
 namespace MailPoet\Helpscout;
+
 use MailPoet\Cron\CronHelper;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\CronDaemon;
-use MailPoet\Router\Router;
 use MailPoet\Services\Bridge;
 
 if(!defined('ABSPATH')) exit;
@@ -16,11 +17,6 @@ class Beacon {
     $mta = Setting::getValue('mta');
     $current_theme = wp_get_theme();
     $current_user = wp_get_current_user();
-    $cron_ping_url = Router::buildRequest(
-      CronDaemon::ENDPOINT,
-      CronDaemon::ACTION_PING
-    );
-    $cron_ping_url = str_replace(home_url(), CronHelper::getSiteUrl(), $cron_ping_url);
     $premium_key = Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME) ?: Setting::getValue(Bridge::API_KEY_SETTING_NAME);
     return array(
       'name' => $current_user->display_name,
@@ -51,7 +47,9 @@ class Beacon {
         $mta['frequency']['interval']
       ),
       'Task Scheduler method' => Setting::getValue('cron_trigger.method'),
-      'Cron ping URL' => $cron_ping_url,
+      'Cron ping URL' => CronHelper::getCronUrl(
+        CronDaemon::ACTION_PING
+      ),
       'Default FROM address' => Setting::getValue('sender.address'),
       'Default Reply-To address' => Setting::getValue('reply_to.address'),
       'Bounce Email Address' => Setting::getValue('bounce.address'),
