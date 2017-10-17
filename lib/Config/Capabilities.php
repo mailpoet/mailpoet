@@ -27,6 +27,7 @@ class Capabilities {
         if(!isset($role_objects[$role])) {
           $role_objects[$role] = get_role($role);
         }
+        if(!is_object($role_objects[$role])) continue;
         $role_objects[$role]->add_cap($name);
       }
     }
@@ -40,6 +41,7 @@ class Capabilities {
         if(!isset($role_objects[$role])) {
           $role_objects[$role] = get_role($role);
         }
+        if(!is_object($role_objects[$role])) continue;
         $role_objects[$role]->remove_cap($name);
       }
     }
