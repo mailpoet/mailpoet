@@ -54,6 +54,8 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
   function testItDoesNotSetupCapabilitiesForNonexistentRoles() {
+    $this->caps->removeWPCapabilities();
+
     $filter = function() {
       return array('nonexistent_role');
     };
@@ -65,12 +67,16 @@ class CapabilitiesTest extends \MailPoetTest {
 
     // other MailPoet capabilities were successfully configured
     $editor_role = get_role('editor');
-    expect($editor_role->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->true();
+    expect($editor_role->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->false();
     expect($editor_role->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
 
     // Restore capabilities
     Hooks::removeFilter('mailpoet_permission_access_plugin_admin', $filter);
     $this->caps->setupWPCapabilities();
+
+    $editor_role = get_role('editor');
+    expect($editor_role->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->true();
+    expect($editor_role->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
   }
 
   function testItSetsUpMembersCapabilities() {
