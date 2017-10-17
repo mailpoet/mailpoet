@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.0.5
+Stable tag: 3.0.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.7 - 2017-10-17 =
+* Improved: subscribing from the same IP address is progressively throttled. Thanks Suyog Palav, Piyush Kumar and Bits of Freedom!
+* Fixed: WordPress users without an email address will not be added as subscribers;
+* Fixed: bug asking subscribers to leave the first field empty in MailPoet subscription forms;
+* Fixed: plugin no longer fails to activate on sites when certain user roles do not exist. Thanks to all who reported this!
 
 = 3.0.6 - 2017-10-10 =
 * Fixed: subscription forms to not throw form validation engine errors;
