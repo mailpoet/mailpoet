@@ -10,7 +10,7 @@ class Image {
     if(empty($element['src'])) {
       return '';
     }
-    if(substr($element['src'], 0, 1) == '/') {
+    if(substr($element['src'], 0, 1) == '/' && substr($element['src'], 1, 1) != '/') {
       $element['src'] = get_option('siteurl') . $element['src'];
     }
 
