@@ -57,18 +57,7 @@ define([
         ignoreFrom: '.mailpoet_image_resize_handle'
       }
     }),
-    normalizeSrc: function () {
-      var src = this.model.get('src');
-      if (src.startsWith('/')) { // if the link is relative
-        src = window.location.href
-          .split('/')
-          .slice(0, 3)
-          .join('/') + src;
-        this.model.set('src', src);
-      }
-    },
     onRender: function () {
-      this.normalizeSrc();
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       if (this.model.get('fullWidth')) {
