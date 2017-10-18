@@ -71,9 +71,9 @@ jobs:
           name: "Set up test environment"
           command: |
               sudo apt-get update
-              sudo apt-get install circleci-php-5.6.23
+              sudo apt-get install circleci-php-7.0.20
               sudo rm /usr/bin/php
-              sudo ln -s /opt/circleci/php/5.6.23/bin/php /usr/bin/php
+              sudo ln -s /opt/circleci/php/7.0.20/bin/php /usr/bin/php
               # Install NodeJS+NPM
               curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
               sudo apt-get install nodejs build-essential
