@@ -63,7 +63,6 @@ class Database {
     if(!defined('MP_SETTINGS_TABLE')) {
       $settings = Env::$db_prefix . 'settings';
       $segments = Env::$db_prefix . 'segments';
-      $dynamicSegmentFilters = Env::$db_prefix . 'dynamic_segment_filters';
       $forms = Env::$db_prefix . 'forms';
       $custom_fields = Env::$db_prefix . 'custom_fields';
       $subscribers = Env::$db_prefix . 'subscribers';
@@ -89,7 +88,6 @@ class Database {
 
       define('MP_SETTINGS_TABLE', $settings);
       define('MP_SEGMENTS_TABLE', $segments);
-      define('MP_DYNAMIC_SEGMENTS_FILTERS_TABLE', $dynamicSegmentFilters);
       define('MP_FORMS_TABLE', $forms);
       define('MP_CUSTOM_FIELDS_TABLE', $custom_fields);
       define('MP_SUBSCRIBERS_TABLE', $subscribers);
