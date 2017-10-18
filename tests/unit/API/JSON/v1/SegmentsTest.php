@@ -7,9 +7,9 @@ use MailPoet\Models\Segment;
 
 class SegmentsTest extends \MailPoetTest {
   function _before() {
-    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
-    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
-    $this->segment_3 = Segment::createOrUpdate(array('name' => 'Segment 3'));
+    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1', 'type' => 'default'));
+    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2', 'type' => 'default'));
+    $this->segment_3 = Segment::createOrUpdate(array('name' => 'Segment 3', 'type' => 'default'));
   }
 
   function testItCanGetASegment() {
@@ -135,6 +135,7 @@ class SegmentsTest extends \MailPoetTest {
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
+
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(3);
 

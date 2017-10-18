@@ -253,6 +253,24 @@ class SegmentTest extends \MailPoetTest {
     expect(count($segments))->equals(1);
   }
 
+  function testListingQuery() {
+    Segment::createOrUpdate(array(
+      'name' => 'name 2',
+      'description' => 'description 2',
+      'type' => 'unknown'
+    ));
+    $query = Segment::listingQuery(array());
+    $data = $query->findMany();
+    expect($data)->count(1);
+    expect($data[0]->name)->equals('some name');
+  }
+
+  function testListingQueryWithGroup() {
+    $query = Segment::listingQuery(array('group' => 'trash'));
+    $data = $query->findMany();
+    expect($data)->count(0);
+  }
+
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);

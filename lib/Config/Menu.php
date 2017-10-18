@@ -228,6 +228,8 @@ class Menu {
       ));
     });
 
+    do_action('mailpoet_menu_after_lists');
+
     // Settings page
     add_submenu_page(
       self::MAIN_PAGE_SLUG,
@@ -460,7 +462,12 @@ class Menu {
     $data = array();
 
     $data['items_per_page'] = $this->getLimitPerPage('subscribers');
-    $data['segments'] = Segment::getSegmentsWithSubscriberCount($type = false);
+    $segments = Segment::getSegmentsWithSubscriberCount($type = false);
+    $segments = apply_filters('mailpoet_segments_with_subscriber_count', $segments);
+    usort($segments, function ($a, $b) {
+      return strcasecmp($a["name"], $b["name"]);
+    });
+    $data['segments'] = $segments;
 
     $data['custom_fields'] = array_map(function($field) {
       $field['params'] = unserialize($field['params']);
@@ -514,7 +521,12 @@ class Menu {
     $data = array();
 
     $data['items_per_page'] = $this->getLimitPerPage('newsletters');
-    $data['segments'] = Segment::getSegmentsWithSubscriberCount($type = false);
+    $segments = Segment::getSegmentsWithSubscriberCount($type = false);
+    $segments = apply_filters('mailpoet_segments_with_subscriber_count', $segments);
+    usort($segments, function ($a, $b) {
+      return strcasecmp($a["name"], $b["name"]);
+    });
+    $data['segments'] = $segments;
     $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
     $data['roles']['mailpoet_all'] = __('In any WordPress role', 'mailpoet');
@@ -678,7 +690,7 @@ class Menu {
     $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
   }
 
-  private function getLimitPerPage($model = null) {
+  function getLimitPerPage($model = null) {
     if($model === null) {
       return Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
     }
@@ -691,7 +703,7 @@ class Menu {
       : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
   }
 
-  private function displayPage($template, $data) {
+  function displayPage($template, $data) {
     try {
       echo $this->renderer->render($template, $data);
     } catch(\Exception $e) {

@@ -152,6 +152,7 @@ class Segment extends Model {
 
   static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
     $query = self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
+      ->whereIn('type', array(Segment::TYPE_WP_USERS, Segment::TYPE_DEFAULT))
       ->selectExpr(
         self::$_table.'.*, ' .
         'COUNT(IF('.
@@ -207,6 +208,15 @@ class Segment extends Model {
       'HAVING subscribers) ' .
       'ORDER BY name'
     )->findArray();
+  }
+
+  static function listingQuery(array $data = array()) {
+    $query = self::select('*');
+    $query->whereIn('type', array(Segment::TYPE_WP_USERS, Segment::TYPE_DEFAULT));
+    if(isset($data['group'])) {
+      $query->filter('groupBy', $data['group']);
+    }
+    return $query;
   }
 
   static function createOrUpdate($data = array()) {
