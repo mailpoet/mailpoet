@@ -45,8 +45,11 @@ fi
 cd /wp-core/wp-content/plugins/mailpoet
 
 /project/vendor/bin/codecept run acceptance -c codeception.acceptance.yml $@
+exitcode=$?
 
 if [[ -z "${KEEP_DEPS}" ]]; then
   rm -rf /project/vendor
   mv /project/vendor_backup /project/vendor
 fi
+
+exit $exitcode
