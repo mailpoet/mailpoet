@@ -94,9 +94,9 @@ jobs:
           command: |
               docker-compose run codeception --steps --debug -vvv --html --xml
       - store_artifacts:
-          path: ~/mailpoet/tests/acceptance-tests/_output
+          path: tests/_output
       - store_test_results:
-          path: ~/mailpoet/tests/acceptance-tests/_output
+          path: tests/_output
   php7:
     working_directory: /home/circleci/mailpoet
     docker:
