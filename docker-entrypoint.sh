@@ -14,7 +14,9 @@ done
 # Make sure permissions are correct.
 cd /wp-core
 chown www-data:www-data wp-content/plugins
+chown www-data:www-data wp-content/uploads
 chmod 755 wp-content/plugins
+chmod -R 777 wp-content/uploads
 
 # Make sure WordPress is installed.
 if ! $(wp-su core is-installed); then
