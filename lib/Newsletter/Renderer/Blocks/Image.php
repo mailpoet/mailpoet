@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Logger;
 use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
@@ -8,6 +9,9 @@ class Image {
   static function render($element, $column_count) {
     if(empty($element['src'])) {
       return '';
+    }
+    if(substr($element['src'], 0, 1) == '/' && substr($element['src'], 1, 1) != '/') {
+      $element['src'] = get_option('siteurl') . $element['src'];
     }
 
     $element['width'] = (int)$element['width'];

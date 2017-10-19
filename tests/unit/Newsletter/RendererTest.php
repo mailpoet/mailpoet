@@ -168,6 +168,31 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_image)->equals('');
   }
 
+  function testItForcesAbsoluteSrcForImages() {
+    $image = array(
+      'src' => '/relative-path',
+      'width' => '100',
+      'height' => '200',
+      'link' => '',
+      'fullWidth' => false,
+      'alt' => 'some test alt text'
+    );
+    $rendered_image = Image::render($image, $columnCount = 1);
+    $site_url = get_option('siteurl');
+    expect($rendered_image)->contains('src="'.$site_url.'/relative-path"');
+
+    $image = array(
+      'src' => '//path-without-protocol',
+      'width' => '100',
+      'height' => '200',
+      'link' => '',
+      'fullWidth' => false,
+      'alt' => 'some test alt text'
+    );
+    $rendered_image = Image::render($image, $columnCount = 1);
+    expect($rendered_image)->contains('src="//path-without-protocol"');
+  }  
+
   function testItRendersImageWithLink() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
