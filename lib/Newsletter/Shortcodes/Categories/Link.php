@@ -62,7 +62,7 @@ class Link {
     }
   }
 
-  static function processUrl($action, $url, $queue, $wp_user_preview) {
+  static function processUrl($action, $url, $queue, $wp_user_preview = false) {
     if ($wp_user_preview)
       return $url;
     return ($queue !== false && (boolean)Setting::getValue('tracking.enabled')) ?
