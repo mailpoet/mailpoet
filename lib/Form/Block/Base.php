@@ -26,6 +26,7 @@ abstract class Base {
 
     if(!empty($block['params']['required'])) {
       $rules['required'] = true;
+      $rules['required-message'] = __('This field is required.', 'mailpoet');
     }
 
     if(!empty($block['params']['validate'])) {
