@@ -26,17 +26,27 @@ modules:
             adminUsername: admin
             adminPassword: password
             adminPath: /wp-admin
+            log_js_errors: true
         WPLoader:
+            loadOnly: true
             wpRootFolder: /wp-core
             dbName: wordpress
             dbHost: mysql
             dbUser: wordpress
             dbPassword: wordpress
-            wpDebug: false
-            tablePrefix: wp_
-            domain: wordpress
-            plugins: ['mailpoet/mailpoet.php']
-            activatePlugins: ['mailpoet/mailpoet.php']
+        WPDb:
+            dsn: 'mysql:host=mysql;dbname=wordpress'
+            user: wordpress
+            password: wordpress
+            dump: tests/_data/acceptanceDump.sql
+            populate: true
+            cleanup: false
+            url: 'http://wordpress'
+            urlReplacement: true
+            tablePrefix: 'wp_'
+        WPCLI:
+            path: /wp-core
+            throw: true
 coverage:
     enabled: true
     whitelist:
