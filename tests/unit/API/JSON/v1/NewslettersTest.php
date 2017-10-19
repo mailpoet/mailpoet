@@ -17,6 +17,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
+use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class NewslettersTest extends \MailPoetTest {
   function _before() {
@@ -699,21 +700,26 @@ class NewslettersTest extends \MailPoetTest {
 
   function testItCanSendAPreview() {
     $subscriber = 'test@subscriber.com';
+    $unsubscribeLink = SubscriptionUrl::getUnsubscribeUrl(false);
+    $manageLink = SubscriptionUrl::getManageUrl(false);
+    $viewInBrowserLink = Url::getViewInBrowserUrl(null, $this->newsletter, false, false, true);
     $data = array(
       'subscriber' => $subscriber,
       'id' => $this->newsletter->id,
       'mailer' => Stub::makeEmpty(
         '\MailPoet\Mailer\Mailer',
         array(
-          'send' => function($newsletter, $subscriber, $extra_params) {
+          'send' => function($newsletter, $subscriber, $extra_params) 
+            use ($unsubscribeLink, $manageLink, $viewInBrowserLink) 
+          {
             expect(is_array($newsletter))->true();
             expect($newsletter['body']['text'])->contains('Hello test');
             expect($subscriber)->equals($subscriber);
             expect($extra_params['unsubscribe_url'])->equals(home_url());
             // system links are replaced with hashes
-            expect($newsletter['body']['html'])->contains('href="#">View in browser');
-            expect($newsletter['body']['html'])->contains('href="#">Unsubscribe');
-            expect($newsletter['body']['html'])->contains('href="#">Manage subscription');
+            expect($newsletter['body']['html'])->contains('href="'.$viewInBrowserLink.'">View in browser');
+            expect($newsletter['body']['html'])->contains('href="'.$unsubscribeLink.'">Unsubscribe');
+            expect($newsletter['body']['html'])->contains('href="'.$manageLink.'">Manage subscription');
             return array('response' => true);
           }
         )

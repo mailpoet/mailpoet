@@ -23,7 +23,7 @@ class Link {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $action,
-          SubscriptionUrl::getUnsubscribeUrl($subscriber),
+          SubscriptionUrl::getUnsubscribeUrl($wp_user_preview ? false : $subscriber),
           $queue,
           $wp_user_preview
         );
@@ -31,7 +31,7 @@ class Link {
       case 'subscription_manage_url':
         return self::processUrl(
           $action,
-          SubscriptionUrl::getManageUrl($subscriber),
+          SubscriptionUrl::getManageUrl($wp_user_preview ? false : $subscriber),
           $queue,
           $wp_user_preview
         );
@@ -40,7 +40,7 @@ class Link {
         $url = NewsletterUrl::getViewInBrowserUrl(
           $type = null,
           $newsletter,
-          $subscriber,
+          $wp_user_preview ? false : $subscriber,
           $queue,
           $wp_user_preview
         );
@@ -63,7 +63,8 @@ class Link {
   }
 
   static function processUrl($action, $url, $queue, $wp_user_preview = false) {
-    if($wp_user_preview) return '#';
+    if ($wp_user_preview)
+      return $url;
     return ($queue !== false && (boolean)Setting::getValue('tracking.enabled')) ?
       self::getFullShortcode($action) :
       $url;

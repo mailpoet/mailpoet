@@ -9,6 +9,8 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
+use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Subscription\Url as SubscriptionUrl;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 require_once(ABSPATH . 'wp-admin/includes/user.php');
@@ -270,7 +272,7 @@ class ShortcodesTest extends \MailPoetTest {
     }
   }
 
-  function testItReturnsHashInsteadofLinksWhenPreviewIsEnabled() {
+  function testItReturnsDefaultLinksWhenPreviewIsEnabled() {
     $shortcodes_object = $this->shortcodes_object;
     $shortcodes_object->wp_user_preview = true;
     $shortcodes = array(
@@ -278,10 +280,15 @@ class ShortcodesTest extends \MailPoetTest {
       '[link:subscription_manage_url]',
       '[link:newsletter_view_in_browser_url]',
     );
+    $links = array(
+      SubscriptionUrl::getUnsubscribeUrl(false),
+      SubscriptionUrl::getManageUrl(false),
+      NewsletterUrl::getViewInBrowserUrl(null, $this->newsletter, false, false, true)
+    );
     $result = $shortcodes_object->process($shortcodes);
     // hash is returned
     foreach($result as $index => $transformed_shortcode) {
-      expect($transformed_shortcode)->equals('#');
+      expect($transformed_shortcode)->equals($links[$index]);
     }
   }
 
