@@ -21,6 +21,7 @@ class Reporter {
 
 
     return array(
+      'PHP version' => PHP_VERSION,
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
       'Total number of subscribers' =>  Subscriber::getTotalSubscribers(),
