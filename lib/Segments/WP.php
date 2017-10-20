@@ -96,59 +96,59 @@ class WP {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
-      UPDATE IGNORE %s
-        JOIN %s as wu ON %s.wp_user_id = wu.id
-      SET email = user_email
-        WHERE %s.wp_user_id IS NOT NULL AND wu.user_email != ""
-    ', $subscribers_table, $wpdb->users, $subscribers_table, $subscribers_table));
+      UPDATE IGNORE %1$s
+        JOIN %2$s as wu ON %1$s.wp_user_id = wu.id
+      SET %1$s.email = user_email
+        WHERE %1$s.wp_user_id IS NOT NULL AND wu.user_email != ""
+    ', $subscribers_table, $wpdb->users));
   }
 
   private static function insertSubscribers() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
-      INSERT IGNORE INTO %s(wp_user_id, email, status, created_at)
-        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %s wu
-          LEFT JOIN %s mps ON wu.id = mps.wp_user_id
+      INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at)
+        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %2$s wu
+          LEFT JOIN %1$s mps ON wu.id = mps.wp_user_id
           WHERE mps.wp_user_id IS NULL AND wu.user_email != ""
       ON DUPLICATE KEY UPDATE wp_user_id = wu.id
-    ', $subscribers_table, $wpdb->users, $subscribers_table));
+    ', $subscribers_table, $wpdb->users));
   }
 
   private static function updateFirstNames() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
-      UPDATE %s
-        JOIN %s as wpum ON %s.wp_user_id = wpum.user_id AND meta_key = "first_name"
-      SET first_name = meta_value
-        WHERE %s.first_name = ""
-        AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $wpdb->usermeta, $subscribers_table, $subscribers_table, $subscribers_table));
+      UPDATE %1$s
+        JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND meta_key = "first_name"
+      SET %1$s.first_name = meta_value
+        WHERE %1$s.first_name = ""
+        AND %1$s.wp_user_id IS NOT NULL
+    ', $subscribers_table, $wpdb->usermeta));
   }
 
   private static function updateLastNames() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
-      UPDATE %s
-        JOIN %s as wpum ON %s.wp_user_id = wpum.user_id AND meta_key = "last_name"
-      SET last_name = meta_value
-        WHERE %s.last_name = ""
-        AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $wpdb->usermeta, $subscribers_table, $subscribers_table, $subscribers_table));
+      UPDATE %1$s
+        JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND meta_key = "last_name"
+      SET %1$s.last_name = meta_value
+        WHERE %1$s.last_name = ""
+        AND %1$s.wp_user_id IS NOT NULL
+    ', $subscribers_table, $wpdb->usermeta));
   }
 
   private static function updateFirstNameIfMissing() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
-      UPDATE %s
-        JOIN %s wu ON %s.wp_user_id = wu.id
-      SET first_name = display_name
-        WHERE %s.first_name = ""
-        AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $wpdb->users, $subscribers_table, $subscribers_table, $subscribers_table));
+      UPDATE %1$s
+        JOIN %2$s wu ON %1$s.wp_user_id = wu.id
+      SET %1$s.first_name = display_name
+        WHERE %1$s.first_name = ""
+        AND %1$s.wp_user_id IS NOT NULL
+    ', $subscribers_table, $wpdb->users));
   }
 
   private static function insertUsersToSegment() {
@@ -165,10 +165,10 @@ class WP {
   private static function removeFromTrash() {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
-      UPDATE %s
-      SET deleted_at = NULL
-        WHERE %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $subscribers_table));
+      UPDATE %1$s
+      SET %1$s.deleted_at = NULL
+        WHERE %1$s.wp_user_id IS NOT NULL
+    ', $subscribers_table));
   }
 
   private static function removeOrphanedSubscribers() {
