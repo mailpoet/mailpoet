@@ -85,7 +85,7 @@ class WP {
     self::removeFromTrash();
     self::updateFirstNames();
     self::updateLastNames();
-    self::updateFristNameIfMissing();
+    self::updateFirstNameIfMissing();
     self::insertUsersToSegment();
     self::removeOrphanedSubscribers();
 
@@ -139,7 +139,7 @@ class WP {
     ', $subscribers_table, $wpdb->usermeta, $subscribers_table, $subscribers_table, $subscribers_table));
   }
 
-  private static function updateFristNameIfMissing() {
+  private static function updateFirstNameIfMissing() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
