@@ -37,6 +37,7 @@ function setup {
 	./wp-cli.phar core download --allow-root --path=wordpress
 	# Generate `wp-config.php` file with debugging enabled
 	echo "define(\"WP_DEBUG\", true);" | ./wp-cli.phar core config --allow-root --dbname=wordpress --dbuser=root --dbhost=127.0.0.1 --path=wordpress --extra-php
+	sed -i "s/\$table_prefix = 'wp_';/\$table_prefix = 'mp_';/" ./wordpress/wp-config.php
 	# Install WordPress
 	./wp-cli.phar core install --allow-root --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc:8080 --title=WordPress --path=wordpress
 	# Softlink plugin to plugin path
