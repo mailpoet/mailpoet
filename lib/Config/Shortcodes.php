@@ -56,12 +56,14 @@ class Shortcodes {
     }
 
     if(empty($segment_ids)) {
-      return Subscriber::filter('subscribed')->count();
+      return number_format_i18n(Subscriber::filter('subscribed')->count());
     } else {
-      return SubscriberSegment::whereIn('segment_id', $segment_ids)
-        ->select('subscriber_id')->distinct()
-        ->filter('subscribed')
-        ->findResultSet()->count();
+      return number_format_i18n(
+        SubscriberSegment::whereIn('segment_id', $segment_ids)
+          ->select('subscriber_id')->distinct()
+          ->filter('subscribed')
+          ->findResultSet()->count()
+      );
     }
   }
 
