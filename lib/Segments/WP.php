@@ -98,7 +98,7 @@ class WP {
     Subscriber::raw_execute(sprintf('
       UPDATE IGNORE %1$s
         JOIN %2$s as wu ON %1$s.wp_user_id = wu.id
-      SET %1$s.email = user_email
+      SET %1$s.email = wu.user_email
         WHERE %1$s.wp_user_id IS NOT NULL AND wu.user_email != ""
     ', $subscribers_table, $wpdb->users));
   }
@@ -120,8 +120,8 @@ class WP {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE %1$s
-        JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND meta_key = "first_name"
-      SET %1$s.first_name = meta_value
+        JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND wpum.meta_key = "first_name"
+      SET %1$s.first_name = wpum.meta_value
         WHERE %1$s.first_name = ""
         AND %1$s.wp_user_id IS NOT NULL
     ', $subscribers_table, $wpdb->usermeta));
@@ -132,8 +132,8 @@ class WP {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE %1$s
-        JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND meta_key = "last_name"
-      SET %1$s.last_name = meta_value
+        JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND wpum.meta_key = "last_name"
+      SET %1$s.last_name = wpum.meta_value
         WHERE %1$s.last_name = ""
         AND %1$s.wp_user_id IS NOT NULL
     ', $subscribers_table, $wpdb->usermeta));
@@ -145,7 +145,7 @@ class WP {
     Subscriber::raw_execute(sprintf('
       UPDATE %1$s
         JOIN %2$s wu ON %1$s.wp_user_id = wu.id
-      SET %1$s.first_name = display_name
+      SET %1$s.first_name = wu.display_name
         WHERE %1$s.first_name = ""
         AND %1$s.wp_user_id IS NOT NULL
     ', $subscribers_table, $wpdb->users));
