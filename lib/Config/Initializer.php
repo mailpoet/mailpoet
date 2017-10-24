@@ -36,6 +36,9 @@ class Initializer {
       return;
     }
 
+    // load translations
+    $this->setupLocalizer();
+
     try {
       $this->setupDB();
     } catch(\Exception $e) {
@@ -124,7 +127,6 @@ class Initializer {
       $this->setupInstaller();
       $this->setupUpdater();
 
-      $this->setupLocalizer();
       $this->setupCapabilities();
       $this->setupMenu();
       $this->setupShortcodes();
