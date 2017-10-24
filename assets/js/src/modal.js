@@ -386,9 +386,6 @@ define('modal', ['mailpoet', 'jquery'],
           // remember the previously focused element
         this.prevFocus = jQuery(':focus');
 
-          // add a flag on the body so that we can prevent scrolling
-        jQuery('body').addClass('mailpoet_modal_opened');
-
           // show popup
         jQuery('#mailpoet_' + this.options.type).show();
 
@@ -447,9 +444,6 @@ define('modal', ['mailpoet', 'jquery'],
 
            // remove class on highlighted elements
         this.highlightOff();
-
-          // remove class from body to let it be scrollable
-        jQuery('body').removeClass('mailpoet_modal_opened');
 
         return this;
       },
