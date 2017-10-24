@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.0.7
+Stable tag: 3.0.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.8 - 2017-10-24 =
+Improved: unsubscribe link now works in browser and email previews;
+Improved: relative URLs in images are replaced by absolute URLs. Thanks Xavier!
+Fixed: default email templates to be translated into your language. Thanks Webteam!
+Fixed: subscription form's "required field" validation message is now translatable. Thanks, Frank!
+Fixed: plugin doesn't fail to activate when WP users table contains custom columns. Thanks Brian!
 
 = 3.0.7 - 2017-10-17 =
 * Improved: subscribing from the same IP address is progressively throttled. Thanks Suyog Palav, Piyush Kumar and Bits of Freedom!
