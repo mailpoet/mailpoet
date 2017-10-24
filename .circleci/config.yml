@@ -81,6 +81,7 @@ jobs:
               curl -sS https://getcomposer.org/installer | php
               php composer.phar install
               ./do install
+              ./do compile:all --env production
       - save_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
           paths:
