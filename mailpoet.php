@@ -3,7 +3,7 @@
 if(!defined('ABSPATH')) exit;
 
 /*
- * Plugin Name: MailPoet 3 (new)
+ * Plugin Name: MailPoet 3 (New)
  * Version: 3.0.8
  * Plugin URI: http://www.mailpoet.com
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
