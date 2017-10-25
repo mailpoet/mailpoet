@@ -44,7 +44,7 @@ class Acceptance extends \Codeception\Module
       && isset($logEntry['source'])
       && $logEntry['level'] === 'SEVERE'
       && ($logEntry['source'] === 'javascript' // Native JS errors
-        || ($logEntry['source'] === 'network' && preg_match('/\.js/i', $logEntry['message'])) // JS scripts failed to load
+        || ($logEntry['source'] === 'network' && preg_match('/\.(js|css)/i', $logEntry['message'])) // JS/CSS files failed to load
       );
   }
 
