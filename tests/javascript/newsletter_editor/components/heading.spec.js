@@ -23,7 +23,6 @@ define([
       });
 
       describe('once rendered', function () {
-        var view;
         var model;
         beforeEach(function () {
           model = new Backbone.SuperModel({

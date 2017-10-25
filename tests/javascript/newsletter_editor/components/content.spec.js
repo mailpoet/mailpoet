@@ -45,7 +45,8 @@ define([
 
       describe('toJSON()', function () {
         it('will only contain properties modifiable by the editor', function () {
-          var model = new (ContentComponent.NewsletterModel)({
+          var json;
+          model = new (ContentComponent.NewsletterModel)({
             id: 19,
             subject: 'some subject',
             preheader: 'some preheader',
@@ -54,7 +55,7 @@ define([
             someField: 'someValue'
           });
 
-          var json = model.toJSON();
+          json = model.toJSON();
           expect(json.id).to.equal(19);
           expect(json.subject).to.equal('some subject');
           expect(json.preheader).to.equal('some preheader');

@@ -175,7 +175,6 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             automatedLatestContent: {
@@ -255,7 +254,6 @@ define([
       });
 
       it('accepts displayable posts', function () {
-        var model;
         EditorApplication.getBlockTypeModel = sinon.stub()
           .returns(ContainerBlock.ContainerBlockModel);
         model = new (module.AutomatedLatestContentBlockModel)();
@@ -504,8 +502,6 @@ define([
         });
 
         describe('when "title only" display type is selected', function () {
-          var model;
-          var view;
           beforeEach(function () {
             model = new (module.AutomatedLatestContentBlockModel)();
             view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
@@ -518,8 +514,6 @@ define([
           });
 
           describe('when "title as list" is selected', function () {
-            var model;
-            var view;
             beforeEach(function () {
               model = new (module.AutomatedLatestContentBlockModel)();
               view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });

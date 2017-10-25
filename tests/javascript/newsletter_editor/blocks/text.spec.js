@@ -23,7 +23,6 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             text: {
@@ -50,8 +49,7 @@ define([
       });
 
       describe('once rendered', function () {
-        var model = new (TextBlock.TextBlockModel)();
-        var view;
+        model = new (TextBlock.TextBlockModel)();
 
         beforeEach(function () {
           global.stubConfig(EditorApplication);

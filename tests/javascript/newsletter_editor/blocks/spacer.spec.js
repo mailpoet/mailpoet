@@ -55,7 +55,6 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             spacer: {
@@ -137,8 +136,6 @@ define([
       });
 
       describe('once rendered', function () {
-        var view;
-        var model;
         beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);

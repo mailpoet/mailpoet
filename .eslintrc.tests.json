@@ -10,9 +10,9 @@
   "rules": {
     // Exceptions
     "func-names": 0,
-    // To add
+    // Temporary
     "no-underscore-dangle": 0,
-    "no-shadow": 0,
+    // To add
     "padded-blocks": 0
   }
 }

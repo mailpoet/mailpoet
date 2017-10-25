@@ -49,7 +49,7 @@ define([
       describe('once rendered', function () {
         var model;
         var availableStyles;
-        var view;
+        var innerView;
         before(function () {
           model = new Backbone.SuperModel({
             text: {
@@ -88,91 +88,91 @@ define([
               '10px', '12px', '14px', '16px', '18px'
             ]
           });
-          view = new (SidebarComponent.SidebarStylesView)({
+          innerView = new (SidebarComponent.SidebarStylesView)({
             model: model,
             availableStyles: availableStyles
           });
 
-          view.render();
+          innerView.render();
         });
 
         it('changes model if text font color field changes', function () {
-          view.$('#mailpoet_text_font_color').val('#123456').change();
+          innerView.$('#mailpoet_text_font_color').val('#123456').change();
           expect(model.get('text.fontColor')).to.equal('#123456');
         });
 
         it('changes model if h1 font color field changes', function () {
-          view.$('#mailpoet_h1_font_color').val('#123457').change();
+          innerView.$('#mailpoet_h1_font_color').val('#123457').change();
           expect(model.get('h1.fontColor')).to.equal('#123457');
         });
 
         it('changes model if h2 font color field changes', function () {
-          view.$('#mailpoet_h2_font_color').val('#123458').change();
+          innerView.$('#mailpoet_h2_font_color').val('#123458').change();
           expect(model.get('h2.fontColor')).to.equal('#123458');
         });
 
         it('changes model if h3 font color field changes', function () {
-          view.$('#mailpoet_h3_font_color').val('#123426').change();
+          innerView.$('#mailpoet_h3_font_color').val('#123426').change();
           expect(model.get('h3.fontColor')).to.equal('#123426');
         });
 
         it('changes model if link font color field changes', function () {
-          view.$('#mailpoet_a_font_color').val('#323232').change();
+          innerView.$('#mailpoet_a_font_color').val('#323232').change();
           expect(model.get('link.fontColor')).to.equal('#323232');
         });
 
         it('changes model if newsletter background color field changes', function () {
-          view.$('#mailpoet_newsletter_background_color').val('#636237').change();
+          innerView.$('#mailpoet_newsletter_background_color').val('#636237').change();
           expect(model.get('wrapper.backgroundColor')).to.equal('#636237');
         });
 
         it('changes model if background color field changes', function () {
-          view.$('#mailpoet_background_color').val('#878587').change();
+          innerView.$('#mailpoet_background_color').val('#878587').change();
           expect(model.get('body.backgroundColor')).to.equal('#878587');
         });
 
         it('changes model if text font family field changes', function () {
-          view.$('#mailpoet_text_font_family').val('Times New Roman').change();
+          innerView.$('#mailpoet_text_font_family').val('Times New Roman').change();
           expect(model.get('text.fontFamily')).to.equal('Times New Roman');
         });
 
         it('changes model if h1 font family field changes', function () {
-          view.$('#mailpoet_h1_font_family').val('Comic Sans').change();
+          innerView.$('#mailpoet_h1_font_family').val('Comic Sans').change();
           expect(model.get('h1.fontFamily')).to.equal('Comic Sans');
         });
 
         it('changes model if h2 font family field changes', function () {
-          view.$('#mailpoet_h2_font_family').val('Tahoma').change();
+          innerView.$('#mailpoet_h2_font_family').val('Tahoma').change();
           expect(model.get('h2.fontFamily')).to.equal('Tahoma');
         });
 
         it('changes model if h3 font family field changes', function () {
-          view.$('#mailpoet_h3_font_family').val('Lucida').change();
+          innerView.$('#mailpoet_h3_font_family').val('Lucida').change();
           expect(model.get('h3.fontFamily')).to.equal('Lucida');
         });
 
         it('changes model if text font size field changes', function () {
-          view.$('#mailpoet_text_font_size').val('9px').change();
+          innerView.$('#mailpoet_text_font_size').val('9px').change();
           expect(model.get('text.fontSize')).to.equal('9px');
         });
 
         it('changes model if h1 font size field changes', function () {
-          view.$('#mailpoet_h1_font_size').val('12px').change();
+          innerView.$('#mailpoet_h1_font_size').val('12px').change();
           expect(model.get('h1.fontSize')).to.equal('12px');
         });
 
         it('changes model if h2 font size field changes', function () {
-          view.$('#mailpoet_h2_font_size').val('14px').change();
+          innerView.$('#mailpoet_h2_font_size').val('14px').change();
           expect(model.get('h2.fontSize')).to.equal('14px');
         });
 
         it('changes model if h3 font size field changes', function () {
-          view.$('#mailpoet_h3_font_size').val('16px').change();
+          innerView.$('#mailpoet_h3_font_size').val('16px').change();
           expect(model.get('h3.fontSize')).to.equal('16px');
         });
 
         it('changes model if link underline field changes', function () {
-          view.$('#mailpoet_a_font_underline').prop('checked', true).change();
+          innerView.$('#mailpoet_a_font_underline').prop('checked', true).change();
           expect(model.get('link.textDecoration')).to.equal('underline');
         });
       });

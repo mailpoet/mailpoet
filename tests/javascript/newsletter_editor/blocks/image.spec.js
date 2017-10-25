@@ -74,7 +74,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
+        var innerModel;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             image: {
@@ -92,31 +92,28 @@ define([
             }
           }
         });
-        model = new (ImageBlock.ImageBlockModel)();
+        innerModel = new (ImageBlock.ImageBlockModel)();
 
-        expect(model.get('link')).to.equal('http://example.org/customConfigPage');
-        expect(model.get('src')).to.equal('http://example.org/someCustomConfigImage.png');
-        expect(model.get('alt')).to.equal('Custom config alt');
-        expect(model.get('fullWidth')).to.equal(false);
-        expect(model.get('width')).to.equal('1234px');
-        expect(model.get('height')).to.equal('2345px');
-        expect(model.get('styles.block.textAlign')).to.equal('right');
+        expect(innerModel.get('link')).to.equal('http://example.org/customConfigPage');
+        expect(innerModel.get('src')).to.equal('http://example.org/someCustomConfigImage.png');
+        expect(innerModel.get('alt')).to.equal('Custom config alt');
+        expect(innerModel.get('fullWidth')).to.equal(false);
+        expect(innerModel.get('width')).to.equal('1234px');
+        expect(innerModel.get('height')).to.equal('2345px');
+        expect(innerModel.get('styles.block.textAlign')).to.equal('right');
       });
     });
 
     describe('block view', function () {
-      var model;
-      var view;
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      model = new (ImageBlock.ImageBlockModel)();
-
-      beforeEach(function () {
-        view = new (ImageBlock.ImageBlockView)({ model: model });
-      });
 
       it('renders', function () {
+        var view;
+        var model;
+        model = new (ImageBlock.ImageBlockModel)();
+        view = new (ImageBlock.ImageBlockView)({ model: model });
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_content')).to.have.length(1);
       });

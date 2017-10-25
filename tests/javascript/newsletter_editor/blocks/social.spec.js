@@ -29,7 +29,6 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             social: {
@@ -131,7 +130,6 @@ define([
       });
 
       describe('once rendered', function () {
-        var model;
         var view;
 
         before(function () {
@@ -217,7 +215,6 @@ define([
       });
 
       describe('once rendered', function () {
-        var model;
         var view;
         beforeEach(function () {
           global.stubChannel(EditorApplication);
