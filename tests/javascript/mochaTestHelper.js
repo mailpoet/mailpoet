@@ -23,9 +23,6 @@ if (!global.document || !global.window) {
   global.window = document.parentWindow;
   global.navigator = global.window.navigator;
 
-  global.window.Node.prototype.contains = function (node) {
-    return this.compareDocumentPosition(node) & 16;
-  };
 }
 const testHelpers = require('./loadHelpers.js');
 global.testHelpers = testHelpers;
