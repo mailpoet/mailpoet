@@ -320,7 +320,8 @@ define([
         global.stubConfig(EditorApplication, {
           blockDefaults: {}
         });
-        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
+        EditorApplication.getBlockTypeModel = sinon.stub()
+          .returns(ContainerBlock.ContainerBlockModel);
         model = new (PostsBlock.PostsBlockModel)();
         view = new (PostsBlock.PostsBlockSettingsView)({ model: model });
       });

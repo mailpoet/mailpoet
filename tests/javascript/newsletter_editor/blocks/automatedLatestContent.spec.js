@@ -256,7 +256,8 @@ define([
 
       it('accepts displayable posts', function () {
         var model;
-        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
+        EditorApplication.getBlockTypeModel = sinon.stub()
+          .returns(ContainerBlock.ContainerBlockModel);
         model = new (module.AutomatedLatestContentBlockModel)();
 
         model.updatePosts([{
@@ -306,7 +307,9 @@ define([
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({ model: { set: sinon.stub() } });
+        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({
+          model: { set: sinon.stub() }
+        });
       });
 
       it('listens to the event', function () {
