@@ -12,7 +12,6 @@ global.expect = chai.expect;
 global.sinon = sinon;
 
 if (!global.document || !global.window) {
-
   global.document = jsdom('<html><head><script></script></head><body></body></html>', {}, {
     FetchExternalResources: ['script'],
     ProcessExternalResources: ['script'],
@@ -22,7 +21,6 @@ if (!global.document || !global.window) {
 
   global.window = document.parentWindow;
   global.navigator = global.window.navigator;
-
 }
 const testHelpers = require('./loadHelpers.js');
 global.testHelpers = testHelpers;

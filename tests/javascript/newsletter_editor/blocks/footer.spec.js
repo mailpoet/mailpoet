@@ -113,7 +113,6 @@ define([
         expect(innerModel.get('styles.link.fontColor')).to.equal('#345678');
         expect(innerModel.get('styles.link.textDecoration')).to.equal('underline');
       });
-
     });
 
     describe('block view', function () {

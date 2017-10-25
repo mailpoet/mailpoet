@@ -7,7 +7,6 @@ define([
   'newsletter_editor/components/communication',
   'amd-inject-loader!newsletter_editor/components/communication'
 ], function (EditorApplication, Communication, CommunicationInjector) {
-
   describe('getPostTypes', function () {
     it('fetches post types from the server', function () {
       var module = CommunicationInjector({

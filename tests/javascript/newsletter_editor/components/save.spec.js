@@ -97,7 +97,6 @@ define([
 
         mock.verify();
       });
-
     });
 
     describe('view', function () {
@@ -194,7 +193,6 @@ define([
           expect(spy).to.have.callCount(1);
           expect(spy).to.have.been.calledWith('beforeEditorSave');
         });
-
       });
     });
   });

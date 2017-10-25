@@ -5,7 +5,6 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/components/sidebar'
 ], function (EditorApplication, SidebarComponent) {
-
   describe('Sidebar', function () {
     describe('content view', function () {
       var view;

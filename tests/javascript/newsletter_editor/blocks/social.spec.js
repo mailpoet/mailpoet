@@ -6,7 +6,6 @@ define([
   'newsletter_editor/blocks/social',
   'backbone'
 ], function (EditorApplication, SocialBlock, Backbone) {
-
   describe('Social', function () {
     describe('block model', function () {
       var model;

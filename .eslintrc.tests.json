@@ -11,8 +11,6 @@
     // Exceptions
     "func-names": 0,
     // Temporary
-    "no-underscore-dangle": 0,
-    // To add
-    "padded-blocks": 0
+    "no-underscore-dangle": 0
   }
 }

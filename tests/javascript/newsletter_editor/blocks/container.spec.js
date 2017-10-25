@@ -121,7 +121,6 @@ define([
       });
 
       describe('once rendered', function () {
-
         describe('on root level', function () {
           var model = new (ContainerBlock.ContainerBlockModel)();
           var view;
@@ -186,7 +185,6 @@ define([
             expect(view.$('.mailpoet_duplicate_block')).to.have.length(1);
           });
         });
-
       });
     });
 

@@ -4,7 +4,6 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/text'
 ], function (EditorApplication, TextBlock) {
-
   describe('Text', function () {
     describe('model', function () {
       var model;
