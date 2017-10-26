@@ -50,7 +50,6 @@
     "space-unary-ops": 0,
     "no-alert": 0,
     "no-script-url": 0,
-    "wrap-iife": 0,
     "space-infix-ops": 0,
     "no-irregular-whitespace": 0,
     "padded-blocks": 0,
