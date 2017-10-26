@@ -67,8 +67,8 @@ define([
     getSelectedAction: function () {
       const selected_action = this.refs.action.value;
       if (selected_action.length > 0) {
-        const action = this.props.bulk_actions.filter((action) => {
-          return (action.name === selected_action);
+        const action = this.props.bulk_actions.filter((act) => {
+          return (act.name === selected_action);
         });
 
         if (action.length > 0) {

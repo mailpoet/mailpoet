@@ -57,9 +57,9 @@ define(
         const reader = new FileReader();
         const saveTemplate = this.saveTemplate;
 
-        reader.onload = (e) => {
+        reader.onload = (evt) => {
           try {
-            saveTemplate(JSON.parse(e.target.result));
+            saveTemplate(JSON.parse(evt.target.result));
             MailPoet.trackEvent('Emails > Template imported', {
               'MailPoet Free version': window.mailpoet_version,
             });

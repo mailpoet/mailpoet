@@ -109,12 +109,12 @@ define(
                     id: this.props.params.id,
                     status: 'active',
                   },
-                }).done((response) => {
+                }).done((response2) => {
                   // redirect to listing based on newsletter type
                   this.context.router.push(`/${this.state.item.type || ''}`);
                   const opts = this.state.item.options;
                   // display success message depending on newsletter type
-                  if (response.data.type === 'welcome') {
+                  if (response2.data.type === 'welcome') {
                     MailPoet.Notice.success(
                       MailPoet.I18n.t('welcomeEmailActivated')
                     );
@@ -123,7 +123,7 @@ define(
                       'List type': opts.event,
                       Delay: opts.afterTimeNumber + ' ' + opts.afterTimeType,
                     });
-                  } else if (response.data.type === 'notification') {
+                  } else if (response2.data.type === 'notification') {
                     MailPoet.Notice.success(
                       MailPoet.I18n.t('postNotificationActivated')
                     );
@@ -141,11 +141,11 @@ define(
                   data: {
                     newsletter_id: this.props.params.id,
                   },
-                }).done((response) => {
+                }).done((response2) => {
                   // redirect to listing based on newsletter type
                   this.context.router.push(`/${this.state.item.type || ''}`);
 
-                  if (response.data.status === 'scheduled') {
+                  if (response2.data.status === 'scheduled') {
                     MailPoet.Notice.success(
                       MailPoet.I18n.t('newsletterHasBeenScheduled')
                     );
