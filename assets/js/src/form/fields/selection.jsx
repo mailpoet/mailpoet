@@ -84,8 +84,8 @@ define([
       this.setState({ select2: true });
     },
     getSelectedValues: function () {
-      if (this.props.field['selected'] !== undefined) {
-        return this.props.field['selected'](this.props.item);
+      if (this.props.field.selected !== undefined) {
+        return this.props.field.selected(this.props.item);
       } else if (this.props.item !== undefined && this.props.field.name !== undefined) {
         if (this.allowMultipleValues()) {
           if (Array.isArray(this.props.item[this.props.field.name])) {
@@ -104,7 +104,7 @@ define([
         let items = window['mailpoet_' + this.props.field.endpoint];
 
 
-        if (this.props.field['filter'] !== undefined) {
+        if (this.props.field.filter !== undefined) {
           items = items.filter(this.props.field.filter);
         }
 
@@ -131,19 +131,19 @@ define([
       }
     },
     getLabel: function (item) {
-      if (this.props.field['getLabel'] !== undefined) {
+      if (this.props.field.getLabel !== undefined) {
         return this.props.field.getLabel(item, this.props.item);
       }
       return item.name;
     },
     getSearchLabel: function (item) {
-      if (this.props.field['getSearchLabel'] !== undefined) {
+      if (this.props.field.getSearchLabel !== undefined) {
         return this.props.field.getSearchLabel(item, this.props.item);
       }
       return null;
     },
     getValue: function (item) {
-      if (this.props.field['getValue'] !== undefined) {
+      if (this.props.field.getValue !== undefined) {
         return this.props.field.getValue(item, this.props.item);
       }
       return item.id;
@@ -152,7 +152,7 @@ define([
     // this function may be used to transform the placeholder value into
     // desired value.
     transformChangedValue: function (value) {
-      if (typeof this.props.field['transformChangedValue'] === 'function') {
+      if (typeof this.props.field.transformChangedValue === 'function') {
         return this.props.field.transformChangedValue.call(this, value);
       }
       return value;

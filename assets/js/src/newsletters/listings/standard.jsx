@@ -13,7 +13,7 @@ import {
   MailerMixin,
 } from 'newsletters/listings/mixins.jsx';
 
-const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
+const mailpoet_tracking_enabled = (!!(window.mailpoet_tracking_enabled));
 
 const messages = {
   onTrash: (response) => {

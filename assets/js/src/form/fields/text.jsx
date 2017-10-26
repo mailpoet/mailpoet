@@ -11,7 +11,7 @@ const FormFieldText = React.createClass({
       <input
         type="text"
         disabled={
-          (this.props.field['disabled'] !== undefined)
+          (this.props.field.disabled !== undefined)
           ? this.props.field.disabled(this.props.item)
           : false
         }

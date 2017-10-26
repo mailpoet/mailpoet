@@ -513,7 +513,7 @@ const Listing = React.createClass({
     }).done((response) => {
       if (
         this.props.messages !== undefined
-        && this.props.messages['onRestore'] !== undefined
+        && this.props.messages.onRestore !== undefined
       ) {
         this.props.messages.onRestore(response);
       }
@@ -541,7 +541,7 @@ const Listing = React.createClass({
     }).done((response) => {
       if (
         this.props.messages !== undefined
-        && this.props.messages['onTrash'] !== undefined
+        && this.props.messages.onTrash !== undefined
       ) {
         this.props.messages.onTrash(response);
       }
@@ -569,7 +569,7 @@ const Listing = React.createClass({
     }).done((response) => {
       if (
         this.props.messages !== undefined
-        && this.props.messages['onDelete'] !== undefined
+        && this.props.messages.onDelete !== undefined
       ) {
         this.props.messages.onDelete(response);
       }

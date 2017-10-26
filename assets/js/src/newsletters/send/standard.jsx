@@ -437,7 +437,7 @@ define(
 
         if (newsletterOptions.status === 'sent'
             || newsletterOptions.status === 'sending') {
-          options['disabled'] = 'disabled';
+          options.disabled = 'disabled';
         }
 
         return options;

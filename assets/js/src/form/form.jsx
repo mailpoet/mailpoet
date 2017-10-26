@@ -101,7 +101,7 @@ define(
         // only get values from displayed fields
         const item = {};
         this.props.fields.map((field) => {
-          if (field['fields'] !== undefined) {
+          if (field.fields !== undefined) {
             field.fields.map((subfield) => {
               item[subfield.name] = this.state.item[subfield.name];
             });

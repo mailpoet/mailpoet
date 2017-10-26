@@ -32,7 +32,7 @@ define([
       let field = false;
       let dataField = data.field;
 
-      if (data.field['field'] !== undefined) {
+      if (data.field.field !== undefined) {
         dataField = jQuery.merge(dataField, data.field.field);
       }
 
@@ -89,7 +89,7 @@ define([
     render: function () {
       let field = false;
 
-      if (this.props.field['fields'] !== undefined) {
+      if (this.props.field.fields !== undefined) {
         field = this.props.field.fields.map((subfield, index) => {
           return this.renderField({
             index: index,
