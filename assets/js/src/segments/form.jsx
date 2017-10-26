@@ -11,7 +11,6 @@ define(
     MailPoet,
     Form
   ) => {
-
     const fields = [
       {
         name: 'name',

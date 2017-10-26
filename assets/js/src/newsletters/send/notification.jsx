@@ -11,7 +11,6 @@ define(
     Scheduling,
     _
   ) => {
-
     let fields = [
       {
         name: 'subject',

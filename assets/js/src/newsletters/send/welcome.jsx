@@ -9,8 +9,6 @@ define(
     Hooks,
     Scheduling
   ) => {
-
-
     let fields = [
       {
         name: 'subject',

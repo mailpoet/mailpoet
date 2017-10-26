@@ -5,7 +5,6 @@ define([
     MailPoet,
     React
   ) => {
-
   const ListingSearch = React.createClass({
     handleSearch: function (e) {
       e.preventDefault();

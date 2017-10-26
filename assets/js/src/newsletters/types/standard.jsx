@@ -11,7 +11,6 @@ define(
     MailPoet,
     Breadcrumb
   ) => {
-
     const NewsletterStandard = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired,

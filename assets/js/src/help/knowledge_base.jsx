@@ -4,7 +4,6 @@ import MailPoet from 'mailpoet';
 import Tabs from './tabs.jsx';
 
 function KnowledgeBase() {
-
   return (
     <div>
 

@@ -17,7 +17,6 @@ const App = React.createClass({
 const container = document.getElementById('help_container');
 
 if (container) {
-
   ReactDOM.render((
     <Router history={history}>
       <Route path="/" component={App}>
@@ -28,5 +27,4 @@ if (container) {
       </Route>
     </Router>
   ), container);
-
 }

@@ -15,7 +15,6 @@ define(
     FormField,
     jQuery
   ) => {
-
     const Form = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired,

@@ -43,7 +43,6 @@ const FormFieldSelect = React.createClass({
 
     const options = keys.map(
       (value, index) => {
-
         if (filter !== false && filter(this.props.item, value) === false) {
           return;
         }

@@ -17,7 +17,6 @@ define(
     Breadcrumb,
     HelpTooltip
   ) => {
-
     const ImportTemplate = React.createClass({
       saveTemplate: function (saveTemplate) {
         const template = saveTemplate;

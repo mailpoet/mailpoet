@@ -13,7 +13,6 @@ define(
     MailPoet,
     Hooks
   ) => {
-
     const jQuery = jq;
 
     const currentTime = window.mailpoet_current_time || '00:00';
