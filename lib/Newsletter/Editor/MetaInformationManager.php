@@ -43,7 +43,7 @@ class MetaInformationManager {
     // Get categories
     $categories = wp_get_post_terms(
       $post_id,
-      array('post_tag', 'category'),
+      array('category'),
       array('fields' => 'names')
     );
     if(!empty($categories)) {
