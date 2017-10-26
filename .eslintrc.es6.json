@@ -51,7 +51,6 @@
     "no-alert": 0,
     "no-script-url": 0,
     "space-infix-ops": 0,
-    "no-irregular-whitespace": 0,
-    "no-underscore-dangle": 0
+    "no-irregular-whitespace": 0
   }
 }

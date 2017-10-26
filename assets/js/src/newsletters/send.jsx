@@ -94,7 +94,7 @@ define(
         if (!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
-          this._save(e).done(() => {
+          this.saveNewsletter(e).done(() => {
             this.setState({ loading: true });
           }).done((response) => {
             switch (response.data.type) {
@@ -131,7 +131,7 @@ define(
                       Frequency: opts.intervalType,
                     });
                   }
-                }).fail(this._showError);
+                }).fail(this.showError);
               default:
                 return MailPoet.Ajax.post({
                   api_version: window.mailpoet_api_version,
@@ -161,10 +161,10 @@ define(
                       'MailPoet Free version': window.mailpoet_version,
                     });
                   }
-                }).fail(this._showError);
+                }).fail(this.showError);
             }
           })
-          .fail(this._showError)
+          .fail(this.showError)
           .always(() => {
             this.setState({ loading: false });
           });
@@ -176,7 +176,7 @@ define(
         if (!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
-          this._save(e).done(() => {
+          this.saveNewsletter(e).done(() => {
             this.setState({ loading: true });
           }).done(() => {
             MailPoet.Ajax.post({
@@ -200,7 +200,7 @@ define(
               }
             });
           })
-          .fail(this._showError)
+          .fail(this.showError)
           .always(() => {
             this.setState({ loading: false });
           });
@@ -210,27 +210,27 @@ define(
       handleSave: function (e) {
         e.preventDefault();
 
-        this._save(e).done(() => {
+        this.saveNewsletter(e).done(() => {
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterUpdated')
           );
         }).done(() => {
           this.context.router.push(`/${this.state.item.type || ''}`);
-        }).fail(this._showError);
+        }).fail(this.showError);
       },
       handleRedirectToDesign: function (e) {
         e.preventDefault();
         const redirectTo = e.target.href;
 
-        this._save(e).done(() => {
+        this.saveNewsletter(e).done(() => {
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterUpdated')
           );
         }).done(() => {
           window.location = redirectTo;
-        }).fail(this._showError);
+        }).fail(this.showError);
       },
-      _save: function () {
+      saveNewsletter: function () {
         const data = this.state.item;
         data.queue = undefined;
         this.setState({ loading: true });
@@ -254,7 +254,7 @@ define(
           this.setState({ loading: false });
         });
       },
-      _showError: (response) => {
+      showError: (response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
             response.errors.map((error) => { return error.message; }),

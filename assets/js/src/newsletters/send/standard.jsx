@@ -194,16 +194,16 @@ define(
     });
 
     const DateTime = React.createClass({
-      _DATE_TIME_SEPARATOR: ' ',
+      DATE_TIME_SEPARATOR: ' ',
       getInitialState: function () {
-        return this._buildStateFromProps(this.props);
+        return this.buildStateFromProps(this.props);
       },
       componentWillReceiveProps: function (nextProps) {
-        this.setState(this._buildStateFromProps(nextProps));
+        this.setState(this.buildStateFromProps(nextProps));
       },
-      _buildStateFromProps: function (props) {
+      buildStateFromProps: function (props) {
         const value = props.value || defaultDateTime;
-        const [date, time] = value.split(this._DATE_TIME_SEPARATOR);
+        const [date, time] = value.split(this.DATE_TIME_SEPARATOR);
         return {
           date: date,
           time: time,
@@ -228,7 +228,7 @@ define(
         }
       },
       getDateTime: function () {
-        return [this.state.date, this.state.time].join(this._DATE_TIME_SEPARATOR);
+        return [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
       },
       render: function () {
         return (
@@ -253,7 +253,7 @@ define(
     });
 
     const StandardScheduling = React.createClass({
-      _getCurrentValue: function () {
+      getCurrentValue: function () {
         return _.defaults(
           this.props.item[this.props.field.name] || {},
           {
@@ -263,7 +263,7 @@ define(
         );
       },
       handleValueChange: function (event) {
-        const oldValue = this._getCurrentValue();
+        const oldValue = this.getCurrentValue();
         const newValue = {};
         newValue[event.target.name] = event.target.value;
 
@@ -280,7 +280,7 @@ define(
         return this.handleValueChange(changeEvent);
       },
       isScheduled: function () {
-        return this._getCurrentValue().isScheduled === '1';
+        return this.getCurrentValue().isScheduled === '1';
       },
       getDateValidation: function () {
         return {
@@ -297,7 +297,7 @@ define(
             <span id="mailpoet_scheduling">
               <DateTime
                 name="scheduledAt"
-                value={this._getCurrentValue().scheduledAt}
+                value={this.getCurrentValue().scheduledAt}
                 onChange={this.handleValueChange}
                 disabled={this.props.field.disabled}
                 dateValidation={this.getDateValidation()} />
