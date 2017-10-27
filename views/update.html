@@ -35,27 +35,61 @@
   </div>
 
   <hr>
+  <div id="mailpoet_random_order">
+    <div>
+      <% if(not settings.analytics.enabled) %>
+        <div class="feature-section one-col mailpoet_centered">
+          <h2><%= __('Do Your Part to Make MailPoet Better') %></h2>
+          <div class="lead-description">
 
-  <% if(not settings.analytics.enabled) %>
-    <div class="feature-section one-col mailpoet_centered">
-      <h2><%= __('Do Your Part to Make MailPoet Better') %></h2>
-      <div class="lead-description">
-
-        <label>
-          <input type="checkbox" id="mailpoet_analytics_enabled" value="1">&nbsp;
-          <%= __('Yes, share my data anonymously.') %>
-        </label>
-      </div>
-      <p class="top-space-triple"><%= __("By sharing your data with us, you can help us understand what our users like (and don't like).") %>
-        <%= __('We use it to prioritize and develop new plugin features.') %><br>
-        <%= __('Share your data to help shape the future of MailPoet! [link]Read more.[/link]')
-          |replaceLinkTags('http://beta.docs.mailpoet.com/article/130-sharing-your-data-with-us', {'target' : '_blank'})
-          |raw
-          %>
+            <label>
+              <input type="checkbox" id="mailpoet_analytics_enabled" value="1">&nbsp;
+              <%= __('Yes, share my data anonymously.') %>
+            </label>
+          </div>
+          <p class="top-space-triple"><%= __("By sharing your data with us, you can help us understand what our users like (and don't like).") %>
+            <%= __('We use it to prioritize and develop new plugin features.') %><br>
+            <%= __('Share your data to help shape the future of MailPoet! [link]Read more.[/link]')
+              |replaceLinkTags('http://beta.docs.mailpoet.com/article/130-sharing-your-data-with-us', {'target' : '_blank'})
+              |raw
+              %>
+          </p>
+        </div>
+        <hr>
+      <% endif %>
     </div>
 
-    <hr>
-  <% endif %>
+    <div>
+      <div class="feature-section one-col mailpoet_centered">
+        <h2><%= __("Subscribe To Our Newsletter") %></h2>
+        <p><%= __("About once a month, we send out a pretty cool newsletter ourselves.") %></p>
+        <p><%= __("Sign up to get a curated selection of awesome links, tips and tricks for using MailPoet, special offers, and important plugin updates!") %></p>
+        <iframe width="380" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="border-style: none; visibility: visible; background-color: #f1f1f1!important;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="<%= __("Subscribe To Our Newsletter") %>"></iframe>
+      </div>
+      <hr>
+    </div>
+
+    <div>
+      <div class="feature-section one-col mailpoet_centered">
+        <h2><%= __("Learn the Ropes") %></h2>
+        <p><%= __("New to MailPoet? Check out our brand new email course. Over the course of a week, we'll teach you how to create and send your first MailPoet email newsletter. Sign up below!") %></p>
+        <iframe width="380" height="100%" scrolling="no" frameborder="0" src="http://newsletters.mailpoet.com?mailpoet_form_iframe=4" class="mailpoet_form_iframe" vspace="0" tabindex="0" onload="if(window['MailPoet']) MailPoet.Iframe.autoSize(this);" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true"></iframe>
+      </div>
+      <hr>
+    </div>
+
+    <div>
+      <div class="feature-section one-col mailpoet_centered">
+        <h2><%= __("Leave a Review, Make Us Happy") %></h2>
+        <p><%= __('We love to read reviews, either critical or positive. Take 3 minutes and make our day. [link]Write a review[/link]. :)')
+          |replaceLinkTags('https://wordpress.org/support/plugin/mailpoet/reviews/', {'target' : '_blank'})
+          |raw
+          %>
+        </p>
+      </div>
+      <hr>
+    </div>
+  </div>
 
   <div class="feature-section one-col mailpoet_centered">
     <h2><%= __('Care to Give Your Opinion?') %></h2>
@@ -109,7 +143,15 @@
           );
         }
       });
-    })
+    });
+
+    var $random = $('#mailpoet_random_order');
+    var divs = $random.children().toArray();
+    $random.empty();
+    _.shuffle(divs).forEach(function(div) {
+      $random.append(div)
+    });
+
   });
 
 </script>
