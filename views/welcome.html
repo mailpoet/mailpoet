@@ -5,11 +5,7 @@
 <div class="wrap mailpoet-about-wrap">
   <h1><%= __('Greetings, humans.') %></h1>
 
-  <p class="about-text"><%= __('Thanks for using MailPoet! We really appreciate all of your love, affection, [link]and (good) plugin reviews.[/link]')
-    |replaceLinkTags('https://wordpress.org/support/plugin/mailpoet/reviews/', {'target' : '_blank'})
-    |raw
-    %>
-  </p>
+  <p class="about-text"><%= __('The new MailPoet. Simply better. And with regular updates.') %></p>
   <div class="mailpoet-logo"><img src="<%= image_url('welcome_template/mailpoet-logo.png') %>" alt="<%= __('MailPoet Logo') %>" /></div>
 
   <h2 class="nav-tab-wrapper wp-clearfix">
@@ -41,7 +37,6 @@
   <hr>
 
   <div class="feature-section two-col">
-    <h2><%= __('Want to Make MailPoet Even Better?') %></h2>
     <div class="col">
       <h3><%= __('Documentation Is One Click Away') %></h3>
       <p><%= __('Simply click on the blue circle in the bottom right corner of any of the MailPoet pages to access our documentation.') %> <em><%= __('Voilà!') %></em>
@@ -55,26 +50,6 @@
         <% if(settings.analytics.enabled) %>checked="checked"<% endif %>
         />&nbsp;<%= __('Yes, I want to help!') %>
       </label>
-      </p>
-    </div>
-  </div>
-
-  <hr>
-
-  <div class="feature-section two-col">
-    <div class="col">
-      <h3><%= __("Subscribe To Our Newsletter") %></h3>
-      <p><%= __("About once a month, we send out a pretty cool newsletter ourselves.") %></p>
-      <p><%= __("Sign up to get a curated selection of awesome links, tips and tricks for using MailPoet, special offers, and important plugin updates!") %></p>
-      <p>
-      <iframe width="380" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="border-style: none; display:block; visibility: visible; background-color: #f1f1f1!important;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="<%= __("Subscribe To Our Newsletter") %>"></iframe>
-      </p>
-    </div>
-    <div class="col">
-      <h3><%= __("Learn the Ropes") %></h3>
-      <p><%= __("New to MailPoet? Check out our brand new email course. Over the course of a week, we'll teach you how to create and send your first MailPoet email newsletter. Sign up below!") %></p>
-      <p>
-      <iframe width="100%" height="100%" scrolling="no" frameborder="0" src="http://newsletters.mailpoet.com?mailpoet_form_iframe=4" class="mailpoet_form_iframe" vspace="0" tabindex="0" onload="if(window['MailPoet']) MailPoet.Iframe.autoSize(this);" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true"></iframe>
       </p>
     </div>
   </div>
