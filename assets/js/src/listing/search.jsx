@@ -10,7 +10,7 @@ define([
     handleSearch: function (e) {
       e.preventDefault();
       this.props.onSearch(
-        this.refs.search.value
+        this.refs.search.value.trim()
       );
     },
     componentWillReceiveProps: function (nextProps) {
