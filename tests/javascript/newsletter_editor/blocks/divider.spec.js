@@ -70,7 +70,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
+        var innerModel;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             divider: {
@@ -86,13 +86,13 @@ define([
             }
           }
         });
-        model = new (DividerBlock.DividerBlockModel)();
+        innerModel = new (DividerBlock.DividerBlockModel)();
 
-        expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
-        expect(model.get('styles.block.padding')).to.equal('37px');
-        expect(model.get('styles.block.borderStyle')).to.equal('inset');
-        expect(model.get('styles.block.borderWidth')).to.equal('7px');
-        expect(model.get('styles.block.borderColor')).to.equal('#345678');
+        expect(innerModel.get('styles.block.backgroundColor')).to.equal('#123456');
+        expect(innerModel.get('styles.block.padding')).to.equal('37px');
+        expect(innerModel.get('styles.block.borderStyle')).to.equal('inset');
+        expect(innerModel.get('styles.block.borderWidth')).to.equal('7px');
+        expect(innerModel.get('styles.block.borderColor')).to.equal('#345678');
       });
     });
 
@@ -138,17 +138,17 @@ define([
     });
 
     describe('settings view', function () {
-      var model;
-      var view;
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         dividers: ['solid', 'inset']
       });
-      model = new (DividerBlock.DividerBlockModel)();
-      view = new (DividerBlock.DividerBlockSettingsView)({ model: model });
 
       it('renders', function () {
+        var model;
+        var view;
+        model = new (DividerBlock.DividerBlockModel)();
+        view = new (DividerBlock.DividerBlockSettingsView)({ model: model });
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_divider_selector')).to.have.length(1);
       });

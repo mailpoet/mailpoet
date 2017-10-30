@@ -34,7 +34,7 @@ define([
         });
 
         it('uses defaults from config when they are set', function () {
-          var model;
+          var innerModel;
           global.stubConfig(EditorApplication, {
             blockDefaults: {
               container: {
@@ -46,9 +46,9 @@ define([
               }
             }
           });
-          model = new (ContainerBlock.ContainerBlockModel)();
+          innerModel = new (ContainerBlock.ContainerBlockModel)();
 
-          expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
+          expect(innerModel.get('styles.block.backgroundColor')).to.equal('#123456');
         });
       });
 
@@ -109,19 +109,18 @@ define([
     });
 
     describe('block view', function () {
-      var model;
-      var view;
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      model = new (ContainerBlock.ContainerBlockModel)();
-      view = new (ContainerBlock.ContainerBlockView)({ model: model });
 
       it('renders', function () {
+        var model;
+        var view;
+        model = new (ContainerBlock.ContainerBlockModel)();
+        view = new (ContainerBlock.ContainerBlockView)({ model: model });
         expect(view.render).to.not.throw();
       });
 
       describe('once rendered', function () {
-
         describe('on root level', function () {
           var model = new (ContainerBlock.ContainerBlockModel)();
           var view;
@@ -186,19 +185,18 @@ define([
             expect(view.$('.mailpoet_duplicate_block')).to.have.length(1);
           });
         });
-
       });
     });
 
     describe('settings view', function () {
-      var model;
-      var view;
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      model = new (ContainerBlock.ContainerBlockModel)();
-      view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
 
       it('renders', function () {
+        var model;
+        var view;
+        model = new (ContainerBlock.ContainerBlockModel)();
+        view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
         expect(view.render).to.not.throw();
       });
 

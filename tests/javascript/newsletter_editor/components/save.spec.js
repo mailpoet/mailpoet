@@ -38,7 +38,7 @@ define([
       });
 
       it('triggers afterEditorSave event', function () {
-        var module;
+        var innerModule;
         var spy = sinon.spy();
         var promise = jQuery.Deferred();
         global.stubChannel(EditorApplication, {
@@ -49,19 +49,19 @@ define([
             type: 'container'
           }
         });
-        module = SaveInjector({
+        innerModule = SaveInjector({
           'newsletter_editor/components/communication': {
             saveNewsletter: sinon.stub().returns(promise)
           }
         });
         promise.resolve({ success: true });
-        module.save();
+        innerModule.save();
         expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
       });
 
       it('sends newsletter json to server for saving', function () {
         var mock = sinon.mock().once().returns(jQuery.Deferred());
-        var module = SaveInjector({
+        var innerModule = SaveInjector({
           'newsletter_editor/components/communication': {
             saveNewsletter: mock
           }
@@ -69,13 +69,13 @@ define([
         global.stubChannel(EditorApplication);
 
         EditorApplication.toJSON = sinon.stub().returns({});
-        module.save();
+        innerModule.save();
 
         mock.verify();
       });
 
       it('encodes newsletter body in JSON format', function () {
-        var module;
+        var innerModule;
         var body = { type: 'testType' };
         var mock = sinon.mock()
           .once()
@@ -88,27 +88,25 @@ define([
         EditorApplication.toJSON = sinon.stub().returns({
           body: body
         });
-        module = SaveInjector({
+        innerModule = SaveInjector({
           'newsletter_editor/components/communication': {
             saveNewsletter: mock
           }
         });
-        module.save();
+        innerModule.save();
 
         mock.verify();
       });
-
     });
 
     describe('view', function () {
-      var view;
       before(function () {
         EditorApplication._contentContainer = { isValid: sinon.stub().returns(true) };
         global.stubConfig(EditorApplication);
-        view = new (SaveComponent.SaveView)();
       });
 
       it('renders', function () {
+        var view = new (SaveComponent.SaveView)();
         expect(view.render).to.not.throw();
       });
 
@@ -139,7 +137,6 @@ define([
           var mock = sinon.mock({ post: function () {} }).expects('post').once().returns(jQuery.Deferred());
           var html2canvasMock = jQuery.Deferred();
           var module;
-          var view;
 
           html2canvasMock.resolve({
             toDataURL: function () { return 'somedataurl'; }
@@ -179,7 +176,6 @@ define([
 
         it('saves newsletter when clicked on "next" button', function () {
           var spy = sinon.spy();
-          var view;
           var module = SaveInjector({
             'newsletter_editor/components/communication': {
               saveNewsletter: function () {
@@ -197,7 +193,6 @@ define([
           expect(spy).to.have.callCount(1);
           expect(spy).to.have.been.calledWith('beforeEditorSave');
         });
-
       });
     });
   });

@@ -132,7 +132,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
+        var innerModel;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             posts: {
@@ -180,35 +180,35 @@ define([
             }
           }
         });
-        model = new (PostsBlock.PostsBlockModel)();
+        innerModel = new (PostsBlock.PostsBlockModel)();
 
-        expect(model.get('amount')).to.equal('17');
-        expect(model.get('contentType')).to.equal('mailpoet_page');
-        expect(model.get('inclusionType')).to.equal('exclude');
-        expect(model.get('displayType')).to.equal('full');
-        expect(model.get('titleFormat')).to.equal('h3');
-        expect(model.get('titleAlignment')).to.equal('right');
-        expect(model.get('titleIsLink')).to.equal(true);
-        expect(model.get('imageFullWidth')).to.equal(false);
-        expect(model.get('featuredImagePosition')).to.equal('aboveTitle');
-        expect(model.get('showAuthor')).to.equal('belowText');
-        expect(model.get('authorPrecededBy')).to.equal('Custom config author preceded by');
-        expect(model.get('showCategories')).to.equal('belowText');
-        expect(model.get('categoriesPrecededBy')).to.equal('Custom config categories preceded by');
-        expect(model.get('readMoreType')).to.equal('button');
-        expect(model.get('readMoreText')).to.equal('Custom Config read more text');
-        expect(model.get('readMoreButton.text')).to.equal('Custom config read more');
-        expect(model.get('readMoreButton.url')).to.equal('[postLink]');
-        expect(model.get('readMoreButton.styles.block.backgroundColor')).to.equal('#123456');
-        expect(model.get('readMoreButton.styles.block.borderColor')).to.equal('#234567');
-        expect(model.get('readMoreButton.styles.link.fontColor')).to.equal('#345678');
-        expect(model.get('readMoreButton.styles.link.fontFamily')).to.equal('Tahoma');
-        expect(model.get('readMoreButton.styles.link.fontSize')).to.equal('37px');
-        expect(model.get('sortBy')).to.equal('oldest');
-        expect(model.get('showDivider')).to.equal(true);
-        expect(model.get('divider.src')).to.equal('http://example.org/someConfigDividerImage.png');
-        expect(model.get('divider.styles.block.backgroundColor')).to.equal('#456789');
-        expect(model.get('divider.styles.block.padding')).to.equal('38px');
+        expect(innerModel.get('amount')).to.equal('17');
+        expect(innerModel.get('contentType')).to.equal('mailpoet_page');
+        expect(innerModel.get('inclusionType')).to.equal('exclude');
+        expect(innerModel.get('displayType')).to.equal('full');
+        expect(innerModel.get('titleFormat')).to.equal('h3');
+        expect(innerModel.get('titleAlignment')).to.equal('right');
+        expect(innerModel.get('titleIsLink')).to.equal(true);
+        expect(innerModel.get('imageFullWidth')).to.equal(false);
+        expect(innerModel.get('featuredImagePosition')).to.equal('aboveTitle');
+        expect(innerModel.get('showAuthor')).to.equal('belowText');
+        expect(innerModel.get('authorPrecededBy')).to.equal('Custom config author preceded by');
+        expect(innerModel.get('showCategories')).to.equal('belowText');
+        expect(innerModel.get('categoriesPrecededBy')).to.equal('Custom config categories preceded by');
+        expect(innerModel.get('readMoreType')).to.equal('button');
+        expect(innerModel.get('readMoreText')).to.equal('Custom Config read more text');
+        expect(innerModel.get('readMoreButton.text')).to.equal('Custom config read more');
+        expect(innerModel.get('readMoreButton.url')).to.equal('[postLink]');
+        expect(innerModel.get('readMoreButton.styles.block.backgroundColor')).to.equal('#123456');
+        expect(innerModel.get('readMoreButton.styles.block.borderColor')).to.equal('#234567');
+        expect(innerModel.get('readMoreButton.styles.link.fontColor')).to.equal('#345678');
+        expect(innerModel.get('readMoreButton.styles.link.fontFamily')).to.equal('Tahoma');
+        expect(innerModel.get('readMoreButton.styles.link.fontSize')).to.equal('37px');
+        expect(innerModel.get('sortBy')).to.equal('oldest');
+        expect(innerModel.get('showDivider')).to.equal(true);
+        expect(innerModel.get('divider.src')).to.equal('http://example.org/someConfigDividerImage.png');
+        expect(innerModel.get('divider.styles.block.backgroundColor')).to.equal('#456789');
+        expect(innerModel.get('divider.styles.block.padding')).to.equal('38px');
       });
 
       it('resets offset when fetching posts', function () {
@@ -320,7 +320,8 @@ define([
         global.stubConfig(EditorApplication, {
           blockDefaults: {}
         });
-        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
+        EditorApplication.getBlockTypeModel = sinon.stub()
+          .returns(ContainerBlock.ContainerBlockModel);
         model = new (PostsBlock.PostsBlockModel)();
         view = new (PostsBlock.PostsBlockSettingsView)({ model: model });
       });
@@ -424,46 +425,46 @@ define([
         });
 
         describe('when "title only" display type is selected', function () {
-          var model;
-          var view;
+          var innerModel;
+          var innerView;
           beforeEach(function () {
-            model = new (PostsBlock.PostsBlockModel)();
-            model.request = sinon.stub().returns({ $el: {} });
-            view = new (PostsBlock.PostsBlockSettingsView)({ model: model });
-            view.render();
-            view.$('.mailpoet_posts_display_type').val('titleOnly').change();
+            innerModel = new (PostsBlock.PostsBlockModel)();
+            innerModel.request = sinon.stub().returns({ $el: {} });
+            innerView = new (PostsBlock.PostsBlockSettingsView)({ model: innerModel });
+            innerView.render();
+            innerView.$('.mailpoet_posts_display_type').val('titleOnly').change();
           });
 
           it('shows "title as list" option', function () {
-            expect(view.$('.mailpoet_posts_title_as_list')).to.not.have.$class('mailpoet_hidden');
+            expect(innerView.$('.mailpoet_posts_title_as_list')).to.not.have.$class('mailpoet_hidden');
           });
 
           describe('when "title as list" is selected', function () {
             beforeEach(function () {
-              view.$('.mailpoet_posts_display_type').val('titleOnly').change();
-              view.$('.mailpoet_posts_title_format').val('ul').change();
+              innerView.$('.mailpoet_posts_display_type').val('titleOnly').change();
+              innerView.$('.mailpoet_posts_title_format').val('ul').change();
             });
 
             describe('"title is link" option', function () {
               it('is hidden', function () {
-                expect(view.$('.mailpoet_posts_title_as_link')).to.have.$class('mailpoet_hidden');
+                expect(innerView.$('.mailpoet_posts_title_as_link')).to.have.$class('mailpoet_hidden');
               });
 
               it('is set to "yes"', function () {
-                expect(model.get('titleIsLink')).to.equal(true);
+                expect(innerModel.get('titleIsLink')).to.equal(true);
               });
             });
           });
 
           describe('when "title as list" is deselected', function () {
             before(function () {
-              view.$('.mailpoet_posts_title_format').val('ul').change();
-              view.$('.mailpoet_posts_title_format').val('h3').change();
+              innerView.$('.mailpoet_posts_title_format').val('ul').change();
+              innerView.$('.mailpoet_posts_title_format').val('h3').change();
             });
 
             describe('"title is link" option', function () {
               it('is visible', function () {
-                expect(view.$('.mailpoet_posts_title_as_link')).to.not.have.$class('mailpoet_hidden');
+                expect(innerView.$('.mailpoet_posts_title_as_link')).to.not.have.$class('mailpoet_hidden');
               });
             });
           });

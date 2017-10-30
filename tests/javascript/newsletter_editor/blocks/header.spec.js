@@ -79,7 +79,7 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
+        var innerModel;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             header: {
@@ -102,16 +102,16 @@ define([
             }
           }
         });
-        model = new (HeaderBlock.HeaderBlockModel)();
+        innerModel = new (HeaderBlock.HeaderBlockModel)();
 
-        expect(model.get('text')).to.equal('some custom config text');
-        expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
-        expect(model.get('styles.text.fontColor')).to.equal('#234567');
-        expect(model.get('styles.text.fontFamily')).to.equal('Tahoma');
-        expect(model.get('styles.text.fontSize')).to.equal('37px');
-        expect(model.get('styles.text.textAlign')).to.equal('right');
-        expect(model.get('styles.link.fontColor')).to.equal('#345678');
-        expect(model.get('styles.link.textDecoration')).to.equal('underline');
+        expect(innerModel.get('text')).to.equal('some custom config text');
+        expect(innerModel.get('styles.block.backgroundColor')).to.equal('#123456');
+        expect(innerModel.get('styles.text.fontColor')).to.equal('#234567');
+        expect(innerModel.get('styles.text.fontFamily')).to.equal('Tahoma');
+        expect(innerModel.get('styles.text.fontSize')).to.equal('37px');
+        expect(innerModel.get('styles.text.textAlign')).to.equal('right');
+        expect(innerModel.get('styles.link.fontColor')).to.equal('#345678');
+        expect(innerModel.get('styles.link.textDecoration')).to.equal('underline');
       });
     });
 
@@ -135,18 +135,18 @@ define([
     });
 
     describe('settings view', function () {
-      var model;
-      var view;
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         fonts: ['Arial', 'Tahoma'],
         textSizes: ['16px', '20px']
       });
-      model = new (HeaderBlock.HeaderBlockModel)();
-      view = new (HeaderBlock.HeaderBlockSettingsView)({ model: model });
 
       it('renders', function () {
+        var model;
+        var view;
+        model = new (HeaderBlock.HeaderBlockModel)();
+        view = new (HeaderBlock.HeaderBlockSettingsView)({ model: model });
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_field_header_text_color')).to.have.length(1);
       });

@@ -175,7 +175,6 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             automatedLatestContent: {
@@ -255,8 +254,8 @@ define([
       });
 
       it('accepts displayable posts', function () {
-        var model;
-        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
+        EditorApplication.getBlockTypeModel = sinon.stub()
+          .returns(ContainerBlock.ContainerBlockModel);
         model = new (module.AutomatedLatestContentBlockModel)();
 
         model.updatePosts([{
@@ -306,7 +305,9 @@ define([
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({ model: { set: sinon.stub() } });
+        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({
+          model: { set: sinon.stub() }
+        });
       });
 
       it('listens to the event', function () {
@@ -501,8 +502,6 @@ define([
         });
 
         describe('when "title only" display type is selected', function () {
-          var model;
-          var view;
           beforeEach(function () {
             model = new (module.AutomatedLatestContentBlockModel)();
             view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
@@ -515,8 +514,6 @@ define([
           });
 
           describe('when "title as list" is selected', function () {
-            var model;
-            var view;
             beforeEach(function () {
               model = new (module.AutomatedLatestContentBlockModel)();
               view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });

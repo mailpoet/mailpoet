@@ -108,7 +108,6 @@ define([
       });
 
       it('uses defaults from config when they are set', function () {
-        var model;
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             button: {
@@ -174,12 +173,12 @@ define([
       });
 
       describe('once rendered', function () {
-        var model;
+        var innerModel;
         var view;
 
         before(function () {
           global.stubChannel(EditorApplication);
-          model = new (ButtonBlock.ButtonBlockModel)({
+          innerModel = new (ButtonBlock.ButtonBlockModel)({
             text: 'Some button',
             url: 'http://example.org',
             styles: {
@@ -198,16 +197,16 @@ define([
               }
             }
           });
-          view = new (ButtonBlock.ButtonBlockView)({ model: model });
+          view = new (ButtonBlock.ButtonBlockView)({ model: innerModel });
           view.render();
         });
 
         it('has a specified text', function () {
-          expect(view.$('.mailpoet_editor_button').text()).to.equal(model.get('text'));
+          expect(view.$('.mailpoet_editor_button').text()).to.equal(innerModel.get('text'));
         });
 
         it('has a specified button url', function () {
-          expect(view.$('.mailpoet_editor_button').attr('href')).to.equal(model.get('url'));
+          expect(view.$('.mailpoet_editor_button').attr('href')).to.equal(innerModel.get('url'));
         });
 
         it('has a specified background color', function () {
@@ -216,27 +215,27 @@ define([
         });
 
         it('has a specified border color', function () {
-          expect(view.$('.mailpoet_editor_button').css('border-color')).to.equal(model.get('styles.block.borderColor'));
+          expect(view.$('.mailpoet_editor_button').css('border-color')).to.equal(innerModel.get('styles.block.borderColor'));
         });
 
         it('has a specified border width', function () {
-          expect(view.$('.mailpoet_editor_button').css('border-width')).to.equal(model.get('styles.block.borderWidth'));
+          expect(view.$('.mailpoet_editor_button').css('border-width')).to.equal(innerModel.get('styles.block.borderWidth'));
         });
 
         it('has a specified border radius', function () {
-          expect(view.$('.mailpoet_editor_button').css('border-radius')).to.equal(model.get('styles.block.borderRadius'));
+          expect(view.$('.mailpoet_editor_button').css('border-radius')).to.equal(innerModel.get('styles.block.borderRadius'));
         });
 
         it('has a specified border style', function () {
-          expect(view.$('.mailpoet_editor_button').css('border-style')).to.equal(model.get('styles.block.borderStyle'));
+          expect(view.$('.mailpoet_editor_button').css('border-style')).to.equal(innerModel.get('styles.block.borderStyle'));
         });
 
         it('has a specified width', function () {
-          expect(view.$('.mailpoet_editor_button').css('width')).to.equal(model.get('styles.block.width'));
+          expect(view.$('.mailpoet_editor_button').css('width')).to.equal(innerModel.get('styles.block.width'));
         });
 
         it('has a specified line height', function () {
-          expect(view.$('.mailpoet_editor_button').css('lineHeight')).to.equal(model.get('styles.block.lineHeight'));
+          expect(view.$('.mailpoet_editor_button').css('lineHeight')).to.equal(innerModel.get('styles.block.lineHeight'));
         });
 
         it('has a specified font color', function () {
@@ -245,20 +244,20 @@ define([
         });
 
         it('has a specified font family', function () {
-          expect(view.$('.mailpoet_editor_button').css('font-family')).to.contain(model.get('styles.block.fontFamily'));
+          expect(view.$('.mailpoet_editor_button').css('font-family')).to.contain(innerModel.get('styles.block.fontFamily'));
         });
 
         it('has a specified font size', function () {
-          expect(view.$('.mailpoet_editor_button').css('font-size')).to.equal(model.get('styles.block.fontSize'));
+          expect(view.$('.mailpoet_editor_button').css('font-size')).to.equal(innerModel.get('styles.block.fontSize'));
         });
 
         it('has a specified font weight', function () {
-          expect(view.$('.mailpoet_editor_button').css('font-weight')).to.equal(model.get('styles.block.fontWeight'));
+          expect(view.$('.mailpoet_editor_button').css('font-weight')).to.equal(innerModel.get('styles.block.fontWeight'));
         });
 
         it('opens settings if clicked', function () {
           var mock = sinon.mock().once();
-          model.on('startEditing', mock);
+          innerModel.on('startEditing', mock);
           view.$('.mailpoet_editor_button').click();
           mock.verify();
         });
@@ -320,7 +319,6 @@ define([
       });
 
       describe('once rendered', function () {
-        var model;
         var view;
         before(function () {
           global.stubChannel(EditorApplication);

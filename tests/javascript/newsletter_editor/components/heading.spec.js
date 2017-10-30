@@ -5,7 +5,6 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/components/heading'
 ], function (EditorApplication, HeadingComponent) {
-
   describe('Heading', function () {
     describe('view', function () {
       var view;
@@ -23,7 +22,6 @@ define([
       });
 
       describe('once rendered', function () {
-        var view;
         var model;
         beforeEach(function () {
           model = new Backbone.SuperModel({
