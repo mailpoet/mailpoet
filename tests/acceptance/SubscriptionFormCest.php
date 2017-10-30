@@ -14,6 +14,7 @@ class SubscriptionFormCest
     $I->fillField('input[title="Email"]', 'test-email@example.com');
     $I->click('.mailpoet_submit');
     $I->waitForText('Check your inbox or spam folder to confirm your subscription.', 3, '.mailpoet_validate_success');
+    $I->seeNoJSErrors();
   }
 
   function _after(\AcceptanceTester $I) {
