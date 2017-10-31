@@ -49,7 +49,7 @@ const stats = {
 };
 
 class StatsBadge extends React.Component {
-  getBadgeType(stat, rate) {
+  static getBadgeType(stat, rate) {
     const len = stat.badgeRanges.length;
     for (let i = 0; i < len; i += 1) {
       if (rate > stat.badgeRanges[i]) {
@@ -70,7 +70,7 @@ class StatsBadge extends React.Component {
       return null;
     }
 
-    const badgeType = this.getBadgeType(stat, rate);
+    const badgeType = StatsBadge.getBadgeType(stat, rate);
     const badge = badges[badgeType] || null;
     if (!badge) {
       return null;
