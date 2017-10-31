@@ -12,7 +12,7 @@ use MailPoet\Settings\Pages;
 class Reporter {
 
   function getData() {
-
+    global $wpdb, $wp_version;
     $mta = Setting::getValue('mta', array());
     $newsletters = Newsletter::getAnalytics();
     $isCronTriggerMethodWP = Setting::getValue('cron_trigger.method') === CronTrigger::$available_methods['wordpress'];
@@ -22,6 +22,15 @@ class Reporter {
 
     return array(
       'PHP version' => PHP_VERSION,
+      'MySQL version' => $wpdb->db_version(),
+      'WordPress version' => $wp_version,
+      'Multisite environment' => is_multisite() ? 'yes' : 'no',
+      'RTL' => is_rtl() ? 'yes' : 'no',
+      'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
+      'WP_MAX_MEMORY_LIMIT' => WP_MAX_MEMORY_LIMIT,
+      'PHP memory_limit' => ini_get('memory_limit'),
+      'PHP max_execution_time' => ini_get('max_execution_time'),
+      'users_can_register' => get_option('users_can_register') ? 'yes' : 'no',
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
       'Total number of subscribers' =>  Subscriber::getTotalSubscribers(),
