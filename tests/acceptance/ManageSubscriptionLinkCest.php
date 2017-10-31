@@ -62,6 +62,7 @@ class ManageSubscriptionLinkCest {
     $I->click('Save');
     $I->wait(3);
     $I->seeOptionIsSelected('.mailpoet_select', 'Subscribed');
+    $I->seeNoJSErrors();
   }
 
   function unsubscribeLink(\AcceptanceTester $I) {
@@ -76,5 +77,6 @@ class ManageSubscriptionLinkCest {
     $I->click('Manage your subscription');
     $I->wait(3);
     $I->seeOptionIsSelected('.mailpoet_select', 'Unsubscribed');
+    $I->seeNoJSErrors();
   }
 }
