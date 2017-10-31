@@ -142,17 +142,17 @@ define(
       handleValueChange: function (e) {
         if (this.props.onChange) {
           return this.props.onChange(e);
-        } else {
-          const item = this.state.item;
-          const field = e.target.name;
-
-          item[field] = e.target.value;
-
-          this.setState({
-            item: item,
-          });
-          return true;
         }
+        const item = this.state.item;
+        const field = e.target.name;
+
+        item[field] = e.target.value;
+
+        this.setState({
+          item: item,
+        });
+        return true;
+
       },
       render: function () {
         let errors;

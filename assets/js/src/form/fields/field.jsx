@@ -77,14 +77,14 @@ define([
             { description }
           </span>
         );
-      } else {
-        return (
-          <div key={'field-' + (data.index || 0)}>
-            { field }
-            { description }
-          </div>
-        );
       }
+      return (
+        <div key={'field-' + (data.index || 0)}>
+          { field }
+          { description }
+        </div>
+      );
+
     },
     render: function () {
       let field = false;

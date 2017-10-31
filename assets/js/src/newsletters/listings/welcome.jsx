@@ -207,11 +207,11 @@ const NewsletterListWelcome = React.createClass({
               { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
             </span>
           );
-        } else {
-          sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
+        }
+        sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
             '%$1s', segment.name
           );
-        }
+
         break;
     }
 
