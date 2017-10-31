@@ -699,7 +699,7 @@
         // get test email and include it in data
         var recipient = $('#mailpoet_mta_test_email').val();
 
-        var settings = jQuery('#mailpoet_settings_form').serializeObject();
+        var settings = jQuery('#mailpoet_settings_form').mailpoetSerializeObject();
         var mailer = settings.mta;
 
         mailer.method = getMethodFromGroup($('#mta_group').val());

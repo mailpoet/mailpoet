@@ -1060,7 +1060,7 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
       template: window.jQuery('#form_template_field_settings').html(),
       data: this.getData(),
       onSuccess: function () {
-        var data = window.jQuery('#form_field_settings').serializeObject();
+        var data = window.jQuery('#form_field_settings').mailpoetSerializeObject();
         this.redraw(data);
       }.bind(this)
     });

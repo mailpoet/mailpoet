@@ -30,7 +30,7 @@ function (
         });
 
         form.parsley().on('form:submit', function (parsley) {
-          var form_data = form.serializeObject() || {};
+          var form_data = form.mailpoetSerializeObject() || {};
           // check if we're on the same domain
           if (isSameDomain(window.MailPoetForm.ajax_url) === false) {
             // non ajax post request

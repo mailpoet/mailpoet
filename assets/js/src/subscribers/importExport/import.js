@@ -771,7 +771,7 @@ define(
                   });
                   jQuery('#form_field_new').parsley().on('form:submit', function () {
                     // get data
-                    var data = jQuery(this.$element).serializeObject();
+                    var data = jQuery(this.$element).mailpoetSerializeObject();
 
                     // save custom field
                     MailPoet.Ajax.post({

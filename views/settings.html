@@ -80,7 +80,7 @@
 
         function saveSettings() {
           // serialize form data
-          var settings_data = $('#mailpoet_settings_form').serializeObject();
+          var settings_data = $('#mailpoet_settings_form').mailpoetSerializeObject();
 
           // show loading screen
           MailPoet.Modal.loading(true);

@@ -44,7 +44,7 @@ define(
             this.loadItem(this.props.params.id);
           } else {
             this.setState({
-              item: jQuery('.mailpoet_form').serializeObject(),
+              item: jQuery('.mailpoet_form').mailpoetSerializeObject(),
             });
           }
         }

@@ -23,7 +23,7 @@ define(
      * Dual licensed under the MIT and GPL licenses.
      * http://benalman.com/about/license/
      */
-    $.fn.serializeObject = function (coerce) {
+    $.fn.mailpoetSerializeObject = function (coerce) {
       var obj = {};
       var coerce_types = { true: !0, false: !1, null: null };
 
