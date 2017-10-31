@@ -60,12 +60,10 @@ define([
         templateResult: function (item) {
           if (item.element && item.element.selected) {
             return null;
+          } else if (item.title) {
+            return item.title;
           } else {
-            if (item.title) {
-              return item.title;
-            } else {
-              return item.text;
-            }
+            return item.text;
           }
         },
       });
