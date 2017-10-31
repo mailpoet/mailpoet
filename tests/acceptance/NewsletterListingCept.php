@@ -1,15 +1,16 @@
 <?php
-/*
- * Test summary: Test Newsletters page works
- *
- * Test details:
- * - Open newsletters from the menu
- */
-$I = new AcceptanceTester($scenario);
-$I->wantTo('Open newsletters page');
 
-$I->loginAsAdmin();
-$I->seeInCurrentUrl('/wp-admin/');
-// Go to Status
-$I->amOnMailpoetPage('Emails');
-$I->waitForElement('#newsletters_container', 3);
+namespace MailPoet\Test\Acceptance;
+
+class NewsletterListingCept {
+  function newsletterListing(\AcceptanceTester $I) {
+    $I->wantTo('Open newsletters listings page');
+
+    $I->loginAsAdmin();
+    $I->seeInCurrentUrl('/wp-admin/');
+
+    // Go to Status
+    $I->amOnMailpoetPage('Emails');
+    $I->waitForElement('#newsletters_container', 3);
+  }
+}

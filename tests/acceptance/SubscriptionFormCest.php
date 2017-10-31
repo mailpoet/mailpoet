@@ -2,14 +2,14 @@
 
 namespace MailPoet\Test\Acceptance;
 
-class SubscriptionFormCest
-{
+class SubscriptionFormCest {
   function _before(\AcceptanceTester $I) {
     $I->cli('widget add mailpoet_form sidebar-1 2 --form=1 --title="Subscribe to Our Newsletter" --allow-root');
   }
 
-  // tests
-  function subscriptionFormWidgetSubscribe(\AcceptanceTester $I) {
+  function subscriptionFormWidget(\AcceptanceTester $I) {
+    $I->wantTo('Subscribe using form widget');
+
     $I->amOnPage('/');
     $I->fillField('input[title="Email"]', 'test-email@example.com');
     $I->click('.mailpoet_submit');
