@@ -266,6 +266,7 @@ class WPTest extends \MailPoetTest  {
          %s
        WHERE
          user_email LIKE "user-sync-test%%"
+         OR user_login LIKE "user-sync-test%%"
     ', $wpdb->users));
     $db->exec(sprintf('
        DELETE FROM
