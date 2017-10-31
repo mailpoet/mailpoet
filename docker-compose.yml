@@ -11,12 +11,19 @@ services:
       - ./:/wp-core/wp-content/plugins/mailpoet
     entrypoint: /docker-entrypoint.sh
 
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+
   wordpress:
     build: ./tests/wordpressDockerfile
     image: wordpress:latest
     depends_on:
       - mysql
       - chrome
+      - mailhog
     volumes:
       - wp-core:/var/www/html
       - ./:/var/www/html/wp-content/plugins/mailpoet
@@ -42,7 +49,7 @@ services:
       - /dev/shm:/dev/shm
     image: selenium/standalone-chrome-debug
     ports:
-      - '4444'
-      - '5900:5900'
+      - 4444
+      - 5900:5900
 volumes:
   wp-core:
