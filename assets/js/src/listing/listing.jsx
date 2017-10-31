@@ -321,14 +321,13 @@ const Listing = React.createClass({
     if (params.splat) {
       params.splat.split('/').map((param) => {
         const [key, value] = this.getParam(param);
+        const filters = {};
         switch (key) {
           case 'filter':
-            const filters = {};
             value.split('&').map((pair) => {
               const [k, v] = pair.split('=');
               filters[k] = v;
-            }
-            );
+            });
 
             state.filter = filters;
             break;
