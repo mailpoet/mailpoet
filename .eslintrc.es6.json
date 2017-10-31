@@ -48,7 +48,6 @@
     "camelcase": 0,
     "eqeqeq": 0,
     "space-unary-ops": 0,
-    "no-sequences": 0,
     "no-extra-boolean-cast": 0,
     "dot-notation": 0,
     "no-shadow": 0,
