@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.0.8
+Stable tag: 3.0.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.9 - 2017-10-31 =
+* Improved: search forms in listings ignore preceding and trailing whitespace;
+* Fixed: tags aren't shown within categories for automated latest content posts anymore. Thanks Gregor!
+* Fixed: our subscription form no longer conflicts with themes/plugins that use jQuery Serialize Object function. Thanks Albert!
 
 = 3.0.8 - 2017-10-24 =
 * Improved: unsubscribe link now works in browser and email previews;
