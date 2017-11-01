@@ -105,7 +105,7 @@ class Widget {
     wp_enqueue_script(
       'mailpoet_public',
       Env::$assets_url . '/js/' . $this->renderer->getJsAsset('public.js'),
-      array(),
+      array('jquery'),
       Env::$version,
       true
     );
