@@ -5,11 +5,7 @@
 <div class="wrap mailpoet-about-wrap">
   <h1><%= __('Greetings, humans.') %></h1>
 
-  <p class="about-text"><%= __('Thanks for using MailPoet! We really appreciate all of your love, affection, [link]and (good) plugin reviews.[/link]')
-    |replaceLinkTags('https://wordpress.org/support/plugin/mailpoet/reviews/', {'target' : '_blank'})
-    |raw
-    %>
-  </p>
+  <p class="about-text"><%= __('The new MailPoet. Simply better. And with regular updates.') %></p>
   <div class="mailpoet-logo"><img src="<%= image_url('welcome_template/mailpoet-logo.png') %>" alt="MailPoet Logo" /></div>
 
   <h2 class="nav-tab-wrapper wp-clearfix">
@@ -152,6 +148,35 @@
       $random.append(div)
     });
 
+  });
+
+  $(function() {
+    $("#mailpoet_analytics_enabled").on("click", function() {
+      var is_enabled = $(this).is(":checked") ? true : "";
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: "settings",
+        action: "set",
+        data: {
+          analytics: { enabled: (is_enabled)}
+        }
+      }).fail(function(response) {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
+          );
+        }
+      });
+
+      if (is_enabled) {
+        MailPoet.forceTrackEvent(
+          'User has installed MailPoet',
+          {'MailPoet Free version': window.mailpoet_version}
+        );
+      }
+
+    })
   });
 
 </script>
