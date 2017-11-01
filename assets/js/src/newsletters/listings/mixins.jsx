@@ -59,87 +59,87 @@ const _QueueMixin = {
       return (
         <span>{MailPoet.I18n.t('paused')}</span>
       );
-    } else {
-      if (newsletter.queue.status === 'scheduled') {
-        return (
-          <span>
-            { MailPoet.I18n.t('scheduledFor') } { MailPoet.Date.format(newsletter.queue.scheduled_at) }
-          </span>
-        );
-      }
-      const progressClasses = classNames(
+    }
+    if (newsletter.queue.status === 'scheduled') {
+      return (
+        <span>
+          { MailPoet.I18n.t('scheduledFor') } { MailPoet.Date.format(newsletter.queue.scheduled_at) }
+        </span>
+      );
+    }
+    const progressClasses = classNames(
         'mailpoet_progress',
         { mailpoet_progress_complete: newsletter.queue.status === 'completed' }
       );
 
       // calculate percentage done
-      let percentage = Math.round(
+    let percentage = Math.round(
         (newsletter.queue.count_processed * 100) / (newsletter.queue.count_total)
       );
 
-      let label;
+    let label;
 
-      if (newsletter.queue.status === 'completed') {
-        label = (
-          <span>
-            {
+    if (newsletter.queue.status === 'completed') {
+      label = (
+        <span>
+          {
               MailPoet.I18n.t('newsletterQueueCompleted')
               .replace('%$1d', parseInt(newsletter.queue.count_processed, 10).toLocaleString())
               .replace('%$2d', parseInt(newsletter.queue.count_total, 10).toLocaleString())
             }
-          </span>
+        </span>
         );
-      } else {
-        label = (
-          <span>
-            { newsletter.queue.count_processed } / { newsletter.queue.count_total }
+    } else {
+      label = (
+        <span>
+          { newsletter.queue.count_processed } / { newsletter.queue.count_total }
             &nbsp;&nbsp;
-            <a
-              id={'resume_' + newsletter.id}
-              className="button"
-              style={{ display: (newsletter.queue.status === 'paused')
+          <a
+            id={'resume_' + newsletter.id}
+            className="button"
+            style={{ display: (newsletter.queue.status === 'paused')
                 ? 'inline-block' : 'none' }}
-              href="javascript:;"
-              onClick={this.resumeSending.bind(null, newsletter)}
+            href="javascript:;"
+            onClick={this.resumeSending.bind(null, newsletter)}
             >{MailPoet.I18n.t('resume')}</a>
-            <a
-              id={'pause_' + newsletter.id}
-              className="button mailpoet_pause"
-              style={{ display: (newsletter.queue.status === null)
+          <a
+            id={'pause_' + newsletter.id}
+            className="button mailpoet_pause"
+            style={{ display: (newsletter.queue.status === null)
                   ? 'inline-block' : 'none' }}
-              href="javascript:;"
-              onClick={this.pauseSending.bind(null, newsletter)}
+            href="javascript:;"
+            onClick={this.pauseSending.bind(null, newsletter)}
             >{MailPoet.I18n.t('pause')}</a>
-          </span>
+        </span>
         );
-      }
-
-      let progress_bar_width = 0;
-
-      if (isNaN(percentage)) {
-        percentage = MailPoet.I18n.t('noSubscribers');
-      } else {
-        progress_bar_width = percentage;
-        percentage += '%';
-      }
-
-      return (
-        <div>
-          <div className={progressClasses}>
-            <span
-              className="mailpoet_progress_bar"
-              style={{ width: progress_bar_width + '%' }}
-              ></span>
-            <span className="mailpoet_progress_label">
-              { percentage }
-            </span>
-          </div>
-          <p style={{ textAlign: 'center' }}>
-            { label }
-          </p>
-        </div>
-      );
     }
+
+    let progress_bar_width = 0;
+
+    if (isNaN(percentage)) {
+      percentage = MailPoet.I18n.t('noSubscribers');
+    } else {
+      progress_bar_width = percentage;
+      percentage += '%';
+    }
+
+    return (
+      <div>
+        <div className={progressClasses}>
+          <span
+            className="mailpoet_progress_bar"
+            style={{ width: progress_bar_width + '%' }}
+              ></span>
+          <span className="mailpoet_progress_label">
+            { percentage }
+          </span>
+        </div>
+        <p style={{ textAlign: 'center' }}>
+          { label }
+        </p>
+      </div>
+    );
+
   },
 };
 
@@ -303,20 +303,20 @@ const _StatisticsMixin = {
             {after_content}
           </div>
         );
-      } else {
-        return (
-          <div>
-            <Link
-              key={`stats-${newsletter.id}`}
-              to={params.link}
-              onClick={params.onClick || null}
-            >
-              {content}
-            </Link>
-            {after_content}
-          </div>
-        );
       }
+      return (
+        <div>
+          <Link
+            key={`stats-${newsletter.id}`}
+            to={params.link}
+            onClick={params.onClick || null}
+            >
+            {content}
+          </Link>
+          {after_content}
+        </div>
+      );
+
     }
 
     return (

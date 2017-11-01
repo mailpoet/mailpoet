@@ -60,13 +60,11 @@ define([
         templateResult: function (item) {
           if (item.element && item.element.selected) {
             return null;
-          } else {
-            if (item.title) {
-              return item.title;
-            } else {
-              return item.text;
-            }
+          } else if (item.title) {
+            return item.title;
           }
+          return item.text;
+
         },
       });
 
@@ -156,9 +154,9 @@ define([
     transformChangedValue: function (value) {
       if (typeof this.props.field['transformChangedValue'] === 'function') {
         return this.props.field.transformChangedValue.call(this, value);
-      } else {
-        return value;
       }
+      return value;
+
     },
     render: function () {
       const options = this.state.items.map((item, index) => {

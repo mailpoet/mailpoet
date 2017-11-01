@@ -223,24 +223,24 @@ const ListingItems = React.createClass({
           </tr>
         </tbody>
       );
-    } else {
-      const select_all_classes = classNames(
+    }
+    const select_all_classes = classNames(
         'mailpoet_select_all',
-        { mailpoet_hidden: (
+      { mailpoet_hidden: (
             this.props.selection === false
             || (this.props.count <= this.props.limit)
           ),
-        }
+      }
       );
 
-      return (
-        <tbody>
-          <tr className={select_all_classes}>
-            <td colSpan={
+    return (
+      <tbody>
+        <tr className={select_all_classes}>
+          <td colSpan={
                 this.props.columns.length
                 + (this.props.is_selectable ? 1 : 0)
               }>
-              {
+            {
                 (this.props.selection !== 'all')
                 ? MailPoet.I18n.t('selectAllLabel')
                 : MailPoet.I18n.t('selectedAllLabel').replace(
@@ -249,41 +249,41 @@ const ListingItems = React.createClass({
                 )
               }
               &nbsp;
-              <a
-                onClick={this.props.onSelectAll}
-                href="javascript:;">{
+            <a
+              onClick={this.props.onSelectAll}
+              href="javascript:;">{
                   (this.props.selection !== 'all')
                   ? MailPoet.I18n.t('selectAllLink')
                   : MailPoet.I18n.t('clearSelection')
                 }</a>
-            </td>
-          </tr>
+          </td>
+        </tr>
 
-          {this.props.items.map((item, index) => {
-            const renderItem = item;
-            renderItem.id = parseInt(item.id, 10);
-            renderItem.selected = (this.props.selected_ids.indexOf(renderItem.id) !== -1);
+        {this.props.items.map((item, index) => {
+          const renderItem = item;
+          renderItem.id = parseInt(item.id, 10);
+          renderItem.selected = (this.props.selected_ids.indexOf(renderItem.id) !== -1);
 
-            return (
-              <ListingItem
-                columns={this.props.columns}
-                onSelectItem={this.props.onSelectItem}
-                onRenderItem={this.props.onRenderItem}
-                onDeleteItem={this.props.onDeleteItem}
-                onRestoreItem={this.props.onRestoreItem}
-                onTrashItem={this.props.onTrashItem}
-                onRefreshItems={this.props.onRefreshItems}
-                selection={this.props.selection}
-                is_selectable={this.props.is_selectable}
-                item_actions={this.props.item_actions}
-                group={this.props.group}
-                key={`item-${renderItem.id}-${index}`}
-                item={renderItem} />
-            );
-          })}
-        </tbody>
-      );
-    }
+          return (
+            <ListingItem
+              columns={this.props.columns}
+              onSelectItem={this.props.onSelectItem}
+              onRenderItem={this.props.onRenderItem}
+              onDeleteItem={this.props.onDeleteItem}
+              onRestoreItem={this.props.onRestoreItem}
+              onTrashItem={this.props.onTrashItem}
+              onRefreshItems={this.props.onRefreshItems}
+              selection={this.props.selection}
+              is_selectable={this.props.is_selectable}
+              item_actions={this.props.item_actions}
+              group={this.props.group}
+              key={`item-${renderItem.id}-${index}`}
+              item={renderItem} />
+          );
+        })}
+      </tbody>
+    );
+
   },
 });
 
@@ -321,14 +321,13 @@ const Listing = React.createClass({
     if (params.splat) {
       params.splat.split('/').map((param) => {
         const [key, value] = this.getParam(param);
+        const filters = {};
         switch (key) {
           case 'filter':
-            const filters = {};
             value.split('&').map((pair) => {
               const [k, v] = pair.split('=');
               filters[k] = v;
-            }
-            );
+            });
 
             state.filter = filters;
             break;
@@ -414,9 +413,9 @@ const Listing = React.createClass({
     if (base_url !== null) {
       base_url = this.setBaseUrlParams(base_url);
       return `/${base_url}/${params}`;
-    } else {
-      return `/${params}`;
     }
+    return `/${params}`;
+
   },
   setBaseUrlParams: function (base_url) {
     let ret = base_url;

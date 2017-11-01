@@ -17,7 +17,7 @@ define(
     const jQuery = jq;
 
     const currentTime = window.mailpoet_current_time || '00:00';
-    const defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
+    const defaultDateTime = window.mailpoet_current_date + ' 00:00:00';
     const timeOfDayItems = window.mailpoet_schedule_time_of_day;
     const dateDisplayFormat = window.mailpoet_date_display_format;
     const dateStorageFormat = window.mailpoet_date_storage_format;
@@ -348,7 +348,7 @@ define(
         endpoint: 'segments',
         multiple: true,
         filter: function (segment) {
-          return !!(!segment.deleted_at);
+          return !segment.deleted_at;
         },
         getLabel: function (segment) {
           return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';

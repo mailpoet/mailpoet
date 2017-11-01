@@ -180,6 +180,7 @@ const NewsletterListWelcome = React.createClass({
   renderSettings: function (newsletter) {
     let sendingEvent;
     let sendingDelay;
+    let segment;
 
     // set sending event
     switch (newsletter.options.event) {
@@ -196,7 +197,7 @@ const NewsletterListWelcome = React.createClass({
 
       case 'segment':
         // get segment
-        const segment = _.find(mailpoet_segments, (segment) => {
+        segment = _.find(mailpoet_segments, (segment) => {
           return (~~(segment.id) === ~~(newsletter.options.segment));
         });
 
@@ -206,11 +207,11 @@ const NewsletterListWelcome = React.createClass({
               { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
             </span>
           );
-        } else {
-          sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
+        }
+        sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
             '%$1s', segment.name
           );
-        }
+
         break;
     }
 

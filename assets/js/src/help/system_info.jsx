@@ -23,9 +23,9 @@ function printData(data) {
         height: '400px',
       }}
     />);
-  } else {
-    return (<p>{MailPoet.I18n.t('systemInfoDataError')}</p>);
   }
+  return (<p>{MailPoet.I18n.t('systemInfoDataError')}</p>);
+
 }
 
 function KnowledgeBase() {

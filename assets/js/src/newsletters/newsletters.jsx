@@ -37,7 +37,8 @@ if (container) {
         {/* Listings */}
         <Route path="standard(/)**" params={{ tab: 'standard' }} component={NewsletterListStandard} />
         <Route path="welcome(/)**" component={NewsletterListWelcome} />
-        <Route path="notification/history/:parent_id(/)**" component={NewsletterListNotificationHistory} />
+        <Route path="notification/history/:parent_id(/)**"
+          component={NewsletterListNotificationHistory} />
         <Route path="notification(/)**" component={NewsletterListNotification} />
         {/* Newsletter: type selection */}
         <Route path="new" component={NewsletterTypes} />
