@@ -348,7 +348,7 @@ define(
         endpoint: 'segments',
         multiple: true,
         filter: function (segment) {
-          return !!(!segment.deleted_at);
+          return !segment.deleted_at;
         },
         getLabel: function (segment) {
           return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
