@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-class NewsletterListingCept {
+class NewsletterListingCest {
   function newsletterListing(\AcceptanceTester $I) {
     $I->wantTo('Open newsletters listings page');
 
