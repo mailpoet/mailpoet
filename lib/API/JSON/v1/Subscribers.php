@@ -10,7 +10,9 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
+use MailPoet\Segments\SubscribersListings;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -40,12 +42,15 @@ class Subscribers extends APIEndpoint {
   }
 
   function listing($data = array()) {
-    $listing = new Listing\Handler(
-      '\MailPoet\Models\Subscriber',
-      $data
-    );
 
-    $listing_data = $listing->get();
+    if(!isset($data['filter']['segment'])) {
+      $listing = new Listing\Handler('\MailPoet\Models\Subscriber', $data);
+
+      $listing_data = $listing->get();
+    } else {
+      $listings = new SubscribersListings();
+      $listing_data = $listings->getListingsInSegment($data);
+    }
 
     $data = array();
     foreach($listing_data['items'] as $subscriber) {
