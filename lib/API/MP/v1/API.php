@@ -133,6 +133,37 @@ class API {
     return $new_subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 
+  function addList(array $list) {
+    // throw exception when list name is missing
+    if(empty($list['name'])) {
+      throw new \Exception(
+        __('List name is required.', 'mailpoet')
+      );
+    }
+
+    // throw exception when list already exists
+    if(Segment::where('name', $list['name'])->findOne()) {
+      throw new \Exception(
+        __('This list already exists.', 'mailpoet')
+      );
+    }
+
+    // add list
+    $new_list = Segment::create();
+    $new_list->hydrate($list);
+    $new_list->save();
+    if($new_list->getErrors() !== false) {
+      throw new \Exception(
+        __(sprintf('Failed to add list: %s', strtolower(implode(', ', $new_list->getErrors()))), 'mailpoet')
+      );
+    }
+
+    // reload list to get the saved created|updated|delete dates/other fields
+    $new_list = Segment::findOne($new_list->id);
+
+    return $new_list->asArray();
+  }
+
   protected function _sendConfirmationEmail(Subscriber $subscriber) {
     return $subscriber->sendConfirmationEmail();
   }

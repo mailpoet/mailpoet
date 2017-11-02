@@ -319,6 +319,37 @@ class APITest extends \MailPoetTest {
     $API->addSubscriber($subscriber, $segments, $options);
   }
 
+  function testItRequiresNameToAddList() {
+    try {
+      API::MP(self::VERSION)->addList(array());
+      $this->fail('List name required exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('List name is required.');
+    }
+  }
+
+  function testItDoesNotAddExistingList() {
+    $segment = Segment::create();
+    $segment->name = 'Test segment';
+    $segment->save();
+    try {
+      API::MP(self::VERSION)->addList(array('name' => $segment->name));
+      $this->fail('List exists exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('This list already exists.');
+    }
+  }
+
+  function testItAddsList() {
+    $segment = array(
+      'name' => 'Test segment'
+    );
+
+    $result = API::MP(self::VERSION)->addList($segment);
+    expect($result['id'])->greaterThan(0);
+    expect($result['name'])->equals($segment['name']);
+  }
+
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
