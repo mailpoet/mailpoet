@@ -11,7 +11,7 @@ class ThrottlingTest extends \MailPoetTest {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     expect(Throttling::throttle())->equals(false);
     expect(Throttling::throttle())->equals(60);
-    for($i = 0; $i < 11; $i++) {
+    for($i = 1; $i <= 10; $i++) {
       $ip = SubscriberIP::create();
       $ip->ip = '127.0.0.1';
       $ip->created_at = Carbon::now()->subMinutes($i);
