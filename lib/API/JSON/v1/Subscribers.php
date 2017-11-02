@@ -54,6 +54,10 @@ class Subscribers extends APIEndpoint {
         ->asArray();
     }
 
+    $listing_data['filters']['segment'] = Hooks::applyFilters(
+      'mailpoet_subscribers_listings_filters_segments',
+      $listing_data['filters']['segment']
+    );
     return $this->successResponse($data, array(
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
