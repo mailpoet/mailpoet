@@ -4,6 +4,7 @@ services:
   codeception:
     build: .
     depends_on:
+      - mailhog
       - wordpress
     volumes:
       - ./:/project
@@ -23,7 +24,6 @@ services:
     depends_on:
       - mysql
       - chrome
-      - mailhog
     volumes:
       - wp-core:/var/www/html
       - ./:/var/www/html/wp-content/plugins/mailpoet
@@ -32,8 +32,6 @@ services:
       - 8080:80
     environment:
       WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_TABLE_PREFIX: mp_
-
   mysql:
     image: mysql:5.6
     environment:
