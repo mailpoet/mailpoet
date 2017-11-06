@@ -2,6 +2,9 @@
 
 namespace MailPoet\Test\Config;
 
+use AspectMock\Test as Mock;
+use Codeception\Util\Stub;
+use Helper\WordPress as WPHelper;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\AccessControl;
 use MailPoet\WP\Hooks;
@@ -103,7 +106,18 @@ class AccessControlTest extends \MailPoetTest {
     expect(count($permissions))->equals(count($labels));
   }
 
+  function testItValidatesIfUserHasCapability() {
+    $capability = 'some_capability';
+    $access_control = new AccessControl();
+
+    $func = Mock::func('MailPoet\Config', 'current_user_can', true);
+
+    expect($access_control->validatePermission($capability))->true();
+    $func->verifyInvoked([$capability]);
+  }
+
   function _after() {
-    WPHooksHelper::releaseAllHooks();
+    Mock::clean();
+    WPHelper::releaseAllFunctions();
   }
 }
