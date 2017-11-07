@@ -258,6 +258,7 @@ define(
                   &nbsp;
                 <a
                   className="button button-primary"
+                  data-automation-id={'select_template_' + index}
                   onClick={this.handleSelectTemplate.bind(null, template)}
                   >
                   {MailPoet.I18n.t('select')}

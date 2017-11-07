@@ -291,7 +291,7 @@ const NewsletterListWelcome = React.createClass({
     return (
       <div>
         <h1 className="title">
-          { MailPoet.I18n.t('pageTitle') } <Link className="page-title-action" to="/new">{ MailPoet.I18n.t('new') }</Link>
+          { MailPoet.I18n.t('pageTitle') } <Link className="page-title-action" to="/new" data-automation-id="new_email">{ MailPoet.I18n.t('new') }</Link>
         </h1>
 
         <ListingTabs tab="welcome" />

@@ -211,6 +211,7 @@ const NewsletterListStandard = React.createClass({
             onClick={() => MailPoet.trackEvent('Emails > Add New',
               { 'MailPoet Free version': window.mailpoet_version }
             )}
+            data-automation-id="new_email"
           >
             {MailPoet.I18n.t('new')}
           </Link>

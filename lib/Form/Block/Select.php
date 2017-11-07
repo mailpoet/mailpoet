@@ -10,10 +10,10 @@ class Select extends Base {
 
     $field_name = 'data[' . static::getFieldName($block) . ']';
     $field_validation = static::getInputValidation($block);
-
+    $automation_id = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
     $html .= '<p class="mailpoet_paragraph">';
     $html .= static::renderLabel($block);
-    $html .= '<select class="mailpoet_select" name="'.$field_name.'">';
+    $html .= '<select class="mailpoet_select" name="'.$field_name.'" ' . $automation_id . '>';
 
     if(isset($block['params']['label_within']) && $block['params']['label_within']) {
       $html .= '<option value="">'.static::getFieldLabel($block).'</option>';
