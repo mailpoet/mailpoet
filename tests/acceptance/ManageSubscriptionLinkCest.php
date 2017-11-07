@@ -13,32 +13,35 @@ class ManageSubscriptionLinkCest {
     $I->wantTo('Create and send new email to WordPress Users list');
 
     $I->loginAsAdmin();
+    $I->pauseExecution();
     $I->amOnMailpoetPage('Emails');
-    $I->click('a.page-title-action');
+    $I->pauseExecution();
+    $I->click('[data-automation-id=\'new_email\']');
 
     // step 1 - select type
     $I->seeInCurrentUrl('#/new');
     $I->click('Create');
-    $I->wait(3);
 
     // step 2 - select template
+    $first_template_element = '[data-automation-id=\'select_template_1\']';
+    $I->waitForElement($first_template_element);
     $I->seeInCurrentUrl('#/template');
-    $I->click('Select', 'ul.mailpoet_boxes > li:nth-child(1)');
-    $I->wait(3);
+    $I->click($first_template_element);
 
     // step 3 - design newsletter (update subject)
+    $title_element ='[data-automation-id=\'newsletter_title\']';
+    $I->waitForElement($title_element);
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
-    $I->waitForElement('.mailpoet_input_title');
-    $I->fillField('.mailpoet_input_title', $this->newsletter_title);
+    $I->fillField($title_element, $this->newsletter_title);
     $I->click('Next');
 
     // step 4 - send
-    $I->waitForElement('input.select2-search__field');
+    $search_field_element = 'input.select2-search__field';
+    $I->waitForElement($search_field_element);
     $I->seeInCurrentUrl('#/send');
-    $I->fillField('input.select2-search__field', 'WordPress Users');
-    $I->pressKey('input.select2-search__field', \WebDriverKeys::ENTER);
+    $I->fillField($search_field_element, 'WordPress Users');
+    $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('Send');
-    $I->wait(3);
     $I->waitForText('Sent to 1 of 1');
   }
 
@@ -52,22 +55,26 @@ class ManageSubscriptionLinkCest {
     $I->switchToNextTab();
     $I->waitForText('Manage your subscription');
 
+    $form_status_element = '[data-automation-id=\'form_status\']';
+
     // set status to unsubscribed
-    $I->selectOption('.mailpoet_select', 'Unsubscribed');
+    $I->selectOption($form_status_element, 'Unsubscribed');
     $I->click('Save');
-    $I->wait(3);
-    $I->seeOptionIsSelected('.mailpoet_select', 'Unsubscribed');
+    $I->waitForElement($form_status_element);
+    $I->seeOptionIsSelected($form_status_element, 'Unsubscribed');
 
     // change status back to subscribed
-    $I->selectOption('.mailpoet_select', 'Subscribed');
+    $I->selectOption($form_status_element, 'Subscribed');
     $I->click('Save');
-    $I->wait(3);
-    $I->seeOptionIsSelected('.mailpoet_select', 'Subscribed');
+    $I->waitForElement($form_status_element);
+    $I->seeOptionIsSelected($form_status_element, 'Subscribed');
     $I->seeNoJSErrors();
   }
 
   function unsubscribeLink(\AcceptanceTester $I) {
     $I->wantTo('Verify that "unsubscribe" link works and subscriber status is set to unsubscribed');
+
+    $form_status_element = '[data-automation-id=\'form_status\']';
 
     $I->amOnUrl('http://mailhog:8025');
     $I->click(Locator::contains('span.subject', $this->newsletter_title));
@@ -76,8 +83,7 @@ class ManageSubscriptionLinkCest {
     $I->switchToNextTab();
     $I->waitForText('You are now unsubscribed');
     $I->click('Manage your subscription');
-    $I->wait(3);
-    $I->seeOptionIsSelected('.mailpoet_select', 'Unsubscribed');
+    $I->seeOptionIsSelected($form_status_element, 'Unsubscribed');
     $I->seeNoJSErrors();
   }
 }
