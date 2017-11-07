@@ -124,6 +124,7 @@ class WP {
       SET %1$s.first_name = wpum.meta_value
         WHERE %1$s.first_name = ""
         AND %1$s.wp_user_id IS NOT NULL
+        AND wpum.meta_value IS NOT NULL
     ', $subscribers_table, $wpdb->usermeta));
   }
 
@@ -136,6 +137,7 @@ class WP {
       SET %1$s.last_name = wpum.meta_value
         WHERE %1$s.last_name = ""
         AND %1$s.wp_user_id IS NOT NULL
+        AND wpum.meta_value IS NOT NULL        
     ', $subscribers_table, $wpdb->usermeta));
   }
 
