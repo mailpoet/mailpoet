@@ -30,6 +30,7 @@ class Export {
           'frameborder="0"',
           'src="'.$iframe_url.'"',
           'class="mailpoet_form_iframe"',
+          'id="mailpoet_form_iframe"',
           'vspace="0"',
           'tabindex="0"',
           'onload="if(window[\'MailPoet\']) MailPoet.Iframe.autoSize(this);"',
