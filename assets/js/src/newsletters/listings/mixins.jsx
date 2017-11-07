@@ -139,7 +139,6 @@ const QueueMixin = {
         </p>
       </div>
     );
-
   },
 };
 
@@ -316,7 +315,6 @@ const StatisticsMixin = {
           {after_content}
         </div>
       );
-
     }
 
     return (

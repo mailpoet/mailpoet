@@ -271,7 +271,6 @@ const NewsletterListNotification = React.createClass({
         to={`/notification/history/${newsletter.id}`}
         >{ MailPoet.I18n.t('viewHistory') }</Link>
     );
-
   },
   renderItem: function (newsletter, actions) {
     const rowClasses = classNames(

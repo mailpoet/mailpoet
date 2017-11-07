@@ -176,7 +176,6 @@ define([
           { pagination }
         </div>
       );
-
     },
   });
 

@@ -84,7 +84,6 @@ define([
           { description }
         </div>
       );
-
     },
     render: function () {
       let field = false;

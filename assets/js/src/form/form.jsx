@@ -151,7 +151,6 @@ define(
           item: item,
         });
         return true;
-
       },
       render: function () {
         let errors;

@@ -64,7 +64,6 @@ define([
             return item.title;
           }
           return item.text;
-
         },
       });
 
@@ -156,7 +155,6 @@ define([
         return this.props.field.transformChangedValue.call(this, value);
       }
       return value;
-
     },
     render: function () {
       const options = this.state.items.map((item, index) => {

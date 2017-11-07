@@ -283,7 +283,6 @@ const ListingItems = React.createClass({
         })}
       </tbody>
     );
-
   },
 });
 
@@ -415,7 +414,6 @@ const Listing = React.createClass({
       return `/${base_url}/${params}`;
     }
     return `/${params}`;
-
   },
   setBaseUrlParams: function (base_url) {
     let ret = base_url;
