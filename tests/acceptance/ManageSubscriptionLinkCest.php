@@ -28,6 +28,7 @@ class ManageSubscriptionLinkCest {
 
     // step 3 - design newsletter (update subject)
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
+    $I->waitForElement('.mailpoet_input_title');
     $I->fillField('.mailpoet_input_title', $this->newsletter_title);
     $I->click('Next');
 
