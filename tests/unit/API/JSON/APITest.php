@@ -143,7 +143,6 @@ class APITest extends \MailPoetTest {
       'data' => array('test' => 'data')
     );
     $access_control = new AccessControl();
-    $access_control->user_roles = $access_control->permissions[AccessControl::PERMISSION_MANAGE_SETTINGS];
     $api = Stub::make(
       new \MailPoet\API\JSON\API($access_control),
       array(
@@ -179,8 +178,10 @@ class APITest extends \MailPoetTest {
       'api_version' => 'v1',
       'data' => array('test' => 'data')
     );
-    $access_control = new AccessControl();
-    $access_control->user_roles = array();
+    $access_control = Stub::make(
+      new AccessControl(),
+      array('validatePermission' => false)
+    );
     $api = new \MailPoet\API\JSON\API($access_control);
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data);
@@ -189,22 +190,36 @@ class APITest extends \MailPoetTest {
   }
 
   function testItValidatesGlobalPermission() {
-    $access_control = new AccessControl();
     $permissions = array(
       'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
     );
 
-    $access_control->user_roles = array();
+    $access_control = Stub::make(
+      new AccessControl(),
+      array(
+        'validatePermission' => Stub::once(function($cap) {
+          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          return false;
+        })
+      )
+    );
     $api = new JSONAPI($access_control);
     expect($api->validatePermissions(null, $permissions))->false();
 
-    $access_control->user_roles = $access_control->permissions[AccessControl::PERMISSION_MANAGE_SETTINGS];
+    $access_control = Stub::make(
+      new AccessControl(),
+      array(
+        'validatePermission' => Stub::once(function($cap) {
+          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          return true;
+        })
+      )
+    );
     $api = new JSONAPI($access_control);
     expect($api->validatePermissions(null, $permissions))->true();
   }
 
   function testItValidatesEndpointMethodPermission() {
-    $access_control = new AccessControl();
     $permissions = array(
       'global' => null,
       'methods' => array(
@@ -212,11 +227,27 @@ class APITest extends \MailPoetTest {
       )
     );
 
-    $access_control->user_roles = array();
+    $access_control = Stub::make(
+      new AccessControl(),
+      array(
+        'validatePermission' => Stub::once(function($cap) {
+          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          return false;
+        })
+      )
+    );
     $api = new JSONAPI($access_control);
     expect($api->validatePermissions('test', $permissions))->false();
 
-    $access_control->user_roles = $access_control->permissions[AccessControl::PERMISSION_MANAGE_SETTINGS];
+    $access_control = Stub::make(
+      new AccessControl(),
+      array(
+        'validatePermission' => Stub::once(function($cap) {
+          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          return true;
+        })
+      )
+    );
     $api = new JSONAPI($access_control);
     expect($api->validatePermissions('test', $permissions))->true();
   }

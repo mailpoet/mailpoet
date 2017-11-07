@@ -95,23 +95,37 @@ class RouterTest extends \MailPoetTest {
   }
 
   function testItValidatesGlobalPermission() {
-    $access_control = new AccessControl();
     $router = $this->router;
 
     $permissions = array(
       'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
     );
-    $access_control->user_roles = array();
+    $access_control = Stub::make(
+      new AccessControl(),
+      array(
+        'validatePermission' => Stub::once(function($cap) {
+          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          return false;
+        })
+      )
+    );
     $router->access_control = $access_control;
     expect($router->validatePermissions(null, $permissions))->false();
 
-    $access_control->user_roles = $access_control->permissions[AccessControl::PERMISSION_MANAGE_SETTINGS];
+    $access_control = Stub::make(
+      new AccessControl(),
+      array(
+        'validatePermission' => Stub::once(function($cap) {
+          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          return true;
+        })
+      )
+    );
     $router->access_control = $access_control;
     expect($router->validatePermissions(null, $permissions))->true();
   }
 
   function testItValidatesEndpointActionPermission() {
-    $access_control = new AccessControl();
     $router = $this->router;
 
     $permissions = array(
@@ -121,11 +135,27 @@ class RouterTest extends \MailPoetTest {
       )
     );
 
-    $access_control->user_roles = array();
+    $access_control = Stub::make(
+      new AccessControl(),
+      array(
+        'validatePermission' => Stub::once(function($cap) {
+          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          return false;
+        })
+      )
+    );
     $router->access_control = $access_control;
     expect($router->validatePermissions('test', $permissions))->false();
 
-    $access_control->user_roles = $access_control->permissions[AccessControl::PERMISSION_MANAGE_SETTINGS];
+    $access_control = Stub::make(
+      new AccessControl(),
+      array(
+        'validatePermission' => Stub::once(function($cap) {
+          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          return true;
+        })
+      )
+    );
     $router->access_control = $access_control;
     expect($router->validatePermissions('test', $permissions))->true();
   }

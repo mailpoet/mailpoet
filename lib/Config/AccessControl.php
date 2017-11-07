@@ -22,8 +22,6 @@ class AccessControl {
 
   function __construct() {
     $this->permissions = self::getDefaultPermissions();
-    $this->user_roles = $this->getUserRoles();
-    $this->user_capabilities = $this->getUserCapabilities();
   }
 
   static function getDefaultPermissions() {
@@ -80,30 +78,8 @@ class AccessControl {
     );
   }
 
-  function getUserRoles() {
-    $user = wp_get_current_user();
-    return $user->roles;
-  }
-
-  function getUserCapabilities() {
-    $user = wp_get_current_user();
-    return array_keys($user->allcaps);
-  }
-
-  function getUserFirstCapability() {
-    return (!empty($this->user_capabilities)) ?
-      $this->user_capabilities[0] :
-      null;
-  }
-
   function validatePermission($permission) {
     if($permission === self::NO_ACCESS_RESTRICTION) return true;
-    foreach($this->user_roles as $role) {
-      $role_object = get_role($role);
-      if($role_object && $role_object->has_cap($permission)) {
-        return true;
-      }
-    }
-    return false;
+    return current_user_can($permission);
   }
 }
