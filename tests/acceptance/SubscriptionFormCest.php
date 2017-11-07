@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Models\SubscriberIP;
 
 class SubscriptionFormCest {
-  const CONFIRMATION_MESSAGE_TIMOUT = 10;
+  const CONFIRMATION_MESSAGE_TIMEOUT = 10;
 
   function __construct() {
     $this->subscriber_email = 'test-form@example.com';
@@ -19,7 +19,7 @@ class SubscriptionFormCest {
     $I->amOnPage('/');
     $I->fillField('[data-automation-id=\'form_email\']', $this->subscriber_email);
     $I->click('.mailpoet_submit');
-    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMOUT, '.mailpoet_validate_success');
+    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
 
     $I->cli('widget reset sidebar-1 --allow-root');
@@ -32,7 +32,7 @@ class SubscriptionFormCest {
     $I->switchToIframe('mailpoet_form_iframe');
     $I->fillField('[data-automation-id=\'form_email\']', $this->subscriber_email);
     $I->click('.mailpoet_submit');
-    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMOUT, '.mailpoet_validate_success');
+    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
   }
 
