@@ -14,7 +14,10 @@
     "import/resolver": "webpack"
   },
   "rules": {
+    // Exceptions
     "comma-dangle": ["error", "always-multiline"],
+    "no-script-url": 0,
+    // Temporary
     "import/no-amd": 0,
     "react/no-multi-comp": 0,
     "react/sort-comp": 0,
@@ -48,7 +51,6 @@
     "camelcase": 0,
     "eqeqeq": 0,
     "space-unary-ops": 0,
-    "no-script-url": 0,
     "space-infix-ops": 0,
     "no-irregular-whitespace": 0
   }
