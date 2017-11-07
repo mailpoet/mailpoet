@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { confirmAlert } from 'react-confirm-alert';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
@@ -98,13 +99,23 @@ const bulk_actions = [
 ];
 
 const confirmEdit = (newsletter) => {
+  const redirectToEditing = () => {
+    window.location.href = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+  };
   if (
     !newsletter.queue
     || newsletter.status != 'sending'
     || newsletter.queue.status !== null
-    || window.confirm(MailPoet.I18n.t('confirmEdit'))
   ) {
-    window.location.href = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+    redirectToEditing();
+  } else {
+    confirmAlert({
+      title: MailPoet.I18n.t('confirmTitle'),
+      message: MailPoet.I18n.t('confirmEdit'),
+      confirmLabel: MailPoet.I18n.t('confirmLabel'),
+      cancelLabel: MailPoet.I18n.t('cancelLabel'),
+      onConfirm: redirectToEditing,
+    });
   }
 };
 

@@ -1,22 +1,11 @@
-define(
-  [
-    'react',
-    'underscore',
-    'mailpoet',
-    'react-router',
-    'classnames',
-    'newsletters/breadcrumb.jsx',
-    'help-tooltip.jsx',
-  ],
-  (
-    React,
-    _,
-    MailPoet,
-    Router,
-    classNames,
-    Breadcrumb,
-    HelpTooltip
-  ) => {
+import React from 'react';
+import _ from 'underscore';
+import MailPoet from 'mailpoet';
+import { confirmAlert } from 'react-confirm-alert';
+import classNames from 'classnames';
+import Breadcrumb from 'newsletters/breadcrumb.jsx';
+import HelpTooltip from 'help-tooltip.jsx';
+
     const ImportTemplate = React.createClass({
       saveTemplate: function (saveTemplate) {
         const template = saveTemplate;
@@ -174,13 +163,7 @@ define(
       },
       handleDeleteTemplate: function (template) {
         this.setState({ loading: true });
-        if (
-          window.confirm(
-            (
-              MailPoet.I18n.t('confirmTemplateDeletion')
-            ).replace('%$1s', template.name)
-          )
-        ) {
+        const onConfirm = () => {
           MailPoet.Ajax.post({
             api_version: window.mailpoet_api_version,
             endpoint: 'newsletterTemplates',
@@ -198,9 +181,18 @@ define(
               );
             }
           });
-        } else {
+        };
+        const onCancel = () => {
           this.setState({ loading: false });
-        }
+        };
+        confirmAlert({
+          title: MailPoet.I18n.t('confirmTitle'),
+          message: MailPoet.I18n.t('confirmTemplateDeletion').replace('%$1s', template.name),
+          confirmLabel: MailPoet.I18n.t('confirmLabel'),
+          cancelLabel: MailPoet.I18n.t('cancelLabel'),
+          onConfirm: onConfirm,
+          onCancel: onCancel,
+        });
       },
       handleShowTemplate: function (template) {
         MailPoet.Modal.popup({
@@ -290,6 +282,4 @@ define(
       },
     });
 
-    return NewsletterTemplates;
-  }
-);
+export default NewsletterTemplates;
