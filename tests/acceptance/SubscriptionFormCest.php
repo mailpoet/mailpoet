@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Models\SubscriberIP;
-
 class SubscriptionFormCest {
   const CONFIRMATION_MESSAGE_TIMEOUT = 10;
 
@@ -36,7 +34,7 @@ class SubscriptionFormCest {
     $I->seeNoJSErrors();
   }
 
-  function _after() {
-    \ORM::raw_execute('TRUNCATE ' . SubscriberIP::$_table);
+  function _after(\AcceptanceTester $I) {
+    $I->cli('db query "TRUNCATE TABLE wp_mailpoet_subscriber_ips" --allow-root');
   }
 }
