@@ -50,6 +50,10 @@ $kernel->init(
   )
 );
 
+// This hook throws an 'Undefined index: SERVER_NAME' error in CLI mode,
+// the action is called in ConflictResolverTest
+remove_filter('admin_print_styles', 'wp_resource_hints', 1);
+
 abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $backupGlobals = true;
   protected $backupGlobalsBlacklist = array(
