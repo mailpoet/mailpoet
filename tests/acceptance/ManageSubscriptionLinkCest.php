@@ -13,9 +13,7 @@ class ManageSubscriptionLinkCest {
     $I->wantTo('Create and send new email to WordPress Users list');
 
     $I->loginAsAdmin();
-    $I->pauseExecution();
     $I->amOnMailpoetPage('Emails');
-    $I->pauseExecution();
     $I->click('[data-automation-id=\'new_email\']');
 
     // step 1 - select type
