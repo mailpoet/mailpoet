@@ -53,7 +53,7 @@ Plus: if you sign up to one of our sending plans, you’ll get all of these fanc
 
 = Translations =
 
-* French
+* French (FR and CA)
 * German
 * Italian
 * Spanish
@@ -63,7 +63,9 @@ Plus: if you sign up to one of our sending plans, you’ll get all of these fanc
 * Russian
 * Japanese
 * Persian (IR)
-* Norwegian
+* Polish
+* Catalan
+* Danish
 * Swedish
 * Turkish
 
