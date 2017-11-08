@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class SubscriptionFormCest {
-  const CONFIRMATION_MESSAGE_TIMEOUT = 10;
+  const CONFIRMATION_MESSAGE_TIMEOUT = 20;
 
   function __construct() {
     $this->subscriber_email = 'test-form@example.com';
