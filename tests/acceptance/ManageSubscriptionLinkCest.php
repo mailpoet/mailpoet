@@ -42,7 +42,7 @@ class ManageSubscriptionLinkCest {
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('Send');
-    $I->waitForText('Sent to 1 of 1');
+    $I->waitForText('Sent to 1 of 1', 20);
   }
 
   function manageSubscriptionLink(\AcceptanceTester $I) {
