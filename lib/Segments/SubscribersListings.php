@@ -12,7 +12,7 @@ class SubscribersListings {
     if(!isset($data['filter']['segment'])) {
       throw new \InvalidArgumentException('Missing segment id');
     }
-    $segment = Segment::find_one($data['filter']['segment']);
+    $segment = Segment::findOne($data['filter']['segment']);
     if($segment) {
       $segment = $segment->asArray();
     }

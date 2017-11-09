@@ -13,9 +13,7 @@ use MailPoet\WP\Hooks;
 class SubscribersListingsTest extends \MailPoetTest {
 
   function _before() {
-    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $this->cleanData();
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1', 'type' => 'default'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 3', 'type' => 'not default'));
     $this->subscriber_1 = Subscriber::createOrUpdate(array(
@@ -38,6 +36,16 @@ class SubscribersListingsTest extends \MailPoetTest {
     ));
     SubscriberSegment::resubscribeToAllSegments($this->subscriber_1);
     SubscriberSegment::resubscribeToAllSegments($this->subscriber_2);
+  }
+
+  function _after() {
+    $this->cleanData();
+  }
+
+  private function cleanData() {
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 
   function testTryToGetListingsWithoutPassingSegment() {
@@ -75,7 +83,7 @@ class SubscribersListingsTest extends \MailPoetTest {
     expect($listings)->equals('dynamic listings');
   }
 
-  function testTryToGetListingsForSegmentWithout() {
+  function testTryToGetListingsForSegmentWithoutHandler() {
     $finder = new SubscribersListings();
     $this->setExpectedException('InvalidArgumentException');
     remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
