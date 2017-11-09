@@ -15,7 +15,6 @@ define(
     FormField,
     jQuery
   ) => {
-
     const Form = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired,
@@ -101,7 +100,7 @@ define(
         // only get values from displayed fields
         const item = {};
         this.props.fields.map((field) => {
-          if (field['fields'] !== undefined) {
+          if (field.fields !== undefined) {
             field.fields.map((subfield) => {
               item[subfield.name] = this.state.item[subfield.name];
             });
@@ -152,7 +151,6 @@ define(
           item: item,
         });
         return true;
-
       },
       render: function () {
         let errors;

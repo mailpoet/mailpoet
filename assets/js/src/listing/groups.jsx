@@ -1,5 +1,4 @@
 define(['react', 'classnames'], (React, classNames) => {
-
   const ListingGroups = React.createClass({
     handleSelect: function (group) {
       return this.props.onSelectGroup(group);

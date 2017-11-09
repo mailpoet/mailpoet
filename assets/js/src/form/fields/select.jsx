@@ -17,7 +17,7 @@ const FormFieldSelect = React.createClass({
       );
     }
 
-    if (this.props.field['filter'] !== undefined) {
+    if (this.props.field.filter !== undefined) {
       filter = this.props.field.filter;
     }
 
@@ -43,7 +43,6 @@ const FormFieldSelect = React.createClass({
 
     const options = keys.map(
       (value, index) => {
-
         if (filter !== false && filter(this.props.item, value) === false) {
           return;
         }

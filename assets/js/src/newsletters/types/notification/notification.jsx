@@ -15,7 +15,6 @@ define(
     Scheduling,
     Breadcrumb
   ) => {
-
     const field = {
       name: 'options',
       type: 'reactComponent',

@@ -53,11 +53,11 @@ const WelcomeScheduling = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired,
   },
-  _getCurrentValue: function () {
+  getCurrentValue: function () {
     return (this.props.item[this.props.field.name] || {});
   },
   handleValueChange: function (name, value) {
-    const oldValue = this._getCurrentValue();
+    const oldValue = this.getCurrentValue();
     const newValue = {};
 
     newValue[name] = value;
@@ -123,7 +123,7 @@ const WelcomeScheduling = React.createClass({
     this.context.router.push(`/template/${newsletterId}`);
   },
   render: function () {
-    const value = this._getCurrentValue();
+    const value = this.getCurrentValue();
     let roleSegmentSelection;
     let timeNumber;
 
@@ -131,14 +131,14 @@ const WelcomeScheduling = React.createClass({
       roleSegmentSelection = (
         <Select
           field={roleField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleRoleChange} />
       );
     } else {
       roleSegmentSelection = (
         <Select
           field={segmentField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleSegmentChange} />
       );
     }
@@ -146,7 +146,7 @@ const WelcomeScheduling = React.createClass({
       timeNumber = (
         <Text
           field={afterTimeNumberField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleAfterTimeNumberChange} />
       );
     }
@@ -155,7 +155,7 @@ const WelcomeScheduling = React.createClass({
       <div>
         <Select
           field={events}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleEventChange} />
 
         { roleSegmentSelection }
@@ -164,7 +164,7 @@ const WelcomeScheduling = React.createClass({
 
         <Select
           field={afterTimeTypeField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleAfterTimeTypeChange} />
       </div>
     );

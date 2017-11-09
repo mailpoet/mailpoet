@@ -13,7 +13,7 @@ import Hooks from 'wp-js-hooks';
 
 const mailpoet_roles = window.mailpoet_roles || {};
 const mailpoet_segments = window.mailpoet_segments || {};
-const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
+const mailpoet_tracking_enabled = (!!(window.mailpoet_tracking_enabled));
 
 const messages = {
   onTrash: (response) => {
@@ -197,8 +197,8 @@ const NewsletterListWelcome = React.createClass({
 
       case 'segment':
         // get segment
-        segment = _.find(mailpoet_segments, (segment) => {
-          return (~~(segment.id) === ~~(newsletter.options.segment));
+        segment = _.find(mailpoet_segments, (seg) => {
+          return (~~(seg.id) === ~~(newsletter.options.segment));
         });
 
         if (segment === undefined) {

@@ -68,7 +68,7 @@ define(
             id: 'welcome',
             title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
             description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
-            action: function () {
+            action: (function () {
               return (
                 <div>
                   <a href="?page=mailpoet-premium" target="_blank">
@@ -76,7 +76,7 @@ define(
                   </a>
                 </div>
               );
-            }(),
+            }()),
           },
           {
             id: 'notification',

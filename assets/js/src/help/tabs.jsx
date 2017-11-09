@@ -17,7 +17,6 @@ const tabs = [
 ];
 
 function Tabs(props) {
-
   const tabLinks = tabs.map((tab, index) => {
     const tabClasses = classNames(
       'nav-tab',

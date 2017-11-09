@@ -9,7 +9,7 @@ import jQuery from 'jquery';
 import Hooks from 'wp-js-hooks';
 import StatsBadge from 'newsletters/badges/stats.jsx';
 
-const _QueueMixin = {
+const QueueMixin = {
   pauseSending: function (newsletter) {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -139,7 +139,6 @@ const _QueueMixin = {
         </p>
       </div>
     );
-
   },
 };
 
@@ -150,7 +149,7 @@ const trackStatsCTAClicked = function () {
   );
 };
 
-const _StatisticsMixin = {
+const StatisticsMixin = {
   renderStatistics: function (newsletter, is_sent, current_time) {
     let sent = is_sent;
     if (sent === undefined) {
@@ -316,7 +315,6 @@ const _StatisticsMixin = {
           {after_content}
         </div>
       );
-
     }
 
     return (
@@ -359,7 +357,7 @@ const _StatisticsMixin = {
   },
 };
 
-const _MailerMixin = {
+const MailerMixin = {
   checkMailerStatus: function (state) {
     if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
       MailPoet.Notice.error(
@@ -428,6 +426,6 @@ const _MailerMixin = {
 };
 
 
-export { _QueueMixin as QueueMixin };
-export { _StatisticsMixin as StatisticsMixin };
-export { _MailerMixin as MailerMixin };
+export { QueueMixin };
+export { StatisticsMixin };
+export { MailerMixin };

@@ -35,11 +35,11 @@ const nthWeekDayField = {
 };
 
 const NotificationScheduling = React.createClass({
-  _getCurrentValue: function () {
+  getCurrentValue: function () {
     return (this.props.item[this.props.field.name] || {});
   },
   handleValueChange: function (name, value) {
-    const oldValue = this._getCurrentValue();
+    const oldValue = this.getCurrentValue();
     const newValue = {};
 
     newValue[name] = value;
@@ -82,7 +82,7 @@ const NotificationScheduling = React.createClass({
     );
   },
   render: function () {
-    const value = this._getCurrentValue();
+    const value = this.getCurrentValue();
     let timeOfDaySelection;
     let weekDaySelection;
     let monthDaySelection;
@@ -92,7 +92,7 @@ const NotificationScheduling = React.createClass({
       timeOfDaySelection = (
         <Select
           field={timeOfDayField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleTimeOfDayChange} />
       );
     }
@@ -101,7 +101,7 @@ const NotificationScheduling = React.createClass({
       weekDaySelection = (
         <Select
           field={weekDayField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleWeekDayChange} />
       );
     }
@@ -110,7 +110,7 @@ const NotificationScheduling = React.createClass({
       monthDaySelection = (
         <Select
           field={monthDayField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleMonthDayChange} />
       );
     }
@@ -119,7 +119,7 @@ const NotificationScheduling = React.createClass({
       nthWeekDaySelection = (
         <Select
           field={nthWeekDayField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleNthWeekDayChange} />
       );
     }
@@ -128,7 +128,7 @@ const NotificationScheduling = React.createClass({
       <div>
         <Select
           field={intervalField}
-          item={this._getCurrentValue()}
+          item={this.getCurrentValue()}
           onValueChange={this.handleIntervalChange} />
 
         {nthWeekDaySelection}

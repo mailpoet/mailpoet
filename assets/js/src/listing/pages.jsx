@@ -7,7 +7,6 @@ define([
     classNames,
     MailPoet
   ) => {
-
   const ListingPages = React.createClass({
     getInitialState: function () {
       return {
@@ -177,7 +176,6 @@ define([
           { pagination }
         </div>
       );
-
     },
   });
 

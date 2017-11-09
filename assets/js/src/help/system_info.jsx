@@ -25,7 +25,6 @@ function printData(data) {
     />);
   }
   return (<p>{MailPoet.I18n.t('systemInfoDataError')}</p>);
-
 }
 
 function KnowledgeBase() {

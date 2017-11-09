@@ -21,7 +21,7 @@ define([
         const action = this.getSelectedAction();
 
         // action on select callback
-        if (action !== null && action['onSelect'] !== undefined) {
+        if (action !== null && action.onSelect !== undefined) {
           this.setState({
             extra: action.onSelect(e),
           });
@@ -41,14 +41,14 @@ define([
         ? this.props.selected_ids
         : [];
 
-      const data = (action['getData'] !== undefined)
+      const data = (action.getData !== undefined)
         ? action.getData()
         : {};
 
       data.action = this.state.action;
 
       let onSuccess = function () {};
-      if (action['onSuccess'] !== undefined) {
+      if (action.onSuccess !== undefined) {
         onSuccess = action.onSuccess;
       }
 
@@ -67,8 +67,8 @@ define([
     getSelectedAction: function () {
       const selected_action = this.refs.action.value;
       if (selected_action.length > 0) {
-        const action = this.props.bulk_actions.filter((action) => {
-          return (action.name === selected_action);
+        const action = this.props.bulk_actions.filter((act) => {
+          return (act.name === selected_action);
         });
 
         if (action.length > 0) {
