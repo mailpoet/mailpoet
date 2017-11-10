@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\API\MP;
 
 use Codeception\Util\Fixtures;
@@ -55,11 +56,19 @@ class APITest extends \MailPoetTest {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
+    // multiple lists error message
     try {
       API::MP(self::VERSION)->subscribeToLists($subscriber->id, array(1,2,3));
       $this->fail('Missing segments exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('These lists do not exist.');
+    }
+    // single list error message
+    try {
+      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array(1));
+      $this->fail('Missing segments exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('This list does not exist.');
     }
   }
 
@@ -81,7 +90,7 @@ class APITest extends \MailPoetTest {
     }
   }
 
-  function testItDoesNotSubscribeSubscriberToListsWhenOneOrMostListsAreMissing() {
+  function testItDoesNotSubscribeSubscriberToListsWhenOneOrMoreListsAreMissing() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -91,27 +100,38 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
+    // multiple lists error message
     try {
       API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id, 90, 100));
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals('Lists with ID 90, 100 do not exist.');
+      expect($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
+    }
+    // single list error message
+    try {
+      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id, 90));
+      $this->fail('Missing segments with IDs exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('List with ID 90 does not exist.');
     }
   }
 
-  function testItSubscribesSubscriberToMultupleLists() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->save();
-    $segment = Segment::createOrUpdate(
+  function testItUsesMultipleListsSubscribeMethodWhenSubscribingToSingleList() {
+    // subscribing to single list = converting list ID to an array and using
+    // multiple lists subscription method
+    $API = Stub::make(new \MailPoet\API\MP\v1\API(), array(
+      'subscribeToLists' => function() {
+        return func_get_args();
+      }
+    ));
+    expect($API->subscribeToList(1,2))->equals(
       array(
-        'name' => 'Default',
-        'type' => Segment::TYPE_DEFAULT
+        1,
+        array(
+          2
+        )
       )
     );
-    $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
-    expect($result['id'])->equals($subscriber->id);
-    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 
   function testItSubscribesSubscriberToSingleList() {
@@ -127,6 +147,21 @@ class APITest extends \MailPoetTest {
     $result = API::MP(self::VERSION)->subscribeToList($subscriber->id, $segment->id);
     expect($result['id'])->equals($subscriber->id);
     expect($result['subscriptions'])->notEmpty();
+    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
+  }
+
+  function testItSubscribesSubscriberToMultipleLists() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
+    expect($result['id'])->equals($subscriber->id);
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 

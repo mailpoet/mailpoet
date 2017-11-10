@@ -51,7 +51,10 @@ class API {
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
     if(!$found_segments) {
-      throw new \Exception(__('These lists do not exist.', 'mailpoet'));
+      $exception = (count($segments_ids) === 1) ?
+        __('This list does not exist.', 'mailpoet') :
+        __('These lists do not exist.', 'mailpoet');
+      throw new \Exception($exception);
     }
 
     // throw exception when trying to subscribe to a WP Users segment
@@ -66,7 +69,10 @@ class API {
     // throw an exception when one or more segments do not exist
     if(count($found_segments_ids) !== count($segments_ids)) {
       $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
-      throw new \Exception(__(sprintf('Lists with ID %s do not exist.', implode(', ', $missing_ids)), 'mailpoet'));
+      $exception = (count($missing_ids) === 1) ?
+        __('List with ID %s does not exist.', 'mailpoet') :
+        __('Lists with IDs %s do not exist.', 'mailpoet');
+      throw new \Exception(sprintf($exception, implode(', ', $missing_ids)));
     }
 
     SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
