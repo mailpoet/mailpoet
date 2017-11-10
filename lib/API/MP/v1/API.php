@@ -79,6 +79,44 @@ class API {
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 
+  function unsubscribeFromList($subscriber_id, $segment_id) {
+    return $this->unsubscribeFromLists($subscriber_id, array($segment_id));
+  }
+
+  function unsubscribeFromLists($subscriber_id, array $segments_ids) {
+    $subscriber = Subscriber::findOne($subscriber_id);
+    // throw exception when subscriber does not exist
+    if(!$subscriber) {
+      throw new \Exception(__('This subscriber does not exist.', 'mailpoet'));
+    }
+
+    // throw exception when none of the segments exist
+    $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
+    if(!$found_segments) {
+      $exception = (count($segments_ids) === 1) ?
+        __('This list does not exist.', 'mailpoet') :
+        __('These lists do not exist.', 'mailpoet');
+      throw new \Exception($exception);
+    }
+
+    // throw exception when trying to unsubscribe from a WP Users segment
+    $found_segments_ids = array_map(function($segment) {
+      return $segment->id;
+    }, $found_segments);
+
+    // throw an exception when one or more segments do not exist
+    if(count($found_segments_ids) !== count($segments_ids)) {
+      $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
+      $exception = (count($missing_ids) === 1) ?
+        __('List with ID %s does not exist.', 'mailpoet') :
+        __('Lists with IDs %s do not exist.', 'mailpoet');
+      throw new \Exception(sprintf($exception, implode(', ', $missing_ids)));
+    }
+
+    SubscriberSegment::unsubscribeFromSegments($subscriber, $found_segments_ids);
+    return $subscriber->withCustomFields()->withSubscriptions()->asArray();
+  }
+
   function getLists() {
     return Segment::whereNotEqual('type', Segment::TYPE_WP_USERS)->findArray();
   }
