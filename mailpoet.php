@@ -82,3 +82,5 @@ function mailpoet_core_dependency_notice() {
 
 // Initialize plugin
 require_once($mailpoet_plugin['initializer']);
+
+// test
