@@ -3,7 +3,7 @@
 function setup {
 	local version=$1
 	# install PHP dependencies for WordPress
-	if [[ $version == "php7" ]]; then
+	if [[ $version == "php7" ]] || [[ $version == "php7_multisite" ]]; then
 		echo "deb http://packages.dotdeb.org jessie all" | sudo tee -a /etc/apt/sources.list.d/dotdeb.list
 		echo "deb-src http://packages.dotdeb.org jessie all" | sudo tee -a /etc/apt/sources.list.d/dotdeb.list
 		wget -qO - http://www.dotdeb.org/dotdeb.gpg | sudo apt-key add -
@@ -39,7 +39,11 @@ function setup {
 	echo "define(\"WP_DEBUG\", true);" | ./wp-cli.phar core config --allow-root --dbname=wordpress --dbuser=root --dbhost=127.0.0.1 --path=wordpress --extra-php
 	sed -i "s/\$table_prefix = 'wp_';/\$table_prefix = 'mp_';/" ./wordpress/wp-config.php
 	# Install WordPress
-	./wp-cli.phar core install --allow-root --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc:8080 --title=WordPress --path=wordpress
+    if [[ $version == "php7_multisite" ]]; then
+    	./wp-cli.phar core multisite-install --allow-root --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc:8080 --title="WordPress Multisite" --path=wordpress
+    else
+    	./wp-cli.phar core install --allow-root --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc:8080 --title=WordPress --path=wordpress
+    fi
 	# Softlink plugin to plugin path
 	ln -s ../../.. wordpress/wp-content/plugins/mailpoet
 	./wp-cli.phar plugin activate mailpoet --path=wordpress
