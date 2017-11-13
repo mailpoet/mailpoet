@@ -378,7 +378,7 @@ class APITest extends \MailPoetTest {
     expect($result['name'])->equals($segment['name']);
   }
 
-  function testItDoesNotUnsubscribeMissingSusbcriberFromLists() {
+  function testItDoesNotUnsubscribeMissingSubscriberFromLists() {
     try {
       API::MP(self::VERSION)->unsubscribeFromLists(false, array(1,2,3));
       $this->fail('Subscriber does not exist exception should have been thrown.');
@@ -492,6 +492,32 @@ class APITest extends \MailPoetTest {
     expect($result['subscriptions'][0]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
     $result = API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id));
     expect($result['subscriptions'][0]['status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
+  }
+
+  function testItGetsSubscriber() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    API::MP(self::VERSION)->subscribeToList($subscriber->id, $segment->id);
+
+    // successful response
+    $result = API::MP(self::VERSION)->getSubscriber($subscriber->email);
+    expect($result['email'])->equals($subscriber->email);
+    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
+
+    // error response
+    try {
+      API::MP(self::VERSION)->getSubscriber('some_fake_email');
+      $this->fail('Subscriber does not exist exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('This subscriber does not exist.');
+    }
   }
 
   function _after() {
