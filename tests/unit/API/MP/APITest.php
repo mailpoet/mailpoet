@@ -134,22 +134,6 @@ class APITest extends \MailPoetTest {
     );
   }
 
-  function testItSubscribesSubscriberToSingleList() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->save();
-    $segment = Segment::createOrUpdate(
-      array(
-        'name' => 'Default',
-        'type' => Segment::TYPE_DEFAULT
-      )
-    );
-    $result = API::MP(self::VERSION)->subscribeToList($subscriber->id, $segment->id);
-    expect($result['id'])->equals($subscriber->id);
-    expect($result['subscriptions'])->notEmpty();
-    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
-  }
-
   function testItSubscribesSubscriberToMultipleLists() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -160,6 +144,15 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
+
+    // test if segments are specified
+    try {
+      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array());
+      $this->fail('Segments are required exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('At least one segment ID is required.');
+    }
+
     $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
     expect($result['id'])->equals($subscriber->id);
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
@@ -440,6 +433,24 @@ class APITest extends \MailPoetTest {
     }
   }
 
+  function testItDoesNotUnsubscribeSubscriberFromWPUsersList() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_WP_USERS
+      )
+    );
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id));
+      $this->fail('WP Users segment exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->id}.");
+    }
+  }
+
   function testItUsesMultipleListsUnsubscribeMethodWhenUnsubscribingFromSingleList() {
     // unsubscribing from single list = converting list ID to an array and using
     // multiple lists unsubscribe method
@@ -468,6 +479,15 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
+
+    // test if segments are specified
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array());
+      $this->fail('Segments are required exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('At least one segment ID is required.');
+    }
+
     $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
     expect($result['subscriptions'][0]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
     $result = API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id));
