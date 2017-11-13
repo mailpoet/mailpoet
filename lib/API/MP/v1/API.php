@@ -164,6 +164,15 @@ class API {
     return $new_list->asArray();
   }
 
+  function getSubscriber($subscriber_email) {
+    $subscriber = Subscriber::findOne($subscriber_email);
+    // throw exception when subscriber does not exist
+    if(!$subscriber) {
+      throw new \Exception(__('This subscriber does not exist.', 'mailpoet'));
+    }
+    return $subscriber->withCustomFields()->withSubscriptions()->asArray();
+  }
+
   protected function _sendConfirmationEmail(Subscriber $subscriber) {
     return $subscriber->sendConfirmationEmail();
   }
