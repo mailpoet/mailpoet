@@ -153,15 +153,28 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('./tasks/transifex_init.sh');
   }
 
-  function testUnit($opts=['file' => null, 'xml' => false]) {
+  function testUnit($opts=['file' => null, 'xml' => false, 'multisite' => false]) {
     $this->loadEnv();
 
-    $command = 'vendor/bin/codecept run unit -c codeception.unit.yml -f '.(($opts['file']) ? $opts['file'] : '');
+    $command = 'vendor/bin/codecept run unit -c codeception.unit.yml';
+
+    if($opts['multisite']) {
+      $command = 'MULTISITE=true ' . $command;
+    }
+
+    if($opts['file']) {
+      $command .= ' -f ' . $opts['file'];
+    }
 
     if($opts['xml']) {
       $command .= ' --xml';
     }
+
     return $this->_exec($command);
+  }
+
+  function testMultisiteUnit($opts=['file' => null, 'xml' => false, 'multisite' => true]) {
+    return $this->testUnit($opts);
   }
 
   function testCoverage($opts=['file' => null, 'xml' => false]) {
