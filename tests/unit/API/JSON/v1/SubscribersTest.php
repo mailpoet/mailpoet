@@ -220,6 +220,20 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data[0]['email'])->equals($this->subscriber_2->email);
   }
 
+  function testItCanAddSegmentsUsingHooks() {
+    $add_segment = function() {
+      return 'segment';
+    };
+    add_filter('mailpoet_subscribers_listings_filters_segments', $add_segment);
+    $router = new Subscribers();
+    $response = $router->listing(array(
+      'filter' => array(
+        'segment' => $this->segment_2->id
+      )
+    ));
+    expect($response->meta['filters']['segment'])->equals('segment');
+  }
+
   function testItCanSearchListing() {
     $new_subscriber =  Subscriber::createOrUpdate(array(
       'email' => 'search.me@find.me',
