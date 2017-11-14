@@ -113,6 +113,26 @@ class PostContentManagerTest extends \MailPoetTest {
     expect($excerpt)->equals('one two &hellip;');
   }
 
+  function testItStripsShortcodesWhenGettingPostContent() {
+    // shortcodes are stripped in excerpt
+    $post = (object)array(
+      'post_excerpt' => '[shortcode]some text in excerpt[/shortcode]'
+    );
+    expect($this->post_content->getContent($post, 'excerpt'))->equals('some text in excerpt');
+
+    // shortcodes are stripped in post content when excerpt doesn't exist
+    $post = (object)array(
+      'post_content' => '[shortcode]some text in content[/shortcode]'
+    );
+    expect($this->post_content->getContent($post, 'excerpt'))->equals('some text in content');
+
+    // shortcodes are stripped in post content
+    $post = (object)array(
+      'post_content' => '[shortcode]some text in content[/shortcode]'
+    );
+    expect($this->post_content->getContent($post, ''))->equals('some text in content');
+  }
+
   function _after() {
     WPHooksHelper::releaseAllHooks();
   }

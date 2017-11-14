@@ -21,17 +21,16 @@ class PostContentManager {
     } elseif($displayType === 'excerpt') {
       // get excerpt
       if(!empty($post->post_excerpt)) {
-        return $post->post_excerpt;
+        return self::stripShortCodes($post->post_excerpt);
       } else {
-        return $this->generateExcerpt($post->post_content);
+        return $this->generateExcerpt(self::stripShortCodes($post->post_content));
       }
     } else {
-      return $post->post_content;
+      return self::stripShortCodes($post->post_content);
     }
   }
 
   function filterContent($content) {
-    $content = self::stripShortCodes($content);
     $content = self::convertEmbeddedContent($content);
 
     // convert h4 h5 h6 to h3
