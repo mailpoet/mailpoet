@@ -42,8 +42,12 @@ class API {
   }
 
   function subscribeToLists($subscriber_id, array $segments_ids) {
-    $subscriber = Subscriber::findOne($subscriber_id);
+    if(empty($segments_ids)) {
+      throw new \Exception(__('At least one segment ID is required.', 'mailpoet'));
+    }
+
     // throw exception when subscriber does not exist
+    $subscriber = Subscriber::findOne($subscriber_id);
     if(!$subscriber) {
       throw new \Exception(__('This subscriber does not exist.', 'mailpoet'));
     }
@@ -51,7 +55,8 @@ class API {
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
     if(!$found_segments) {
-      throw new \Exception(__('These lists do not exist.', 'mailpoet'));
+      $exception = _n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
+      throw new \Exception($exception);
     }
 
     // throw exception when trying to subscribe to a WP Users segment
@@ -66,10 +71,59 @@ class API {
     // throw an exception when one or more segments do not exist
     if(count($found_segments_ids) !== count($segments_ids)) {
       $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
-      throw new \Exception(__(sprintf('Lists with ID %s do not exist.', implode(', ', $missing_ids)), 'mailpoet'));
+      $exception = sprintf(
+        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
+        implode(', ', $missing_ids)
+      );
+      throw new \Exception(sprintf($exception, implode(', ', $missing_ids)));
     }
 
     SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
+    return $subscriber->withCustomFields()->withSubscriptions()->asArray();
+  }
+
+  function unsubscribeFromList($subscriber_id, $segment_id) {
+    return $this->unsubscribeFromLists($subscriber_id, array($segment_id));
+  }
+
+  function unsubscribeFromLists($subscriber_id, array $segments_ids) {
+    if(empty($segments_ids)) {
+      throw new \Exception(__('At least one segment ID is required.', 'mailpoet'));
+    }
+
+    // throw exception when subscriber does not exist
+    $subscriber = Subscriber::findOne($subscriber_id);
+    if(!$subscriber) {
+      throw new \Exception(__('This subscriber does not exist.', 'mailpoet'));
+    }
+
+    // throw exception when none of the segments exist
+    $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
+    if(!$found_segments) {
+      $exception = _n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
+      throw new \Exception($exception);
+    }
+
+    // throw exception when trying to subscribe to a WP Users segment
+    $found_segments_ids = array();
+    foreach($found_segments as $segment) {
+      if($segment->type === Segment::TYPE_WP_USERS) {
+        throw new \Exception(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
+      }
+      $found_segments_ids[] = $segment->id;
+    }
+
+    // throw an exception when one or more segments do not exist
+    if(count($found_segments_ids) !== count($segments_ids)) {
+      $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
+      $exception = sprintf(
+        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
+        implode(', ', $missing_ids)
+      );
+      throw new \Exception($exception);
+    }
+
+    SubscriberSegment::unsubscribeFromSegments($subscriber, $found_segments_ids);
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 

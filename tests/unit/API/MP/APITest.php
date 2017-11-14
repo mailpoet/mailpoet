@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\API\MP;
 
 use Codeception\Util\Fixtures;
@@ -42,7 +43,7 @@ class APITest extends \MailPoetTest {
     );
   }
 
-  function testItDoesNotSubscribeMissingSusbcriberToLists() {
+  function testItDoesNotSubscribeMissingSubscriberToLists() {
     try {
       API::MP(self::VERSION)->subscribeToLists(false, array(1,2,3));
       $this->fail('Subscriber does not exist exception should have been thrown.');
@@ -55,11 +56,19 @@ class APITest extends \MailPoetTest {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
+    // multiple lists error message
     try {
       API::MP(self::VERSION)->subscribeToLists($subscriber->id, array(1,2,3));
       $this->fail('Missing segments exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('These lists do not exist.');
+    }
+    // single list error message
+    try {
+      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array(1));
+      $this->fail('Missing segments exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('This list does not exist.');
     }
   }
 
@@ -81,7 +90,7 @@ class APITest extends \MailPoetTest {
     }
   }
 
-  function testItDoesNotSubscribeSubscriberToListsWhenOneOrMostListsAreMissing() {
+  function testItDoesNotSubscribeSubscriberToListsWhenOneOrMoreListsAreMissing() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -91,30 +100,41 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
+    // multiple lists error message
     try {
       API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id, 90, 100));
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals('Lists with ID 90, 100 do not exist.');
+      expect($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
+    }
+    // single list error message
+    try {
+      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id, 90));
+      $this->fail('Missing segments with IDs exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('List with ID 90 does not exist.');
     }
   }
 
-  function testItSubscribesSubscriberToMultupleLists() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->save();
-    $segment = Segment::createOrUpdate(
+  function testItUsesMultipleListsSubscribeMethodWhenSubscribingToSingleList() {
+    // subscribing to single list = converting list ID to an array and using
+    // multiple lists subscription method
+    $API = Stub::make(new \MailPoet\API\MP\v1\API(), array(
+      'subscribeToLists' => function() {
+        return func_get_args();
+      }
+    ));
+    expect($API->subscribeToList(1, 2))->equals(
       array(
-        'name' => 'Default',
-        'type' => Segment::TYPE_DEFAULT
+        1,
+        array(
+          2
+        )
       )
     );
-    $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
-    expect($result['id'])->equals($subscriber->id);
-    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 
-  function testItSubscribesSubscriberToSingleList() {
+  function testItSubscribesSubscriberToMultipleLists() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -124,9 +144,17 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
-    $result = API::MP(self::VERSION)->subscribeToList($subscriber->id, $segment->id);
+
+    // test if segments are specified
+    try {
+      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array());
+      $this->fail('Segments are required exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('At least one segment ID is required.');
+    }
+
+    $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
     expect($result['id'])->equals($subscriber->id);
-    expect($result['subscriptions'])->notEmpty();
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 
@@ -348,6 +376,122 @@ class APITest extends \MailPoetTest {
     $result = API::MP(self::VERSION)->addList($segment);
     expect($result['id'])->greaterThan(0);
     expect($result['name'])->equals($segment['name']);
+  }
+
+  function testItDoesNotUnsubscribeMissingSubscriberFromLists() {
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists(false, array(1,2,3));
+      $this->fail('Subscriber does not exist exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('This subscriber does not exist.');
+    }
+  }
+
+  function testItDoesNotUnsubscribeSubscriberFromMissingLists() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    // multiple lists error message
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array(1,2,3));
+      $this->fail('Missing segments exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('These lists do not exist.');
+    }
+    // single list error message
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array(1));
+      $this->fail('Missing segments exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('This list does not exist.');
+    }
+  }
+
+  function testItDoesNotUnsubscribeSubscriberFromListsWhenOneOrMoreListsAreMissing() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    // multiple lists error message
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id, 90, 100));
+      $this->fail('Missing segments with IDs exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
+    }
+    // single list error message
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id, 90));
+      $this->fail('Missing segments with IDs exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('List with ID 90 does not exist.');
+    }
+  }
+
+  function testItDoesNotUnsubscribeSubscriberFromWPUsersList() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_WP_USERS
+      )
+    );
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id));
+      $this->fail('WP Users segment exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->id}.");
+    }
+  }
+
+  function testItUsesMultipleListsUnsubscribeMethodWhenUnsubscribingFromSingleList() {
+    // unsubscribing from single list = converting list ID to an array and using
+    // multiple lists unsubscribe method
+    $API = Stub::make(new \MailPoet\API\MP\v1\API(), array(
+      'unsubscribeFromLists' => function() {
+        return func_get_args();
+      }
+    ));
+    expect($API->unsubscribeFromList(1, 2))
+      ->equals(array(
+        1,
+        array(
+          2
+        )
+      )
+    );
+  }
+
+  function testItUnsubscribesSubscriberFromMultipleLists() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+
+    // test if segments are specified
+    try {
+      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array());
+      $this->fail('Segments are required exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('At least one segment ID is required.');
+    }
+
+    $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
+    expect($result['subscriptions'][0]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    $result = API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id));
+    expect($result['subscriptions'][0]['status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
   function testItGetsSubscriber() {

@@ -21,10 +21,7 @@ class SubscriberSegment extends Model {
       foreach($segment_ids as $segment_id) {
 
         // do not remove subscriptions to the WP Users segment
-        if(
-          $wp_segment !== false
-          && ($wp_segment->id === (int)$segment_id)
-        ) {
+        if($wp_segment !== false && (int)$wp_segment->id === (int)$segment_id) {
           continue;
         }
 
