@@ -26,7 +26,7 @@ class PostContentManager {
         return $this->generateExcerpt(self::stripShortCodes($post->post_content));
       }
     } else {
-      return $post->post_content;
+      return self::stripShortCodes($post->post_content);
     }
   }
 
