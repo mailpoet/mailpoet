@@ -77,6 +77,44 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribed_segments[0]['name'])->equals($this->segment_2->name);
   }
 
+  function testItDoesNotUnsubscribeFromWPSegment() {
+    $subscriber = $this->subscriber;
+    $segment_1 = $this->segment_1;
+    $segment_1->type = Segment::TYPE_WP_USERS;
+    $segment_1->save();
+    $segment_2 = $this->segment_2;
+    $subscriber_segment = SubscriberSegment::createOrUpdate(
+      array(
+        'subscriber_id' => $subscriber->id,
+        'segment_id' => $segment_1->id,
+        'status' => Subscriber::STATUS_SUBSCRIBED
+      )
+    );
+    $subscriber_segment = SubscriberSegment::createOrUpdate(
+      array(
+        'subscriber_id' => $subscriber->id,
+        'segment_id' => $this->segment_2->id,
+        'status' => Subscriber::STATUS_SUBSCRIBED
+      )
+    );
+
+    // verify that subscriber is subscribed to 2 segments
+    $subscriber = Subscriber::findOne($subscriber->id)->withSubscriptions();
+    expect($subscriber->subscriptions[0]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber->subscriptions[0]['segment_id'])->equals($segment_1->id);
+    expect($subscriber->subscriptions[1]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber->subscriptions[1]['segment_id'])->equals($segment_2->id);
+
+    // verify that subscriber is not subscribed only to the non-WP segment (#2)
+    SubscriberSegment::unsubscribeFromSegments($subscriber, array($segment_1->id, $segment_2->id));
+    $subscriber = Subscriber::findOne($subscriber->id)->withSubscriptions();
+
+    expect($subscriber->subscriptions[0]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber->subscriptions[0]['segment_id'])->equals($segment_1->id);
+    expect($subscriber->subscriptions[1]['status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    expect($subscriber->subscriptions[1]['segment_id'])->equals($segment_2->id);
+  }
+
   function testItCanUnsubscribeFromAllSegments() {
     SubscriberSegment::createOrUpdate(array(
       'subscriber_id' => $this->subscriber->id,
