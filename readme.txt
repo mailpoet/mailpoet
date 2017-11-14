@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.1.0
+Stable tag: 3.2.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -116,9 +116,15 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 == Changelog ==
 
+= 3.2.0 - 2017-11-14 =
+* Added: API method to access subscriber data by email;
+* Added: API method to unsubscribe from lists;
+* Fixed: shortcodes are properly removed from all post excerpts that are included in emails. Thanks Gerhard!
+* Premium: you can now view subscribers in dynamic segments.
+
 = 3.1.0 - 2017-11-07 =
 * Added: a method to create a new list via our public API;
-* Fixed: javascript files are loaded with a dependency on jquery; Thanks George!
+* Fixed: javascript files are loaded with a dependency on jquery. Thanks George!
 * Fixed: WP users sync no longer chokes on NULL values for first/last names. Thanks @cartpauj!
 * Fixed: superadmin users on Multisite installations can always access MailPoet on subsites. Thanks Ryan!
 
