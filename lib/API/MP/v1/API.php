@@ -105,12 +105,13 @@ class API {
     }
 
     // throw exception when trying to subscribe to a WP Users segment
-    $found_segments_ids = array_map(function($segment) {
+    $found_segments_ids = array();
+    foreach($found_segments as $segment) {
       if($segment->type === Segment::TYPE_WP_USERS) {
         throw new \Exception(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
       }
-      return $segment->id;
-    }, $found_segments);
+      $found_segments_ids[] = $segment->id;
+    }
 
     // throw an exception when one or more segments do not exist
     if(count($found_segments_ids) !== count($segments_ids)) {
