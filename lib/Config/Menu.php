@@ -37,13 +37,14 @@ class Menu {
     $this->renderer = $renderer;
     $this->assets_url = $assets_url;
     $this->access_control = $access_control;
+  }
+
+  function init() {
     $subscribers_feature = new SubscribersFeature();
     $this->subscribers_over_limit = $subscribers_feature->check();
     $this->checkMailPoetAPIKey();
     $this->checkPremiumKey();
-  }
 
-  function init() {
     add_action(
       'admin_menu',
       array(
