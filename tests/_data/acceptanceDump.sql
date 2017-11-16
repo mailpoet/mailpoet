@@ -134,6 +134,10 @@ CREATE TABLE `wp_mailpoet_newsletters` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
+INSERT INTO `wp_mailpoet_newsletters` VALUES
+(1,NULL,NULL,'Standard newsletter','standard','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL),
+(2,NULL,NULL,'Welcome email','welcome','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL),
+(3,NULL,NULL,'Post notification','notification','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL);
 
 DROP TABLE IF EXISTS `wp_mailpoet_newsletter_links`;
 CREATE TABLE `wp_mailpoet_newsletter_links` (
@@ -486,7 +490,8 @@ CREATE TABLE `wp_mailpoet_subscribers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 INSERT INTO `wp_mailpoet_subscribers` (`id`, `wp_user_id`, `first_name`, `last_name`, `email`, `status`, `subscribed_ip`, `confirmed_ip`, `confirmed_at`, `created_at`, `updated_at`, `deleted_at`, `unconfirmed_data`) VALUES
-(1,	1,	'admin',	'',	'wp@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL,	NULL);
+(1,	1,	'admin',	'',	'wp@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL,	NULL),
+(2,	NULL,	'first',	'last',	'subscriber@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-11-16 10:39:00',	'2017-11-16 10:39:00',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `wp_mailpoet_subscriber_custom_field`;
 CREATE TABLE `wp_mailpoet_subscriber_custom_field` (
