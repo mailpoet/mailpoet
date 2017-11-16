@@ -46,7 +46,7 @@ const ListingTabs = React.createClass({
     });
 
     return (
-      <h2 className="nav-tab-wrapper">
+      <h2 className="nav-tab-wrapper" data-automation-id="newsletters_listing_tabs">
         { tabs }
       </h2>
     );

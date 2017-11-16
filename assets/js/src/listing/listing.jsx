@@ -186,7 +186,7 @@ const ListingItem = React.createClass({
     const row_classes = classNames({ 'is-expanded': this.state.expanded });
 
     return (
-      <tr className={row_classes}>
+      <tr className={row_classes} data-automation-id={'listing_item_' + this.props.item.id}>
         { checkbox }
         { this.props.onRenderItem(this.props.item, actions) }
       </tr>
