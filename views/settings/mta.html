@@ -736,7 +736,7 @@
             "<%= __('The email has been sent! Check your inbox.') | escape('js') %>",
             { scroll: true }
           );
-          trackTestEmailSent(true);
+          trackTestEmailSent(mailer, true);
         }).fail(function(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
@@ -744,7 +744,7 @@
               { scroll: true }
             );
           }
-          trackTestEmailSent(false);
+          trackTestEmailSent(mailer, false);
         });
       });
 
@@ -878,7 +878,7 @@
       $('#mailpoet_smtp_provider').trigger('change');
       $('#mailpoet_web_host').trigger('change');
 
-      function trackTestEmailSent(success) {
+      function trackTestEmailSent(mailer, success) {
         MailPoet.trackEvent(
           'User has sent a test email from Settings',
           {
