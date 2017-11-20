@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Codeception\Util\Locator;
+
 class SubscriptionFormCest {
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;
 
@@ -32,6 +34,24 @@ class SubscriptionFormCest {
     $I->click('.mailpoet_submit');
     $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
+  }
+
+  /**
+   * @depends subscriptionFormWidget
+   */
+  function subscriptionConfirmation(\AcceptanceTester $I) {
+    $I->amOnUrl('http://mailhog:8025');
+    $I->click(Locator::contains('span.subject', 'Confirm your subscription'));
+    $I->switchToIframe('preview-html');
+    $I->click('Click here to confirm your subscription');
+    $I->switchToNextTab();
+    $I->see('You have subscribed');
+    $I->seeNoJSErrors();
+
+    $I->amOnUrl('http://wordpress');
+    $I->loginAsAdmin();
+    $I->amOnMailpoetPage('Subscribers');
+    $I->see('Subscribed', Locator::contains('tr', $this->subscriber_email));
   }
 
   function _after(\AcceptanceTester $I) {
