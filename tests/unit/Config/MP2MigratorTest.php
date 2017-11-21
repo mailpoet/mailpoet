@@ -53,7 +53,8 @@ class MP2MigratorTest extends \MailPoetTest {
     $this->invokeMethod($this->MP2Migrator, 'eraseMP3Data');
 
     // Check if the subscribers number is equal to the WordPress users number
-    $WPUsersCount = \ORM::for_table($wpdb->prefix . 'users')->count();
+    // On multisite environment, there's only 1 users table that's shared by subsites
+    $WPUsersCount = \ORM::for_table($wpdb->base_prefix . 'users')->count();
     expect(Subscriber::count())->equals($WPUsersCount);
 
     // Check if the custom fields number is 0
