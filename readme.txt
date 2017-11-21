@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.2.1 - 2017-11-21 =
+* Fixed: Safari bug asking subscribers to leave the first field empty in MailPoet subscription forms;
+* Fixed: JavaScript error is not thrown when test email can't be sent;
 
 = 3.2.0 - 2017-11-14 =
 * Added: API method to access subscriber data by email;
