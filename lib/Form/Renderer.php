@@ -15,7 +15,7 @@ class Renderer {
     $styles = new Util\Styles(static::getStyles($form));
 
     $html = '<style type="text/css">';
-    $html .= '.mailpoet_hp_email_label{position: absolute;left: -999em;}'; // move honeypot field out of sight
+    $html .= '.mailpoet_hp_email_label{display:none;}'; // move honeypot field out of sight
     $html .= $styles->render($prefix);
     $html .= '</style>';
 
