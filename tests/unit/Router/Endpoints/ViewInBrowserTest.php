@@ -139,14 +139,13 @@ class ViewInBrowserTest extends \MailPoetTest {
     // when WP user is not logged, false should be returned
     expect($view_in_browser->_validateBrowserPreviewData($data))->false();
 
-    // when WP user is logged in but does not have 'manage options' permission, false should be returned
-    wp_set_current_user(1);
-    $wp_user = wp_get_current_user();
+    $wp_user = wp_set_current_user(0);
+    // when WP user does not have 'manage options' permission, false should be returned
     $wp_user->remove_role('administrator');
     $view_in_browser->access_control = new AccessControl();
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
 
-    // when WP user is logged and has 'manage options' permission, data should be returned
+    // when WP has 'manage options' permission, data should be returned
     $wp_user->add_role('administrator');
     $view_in_browser->access_control = new AccessControl();
     expect($view_in_browser->_validateBrowserPreviewData($data))->equals($data);

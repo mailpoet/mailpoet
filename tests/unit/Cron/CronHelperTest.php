@@ -107,6 +107,12 @@ class CronHelperTest extends \MailPoetTest {
     }
   }
 
+  function testItGetsSubsiteUrlOnMultisiteEnvironment() {
+    if((boolean)getenv('MULTISITE') === true) {
+      expect(CronHelper::getSiteUrl())->contains(getenv('WP_TEST_MULTISITE_SLUG'));
+    }
+  }
+
   function testItEnforcesExecutionLimit() {
     $time = microtime(true);
     expect(CronHelper::enforceExecutionLimit($time))->null();

@@ -1,6 +1,12 @@
 <?php
 
-$wp_load_file = getenv('WP_TEST_PATH') . '/wp-load.php';
+if((boolean)getenv('MULTISITE') === true) {
+  // REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
+  $_SERVER['REQUEST_URI'] = '/' . getenv('WP_TEST_MULTISITE_SLUG');
+  $wp_load_file = getenv('WP_TEST_PATH_MULTISITE') . '/wp-load.php';
+} else {
+  $wp_load_file = getenv('WP_TEST_PATH') . '/wp-load.php';
+}
 require_once($wp_load_file);
 
 $console = new \Codeception\Lib\Console\Output([]);
