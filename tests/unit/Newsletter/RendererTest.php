@@ -191,7 +191,7 @@ class RendererTest extends \MailPoetTest {
     );
     $rendered_image = Image::render($image, $columnCount = 1);
     expect($rendered_image)->contains('src="//path-without-protocol"');
-  }  
+  }
 
   function testItRendersImageWithLink() {
     $newsletter = $this->newsletter['body'];
@@ -444,11 +444,12 @@ class RendererTest extends \MailPoetTest {
   function testItPostProcessesTemplate() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render();
-    // !important should be stripped from everywhere except from
-    // with the <style> tag
-    expect(preg_match('/<style.*?important/s', $template['html']))
-      ->equals(1);
-    expect(preg_match('/mailpoet_template.*?important/s', $template['html']))
-      ->equals(0);
+    // !important should be stripped from everywhere except from with the <style> tag
+    expect(preg_match('/<style.*?important/s', $template['html']))->equals(1);
+    expect(preg_match('/mailpoet_template.*?important/s', $template['html']))->equals(0);
+
+    // spaces are only replaces in image tag URLs
+    expect(preg_match('/image%20with%20space.jpg/s', $template['html']))->equals(1);
+    expect(preg_match('/link%20with%20space.jpg/s', $template['html']))->equals(0);
   }
 }
