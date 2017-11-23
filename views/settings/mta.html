@@ -851,6 +851,9 @@
 
       function getMethodFromGroup(group) {
         var group = group || 'website';
+        if(group === 'mailpoet' && window.location.hash.indexOf('mta/other') === 1) {
+          group = 'website';
+        }
         switch(group) {
           case 'mailpoet':
             return 'MailPoet';
@@ -1011,7 +1014,6 @@
     }
 
     function renderHostSendingFrequency() {
-
       var host = $(this).find('option:selected').first();
       var frequencyType = $("#mailpoet_sending_frequency").find('option:selected').first().val();
 
