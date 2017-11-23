@@ -22,7 +22,7 @@ Fixtures::add(
                "blocks": [
                  {
                    "type": "text",
-                   "text": "<a href=\"[link:newsletter_view_in_browser_url]\">View in browser link</a> <a data-post-id=\"10\" href=\"http://example.com\">Post link</a> Hello [subscriber:firstname | default:test] <a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe link</a> <a href=\"[link:subscription_manage_url]\">Manage subscription link</a> <img src=\"http://example.com/image with space.jpg\"> <a href=\"http://example.com/link with space.jpg\">"
+                   "text": "<a href=\"[link:newsletter_view_in_browser_url]\">View in browser link</a> <a data-post-id=\"10\" href=\"http://example.com\">Post link</a> Hello [subscriber:firstname | default:test] <a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe link</a> <a href=\"[link:subscription_manage_url]\">Manage subscription link</a> <img src=\"http://example.com/image with space.jpg\"> <a href=\"http://example.com/link with space.jpg\">Link with space</a>"
                  }
                ]
              }
