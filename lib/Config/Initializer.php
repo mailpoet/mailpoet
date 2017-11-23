@@ -232,6 +232,7 @@ class Initializer {
       $this->setupHooks();
       $this->setupJSONAPI();
       $this->setupRouter();
+      $this->setupUserLocale();
     } catch(\Exception $e) {
       $this->handleFailedInitialization($e);
     }
@@ -245,6 +246,13 @@ class Initializer {
   function setupRouter() {
     $router = new Router\Router($this->access_control);
     $router->init();
+  }
+
+  function setupUserLocale() {
+    if(get_user_locale() === get_locale()) return;
+    unload_textdomain(Env::$plugin_name);
+    $localizer = new Localizer();
+    $localizer->init();
   }
 
   function setupPages() {

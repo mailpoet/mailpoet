@@ -30,7 +30,7 @@ class Localizer {
   function locale() {
     $locale = apply_filters(
       'plugin_locale',
-      get_locale(),
+      get_user_locale(),
       Env::$plugin_name
     );
     return $locale;
