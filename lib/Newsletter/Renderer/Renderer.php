@@ -130,6 +130,10 @@ class Renderer {
 
   function postProcessTemplate($template) {
     $DOM = $this->DOM_parser->parseStr($template);
+    // replace spaces in image tag URLs
+    foreach($DOM->query('img') as $image) {
+      $image->src = str_replace(' ', '%20', $image->src);
+    }
     $template = $DOM->query('.mailpoet_template');
     // replace all !important tags except for in the body tag
     $template->html(
