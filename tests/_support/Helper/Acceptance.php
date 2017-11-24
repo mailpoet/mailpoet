@@ -38,6 +38,10 @@ class Acceptance extends \Codeception\Module
     $this->assertEquals('', join(PHP_EOL, $this->js_errors), 'JS errors are present');
   }
 
+  function getCurrentUrl() {
+    return $this->getModule('WPWebDriver')->_getCurrentUri();
+  }
+
   protected function isJSError($logEntry) {
     return isset($logEntry['level'])
       && isset($logEntry['message'])
