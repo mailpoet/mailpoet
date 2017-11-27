@@ -18,7 +18,7 @@ class ManageSubscriptionLinkCest {
 
     // step 1 - select type
     $I->seeInCurrentUrl('#/new');
-    $I->click('Create');
+    $I->click('[data-automation-id=\'create_standard\']');
 
     // step 2 - select template
     $first_template_element = '[data-automation-id=\'select_template_1\']';
