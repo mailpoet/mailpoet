@@ -702,7 +702,7 @@
         var settings = jQuery('#mailpoet_settings_form').mailpoetSerializeObject();
         var mailer = settings.mta;
 
-        mailer.method = getMethodFromGroup($('#mta_group').val());
+        mailer.method = getMethodFromGroup($('#mailpoet_smtp_method').val());
 
         // check that we have a from address
         if(settings.sender.address.length === 0) {
@@ -851,9 +851,7 @@
 
       function getMethodFromGroup(group) {
         var group = group || 'website';
-        if(group === 'mailpoet' && window.location.hash.indexOf('mta/other') === 1) {
-          group = 'website';
-        }
+
         switch(group) {
           case 'mailpoet':
             return 'MailPoet';
