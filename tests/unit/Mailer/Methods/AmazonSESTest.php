@@ -216,6 +216,16 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
+  function testItCatchesSendingErrors() {
+    $invalid_subscriber = 'john.@doe.com';
+    $result = $this->mailer->send(
+      $this->newsletter,
+      $invalid_subscriber
+    );
+    expect($result['response'])->false();
+    expect($result['error_message'])->contains('does not comply with RFC 2822');
+  }
+
   function testItCanSend() {
     if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(

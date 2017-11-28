@@ -50,10 +50,14 @@ class AmazonSES {
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
-    $result = wp_remote_post(
-      $this->url,
-      $this->request($newsletter, $subscriber, $extra_params)
-    );
+    try {
+      $result = wp_remote_post(
+        $this->url,
+        $this->request($newsletter, $subscriber, $extra_params)
+      );
+    } catch(\Exception $e) {
+      return Mailer::formatMailerSendErrorResult($e->getMessage());
+    }
     if(is_wp_error($result)) {
       return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
     }
