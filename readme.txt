@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.2.2 - 2017-11-28 =
+* Fixed: plugin language changes according to user's profile language;
+* Fixed: linked images with spaces inside URL are now properly displayed in Gmail. Thanks, Willie!
+* Fixed: proper error message is displayed when sending fails using Amazon SES. Thanks Andres!
+* Fixed: error message thrown in a rare case when trying to send a test email.
 
 = 3.2.1 - 2017-11-21 =
 * Fixed: Safari bug asking subscribers to leave the first field empty in MailPoet subscription forms;
