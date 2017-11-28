@@ -860,6 +860,7 @@
           case 'website':
             return 'PHPMail';
           break;
+          case 'manual':
           case 'smtp':
             var method = $('#mailpoet_smtp_provider').val();
             if(method === 'manual') {
@@ -867,6 +868,8 @@
             }
             return method;
           break;
+          default:
+            return group;
         }
       }
 
