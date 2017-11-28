@@ -702,7 +702,7 @@
         var settings = jQuery('#mailpoet_settings_form').mailpoetSerializeObject();
         var mailer = settings.mta;
 
-        mailer.method = getMethodFromGroup($('#mta_group').val());
+        mailer.method = getMethodFromGroup($('#mailpoet_smtp_method').val());
 
         // check that we have a from address
         if(settings.sender.address.length === 0) {
@@ -851,10 +851,12 @@
 
       function getMethodFromGroup(group) {
         var group = group || 'website';
+
         switch(group) {
           case 'mailpoet':
             return 'MailPoet';
           break;
+          case 'server':
           case 'website':
             return 'PHPMail';
           break;
@@ -1011,7 +1013,6 @@
     }
 
     function renderHostSendingFrequency() {
-
       var host = $(this).find('option:selected').first();
       var frequencyType = $("#mailpoet_sending_frequency").find('option:selected').first().val();
 
