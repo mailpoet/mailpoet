@@ -1,10 +1,12 @@
 <?php
 namespace MailPoet\Test\Config;
 
+use Codeception\Util\Fixtures;
 use Helper\WordPress;
 use MailPoet\Config\Shortcodes;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 
@@ -48,5 +50,39 @@ class ShortcodesTest extends \MailPoetTest {
     );
     expect($request_data['newsletter_id'])->isEmpty();
     expect($request_data['newsletter_hash'])->equals($this->newsletter->hash);
+  }
+
+  function testItDisplaysManageSubscriptionPageForLoggedinExistingUsers() {
+    $wp_user = wp_set_current_user(1);
+    expect(is_user_logged_in())->true();
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->email = $wp_user->data->user_email;
+    $subscriber->wp_user_id = $wp_user->ID;
+    $subscriber->save();
+    $result = do_shortcode('[mailpoet_manage_subscription]');
+    expect($result)->contains('form method="POST"');
+    expect($result)->contains($subscriber->email);
+  }
+
+  function testItDoesNotDisplayManageSubscriptionPageForLoggedinNonexistentSubscribers() {
+    $wp_user = wp_set_current_user(1);
+    expect(is_user_logged_in())->true();
+    expect(Subscriber::findOne($wp_user->data->user_email))->false();
+    $result = do_shortcode('[mailpoet_manage_subscription]');
+    expect($result)->contains('You need to be logged in or be a subscriber to our mailing lists to see this page.');
+  }
+
+  function testItDoesNotDisplayManageSubscriptionPageForLoggedOutUsers() {
+    wp_set_current_user(0);
+    expect(is_user_logged_in())->false();
+    $result = do_shortcode('[mailpoet_manage_subscription]');
+    expect($result)->contains('You need to be logged in or be a subscriber to our mailing lists to see this page.');
+  }
+
+  function _after() {
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

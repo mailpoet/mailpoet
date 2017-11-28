@@ -1,9 +1,11 @@
 <?php
+
 namespace MailPoet\Config;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Subscription\Pages;
 use MailPoet\WP\Hooks;
 
 class Shortcodes {
@@ -33,6 +35,17 @@ class Shortcodes {
     Hooks::addFilter('mailpoet_archive_subject', array(
       $this, 'renderArchiveSubject'
     ), 2, 3);
+
+    // subscription management
+    add_shortcode('mailpoet_manage_subscription', array(
+      $this,
+      'getManageContent'
+    ));
+  }
+
+  function getManageContent() {
+    $subscription_page = new Pages();
+    return $subscription_page->getManageContent();
   }
 
   function formWidget($params = array()) {

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscription;
 
 use MailPoet\Models\Subscriber;
@@ -14,12 +15,15 @@ use MailPoet\Form\Block\Date as FormBlockDate;
 
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
+  const ACTION_CONFIRM = 'confirm';
+  const ACTION_MANAGE = 'manage';
+  const ACTION_UNSUBSCRIBE = 'unsubscribe';
 
   private $action;
   private $data;
   private $subscriber;
 
-  function __construct($action, $data = array()) {
+  function __construct($action = false, $data = array()) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
@@ -32,8 +36,12 @@ class Pages {
 
     // manage subscription link shortcode
     // [mailpoet_manage text="Manage your subscription"]
-    add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
-    add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
+    if(!shortcode_exists('mailpoet_manage')) {
+      add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
+    }
+    if(!shortcode_exists('mailpoet_manage_subscription')) {
+      add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
+    }
   }
 
   private function isPreview() {
@@ -46,14 +54,15 @@ class Pages {
   function getSubscriber() {
     $token = (isset($this->data['token'])) ? $this->data['token'] : null;
     $email = (isset($this->data['email'])) ? $this->data['email'] : null;
+    $wp_user = wp_get_current_user();
 
-    if(Subscriber::generateToken($email) === $token) {
-      $subscriber = Subscriber::findOne($email);
-      if($subscriber !== false) {
-        return $subscriber;
-      }
+    if(!$email && $wp_user->exists()) {
+      return Subscriber::where('wp_user_id', $wp_user->ID)->findOne();
     }
-    return false;
+
+    return (Subscriber::generateToken($email) === $token) ?
+      Subscriber::findOne($email) :
+      false;
   }
 
   function confirm() {
@@ -113,13 +122,13 @@ class Pages {
     } else {
       // when it's our own page, generate page title based on requested action
       switch($this->action) {
-        case 'confirm':
+        case self::ACTION_CONFIRM:
           return $this->getConfirmTitle();
 
-        case 'manage':
+        case self::ACTION_MANAGE:
           return $this->getManageTitle();
 
-        case 'unsubscribe':
+        case self::ACTION_UNSUBSCRIBE:
           return $this->getUnsubscribeTitle();
       }
     }
@@ -137,13 +146,13 @@ class Pages {
       $content = '';
 
       switch($this->action) {
-        case 'confirm':
+        case self::ACTION_CONFIRM:
           $content = $this->getConfirmContent();
           break;
-        case 'manage':
+        case self::ACTION_MANAGE:
           $content = $this->getManageContent();
           break;
-        case 'unsubscribe':
+        case self::ACTION_UNSUBSCRIBE:
           $content = $this->getUnsubscribeContent();
           break;
       }
@@ -225,7 +234,7 @@ class Pages {
       ->withCustomFields()
       ->withSubscriptions();
     } else {
-      return;
+      return __('You need to be logged in or be a subscriber to our mailing lists to see this page.', 'mailpoet');
     }
 
     $custom_fields = array_map(function($custom_field) use($subscriber) {
