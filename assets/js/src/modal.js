@@ -215,6 +215,7 @@ define('modal', ['mailpoet', 'jquery'],
         jQuery(document).on('keyup.mailpoet_modal', function (e) {
           if (this.opened === false) { return false; }
           if (e.keyCode === 27) { this.cancel(); }
+          return true;
         }.bind(this));
 
         // make sure the popup is repositioned when the window is resized

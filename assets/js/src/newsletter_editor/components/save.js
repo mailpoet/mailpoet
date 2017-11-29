@@ -350,6 +350,7 @@ define([
 
       return message;
     }
+    return undefined;
   };
 
   App.on('before:start', function (App) {

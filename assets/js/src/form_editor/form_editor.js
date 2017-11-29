@@ -330,6 +330,7 @@ WysijaForm = {
             setting.setValue(data.settings[setting.name]);
           }
         }
+        return true;
       });
     }
   },
@@ -582,10 +583,8 @@ WysijaForm = {
   },
   hideControls: function () {
     try {
-      return WysijaForm.getBlocks().invoke('hideControls');
-    } catch (e) {
-      return;
-    }
+      WysijaForm.getBlocks().invoke('hideControls');
+    } catch (e) {}
   },
   hideTools: function () {
     window.$$('.wysija_tools').invoke('hide');
@@ -657,6 +656,7 @@ WysijaForm = {
       // this is a url, so do not encode the protocol
       return encodeURI(str).replace(/[!'()*]/g, escape);
     }
+    return str;
   },
   updateBlock: function (field) {
     var hasUpdated = false;
@@ -973,6 +973,7 @@ WysijaForm.Block.create = function (createBlock, target) {
 
   // position settings
   WysijaForm.setSettingsPosition();
+  return true;
 };
 
 document.observe('wjfe:item:drop', function (event) {

@@ -54,6 +54,7 @@ define([
       if (invalidBlock) {
         return invalidBlock.validationError;
       }
+      return undefined;
     },
     parse: function (response) {
       // If container has any blocks - add them to a collection
@@ -132,6 +133,7 @@ define([
             WidgetView.destroy();
             return node;
           }
+          return undefined;
         },
         testAttachToInstance: function (model, view) {
           // Attach Draggable only to layout containers and disable it

@@ -79,6 +79,7 @@ define([
             WidgetView.destroy();
             return node;
           }
+          return undefined;
         }
       },
       HighlightEditingBehavior: {}

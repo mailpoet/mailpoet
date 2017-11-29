@@ -143,6 +143,7 @@ define([
       }).always(function () {
         that.trigger('morePostsLoaded');
       });
+      return true;
     },
     _refreshTransformedPosts: function () {
       var that = this;

@@ -358,7 +358,7 @@ define([
 
       if (orientation === 'horizontal' && insertionType === 'special') {
         // Disable special insertion for horizontal containers
-        return;
+        return undefined;
       }
 
       return {

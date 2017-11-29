@@ -195,6 +195,7 @@ define([
       } else {
         return this.changeField('link', event);
       }
+      return undefined;
     },
     changeField: function (field, event) {
       this.model.set(field, jQuery(event.target).val());

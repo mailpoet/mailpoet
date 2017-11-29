@@ -339,6 +339,7 @@ define([
           }
         });
       });
+      return undefined;
     }
   });
 

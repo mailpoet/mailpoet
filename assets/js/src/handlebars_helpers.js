@@ -17,7 +17,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     var f;
     if (window.moment) {
       if (timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
-        return;
+        return undefined;
       }
 
       // set date format
