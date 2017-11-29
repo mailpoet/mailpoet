@@ -111,9 +111,9 @@ define('modal', ['mailpoet', 'jquery'],
       compileTemplate: function (template) {
         if (this.renderer === 'html') {
           return function () { return template; };
-        } else {
-          return window.Handlebars.compile(template);
         }
+        return window.Handlebars.compile(template);
+
       },
       init: function (options) {
         var modal;

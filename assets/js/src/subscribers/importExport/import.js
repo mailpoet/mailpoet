@@ -729,9 +729,9 @@ define(
             // if we're on the last line, show the total count of subscribers data
             else if (index === (subscribers.subscribers.length - 1)) {
               return subscribers.subscribersCount.toLocaleString();
-            } else {
-              return index + 1;
             }
+            return index + 1;
+
           });
 
           // reduce subscribers object if the total length is greater than the

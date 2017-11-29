@@ -798,9 +798,9 @@ WysijaForm.Block = window.Class.create({
     var block_placeholder = this.getBlockDroppable();
     if (block_placeholder === null) {
       return this.createBlockDroppable().hasClassName('enabled');
-    } else {
-      return block_placeholder.hasClassName('enabled');
     }
+    return block_placeholder.hasClassName('enabled');
+
   },
   createBlockDroppable: function () {
     info('block -> createBlockDroppable');
@@ -812,9 +812,9 @@ WysijaForm.Block = window.Class.create({
   getBlockDroppable: function () {
     if (this.element.previous() === undefined || this.element.previous().hasClassName('block_placeholder') === false) {
       return null;
-    } else {
-      return this.element.previous();
     }
+    return this.element.previous();
+
   },
   getControls: function () {
     return this.element.down('.wysija_controls');

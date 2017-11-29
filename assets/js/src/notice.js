@@ -115,9 +115,9 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
     formatMessage: function (message) {
       if (Array.isArray(message)) {
         return message.join('<br />');
-      } else {
-        return message;
       }
+      return message;
+
     },
     show: function (options) {
       // initialize

@@ -398,13 +398,13 @@ define([
           index: index,
           position: 'before'
         };
-      } else {
-        // Second half of the element
-        return {
-          index: index,
-          position: 'after'
-        };
       }
+        // Second half of the element
+      return {
+        index: index,
+        position: 'after'
+      };
+
     },
     _computeSpecialIndex: function (eventX, eventY) {
       return this._computeCellIndex(eventX, eventY);
