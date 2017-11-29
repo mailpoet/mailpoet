@@ -31,6 +31,16 @@ define(
      // render template
      jQuery('#mailpoet_subscribers_export > div.inside').html(subscribers_export_template(window.exportData));
 
+     function toggleNextStepButton(condition) {
+       var disabled = 'button-disabled';
+       if (condition === 'on') {
+         nextStepButton.removeClass(disabled);
+       }
+       else {
+         nextStepButton.addClass(disabled);
+       }
+     }
+
      // define reusable variables
      segmentsContainerElement = jQuery('#export_lists');
      subscriberFieldsContainerElement = jQuery('#export_columns');
@@ -127,16 +137,6 @@ define(
        }
        segmentsContainerElement.val(selectedSegments).trigger('change');
      });
-
-     function toggleNextStepButton(condition) {
-       var disabled = 'button-disabled';
-       if (condition === 'on') {
-         nextStepButton.removeClass(disabled);
-       }
-       else {
-         nextStepButton.addClass(disabled);
-       }
-     }
 
      nextStepButton.click(function () {
        var exportFormat;

@@ -11,6 +11,27 @@ var Observable;
 var WysijaHistory;
 var WysijaForm;
 
+/* LOGGING */
+function info(value) {
+  if (WysijaForm.options.debug === false) return;
+
+  if (!(window.console && console.log)) {
+    (function () {
+      var noop = function () {};
+      var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
+      var length = methods.length;
+      var console = {};
+      window.console = {};
+      while (length--) {
+        console[methods[length]] = noop;
+      }
+    }());
+  }
+  try {
+    console.log('[DEBUG] ' + value);
+  } catch (e) {}
+}
+
 Event.cacheDelegated = {};
 Object.extend(document, (function () {
   var cache = Event.cacheDelegated;
@@ -96,6 +117,12 @@ Observable = (function () {
     return name.underscore().split('_').join(':');
   }
 
+  function getWrapper(handler, klass) {
+    return function (event) {
+      return handler.call(new klass(this), event, event.memo);
+    };
+  }
+
   function getHandlers(klass) {
     var proto = klass.prototype;
     var namespace = proto.namespace;
@@ -104,12 +131,6 @@ Observable = (function () {
       handlers.set(getEventName(name, namespace), getWrapper(proto[name], klass));
       return handlers;
     });
-  }
-
-  function getWrapper(handler, klass) {
-    return function (event) {
-      return handler.call(new klass(this), event, event.memo);
-    };
   }
 
   function onDomLoad(selector, klass) {
@@ -1073,26 +1094,5 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
 
 /* When dom is loaded, initialize WysijaForm */
 document.observe('dom:loaded', WysijaForm.init);
-
-/* LOGGING */
-function info(value) {
-  if (WysijaForm.options.debug === false) return;
-
-  if (!(window.console && console.log)) {
-    (function () {
-      var noop = function () {};
-      var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
-      var length = methods.length;
-      var console = {};
-      window.console = {};
-      while (length--) {
-        console[methods[length]] = noop;
-      }
-    }());
-  }
-  try {
-    console.log('[DEBUG] ' + value);
-  } catch (e) {}
-}
 
 module.exports = WysijaForm;

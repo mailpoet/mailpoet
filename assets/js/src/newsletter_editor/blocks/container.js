@@ -196,19 +196,19 @@ define([
       var $toggleButton = this.$('> .mailpoet_tools .mailpoet_newsletter_layer_selector');
       var $overlay = jQuery('.mailpoet_layer_overlay');
       var $container = this.$('> .mailpoet_container');
-      var enableContainerLayer = function () {
-        that.$el.addClass('mailpoet_container_layer_active');
-        $toggleButton.addClass('mailpoet_container_layer_active');
-        $container.addClass('mailpoet_layer_highlight');
-        $overlay.click(disableContainerLayer);
-        $overlay.show();
-      };
       var disableContainerLayer = function () {
         that.$el.removeClass('mailpoet_container_layer_active');
         $toggleButton.removeClass('mailpoet_container_layer_active');
         $container.removeClass('mailpoet_layer_highlight');
         $overlay.hide();
         $overlay.off('click');
+      };
+      var enableContainerLayer = function () {
+        that.$el.addClass('mailpoet_container_layer_active');
+        $toggleButton.addClass('mailpoet_container_layer_active');
+        $container.addClass('mailpoet_layer_highlight');
+        $overlay.click(disableContainerLayer);
+        $overlay.show();
       };
       if ($toggleButton.hasClass('mailpoet_container_layer_active')) {
         disableContainerLayer();
