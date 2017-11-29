@@ -87,13 +87,13 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('spacer', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('spacer', {
       blockModel: Module.SpacerBlockModel,
       blockView: Module.SpacerBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'spacer',
       widgetView: Module.SpacerWidgetView,
       priority: 94

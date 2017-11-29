@@ -68,21 +68,21 @@ define([
   };
 
   App.on('before:start', function (Application, options) {
-    var App = Application;
+    var BeforeStartApp = Application;
     // Expose block methods globally
-    App.registerBlockType = Module.registerBlockType;
-    App.getBlockTypeModel = Module.getBlockTypeModel;
-    App.getBlockTypeView = Module.getBlockTypeView;
-    App.toJSON = Module.toJSON;
-    App.getBody = Module.getBody;
-    App.getNewsletter = Module.getNewsletter;
-    App.findModels = Module.findModels;
+    BeforeStartApp.registerBlockType = Module.registerBlockType;
+    BeforeStartApp.getBlockTypeModel = Module.getBlockTypeModel;
+    BeforeStartApp.getBlockTypeView = Module.getBlockTypeView;
+    BeforeStartApp.toJSON = Module.toJSON;
+    BeforeStartApp.getBody = Module.getBody;
+    BeforeStartApp.getNewsletter = Module.getNewsletter;
+    BeforeStartApp.findModels = Module.findModels;
 
     Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['body']));
   });
 
   App.on('start', function (Application, options) {
-    var App = Application;
+    var StartApp = Application;
     var body = options.newsletter.body;
     var content = (_.has(body, 'content')) ? body.content : {};
 
@@ -93,13 +93,13 @@ define([
       );
     }
 
-    App._contentContainer = new (App.getBlockTypeModel('container'))(content, { parse: true });
-    App._contentContainerView = new (App.getBlockTypeView('container'))({
-      model: App._contentContainer,
+    StartApp._contentContainer = new (StartApp.getBlockTypeModel('container'))(content, { parse: true });
+    StartApp._contentContainerView = new (StartApp.getBlockTypeView('container'))({
+      model: StartApp._contentContainer,
       renderOptions: { depth: 0 }
     });
 
-    App._appView.showChildView('contentRegion', App._contentContainerView);
+    StartApp._appView.showChildView('contentRegion', StartApp._contentContainerView);
   });
 
 

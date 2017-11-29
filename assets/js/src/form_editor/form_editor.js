@@ -66,18 +66,18 @@ Object.extend(document, (function () {
       var wrapper;
       switch (length) {
         case 2:
-          getWrappersForSelector(selector, eventName).each(function (wrapper) {
-            document.stopDelegating(selector, eventName, wrapper.handler);
+          getWrappersForSelector(selector, eventName).each(function (selectorWrapper) {
+            document.stopDelegating(selector, eventName, selectorWrapper.handler);
           });
           break;
         case 1:
-          Object.keys(getCacheForSelector(selector)).each(function (eventName) {
-            document.stopDelegating(selector, eventName);
+          Object.keys(getCacheForSelector(selector)).each(function (event) {
+            document.stopDelegating(selector, event);
           });
           break;
         case 0:
-          Object.keys(cache).each(function (selector) {
-            document.stopDelegating(selector);
+          Object.keys(cache).each(function (cacheSelector) {
+            document.stopDelegating(cacheSelector);
           });
           break;
         default:
@@ -157,8 +157,8 @@ Object.extend(window.Droppables, {
     var drop;
     var affected = [];
     if (!this.drops.length) return;
-    this.drops.each(function (drop) {
-      if (window.Droppables.isAffected(point, element, drop)) affected.push(drop);
+    this.drops.each(function (dropsDrop) {
+      if (window.Droppables.isAffected(point, element, dropsDrop)) affected.push(dropsDrop);
     });
     if (affected.length > 0) drop = window.Droppables.findDeepestChild(affected);
     if (this.last_active && this.last_active !== drop) this.deactivate(this.last_active, element);

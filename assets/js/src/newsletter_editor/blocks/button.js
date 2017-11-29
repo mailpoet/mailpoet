@@ -132,13 +132,13 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('button', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('button', {
       blockModel: Module.ButtonBlockModel,
       blockView: Module.ButtonBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'button',
       widgetView: Module.ButtonWidgetView,
       priority: 92

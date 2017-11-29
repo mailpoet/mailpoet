@@ -110,13 +110,13 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('header', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('header', {
       blockModel: Module.HeaderBlockModel,
       blockView: Module.HeaderBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'header',
       widgetView: Module.HeaderWidgetView,
       priority: 98

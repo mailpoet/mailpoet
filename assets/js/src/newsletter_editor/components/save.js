@@ -353,8 +353,8 @@ define([
     return undefined;
   };
 
-  App.on('before:start', function (App) {
-    var Application = App;
+  App.on('before:start', function (BeforeStartApp) {
+    var Application = BeforeStartApp;
     Application.save = Module.save;
     Application.getChannel().on('autoSave', Module.autoSave);
 
@@ -363,9 +363,9 @@ define([
     Application.getChannel().reply('save', Application.save);
   });
 
-  App.on('start', function (App) {
+  App.on('start', function (BeforeStartApp) {
     var saveView = new Module.SaveView();
-    App._appView.showChildView('bottomRegion', saveView);
+    BeforeStartApp._appView.showChildView('bottomRegion', saveView);
   });
 
   return Module;

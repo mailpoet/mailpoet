@@ -29,8 +29,8 @@ define([
     }
   });
 
-  App.on('start', function (App) {
-    App._appView.showChildView('headingRegion', new Module.HeadingView({ model: App.getNewsletter() }));
+  App.on('start', function (StartApp) {
+    StartApp._appView.showChildView('headingRegion', new Module.HeadingView({ model: StartApp.getNewsletter() }));
     MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-subject-line'), {
       tooltipId: 'tooltip-designer-subject-line-ti',
       tooltip: MailPoet.I18n.t('helpTooltipDesignerSubjectLine'),

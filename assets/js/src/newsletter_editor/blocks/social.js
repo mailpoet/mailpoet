@@ -299,13 +299,13 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('social', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('social', {
       blockModel: Module.SocialBlockModel,
       blockView: Module.SocialBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'social',
       widgetView: Module.SocialWidgetView,
       priority: 95

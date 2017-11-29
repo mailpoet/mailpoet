@@ -94,13 +94,13 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('text', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('text', {
       blockModel: Module.TextBlockModel,
       blockView: Module.TextBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'text',
       widgetView: Module.TextWidgetView,
       priority: 90

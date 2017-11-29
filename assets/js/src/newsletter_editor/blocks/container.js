@@ -338,25 +338,25 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('container', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
       blockView: Module.ContainerBlockView
     });
 
-    App.registerLayoutWidget({
+    BeforeStartApp.registerLayoutWidget({
       name: 'oneColumnLayout',
       priority: 100,
       widgetView: Module.OneColumnContainerWidgetView
     });
 
-    App.registerLayoutWidget({
+    BeforeStartApp.registerLayoutWidget({
       name: 'twoColumnLayout',
       priority: 100,
       widgetView: Module.TwoColumnContainerWidgetView
     });
 
-    App.registerLayoutWidget({
+    BeforeStartApp.registerLayoutWidget({
       name: 'threeColumnLayout',
       priority: 100,
       widgetView: Module.ThreeColumnContainerWidgetView

@@ -361,18 +361,18 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    var Application = App;
+  App.on('before:start', function (BeforeStartApp) {
+    var Application = BeforeStartApp;
     Application.registerWidget = Module.registerWidget;
     Application.getWidgets = Module.getWidgets;
     Application.registerLayoutWidget = Module.registerLayoutWidget;
     Application.getLayoutWidgets = Module.getLayoutWidgets;
   });
 
-  App.on('start', function (App) {
+  App.on('start', function (StartApp) {
     var sidebarView = new SidebarView();
 
-    App._appView.showChildView('sidebarRegion', sidebarView);
+    StartApp._appView.showChildView('sidebarRegion', sidebarView);
 
     MailPoet.helpTooltip.show(document.getElementById('tooltip-send-preview'), {
       tooltipId: 'tooltip-editor-send-preview',

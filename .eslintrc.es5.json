@@ -37,7 +37,6 @@
     "global-require": 0,
     "no-throw-literal": 0,
     "no-extra-bind": 0,
-    "no-shadow": 0,
     "no-underscore-dangle": 0,
     "brace-style": 0,
     "no-else-return": 0,

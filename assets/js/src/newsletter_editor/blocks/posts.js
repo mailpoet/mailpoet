@@ -583,13 +583,13 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('posts', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('posts', {
       blockModel: Module.PostsBlockModel,
       blockView: Module.PostsBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'posts',
       widgetView: Module.PostsWidgetView,
       priority: 96

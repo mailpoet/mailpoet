@@ -501,8 +501,8 @@ define(
             // count repeating e-mails inside duplicate array and present them in
             // 'email (xN)' format
             duplicates = {};
-            subscribers.duplicate.forEach(function (email) {
-              duplicates[email] = (duplicates[email] || 0) + 1;
+            subscribers.duplicate.forEach(function (subscriberEmail) {
+              duplicates[subscriberEmail] = (duplicates[subscriberEmail] || 0) + 1;
             });
             subscribers.duplicate = [];
             for (email in duplicates) {
@@ -662,7 +662,7 @@ define(
           // autodetect column types
           Handlebars.registerHelper(
               'show_and_match_columns',
-              function (subscribers, options) {
+              function (helperSubscribers, options) {
                 var displayedColumns = [];
                 var displayedColumnsIds = [];
                 var i;
@@ -671,14 +671,14 @@ define(
                 var headerName;
                 var headerNameMatch;
                 // go through all elements of the first row in subscribers data
-                for (i in subscribers.subscribers[0]) {
-                  columnData = subscribers.subscribers[0][i];
+                for (i in helperSubscribers.subscribers[0]) {
+                  columnData = helperSubscribers.subscribers[0][i];
                   columnId = 'ignore'; // set default column type
                   // if the column is not undefined and has a valid e-mail, set type as email
                   if (columnData % 1 !== 0 && window.emailRegex.test(columnData)) {
                     columnId = 'email';
-                  } else if (subscribers.header) {
-                    headerName = subscribers.header[i];
+                  } else if (helperSubscribers.header) {
+                    headerName = helperSubscribers.header[i];
                     headerNameMatch = window.mailpoetColumns.map(function (el) {
                       return el.name;
                     }).indexOf(headerName);
@@ -1007,22 +1007,21 @@ define(
             var batchNumber = 0;
             var batchSize = 2000;
             var timestamp = Date.now() / 1000;
-            var subscribers = [];
             var importResults = {
               created: 0,
               updated: 0,
               errors: [],
               segments: []
             };
-            var subscribers;
+            var clickSubscribers;
             var splitSubscribers;
 
             if (jQuery(this).hasClass('button-disabled')) {
               return;
             }
             MailPoet.Modal.loading(true);
-            splitSubscribers = function (subscribers, size) {
-              return subscribers.reduce(function (res, item, index) {
+            splitSubscribers = function (localSubscribers, size) {
+              return localSubscribers.reduce(function (res, item, index) {
                 if (index % size === 0) {
                   res.push([]);
                 }
@@ -1030,7 +1029,7 @@ define(
                 return res;
               }, []);
             };
-            subscribers = splitSubscribers(window.importData.step1.subscribers, batchSize);
+            clickSubscribers = splitSubscribers(window.importData.step1.subscribers, batchSize);
 
             _.each(jQuery('select.mailpoet_subscribers_column_data_match'),
               function (column, columnIndex) {
@@ -1042,16 +1041,16 @@ define(
                 columns[columnId] = { index: columnIndex, validation_rule: validationRule };
               });
 
-            _.each(subscribers, function () {
-              queue.add(function (queue) {
-                queue.pause();
+            _.each(clickSubscribers, function () {
+              queue.add(function (addQueue) {
+                addQueue.pause();
                 MailPoet.Ajax.post({
                   api_version: window.mailpoet_api_version,
                   endpoint: 'ImportExport',
                   action: 'processImport',
                   data: JSON.stringify({
                     columns: columns,
-                    subscribers: subscribers[batchNumber],
+                    subscribers: clickSubscribers[batchNumber],
                     timestamp: timestamp,
                     segments: segmentSelectElement.val(),
                     updateSubscribers: (jQuery(':radio[name="subscriber_update_option"]:checked').val() === 'yes')
@@ -1061,7 +1060,7 @@ define(
                   importResults.updated += response.data.updated;
                   importResults.segments = response.data.segments;
                   importResults.added_to_segment_with_welcome_notification = response.data.added_to_segment_with_welcome_notification;
-                  queue.run();
+                  addQueue.run();
                 }).fail(function (response) {
                   MailPoet.Modal.loading(false);
                   if (response.errors.length > 0) {
