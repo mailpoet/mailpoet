@@ -97,10 +97,14 @@ define([
       return null;
     },
     loadCachedItems: function () {
+      let items;
       if (typeof (window[`mailpoet_${this.props.field.endpoint}`]) !== 'undefined') {
-        let items = window[`mailpoet_${this.props.field.endpoint}`];
+        items = window[`mailpoet_${this.props.field.endpoint}`];
+      } else if (this.props.field.values !== undefined) {
+        items = this.props.field.values;
+      }
 
-
+      if (Array.isArray(items)) {
         if (this.props.field.filter !== undefined) {
           items = items.filter(this.props.field.filter);
         }
