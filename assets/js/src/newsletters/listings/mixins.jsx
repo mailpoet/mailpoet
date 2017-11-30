@@ -392,6 +392,10 @@ const MailerMixin = {
         MailPoet.I18n.t('mailerConnectionErrorNotice')
           .replace('%$1s', state.meta.mta_log.error.error_message);
     }
+    if (state.meta.mta_log.error.error_code) {
+      mailer_error_notice += ' ' + MailPoet.I18n.t('mailerErrorCode')
+          .replace('%$1s', state.meta.mta_log.error.error_code);
+    }
     return (
       <div>
         <p>{ mailer_error_notice }</p>

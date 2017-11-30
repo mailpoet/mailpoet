@@ -57,7 +57,7 @@ class Newsletter {
     // return the newsletter if it was previously rendered
     if(!is_null($queue->getNewsletterRenderedBody())) {
       return (!$queue->validate()) ?
-        $this->stopNewsletterPreProcessing() :
+        $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-RENDER', $queue->id)) :
         $newsletter;
     }
     // if tracking is enabled, do additional processing
@@ -111,7 +111,7 @@ class Newsletter {
       $queue_errors = ($queue->validate() !== true);
     }
     if($queue_errors) {
-      $this->stopNewsletterPreProcessing();
+      $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-SAVE', $queue->id));
     }
     return $newsletter;
   }
@@ -169,10 +169,11 @@ class Newsletter {
     return Helpers::flattenArray($segments);
   }
 
-  function stopNewsletterPreProcessing() {
+  function stopNewsletterPreProcessing($error_code = null) {
     MailerLog::processError(
       'queue_save',
-      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.')
+      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.'),
+      $error_code
     );
   }
 }
