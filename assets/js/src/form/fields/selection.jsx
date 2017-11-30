@@ -26,7 +26,7 @@ define([
       return (this.state.select2 === true);
     },
     componentDidMount: function () {
-      if (this.allowMultipleValues()) {
+      if (this.allowMultipleValues() || this.props.field.forceSelect2) {
         this.setupSelect2();
       }
     },
@@ -41,7 +41,7 @@ define([
       }
     },
     componentWillUnmount: function () {
-      if (this.allowMultipleValues()) {
+      if (this.allowMultipleValues() || this.props.field.forceSelect2) {
         this.destroySelect2();
       }
     },
@@ -154,6 +154,13 @@ define([
       }
       return value;
     },
+    insertEmptyOption: function () {
+      // https://select2.org/placeholders
+      // For single selects only, in order for the placeholder value to appear,
+      // we must have a blank <option> as the first option in the <select> control.
+      if (this.allowMultipleValues()) return undefined;
+      if (this.props.field.placeholder) return (<option />);
+    },
     render: function () {
       const options = this.state.items.map((item, index) => {
         const label = this.getLabel(item);
@@ -180,7 +187,10 @@ define([
           multiple={this.props.field.multiple}
           defaultValue={this.getSelectedValues()}
           {...this.props.field.validation}
-        >{ options }</select>
+        >
+          { this.insertEmptyOption() }
+          { options }
+        </select>
       );
     },
   });
