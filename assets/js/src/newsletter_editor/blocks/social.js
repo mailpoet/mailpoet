@@ -10,7 +10,6 @@ define([
   'underscore',
   'jquery'
 ], function (App, BaseBlock, Backbone, Marionette, SuperModel, _, jQuery) {
-
   'use strict';
 
   var Module = {};

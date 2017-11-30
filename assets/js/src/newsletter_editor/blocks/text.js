@@ -7,7 +7,6 @@ define([
   'underscore',
   'mailpoet'
 ], function (App, BaseBlock, _, MailPoet) {
-
   'use strict';
 
   var Module = {};

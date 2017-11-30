@@ -117,7 +117,6 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
         return message.join('<br />');
       }
       return message;
-
     },
     show: function (options) {
       // initialize

@@ -404,7 +404,6 @@ define([
         index: index,
         position: 'after'
       };
-
     },
     _computeSpecialIndex: function (eventX, eventY) {
       return this._computeCellIndex(eventX, eventY);

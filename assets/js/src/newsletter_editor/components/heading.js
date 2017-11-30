@@ -6,7 +6,6 @@ define([
   'jquery',
   'mailpoet'
 ], function (App, Backbone, Marionette, _, jQuery, MailPoet) {
-
   'use strict';
 
   var Module = {};

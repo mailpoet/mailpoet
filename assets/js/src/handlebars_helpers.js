@@ -27,10 +27,8 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
         return window.moment.unix(timestamp).format(f);
       }
       return window.moment.utc(timestamp).format(f);
-
     }
     return timestamp;
-
   });
 
   Handlebars.registerHelper('cycle', function (value, block) {
@@ -89,7 +87,6 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       return value.replace(mailtoMatchingRegex, '');
     }
     return value;
-
   });
   Handlebars.registerHelper('lookup', function (obj, field) {
     return obj && obj[field];
@@ -136,7 +133,6 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       return sanitized.substr(0, limit - strAppend.length) + strAppend;
     }
     return sanitized;
-
   });
 
   Handlebars.registerHelper('getNumber', function (string) {

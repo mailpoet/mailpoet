@@ -11,7 +11,6 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/base'
 ], function (Backbone, Marionette, _, jQuery, App, BaseBlock) {
-
   'use strict';
 
   var Module = {};
@@ -151,7 +150,6 @@ define([
         if (this.model.get('blocks').length === 2) return Module.TwoColumnContainerWidgetView;
       }
       return Module.OneColumnContainerWidgetView;
-
     },
     initialize: function (options) {
       base.BlockView.prototype.initialize.apply(this, arguments);

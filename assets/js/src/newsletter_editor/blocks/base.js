@@ -13,7 +13,6 @@ define([
   'mailpoet',
   'modal'
 ], function (App, Marionette, SuperModel, _, jQuery, MailPoet) {
-
   'use strict';
 
   var Module = {};

@@ -25,7 +25,6 @@ define([
   _,
   $
 ) {
-
   'use strict';
 
   var Module = {};
@@ -33,7 +32,6 @@ define([
 
   // Save editor contents to server
   Module.save = function () {
-
     var json = App.toJSON();
 
     // Stringify to enable transmission of primitive non-string value types
@@ -235,7 +233,6 @@ define([
         });
         this.hideOptionContents();
       }
-
     },
     toggleExportTemplate: function () {
       this.$('.mailpoet_export_template_container').toggleClass('mailpoet_hidden');

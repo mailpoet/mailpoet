@@ -8,7 +8,6 @@ define([
   'mailpoet',
   'jquery'
 ], function (App, BaseBlock, _, MailPoet, jQuery) {
-
   'use strict';
 
   var Module = {};

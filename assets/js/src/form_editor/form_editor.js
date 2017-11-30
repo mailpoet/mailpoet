@@ -546,7 +546,6 @@ WysijaForm = {
       if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = parseInt(window.$(WysijaForm.options.container).positionedOffset().left);
     }
     if (WysijaForm.toolbar.x === null) WysijaForm.toolbar.x = parseInt(WysijaForm.toolbar.left + window.$(WysijaForm.options.container).getDimensions().width + 15);
-
   },
   setToolbarPosition: function () {
     var position;
@@ -821,7 +820,6 @@ WysijaForm.Block = window.Class.create({
       return this.createBlockDroppable().hasClassName('enabled');
     }
     return blockPlaceholder.hasClassName('enabled');
-
   },
   createBlockDroppable: function () {
     info('block -> createBlockDroppable');
@@ -835,7 +833,6 @@ WysijaForm.Block = window.Class.create({
       return null;
     }
     return this.element.previous();
-
   },
   getControls: function () {
     return this.element.down('.wysija_controls');

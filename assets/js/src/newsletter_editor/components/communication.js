@@ -4,7 +4,6 @@ define([
   'mailpoet',
   'ajax'
 ], function (App, _, MailPoet) {
-
   var Module = {};
 
   Module._query = function (args) {

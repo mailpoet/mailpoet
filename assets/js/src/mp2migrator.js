@@ -41,7 +41,6 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
             jQuery('#upgrade-completed').show();
           }
           jQuery('#logger').append(row + '<br />\n');
-
         });
         jQuery('#logger').append('<span class="error_msg">' + MailPoet.MP2Migrator.fatal_error + '</span>' + '<br />\n');
       }).always(function () {
@@ -206,5 +205,4 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
     // Update the display
     MailPoet.MP2Migrator.updateDisplay();
   });
-
 });

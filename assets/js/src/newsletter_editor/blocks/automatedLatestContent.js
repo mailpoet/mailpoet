@@ -27,7 +27,6 @@ define([
   _,
   jQuery
   ) {
-
   'use strict';
 
   var Module = {};

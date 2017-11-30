@@ -6,7 +6,6 @@ define([
   'newsletter_editor/blocks/base',
   'underscore'
 ], function (App, BaseBlock, _) {
-
   'use strict';
 
   var Module = {};

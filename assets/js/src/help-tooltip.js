@@ -6,7 +6,6 @@ define('helpTooltip', ['mailpoet', 'react', 'react-dom', 'help-tooltip.jsx'],
 
     MailPoet.helpTooltip = {
       show: function (domContainerNode, opts) {
-
         ReactDOM.render(React.createElement(
           TooltipComponent, {
             tooltip: opts.tooltip,
@@ -16,7 +15,6 @@ define('helpTooltip', ['mailpoet', 'react', 'react-dom', 'help-tooltip.jsx'],
         ), domContainerNode);
       }
     };
-
   }
 );
 

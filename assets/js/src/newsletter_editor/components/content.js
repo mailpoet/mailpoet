@@ -35,14 +35,12 @@ define([
       return Module._blockTypes[type].blockModel;
     }
     throw 'Block type not supported: ' + type;
-
   };
   Module.getBlockTypeView = function (type) {
     if (type in Module._blockTypes) {
       return Module._blockTypes[type].blockView;
     }
     throw 'Block type not supported: ' + type;
-
   };
 
   Module.getBody = function () {

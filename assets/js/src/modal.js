@@ -113,7 +113,6 @@ define('modal', ['mailpoet', 'jquery'],
           return function () { return template; };
         }
         return window.Handlebars.compile(template);
-
       },
       init: function (options) {
         var modal;

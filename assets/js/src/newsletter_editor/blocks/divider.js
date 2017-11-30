@@ -7,7 +7,6 @@ define([
   'underscore',
   'jquery'
 ], function (App, BaseBlock, _, jQuery) {
-
   'use strict';
 
   var Module = {};

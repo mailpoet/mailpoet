@@ -451,7 +451,6 @@ define(
               }
             });
           });
-
         });
 
         router.on('route:step2', function () {
@@ -741,7 +740,6 @@ define(
               return subscribers.subscribersCount.toLocaleString();
             }
             return index + 1;
-
           });
 
           // reduce subscribers object if the total length is greater than the

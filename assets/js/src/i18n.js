@@ -21,5 +21,4 @@ define('i18n',
         return translations;
       }
     };
-
   });

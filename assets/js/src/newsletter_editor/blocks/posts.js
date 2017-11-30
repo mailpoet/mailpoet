@@ -36,7 +36,6 @@ define([
   ButtonBlock,
   DividerBlock
   ) {
-
   'use strict';
 
   var Module = {};

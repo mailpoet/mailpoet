@@ -2,7 +2,6 @@ define([
   'newsletter_editor/App',
   'backbone.supermodel'
 ], function (App, SuperModel) {
-
   var Module = {};
 
   Module.ConfigModel = SuperModel.extend({
