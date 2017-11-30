@@ -77,7 +77,7 @@ define('date',
         var escapeToken;
         var index;
         var token;
-        var format_mappings = {
+        var formatMappings = {
           date: {
             d: 'DD',
             D: 'ddd',
@@ -146,7 +146,7 @@ define('date',
 
         if (!format || format.length <= 0) return format;
 
-        replacements = format_mappings['date'];
+        replacements = formatMappings['date'];
         convertedFormat = [];
         escapeToken = false;
 

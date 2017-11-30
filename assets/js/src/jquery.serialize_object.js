@@ -25,7 +25,7 @@ define(
      */
     $.fn.mailpoetSerializeObject = function (coerce) {
       var obj = {};
-      var coerce_types = { true: !0, false: !1, null: null };
+      var coerceTypes = { true: !0, false: !1, null: null };
 
       // Iterate over all name=value pairs.
       $.each(this.serializeArray(), function (j, v) {
@@ -37,33 +37,33 @@ define(
         // If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
         // into its component parts.
         var keys = key.split('][');
-        var keys_last = keys.length - 1;
+        var keysLast = keys.length - 1;
 
         // If the first keys part contains [ and the last ends with ], then []
         // are correctly balanced.
-        if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
+        if (/\[/.test(keys[0]) && /\]$/.test(keys[keysLast])) {
           // Remove the trailing ] from the last keys part.
-          keys[keys_last] = keys[keys_last].replace(/\]$/, '');
+          keys[keysLast] = keys[keysLast].replace(/\]$/, '');
 
           // Split first keys part into two parts on the [ and add them back onto
           // the beginning of the keys array.
           keys = keys.shift().split('[').concat(keys);
 
-          keys_last = keys.length - 1;
+          keysLast = keys.length - 1;
         } else {
           // Basic 'foo' style key.
-          keys_last = 0;
+          keysLast = 0;
         }
 
         // Coerce values.
         if (coerce) {
           val = val && !isNaN(val) ? +val              // number
             : val === 'undefined' ? undefined         // undefined
-            : coerce_types[val] !== undefined ? coerce_types[val] // true, false, null
+            : coerceTypes[val] !== undefined ? coerceTypes[val] // true, false, null
             : val;                                                // string
         }
 
-        if (keys_last) {
+        if (keysLast) {
           // Complex key, build deep object structure based on a few rules:
           // * The 'cur' pointer starts at the object top-level.
           // * [] = array push (n is set to array length), [n] = array if n is
@@ -73,9 +73,9 @@ define(
           //   object or array based on the type of the next keys part.
           // * Move the 'cur' pointer to the next level.
           // * Rinse & repeat.
-          for (; i <= keys_last; i++) {
+          for (; i <= keysLast; i++) {
             key = keys[i] === '' ? cur.length : keys[i];
-            cur[key] = i < keys_last
+            cur[key] = i < keysLast
               ? cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ? {} : [])
               : val;
             cur = cur[key];

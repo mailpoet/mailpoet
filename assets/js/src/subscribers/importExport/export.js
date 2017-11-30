@@ -21,15 +21,15 @@ define(
      var groupBySegmentOptionElement;
      var nextStepButton;
      var renderSegmentsAndFields;
-     var subscribers_export_template;
+     var subscribersExportTemplate;
      if (!window.exportData.segments) {
        return;
      }
-     subscribers_export_template =
+     subscribersExportTemplate =
       Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
 
      // render template
-     jQuery('#mailpoet_subscribers_export > div.inside').html(subscribers_export_template(window.exportData));
+     jQuery('#mailpoet_subscribers_export > div.inside').html(subscribersExportTemplate(window.exportData));
 
      function toggleNextStepButton(condition) {
        var disabled = 'button-disabled';

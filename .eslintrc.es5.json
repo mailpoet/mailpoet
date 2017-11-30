@@ -41,7 +41,6 @@
     "no-throw-literal": 0,
     "no-extra-bind": 0,
     "brace-style": 0,
-    "camelcase": 0,
     "padded-blocks": 0,
     "strict": 0,
     "space-infix-ops": 0,

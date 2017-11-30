@@ -111,12 +111,12 @@ define([
       // position of the sidebar would be scrollable and not fixed
       // partially out of visible screen
       this.$el.parent().each(function () {
-        var calculated_left;
+        var calculatedLeft;
         var self = jQuery(this);
 
         if (self.css('position') === 'fixed') {
-          calculated_left = self.parent().offset().left - jQuery(window).scrollLeft();
-          self.css('left', calculated_left + 'px');
+          calculatedLeft = self.parent().offset().left - jQuery(window).scrollLeft();
+          self.css('left', calculatedLeft + 'px');
         } else {
           self.css('left', '');
         }

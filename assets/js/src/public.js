@@ -30,7 +30,7 @@ function (
         });
 
         form.parsley().on('form:submit', function (parsley) {
-          var form_data = form.mailpoetSerializeObject() || {};
+          var formData = form.mailpoetSerializeObject() || {};
           // check if we're on the same domain
           if (isSameDomain(window.MailPoetForm.ajax_url) === false) {
             // non ajax post request
@@ -39,11 +39,11 @@ function (
             // ajax request
           MailPoet.Ajax.post({
             url: window.MailPoetForm.ajax_url,
-            token: form_data.token,
-            api_version: form_data.api_version,
+            token: formData.token,
+            api_version: formData.api_version,
             endpoint: 'subscribers',
             action: 'subscribe',
-            data: form_data.data
+            data: formData.data
           }).fail(function (response) {
             form.find('.mailpoet_validate_error').html(
                 response.errors.map(function (error) {
