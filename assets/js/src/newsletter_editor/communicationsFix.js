@@ -11,8 +11,8 @@
   var Radio = require('backbone.radio');
   var _ = require('underscore');
   if (typeof define === 'function' && define.amd) {
-    define(['backbone.marionette', 'backbone.radio', 'underscore'], function (Marionette, Radio, _) {
-      return factory(Marionette, Radio, _);
+    define(['backbone.marionette', 'backbone.radio', 'underscore'], function (BackboneMarionette, BackboneRadio, underscore) {
+      return factory(BackboneMarionette, BackboneRadio, underscore);
     });
   }
   else if (typeof exports !== 'undefined') {

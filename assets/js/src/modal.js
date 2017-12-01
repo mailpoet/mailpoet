@@ -111,9 +111,8 @@ define('modal', ['mailpoet', 'jquery'],
       compileTemplate: function (template) {
         if (this.renderer === 'html') {
           return function () { return template; };
-        } else {
-          return window.Handlebars.compile(template);
         }
+        return window.Handlebars.compile(template);
       },
       init: function (options) {
         var modal;
@@ -215,6 +214,7 @@ define('modal', ['mailpoet', 'jquery'],
         jQuery(document).on('keyup.mailpoet_modal', function (e) {
           if (this.opened === false) { return false; }
           if (e.keyCode === 27) { this.cancel(); }
+          return true;
         }.bind(this));
 
         // make sure the popup is repositioned when the window is resized

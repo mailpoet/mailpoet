@@ -281,7 +281,7 @@ define([
       // 2. Remove visual markings of drop position visualization
       this.view.$('.mailpoet_drop_marker').remove();
     },
-    getDropPosition: function (eventX, eventY, is_unsafe) {
+    getDropPosition: function (eventX, eventY, isUnsafe) {
       var SPECIAL_AREA_INSERTION_WIDTH = 0.00; // Disable special insertion. Default: 0.3
 
       var element = this.view.$el;
@@ -307,7 +307,7 @@ define([
       var position;
       var indexAndPosition;
 
-      var unsafe = !!is_unsafe;
+      var unsafe = !!isUnsafe;
 
       if (this.getCollection().length === 0) {
         return {
@@ -358,7 +358,7 @@ define([
 
       if (orientation === 'horizontal' && insertionType === 'special') {
         // Disable special insertion for horizontal containers
-        return;
+        return undefined;
       }
 
       return {
@@ -398,13 +398,12 @@ define([
           index: index,
           position: 'before'
         };
-      } else {
-        // Second half of the element
-        return {
-          index: index,
-          position: 'after'
-        };
       }
+        // Second half of the element
+      return {
+        index: index,
+        position: 'after'
+      };
     },
     _computeSpecialIndex: function (eventX, eventY) {
       return this._computeCellIndex(eventX, eventY);

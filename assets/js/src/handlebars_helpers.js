@@ -17,7 +17,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     var f;
     if (window.moment) {
       if (timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
-        return;
+        return undefined;
       }
 
       // set date format
@@ -25,12 +25,10 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       // check if we passed a timestamp
       if (parseInt(timestamp, 10) == timestamp) {
         return window.moment.unix(timestamp).format(f);
-      } else {
-        return window.moment.utc(timestamp).format(f);
       }
-    } else {
-      return timestamp;
+      return window.moment.utc(timestamp).format(f);
     }
+    return timestamp;
   });
 
   Handlebars.registerHelper('cycle', function (value, block) {
@@ -87,9 +85,8 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     var mailtoMatchingRegex = /^mailto\:/i;
     if (typeof value === 'string' && value.match(mailtoMatchingRegex)) {
       return value.replace(mailtoMatchingRegex, '');
-    } else {
-      return value;
     }
+    return value;
   });
   Handlebars.registerHelper('lookup', function (obj, field) {
     return obj && obj[field];
@@ -134,9 +131,8 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     }
     if (sanitized.length > limit) {
       return sanitized.substr(0, limit - strAppend.length) + strAppend;
-    } else {
-      return sanitized;
     }
+    return sanitized;
   });
 
   Handlebars.registerHelper('getNumber', function (string) {

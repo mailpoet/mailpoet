@@ -7,7 +7,6 @@ define([
   'underscore',
   'mailpoet'
 ], function (App, BaseBlock, _, MailPoet) {
-
   'use strict';
 
   var Module = {};
@@ -110,13 +109,13 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('footer', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('footer', {
       blockModel: Module.FooterBlockModel,
       blockView: Module.FooterBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'footer',
       widgetView: Module.FooterWidgetView,
       priority: 99

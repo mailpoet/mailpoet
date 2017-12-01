@@ -4,7 +4,6 @@ define([
   'backbone.supermodel',
   'underscore'
 ], function (App, Marionette, SuperModel, _) {
-
   'use strict';
 
   var Module = {};
@@ -69,8 +68,8 @@ define([
     return App.getConfig().get('availableStyles');
   };
 
-  App.on('before:start', function (App, options) {
-    var Application = App;
+  App.on('before:start', function (BeforeStartApp, options) {
+    var Application = BeforeStartApp;
     var body;
     var globalStyles;
     // Expose style methods to global application
@@ -83,9 +82,9 @@ define([
     this.setGlobalStyles(globalStyles);
   });
 
-  App.on('start', function (App) {
-    var stylesView = new Module.StylesView({ model: App.getGlobalStyles() });
-    App._appView.showChildView('stylesRegion', stylesView);
+  App.on('start', function (StartApp) {
+    var stylesView = new Module.StylesView({ model: StartApp.getGlobalStyles() });
+    StartApp._appView.showChildView('stylesRegion', stylesView);
   });
 
   return Module;

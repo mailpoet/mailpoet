@@ -13,7 +13,6 @@ define([
   'mailpoet',
   'modal'
 ], function (App, Marionette, SuperModel, _, jQuery, MailPoet) {
-
   'use strict';
 
   var Module = {};
@@ -79,6 +78,7 @@ define([
             WidgetView.destroy();
             return node;
           }
+          return undefined;
         }
       },
       HighlightEditingBehavior: {}

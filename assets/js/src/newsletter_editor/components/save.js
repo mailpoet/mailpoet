@@ -25,7 +25,6 @@ define([
   _,
   $
 ) {
-
   'use strict';
 
   var Module = {};
@@ -33,7 +32,6 @@ define([
 
   // Save editor contents to server
   Module.save = function () {
-
     var json = App.toJSON();
 
     // Stringify to enable transmission of primitive non-string value types
@@ -235,7 +233,6 @@ define([
         });
         this.hideOptionContents();
       }
-
     },
     toggleExportTemplate: function () {
       this.$('.mailpoet_export_template_container').toggleClass('mailpoet_hidden');
@@ -350,10 +347,11 @@ define([
 
       return message;
     }
+    return undefined;
   };
 
-  App.on('before:start', function (App) {
-    var Application = App;
+  App.on('before:start', function (BeforeStartApp) {
+    var Application = BeforeStartApp;
     Application.save = Module.save;
     Application.getChannel().on('autoSave', Module.autoSave);
 
@@ -362,9 +360,9 @@ define([
     Application.getChannel().reply('save', Application.save);
   });
 
-  App.on('start', function (App) {
+  App.on('start', function (BeforeStartApp) {
     var saveView = new Module.SaveView();
-    App._appView.showChildView('bottomRegion', saveView);
+    BeforeStartApp._appView.showChildView('bottomRegion', saveView);
   });
 
   return Module;

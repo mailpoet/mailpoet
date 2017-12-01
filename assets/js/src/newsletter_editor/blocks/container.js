@@ -11,7 +11,6 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/base'
 ], function (Backbone, Marionette, _, jQuery, App, BaseBlock) {
-
   'use strict';
 
   var Module = {};
@@ -54,6 +53,7 @@ define([
       if (invalidBlock) {
         return invalidBlock.validationError;
       }
+      return undefined;
     },
     parse: function (response) {
       // If container has any blocks - add them to a collection
@@ -132,6 +132,7 @@ define([
             WidgetView.destroy();
             return node;
           }
+          return undefined;
         },
         testAttachToInstance: function (model, view) {
           // Attach Draggable only to layout containers and disable it
@@ -149,7 +150,6 @@ define([
         if (this.model.get('blocks').length === 2) return Module.TwoColumnContainerWidgetView;
       }
       return Module.OneColumnContainerWidgetView;
-
     },
     initialize: function (options) {
       base.BlockView.prototype.initialize.apply(this, arguments);
@@ -194,19 +194,19 @@ define([
       var $toggleButton = this.$('> .mailpoet_tools .mailpoet_newsletter_layer_selector');
       var $overlay = jQuery('.mailpoet_layer_overlay');
       var $container = this.$('> .mailpoet_container');
-      var enableContainerLayer = function () {
-        that.$el.addClass('mailpoet_container_layer_active');
-        $toggleButton.addClass('mailpoet_container_layer_active');
-        $container.addClass('mailpoet_layer_highlight');
-        $overlay.click(disableContainerLayer);
-        $overlay.show();
-      };
       var disableContainerLayer = function () {
         that.$el.removeClass('mailpoet_container_layer_active');
         $toggleButton.removeClass('mailpoet_container_layer_active');
         $container.removeClass('mailpoet_layer_highlight');
         $overlay.hide();
         $overlay.off('click');
+      };
+      var enableContainerLayer = function () {
+        that.$el.addClass('mailpoet_container_layer_active');
+        $toggleButton.addClass('mailpoet_container_layer_active');
+        $container.addClass('mailpoet_layer_highlight');
+        $overlay.click(disableContainerLayer);
+        $overlay.show();
       };
       if ($toggleButton.hasClass('mailpoet_container_layer_active')) {
         disableContainerLayer();
@@ -336,25 +336,25 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('container', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
       blockView: Module.ContainerBlockView
     });
 
-    App.registerLayoutWidget({
+    BeforeStartApp.registerLayoutWidget({
       name: 'oneColumnLayout',
       priority: 100,
       widgetView: Module.OneColumnContainerWidgetView
     });
 
-    App.registerLayoutWidget({
+    BeforeStartApp.registerLayoutWidget({
       name: 'twoColumnLayout',
       priority: 100,
       widgetView: Module.TwoColumnContainerWidgetView
     });
 
-    App.registerLayoutWidget({
+    BeforeStartApp.registerLayoutWidget({
       name: 'threeColumnLayout',
       priority: 100,
       widgetView: Module.ThreeColumnContainerWidgetView

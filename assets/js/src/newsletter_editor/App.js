@@ -36,5 +36,4 @@ define([
   window.EditorApplication = app;
 
   return app;
-
 });

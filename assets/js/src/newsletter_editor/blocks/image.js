@@ -8,7 +8,6 @@ define([
   'mailpoet',
   'jquery'
 ], function (App, BaseBlock, _, MailPoet, jQuery) {
-
   'use strict';
 
   var Module = {};
@@ -413,13 +412,13 @@ define([
   });
   Module.ImageWidgetView = ImageWidgetView;
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('image', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('image', {
       blockModel: Module.ImageBlockModel,
       blockView: Module.ImageBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'image',
       widgetView: Module.ImageWidgetView,
       priority: 91

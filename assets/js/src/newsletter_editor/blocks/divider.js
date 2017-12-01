@@ -7,7 +7,6 @@ define([
   'underscore',
   'jquery'
 ], function (App, BaseBlock, _, jQuery) {
-
   'use strict';
 
   var Module = {};
@@ -138,13 +137,13 @@ define([
       }
     }
   });
-  App.on('before:start', function (App) {
-    App.registerBlockType('divider', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('divider', {
       blockModel: Module.DividerBlockModel,
       blockView: Module.DividerBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'divider',
       widgetView: Module.DividerWidgetView,
       priority: 93

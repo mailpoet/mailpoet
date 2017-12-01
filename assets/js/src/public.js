@@ -30,54 +30,54 @@ function (
         });
 
         form.parsley().on('form:submit', function (parsley) {
-          var form_data = form.mailpoetSerializeObject() || {};
+          var formData = form.mailpoetSerializeObject() || {};
           // check if we're on the same domain
           if (isSameDomain(window.MailPoetForm.ajax_url) === false) {
             // non ajax post request
             return true;
-          } else {
+          }
             // ajax request
-            MailPoet.Ajax.post({
-              url: window.MailPoetForm.ajax_url,
-              token: form_data.token,
-              api_version: form_data.api_version,
-              endpoint: 'subscribers',
-              action: 'subscribe',
-              data: form_data.data
-            }).fail(function (response) {
-              form.find('.mailpoet_validate_error').html(
+          MailPoet.Ajax.post({
+            url: window.MailPoetForm.ajax_url,
+            token: formData.token,
+            api_version: formData.api_version,
+            endpoint: 'subscribers',
+            action: 'subscribe',
+            data: formData.data
+          }).fail(function (response) {
+            form.find('.mailpoet_validate_error').html(
                 response.errors.map(function (error) {
                   return error.message;
                 }).join('<br />')
               ).show();
-            }).done(function (response) {
+          }).done(function (response) {
               // successfully subscribed
-              if (
+            if (
                 response.meta !== undefined
                 && response.meta.redirect_url !== undefined
               ) {
                 // go to page
-                window.location.href = response.meta.redirect_url;
-              } else {
+              window.location.href = response.meta.redirect_url;
+            } else {
                 // display success message
-                form.find('.mailpoet_validate_success').show();
-              }
+              form.find('.mailpoet_validate_success').show();
+            }
 
               // reset form
-              form.trigger('reset');
+            form.trigger('reset');
               // reset validation
-              parsley.reset();
+            parsley.reset();
 
               // resize iframe
-              if (
+            if (
                 window.frameElement !== null
                 && MailPoet !== undefined
                 && MailPoet['Iframe']
               ) {
-                MailPoet.Iframe.autoSize(window.frameElement);
-              }
-            });
-          }
+              MailPoet.Iframe.autoSize(window.frameElement);
+            }
+          });
+
           return false;
         });
       });

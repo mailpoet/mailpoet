@@ -10,7 +10,6 @@ define([
   'underscore',
   'jquery'
 ], function (App, BaseBlock, Backbone, Marionette, SuperModel, _, jQuery) {
-
   'use strict';
 
   var Module = {};
@@ -195,6 +194,7 @@ define([
       } else {
         return this.changeField('link', event);
       }
+      return undefined;
     },
     changeField: function (field, event) {
       this.model.set(field, jQuery(event.target).val());
@@ -298,13 +298,13 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('social', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('social', {
       blockModel: Module.SocialBlockModel,
       blockView: Module.SocialBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'social',
       widgetView: Module.SocialWidgetView,
       priority: 95

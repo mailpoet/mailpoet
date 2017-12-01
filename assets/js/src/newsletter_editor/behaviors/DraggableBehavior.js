@@ -84,7 +84,6 @@ define([
               that.view.$el.addClass('mailpoet_hidden');
             }
           }
-
         },
         // call this function on every dragmove event
         onmove: function (event) {

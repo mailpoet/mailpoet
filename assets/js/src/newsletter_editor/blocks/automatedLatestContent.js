@@ -27,7 +27,6 @@ define([
   _,
   jQuery
   ) {
-
   'use strict';
 
   var Module = {};
@@ -380,21 +379,21 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    App.registerBlockType('automatedLatestContent', {
+  App.on('before:start', function (BeforeStartApp) {
+    BeforeStartApp.registerBlockType('automatedLatestContent', {
       blockModel: Module.AutomatedLatestContentBlockModel,
       blockView: Module.AutomatedLatestContentBlockView
     });
 
-    App.registerWidget({
+    BeforeStartApp.registerWidget({
       name: 'automatedLatestContent',
       widgetView: Module.AutomatedLatestContentWidgetView,
       priority: 97
     });
   });
 
-  App.on('start', function (App) {
-    var Application = App;
+  App.on('start', function (StartApp) {
+    var Application = StartApp;
     Application._ALCSupervisor = new Module.ALCSupervisor();
     Application._ALCSupervisor.refresh();
   });

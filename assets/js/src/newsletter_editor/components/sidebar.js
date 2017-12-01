@@ -17,7 +17,6 @@ define([
   _,
   jQuery
   ) {
-
   'use strict';
 
   var Module = {};
@@ -111,12 +110,12 @@ define([
       // position of the sidebar would be scrollable and not fixed
       // partially out of visible screen
       this.$el.parent().each(function () {
-        var calculated_left;
+        var calculatedLeft;
         var self = jQuery(this);
 
         if (self.css('position') === 'fixed') {
-          calculated_left = self.parent().offset().left - jQuery(window).scrollLeft();
-          self.css('left', calculated_left + 'px');
+          calculatedLeft = self.parent().offset().left - jQuery(window).scrollLeft();
+          self.css('left', calculatedLeft + 'px');
         } else {
           self.css('left', '');
         }
@@ -339,6 +338,7 @@ define([
           }
         });
       });
+      return undefined;
     }
   });
 
@@ -360,18 +360,18 @@ define([
     }
   });
 
-  App.on('before:start', function (App) {
-    var Application = App;
+  App.on('before:start', function (BeforeStartApp) {
+    var Application = BeforeStartApp;
     Application.registerWidget = Module.registerWidget;
     Application.getWidgets = Module.getWidgets;
     Application.registerLayoutWidget = Module.registerLayoutWidget;
     Application.getLayoutWidgets = Module.getLayoutWidgets;
   });
 
-  App.on('start', function (App) {
+  App.on('start', function (StartApp) {
     var sidebarView = new SidebarView();
 
-    App._appView.showChildView('sidebarRegion', sidebarView);
+    StartApp._appView.showChildView('sidebarRegion', sidebarView);
 
     MailPoet.helpTooltip.show(document.getElementById('tooltip-send-preview'), {
       tooltipId: 'tooltip-editor-send-preview',

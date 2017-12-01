@@ -2,7 +2,6 @@ define([
   'newsletter_editor/App',
   'backbone.supermodel'
 ], function (App, SuperModel) {
-
   var Module = {};
 
   Module.ConfigModel = SuperModel.extend({
@@ -24,8 +23,8 @@ define([
     return Module._config;
   };
 
-  App.on('before:start', function (App, options) {
-    var Application = App;
+  App.on('before:start', function (BeforeStartApp, options) {
+    var Application = BeforeStartApp;
     // Expose config methods globally
     Application.getConfig = Module.getConfig;
     Application.setConfig = Module.setConfig;
