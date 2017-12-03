@@ -247,6 +247,11 @@ class BridgeTest extends \MailPoetTest {
     $bridge->onSettingsSave($settings);
   }
 
+  function testItPingsBridge() {
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    expect(Bridge::pingBridge())->true();
+  }
+
   private function setMailPoetSendingMethod() {
     Setting::setValue(
       Mailer::MAILER_CONFIG_SETTING_NAME,
