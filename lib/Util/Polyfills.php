@@ -15,3 +15,9 @@ if(!function_exists('mb_convert_encoding')) {
     return MbstringPolyfill::mb_convert_encoding($s, $to, $from);
   }
 }
+
+if(!function_exists('mb_strtoupper')) {
+  function mb_strtoupper($s, $encoding = null) {
+    return MbstringPolyfill::mb_strtoupper($s, $encoding);
+  }
+}
