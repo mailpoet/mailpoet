@@ -164,6 +164,7 @@ define([
       // we must have a blank <option> as the first option in the <select> control.
       if (this.allowMultipleValues()) return undefined;
       if (this.props.field.placeholder) return (<option />);
+      return undefined;
     },
     render: function () {
       const options = this.state.items.map((item, index) => {

@@ -111,7 +111,7 @@ define([
       }
 
       return (
-        <tr>
+        <tr className={`form-field-row-${this.props.field.name}`}>
           <th scope="row">
             <label
               htmlFor={`field_${this.props.field.name}`}
