@@ -35,4 +35,15 @@ class Localizer {
     );
     return $locale;
   }
+
+  function forceLoadWebsiteLocaleText() {
+    $language_path = sprintf(
+      '%s/%s-%s.mo',
+      Env::$languages_path,
+      Env::$plugin_name,
+      get_locale()
+    );
+    unload_textdomain(Env::$plugin_name);
+    load_textdomain(Env::$plugin_name, $language_path);
+  }
 }
