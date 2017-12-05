@@ -27,7 +27,7 @@ class Router {
       false;
     $this->data = isset($api_data['data']) ?
       self::decodeRequestData($api_data['data']) :
-      false;
+      array();
     $this->access_control = $access_control;
   }
 
