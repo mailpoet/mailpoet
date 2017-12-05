@@ -36,6 +36,7 @@ class Shortcodes {
 
     // initialize subscription management shortcodes
     $subscription_page = new Pages();
+    $subscription_page->initShortcodes();
   }
 
   function formWidget($params = array()) {

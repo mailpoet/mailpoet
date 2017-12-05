@@ -23,26 +23,28 @@ class Pages {
   private $data;
   private $subscriber;
 
-  function __construct($action = false, $data = array(), $init_page_filters = false) {
+  function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
-
-    // handle subscription pages title & content
-    if($init_page_filters) {
-      add_filter('wp_title', array($this,'setWindowTitle'), 10, 3);
-      add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
-      add_filter('the_title', array($this,'setPageTitle'), 10, 1);
-      add_filter('the_content', array($this,'setPageContent'), 10, 1);
-    }
-
-    // manage subscription link shortcodes
-    add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
-    add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
+    if($init_page_filters) $this->initPageFilters();
+    if($init_shortcodes) $this->initShortcodes();
   }
 
   private function isPreview() {
     return (array_key_exists('preview', $_GET) || array_key_exists('preview', $this->data));
+  }
+
+  function initPageFilters() {
+    add_filter('wp_title', array($this,'setWindowTitle'), 10, 3);
+    add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
+    add_filter('the_title', array($this,'setPageTitle'), 10, 1);
+    add_filter('the_content', array($this,'setPageContent'), 10, 1);
+  }
+
+  function initShortcodes() {
+    add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
+    add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
   }
 
   function getSubscriber() {

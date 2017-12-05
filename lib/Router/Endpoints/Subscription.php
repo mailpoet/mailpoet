@@ -27,16 +27,20 @@ class Subscription {
   }
 
   function confirm() {
-    $subscription = new UserSubscription\Pages('confirm', $this->data, true);
+    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM);
     $subscription->confirm();
   }
 
   function manage() {
-    $subscription = new UserSubscription\Pages('manage', $this->data, true);
+    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_MANAGE);
   }
 
   function unsubscribe() {
-    $subscription = new UserSubscription\Pages('unsubscribe', $this->data, true);
+    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE);
     $subscription->unsubscribe();
+  }
+
+  private function initSubscriptionPage($action) {
+    return new UserSubscription\Pages($action, $this->data, true, true);
   }
 }
