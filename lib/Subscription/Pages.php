@@ -23,32 +23,26 @@ class Pages {
   private $data;
   private $subscriber;
 
-  function __construct($action = false, $data = array()) {
+  function __construct($action = false, $data = array(), $init_page_filters = false) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
 
     // handle subscription pages title & content
-    add_filter('wp_title', array($this,'setWindowTitle'), 10, 3);
-    add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
-    add_filter('the_title', array($this,'setPageTitle'), 10, 1);
-    add_filter('the_content', array($this,'setPageContent'), 10, 1);
+    if($init_page_filters) {
+      add_filter('wp_title', array($this,'setWindowTitle'), 10, 3);
+      add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
+      add_filter('the_title', array($this,'setPageTitle'), 10, 1);
+      add_filter('the_content', array($this,'setPageContent'), 10, 1);
+    }
 
-    // manage subscription link shortcode
-    // [mailpoet_manage text="Manage your subscription"]
-    if(!shortcode_exists('mailpoet_manage')) {
-      add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
-    }
-    if(!shortcode_exists('mailpoet_manage_subscription')) {
-      add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
-    }
+    // manage subscription link shortcodes
+    add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
+    add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
   }
 
   private function isPreview() {
-    return (
-      array_key_exists('preview', $_GET)
-      || array_key_exists('preview', $this->data)
-    );
+    return (array_key_exists('preview', $_GET) || array_key_exists('preview', $this->data));
   }
 
   function getSubscriber() {
@@ -234,7 +228,7 @@ class Pages {
       ->withCustomFields()
       ->withSubscriptions();
     } else {
-      return __('You need to be logged in or be a subscriber to our mailing lists to see this page.', 'mailpoet');
+      return __('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
 
     $custom_fields = array_map(function($custom_field) use($subscriber) {
@@ -418,6 +412,8 @@ class Pages {
   }
 
   function getManageLink($params) {
+    if(!$this->subscriber) return __('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
+
     // get label or display default label
     $text = (
       isset($params['text'])

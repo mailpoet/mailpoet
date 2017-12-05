@@ -27,16 +27,16 @@ class Subscription {
   }
 
   function confirm() {
-    $subscription = new UserSubscription\Pages('confirm', $this->data);
+    $subscription = new UserSubscription\Pages('confirm', $this->data, true);
     $subscription->confirm();
   }
 
   function manage() {
-    $subscription = new UserSubscription\Pages('manage', $this->data);
+    $subscription = new UserSubscription\Pages('manage', $this->data, true);
   }
 
   function unsubscribe() {
-    $subscription = new UserSubscription\Pages('unsubscribe', $this->data);
+    $subscription = new UserSubscription\Pages('unsubscribe', $this->data, true);
     $subscription->unsubscribe();
   }
 }

@@ -52,7 +52,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($request_data['newsletter_hash'])->equals($this->newsletter->hash);
   }
 
-  function testItDisplaysManageSubscriptionPageForLoggedinExistingUsers() {
+  function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
     $wp_user = wp_set_current_user(1);
     expect(is_user_logged_in())->true();
     $subscriber = Subscriber::create();
@@ -60,24 +60,69 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriber->email = $wp_user->data->user_email;
     $subscriber->wp_user_id = $wp_user->ID;
     $subscriber->save();
+
+    $shortcodes = new Shortcodes();
+    $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
     expect($result)->contains('form method="POST"');
     expect($result)->contains($subscriber->email);
   }
 
-  function testItDoesNotDisplayManageSubscriptionPageForLoggedinNonexistentSubscribers() {
+  function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
     $wp_user = wp_set_current_user(1);
     expect(is_user_logged_in())->true();
     expect(Subscriber::findOne($wp_user->data->user_email))->false();
+
+    $shortcodes = new Shortcodes();
+    $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->contains('You need to be logged in or be a subscriber to our mailing lists to see this page.');
+    expect($result)->contains('Subscription management form is only available to mailing lists subscribers.');
+  }
+
+  function testItDoesNotDisplayManageSubscriptionFormForLoggedOutUsers() {
+    wp_set_current_user(0);
+    expect(is_user_logged_in())->false();
+
+    $shortcodes = new Shortcodes();
+    $shortcodes->init();
+    $result = do_shortcode('[mailpoet_manage_subscription]');
+    expect($result)->contains('Subscription management form is only available to mailing lists subscribers.');
+  }
+
+  function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
+    $wp_user = wp_set_current_user(1);
+    expect(is_user_logged_in())->true();
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->email = $wp_user->data->user_email;
+    $subscriber->wp_user_id = $wp_user->ID;
+    $subscriber->save();
+
+    $shortcodes = new Shortcodes();
+    $shortcodes->init();
+    $result = do_shortcode('[mailpoet_manage]');
+    expect($result)->contains('Manage your subscription');
+  }
+
+  function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
+    $wp_user = wp_set_current_user(1);
+    expect(is_user_logged_in())->true();
+    expect(Subscriber::findOne($wp_user->data->user_email))->false();
+
+    $shortcodes = new Shortcodes();
+    $shortcodes->init();
+    $result = do_shortcode('[mailpoet_manage]');
+    expect($result)->contains('Link to subscription management page is only available to mailing lists subscribers.');
   }
 
   function testItDoesNotDisplayManageSubscriptionPageForLoggedOutUsers() {
     wp_set_current_user(0);
     expect(is_user_logged_in())->false();
-    $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->contains('You need to be logged in or be a subscriber to our mailing lists to see this page.');
+
+    $shortcodes = new Shortcodes();
+    $shortcodes->init();
+    $result = do_shortcode('[mailpoet_manage]');
+    expect($result)->contains('Link to subscription management page is only available to mailing lists subscribers.');
   }
 
   function _after() {
