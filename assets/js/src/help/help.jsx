@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import { Router, Route, IndexRedirect, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
 
-import KnowledgeBase from 'help/knowledge_base.jsx';
+import SystemStatus from 'help/system_status.jsx';
 import SystemInfo from 'help/system_info.jsx';
+import KnowledgeBase from 'help/knowledge_base.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
@@ -20,10 +21,11 @@ if (container) {
   ReactDOM.render((
     <Router history={history}>
       <Route path="/" component={App}>
-        <IndexRedirect to="knowledgeBase" />
+        <IndexRedirect to="systemStatus" />
         {/* Pages */}
-        <Route path="knowledgeBase(/)**" params={{ tab: 'knowledgeBase' }} component={KnowledgeBase} />
+        <Route path="systemStatus(/)**" params={{ tab: 'systemStatus' }} component={SystemStatus} />
         <Route path="systemInfo(/)**" params={{ tab: 'systemInfo' }} component={SystemInfo} />
+        <Route path="knowledgeBase(/)**" params={{ tab: 'knowledgeBase' }} component={KnowledgeBase} />
       </Route>
     </Router>
   ), container);

@@ -7,7 +7,8 @@
 <div id="mailpoet_help">
 
   <script type="text/javascript">
-    var help_scout_data = <%= json_encode(data) %>;
+    var systemInfoData = <%= json_encode(systemInfoData) %>;
+    var systemStatusData = <%= json_encode(systemStatusData) %>;
   </script>
 
   <div id="help_container"></div>
@@ -19,6 +20,15 @@
 <%= localize({
   'tabKnowledgeBaseTitle': __('Knowledge Base'),
   'tabSystemInfoTitle': __('System Info'),
+  'tabSystemStatusTitle': __('System Status'),
+  'systemStatusIntroCron': __('For the plugin to work, it must be able to establish connection with the task scheduler.'),
+  'systemStatusIntroCronMSS': __('For the plugin to work, it must be able to establish connection with the task scheduler and the key activation/MailPoet sending service.'),
+  'systemStatusCronTitle': __('Task Scheduler'),
+  'systemStatusMSSTitle': __('Key Activation and MailPoet Sending Service'),
+  'systemStatusConnectionSuccessful': __('Connection successful.'),
+  'systemStatusConnectionUnsuccessful': __('Connection unsuccessful.'),
+  'systemStatusCronConnectionUnsuccessfulInfo': __('Please consult our [link]knowledge base article[/link] for troubleshooting tips.'),
+  'systemStatusMSSConnectionUnsuccessfulInfo': __('Please contact our technical support for assistance.'),
   'knowledgeBaseIntro': __('Click on one of these categories below to find more information:'),
   'knowledgeBaseButton': __('Visit our Knowledge Base for more articles'),
   'systemInfoIntro': __('The information below is useful when you need to get in touch with our support. Just copy all the text below and paste it into a message to us.'),

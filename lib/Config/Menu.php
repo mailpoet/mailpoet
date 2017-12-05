@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -13,6 +14,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
+use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
@@ -429,8 +431,27 @@ class Menu {
     $this->displayPage('settings.html', $data);
   }
 
+
   function help() {
-    $this->displayPage('help.html', array('data' => Beacon::getData()));
+    $system_info_data = Beacon::getData();
+    $system_status_data = array(
+      'cron' => array(
+        'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
+        'isReachable' => CronHelper::pingDaemon()
+      ),
+      'mss' => array(
+        'enabled' => (Bridge::isMPSendingServiceEnabled()) ?
+          array('isReachable' => Bridge::pingBridge()) :
+          false
+      )
+    );
+    $this->displayPage(
+      'help.html',
+      array(
+        'systemInfoData' => $system_info_data,
+        'systemStatusData' => $system_status_data
+      )
+    );
   }
 
   private function _getFlags() {

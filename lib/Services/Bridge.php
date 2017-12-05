@@ -26,6 +26,8 @@ class Bridge {
   const CHECK_ERROR_UNAVAILABLE = 503;
   const CHECK_ERROR_UNKNOWN = 'unknown';
 
+  const BRIDGE_URL = 'https://bridge.mailpoet.com';
+
   public $api;
 
   static function isMPSendingServiceEnabled() {
@@ -46,6 +48,15 @@ class Bridge {
   static function isPremiumKeySpecified() {
     $key = Setting::getValue(self::PREMIUM_KEY_SETTING_NAME);
     return !empty($key);
+  }
+
+  static function pingBridge() {
+    $params = array(
+      'blocking' => true,
+      'timeout' => 10
+    );
+    $result = wp_remote_get(self::BRIDGE_URL, $params);
+    return wp_remote_retrieve_response_code($result) === 200;
   }
 
   function initApi($api_key) {
