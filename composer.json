@@ -20,7 +20,7 @@
     "symfony/polyfill-mbstring": "1.6.0"
   },
   "require-dev": {
-    "codeception/aspect-mock": "^2.0",
+    "codeception/aspect-mock": "2.0.1",
     "codeception/codeception": "2.3.5",
     "codeception/verify": "^0.3.3",
     "consolidation/robo": "^1.0.5",
