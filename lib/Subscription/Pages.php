@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscription;
 
 use MailPoet\Models\Subscriber;
@@ -14,46 +15,50 @@ use MailPoet\Form\Block\Date as FormBlockDate;
 
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
+  const ACTION_CONFIRM = 'confirm';
+  const ACTION_MANAGE = 'manage';
+  const ACTION_UNSUBSCRIBE = 'unsubscribe';
 
   private $action;
   private $data;
   private $subscriber;
 
-  function __construct($action, $data = array()) {
+  function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
+    if($init_page_filters) $this->initPageFilters();
+    if($init_shortcodes) $this->initShortcodes();
+  }
 
-    // handle subscription pages title & content
+  private function isPreview() {
+    return (array_key_exists('preview', $_GET) || array_key_exists('preview', $this->data));
+  }
+
+  function initPageFilters() {
     add_filter('wp_title', array($this,'setWindowTitle'), 10, 3);
     add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
     add_filter('the_title', array($this,'setPageTitle'), 10, 1);
     add_filter('the_content', array($this,'setPageContent'), 10, 1);
-
-    // manage subscription link shortcode
-    // [mailpoet_manage text="Manage your subscription"]
-    add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
-    add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
   }
 
-  private function isPreview() {
-    return (
-      array_key_exists('preview', $_GET)
-      || array_key_exists('preview', $this->data)
-    );
+  function initShortcodes() {
+    add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
+    add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
   }
 
   function getSubscriber() {
     $token = (isset($this->data['token'])) ? $this->data['token'] : null;
     $email = (isset($this->data['email'])) ? $this->data['email'] : null;
+    $wp_user = wp_get_current_user();
 
-    if(Subscriber::generateToken($email) === $token) {
-      $subscriber = Subscriber::findOne($email);
-      if($subscriber !== false) {
-        return $subscriber;
-      }
+    if(!$email && $wp_user->exists()) {
+      return Subscriber::where('wp_user_id', $wp_user->ID)->findOne();
     }
-    return false;
+
+    return (Subscriber::generateToken($email) === $token) ?
+      Subscriber::findOne($email) :
+      false;
   }
 
   function confirm() {
@@ -113,13 +118,13 @@ class Pages {
     } else {
       // when it's our own page, generate page title based on requested action
       switch($this->action) {
-        case 'confirm':
+        case self::ACTION_CONFIRM:
           return $this->getConfirmTitle();
 
-        case 'manage':
+        case self::ACTION_MANAGE:
           return $this->getManageTitle();
 
-        case 'unsubscribe':
+        case self::ACTION_UNSUBSCRIBE:
           return $this->getUnsubscribeTitle();
       }
     }
@@ -137,13 +142,13 @@ class Pages {
       $content = '';
 
       switch($this->action) {
-        case 'confirm':
+        case self::ACTION_CONFIRM:
           $content = $this->getConfirmContent();
           break;
-        case 'manage':
+        case self::ACTION_MANAGE:
           $content = $this->getManageContent();
           break;
-        case 'unsubscribe':
+        case self::ACTION_UNSUBSCRIBE:
           $content = $this->getUnsubscribeContent();
           break;
       }
@@ -225,7 +230,7 @@ class Pages {
       ->withCustomFields()
       ->withSubscriptions();
     } else {
-      return;
+      return __('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
 
     $custom_fields = array_map(function($custom_field) use($subscriber) {
@@ -409,6 +414,8 @@ class Pages {
   }
 
   function getManageLink($params) {
+    if(!$this->subscriber) return __('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
+
     // get label or display default label
     $text = (
       isset($params['text'])
