@@ -238,7 +238,7 @@ const NewsletterListWelcome = React.createClass({
             );
             break;
         }
-        sendingEvent += ' [' + sendingDelay + ']';
+        sendingEvent += ` [${sendingDelay}]`;
       }
       // add a "period" at the end if we do have a sendingEvent
       sendingEvent += '.';

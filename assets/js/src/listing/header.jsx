@@ -19,7 +19,7 @@ const ListingHeader = React.createClass({
         <ListingColumn
           onSort={this.props.onSort}
           sort_by={this.props.sort_by}
-          key={'column-' + index}
+          key={`column-${index}`}
           column={renderColumn} />
       );
     });

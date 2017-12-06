@@ -20,7 +20,7 @@ function renderStatusMessage(status, error, link) {
   }
 
   return (
-    <div className={'mailpoet_notice notice inline notice-' + noticeType} style={{ marginTop: '1em' }}>
+    <div className={`mailpoet_notice notice inline notice-${noticeType}`} style={{ marginTop: '1em' }}>
       <p>{noticeMessage}</p>
     </div>
   );

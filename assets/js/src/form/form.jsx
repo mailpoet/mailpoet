@@ -156,7 +156,7 @@ define(
         let errors;
         if (this.getErrors() !== undefined) {
           errors = this.getErrors().map((error, index) => (
-            <p key={'error-' + index} className="mailpoet_error">
+            <p key={`error-${index}`} className="mailpoet_error">
               { error.message }
             </p>
             ));
@@ -193,7 +193,7 @@ define(
               field={field}
               item={this.getValues()}
               onValueChange={onValueChange}
-              key={'field-' + i} />
+              key={`field-${i}`} />
           );
         });
 

@@ -22,7 +22,7 @@ const events = {
 const availableSegmentValues = _.object(_.map(
   availableSegments,
   (segment) => {
-    const name = segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
+    const name = `${segment.name} (${parseInt(segment.subscribers, 10).toLocaleString()})`;
     return [segment.id, name];
   }
 ));

@@ -44,7 +44,7 @@ const ListingItem = React.createClass({
       checkbox = (
         <th className="check-column" scope="row">
           <label className="screen-reader-text">{
-            'Select ' + this.props.item[this.props.columns[0].name]
+            `Select ${this.props.item[this.props.columns[0].name]}`
           }</label>
           <input
             type="checkbox"
@@ -74,7 +74,7 @@ const ListingItem = React.createClass({
 
         if (action.name === 'trash') {
           custom_action = (
-            <span key={'action-' + index} className="trash">
+            <span key={`action-${index}`} className="trash">
               {(!is_first) ? ' | ' : ''}
               <a
                 href="javascript:;"
@@ -90,7 +90,7 @@ const ListingItem = React.createClass({
           custom_action = (
             <span
               onClick={this.props.onRefreshItems}
-              key={'action-' + index} className={action.name}>
+              key={`action-${index}`} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -98,7 +98,7 @@ const ListingItem = React.createClass({
         } else if (action.link) {
           custom_action = (
             <span
-              key={'action-' + index} className={action.name}>
+              key={`action-${index}`} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -106,7 +106,7 @@ const ListingItem = React.createClass({
         } else {
           custom_action = (
             <span
-              key={'action-' + index} className={action.name}>
+              key={`action-${index}`} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               <a href="javascript:;" onClick={
                 (action.onClick !== undefined)
@@ -186,7 +186,7 @@ const ListingItem = React.createClass({
     const row_classes = classNames({ 'is-expanded': this.state.expanded });
 
     return (
-      <tr className={row_classes} data-automation-id={'listing_item_' + this.props.item.id}>
+      <tr className={row_classes} data-automation-id={`listing_item_${this.props.item.id}`}>
         { checkbox }
         { this.props.onRenderItem(this.props.item, actions) }
       </tr>
@@ -418,8 +418,8 @@ const Listing = React.createClass({
     if (ret.indexOf(':') !== -1) {
       const params = this.getParams();
       Object.keys(params).map((key) => {
-        if (ret.indexOf(':' + key) !== -1) {
-          ret = ret.replace(':' + key, params[key]);
+        if (ret.indexOf(`:${key}`) !== -1) {
+          ret = ret.replace(`:${key}`, params[key]);
         }
       });
     }

@@ -78,7 +78,7 @@ define(
           return !!(!segment.deleted_at && segment.type === 'default');
         },
         getLabel: function (segment) {
-          return segment.name + ' (' + segment.subscribers + ')';
+          return `${segment.name} (${segment.subscribers})`;
         },
         getSearchLabel: function (segment, subscriber) {
           let label = '';
@@ -110,7 +110,7 @@ define(
     const custom_fields = window.mailpoet_custom_fields || [];
     custom_fields.map((custom_field) => {
       const field = {
-        name: 'cf_' + custom_field.id,
+        name: `cf_${custom_field.id}`,
         label: custom_field.name,
         type: custom_field.type,
       };

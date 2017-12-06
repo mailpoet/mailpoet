@@ -120,7 +120,7 @@ define(
                     MailPoet.trackEvent('Emails > Welcome email activated', {
                       'MailPoet Free version': window.mailpoet_version,
                       'List type': opts.event,
-                      Delay: opts.afterTimeNumber + ' ' + opts.afterTimeType,
+                      Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
                     });
                   } else if (response2.data.type === 'notification') {
                     MailPoet.Notice.success(
@@ -324,7 +324,7 @@ define(
                 &nbsp;{MailPoet.I18n.t('orSimply')}&nbsp;
                 <a
                   href={
-                    '?page=mailpoet-newsletter-editor&id=' + this.props.params.id
+                    `?page=mailpoet-newsletter-editor&id=${this.props.params.id}`
                   }
                   onClick={this.handleRedirectToDesign}>
                   {MailPoet.I18n.t('goBackToDesign')}

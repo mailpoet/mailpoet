@@ -98,7 +98,7 @@ define([
             { this.props.bulk_actions.map((action, index) => (
               <option
                 value={action.name}
-                key={'action-' + index}
+                key={`action-${index}`}
                 >{ action.label }</option>
               )) }
           </select>

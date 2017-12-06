@@ -13,7 +13,7 @@ define([
       const selected_value = this.props.item[this.props.field.name];
       const options = Object.keys(this.props.field.values).map(
         (value, index) => (
-          <p key={'radio-' + index}>
+          <p key={`radio-${index}`}>
             <label>
               <input
                 type="radio"

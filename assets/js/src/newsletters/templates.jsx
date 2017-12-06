@@ -151,7 +151,7 @@ const NewsletterTemplates = React.createClass({
       },
     }).done((response) => {
       // TODO: Move this URL elsewhere
-      window.location = 'admin.php?page=mailpoet-newsletter-editor&id=' + response.data.id;
+      window.location = `admin.php?page=mailpoet-newsletter-editor&id=${response.data.id}`;
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -229,7 +229,7 @@ const NewsletterTemplates = React.createClass({
       }
 
       return (
-        <li key={'template-' + index}>
+        <li key={`template-${index}`}>
           <div className="mailpoet_thumbnail">
             { thumbnail }
           </div>
@@ -249,7 +249,7 @@ const NewsletterTemplates = React.createClass({
               &nbsp;
             <a
               className="button button-primary"
-              data-automation-id={'select_template_' + index}
+              data-automation-id={`select_template_${index}`}
               onClick={this.handleSelectTemplate.bind(null, template)}
               >
               {MailPoet.I18n.t('select')}

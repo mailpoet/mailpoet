@@ -19,7 +19,7 @@ define([
       const isChecked = !!(Number(this.props.item[this.props.field.name]));
       const options = Object.keys(this.props.field.values).map(
         (value, index) => (
-          <p key={'checkbox-' + index}>
+          <p key={`checkbox-${index}`}>
             <label>
               <input
                 ref="checkbox"
