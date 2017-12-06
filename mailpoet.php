@@ -9,7 +9,7 @@ if(!defined('ABSPATH')) exit;
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
- * Requires at least: 4.6
+ * Requires at least: 4.7
  * Tested up to: 4.9
  *
  * Domain Path: /lang/
