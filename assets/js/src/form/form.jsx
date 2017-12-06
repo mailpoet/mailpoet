@@ -155,13 +155,11 @@ define(
       render: function () {
         let errors;
         if (this.getErrors() !== undefined) {
-          errors = this.getErrors().map((error, index) => {
-            return (
-              <p key={'error-' + index} className="mailpoet_error">
-                { error.message }
-              </p>
-            );
-          });
+          errors = this.getErrors().map((error, index) => (
+            <p key={'error-' + index} className="mailpoet_error">
+              { error.message }
+            </p>
+            ));
         }
 
         const formClasses = classNames(

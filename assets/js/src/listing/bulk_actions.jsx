@@ -67,9 +67,7 @@ define([
     getSelectedAction: function () {
       const selected_action = this.refs.action.value;
       if (selected_action.length > 0) {
-        const action = this.props.bulk_actions.filter((act) => {
-          return (act.name === selected_action);
-        });
+        const action = this.props.bulk_actions.filter(act => (act.name === selected_action));
 
         if (action.length > 0) {
           return action[0];
@@ -97,14 +95,12 @@ define([
             onChange={this.handleChangeAction}
           >
             <option value="">{MailPoet.I18n.t('bulkActions')}</option>
-            { this.props.bulk_actions.map((action, index) => {
-              return (
-                <option
-                  value={action.name}
-                  key={'action-' + index}
+            { this.props.bulk_actions.map((action, index) => (
+              <option
+                value={action.name}
+                key={'action-' + index}
                 >{ action.label }</option>
-              );
-            }) }
+              )) }
           </select>
           <input
             onClick={this.handleApplyAction}

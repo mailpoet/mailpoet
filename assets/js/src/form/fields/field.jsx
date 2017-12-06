@@ -89,14 +89,12 @@ define([
       let field = false;
 
       if (this.props.field.fields !== undefined) {
-        field = this.props.field.fields.map((subfield, index) => {
-          return this.renderField({
-            index: index,
-            field: subfield,
-            item: this.props.item,
-            onValueChange: this.props.onValueChange || false,
-          });
-        });
+        field = this.props.field.fields.map((subfield, index) => this.renderField({
+          index: index,
+          field: subfield,
+          item: this.props.item,
+          onValueChange: this.props.onValueChange || false,
+        }));
       } else {
         field = this.renderField(this.props);
       }

@@ -88,9 +88,7 @@ define([
       } else if (this.props.item !== undefined && this.props.field.name !== undefined) {
         if (this.allowMultipleValues()) {
           if (Array.isArray(this.props.item[this.props.field.name])) {
-            return this.props.item[this.props.field.name].map((item) => {
-              return item.id;
-            });
+            return this.props.item[this.props.field.name].map(item => item.id);
           }
         } else {
           return this.props.item[this.props.field.name];

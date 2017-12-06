@@ -109,26 +109,24 @@ const item_actions = [
   {
     name: 'duplicate_segment',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: (item, refresh) => {
-      return MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'segments',
-        action: 'duplicate',
-        data: {
-          id: item.id,
-        },
-      }).done((response) => {
-        MailPoet.Notice.success(
+    onClick: (item, refresh) => MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'segments',
+      action: 'duplicate',
+      data: {
+        id: item.id,
+      },
+    }).done((response) => {
+      MailPoet.Notice.success(
           MailPoet.I18n.t('listDuplicated').replace('%$1s', response.data.name)
         );
-        refresh();
-      }).fail((response) => {
-        MailPoet.Notice.error(
-          response.errors.map((error) => { return error.message; }),
+      refresh();
+    }).fail((response) => {
+      MailPoet.Notice.error(
+          response.errors.map(error => error.message),
           { scroll: true }
         );
-      });
-    },
+    }),
     display: function (segment) {
       return (segment.type !== 'wp_users');
     },
@@ -166,7 +164,7 @@ const item_actions = [
         MailPoet.Modal.loading(false);
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }

@@ -369,8 +369,7 @@ const Listing = React.createClass({
   setParams: function () {
     if (this.props.location) {
       const params = Object.keys(this.state)
-        .filter((key) => {
-          return (
+        .filter(key => (
             [
               'group',
               'filter',
@@ -379,8 +378,7 @@ const Listing = React.createClass({
               'sort_by',
               'sort_order',
             ].indexOf(key) !== -1
-          );
-        })
+          ))
         .map((key) => {
           let value = this.state[key];
           if (value === Object(value)) {
@@ -393,7 +391,7 @@ const Listing = React.createClass({
             return `${key}[${value}]`;
           }
         })
-        .filter((key) => { return (key !== undefined); })
+        .filter(key => (key !== undefined))
         .join('/');
 
       // set url
@@ -488,7 +486,7 @@ const Listing = React.createClass({
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -518,7 +516,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map((error) => { return error.message; }),
+        response.errors.map(error => error.message),
         { scroll: true }
       );
     });
@@ -546,7 +544,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map((error) => { return error.message; }),
+        response.errors.map(error => error.message),
         { scroll: true }
       );
     });
@@ -574,7 +572,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map((error) => { return error.message; }),
+        response.errors.map(error => error.message),
         { scroll: true }
       );
     });
@@ -591,7 +589,7 @@ const Listing = React.createClass({
       this.handleGroup('all');
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map((error) => { return error.message; }),
+        response.errors.map(error => error.message),
         { scroll: true }
       );
     });
@@ -630,7 +628,7 @@ const Listing = React.createClass({
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map((error) => { return error.message; }),
+          response.errors.map(error => error.message),
           { scroll: true }
         );
       }
@@ -679,9 +677,7 @@ const Listing = React.createClass({
     if (is_checked === false) {
       this.clearSelection();
     } else {
-      const selected_ids = this.state.items.map((item) => {
-        return Number(item.id);
-      });
+      const selected_ids = this.state.items.map(item => Number(item.id));
 
       this.setState({
         selected_ids: selected_ids,
@@ -749,9 +745,9 @@ const Listing = React.createClass({
 
     // columns
     let columns = this.props.columns || [];
-    columns = columns.filter((column) => {
-      return (column.display === undefined || !!(column.display) === true);
-    });
+    columns = columns.filter(
+      column => (column.display === undefined || !!(column.display) === true)
+    );
 
     // bulk actions
     let bulk_actions = this.props.bulk_actions || [];

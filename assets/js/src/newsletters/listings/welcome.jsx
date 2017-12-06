@@ -197,9 +197,10 @@ const NewsletterListWelcome = React.createClass({
 
       case 'segment':
         // get segment
-        segment = _.find(mailpoet_segments, (seg) => {
-          return (Number(seg.id) === Number(newsletter.options.segment));
-        });
+        segment = _.find(
+          mailpoet_segments,
+          seg => (Number(seg.id) === Number(newsletter.options.segment))
+        );
 
         if (segment === undefined) {
           return (

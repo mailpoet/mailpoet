@@ -24,15 +24,13 @@ define([
     },
     getAvailableFilters: function () {
       const filters = this.props.filters;
-      return Object.keys(filters).filter((filter) => {
-        return !(
+      return Object.keys(filters).filter(filter => !(
           filters[filter].length === 0
           || (
             filters[filter].length === 1
             && !filters[filter][0].value
           )
-        );
-      });
+        ));
     },
     componentDidUpdate: function () {
       const selected_filters = this.props.filter;
@@ -49,24 +47,20 @@ define([
     render: function () {
       const filters = this.props.filters;
       const available_filters = this.getAvailableFilters()
-        .map((filter, i) => {
-          return (
-            <select
-              ref={`filter-${i}`}
-              key={`filter-${i}`}
-              name={filter}
+        .map((filter, i) => (
+          <select
+            ref={`filter-${i}`}
+            key={`filter-${i}`}
+            name={filter}
             >
-              { filters[filter].map((option, j) => {
-                return (
-                  <option
-                    value={option.value}
-                    key={'filter-option-' + j}
+            { filters[filter].map((option, j) => (
+              <option
+                value={option.value}
+                key={'filter-option-' + j}
                 >{ option.label }</option>
-                );
-              }) }
-            </select>
-          );
-        });
+                )) }
+          </select>
+          ));
 
       let button;
 

@@ -46,11 +46,7 @@ define(
         },
         transformChangedValue: function (segment_ids) {
           const all_segments = this.state.items;
-          return _.map(segment_ids, (id) => {
-            return _.find(all_segments, (segment) => {
-              return segment.id === id;
-            });
-          });
+          return _.map(segment_ids, id => _.find(all_segments, segment => segment.id === id));
         },
         validation: {
           'data-parsley-required': true,

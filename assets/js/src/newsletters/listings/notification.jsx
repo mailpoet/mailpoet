@@ -141,7 +141,7 @@ const newsletter_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -197,9 +197,7 @@ const NewsletterListNotification = React.createClass({
     let sendingFrequency;
 
     // get list of segments' name
-    const segments = newsletter.segments.map((segment) => {
-      return segment.name;
-    });
+    const segments = newsletter.segments.map(segment => segment.name);
     const sendingToSegments = MailPoet.I18n.t('ifNewContentToSegments').replace(
       '%$1s', segments.join(', ')
     );

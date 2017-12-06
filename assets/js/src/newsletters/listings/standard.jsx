@@ -156,7 +156,7 @@ let newsletter_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -180,9 +180,7 @@ const NewsletterListStandard = React.createClass({
       'has-row-actions'
     );
 
-    const segments = newsletter.segments.map((segment) => {
-      return segment.name;
-    }).join(', ');
+    const segments = newsletter.segments.map(segment => segment.name).join(', ');
 
     return (
       <div>

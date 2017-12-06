@@ -44,7 +44,7 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map((error) => { return error.message; }),
+              response.errors.map(error => error.message),
               { scroll: true }
             );
           }
@@ -101,24 +101,22 @@ define(
             <Breadcrumb step="type" />
 
             <ul className="mailpoet_boxes clearfix">
-              {types.map((type, index) => {
-                return (
-                  <li key={index} data-type={type.id}>
-                    <div>
-                      <div className="mailpoet_thumbnail"></div>
+              {types.map((type, index) => (
+                <li key={index} data-type={type.id}>
+                  <div>
+                    <div className="mailpoet_thumbnail"></div>
 
-                      <div className="mailpoet_description">
-                        <h3>{type.title}</h3>
-                        <p>{type.description}</p>
-                      </div>
-
-                      <div className="mailpoet_actions">
-                        {type.action}
-                      </div>
+                    <div className="mailpoet_description">
+                      <h3>{type.title}</h3>
+                      <p>{type.description}</p>
                     </div>
-                  </li>
-                );
-              }, this)}
+
+                    <div className="mailpoet_actions">
+                      {type.action}
+                    </div>
+                  </div>
+                </li>
+                ), this)}
             </ul>
           </div>
         );

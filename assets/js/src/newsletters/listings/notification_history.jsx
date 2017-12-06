@@ -64,9 +64,7 @@ const NewsletterListNotificationHistory = React.createClass({
       'has-row-actions'
     );
 
-    const segments = newsletter.segments.map((segment) => {
-      return segment.name;
-    }).join(', ');
+    const segments = newsletter.segments.map(segment => segment.name).join(', ');
 
     return (
       <div>
