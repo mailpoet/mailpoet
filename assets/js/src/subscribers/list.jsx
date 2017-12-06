@@ -38,7 +38,7 @@ const columns = [
 
 const messages = {
   onTrash: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -53,7 +53,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -68,7 +68,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -122,13 +122,13 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#move_to_segment').val()),
+        segment_id: Number(jQuery('#move_to_segment').val()),
       };
     },
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
-        .replace('%$1d', (~~(response.meta.count)).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
     },
@@ -154,13 +154,13 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#add_to_segment').val()),
+        segment_id: Number(jQuery('#add_to_segment').val()),
       };
     },
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
-        .replace('%$1d', (~~response.meta.count).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
     },
@@ -186,13 +186,13 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#remove_from_segment').val()),
+        segment_id: Number(jQuery('#remove_from_segment').val()),
       };
     },
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
-        .replace('%$1d', (~~response.meta.count).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
     },
@@ -203,7 +203,7 @@ const bulk_actions = [
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
-        .replace('%$1d', (~~response.meta.count).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
       );
     },
   },
@@ -213,7 +213,7 @@ const bulk_actions = [
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleConfirmationEmailsSent')
-        .replace('%$1d', (~~response.meta.count).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
       );
     },
   },
@@ -237,7 +237,7 @@ const item_actions = [
   {
     name: 'trash',
     display: function (subscriber) {
-      return !!(~~subscriber.wp_user_id === 0);
+      return Number(subscriber.wp_user_id) === 0;
     },
   },
 ];

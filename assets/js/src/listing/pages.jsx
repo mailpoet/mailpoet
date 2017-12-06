@@ -37,7 +37,7 @@ define([
       );
     },
     constrainPage: function (page) {
-      return Math.min(Math.max(1, Math.abs(~~page)), this.getLastPage());
+      return Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
     },
     handleSetManualPage: function (e) {
       if (e.which === 13) {

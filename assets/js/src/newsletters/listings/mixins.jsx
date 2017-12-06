@@ -169,7 +169,7 @@ const StatisticsMixin = {
     params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
 
     // welcome emails provide explicit total_sent value
-    const total_sent = ~~(newsletter.total_sent || newsletter.queue.count_processed);
+    const total_sent = Number((newsletter.total_sent || newsletter.queue.count_processed));
 
     let percentage_clicked = 0;
     let percentage_opened = 0;
@@ -340,7 +340,7 @@ const StatisticsMixin = {
       display: function (newsletter) {
         // welcome emails provide explicit total_sent value
         const count_processed = newsletter.queue && newsletter.queue.count_processed;
-        return ~~(newsletter.total_sent || count_processed) > 0;
+        return Number(newsletter.total_sent || count_processed) > 0;
       },
     });
     return actions;

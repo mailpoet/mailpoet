@@ -18,7 +18,7 @@ import {
 
 const messages = {
   onTrash: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -33,7 +33,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -48,7 +48,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -165,7 +165,7 @@ const NewsletterListNotification = React.createClass({
       endpoint: 'newsletters',
       action: 'setStatus',
       data: {
-        id: ~~(e.target.getAttribute('data-id')),
+        id: Number(e.target.getAttribute('data-id')),
         status: e.target.value,
       },
     }).done((response) => {
@@ -260,7 +260,7 @@ const NewsletterListNotification = React.createClass({
     );
   },
   renderHistoryLink: function (newsletter) {
-    const childrenCount = ~~(newsletter.children_count);
+    const childrenCount = Number((newsletter.children_count));
     if (childrenCount === 0) {
       return (
         MailPoet.I18n.t('notSentYet')

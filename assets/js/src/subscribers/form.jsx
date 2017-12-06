@@ -19,7 +19,7 @@ define(
         label: MailPoet.I18n.t('email'),
         type: 'text',
         disabled: function (subscriber) {
-          return ~~(subscriber.wp_user_id > 0);
+          return Number(subscriber.wp_user_id > 0);
         },
       },
       {
@@ -27,7 +27,7 @@ define(
         label: MailPoet.I18n.t('firstname'),
         type: 'text',
         disabled: function (subscriber) {
-          return ~~(subscriber.wp_user_id > 0);
+          return Number(subscriber.wp_user_id > 0);
         },
       },
       {
@@ -35,7 +35,7 @@ define(
         label: MailPoet.I18n.t('lastname'),
         type: 'text',
         disabled: function (subscriber) {
-          return ~~(subscriber.wp_user_id > 0);
+          return Number(subscriber.wp_user_id > 0);
         },
       },
       {
@@ -49,7 +49,7 @@ define(
           bounced: MailPoet.I18n.t('bounced'),
         },
         filter: function (subscriber, value) {
-          if (~~(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
+          if (Number(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
             return false;
           }
           return true;
@@ -151,7 +151,7 @@ define(
     };
 
     const beforeFormContent = function (subscriber) {
-      if (~~(subscriber.wp_user_id) > 0) {
+      if (Number(subscriber.wp_user_id) > 0) {
         return (
           <p className="description">
             { ReactStringReplace(

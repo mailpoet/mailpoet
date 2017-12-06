@@ -338,7 +338,7 @@ const Listing = React.createClass({
 
     // limit per page
     if (this.props.limit !== undefined) {
-      state.limit = Math.abs(~~this.props.limit);
+      state.limit = Math.abs(Number(this.props.limit));
     }
 
     // sort by
@@ -680,7 +680,7 @@ const Listing = React.createClass({
       this.clearSelection();
     } else {
       const selected_ids = this.state.items.map((item) => {
-        return ~~item.id;
+        return Number(item.id);
       });
 
       this.setState({

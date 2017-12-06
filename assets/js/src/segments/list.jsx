@@ -40,7 +40,7 @@ const columns = [
 
 const messages = {
   onTrash: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -55,7 +55,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -70,7 +70,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -200,10 +200,10 @@ const SegmentList = React.createClass({
       'has-row-actions'
     );
 
-    const subscribed = ~~(segment.subscribers_count.subscribed || 0);
-    const unconfirmed = ~~(segment.subscribers_count.unconfirmed || 0);
-    const unsubscribed = ~~(segment.subscribers_count.unsubscribed || 0);
-    const bounced = ~~(segment.subscribers_count.bounced || 0);
+    const subscribed = Number(segment.subscribers_count.subscribed || 0);
+    const unconfirmed = Number(segment.subscribers_count.unconfirmed || 0);
+    const unsubscribed = Number(segment.subscribers_count.unsubscribed || 0);
+    const bounced = Number(segment.subscribers_count.bounced || 0);
 
     let segment_name;
 
