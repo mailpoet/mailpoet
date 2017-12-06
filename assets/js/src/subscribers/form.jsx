@@ -133,6 +133,10 @@ define(
         case 'select':
           field.placeholder = '-';
           break;
+
+        default:
+          field.placeholder = '';
+          break;
       }
 
       fields.push(field);

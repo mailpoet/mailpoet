@@ -248,6 +248,10 @@ const NewsletterListNotification = React.createClass({
       case 'immediately':
         sendingFrequency = MailPoet.I18n.t('sendImmediately');
         break;
+
+      default:
+        sendingFrequency = 'Invalid sending frequency';
+        break;
     }
 
 

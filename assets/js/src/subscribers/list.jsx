@@ -278,6 +278,10 @@ const SubscriberList = React.createClass({
       case 'bounced':
         status = MailPoet.I18n.t('bounced');
         break;
+
+      default:
+        status = 'Invalid';
+        break;
     }
 
     let segments = false;

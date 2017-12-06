@@ -68,6 +68,10 @@ define([
         case 'reactComponent':
           field = (<data.field.component {...data} />);
           break;
+
+        default:
+          field = 'invalid';
+          break;
       }
 
       if (inline === true) {

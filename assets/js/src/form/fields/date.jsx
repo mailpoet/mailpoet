@@ -167,6 +167,11 @@ define([
             year: this.state.year,
           };
           break;
+        default:
+          value = {
+            value: 'invalid type',
+          };
+          break;
       }
 
       return value;
@@ -233,6 +238,9 @@ define([
               day={this.state.day}
               placeholder={this.props.field.day_placeholder}
             />);
+
+          default:
+            return <div>Invalid date type</div>;
         }
       });
 

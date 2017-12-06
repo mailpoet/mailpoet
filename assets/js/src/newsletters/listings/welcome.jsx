@@ -195,7 +195,7 @@ const NewsletterListWelcome = React.createClass({
         }
         break;
 
-      case 'segment':
+      default:
         // get segment
         segment = _.find(
           mailpoet_segments,
@@ -236,6 +236,10 @@ const NewsletterListWelcome = React.createClass({
             sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace(
               '%$1d', newsletter.options.afterTimeNumber
             );
+            break;
+
+          default:
+            sendingDelay = 'Invalid sending delay';
             break;
         }
         sendingEvent += ` [${sendingDelay}]`;
