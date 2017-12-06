@@ -217,7 +217,7 @@ define(
       },
       propagateChange: function () {
         if (this.props.onChange) {
-          return this.props.onChange({
+          this.props.onChange({
             target: {
               name: this.props.name || '',
               value: this.getDateTime(),

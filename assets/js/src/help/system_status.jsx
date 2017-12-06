@@ -42,7 +42,7 @@ function renderCronSection(data) {
 }
 
 function renderMSSSection(data) {
-  if (!data.mss.enabled) return;
+  if (!data.mss.enabled) return undefined;
 
   const status = data.mss.enabled.isReachable;
 

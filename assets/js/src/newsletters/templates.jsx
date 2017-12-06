@@ -57,6 +57,7 @@ const ImportTemplate = React.createClass({
     };
 
     reader.readAsText(file);
+    return true;
   },
   render: function () {
     return (

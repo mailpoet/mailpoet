@@ -170,6 +170,7 @@ define(
           </p>
         );
       }
+      return undefined;
     };
 
     const afterFormContent = function () {
