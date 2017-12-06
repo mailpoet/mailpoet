@@ -68,14 +68,12 @@ define(
             return null;
           }
 
-          return subscriber.subscriptions.map((subscription) => {
-            if (subscription.status === 'subscribed') {
-              return subscription.segment_id;
-            }
-          });
+          return subscriber.subscriptions
+            .filter(subscription => subscription.status === 'subscribed')
+            .map(subscription => subscription.segment_id);
         },
         filter: function (segment) {
-          return !!(!segment.deleted_at && segment.type === 'default');
+          return (!segment.deleted_at && segment.type === 'default');
         },
         getLabel: function (segment) {
           return `${segment.name} (${segment.subscribers})`;
@@ -84,7 +82,7 @@ define(
           let label = '';
 
           if (subscriber.subscriptions !== undefined) {
-            subscriber.subscriptions.map((subscription) => {
+            subscriber.subscriptions.forEach((subscription) => {
               if (segment.id === subscription.segment_id) {
                 label = segment.name;
 
@@ -108,7 +106,7 @@ define(
     ];
 
     const custom_fields = window.mailpoet_custom_fields || [];
-    custom_fields.map((custom_field) => {
+    custom_fields.forEach((custom_field) => {
       const field = {
         name: `cf_${custom_field.id}`,
         label: custom_field.name,

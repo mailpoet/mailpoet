@@ -245,7 +245,7 @@ const item_actions = [
 const SubscriberList = React.createClass({
   getSegmentFromId: function (segment_id) {
     let result = false;
-    window.mailpoet_segments.map((segment) => {
+    window.mailpoet_segments.forEach((segment) => {
       if (segment.id === segment_id) {
         result = segment;
       }
@@ -290,7 +290,7 @@ const SubscriberList = React.createClass({
     if (subscriber.subscriptions.length > 0) {
       const subscribed_segments = [];
 
-      subscriber.subscriptions.map((subscription) => {
+      subscriber.subscriptions.forEach((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
         if (segment === false) return;
         if (subscription.status === 'subscribed') {

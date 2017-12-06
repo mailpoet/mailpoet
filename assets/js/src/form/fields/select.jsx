@@ -41,21 +41,20 @@ const FormFieldSelect = React.createClass({
       keys = Object.keys(this.props.field.values);
     }
 
-    const options = keys.map(
-      (value, index) => {
-        if (filter !== false && filter(this.props.item, value) === false) {
-          return;
-        }
-
-        return (
+    const options = keys
+      .filter((value) => {
+        if (filter === false) return true;
+        return filter(this.props.item, value);
+      })
+      .map(
+        (value, index) => (
           <option
             key={`option-${index}`}
             value={value}>
             { this.props.field.values[value] }
           </option>
-        );
-      }
-    );
+          )
+      );
 
     return (
       <select

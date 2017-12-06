@@ -11,7 +11,7 @@ define([
   const ListingFilters = React.createClass({
     handleFilterAction: function () {
       const filters = {};
-      this.getAvailableFilters().map((filter, i) => {
+      this.getAvailableFilters().forEach((filter, i) => {
         filters[this.refs[`filter-${i}`].name] = this.refs[`filter-${i}`].value;
       });
       if (this.props.onBeforeSelectFilter) {
@@ -34,7 +34,7 @@ define([
     },
     componentDidUpdate: function () {
       const selected_filters = this.props.filter;
-      this.getAvailableFilters().map(
+      this.getAvailableFilters().forEach(
         (filter, i) => {
           if (selected_filters[filter] !== undefined && selected_filters[filter]) {
             jQuery(this.refs[`filter-${i}`])

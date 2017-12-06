@@ -63,13 +63,14 @@ const ListingItem = React.createClass({
 
     if (custom_actions.length > 0) {
       let is_first = true;
-      item_actions = custom_actions.map((action, index) => {
+      item_actions = custom_actions
+      .filter((action) => {
         if (action.display !== undefined) {
-          if (action.display(this.props.item) === false) {
-            return;
-          }
+          return action.display(this.props.item);
         }
-
+        return true;
+      })
+      .map((action, index) => {
         let custom_action = null;
 
         if (action.name === 'trash') {
@@ -318,12 +319,12 @@ const Listing = React.createClass({
     const state = this.getInitialState();
      // check for url params
     if (params.splat) {
-      params.splat.split('/').map((param) => {
+      params.splat.split('/').forEach((param) => {
         const [key, value] = this.getParam(param);
         const filters = {};
         switch (key) {
           case 'filter':
-            value.split('&').map((pair) => {
+            value.split('&').forEach((pair) => {
               const [k, v] = pair.split('=');
               filters[k] = v;
             });
@@ -386,12 +387,13 @@ const Listing = React.createClass({
           } else if (value === Boolean(value)) {
             value = value.toString();
           }
-
-          if (value !== '' && value !== null) {
-            return `${key}[${value}]`;
-          }
+          return {
+            key,
+            value,
+          };
         })
-        .filter(key => (key !== undefined))
+        .filter(keyValue => keyValue.value !== '' && keyValue.value !== null)
+        .map(keyValue => `${keyValue.key}[${keyValue.value}]`)
         .join('/');
 
       // set url
@@ -417,7 +419,7 @@ const Listing = React.createClass({
     let ret = base_url;
     if (ret.indexOf(':') !== -1) {
       const params = this.getParams();
-      Object.keys(params).map((key) => {
+      Object.keys(params).forEach((key) => {
         if (ret.indexOf(`:${key}`) !== -1) {
           ret = ret.replace(`:${key}`, params[key]);
         }
