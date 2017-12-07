@@ -64,12 +64,7 @@ const ListingItem = React.createClass({
     if (customActions.length > 0) {
       let isFirst = true;
       itemActions = customActions
-      .filter((action) => {
-        if (action.display !== undefined) {
-          return action.display(this.props.item);
-        }
-        return true;
-      })
+      .filter(action => action.display === undefined || action.display(this.props.item))
       .map((action, index) => {
         let customAction = null;
 
@@ -392,8 +387,8 @@ const Listing = React.createClass({
             value,
           };
         })
-        .filter(keyValue => keyValue.value !== '' && keyValue.value !== null)
-        .map(keyValue => `${keyValue.key}[${keyValue.value}]`)
+        .filter(({ value }) => value !== '' && value !== null)
+        .map(({ key, value }) => `${key}[${value}]`)
         .join('/');
 
       // set url
