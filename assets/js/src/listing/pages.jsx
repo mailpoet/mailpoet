@@ -164,7 +164,7 @@ define([
         );
 
       let numberOfItemsLabel;
-      if (this.props.count == 1) {
+      if (Number(this.props.count) === 1) {
         numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsSingular');
       } else {
         numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsMultiple')

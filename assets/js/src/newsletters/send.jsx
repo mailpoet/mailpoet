@@ -274,12 +274,12 @@ define(
         return true;
       },
       render: function () {
-        const isPaused = this.state.item.status == 'sending'
+        const isPaused = this.state.item.status === 'sending'
           && this.state.item.queue
-          && this.state.item.queue.status == 'paused';
+          && this.state.item.queue.status === 'paused';
         const fields = this.state.fields.map((field) => {
           const newField = field;
-          if (field.name == 'segments' || field.name == 'options') {
+          if (field.name === 'segments' || field.name === 'options') {
             newField.disabled = isPaused;
           }
           return newField;

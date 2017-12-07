@@ -104,7 +104,7 @@ const confirmEdit = (newsletter) => {
   };
   if (
     !newsletter.queue
-    || newsletter.status != 'sending'
+    || newsletter.status !== 'sending'
     || newsletter.queue.status !== null
   ) {
     redirectToEditing();
