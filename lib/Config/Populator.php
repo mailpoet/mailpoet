@@ -57,6 +57,8 @@ class Populator {
   }
 
   function up() {
+    $localizer = new Localizer();
+    $localizer->forceLoadWebsiteLocaleText();
     $this->convertExistingDataToUTF8();
     $this->migrateSimpleScheduledTasks();
     $this->populateNewsletterSentAtField();

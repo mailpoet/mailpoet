@@ -1,7 +1,7 @@
 === MailPoet 3 (New) ===
 Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
-Requires at least: 4.6
+Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
 Stable tag: 3.2.4
