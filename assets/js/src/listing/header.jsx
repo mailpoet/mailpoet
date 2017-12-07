@@ -19,7 +19,7 @@ const ListingHeader = React.createClass({
         <ListingColumn
           onSort={this.props.onSort}
           sort_by={this.props.sort_by}
-          key={'column-' + index}
+          key={`column-${index}`}
           column={renderColumn} />
       );
     });
@@ -54,9 +54,9 @@ const ListingHeader = React.createClass({
 
 const ListingColumn = React.createClass({
   handleSort: function () {
-    const sort_by = this.props.column.name;
-    const sort_order = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
-    this.props.onSort(sort_by, sort_order);
+    const sortBy = this.props.column.name;
+    const sortOrder = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
+    this.props.onSort(sortBy, sortOrder);
   },
   render: function () {
     const classes = classNames(

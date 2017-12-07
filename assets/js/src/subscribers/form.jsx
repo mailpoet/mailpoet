@@ -19,7 +19,7 @@ define(
         label: MailPoet.I18n.t('email'),
         type: 'text',
         disabled: function (subscriber) {
-          return ~~(subscriber.wp_user_id > 0);
+          return Number(subscriber.wp_user_id > 0);
         },
       },
       {
@@ -27,7 +27,7 @@ define(
         label: MailPoet.I18n.t('firstname'),
         type: 'text',
         disabled: function (subscriber) {
-          return ~~(subscriber.wp_user_id > 0);
+          return Number(subscriber.wp_user_id > 0);
         },
       },
       {
@@ -35,7 +35,7 @@ define(
         label: MailPoet.I18n.t('lastname'),
         type: 'text',
         disabled: function (subscriber) {
-          return ~~(subscriber.wp_user_id > 0);
+          return Number(subscriber.wp_user_id > 0);
         },
       },
       {
@@ -49,7 +49,7 @@ define(
           bounced: MailPoet.I18n.t('bounced'),
         },
         filter: function (subscriber, value) {
-          if (~~(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
+          if (Number(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
             return false;
           }
           return true;
@@ -68,34 +68,32 @@ define(
             return null;
           }
 
-          return subscriber.subscriptions.map((subscription) => {
-            if (subscription.status === 'subscribed') {
-              return subscription.segment_id;
-            }
-          });
+          return subscriber.subscriptions
+            .filter(subscription => subscription.status === 'subscribed')
+            .map(subscription => subscription.segment_id);
         },
         filter: function (segment) {
-          return !!(!segment.deleted_at && segment.type === 'default');
+          return (!segment.deleted_at && segment.type === 'default');
         },
         getLabel: function (segment) {
-          return segment.name + ' (' + segment.subscribers + ')';
+          return `${segment.name} (${segment.subscribers})`;
         },
         getSearchLabel: function (segment, subscriber) {
           let label = '';
 
           if (subscriber.subscriptions !== undefined) {
-            subscriber.subscriptions.map((subscription) => {
+            subscriber.subscriptions.forEach((subscription) => {
               if (segment.id === subscription.segment_id) {
                 label = segment.name;
 
                 if (subscription.status === 'unsubscribed') {
-                  const unsubscribed_at = MailPoet.Date
+                  const unsubscribedAt = MailPoet.Date
                     .format(subscription.updated_at);
                   label += ' (%$1s)'.replace(
                     '%$1s',
                     MailPoet.I18n.t('unsubscribedOn').replace(
                       '%$1s',
-                      unsubscribed_at
+                      unsubscribedAt
                     )
                   );
                 }
@@ -107,23 +105,23 @@ define(
       },
     ];
 
-    const custom_fields = window.mailpoet_custom_fields || [];
-    custom_fields.map((custom_field) => {
+    const customFields = window.mailpoet_custom_fields || [];
+    customFields.forEach((customField) => {
       const field = {
-        name: 'cf_' + custom_field.id,
-        label: custom_field.name,
-        type: custom_field.type,
+        name: `cf_${customField.id}`,
+        label: customField.name,
+        type: customField.type,
       };
-      if (custom_field.params) {
-        field.params = custom_field.params;
+      if (customField.params) {
+        field.params = customField.params;
       }
 
-      if (custom_field.params.values) {
-        field.values = custom_field.params.values;
+      if (customField.params.values) {
+        field.values = customField.params.values;
       }
 
       // add placeholders for selects (date, select)
-      switch (custom_field.type) {
+      switch (customField.type) {
         case 'date':
           field.year_placeholder = MailPoet.I18n.t('year');
           field.month_placeholder = MailPoet.I18n.t('month');
@@ -132,6 +130,10 @@ define(
 
         case 'select':
           field.placeholder = '-';
+          break;
+
+        default:
+          field.placeholder = '';
           break;
       }
 
@@ -151,7 +153,7 @@ define(
     };
 
     const beforeFormContent = function (subscriber) {
-      if (~~(subscriber.wp_user_id) > 0) {
+      if (Number(subscriber.wp_user_id) > 0) {
         return (
           <p className="description">
             { ReactStringReplace(
@@ -168,6 +170,7 @@ define(
           </p>
         );
       }
+      return undefined;
     };
 
     const afterFormContent = function () {

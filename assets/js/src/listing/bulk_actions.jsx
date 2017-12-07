@@ -37,7 +37,7 @@ define([
         return;
       }
 
-      const selected_ids = (this.props.selection !== 'all')
+      const selectedIds = (this.props.selection !== 'all')
         ? this.props.selected_ids
         : [];
 
@@ -53,7 +53,7 @@ define([
       }
 
       if (data.action) {
-        const promise = this.props.onBulkAction(selected_ids, data);
+        const promise = this.props.onBulkAction(selectedIds, data);
         if (promise !== false) {
           promise.then(onSuccess);
         }
@@ -65,11 +65,9 @@ define([
       });
     },
     getSelectedAction: function () {
-      const selected_action = this.refs.action.value;
-      if (selected_action.length > 0) {
-        const action = this.props.bulk_actions.filter((act) => {
-          return (act.name === selected_action);
-        });
+      const selectedAction = this.refs.action.value;
+      if (selectedAction.length > 0) {
+        const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
 
         if (action.length > 0) {
           return action[0];
@@ -97,14 +95,12 @@ define([
             onChange={this.handleChangeAction}
           >
             <option value="">{MailPoet.I18n.t('bulkActions')}</option>
-            { this.props.bulk_actions.map((action, index) => {
-              return (
-                <option
-                  value={action.name}
-                  key={'action-' + index}
+            { this.props.bulk_actions.map((action, index) => (
+              <option
+                value={action.name}
+                key={`action-${index}`}
                 >{ action.label }</option>
-              );
-            }) }
+              )) }
           </select>
           <input
             onClick={this.handleApplyAction}

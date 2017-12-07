@@ -14,11 +14,11 @@ import {
   MailerMixin,
 } from 'newsletters/listings/mixins.jsx';
 
-const mailpoet_tracking_enabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetTrackingEnabled = (!!(window.mailpoetTrackingEnabled));
 
 const messages = {
   onTrash: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -33,7 +33,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -48,7 +48,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -81,7 +81,7 @@ const columns = [
   {
     name: 'statistics',
     label: MailPoet.I18n.t('statistics'),
-    display: mailpoet_tracking_enabled,
+    display: mailpoetTrackingEnabled,
   },
   {
     name: 'sent_at',
@@ -90,7 +90,7 @@ const columns = [
   },
 ];
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -104,7 +104,7 @@ const confirmEdit = (newsletter) => {
   };
   if (
     !newsletter.queue
-    || newsletter.status != 'sending'
+    || newsletter.status !== 'sending'
     || newsletter.queue.status !== null
   ) {
     redirectToEditing();
@@ -119,7 +119,7 @@ const confirmEdit = (newsletter) => {
   }
 };
 
-let newsletter_actions = [
+let newsletterActions = [
   {
     name: 'view',
     link: function (newsletter) {
@@ -156,7 +156,7 @@ let newsletter_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -169,7 +169,7 @@ let newsletter_actions = [
 ];
 
 Hooks.addFilter('mailpoet_newsletters_listings_standard_actions', StatisticsMixin.addStatsCTAAction);
-newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletter_actions);
+newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletterActions);
 
 const NewsletterListStandard = React.createClass({
   mixins: [QueueMixin, StatisticsMixin, MailerMixin],
@@ -180,9 +180,7 @@ const NewsletterListStandard = React.createClass({
       'has-row-actions'
     );
 
-    const segments = newsletter.segments.map((segment) => {
-      return segment.name;
-    }).join(', ');
+    const segments = newsletter.segments.map(segment => segment.name).join(', ');
 
     return (
       <div>
@@ -202,7 +200,7 @@ const NewsletterListStandard = React.createClass({
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           { segments }
         </td>
-        { (mailpoet_tracking_enabled === true) ? (
+        { (mailpoetTrackingEnabled === true) ? (
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
             { this.renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
@@ -239,8 +237,8 @@ const NewsletterListStandard = React.createClass({
           base_url="standard"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={newsletter_actions}
+          bulk_actions={bulkActions}
+          item_actions={newsletterActions}
           messages={messages}
           auto_refresh={true}
           sort_by="sent_at"

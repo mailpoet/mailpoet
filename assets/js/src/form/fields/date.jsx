@@ -167,6 +167,11 @@ define([
             year: this.state.year,
           };
           break;
+        default:
+          value = {
+            value: 'invalid type',
+          };
+          break;
       }
 
       return value;
@@ -181,7 +186,7 @@ define([
         field = matches[1];
         property = matches[2];
 
-        const value = ~~(e.target.value);
+        const value = Number(e.target.value);
 
         this.setState({
           [`${property}`]: value,
@@ -233,6 +238,9 @@ define([
               day={this.state.day}
               placeholder={this.props.field.day_placeholder}
             />);
+
+          default:
+            return <div>Invalid date type</div>;
         }
       });
 

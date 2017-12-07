@@ -37,7 +37,7 @@ define([
       );
     },
     constrainPage: function (page) {
-      return Math.min(Math.max(1, Math.abs(~~page)), this.getLastPage());
+      return Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
     },
     handleSetManualPage: function (e) {
       if (e.which === 13) {
@@ -164,7 +164,7 @@ define([
         );
 
       let numberOfItemsLabel;
-      if (this.props.count == 1) {
+      if (Number(this.props.count) === 1) {
         numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsSingular');
       } else {
         numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsMultiple')

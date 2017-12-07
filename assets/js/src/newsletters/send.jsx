@@ -120,7 +120,7 @@ define(
                     MailPoet.trackEvent('Emails > Welcome email activated', {
                       'MailPoet Free version': window.mailpoet_version,
                       'List type': opts.event,
-                      Delay: opts.afterTimeNumber + ' ' + opts.afterTimeType,
+                      Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
                     });
                   } else if (response2.data.type === 'notification') {
                     MailPoet.Notice.success(
@@ -194,7 +194,7 @@ define(
             }).fail((response) => {
               if (response.errors.length > 0) {
                 MailPoet.Notice.error(
-                  response.errors.map((error) => { return error.message; }),
+                  response.errors.map(error => error.message),
                   { scroll: true }
                 );
               }
@@ -257,7 +257,7 @@ define(
       showError: (response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -274,12 +274,12 @@ define(
         return true;
       },
       render: function () {
-        const isPaused = this.state.item.status == 'sending'
+        const isPaused = this.state.item.status === 'sending'
           && this.state.item.queue
-          && this.state.item.queue.status == 'paused';
+          && this.state.item.queue.status === 'paused';
         const fields = this.state.fields.map((field) => {
           const newField = field;
-          if (field.name == 'segments' || field.name == 'options') {
+          if (field.name === 'segments' || field.name === 'options') {
             newField.disabled = isPaused;
           }
           return newField;
@@ -324,7 +324,7 @@ define(
                 &nbsp;{MailPoet.I18n.t('orSimply')}&nbsp;
                 <a
                   href={
-                    '?page=mailpoet-newsletter-editor&id=' + this.props.params.id
+                    `?page=mailpoet-newsletter-editor&id=${this.props.params.id}`
                   }
                   onClick={this.handleRedirectToDesign}>
                   {MailPoet.I18n.t('goBackToDesign')}

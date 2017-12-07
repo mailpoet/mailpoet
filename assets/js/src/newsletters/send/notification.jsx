@@ -42,15 +42,11 @@ define(
           return !segment.deleted_at;
         },
         getLabel: function (segment) {
-          return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
+          return `${segment.name} (${parseInt(segment.subscribers, 10).toLocaleString()})`;
         },
-        transformChangedValue: function (segment_ids) {
-          const all_segments = this.state.items;
-          return _.map(segment_ids, (id) => {
-            return _.find(all_segments, (segment) => {
-              return segment.id === id;
-            });
-          });
+        transformChangedValue: function (segmentIds) {
+          const allSegments = this.state.items;
+          return _.map(segmentIds, id => _.find(allSegments, segment => segment.id === id));
         },
         validation: {
           'data-parsley-required': true,

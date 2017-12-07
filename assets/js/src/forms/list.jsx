@@ -27,7 +27,7 @@ const columns = [
 
 const messages = {
   onTrash: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -42,7 +42,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -57,7 +57,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -73,7 +73,7 @@ const messages = {
   },
 };
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -81,7 +81,7 @@ const bulk_actions = [
   },
 ];
 
-const item_actions = [
+const itemActions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
@@ -110,7 +110,7 @@ const item_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -133,32 +133,31 @@ const FormList = React.createClass({
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map((error) => { return error.message; }),
+          response.errors.map(error => error.message),
           { scroll: true }
         );
       }
     });
   },
   renderItem(form, actions) {
-    const row_classes = classNames(
+    const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
     );
 
-    let segments = window.mailpoet_segments.filter((segment) => {
-      return (jQuery.inArray(segment.id, form.segments) !== -1);
-    }).map((segment) => {
-      return segment.name;
-    }).join(', ');
+    let segments = window.mailpoet_segments
+      .filter(segment => (jQuery.inArray(segment.id, form.segments) !== -1))
+      .map(segment => segment.name)
+      .join(', ');
 
     if (form.settings.segments_selected_by === 'user') {
-      segments = MailPoet.I18n.t('userChoice') + ' ' + segments;
+      segments = `${MailPoet.I18n.t('userChoice')} ${segments}`;
     }
 
     return (
       <div>
-        <td className={row_classes}>
+        <td className={rowClasses}>
           <strong>
             <a
               className="row-title"
@@ -199,8 +198,8 @@ const FormList = React.createClass({
           endpoint="forms"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={item_actions}
+          bulk_actions={bulkActions}
+          item_actions={itemActions}
         />
       </div>
     );

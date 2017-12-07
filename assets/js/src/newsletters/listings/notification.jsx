@@ -18,7 +18,7 @@ import {
 
 const messages = {
   onTrash: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -33,7 +33,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -48,7 +48,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -91,7 +91,7 @@ const columns = [
   },
 ];
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -99,7 +99,7 @@ const bulk_actions = [
   },
 ];
 
-const newsletter_actions = [
+const newsletterActions = [
   {
     name: 'view',
     link: function (newsletter) {
@@ -141,7 +141,7 @@ const newsletter_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -165,7 +165,7 @@ const NewsletterListNotification = React.createClass({
       endpoint: 'newsletters',
       action: 'setStatus',
       data: {
-        id: ~~(e.target.getAttribute('data-id')),
+        id: Number(e.target.getAttribute('data-id')),
         status: e.target.value,
       },
     }).done((response) => {
@@ -197,9 +197,7 @@ const NewsletterListNotification = React.createClass({
     let sendingFrequency;
 
     // get list of segments' name
-    const segments = newsletter.segments.map((segment) => {
-      return segment.name;
-    });
+    const segments = newsletter.segments.map(segment => segment.name);
     const sendingToSegments = MailPoet.I18n.t('ifNewContentToSegments').replace(
       '%$1s', segments.join(', ')
     );
@@ -250,6 +248,10 @@ const NewsletterListNotification = React.createClass({
       case 'immediately':
         sendingFrequency = MailPoet.I18n.t('sendImmediately');
         break;
+
+      default:
+        sendingFrequency = 'Invalid sending frequency';
+        break;
     }
 
 
@@ -260,7 +262,7 @@ const NewsletterListNotification = React.createClass({
     );
   },
   renderHistoryLink: function (newsletter) {
-    const childrenCount = ~~(newsletter.children_count);
+    const childrenCount = Number((newsletter.children_count));
     if (childrenCount === 0) {
       return (
         MailPoet.I18n.t('notSentYet')
@@ -323,8 +325,8 @@ const NewsletterListNotification = React.createClass({
           base_url="notification"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={newsletter_actions}
+          bulk_actions={bulkActions}
+          item_actions={newsletterActions}
           messages={messages}
           auto_refresh={true}
           sort_by="updated_at"

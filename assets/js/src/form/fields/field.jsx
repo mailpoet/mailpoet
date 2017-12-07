@@ -68,18 +68,22 @@ define([
         case 'reactComponent':
           field = (<data.field.component {...data} />);
           break;
+
+        default:
+          field = 'invalid';
+          break;
       }
 
       if (inline === true) {
         return (
-          <span key={'field-' + (data.index || 0)}>
+          <span key={`field-${data.index || 0}`}>
             { field }
             { description }
           </span>
         );
       }
       return (
-        <div key={'field-' + (data.index || 0)}>
+        <div key={`field-${data.index || 0}`}>
           { field }
           { description }
         </div>
@@ -89,14 +93,12 @@ define([
       let field = false;
 
       if (this.props.field.fields !== undefined) {
-        field = this.props.field.fields.map((subfield, index) => {
-          return this.renderField({
-            index: index,
-            field: subfield,
-            item: this.props.item,
-            onValueChange: this.props.onValueChange || false,
-          });
-        });
+        field = this.props.field.fields.map((subfield, index) => this.renderField({
+          index: index,
+          field: subfield,
+          item: this.props.item,
+          onValueChange: this.props.onValueChange || false,
+        }));
       } else {
         field = this.renderField(this.props);
       }
@@ -112,7 +114,7 @@ define([
         <tr>
           <th scope="row">
             <label
-              htmlFor={'field_' + this.props.field.name}
+              htmlFor={`field_${this.props.field.name}`}
             >
               { this.props.field.label }
               { tip }

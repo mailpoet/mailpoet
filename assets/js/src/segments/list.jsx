@@ -40,7 +40,7 @@ const columns = [
 
 const messages = {
   onTrash: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -55,7 +55,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -70,7 +70,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -86,7 +86,7 @@ const messages = {
   },
 };
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -94,7 +94,7 @@ const bulk_actions = [
   },
 ];
 
-const item_actions = [
+const itemActions = [
   {
     name: 'edit',
     link: function (item) {
@@ -109,26 +109,24 @@ const item_actions = [
   {
     name: 'duplicate_segment',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: (item, refresh) => {
-      return MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'segments',
-        action: 'duplicate',
-        data: {
-          id: item.id,
-        },
-      }).done((response) => {
-        MailPoet.Notice.success(
+    onClick: (item, refresh) => MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'segments',
+      action: 'duplicate',
+      data: {
+        id: item.id,
+      },
+    }).done((response) => {
+      MailPoet.Notice.success(
           MailPoet.I18n.t('listDuplicated').replace('%$1s', response.data.name)
         );
-        refresh();
-      }).fail((response) => {
-        MailPoet.Notice.error(
-          response.errors.map((error) => { return error.message; }),
+      refresh();
+    }).fail((response) => {
+      MailPoet.Notice.error(
+          response.errors.map(error => error.message),
           { scroll: true }
         );
-      });
-    },
+    }),
     display: function (segment) {
       return (segment.type !== 'wp_users');
     },
@@ -166,7 +164,7 @@ const item_actions = [
         MailPoet.Modal.loading(false);
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -200,20 +198,20 @@ const SegmentList = React.createClass({
       'has-row-actions'
     );
 
-    const subscribed = ~~(segment.subscribers_count.subscribed || 0);
-    const unconfirmed = ~~(segment.subscribers_count.unconfirmed || 0);
-    const unsubscribed = ~~(segment.subscribers_count.unsubscribed || 0);
-    const bounced = ~~(segment.subscribers_count.bounced || 0);
+    const subscribed = Number(segment.subscribers_count.subscribed || 0);
+    const unconfirmed = Number(segment.subscribers_count.unconfirmed || 0);
+    const unsubscribed = Number(segment.subscribers_count.unsubscribed || 0);
+    const bounced = Number(segment.subscribers_count.bounced || 0);
 
-    let segment_name;
+    let segmentName;
 
     if (segment.type === 'wp_users') {
       // the WP users segment is not editable so just display its name
-      segment_name = (
+      segmentName = (
         <span className="row-title">{ segment.name }</span>
       );
     } else {
-      segment_name = (
+      segmentName = (
         <Link
           className="row-title"
           to={`/edit/${segment.id}`}
@@ -225,7 +223,7 @@ const SegmentList = React.createClass({
       <div>
         <td className={rowClasses}>
           <strong>
-            { segment_name }
+            { segmentName }
           </strong>
           { actions }
         </td>
@@ -266,8 +264,8 @@ const SegmentList = React.createClass({
           endpoint="segments"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={item_actions}
+          bulk_actions={bulkActions}
+          item_actions={itemActions}
           sort_by="name"
           sort_order="asc"
         />

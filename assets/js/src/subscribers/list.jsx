@@ -38,7 +38,7 @@ const columns = [
 
 const messages = {
   onTrash: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -53,7 +53,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -68,7 +68,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    const count = ~~response.meta.count;
+    const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
@@ -100,7 +100,7 @@ const messages = {
   },
 };
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'moveToList',
     label: MailPoet.I18n.t('moveToList'),
@@ -122,13 +122,13 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#move_to_segment').val()),
+        segment_id: Number(jQuery('#move_to_segment').val()),
       };
     },
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
-        .replace('%$1d', (~~(response.meta.count)).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
     },
@@ -154,13 +154,13 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#add_to_segment').val()),
+        segment_id: Number(jQuery('#add_to_segment').val()),
       };
     },
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
-        .replace('%$1d', (~~response.meta.count).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
     },
@@ -186,13 +186,13 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#remove_from_segment').val()),
+        segment_id: Number(jQuery('#remove_from_segment').val()),
       };
     },
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
-        .replace('%$1d', (~~response.meta.count).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
     },
@@ -203,7 +203,7 @@ const bulk_actions = [
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
-        .replace('%$1d', (~~response.meta.count).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
       );
     },
   },
@@ -213,7 +213,7 @@ const bulk_actions = [
     onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleConfirmationEmailsSent')
-        .replace('%$1d', (~~response.meta.count).toLocaleString())
+        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
       );
     },
   },
@@ -224,7 +224,7 @@ const bulk_actions = [
   },
 ];
 
-const item_actions = [
+const itemActions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
@@ -237,23 +237,23 @@ const item_actions = [
   {
     name: 'trash',
     display: function (subscriber) {
-      return !!(~~subscriber.wp_user_id === 0);
+      return Number(subscriber.wp_user_id) === 0;
     },
   },
 ];
 
 const SubscriberList = React.createClass({
-  getSegmentFromId: function (segment_id) {
+  getSegmentFromId: function (segmentId) {
     let result = false;
-    window.mailpoet_segments.map((segment) => {
-      if (segment.id === segment_id) {
+    window.mailpoet_segments.forEach((segment) => {
+      if (segment.id === segmentId) {
         result = segment;
       }
     });
     return result;
   },
   renderItem: function (subscriber, actions) {
-    const row_classes = classNames(
+    const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -278,32 +278,36 @@ const SubscriberList = React.createClass({
       case 'bounced':
         status = MailPoet.I18n.t('bounced');
         break;
+
+      default:
+        status = 'Invalid';
+        break;
     }
 
     let segments = false;
 
     // Subscriptions
     if (subscriber.subscriptions.length > 0) {
-      const subscribed_segments = [];
+      const subscribedSegments = [];
 
-      subscriber.subscriptions.map((subscription) => {
+      subscriber.subscriptions.forEach((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
         if (segment === false) return;
         if (subscription.status === 'subscribed') {
-          subscribed_segments.push(segment.name);
+          subscribedSegments.push(segment.name);
         }
       });
 
       segments = (
         <span>
-          { subscribed_segments.join(', ') }
+          { subscribedSegments.join(', ') }
         </span>
       );
     }
 
     return (
       <div>
-        <td className={row_classes}>
+        <td className={rowClasses}>
           <strong>
             <Link
               className="row-title"
@@ -356,8 +360,8 @@ const SubscriberList = React.createClass({
           endpoint="subscribers"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={item_actions}
+          bulk_actions={bulkActions}
+          item_actions={itemActions}
           messages={messages}
           sort_by={'created_at'}
           sort_order={'desc'}

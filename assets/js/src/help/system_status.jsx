@@ -20,7 +20,7 @@ function renderStatusMessage(status, error, link) {
   }
 
   return (
-    <div className={'mailpoet_notice notice inline notice-' + noticeType} style={{ marginTop: '1em' }}>
+    <div className={`mailpoet_notice notice inline notice-${noticeType}`} style={{ marginTop: '1em' }}>
       <p>{noticeMessage}</p>
     </div>
   );
@@ -42,7 +42,7 @@ function renderCronSection(data) {
 }
 
 function renderMSSSection(data) {
-  if (!data.mss.enabled) return;
+  if (!data.mss.enabled) return undefined;
 
   const status = data.mss.enabled.isReachable;
 

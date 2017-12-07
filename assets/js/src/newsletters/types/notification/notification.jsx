@@ -55,7 +55,7 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map((error) => { return error.message; }),
+              response.errors.map(error => error.message),
               { scroll: true }
             );
           }

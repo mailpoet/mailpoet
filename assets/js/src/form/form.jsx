@@ -99,9 +99,9 @@ define(
 
         // only get values from displayed fields
         const item = {};
-        this.props.fields.map((field) => {
+        this.props.fields.forEach((field) => {
           if (field.fields !== undefined) {
-            field.fields.map((subfield) => {
+            field.fields.forEach((subfield) => {
               item[subfield.name] = this.state.item[subfield.name];
             });
           } else {
@@ -155,13 +155,11 @@ define(
       render: function () {
         let errors;
         if (this.getErrors() !== undefined) {
-          errors = this.getErrors().map((error, index) => {
-            return (
-              <p key={'error-' + index} className="mailpoet_error">
-                { error.message }
-              </p>
-            );
-          });
+          errors = this.getErrors().map((error, index) => (
+            <p key={`error-${index}`} className="mailpoet_error">
+              { error.message }
+            </p>
+            ));
         }
 
         const formClasses = classNames(
@@ -195,7 +193,7 @@ define(
               field={field}
               item={this.getValues()}
               onValueChange={onValueChange}
-              key={'field-' + i} />
+              key={`field-${i}`} />
           );
         });
 

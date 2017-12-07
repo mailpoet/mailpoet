@@ -11,8 +11,8 @@ define([
   const ListingFilters = React.createClass({
     handleFilterAction: function () {
       const filters = {};
-      this.getAvailableFilters().map((filter, i) => {
-        filters[this.refs['filter-' + i].name] = this.refs['filter-' + i].value;
+      this.getAvailableFilters().forEach((filter, i) => {
+        filters[this.refs[`filter-${i}`].name] = this.refs[`filter-${i}`].value;
       });
       if (this.props.onBeforeSelectFilter) {
         this.props.onBeforeSelectFilter(filters);
@@ -24,23 +24,21 @@ define([
     },
     getAvailableFilters: function () {
       const filters = this.props.filters;
-      return Object.keys(filters).filter((filter) => {
-        return !(
+      return Object.keys(filters).filter(filter => !(
           filters[filter].length === 0
           || (
             filters[filter].length === 1
             && !filters[filter][0].value
           )
-        );
-      });
+        ));
     },
     componentDidUpdate: function () {
-      const selected_filters = this.props.filter;
-      this.getAvailableFilters().map(
+      const selectedFilters = this.props.filter;
+      this.getAvailableFilters().forEach(
         (filter, i) => {
-          if (selected_filters[filter] !== undefined && selected_filters[filter]) {
-            jQuery(this.refs['filter-' + i])
-              .val(selected_filters[filter])
+          if (selectedFilters[filter] !== undefined && selectedFilters[filter]) {
+            jQuery(this.refs[`filter-${i}`])
+              .val(selectedFilters[filter])
               .trigger('change');
           }
         }
@@ -48,29 +46,25 @@ define([
     },
     render: function () {
       const filters = this.props.filters;
-      const available_filters = this.getAvailableFilters()
-        .map((filter, i) => {
-          return (
-            <select
-              ref={`filter-${i}`}
-              key={`filter-${i}`}
-              name={filter}
+      const availableFilters = this.getAvailableFilters()
+        .map((filter, i) => (
+          <select
+            ref={`filter-${i}`}
+            key={`filter-${i}`}
+            name={filter}
             >
-              { filters[filter].map((option, j) => {
-                return (
-                  <option
-                    value={option.value}
-                    key={'filter-option-' + j}
+            { filters[filter].map((option, j) => (
+              <option
+                value={option.value}
+                key={`filter-option-${j}`}
                 >{ option.label }</option>
-                );
-              }) }
-            </select>
-          );
-        });
+                )) }
+          </select>
+          ));
 
       let button;
 
-      if (available_filters.length > 0) {
+      if (availableFilters.length > 0) {
         button = (
           <input
             id="post-query-submit"
@@ -81,9 +75,9 @@ define([
         );
       }
 
-      let empty_trash;
+      let emptyTrash;
       if (this.props.group === 'trash') {
-        empty_trash = (
+        emptyTrash = (
           <input
             onClick={this.handleEmptyTrash}
             type="submit"
@@ -95,9 +89,9 @@ define([
 
       return (
         <div className="alignleft actions actions">
-          { available_filters }
+          { availableFilters }
           { button }
-          { empty_trash }
+          { emptyTrash }
         </div>
       );
     },

@@ -44,7 +44,7 @@ const ListingItem = React.createClass({
       checkbox = (
         <th className="check-column" scope="row">
           <label className="screen-reader-text">{
-            'Select ' + this.props.item[this.props.columns[0].name]
+            `Select ${this.props.item[this.props.columns[0].name]}`
           }</label>
           <input
             type="checkbox"
@@ -58,24 +58,20 @@ const ListingItem = React.createClass({
       );
     }
 
-    const custom_actions = this.props.item_actions;
-    let item_actions = false;
+    const customActions = this.props.item_actions;
+    let itemActions = false;
 
-    if (custom_actions.length > 0) {
-      let is_first = true;
-      item_actions = custom_actions.map((action, index) => {
-        if (action.display !== undefined) {
-          if (action.display(this.props.item) === false) {
-            return;
-          }
-        }
-
-        let custom_action = null;
+    if (customActions.length > 0) {
+      let isFirst = true;
+      itemActions = customActions
+      .filter(action => action.display === undefined || action.display(this.props.item))
+      .map((action, index) => {
+        let customAction = null;
 
         if (action.name === 'trash') {
-          custom_action = (
-            <span key={'action-' + index} className="trash">
-              {(!is_first) ? ' | ' : ''}
+          customAction = (
+            <span key={`action-${index}`} className="trash">
+              {(!isFirst) ? ' | ' : ''}
               <a
                 href="javascript:;"
                 onClick={this.handleTrashItem.bind(
@@ -87,27 +83,27 @@ const ListingItem = React.createClass({
             </span>
           );
         } else if (action.refresh) {
-          custom_action = (
+          customAction = (
             <span
               onClick={this.props.onRefreshItems}
-              key={'action-' + index} className={action.name}>
-              {(!is_first) ? ' | ' : ''}
+              key={`action-${index}`} className={action.name}>
+              {(!isFirst) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
           );
         } else if (action.link) {
-          custom_action = (
+          customAction = (
             <span
-              key={'action-' + index} className={action.name}>
-              {(!is_first) ? ' | ' : ''}
+              key={`action-${index}`} className={action.name}>
+              {(!isFirst) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
           );
         } else {
-          custom_action = (
+          customAction = (
             <span
-              key={'action-' + index} className={action.name}>
-              {(!is_first) ? ' | ' : ''}
+              key={`action-${index}`} className={action.name}>
+              {(!isFirst) ? ' | ' : ''}
               <a href="javascript:;" onClick={
                 (action.onClick !== undefined)
                 ? action.onClick.bind(null,
@@ -120,14 +116,14 @@ const ListingItem = React.createClass({
           );
         }
 
-        if (custom_action !== null && is_first === true) {
-          is_first = false;
+        if (customAction !== null && isFirst === true) {
+          isFirst = false;
         }
 
-        return custom_action;
+        return customAction;
       });
     } else {
-      item_actions = (
+      itemActions = (
         <span className="edit">
           <Link to={`/edit/${this.props.item.id}`}>{MailPoet.I18n.t('edit')}</Link>
         </span>
@@ -172,7 +168,7 @@ const ListingItem = React.createClass({
       actions = (
         <div>
           <div className="row-actions">
-            { item_actions }
+            { itemActions }
           </div>
           <button
             onClick={this.handleToggleItem.bind(null, this.props.item.id)}
@@ -183,10 +179,10 @@ const ListingItem = React.createClass({
       );
     }
 
-    const row_classes = classNames({ 'is-expanded': this.state.expanded });
+    const rowClasses = classNames({ 'is-expanded': this.state.expanded });
 
     return (
-      <tr className={row_classes} data-automation-id={'listing_item_' + this.props.item.id}>
+      <tr className={rowClasses} data-automation-id={`listing_item_${this.props.item.id}`}>
         { checkbox }
         { this.props.onRenderItem(this.props.item, actions) }
       </tr>
@@ -224,7 +220,7 @@ const ListingItems = React.createClass({
         </tbody>
       );
     }
-    const select_all_classes = classNames(
+    const selectAllClasses = classNames(
         'mailpoet_select_all',
       { mailpoet_hidden: (
             this.props.selection === false
@@ -235,7 +231,7 @@ const ListingItems = React.createClass({
 
     return (
       <tbody>
-        <tr className={select_all_classes}>
+        <tr className={selectAllClasses}>
           <td colSpan={
                 this.props.columns.length
                 + (this.props.is_selectable ? 1 : 0)
@@ -318,12 +314,12 @@ const Listing = React.createClass({
     const state = this.getInitialState();
      // check for url params
     if (params.splat) {
-      params.splat.split('/').map((param) => {
+      params.splat.split('/').forEach((param) => {
         const [key, value] = this.getParam(param);
         const filters = {};
         switch (key) {
           case 'filter':
-            value.split('&').map((pair) => {
+            value.split('&').forEach((pair) => {
               const [k, v] = pair.split('=');
               filters[k] = v;
             });
@@ -338,7 +334,7 @@ const Listing = React.createClass({
 
     // limit per page
     if (this.props.limit !== undefined) {
-      state.limit = Math.abs(~~this.props.limit);
+      state.limit = Math.abs(Number(this.props.limit));
     }
 
     // sort by
@@ -369,8 +365,7 @@ const Listing = React.createClass({
   setParams: function () {
     if (this.props.location) {
       const params = Object.keys(this.state)
-        .filter((key) => {
-          return (
+        .filter(key => (
             [
               'group',
               'filter',
@@ -379,8 +374,7 @@ const Listing = React.createClass({
               'sort_by',
               'sort_order',
             ].indexOf(key) !== -1
-          );
-        })
+          ))
         .map((key) => {
           let value = this.state[key];
           if (value === Object(value)) {
@@ -388,12 +382,13 @@ const Listing = React.createClass({
           } else if (value === Boolean(value)) {
             value = value.toString();
           }
-
-          if (value !== '' && value !== null) {
-            return `${key}[${value}]`;
-          }
+          return {
+            key,
+            value,
+          };
         })
-        .filter((key) => { return (key !== undefined); })
+        .filter(({ value }) => value !== '' && value !== null)
+        .map(({ key, value }) => `${key}[${value}]`)
         .join('/');
 
       // set url
@@ -405,23 +400,23 @@ const Listing = React.createClass({
     }
   },
   getUrlWithParams: function (params) {
-    let base_url = (this.props.base_url !== undefined)
+    let baseUrl = (this.props.base_url !== undefined)
       ? this.props.base_url
       : null;
 
-    if (base_url !== null) {
-      base_url = this.setBaseUrlParams(base_url);
-      return `/${base_url}/${params}`;
+    if (baseUrl !== null) {
+      baseUrl = this.setBaseUrlParams(baseUrl);
+      return `/${baseUrl}/${params}`;
     }
     return `/${params}`;
   },
-  setBaseUrlParams: function (base_url) {
-    let ret = base_url;
+  setBaseUrlParams: function (baseUrl) {
+    let ret = baseUrl;
     if (ret.indexOf(':') !== -1) {
       const params = this.getParams();
-      Object.keys(params).map((key) => {
-        if (ret.indexOf(':' + key) !== -1) {
-          ret = ret.replace(':' + key, params[key]);
+      Object.keys(params).forEach((key) => {
+        if (ret.indexOf(`:${key}`) !== -1) {
+          ret = ret.replace(`:${key}`, params[key]);
         }
       });
     }
@@ -488,7 +483,7 @@ const Listing = React.createClass({
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map((error) => { return error.message; }),
+            response.errors.map(error => error.message),
             { scroll: true }
           );
         }
@@ -518,7 +513,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map((error) => { return error.message; }),
+        response.errors.map(error => error.message),
         { scroll: true }
       );
     });
@@ -546,7 +541,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map((error) => { return error.message; }),
+        response.errors.map(error => error.message),
         { scroll: true }
       );
     });
@@ -574,7 +569,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map((error) => { return error.message; }),
+        response.errors.map(error => error.message),
         { scroll: true }
       );
     });
@@ -591,16 +586,16 @@ const Listing = React.createClass({
       this.handleGroup('all');
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map((error) => { return error.message; }),
+        response.errors.map(error => error.message),
         { scroll: true }
       );
     });
   },
-  handleBulkAction: function (selected_ids, params) {
+  handleBulkAction: function (selectedIds, params) {
     if (
       this.state.selection === false
       && this.state.selected_ids.length === 0
-      && selected_ids !== 'all'
+      && selectedIds !== 'all'
     ) {
       return false;
     }
@@ -616,8 +611,8 @@ const Listing = React.createClass({
       group: this.state.group,
       search: this.state.search,
     };
-    if (selected_ids !== 'all') {
-      data.listing.selection = selected_ids;
+    if (selectedIds !== 'all') {
+      data.listing.selection = selectedIds;
     }
 
     return MailPoet.Ajax.post({
@@ -630,7 +625,7 @@ const Listing = React.createClass({
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map((error) => { return error.message; }),
+          response.errors.map(error => error.message),
           { scroll: true }
         );
       }
@@ -646,20 +641,20 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleSort: function (sort_by, sort_order = 'asc') {
+  handleSort: function (sortBy, sortOrder = 'asc') {
     this.setState({
-      sort_by: sort_by,
-      sort_order: (sort_order === 'asc') ? 'asc' : 'desc',
+      sort_by: sortBy,
+      sort_order: (sortOrder === 'asc') ? 'asc' : 'desc',
     }, () => {
       this.setParams();
     });
   },
-  handleSelectItem: function (id, is_checked) {
-    let selected_ids = this.state.selected_ids;
+  handleSelectItem: function (id, isChecked) {
+    let selectedIds = this.state.selected_ids;
     let selection = false;
 
-    if (is_checked) {
-      selected_ids = jQuery.merge(selected_ids, [id]);
+    if (isChecked) {
+      selectedIds = jQuery.merge(selectedIds, [id]);
       // check whether all items on the page are selected
       if (
         jQuery('tbody .check-column :checkbox:not(:checked)').length === 0
@@ -667,24 +662,22 @@ const Listing = React.createClass({
         selection = 'page';
       }
     } else {
-      selected_ids.splice(selected_ids.indexOf(id), 1);
+      selectedIds.splice(selectedIds.indexOf(id), 1);
     }
 
     this.setState({
       selection: selection,
-      selected_ids: selected_ids,
+      selected_ids: selectedIds,
     });
   },
-  handleSelectItems: function (is_checked) {
-    if (is_checked === false) {
+  handleSelectItems: function (isChecked) {
+    if (isChecked === false) {
       this.clearSelection();
     } else {
-      const selected_ids = this.state.items.map((item) => {
-        return ~~item.id;
-      });
+      const selectedIds = this.state.items.map(item => Number(item.id));
 
       this.setState({
-        selected_ids: selected_ids,
+        selected_ids: selectedIds,
         selection: 'page',
       });
     }
@@ -744,20 +737,20 @@ const Listing = React.createClass({
   },
   render: function () {
     const items = this.state.items;
-    const sort_by = this.state.sort_by;
-    const sort_order = this.state.sort_order;
+    const sortBy = this.state.sort_by;
+    const sortOrder = this.state.sort_order;
 
     // columns
     let columns = this.props.columns || [];
-    columns = columns.filter((column) => {
-      return (column.display === undefined || !!(column.display) === true);
-    });
+    columns = columns.filter(
+      column => (column.display === undefined || !!(column.display) === true)
+    );
 
     // bulk actions
-    let bulk_actions = this.props.bulk_actions || [];
+    let bulkActions = this.props.bulk_actions || [];
 
-    if (this.state.group === 'trash' && bulk_actions.length > 0) {
-      bulk_actions = [
+    if (this.state.group === 'trash' && bulkActions.length > 0) {
+      bulkActions = [
         {
           name: 'restore',
           label: MailPoet.I18n.t('restore'),
@@ -772,9 +765,9 @@ const Listing = React.createClass({
     }
 
     // item actions
-    const item_actions = this.props.item_actions || [];
+    const itemActions = this.props.item_actions || [];
 
-    const table_classes = classNames(
+    const tableClasses = classNames(
       'mailpoet_listing_table',
       'wp-list-table',
       'widefat',
@@ -819,7 +812,7 @@ const Listing = React.createClass({
         <div className="tablenav top clearfix">
           <ListingBulkActions
             count={this.state.count}
-            bulk_actions={bulk_actions}
+            bulk_actions={bulkActions}
             selection={this.state.selection}
             selected_ids={this.state.selected_ids}
             onBulkAction={this.handleBulkAction} />
@@ -837,16 +830,16 @@ const Listing = React.createClass({
             limit={this.state.limit}
             onSetPage={this.handleSetPage} />
         </div>
-        <table className={table_classes}>
+        <table className={tableClasses}>
           <thead>
             <ListingHeader
               onSort={this.handleSort}
               onSelectItems={this.handleSelectItems}
               selection={this.state.selection}
-              sort_by={sort_by}
-              sort_order={sort_order}
+              sort_by={sortBy}
+              sort_order={sortOrder}
               columns={columns}
-              is_selectable={bulk_actions.length > 0} />
+              is_selectable={bulkActions.length > 0} />
           </thead>
 
           <ListingItems
@@ -856,7 +849,7 @@ const Listing = React.createClass({
             onTrashItem={this.handleTrashItem}
             onRefreshItems={this.handleRefreshItems}
             columns={columns}
-            is_selectable={bulk_actions.length > 0}
+            is_selectable={bulkActions.length > 0}
             onSelectItem={this.handleSelectItem}
             onSelectAll={this.handleSelectAll}
             selection={this.state.selection}
@@ -865,7 +858,7 @@ const Listing = React.createClass({
             group={this.state.group}
             count={this.state.count}
             limit={this.state.limit}
-            item_actions={item_actions}
+            item_actions={itemActions}
             messages={messages}
             items={items} />
 
@@ -874,17 +867,17 @@ const Listing = React.createClass({
               onSort={this.handleSort}
               onSelectItems={this.handleSelectItems}
               selection={this.state.selection}
-              sort_by={sort_by}
-              sort_order={sort_order}
+              sort_by={sortBy}
+              sort_order={sortOrder}
               columns={columns}
-              is_selectable={bulk_actions.length > 0} />
+              is_selectable={bulkActions.length > 0} />
           </tfoot>
 
         </table>
         <div className="tablenav bottom">
           <ListingBulkActions
             count={this.state.count}
-            bulk_actions={bulk_actions}
+            bulk_actions={bulkActions}
             selection={this.state.selection}
             selected_ids={this.state.selected_ids}
             onBulkAction={this.handleBulkAction} />

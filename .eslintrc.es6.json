@@ -17,6 +17,7 @@
     // Exceptions
     "comma-dangle": ["error", "always-multiline"],
     "no-script-url": 0,
+    "import/extensions": 0, // we wouldn't be able to import jQuery without this line
     // Temporary
     "import/no-amd": 0,
     "react/no-multi-comp": 0,
@@ -40,16 +41,6 @@
     "jsx-a11y/alt-text": 0,
     "func-names": 0,
     "object-shorthand": 0,
-    "no-bitwise": 0,
-    "arrow-body-style": 0,
-    "prefer-template": 0,
-    "default-case": 0,
-    "array-callback-return": 0,
-    "consistent-return": 0,
-    "import/extensions": 0,
-    "import/no-extraneous-dependencies": 0,
-    "camelcase": 0,
-    "eqeqeq": 0,
     "space-unary-ops": 0,
     "space-infix-ops": 0,
     "no-irregular-whitespace": 0

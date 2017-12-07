@@ -35,7 +35,7 @@ define([
         (this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
       ) {
-        jQuery('#' + this.refs.select.id)
+        jQuery(`#${this.refs.select.id}`)
           .val(this.getSelectedValues())
           .trigger('change');
       }
@@ -47,7 +47,7 @@ define([
     },
     destroySelect2: function () {
       if (this.isSelect2Initialized()) {
-        jQuery('#' + this.refs.select.id).select2('destroy');
+        jQuery(`#${this.refs.select.id}`).select2('destroy');
       }
     },
     setupSelect2: function () {
@@ -55,7 +55,7 @@ define([
         return;
       }
 
-      const select2 = jQuery('#' + this.refs.select.id).select2({
+      const select2 = jQuery(`#${this.refs.select.id}`).select2({
         width: (this.props.width || ''),
         templateResult: function (item) {
           if (item.element && item.element.selected) {
@@ -88,9 +88,7 @@ define([
       } else if (this.props.item !== undefined && this.props.field.name !== undefined) {
         if (this.allowMultipleValues()) {
           if (Array.isArray(this.props.item[this.props.field.name])) {
-            return this.props.item[this.props.field.name].map((item) => {
-              return item.id;
-            });
+            return this.props.item[this.props.field.name].map(item => item.id);
           }
         } else {
           return this.props.item[this.props.field.name];
@@ -99,8 +97,8 @@ define([
       return null;
     },
     loadCachedItems: function () {
-      if (typeof (window['mailpoet_' + this.props.field.endpoint]) !== 'undefined') {
-        let items = window['mailpoet_' + this.props.field.endpoint];
+      if (typeof (window[`mailpoet_${this.props.field.endpoint}`]) !== 'undefined') {
+        let items = window[`mailpoet_${this.props.field.endpoint}`];
 
 
         if (this.props.field.filter !== undefined) {
@@ -116,7 +114,7 @@ define([
       let value;
       if (this.props.onValueChange !== undefined) {
         if (this.props.field.multiple) {
-          value = jQuery('#' + this.refs.select.id).val();
+          value = jQuery(`#${this.refs.select.id}`).val();
         } else {
           value = e.target.value;
         }
@@ -164,7 +162,7 @@ define([
 
         return (
           <option
-            key={'option-' + index}
+            key={`option-${index}`}
             value={value}
             title={searchLabel}
           >

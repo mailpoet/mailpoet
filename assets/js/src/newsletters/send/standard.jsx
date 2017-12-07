@@ -16,7 +16,7 @@ define(
     const jQuery = jq;
 
     const currentTime = window.mailpoet_current_time || '00:00';
-    const defaultDateTime = window.mailpoet_current_date + ' 00:00:00';
+    const defaultDateTime = `${window.mailpoet_current_date} 00:00:00`;
     const timeOfDayItems = window.mailpoet_schedule_time_of_day;
     const dateDisplayFormat = window.mailpoet_date_display_format;
     const dateStorageFormat = window.mailpoet_date_storage_format;
@@ -168,15 +168,13 @@ define(
     const TimeSelect = React.createClass({
       render: function () {
         const options = Object.keys(timeOfDayItems).map(
-          (value, index) => {
-            return (
-              <option
-                key={'option-' + index}
-                value={value}>
-                { timeOfDayItems[value] }
-              </option>
-            );
-          }
+          (value, index) => (
+            <option
+              key={`option-${index}`}
+              value={value}>
+              { timeOfDayItems[value] }
+            </option>
+            )
         );
 
         return (
@@ -219,7 +217,7 @@ define(
       },
       propagateChange: function () {
         if (this.props.onChange) {
-          return this.props.onChange({
+          this.props.onChange({
             target: {
               name: this.props.name || '',
               value: this.getDateTime(),
@@ -350,15 +348,11 @@ define(
           return !segment.deleted_at;
         },
         getLabel: function (segment) {
-          return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
+          return `${segment.name} (${parseInt(segment.subscribers, 10).toLocaleString()})`;
         },
-        transformChangedValue: function (segment_ids) {
-          const all_segments = this.state.items;
-          return _.map(segment_ids, (id) => {
-            return _.find(all_segments, (segment) => {
-              return segment.id === id;
-            });
-          });
+        transformChangedValue: function (segmentIds) {
+          const allSegments = this.state.items;
+          return _.map(segmentIds, id => _.find(allSegments, segment => segment.id === id));
         },
         validation: {
           'data-parsley-required': true,

@@ -9,9 +9,7 @@ function handleFocus(event) {
 
 function printData(data) {
   if (_.isObject(data)) {
-    const printableData = Object.keys(data).map((key) => {
-      return `${key}: ${data[key]}`;
-    });
+    const printableData = Object.keys(data).map(key => `${key}: ${data[key]}`);
 
     return (<textarea
       readOnly={true}
