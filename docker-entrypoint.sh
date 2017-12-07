@@ -30,6 +30,9 @@ if ! $(wp-su core is-installed); then
     wp-su core config --dbhost=mysql --dbname=wordpress --dbuser=wordpress --dbpass=wordpress --extra-php="define( 'SCRIPT_DEBUG', true );" --force
 fi
 
+# Change default table prefix
+sed -i "s/\$table_prefix = 'wp_';/\$table_prefix = 'mp_';/" ./wp-config.php
+
 # Load Composer dependencies
 # Set KEEP_DEPS environment flag to not redownload them on each run, only for the 1st time, useful for development.
 # Example: docker-compose run -e KEEP_DEPS=1 codeception ...
