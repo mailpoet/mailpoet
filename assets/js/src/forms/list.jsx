@@ -146,7 +146,10 @@ const FormList = React.createClass({
       'has-row-actions'
     );
 
-    let segments = window.mailpoet_segments.filter(segment => (jQuery.inArray(segment.id, form.segments) !== -1)).map(segment => segment.name).join(', ');
+    let segments = window.mailpoet_segments
+      .filter(segment => (jQuery.inArray(segment.id, form.segments) !== -1))
+      .map(segment => segment.name)
+      .join(', ');
 
     if (form.settings.segments_selected_by === 'user') {
       segments = `${MailPoet.I18n.t('userChoice')} ${segments}`;
