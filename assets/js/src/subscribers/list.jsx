@@ -100,7 +100,7 @@ const messages = {
   },
 };
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'moveToList',
     label: MailPoet.I18n.t('moveToList'),
@@ -224,7 +224,7 @@ const bulk_actions = [
   },
 ];
 
-const item_actions = [
+const itemActions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
@@ -243,17 +243,17 @@ const item_actions = [
 ];
 
 const SubscriberList = React.createClass({
-  getSegmentFromId: function (segment_id) {
+  getSegmentFromId: function (segmentId) {
     let result = false;
     window.mailpoet_segments.forEach((segment) => {
-      if (segment.id === segment_id) {
+      if (segment.id === segmentId) {
         result = segment;
       }
     });
     return result;
   },
   renderItem: function (subscriber, actions) {
-    const row_classes = classNames(
+    const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -288,26 +288,26 @@ const SubscriberList = React.createClass({
 
     // Subscriptions
     if (subscriber.subscriptions.length > 0) {
-      const subscribed_segments = [];
+      const subscribedSegments = [];
 
       subscriber.subscriptions.forEach((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
         if (segment === false) return;
         if (subscription.status === 'subscribed') {
-          subscribed_segments.push(segment.name);
+          subscribedSegments.push(segment.name);
         }
       });
 
       segments = (
         <span>
-          { subscribed_segments.join(', ') }
+          { subscribedSegments.join(', ') }
         </span>
       );
     }
 
     return (
       <div>
-        <td className={row_classes}>
+        <td className={rowClasses}>
           <strong>
             <Link
               className="row-title"
@@ -360,8 +360,8 @@ const SubscriberList = React.createClass({
           endpoint="subscribers"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={item_actions}
+          bulk_actions={bulkActions}
+          item_actions={itemActions}
           messages={messages}
           sort_by={'created_at'}
           sort_order={'desc'}

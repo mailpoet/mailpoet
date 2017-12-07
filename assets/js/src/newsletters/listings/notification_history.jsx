@@ -13,7 +13,7 @@ import {
   MailerMixin,
 } from 'newsletters/listings/mixins.jsx';
 
-const mailpoet_tracking_enabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetTrackingEnabled = (!!(window.mailpoetTrackingEnabled));
 
 const columns = [
   {
@@ -31,7 +31,7 @@ const columns = [
   {
     name: 'statistics',
     label: MailPoet.I18n.t('statistics'),
-    display: mailpoet_tracking_enabled,
+    display: mailpoetTrackingEnabled,
   },
   {
     name: 'sent_at',
@@ -39,7 +39,7 @@ const columns = [
   },
 ];
 
-let newsletter_actions = [
+let newsletterActions = [
   {
     name: 'view',
     link: function (newsletter) {
@@ -53,7 +53,7 @@ let newsletter_actions = [
 ];
 
 Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', StatisticsMixin.addStatsCTAAction);
-newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletter_actions);
+newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletterActions);
 
 const NewsletterListNotificationHistory = React.createClass({
   mixins: [QueueMixin, StatisticsMixin, MailerMixin],
@@ -83,7 +83,7 @@ const NewsletterListNotificationHistory = React.createClass({
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           { segments }
         </td>
-        { (mailpoet_tracking_enabled === true) ? (
+        { (mailpoetTrackingEnabled === true) ? (
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
             { this.renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
@@ -117,7 +117,7 @@ const NewsletterListNotificationHistory = React.createClass({
           base_url="notification/history/:parent_id"
           onRenderItem={this.renderItem}
           columns={columns}
-          item_actions={newsletter_actions}
+          item_actions={newsletterActions}
           auto_refresh={true}
           sort_by="sent_at"
           sort_order="desc"

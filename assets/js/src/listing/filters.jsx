@@ -33,12 +33,12 @@ define([
         ));
     },
     componentDidUpdate: function () {
-      const selected_filters = this.props.filter;
+      const selectedFilters = this.props.filter;
       this.getAvailableFilters().forEach(
         (filter, i) => {
-          if (selected_filters[filter] !== undefined && selected_filters[filter]) {
+          if (selectedFilters[filter] !== undefined && selectedFilters[filter]) {
             jQuery(this.refs[`filter-${i}`])
-              .val(selected_filters[filter])
+              .val(selectedFilters[filter])
               .trigger('change');
           }
         }
@@ -46,7 +46,7 @@ define([
     },
     render: function () {
       const filters = this.props.filters;
-      const available_filters = this.getAvailableFilters()
+      const availableFilters = this.getAvailableFilters()
         .map((filter, i) => (
           <select
             ref={`filter-${i}`}
@@ -64,7 +64,7 @@ define([
 
       let button;
 
-      if (available_filters.length > 0) {
+      if (availableFilters.length > 0) {
         button = (
           <input
             id="post-query-submit"
@@ -75,9 +75,9 @@ define([
         );
       }
 
-      let empty_trash;
+      let emptyTrash;
       if (this.props.group === 'trash') {
-        empty_trash = (
+        emptyTrash = (
           <input
             onClick={this.handleEmptyTrash}
             type="submit"
@@ -89,9 +89,9 @@ define([
 
       return (
         <div className="alignleft actions actions">
-          { available_filters }
+          { availableFilters }
           { button }
-          { empty_trash }
+          { emptyTrash }
         </div>
       );
     },

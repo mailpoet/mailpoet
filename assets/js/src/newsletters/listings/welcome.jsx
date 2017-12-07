@@ -11,9 +11,9 @@ import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 
-const mailpoet_roles = window.mailpoet_roles || {};
-const mailpoet_segments = window.mailpoet_segments || {};
-const mailpoet_tracking_enabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetRoles = window.mailpoetRoles || {};
+const mailpoetSegments = window.mailpoetSegments || {};
+const mailpoetTrackingEnabled = (!!(window.mailpoetTrackingEnabled));
 
 const messages = {
   onTrash: (response) => {
@@ -81,7 +81,7 @@ const columns = [
   {
     name: 'statistics',
     label: MailPoet.I18n.t('statistics'),
-    display: mailpoet_tracking_enabled,
+    display: mailpoetTrackingEnabled,
   },
   {
     name: 'updated_at',
@@ -90,7 +90,7 @@ const columns = [
   },
 ];
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -98,7 +98,7 @@ const bulk_actions = [
   },
 ];
 
-let newsletter_actions = [
+let newsletterActions = [
   {
     name: 'view',
     link: function (newsletter) {
@@ -125,7 +125,7 @@ let newsletter_actions = [
 ];
 
 Hooks.addFilter('mailpoet_newsletters_listings_welcome_notification_actions', StatisticsMixin.addStatsCTAAction);
-newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletter_actions);
+newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletterActions);
 
 const NewsletterListWelcome = React.createClass({
   mixins: [StatisticsMixin, MailerMixin],
@@ -156,7 +156,7 @@ const NewsletterListWelcome = React.createClass({
     });
   },
   renderStatus: function (newsletter) {
-    const total_sent = (
+    const totalSent = (
       MailPoet.I18n.t('sentToXSubscribers')
       .replace('%$1d', newsletter.total_sent.toLocaleString())
     );
@@ -173,7 +173,7 @@ const NewsletterListWelcome = React.createClass({
             <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
           </select>
         </p>
-        <p>{ total_sent }</p>
+        <p>{ totalSent }</p>
       </div>
     );
   },
@@ -190,7 +190,7 @@ const NewsletterListWelcome = React.createClass({
           sendingEvent = MailPoet.I18n.t('welcomeEventWPUserAnyRole');
         } else {
           sendingEvent = MailPoet.I18n.t('welcomeEventWPUserWithRole').replace(
-            '%$1s', mailpoet_roles[newsletter.options.role]
+            '%$1s', mailpoetRoles[newsletter.options.role]
           );
         }
         break;
@@ -198,7 +198,7 @@ const NewsletterListWelcome = React.createClass({
       default:
         // get segment
         segment = _.find(
-          mailpoet_segments,
+          mailpoetSegments,
           seg => (Number(seg.id) === Number(newsletter.options.segment))
         );
 
@@ -278,7 +278,7 @@ const NewsletterListWelcome = React.createClass({
         <td className="column" data-colname={MailPoet.I18n.t('settings')}>
           { this.renderSettings(newsletter) }
         </td>
-        { (mailpoet_tracking_enabled === true) ? (
+        { (mailpoetTrackingEnabled === true) ? (
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
             { this.renderStatistics(
               newsletter,
@@ -310,8 +310,8 @@ const NewsletterListWelcome = React.createClass({
           base_url="welcome"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={newsletter_actions}
+          bulk_actions={bulkActions}
+          item_actions={newsletterActions}
           messages={messages}
           auto_refresh={true}
           sort_by="updated_at"

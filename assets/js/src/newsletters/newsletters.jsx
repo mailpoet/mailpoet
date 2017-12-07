@@ -27,10 +27,10 @@ const App = React.createClass({
 const container = document.getElementById('newsletters_container');
 
 if (container) {
-  let extra_routes = [];
-  extra_routes = Hooks.applyFilters('mailpoet_newsletters_before_router', extra_routes);
+  let extraRoutes = [];
+  extraRoutes = Hooks.applyFilters('mailpoet_newsletters_before_router', extraRoutes);
 
-  const mailpoet_listing = ReactDOM.render((
+  const mailpoetListing = ReactDOM.render((
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRedirect to="standard" />
@@ -50,10 +50,10 @@ if (container) {
         {/* Sending options */}
         <Route path="send/:id" component={NewsletterSend} />
         {/* Extra routes */}
-        { extra_routes.map(rt => <Route key={rt.path} path={rt.path} component={rt.component} />) }
+        { extraRoutes.map(rt => <Route key={rt.path} path={rt.path} component={rt.component} />) }
       </Route>
     </Router>
   ), container);
 
-  window.mailpoet_listing = mailpoet_listing;
+  window.mailpoet_listing = mailpoetListing;
 }

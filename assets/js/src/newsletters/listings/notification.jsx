@@ -91,7 +91,7 @@ const columns = [
   },
 ];
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -99,7 +99,7 @@ const bulk_actions = [
   },
 ];
 
-const newsletter_actions = [
+const newsletterActions = [
   {
     name: 'view',
     link: function (newsletter) {
@@ -325,8 +325,8 @@ const NewsletterListNotification = React.createClass({
           base_url="notification"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={newsletter_actions}
+          bulk_actions={bulkActions}
+          item_actions={newsletterActions}
           messages={messages}
           auto_refresh={true}
           sort_by="updated_at"

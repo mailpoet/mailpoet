@@ -86,7 +86,7 @@ const messages = {
   },
 };
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -94,7 +94,7 @@ const bulk_actions = [
   },
 ];
 
-const item_actions = [
+const itemActions = [
   {
     name: 'edit',
     link: function (item) {
@@ -203,15 +203,15 @@ const SegmentList = React.createClass({
     const unsubscribed = Number(segment.subscribers_count.unsubscribed || 0);
     const bounced = Number(segment.subscribers_count.bounced || 0);
 
-    let segment_name;
+    let segmentName;
 
     if (segment.type === 'wp_users') {
       // the WP users segment is not editable so just display its name
-      segment_name = (
+      segmentName = (
         <span className="row-title">{ segment.name }</span>
       );
     } else {
-      segment_name = (
+      segmentName = (
         <Link
           className="row-title"
           to={`/edit/${segment.id}`}
@@ -223,7 +223,7 @@ const SegmentList = React.createClass({
       <div>
         <td className={rowClasses}>
           <strong>
-            { segment_name }
+            { segmentName }
           </strong>
           { actions }
         </td>
@@ -264,8 +264,8 @@ const SegmentList = React.createClass({
           endpoint="segments"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={item_actions}
+          bulk_actions={bulkActions}
+          item_actions={itemActions}
           sort_by="name"
           sort_order="asc"
         />

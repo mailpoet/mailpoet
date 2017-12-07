@@ -73,7 +73,7 @@ const messages = {
   },
 };
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -81,7 +81,7 @@ const bulk_actions = [
   },
 ];
 
-const item_actions = [
+const itemActions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
@@ -140,7 +140,7 @@ const FormList = React.createClass({
     });
   },
   renderItem(form, actions) {
-    const row_classes = classNames(
+    const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
@@ -154,7 +154,7 @@ const FormList = React.createClass({
 
     return (
       <div>
-        <td className={row_classes}>
+        <td className={rowClasses}>
           <strong>
             <a
               className="row-title"
@@ -195,8 +195,8 @@ const FormList = React.createClass({
           endpoint="forms"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={item_actions}
+          bulk_actions={bulkActions}
+          item_actions={itemActions}
         />
       </div>
     );

@@ -14,7 +14,7 @@ import {
   MailerMixin,
 } from 'newsletters/listings/mixins.jsx';
 
-const mailpoet_tracking_enabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetTrackingEnabled = (!!(window.mailpoetTrackingEnabled));
 
 const messages = {
   onTrash: (response) => {
@@ -81,7 +81,7 @@ const columns = [
   {
     name: 'statistics',
     label: MailPoet.I18n.t('statistics'),
-    display: mailpoet_tracking_enabled,
+    display: mailpoetTrackingEnabled,
   },
   {
     name: 'sent_at',
@@ -90,7 +90,7 @@ const columns = [
   },
 ];
 
-const bulk_actions = [
+const bulkActions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
@@ -119,7 +119,7 @@ const confirmEdit = (newsletter) => {
   }
 };
 
-let newsletter_actions = [
+let newsletterActions = [
   {
     name: 'view',
     link: function (newsletter) {
@@ -169,7 +169,7 @@ let newsletter_actions = [
 ];
 
 Hooks.addFilter('mailpoet_newsletters_listings_standard_actions', StatisticsMixin.addStatsCTAAction);
-newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletter_actions);
+newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletterActions);
 
 const NewsletterListStandard = React.createClass({
   mixins: [QueueMixin, StatisticsMixin, MailerMixin],
@@ -200,7 +200,7 @@ const NewsletterListStandard = React.createClass({
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           { segments }
         </td>
-        { (mailpoet_tracking_enabled === true) ? (
+        { (mailpoetTrackingEnabled === true) ? (
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
             { this.renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
@@ -237,8 +237,8 @@ const NewsletterListStandard = React.createClass({
           base_url="standard"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={bulk_actions}
-          item_actions={newsletter_actions}
+          bulk_actions={bulkActions}
+          item_actions={newsletterActions}
           messages={messages}
           auto_refresh={true}
           sort_by="sent_at"

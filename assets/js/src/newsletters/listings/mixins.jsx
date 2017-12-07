@@ -50,12 +50,12 @@ const QueueMixin = {
       }
     });
   },
-  renderQueueStatus: function (newsletter, mailer_log) {
+  renderQueueStatus: function (newsletter, mailerLog) {
     if (!newsletter.queue) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
-    } else if (mailer_log.status === 'paused' && newsletter.queue.status !== 'completed') {
+    } else if (mailerLog.status === 'paused' && newsletter.queue.status !== 'completed') {
       return (
         <span>{MailPoet.I18n.t('paused')}</span>
       );
@@ -114,12 +114,12 @@ const QueueMixin = {
         );
     }
 
-    let progress_bar_width = 0;
+    let progressBarWidth = 0;
 
     if (isNaN(percentage)) {
       percentage = MailPoet.I18n.t('noSubscribers');
     } else {
-      progress_bar_width = percentage;
+      progressBarWidth = percentage;
       percentage += '%';
     }
 
@@ -128,7 +128,7 @@ const QueueMixin = {
         <div className={progressClasses}>
           <span
             className="mailpoet_progress_bar"
-            style={{ width: `${progress_bar_width}%` }}
+            style={{ width: `${progressBarWidth}%` }}
               ></span>
           <span className="mailpoet_progress_label">
             { percentage }
@@ -150,8 +150,8 @@ const trackStatsCTAClicked = function () {
 };
 
 const StatisticsMixin = {
-  renderStatistics: function (newsletter, is_sent, current_time) {
-    let sent = is_sent;
+  renderStatistics: function (newsletter, isSent, currentTime) {
+    let sent = isSent;
     if (sent === undefined) {
       // condition for standard and post notification listings
       sent = newsletter.statistics
@@ -169,74 +169,74 @@ const StatisticsMixin = {
     params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
 
     // welcome emails provide explicit total_sent value
-    const total_sent = Number((newsletter.total_sent || newsletter.queue.count_processed));
+    const totalSent = Number((newsletter.total_sent || newsletter.queue.count_processed));
 
-    let percentage_clicked = 0;
-    let percentage_opened = 0;
-    let percentage_unsubscribed = 0;
+    let percentageClicked = 0;
+    let percentageOpened = 0;
+    let percentageUnsubscribed = 0;
 
-    if (total_sent > 0) {
-      percentage_clicked = (newsletter.statistics.clicked * 100) / total_sent;
-      percentage_opened = (newsletter.statistics.opened * 100) / total_sent;
-      percentage_unsubscribed = (newsletter.statistics.unsubscribed * 100) / total_sent;
+    if (totalSent > 0) {
+      percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
+      percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
+      percentageUnsubscribed = (newsletter.statistics.unsubscribed * 100) / totalSent;
     }
 
     // format to 1 decimal place
-    const percentage_clicked_display = MailPoet.Num.toLocaleFixed(percentage_clicked, 1);
-    const percentage_opened_display = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
-    const percentage_unsubscribed_display = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
+    const percentageClickedDisplay = MailPoet.Num.toLocaleFixed(percentageClicked, 1);
+    const percentageOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageOpened, 1);
+    const percentageUnsubscribedDisplay = MailPoet.Num.toLocaleFixed(percentageUnsubscribed, 1);
 
-    let show_stats_timeout;
-    let newsletter_date;
-    let sent_hours_ago;
-    let too_early_for_stats;
-    let show_kb_link;
-    if (current_time !== undefined) {
+    let showStatsTimeout;
+    let newsletterDate;
+    let sentHoursAgo;
+    let tooEarlyForStats;
+    let showKbLink;
+    if (currentTime !== undefined) {
       // standard emails and post notifications:
       // display green box for newsletters that were just sent
-      show_stats_timeout = 6; // in hours
-      newsletter_date = newsletter.queue.scheduled_at || newsletter.queue.created_at;
-      sent_hours_ago = moment(current_time).diff(moment(newsletter_date), 'hours');
-      too_early_for_stats = sent_hours_ago < show_stats_timeout;
-      show_kb_link = true;
+      showStatsTimeout = 6; // in hours
+      newsletterDate = newsletter.queue.scheduled_at || newsletter.queue.created_at;
+      sentHoursAgo = moment(currentTime).diff(moment(newsletterDate), 'hours');
+      tooEarlyForStats = sentHoursAgo < showStatsTimeout;
+      showKbLink = true;
     } else {
       // welcome emails: no green box and KB link
-      too_early_for_stats = false;
-      show_kb_link = false;
+      tooEarlyForStats = false;
+      showKbLink = false;
     }
 
     const improveStatsKBLink = 'http://beta.docs.mailpoet.com/article/191-how-to-improve-my-open-and-click-rates';
 
     // thresholds to display badges
-    const min_newsletters_sent = 20;
-    const min_newsletter_opens = 5;
+    const minNewslettersSent = 20;
+    const minNewsletterOpens = 5;
 
     let content;
-    if (total_sent >= min_newsletters_sent
-      && newsletter.statistics.opened >= min_newsletter_opens
-      && !too_early_for_stats
+    if (totalSent >= minNewslettersSent
+      && newsletter.statistics.opened >= minNewsletterOpens
+      && !tooEarlyForStats
     ) {
       // display stats with badges
       content = (
         <div className="mailpoet_stats_text">
           <div>
-            <span>{ percentage_opened_display }% </span>
+            <span>{ percentageOpenedDisplay }% </span>
             <StatsBadge
               stat="opened"
-              rate={percentage_opened}
+              rate={percentageOpened}
               tooltipId={`opened-${newsletter.id}`}
             />
           </div>
           <div>
-            <span>{ percentage_clicked_display }% </span>
+            <span>{ percentageClickedDisplay }% </span>
             <StatsBadge
               stat="clicked"
-              rate={percentage_clicked}
+              rate={percentageClicked}
               tooltipId={`clicked-${newsletter.id}`}
             />
           </div>
           <div>
-            <span className="mailpoet_stat_hidden">{ percentage_unsubscribed_display }%</span>
+            <span className="mailpoet_stat_hidden">{ percentageUnsubscribedDisplay }%</span>
           </div>
         </div>
       );
@@ -245,17 +245,17 @@ const StatisticsMixin = {
       content = (
         <div>
           <span className="mailpoet_stats_text">
-            { percentage_opened_display }%,
+            { percentageOpenedDisplay }%,
             { ' ' }
-            { percentage_clicked_display }%
+            { percentageClickedDisplay }%
             <span className="mailpoet_stat_hidden">
-              , { percentage_unsubscribed_display }%
+              , { percentageUnsubscribedDisplay }%
             </span>
           </span>
-          { too_early_for_stats && (
+          { tooEarlyForStats && (
             <div className="mailpoet_badge mailpoet_badge_green">
               {MailPoet.I18n.t('checkBackInHours')
-                  .replace('%$1d', show_stats_timeout - sent_hours_ago)}
+                  .replace('%$1d', showStatsTimeout - sentHoursAgo)}
             </div>
           ) }
         </div>
@@ -263,18 +263,18 @@ const StatisticsMixin = {
     }
 
     // thresholds to display bad open rate help
-    const max_percentage_opened = 5;
-    const min_sent_hours_ago = 24;
-    const min_total_sent = 10;
+    const maxPercentageOpened = 5;
+    const minSentHoursAgo = 24;
+    const minTotalSent = 10;
 
-    let after_content;
-    if (show_kb_link
-      && percentage_opened < max_percentage_opened
-      && sent_hours_ago >= min_sent_hours_ago
-      && total_sent >= min_total_sent
+    let afterContent;
+    if (showKbLink
+      && percentageOpened < maxPercentageOpened
+      && sentHoursAgo >= minSentHoursAgo
+      && totalSent >= minTotalSent
     ) {
       // help link for bad open rate
-      after_content = (
+      afterContent = (
         <div>
           <a
             href={improveStatsKBLink}
@@ -287,7 +287,7 @@ const StatisticsMixin = {
       );
     }
 
-    if (total_sent > 0 && params.link) {
+    if (totalSent > 0 && params.link) {
       // wrap content in a link
       if (params.externalLink) {
         return (
@@ -299,7 +299,7 @@ const StatisticsMixin = {
             >
               {content}
             </a>
-            {after_content}
+            {afterContent}
           </div>
         );
       }
@@ -312,7 +312,7 @@ const StatisticsMixin = {
             >
             {content}
           </Link>
-          {after_content}
+          {afterContent}
         </div>
       );
     }
@@ -320,7 +320,7 @@ const StatisticsMixin = {
     return (
       <div>
         {content}
-        {after_content}
+        {afterContent}
       </div>
     );
   },
@@ -339,8 +339,8 @@ const StatisticsMixin = {
       },
       display: function (newsletter) {
         // welcome emails provide explicit total_sent value
-        const count_processed = newsletter.queue && newsletter.queue.count_processed;
-        return Number(newsletter.total_sent || count_processed) > 0;
+        const countProcessed = newsletter.queue && newsletter.queue.count_processed;
+        return Number(newsletter.total_sent || countProcessed) > 0;
       },
     });
     return actions;
@@ -374,8 +374,8 @@ const MailerMixin = {
     }
   },
   getMailerError(state) {
-    let mailer_error_notice;
-    const mailer_check_settings_notice = ReactStringReplace(
+    let mailerErrorNotice;
+    const mailerCheckSettingsNotice = ReactStringReplace(
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
       match => (
@@ -383,23 +383,23 @@ const MailerMixin = {
       )
     );
     if (state.meta.mta_log.error.operation === 'send') {
-      mailer_error_notice =
+      mailerErrorNotice =
         MailPoet.I18n.t('mailerSendErrorNotice')
           .replace('%$1s', state.meta.mta_method)
           .replace('%$2s', state.meta.mta_log.error.error_message);
     } else {
-      mailer_error_notice =
+      mailerErrorNotice =
         MailPoet.I18n.t('mailerConnectionErrorNotice')
           .replace('%$1s', state.meta.mta_log.error.error_message);
     }
     if (state.meta.mta_log.error.error_code) {
-      mailer_error_notice += ` ${MailPoet.I18n.t('mailerErrorCode')
+      mailerErrorNotice += ` ${MailPoet.I18n.t('mailerErrorCode')
           .replace('%$1s', state.meta.mta_log.error.error_code)}`;
     }
     return (
       <div>
-        <p>{ mailer_error_notice }</p>
-        <p>{ mailer_check_settings_notice }</p>
+        <p>{ mailerErrorNotice }</p>
+        <p>{ mailerCheckSettingsNotice }</p>
         <p>
           <a href="javascript:;"
             className="button"
