@@ -150,32 +150,4 @@ EOL;
       true
     );
   }
-
-  // TODO: extract this method into an Initializer
-  // - the "ajax" part might probably be useless
-  // - the "post" (non-ajax) part needs to be redone properly
-  function setupActions() {
-    // ajax requests
-    add_action(
-      'wp_ajax_mailpoet_form_subscribe',
-      'mailpoet_form_subscribe'
-    );
-    add_action(
-      'wp_ajax_nopriv_mailpoet_form_subscribe',
-      'mailpoet_form_subscribe'
-    );
-    // post request
-    add_action(
-      'admin_post_nopriv_mailpoet_form_subscribe',
-      'mailpoet_form_subscribe'
-    );
-    add_action(
-      'admin_post_mailpoet_form_subscribe',
-      'mailpoet_form_subscribe'
-    );
-    add_action(
-      'init',
-      'mailpoet_form_subscribe'
-    );
-  }
 }
