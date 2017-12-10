@@ -89,6 +89,8 @@ class Widget extends \WP_Widget {
   }
 
   function setupDependencies() {
+    if(!is_active_widget(false, false, $this->id_base, true)) return;
+
     wp_enqueue_style(
       'mailpoet_public',
       Env::$assets_url . '/css/' . $this->renderer->getCssAsset('public.css')
