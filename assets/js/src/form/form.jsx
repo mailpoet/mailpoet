@@ -57,8 +57,6 @@ define(
           if (props.item === undefined) {
             this.refs.form.reset();
           }
-        } else {
-          this.loadItem(props.params.id);
         }
       },
       loadItem: function (id) {
@@ -76,6 +74,9 @@ define(
             loading: false,
             item: response.data,
           });
+          if (typeof this.props.onItemLoad === 'function') {
+            this.props.onItemLoad(response.data);
+          }
         }).fail(() => {
           this.setState({
             loading: false,
