@@ -13,7 +13,7 @@ import {
   MailerMixin,
 } from 'newsletters/listings/mixins.jsx';
 
-const mailpoetTrackingEnabled = (!!(window.mailpoetTrackingEnabled));
+const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
 const columns = [
   {
