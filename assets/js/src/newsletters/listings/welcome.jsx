@@ -11,9 +11,9 @@ import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 
-const mailpoetRoles = window.mailpoetRoles || {};
-const mailpoetSegments = window.mailpoetSegments || {};
-const mailpoetTrackingEnabled = (!!(window.mailpoetTrackingEnabled));
+const mailpoetRoles = window.mailpoet_roles || {};
+const mailpoetSegments = window.mailpoet_segments || {};
+const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
 const messages = {
   onTrash: (response) => {
