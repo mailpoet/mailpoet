@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  qa_js_php5:
+  qa_js_security_php5:
     working_directory: /home/circleci/mailpoet
     docker:
       - image: circleci/php:5.6.30-apache-browsers
@@ -38,6 +38,10 @@ jobs:
           command: |
             mkdir test-results/mocha
             ./do t:j test-results/mocha/junit.xml
+      - run:
+          name: "Composer security check"
+          command: |
+            ./do s:composer
       - run:
           name: "PHP Unit tests"
           command: |
@@ -164,7 +168,7 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - qa_js_php5
+      - qa_js_security_php5
       - php7
-      - php7_multisite      
+      - php7_multisite
       - acceptance_tests
