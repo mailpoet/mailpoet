@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.3.1 - 2017-12-14 =
+* Fixed: newsletter open/click rates are properly displayed in listings. Thanks to all who have reported the issue!
 
 = 3.3.0 - 2017-12-12 =
 * Premium: you can now segment your subscribers by email opens or clicks;
