@@ -375,7 +375,8 @@ class Menu {
       'settings' => Setting::getAll(),
       'current_user' => wp_get_current_user(),
       'redirect_url' => $redirect_url,
-      'sub_menu' => self::MAIN_PAGE_SLUG
+      'sub_menu' => self::MAIN_PAGE_SLUG,
+      'is_woocommerce_available' => is_plugin_active('woocommerce/woocommerce.php'),
     );
 
     $readme_file = Env::$path . '/readme.txt';
