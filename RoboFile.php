@@ -211,6 +211,10 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
+  function securityComposer() {
+    return $this->_exec('vendor/bin/security-checker security:check --format=simple');
+  }
+
   function testDebug($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build -c codeception.unit.yml');
