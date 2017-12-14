@@ -18,7 +18,8 @@
     "sabberworm/php-css-parser": "^8.1",
     "symfony/polyfill-xml": "^1.3",
     "symfony/polyfill-mbstring": "1.6.0",
-    "sensiolabs/security-checker": "^4.1"
+    "sensiolabs/security-checker": "^4.1",
+    "amphp/artax": "2.0.5"
   },
   "require-dev": {
     "codeception/aspect-mock": "2.0.1",
