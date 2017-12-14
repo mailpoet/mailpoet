@@ -168,8 +168,9 @@ define([
         numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsSingular');
       } else {
         numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsMultiple')
-            .replace('%$1d', this.props.count.toLocaleString());
+          .replace('%$1d', parseInt(this.props.count, 10).toLocaleString());
       }
+
       return (
         <div className={classes}>
           <span className="displaying-num">{ numberOfItemsLabel }</span>
