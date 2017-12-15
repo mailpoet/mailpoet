@@ -115,8 +115,7 @@ class Initializer {
   }
 
   function setupWidget() {
-    $widget = new Widget($this->renderer);
-    $widget->init();
+    register_widget('\MailPoet\Form\Widget');
   }
 
   function initialize() {

@@ -51,10 +51,11 @@ class SubscriptionFormCest {
     $I->amOnUrl('http://wordpress');
     $I->loginAsAdmin();
     $I->amOnMailpoetPage('Subscribers');
+    $I->waitForText($this->subscriber_email);
     $I->see('Subscribed', Locator::contains('tr', $this->subscriber_email));
   }
 
   function _after(\AcceptanceTester $I) {
-    $I->cli('db query "TRUNCATE TABLE wp_mailpoet_subscriber_ips" --allow-root');
+    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_subscriber_ips" --allow-root');
   }
 }

@@ -40,10 +40,9 @@ class ConflictResolverTest extends \MailPoetTest {
     do_action('admin_print_footer_scripts');
     do_action('admin_footer');
     global $wp_styles;
-    $queued_styles = array_flip($wp_styles->queue);
     // it should dequeue all styles except those found on the list of permitted locations
-    expect(empty($queued_styles['select2']))->true();
-    expect(empty($queued_styles['permitted_style']))->false();
+    expect(in_array('select2', $wp_styles->queue))->false();
+    expect(in_array('permitted_style', $wp_styles->queue))->true();
   }
 
   function testItWhitelistsStyles() {
@@ -61,9 +60,8 @@ class ConflictResolverTest extends \MailPoetTest {
     do_action('admin_print_footer_scripts');
     do_action('admin_footer');
     global $wp_styles;
-    $queued_styles = array_flip($wp_styles->queue);
     // it should not dequeue select2 style
-    expect(empty($queued_styles['select2']))->false();
+    expect(in_array('select2', $wp_styles->queue))->true();
   }
 
   function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
@@ -78,11 +76,10 @@ class ConflictResolverTest extends \MailPoetTest {
     do_action('wp_print_scripts');
     do_action('admin_print_footer_scripts');
     global $wp_scripts;
-    $queued_scripts = array_flip($wp_scripts->queue);
     // it should dequeue all scripts except those found on the list of permitted locations
-    expect(empty($queued_scripts['select2']))->true();
-    expect(empty($queued_scripts['some_random_script']))->true();
-    expect(empty($queued_scripts['permitted_script']))->false();
+    expect(in_array('select2', $wp_scripts->queue))->false();
+    expect(in_array('some_random_script', $wp_scripts->queue))->false();
+    expect(in_array('permitted_script', $wp_scripts->queue))->true();
   }
 
   function testItWhitelistsScripts() {
@@ -98,9 +95,8 @@ class ConflictResolverTest extends \MailPoetTest {
     do_action('wp_print_scripts');
     do_action('admin_print_footer_scripts');
     global $wp_scripts;
-    $queued_scripts = array_flip($wp_scripts->queue);
     // it should not dequeue select2 script
-    expect(empty($queued_scripts['select2']))->false();
+    expect(in_array('select2', $wp_scripts->queue))->true();
   }
 
   function _after() {
