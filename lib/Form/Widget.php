@@ -7,6 +7,7 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
+use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
 use MailPoet\WP\Hooks;
 
@@ -48,6 +49,9 @@ class Widget extends \WP_Widget {
     wp_print_scripts('jquery');
     wp_print_scripts('mailpoet_vendor');
     wp_print_scripts('mailpoet_public');
+    if(Setting::getValue('re_captcha.enabled')) {
+      echo '<script src="https://www.google.com/recaptcha/api.js"></script>';
+    }
     $scripts = ob_get_contents();
     ob_end_clean();
 

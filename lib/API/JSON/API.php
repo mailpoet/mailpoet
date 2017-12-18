@@ -2,6 +2,7 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
+use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Hooks;
@@ -56,7 +57,13 @@ class API {
     Hooks::doAction('mailpoet_api_setup', array($this));
     $this->setRequestData($_POST);
 
-    if($this->checkToken() === false) {
+    $ignoreToken = (
+      Setting::getValue('re_captcha.enabled') && 
+      $this->_request_endpoint == 'subscribers' && 
+      $this->_request_method == 'subscribe'
+    ); 
+
+    if(!$ignoreToken && $this->checkToken() === false) {
       $error_message = __('Sorry, but we couldn\'t connect to the MailPoet server. Please refresh the web page and try again.', 'mailpoet');
       $error_response = $this->createErrorResponse(Error::UNAUTHORIZED, $error_message, Response::STATUS_UNAUTHORIZED);
       return $error_response->send();

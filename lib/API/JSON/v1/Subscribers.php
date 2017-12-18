@@ -5,9 +5,10 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
-use MailPoet\Listing;
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Listing;
 use MailPoet\Models\Form;
+use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
@@ -76,6 +77,8 @@ class Subscribers extends APIEndpoint {
     $form = Form::findOne($form_id);
     unset($data['form_id']);
 
+    $recaptcha = Setting::getValue('re_captcha');
+
     if(!$form) {
       return $this->badRequest(array(
         APIError::BAD_REQUEST => __('Please specify a valid form ID.', 'mailpoet')
@@ -85,6 +88,26 @@ class Subscribers extends APIEndpoint {
       return $this->badRequest(array(
         APIError::BAD_REQUEST => __('Please leave the first field empty.', 'mailpoet')
       ));
+    }
+
+    if($recaptcha['enabled'] && !isset($data['recaptcha'])) {
+      return $this->badRequest(array(
+        APIError::BAD_REQUEST => __('Please check the reCAPTCHA.', 'mailpoet')
+      ));
+    }
+
+    if($recaptcha['enabled']) {
+      $res = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
+        'body' => array(
+          'secret' => $recaptcha['secret_token'],
+          'response' => $data['recaptcha']
+        ) 
+      ));
+      if(is_wp_error($res) || !$res['body']['success']) {
+        return $this->badRequest(array(
+          APIError::BAD_REQUEST => __('Error while validating the reCAPTCHA.', 'mailpoet')
+        ));
+      }
     }
 
     $data = $this->deobfuscateFormPayload($data);
