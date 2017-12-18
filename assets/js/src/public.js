@@ -36,7 +36,12 @@ function ( // eslint-disable-line func-names
             // non ajax post request
             return true;
           }
-            // ajax request
+
+          if (formData['g-recaptcha-response']) {
+            formData.data.recaptcha = formData['g-recaptcha-response'];
+          }
+
+          // ajax request
           MailPoet.Ajax.post({
             url: window.MailPoetForm.ajax_url,
             token: formData.token,
