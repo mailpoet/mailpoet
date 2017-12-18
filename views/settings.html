@@ -4,7 +4,7 @@
   <div id="mailpoet_settings">
 
     <h1 class="title"><%= __('Settings') %></h1>
-    
+
     <!-- settings form  -->
     <form
       id="mailpoet_settings_form"
@@ -131,6 +131,16 @@
 
         $(document).on('click', 'input[data-toggle]', toggleContent);
         $('input[data-toggle]').each(toggleContent);
+
+        function toggleReCaptchaSettings() {
+          if ($('input[name="re_captcha[enabled]"]:checked').val()) {
+            $('#settings_re_captcha_tokens').show();
+          } else {
+            $('#settings_re_captcha_tokens').hide();
+          }
+        }
+        $('input[name="re_captcha[enabled]"]').on('click', toggleReCaptchaSettings);
+        toggleReCaptchaSettings();
 
         // page preview
         $('.mailpoet_page_preview').on('click', function() {
