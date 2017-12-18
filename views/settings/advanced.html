@@ -164,6 +164,62 @@
         </p>
       </td>
     </tr>
+    <!-- reCaptcha settings -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Enable reCAPTCHA') %>
+        </label>
+        <p class="description">
+          <%= __('Use reCAPTCHA to protect MailPoet subscription forms.') %>
+          <a
+            href="https://www.google.com/recaptcha/admin"
+            target="_blank"
+          ><%= __('Sign up for an API key pair here.') %></a>
+        </p>
+      </th>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="re_captcha[enabled]"
+              value="1"
+              <% if(settings.re_captcha.enabled) %>
+                checked="checked"
+              <% endif %>
+            /><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+              type="radio"
+              name="re_captcha[enabled]"
+              value=""
+              <% if not(settings.re_captcha.enabled) %>
+                checked="checked"
+              <% endif %>
+            /><%= __('No') %>
+          </label>
+        </p>
+        <div id="settings_re_captcha_tokens">
+          <p>
+            <input type="text"
+              name="re_captcha[site_token]"
+              value="<%= settings.re_captcha.site_token %>"
+              placeholder="Your reCAPTCHA Site Token"
+            />
+          </p>
+          <p>
+            <input type="text"
+              name="re_captcha[secret_token]"
+              value="<%= settings.re_captcha.secret_token %>"
+              placeholder="Your reCAPTCHA Secret Token"
+            />
+          </p>
+        </div>
+      </td>
+    </tr>
     <!-- reinstall -->
     <tr>
       <th scope="row">
