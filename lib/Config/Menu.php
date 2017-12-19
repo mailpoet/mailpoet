@@ -438,7 +438,7 @@ class Menu {
     $system_status_data = array(
       'cron' => array(
         'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
-        'isReachable' => CronHelper::pingDaemon()
+        'isReachable' => CronHelper::pingDaemon(true)
       ),
       'mss' => array(
         'enabled' => (Bridge::isMPSendingServiceEnabled()) ?

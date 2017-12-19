@@ -48,14 +48,16 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function pingDaemon() {
+  static function pingDaemon($validate_response = false) {
     $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
     $result = self::queryCronUrl($url);
-    return (is_wp_error($result)) ?
-      $result->get_error_message() :
-      wp_remote_retrieve_body($result);
+    if (is_wp_error($result)) return $result->get_error_message();
+    $response = wp_remote_retrieve_body($result);
+    return (!$validate_response) ?
+      $response :
+      $response === Daemon::PING_SUCCESS_RESPONSE;
   }
 
   static function accessDaemon($token) {
