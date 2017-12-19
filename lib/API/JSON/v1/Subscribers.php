@@ -10,6 +10,7 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\WP\Hooks;
@@ -158,11 +159,15 @@ class Subscribers extends APIEndpoint {
 
     if(!empty($errors)) {
       return $this->badRequest($errors);
-    } else {
-      return $this->successResponse(
-        Subscriber::findOne($subscriber->id)->asArray()
-      );
     }
+
+    if(!empty($data['segments'])) {
+      Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $data['segments']);
+    }
+
+    return $this->successResponse(
+      Subscriber::findOne($subscriber->id)->asArray()
+    );
   }
 
   function restore($data = array()) {
