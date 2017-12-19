@@ -103,7 +103,13 @@ class Subscribers extends APIEndpoint {
           'response' => $data['recaptcha']
         ) 
       ));
-      if(is_wp_error($res) || !$res['body']['success']) {
+      if(is_wp_error($res)) {
+        return $this->badRequest(array(
+          APIError::BAD_REQUEST => __('Error while validating the reCAPTCHA.', 'mailpoet')
+        ));
+      }
+      $res = json_decode($res['body']);
+      if(!$res->success) {
         return $this->badRequest(array(
           APIError::BAD_REQUEST => __('Error while validating the reCAPTCHA.', 'mailpoet')
         ));
