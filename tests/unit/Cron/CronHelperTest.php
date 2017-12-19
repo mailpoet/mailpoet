@@ -4,6 +4,7 @@ namespace MailPoet\Test\Cron;
 
 use AspectMock\Test as Mock;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Daemon;
 use MailPoet\Models\Setting;
 
 class CronHelperTest extends \MailPoetTest {
@@ -162,7 +163,10 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItPingsDaemon() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    expect(CronHelper::pingDaemon())->equals('pong');
+    // raw response is returned
+    expect(CronHelper::pingDaemon())->equals(Daemon::PING_SUCCESS_RESPONSE);
+    // response is validated
+    expect(CronHelper::pingDaemon(true))->true();
   }
 
   function _after() {

@@ -14,6 +14,8 @@ class Daemon {
   public $request_data;
   public $timer;
 
+  const PING_SUCCESS_RESPONSE = 'pong';
+
   function __construct($request_data = false) {
     $this->request_data = $request_data;
     $this->daemon = CronHelper::getDaemon();
@@ -22,7 +24,7 @@ class Daemon {
   }
 
   function ping() {
-    $this->terminateRequest('pong');
+    $this->terminateRequest(self::PING_SUCCESS_RESPONSE);
   }
 
   function run() {
