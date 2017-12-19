@@ -53,7 +53,7 @@ class Renderer {
     if(Setting::getValue('re_captcha.enabled')) {
       $submit = array_pop($html);
       $site_key = Setting::getValue('re_captcha.site_token');
-      $html[] = '<div class="g-recaptcha" data-sitekey="'. $site_key .'"></div>';
+      $html[] = '<div class="g-recaptcha" data-size="compact" data-sitekey="'. $site_key .'"></div>';
       $html[] = $submit;
     }
     

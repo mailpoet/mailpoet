@@ -92,7 +92,7 @@ class Subscribers extends APIEndpoint {
 
     if($recaptcha['enabled'] && !isset($data['recaptcha'])) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Please check the reCAPTCHA.', 'mailpoet')
+        APIError::BAD_REQUEST => __('Please check the captcha.', 'mailpoet')
       ));
     }
 
@@ -105,13 +105,13 @@ class Subscribers extends APIEndpoint {
       ));
       if(is_wp_error($res)) {
         return $this->badRequest(array(
-          APIError::BAD_REQUEST => __('Error while validating the reCAPTCHA.', 'mailpoet')
+          APIError::BAD_REQUEST => __('Error while validating the captcha.', 'mailpoet')
         ));
       }
       $res = json_decode($res['body']);
       if(!$res->success) {
         return $this->badRequest(array(
-          APIError::BAD_REQUEST => __('Error while validating the reCAPTCHA.', 'mailpoet')
+          APIError::BAD_REQUEST => __('Error while validating the captcha.', 'mailpoet')
         ));
       }
     }
