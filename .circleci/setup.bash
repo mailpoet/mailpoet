@@ -8,7 +8,7 @@ function setup {
 	# install PHP dependencies for WordPress
 	if [[ $version == "php7" ]] || [[ $version == "php7_multisite" ]]; then
 		echo "deb http://packages.dotdeb.org jessie all" | sudo tee -a /etc/apt/sources.list.d/dotdeb.list
-		echo "deb-src http://packages.dotdeb.org jessie all" | sudo tee -a /etc/apt/sources.list.d/dotdeb.list
+		# echo "deb-src http://packages.dotdeb.org jessie all" | sudo tee -a /etc/apt/sources.list.d/dotdeb.list
 		wget -qO - http://www.dotdeb.org/dotdeb.gpg | sudo apt-key add -
 		sudo apt-get update
 		sudo apt-get install mysql-client php7.0-mysql zlib1g-dev
