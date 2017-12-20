@@ -28,4 +28,10 @@ class HelpersTest extends \MailPoetTest {
     expect(Helpers::replaceLinkTags($source, $link, array(), 'custom_link_tag'))
       ->equals('<a href="' . $link . '">example link</a>');
   }
+
+  function testItChecksForValidJsonString() {
+    expect(Helpers::isJson(123))->false();
+    $json = json_encode(array('one' => 1, 'two' => 2));
+    expect(Helpers::isJson($json))->true();
+  }
 }

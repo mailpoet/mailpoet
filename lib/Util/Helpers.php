@@ -5,6 +5,12 @@ class Helpers {
   const DIVIDER = '***MailPoet***';
   const LINK_TAG = 'link';
 
+  static function isJson($string) {
+    if(!is_string($string)) return false;
+    json_decode($string);
+    return json_last_error() == JSON_ERROR_NONE;
+  }
+
   static function replaceLinkTags($source, $link = false, $attributes = array(), $link_tag = false) {
     if(!$link) return $source;
     $link_tag = ($link_tag) ? $link_tag : self::LINK_TAG;
