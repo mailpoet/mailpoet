@@ -60,6 +60,7 @@ define(
         label: MailPoet.I18n.t('lists'),
         type: 'selection',
         placeholder: MailPoet.I18n.t('selectList'),
+        tip: MailPoet.I18n.t('welcomeEmailTip'),
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         multiple: true,

@@ -7,10 +7,15 @@ use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
+use MailPoet\Models\SubscriberSegment;
 
 class SubscribersTest extends \MailPoetTest {
   function _before() {
@@ -136,6 +141,7 @@ class SubscribersTest extends \MailPoetTest {
     );
     expect($response->data['first_name'])->equals('Super Jane');
   }
+
 
   function testItCanRemoveListsFromAnExistingSubscriber() {
     $router = new Subscribers();
@@ -563,9 +569,80 @@ class SubscribersTest extends \MailPoetTest {
     }
   }
 
+  function testItSchedulesWelcomeEmailNotificationWhenSubscriberIsAdded() {
+    $this->_createWelcomeNewsletter();
+    $subscriber_data = array(
+      'email' => 'raul.doe@mailpoet.com',
+      'first_name' => 'Raul',
+      'last_name' => 'Doe',
+      'segments' => array(
+        $this->segment_1->id
+      )
+    );
+
+    $router = new Subscribers();
+    $router->save($subscriber_data);
+    expect(SendingQueue::findMany())->count(1);
+  }
+
+  function testItSchedulesWelcomeEmailNotificationWhenExistedSubscriberIsUpdated() {
+    $this->_createWelcomeNewsletter();
+    $subscriber_data = array(
+      'email' => 'raul.doe@mailpoet.com',
+      'first_name' => 'Raul',
+      'last_name' => 'Doe',
+      'segments' => array(
+        $this->segment_2->id
+      )
+    );
+
+    // welcome notification is created only for segment #1
+    $router = new Subscribers();
+    $router->save($subscriber_data);
+    expect(SendingQueue::findMany())->isEmpty();
+
+    $subscriber_data['segments'] = array($this->segment_1->id);
+    $router->save($subscriber_data);
+    expect(SendingQueue::findMany())->count(1);
+  }
+
+  private function _createWelcomeNewsletter() {
+    $welcome_newsletter = Newsletter::create();
+    $welcome_newsletter->type = Newsletter::TYPE_WELCOME;
+    $welcome_newsletter->status = Newsletter::STATUS_ACTIVE;
+    $welcome_newsletter->save();
+    expect($welcome_newsletter->getErrors())->false();
+
+    $welcome_newsletter_options = array(
+      'event' => 'segment',
+      'segment' => $this->segment_1->id,
+      'schedule' => '* * * * *'
+    );
+
+    foreach($welcome_newsletter_options as $option => $value) {
+      $newsletter_option_field = NewsletterOptionField::create();
+      $newsletter_option_field->name = $option;
+      $newsletter_option_field->newsletter_type = Newsletter::TYPE_WELCOME;
+      $newsletter_option_field->save();
+      expect($newsletter_option_field->getErrors())->false();
+
+      $newsletter_option = NewsletterOption::create();
+      $newsletter_option->option_field_id = $newsletter_option_field->id;
+      $newsletter_option->newsletter_id = $welcome_newsletter->id;
+      $newsletter_option->value = $value;
+      $newsletter_option->save();
+      expect($newsletter_option->getErrors())->false();
+    }
+  }
+
   function _after() {
-    Segment::deleteMany();
-    Subscriber::deleteMany();
-    SubscriberIP::deleteMany();
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberIP::$_table);
   }
 }
