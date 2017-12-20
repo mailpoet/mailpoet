@@ -217,9 +217,19 @@ define([
       (new ViewType(_.extend({ model: this.model }, options || {}))).render();
     },
     showDeletionConfirmation: function () {
+      this.$('.mailpoet_delete_block')
+        .closest('.mailpoet_block')
+        .find('> .mailpoet_block_highlight')
+        .css({ background: '#E64047', opacity: 0.5 });
+
       this.$('.mailpoet_delete_block').addClass('mailpoet_delete_block_activated');
     },
     hideDeletionConfirmation: function () {
+      this.$('.mailpoet_delete_block')
+        .closest('.mailpoet_block')
+        .find('> .mailpoet_block_highlight')
+        .css({ background: 'transparent', opacity: 1 });
+
       this.$('.mailpoet_delete_block').removeClass('mailpoet_delete_block_activated');
     },
     deleteBlock: function (event) {
