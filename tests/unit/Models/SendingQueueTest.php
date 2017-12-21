@@ -1,12 +1,15 @@
 <?php
+
 namespace MailPoet\Test\Models;
 
 use AspectMock\Test as Mock;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Util\Helpers;
 
 class SendingQueueTest extends \MailPoetTest {
   function _before() {
     $this->queue = SendingQueue::create();
+    $this->queue->newsletter_id = 1;
     $this->queue->save();
 
     $this->rendered_body = array(
@@ -33,6 +36,42 @@ class SendingQueueTest extends \MailPoetTest {
     ]);
     $this->queue->decodeEmojisInBody($this->rendered_body);
     $mock->verifyInvokedMultipleTimes('decodeEntities', 2);
+  }
+
+  function testItReadsSerializedRenderedNewsletterBody() {
+    $queue = $this->queue;
+    $data = array(
+      'html' => 'html',
+      'text' => 'text'
+    );
+    $queue->newsletter_rendered_body = serialize($data);
+    expect($queue->getNewsletterRenderedBody())->equals($data);
+  }
+
+  function testItReadsJsonEncodedRenderedNewsletterBody() {
+    $queue = $this->queue;
+    $data = array(
+      'html' => 'html',
+      'text' => 'text'
+    );
+    $queue->newsletter_rendered_body = json_encode($data);
+    expect($queue->getNewsletterRenderedBody())->equals($data);
+  }
+
+  function testItJsonEncodesRenderedNewsletterBodyWhenSaving() {
+    $queue = SendingQueue::create();
+    $data = array(
+      'html' => 'html',
+      'text' => 'text'
+    );
+    $queue->newsletter_id = 1;
+    $queue->newsletter_rendered_body = $data;
+    $queue->save();
+
+    $queue = SendingQueue::findOne($queue->id);
+
+    expect(Helpers::isJson($queue->newsletter_rendered_body))->true();
+    expect(json_decode($queue->newsletter_rendered_body, true))->equals($data);
   }
 
   function _after() {
