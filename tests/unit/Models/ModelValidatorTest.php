@@ -36,5 +36,7 @@ class ModelValidatorTest extends \MailPoetTest {
     expect($this->validator->validateRenderedNewsletterBody(serialize(null)))->true();
     expect($this->validator->validateRenderedNewsletterBody(serialize(array('html' => 'test', 'text' => 'test'))))->true();
     expect($this->validator->validateRenderedNewsletterBody(array('html' => 'test', 'text' => 'test')))->true();
+    expect($this->validator->validateRenderedNewsletterBody(json_encode(null)))->true();
+    expect($this->validator->validateRenderedNewsletterBody(json_encode(array('html' => 'test', 'text' => 'test'))))->true();
   }
 }

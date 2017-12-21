@@ -2,6 +2,8 @@
 
 namespace MailPoet\Models;
 
+use MailPoet\Util\Helpers;
+
 if(!defined('ABSPATH')) exit;
 
 class ModelValidator extends \Sudzy\Engine {
@@ -35,9 +37,11 @@ class ModelValidator extends \Sudzy\Engine {
   }
 
   function validateRenderedNewsletterBody($newsletter_body) {
-    $newsletter_body = (!is_serialized($newsletter_body)) ?
-      $newsletter_body :
-      unserialize($newsletter_body);
+    if(is_serialized($newsletter_body)) {
+      $newsletter_body = unserialize($newsletter_body);
+    } else if(Helpers::isJson($newsletter_body)) {
+      $newsletter_body = json_decode($newsletter_body, true);
+    }
     return (is_null($newsletter_body) || (is_array($newsletter_body) && !empty($newsletter_body['html']) && !empty($newsletter_body['text'])));
   }
 }

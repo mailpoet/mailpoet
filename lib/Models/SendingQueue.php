@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
 
 if(!defined('ABSPATH')) exit;
@@ -56,10 +57,10 @@ class SendingQueue extends Model {
     if(!is_serialized($this->subscribers) && !is_null($this->subscribers)) {
       $this->set('subscribers', serialize($this->subscribers));
     }
-    if(!is_serialized($this->newsletter_rendered_body) && !is_null($this->newsletter_rendered_body)) {
+    if(!Helpers::isJson($this->newsletter_rendered_body) && !is_null($this->newsletter_rendered_body)) {
       $this->set(
         'newsletter_rendered_body',
-        serialize($this->encodeEmojisInBody($this->newsletter_rendered_body))
+        json_encode($this->encodeEmojisInBody($this->newsletter_rendered_body))
       );
     }
     // set the default priority to medium
@@ -84,9 +85,7 @@ class SendingQueue extends Model {
   }
 
   function getNewsletterRenderedBody($type = false) {
-    $rendered_newsletter = (!is_serialized($this->newsletter_rendered_body)) ?
-      $this->newsletter_rendered_body :
-      $this->decodeEmojisInBody(unserialize($this->newsletter_rendered_body));
+    $rendered_newsletter = $this->decodeRenderedNewsletterBodyObject($this->newsletter_rendered_body);
     return ($type && !empty($rendered_newsletter[$type])) ?
       $rendered_newsletter[$type] :
       $rendered_newsletter;
@@ -165,4 +164,15 @@ class SendingQueue extends Model {
     }
     return $this->save();
   }
+
+  private function decodeRenderedNewsletterBodyObject($rendered_body) {
+    if(is_serialized($rendered_body)) {
+      return $this->decodeEmojisInBody(unserialize($rendered_body));
+    }
+    if(Helpers::isJson($rendered_body)) {
+      return $this->decodeEmojisInBody(json_decode($rendered_body, true));
+    }
+    return $rendered_body;
+  }
+
 }
