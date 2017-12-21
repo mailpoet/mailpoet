@@ -62,7 +62,7 @@ abstract class SimpleWorker {
     $task->type = static::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->priority = ScheduledTask::PRIORITY_LOW;
-    $task->scheduled_at = self::getNextRunDate();
+    $task->scheduled_at = static::getNextRunDate();
     $task->save();
     return $task;
   }
@@ -138,5 +138,12 @@ abstract class SimpleWorker {
 
   static function getFutureTasks() {
     return self::getScheduledTasks(true);
+  }
+
+  static function getCompletedTasks() {
+    return ScheduledTask::where('type', static::TASK_TYPE)
+      ->whereNull('deleted_at')
+      ->where('status', ScheduledTask::STATUS_COMPLETED)
+      ->findMany();
   }
 }

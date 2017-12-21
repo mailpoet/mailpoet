@@ -6,10 +6,12 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\SendingQueue as SendingQueueModel;
+use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Hooks as WPHooks;
 
 if(!defined('ABSPATH')) exit;
@@ -45,11 +47,7 @@ class SendingQueue {
       // get newsletter segments
       $newsletter_segments_ids = $this->newsletter_task->getNewsletterSegments($newsletter);
       // get subscribers
-      $queue->subscribers = $queue->getSubscribers();
-      $subscriber_batches = array_chunk(
-        $queue->subscribers['to_process'],
-        $this->batch_size
-      );
+      $subscriber_batches = new BatchIterator($queue->task_id, $this->batch_size);
       foreach($subscriber_batches as $subscribers_to_process_ids) {
         if(!empty($newsletter_segments_ids[0])) {
           // Check that subscribers are in segments
@@ -72,7 +70,7 @@ class SendingQueue {
             $found_subscribers_ids
           );
           $queue->removeSubscribers($subscribers_to_remove);
-          if(!count($queue->subscribers['to_process'])) {
+          if(!$queue->count_to_process) {
             $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
             continue;
           }
@@ -82,7 +80,7 @@ class SendingQueue {
           $newsletter,
           $found_subscribers
         );
-        if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
+        if($queue->status === ScheduledTaskModel::STATUS_COMPLETED) {
           $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
         }
         $this->enforceSendingAndExecutionLimits();
@@ -179,7 +177,7 @@ class SendingQueue {
     // update the sent count
     $this->mailer_task->updateSentCount();
     // enforce execution limits if queue is still being processed
-    if($queue->status !== SendingQueueModel::STATUS_COMPLETED) {
+    if($queue->status !== ScheduledTaskModel::STATUS_COMPLETED) {
       $this->enforceSendingAndExecutionLimits();
     }
     return $queue;
@@ -193,11 +191,6 @@ class SendingQueue {
   }
 
   static function getRunningQueues() {
-    return SendingQueueModel::orderByAsc('priority')
-      ->orderByAsc('created_at')
-      ->whereNull('deleted_at')
-      ->whereNull('status')
-      ->whereNull('type')
-      ->findMany();
+    return SendingTask::getRunningQueues();
   }
 }

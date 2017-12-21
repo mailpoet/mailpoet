@@ -13,6 +13,10 @@ class Subscribers {
     $this->task = $task;
   }
 
+  function setSubscribers(array $subscriber_ids) {
+    ScheduledTaskSubscriber::setSubscribers($this->task->id, $subscriber_ids);
+  }
+
   function getSubscribers() {
     return ScheduledTaskSubscriber::where('task_id', $this->task->id);
   }
@@ -20,13 +24,20 @@ class Subscribers {
   function isSubscriberProcessed($subscriber_id) {
     $subscriber = $this->getSubscribers()
       ->where('subscriber_id', $subscriber_id)
+      ->where('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
       ->findOne();
     return !empty($subscriber);
   }
 
-  function removeSubscribers($subscribers_to_remove) {
+  function removeSubscribers(array $subscribers_to_remove) {
     $this->getSubscribers()
       ->whereIn('subscriber_id', $subscribers_to_remove)
+      ->deleteMany();
+    $this->checkCompleted();
+  }
+
+  function removeAllSubscribers() {
+    $this->getSubscribers()
       ->deleteMany();
     $this->checkCompleted();
   }
@@ -40,8 +51,8 @@ class Subscribers {
     $this->checkCompleted();
   }
 
-  private function checkCompleted() {
-    if(!ScheduledTaskSubscriber::getUnprocessedCount($this->task->id)) {
+  private function checkCompleted($count = null) {
+    if(!$count && !ScheduledTaskSubscriber::getUnprocessedCount($this->task->id)) {
       $this->task->complete();
     }
   }

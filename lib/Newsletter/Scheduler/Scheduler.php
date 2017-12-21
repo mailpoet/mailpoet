@@ -7,6 +7,7 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class Scheduler {
   const SECONDS_IN_HOUR = 3600;
@@ -73,18 +74,14 @@ class Scheduler {
   }
 
   static function createWelcomeNotificationQueue($newsletter, $subscriber_id) {
-    $previously_scheduled_notification = SendingQueue::where('newsletter_id', $newsletter->id)
-      ->whereLike('subscribers', '%' . serialize(array($subscriber_id)) . '%')
+    $previously_scheduled_notification = SendingQueue::joinWithSubscribers()
+      ->where('queues.newsletter_id', $newsletter->id)
+      ->where('subscribers.subscriber_id', $subscriber_id)
       ->findOne();
     if(!empty($previously_scheduled_notification)) return;
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->subscribers = serialize(
-      array(
-        'to_process' => array($subscriber_id)
-      )
-    );
-    $queue->count_total = $queue->count_to_process = 1;
+    $queue->setSubscribers(array($subscriber_id));
     $after_time_type = $newsletter->afterTimeType;
     $after_time_number = $newsletter->afterTimeNumber;
     $scheduled_at = null;
@@ -116,7 +113,7 @@ class Scheduler {
       ->where('scheduled_at', $next_run_date)
       ->findOne();
     if($existing_queue) return;
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduled_at = $next_run_date;
