@@ -72,6 +72,10 @@ function ( // eslint-disable-line func-names
             form.trigger('reset');
               // reset validation
             parsley.reset();
+            // reset captcha
+            if (window.grecaptcha) {
+              window.grecaptcha.reset();
+            }
 
               // resize iframe
             if (

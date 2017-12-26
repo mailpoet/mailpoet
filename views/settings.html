@@ -70,6 +70,7 @@
               secret_key = $('input[name="re_captcha[secret_token]"]').val().trim();
           if (enabled && (site_key == '' || secret_key == '')) {
             $('#settings_re_captcha_tokens_error').show();
+            window.location.href = '#advanced';
             return false;
           }
           // if we're setting up a sending method, try to activate it

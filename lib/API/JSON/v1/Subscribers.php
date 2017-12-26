@@ -90,13 +90,13 @@ class Subscribers extends APIEndpoint {
       ));
     }
 
-    if($recaptcha['enabled'] && !isset($data['recaptcha'])) {
+    if(!empty($recaptcha['enabled']) && $recaptcha['enabled'] && !isset($data['recaptcha'])) {
       return $this->badRequest(array(
         APIError::BAD_REQUEST => __('Please check the captcha.', 'mailpoet')
       ));
     }
 
-    if($recaptcha['enabled']) {
+    if(!empty($recaptcha['enabled']) && $recaptcha['enabled']) {
       $res = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
         'body' => array(
           'secret' => $recaptcha['secret_token'],
@@ -108,8 +108,8 @@ class Subscribers extends APIEndpoint {
           APIError::BAD_REQUEST => __('Error while validating the captcha.', 'mailpoet')
         ));
       }
-      $res = json_decode($res['body']);
-      if(!$res->success) {
+      $res = json_decode(wp_remote_retrieve_body($res));
+      if(empty($res) || !$res->success) {
         return $this->badRequest(array(
           APIError::BAD_REQUEST => __('Error while validating the captcha.', 'mailpoet')
         ));

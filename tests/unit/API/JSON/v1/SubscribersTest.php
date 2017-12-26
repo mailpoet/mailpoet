@@ -461,6 +461,19 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
+  function testItCannotSubscribeWithoutCaptchaWhenEnabled() {
+    Setting::setValue('re_captcha', array('enabled' => true));
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'form_id' => $this->form->id,
+      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please check the captcha.');
+    Setting::setValue('re_captcha', array());
+  }
+
   function testItCanSubscribeWithoutSegmentsIfTheyAreSelectedByAdmin() {
     $form = $this->form->asArray();
     $form['settings']['segments_selected_by'] = 'admin';

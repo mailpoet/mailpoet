@@ -41,23 +41,19 @@ class Renderer {
   }
 
   static function renderBlocks($blocks = array(), $honeypot_enabled = true) {
-    $html = array();
     // add honeypot for spambots
-    $html[] = ($honeypot_enabled) ?
+    $html = ($honeypot_enabled) ?
       '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
       '';
     foreach($blocks as $key => $block) {
-      $html[] = static::renderBlock($block) . PHP_EOL;
-    }
-
-    if(Setting::getValue('re_captcha.enabled')) {
-      $submit = array_pop($html);
-      $site_key = Setting::getValue('re_captcha.site_token');
-      $html[] = '<div class="g-recaptcha" data-size="compact" data-sitekey="'. $site_key .'"></div>';
-      $html[] = $submit;
+      if($block['type'] == 'submit' && Setting::getValue('re_captcha.enabled')) {
+        $site_key = Setting::getValue('re_captcha.site_token');
+        $html .= '<div class="g-recaptcha" data-size="compact" data-sitekey="'. $site_key .'"></div>';
+      }
+      $html .= static::renderBlock($block) . PHP_EOL;
     }
     
-    return implode('', $html);
+    return $html;
   }
 
   static function renderBlock($block = array()) {

@@ -59,8 +59,8 @@ class API {
 
     $ignoreToken = (
       Setting::getValue('re_captcha.enabled') && 
-      $this->_request_endpoint == 'subscribers' && 
-      $this->_request_method == 'subscribe'
+      $this->_request_endpoint === 'subscribers' && 
+      $this->_request_method === 'subscribe'
     ); 
 
     if(!$ignoreToken && $this->checkToken() === false) {

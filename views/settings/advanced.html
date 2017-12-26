@@ -207,18 +207,20 @@
             <input type="text"
               name="re_captcha[site_token]"
               value="<%= settings.re_captcha.site_token %>"
-              placeholder="Your reCAPTCHA Site Key"
+              placeholder="<%= __('Your reCAPTCHA Site Key') %>"
+              class="regular-text"
             />
           </p>
           <p>
             <input type="text"
               name="re_captcha[secret_token]"
               value="<%= settings.re_captcha.secret_token %>"
-              placeholder="Your reCAPTCHA Secret Key"
+              placeholder="<%= __('Your reCAPTCHA Secret Key') %>"
+              class="regular-text"
             />
           </p>
           <div id="settings_re_captcha_tokens_error" class="mailpoet_error_item mailpoet_error">
-            Please fill the reCAPTCHA keys.
+            <%= __('Please fill the reCAPTCHA keys.') %> 
           </div>
         </div>
       </td>
