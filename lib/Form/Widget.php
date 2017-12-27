@@ -14,8 +14,6 @@ use MailPoet\WP\Hooks;
 if(!defined('ABSPATH')) exit;
 
 class Widget extends \WP_Widget {
-  const RECAPTCHA_API_SCRIPT = '<script src="https://www.google.com/recaptcha/api.js"></script>';
-
   private $renderer;
 
   function __construct() {
@@ -51,6 +49,7 @@ class Widget extends \WP_Widget {
     wp_print_scripts('jquery');
     wp_print_scripts('mailpoet_vendor');
     wp_print_scripts('mailpoet_public');
+    echo '<script src="https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit" async defer></script>';
     $scripts = ob_get_contents();
     ob_end_clean();
 
@@ -110,6 +109,14 @@ class Widget extends \WP_Widget {
       Env::$version,
       true
     );
+
+    if(!empty(Setting::getValue('re_captcha')) && Setting::getValue('re_captcha.enabled')) {
+      wp_enqueue_script(
+        'mailpoet_recaptcha',
+        'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit',
+        array('mailpoet_public')
+      );
+    }
 
     wp_localize_script('mailpoet_public', 'MailPoetForm', array(
       'ajax_url' => admin_url('admin-ajax.php'),
@@ -274,12 +281,6 @@ EOL;
 
     if(!empty($body)) {
       $form_id = $this->id_base . '_' . $form['id'];
-      if(Setting::getValue('re_captcha.enabled')) {
-        if(empty($before_widget)) {
-          $before_widget = '';
-        }
-        $before_widget .= self::RECAPTCHA_API_SCRIPT;
-      }
       $data = array(
         'form_id' => $form_id,
         'form_type' => $form_type,

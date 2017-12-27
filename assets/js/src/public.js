@@ -8,6 +8,16 @@ function ( // eslint-disable-line func-names
   jQuery
 ) {
   jQuery(function ($) { // eslint-disable-line func-names
+    window.reCaptchaCallback = function () {
+      $('.mailpoet_recaptcha').each(function() {
+        var sitekey = $(this).attr('data-sitekey');
+        var container = $(this).find('> .mailpoet_recaptcha_container').get(0);
+        var field = $(this).find('> .mailpoet_recaptcha_field');
+        var widget_id = window.grecaptcha.render(container, {sitekey: sitekey, size: 'compact'});
+        field.val(widget_id);
+      });
+    };
+
     function isSameDomain(url) {
       var link = document.createElement('a');
       link.href = url;
@@ -37,8 +47,8 @@ function ( // eslint-disable-line func-names
             return true;
           }
 
-          if (formData['g-recaptcha-response']) {
-            formData.data.recaptcha = formData['g-recaptcha-response'];
+          if (window.grecaptcha && formData.recaptcha) {
+            formData.data.recaptcha = window.grecaptcha.getResponse(formData.recaptcha);
           }
 
           // ajax request
@@ -55,7 +65,14 @@ function ( // eslint-disable-line func-names
                   return error.message;
                 }).join('<br />')
               ).show();
+<<<<<<< HEAD
           }).done(function (response) { // eslint-disable-line func-names
+=======
+            if (window.grecaptcha) {
+              window.grecaptcha.reset(formData.recaptcha);
+            }
+          }).done(function (response) {
+>>>>>>> handling multiple instances of reCaptcha
               // successfully subscribed
             if (
                 response.meta !== undefined
@@ -74,7 +91,7 @@ function ( // eslint-disable-line func-names
             parsley.reset();
             // reset captcha
             if (window.grecaptcha) {
-              window.grecaptcha.reset();
+              window.grecaptcha.reset(formData.recaptcha);
             }
 
               // resize iframe

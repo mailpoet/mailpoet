@@ -48,7 +48,10 @@ class Renderer {
     foreach($blocks as $key => $block) {
       if($block['type'] == 'submit' && Setting::getValue('re_captcha.enabled')) {
         $site_key = Setting::getValue('re_captcha.site_token');
-        $html .= '<div class="g-recaptcha" data-size="compact" data-sitekey="'. $site_key .'"></div>';
+        $html .= '<div class="mailpoet_recaptcha" data-sitekey="'. $site_key .'">
+          <div class="mailpoet_recaptcha_container"></div>
+          <input class="mailpoet_recaptcha_field" type="hidden" name="recaptcha">
+        </div>';
       }
       $html .= static::renderBlock($block) . PHP_EOL;
     }
