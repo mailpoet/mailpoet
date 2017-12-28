@@ -33,7 +33,7 @@ class SubscriptionFormCest {
     $I->click('.mailpoet_submit');
     $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
-    $I->seeCurrentUrlEquals('/form-test');
+    $I->seeCurrentUrlEquals('/some-wrong-url');
   }
 
   function subscriptionFormIframe(\AcceptanceTester $I) {
