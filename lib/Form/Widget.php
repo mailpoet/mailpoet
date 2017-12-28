@@ -89,7 +89,7 @@ class Widget extends \WP_Widget {
   }
 
   function setupDependencies() {
-    if(!is_active_widget(false, false, $this->id_base, true)) return;
+    if(wp_script_is('mailpoet_public', 'enqueued')) return;
 
     wp_enqueue_style(
       'mailpoet_public',

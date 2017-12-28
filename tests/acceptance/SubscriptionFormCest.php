@@ -25,6 +25,17 @@ class SubscriptionFormCest {
     $I->cli('widget reset sidebar-1 --allow-root');
   }
 
+  function subscriptionFormShortcode(\AcceptanceTester $I) {
+    $I->wantTo('Subscribe using form shortcode');
+
+    $I->amOnPage('/form-test');
+    $I->fillField('[data-automation-id=\'form_email\']', $this->subscriber_email);
+    $I->click('.mailpoet_submit');
+    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+    $I->seeNoJSErrors();
+    $I->seeCurrentUrlEquals('/form-test');
+  }
+
   function subscriptionFormIframe(\AcceptanceTester $I) {
     $I->wantTo('Subscribe using iframe form');
 
