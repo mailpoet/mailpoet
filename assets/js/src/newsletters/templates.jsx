@@ -85,7 +85,8 @@ const NewsletterTemplates = React.createClass({
   getInitialState: function () {
     return {
       loading: false,
-      templates: [],
+      templates: {},
+      selectedCategory: ''
     };
   },
   componentDidMount: function () {
@@ -100,8 +101,6 @@ const NewsletterTemplates = React.createClass({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletterTemplates',
       action: 'getAll',
-    }).always(() => {
-      MailPoet.Modal.loading(false);
     }).done((response) => {
       if (this.isMounted()) {
         if (response.data.length === 0) {
@@ -111,14 +110,27 @@ const NewsletterTemplates = React.createClass({
                 MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
               description:
                 MailPoet.I18n.t('mailpoetGuideTemplateDescription'),
+              categories: '["welcome_emails", "post_notifications", "inspiration"]',
               readonly: '1',
             },
           ];
         }
-        this.setState({
-          templates: response.data,
-          loading: false,
+
+        const templates = response.data.reduce((result, item) => {
+          JSON.parse(item.categories).forEach(category => {
+            result[category].push(item);
+          });
+          return result;
+        }, {
+          welcome_emails: [],
+          post_notifications: [],
+          inspiration: [],
+          blank: [],
+          recent: [],
+          saved: []
         });
+
+        this.selectInitialCategory(templates);
       }
     }).fail((response) => {
       if (response.errors.length > 0) {
@@ -127,7 +139,47 @@ const NewsletterTemplates = React.createClass({
           { scroll: true }
         );
       }
+      MailPoet.Modal.loading(false);
     });
+  },
+  selectInitialCategory: function(templates) {
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'get',
+      data: {
+        id: this.props.params.id
+      },
+    }).always(() => {
+      MailPoet.Modal.loading(false);
+    }).done((response) => {
+      const type = response.data.type
+      let category = 'inspiration'
+      if (type == 'welcome') {
+        category = 'welcome_emails';
+      } else if (type == 'notification') {
+        category = 'post_notifications';
+      } else if (templates['recent'] && templates['recent'].length > 0) {
+        category = 'recent';
+      } else if (templates['saved'] && templates['saved'].length > 0) {
+        category = 'saved';
+      }
+      this.setState({
+        templates: templates,
+        selectedCategory: category,
+        loading: false
+      });
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(error => error.message),
+          { scroll: true }
+        );
+      }
+    });
+  },
+  selectCategory: function(category) {
+    this.setState({selectedCategory: category});
   },
   handleSelectTemplate: function (template) {
     let body = template.body;
@@ -206,7 +258,9 @@ const NewsletterTemplates = React.createClass({
     this.getTemplates();
   },
   render: function () {
-    const templates = this.state.templates.map((template, index) => {
+    let templates = this.state.templates[this.state.selectedCategory] || [];
+
+    templates = templates.map((template, index) => {
       const deleteLink = (
         <div className="mailpoet_delete">
           <a
@@ -267,11 +321,54 @@ const NewsletterTemplates = React.createClass({
       { mailpoet_boxes_loading: this.state.loading }
     );
 
+    const categories = (<div className="wp-filter hide-if-no-js">
+      <ul className="filter-links">
+        <li><a 
+          href="javascript:" 
+          className={this.state.selectedCategory == 'recent' ? 'current' : ''}
+          onClick={() => this.selectCategory('recent')}
+          > Recently sent
+        </a></li>
+        <li><a 
+          href="javascript:" 
+          className={this.state.selectedCategory == 'saved' ? 'current' : ''}
+          onClick={() => this.selectCategory('saved')}
+          > Your saved templates
+        </a></li>
+        <li><a 
+          href="javascript:" 
+          className={this.state.selectedCategory == 'blank' ? 'current' : ''}
+          onClick={() => this.selectCategory('blank')}
+          > Blank
+        </a></li>
+        <li><a 
+          href="javascript:" 
+          className={this.state.selectedCategory == 'inspiration' ? 'current' : ''}
+          onClick={() => this.selectCategory('inspiration')}
+          > Inspiration
+        </a></li>
+        <li><a 
+          href="javascript:" 
+          className={this.state.selectedCategory == 'welcome_emails' ? 'current' : ''}
+          onClick={() => this.selectCategory('welcome_emails')}
+          > Welcome Emails
+        </a></li>
+        <li><a 
+          href="javascript:" 
+          className={this.state.selectedCategory == 'post_notifications' ? 'current' : ''}
+          onClick={() => this.selectCategory('post_notifications')}
+          > Post Notifications
+        </a></li>
+      </ul>
+    </div>);
+
     return (
       <div>
         <h1>{MailPoet.I18n.t('selectTemplateTitle')}</h1>
 
         <Breadcrumb step="template" />
+
+        {categories}
 
         <ul className={boxClasses}>
           { templates }
