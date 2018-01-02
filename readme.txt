@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.3.3 - 2018-01-02 =
+* Improved: Welcome emails are now sent for subscribers manually created by administrators;
+* Improved: content deletion in email designer to more clearly warn about what is being deleted;
+* Improved: HelpScout beacon no longer obstructs pagination in listings.
 
 = 3.3.2 - 2017-12-19 =
 * Thanked: 2017 finally saw the release of MailPoet 3 and MailPoet Sending Service. We wouldn't have done it without your patience and support, for which we are extremely grateful. Thank YOU!
