@@ -11,6 +11,7 @@ define(
     'newsletters/breadcrumb.jsx',
     'help-tooltip.jsx',
     'jquery',
+    'html2canvas'
   ],
   (
     React,
@@ -23,7 +24,8 @@ define(
     WelcomeNewsletterFields,
     Breadcrumb,
     HelpTooltip,
-    jQuery
+    jQuery,
+    html2canvas
   ) => {
     const NewsletterSend = React.createClass({
       contextTypes: {
@@ -88,6 +90,30 @@ define(
           });
         });
       },
+      saveTemplate: function(data, done) {
+        var iframe = document.createElement('iframe');
+        iframe.src = data.preview_url;
+        iframe.onload = () => {
+          html2canvas(iframe.contentDocument.documentElement).then(function(thumbnail){
+            document.body.removeChild(iframe);
+            MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
+              endpoint: 'newsletterTemplates',
+              action: 'save',
+              data: {
+                name: data.subject,
+                description: data.preheader,
+                thumbnail: thumbnail.toDataURL('image/jpeg'),
+                body: JSON.stringify(data.body),
+                categories: '["recent"]'
+              }
+            }).then(done).fail(this.showError);
+          });
+        }
+        // just to hide the iframe
+        iframe.style.cssText ='position: absolute; opacity:0; z-index: -9999';
+        document.body.appendChild(iframe);
+      },
       handleSend: function (e) {
         e.preventDefault();
 
@@ -141,26 +167,29 @@ define(
                     newsletter_id: this.props.params.id,
                   },
                 }).done((response2) => {
-                  // redirect to listing based on newsletter type
-                  this.context.router.push(`/${this.state.item.type || ''}`);
+                  // save template in recently sent category
+                  this.saveTemplate(response.data, () => {
+                    // redirect to listing based on newsletter type
+                    this.context.router.push(`/${this.state.item.type || ''}`);
 
-                  if (response2.data.status === 'scheduled') {
-                    MailPoet.Notice.success(
-                      MailPoet.I18n.t('newsletterHasBeenScheduled')
-                    );
-                    MailPoet.trackEvent('Emails > Newsletter sent', {
-                      scheduled: true,
-                      'MailPoet Free version': window.mailpoet_version,
-                    });
-                  } else {
-                    MailPoet.Notice.success(
-                      MailPoet.I18n.t('newsletterBeingSent')
-                    );
-                    MailPoet.trackEvent('Emails > Newsletter sent', {
-                      scheduled: false,
-                      'MailPoet Free version': window.mailpoet_version,
-                    });
-                  }
+                    if (response2.data.status === 'scheduled') {
+                      MailPoet.Notice.success(
+                        MailPoet.I18n.t('newsletterHasBeenScheduled')
+                      );
+                      MailPoet.trackEvent('Emails > Newsletter sent', {
+                        scheduled: true,
+                        'MailPoet Free version': window.mailpoet_version,
+                      });
+                    } else {
+                      MailPoet.Notice.success(
+                        MailPoet.I18n.t('newsletterBeingSent')
+                      );
+                      MailPoet.trackEvent('Emails > Newsletter sent', {
+                        scheduled: false,
+                        'MailPoet Free version': window.mailpoet_version,
+                      });
+                    }
+                  });
                 }).fail(this.showError);
             }
           })

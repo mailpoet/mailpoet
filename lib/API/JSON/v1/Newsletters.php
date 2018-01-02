@@ -129,7 +129,16 @@ class Newsletters extends APIEndpoint {
 
     Hooks::doAction('mailpoet_api_newsletters_save_after', $newsletter);
 
-    return $this->successResponse($newsletter->asArray());
+    $preview_url = NewsletterUrl::getViewInBrowserUrl(
+      NewsletterUrl::TYPE_LISTING_EDITOR,
+      $newsletter,
+      Subscriber::getCurrentWPUser()
+    );
+
+    $newsletter = $newsletter->asArray();
+    $newsletter['preview_url'] = $preview_url;
+
+    return $this->successResponse($newsletter);
   }
 
   function setStatus($data = array()) {
