@@ -93,29 +93,41 @@ define([
   };
 
   Module.saveTemplate = function (options) {
-    var promise = jQuery.Deferred();
+    var categories = ['saved'];
 
-    promise.then(function (thumbnail) {
-      var data = _.extend(options || {}, {
-        thumbnail: thumbnail.toDataURL('image/jpeg'),
-        body: JSON.stringify(App.getBody())
-      });
+    return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'get',
+      data: {
+        id: App.toJSON().id
+      }
+    }).then(function(response) {
+      var type = response.data.type;
+      if (type == 'welcome') {
+        categories.push('welcome_emails');
+      }
+      if (type == 'notification') {
+        categories.push('post_notifications');
+      }
+    }).then(function() {
+      return Module.getThumbnail(
+        jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
+      ).then(function (thumbnail) {
+        var data = _.extend(options || {}, {
+          thumbnail: thumbnail.toDataURL('image/jpeg'),
+          body: JSON.stringify(App.getBody()),
+          categories: JSON.stringify(categories)
+        });
 
-      return MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'newsletterTemplates',
-        action: 'save',
-        data: data
+        return MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'newsletterTemplates',
+          action: 'save',
+          data: data
+        });
       });
     });
-
-    Module.getThumbnail(
-      jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
-    ).then(function (thumbnail) {
-      promise.resolve(thumbnail);
-    });
-
-    return promise;
   };
 
   Module.exportTemplate = function (options) {
