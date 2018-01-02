@@ -245,6 +245,7 @@ class Migrator {
     $attributes = array(
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(250) NOT NULL,',
+      'categories varchar(250) NOT NULL DEFAULT "[]",',
       'description varchar(250) NOT NULL,',
       'body LONGTEXT,',
       'thumbnail LONGTEXT,',

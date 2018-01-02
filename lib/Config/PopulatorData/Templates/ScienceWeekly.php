@@ -16,6 +16,7 @@ class ScienceWeekly {
     return array(
       'name' => __("Science Weekly", 'mailpoet'),
       'description' => __("The right chemistry to send your weekly posts.", 'mailpoet'),
+      'categories' => json_encode(array('inspiration')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

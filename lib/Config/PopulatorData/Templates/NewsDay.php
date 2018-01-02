@@ -16,6 +16,7 @@ class NewsDay {
     return array(
       'name' => __("News Day", 'mailpoet'),
       'description' => __("Media ready template.", 'mailpoet'),
+      'categories' => json_encode(array('inspiration')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

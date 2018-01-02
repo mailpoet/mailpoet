@@ -16,6 +16,7 @@ class Discount {
     return array(
       'name' => __("Discount", 'mailpoet'),
       'description' => __("A useful layout for a simple discount email.", 'mailpoet'),
+      'categories' => json_encode(array('inspiration')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

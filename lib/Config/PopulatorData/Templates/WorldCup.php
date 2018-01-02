@@ -16,6 +16,7 @@ class WorldCup {
     return array(
       'name' => __("World Cup", 'mailpoet'),
       'description' => __("Always a winner.", 'mailpoet'),
+      'categories' => json_encode(array('inspiration')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

@@ -16,6 +16,7 @@ class PostNotificationsBlank1Column {
     return array(
       'name' => __("Post Notifications: Blank 1 Column", 'mailpoet'),
       'description' => __("A blank Post Notifications template with a 1 column layout.", 'mailpoet'),
+      'categories' => json_encode(array('post_notifications')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
