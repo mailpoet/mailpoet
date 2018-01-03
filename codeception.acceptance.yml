@@ -43,7 +43,7 @@ modules:
             cleanup: false
             url: 'http://wordpress'
             urlReplacement: true
-            tablePrefix: 'wp_'
+            tablePrefix: 'mp_'
         WPCLI:
             path: /wp-core
             throw: true
