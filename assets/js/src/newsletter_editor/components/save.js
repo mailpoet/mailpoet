@@ -102,7 +102,7 @@ define([
       data: {
         id: App.toJSON().id
       }
-    }).then(function(response) {
+    }).then(function (response) {
       var type = response.data.type;
       if (type == 'welcome') {
         categories.push('welcome_emails');
@@ -110,7 +110,7 @@ define([
       if (type == 'notification') {
         categories.push('post_notifications');
       }
-    }).then(function() {
+    }).then(function () {
       return Module.getThumbnail(
         jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
       ).then(function (thumbnail) {

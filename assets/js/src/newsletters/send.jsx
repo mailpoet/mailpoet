@@ -11,7 +11,7 @@ define(
     'newsletters/breadcrumb.jsx',
     'help-tooltip.jsx',
     'jquery',
-    'html2canvas'
+    'html2canvas',
   ],
   (
     React,
@@ -90,11 +90,11 @@ define(
           });
         });
       },
-      saveTemplate: function(data, done) {
-        var iframe = document.createElement('iframe');
+      saveTemplate: function (data, done) {
+        const iframe = document.createElement('iframe');
         iframe.src = data.preview_url;
         iframe.onload = () => {
-          html2canvas(iframe.contentDocument.documentElement).then(function(thumbnail){
+          html2canvas(iframe.contentDocument.documentElement).then((thumbnail) => {
             document.body.removeChild(iframe);
             MailPoet.Ajax.post({
               api_version: window.mailpoet_api_version,
@@ -105,11 +105,11 @@ define(
                 description: data.preheader,
                 thumbnail: thumbnail.toDataURL('image/jpeg'),
                 body: JSON.stringify(data.body),
-                categories: '["recent"]'
-              }
+                categories: '["recent"]',
+              },
             }).then(done).fail(this.showError);
           });
-        }
+        };
         // just to hide the iframe
         iframe.style.cssText ='position: absolute; opacity:0; z-index: -9999';
         document.body.appendChild(iframe);

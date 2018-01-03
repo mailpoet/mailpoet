@@ -86,7 +86,7 @@ const NewsletterTemplates = React.createClass({
     return {
       loading: false,
       templates: {},
-      selectedCategory: ''
+      selectedCategory: '',
     };
   },
   componentDidMount: function () {
@@ -117,7 +117,7 @@ const NewsletterTemplates = React.createClass({
         }
 
         const templates = response.data.reduce((result, item) => {
-          JSON.parse(item.categories).forEach(category => {
+          JSON.parse(item.categories).forEach((category) => {
             result[category].push(item);
           });
           return result;
@@ -127,7 +127,7 @@ const NewsletterTemplates = React.createClass({
           inspiration: [],
           blank: [],
           recent: [],
-          saved: []
+          saved: [],
         });
 
         this.selectInitialCategory(templates);
@@ -142,32 +142,32 @@ const NewsletterTemplates = React.createClass({
       MailPoet.Modal.loading(false);
     });
   },
-  selectInitialCategory: function(templates) {
+  selectInitialCategory: function (templates) {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
       action: 'get',
       data: {
-        id: this.props.params.id
+        id: this.props.params.id,
       },
     }).always(() => {
       MailPoet.Modal.loading(false);
     }).done((response) => {
-      const type = response.data.type
-      let category = 'inspiration'
-      if (type == 'welcome') {
+      const type = response.data.type;
+      let category = 'inspiration';
+      if (type === 'welcome') {
         category = 'welcome_emails';
-      } else if (type == 'notification') {
+      } else if (type === 'notification') {
         category = 'post_notifications';
-      } else if (templates['recent'] && templates['recent'].length > 0) {
+      } else if (templates.recent && templates.recent.length > 0) {
         category = 'recent';
-      } else if (templates['saved'] && templates['saved'].length > 0) {
+      } else if (templates.saved && templates.saved.length > 0) {
         category = 'saved';
       }
       this.setState({
         templates: templates,
         selectedCategory: category,
-        loading: false
+        loading: false,
       });
     }).fail((response) => {
       if (response.errors.length > 0) {
@@ -178,8 +178,8 @@ const NewsletterTemplates = React.createClass({
       }
     });
   },
-  selectCategory: function(category) {
-    this.setState({selectedCategory: category});
+  selectCategory: function (category) {
+    this.setState({ selectedCategory: category });
   },
   handleSelectTemplate: function (template) {
     let body = template.body;
@@ -323,39 +323,39 @@ const NewsletterTemplates = React.createClass({
 
     const categories = (<div className="wp-filter hide-if-no-js">
       <ul className="filter-links">
-        <li><a 
-          href="javascript:" 
-          className={this.state.selectedCategory == 'recent' ? 'current' : ''}
+        <li><a
+          href="javascript:"
+          className={this.state.selectedCategory === 'recent' ? 'current' : ''}
           onClick={() => this.selectCategory('recent')}
           > Recently sent
         </a></li>
-        <li><a 
-          href="javascript:" 
-          className={this.state.selectedCategory == 'saved' ? 'current' : ''}
+        <li><a
+          href="javascript:"
+          className={this.state.selectedCategory === 'saved' ? 'current' : ''}
           onClick={() => this.selectCategory('saved')}
           > Your saved templates
         </a></li>
-        <li><a 
-          href="javascript:" 
-          className={this.state.selectedCategory == 'blank' ? 'current' : ''}
+        <li><a
+          href="javascript:"
+          className={this.state.selectedCategory === 'blank' ? 'current' : ''}
           onClick={() => this.selectCategory('blank')}
           > Blank
         </a></li>
-        <li><a 
-          href="javascript:" 
-          className={this.state.selectedCategory == 'inspiration' ? 'current' : ''}
+        <li><a
+          href="javascript:"
+          className={this.state.selectedCategory === 'inspiration' ? 'current' : ''}
           onClick={() => this.selectCategory('inspiration')}
           > Inspiration
         </a></li>
-        <li><a 
-          href="javascript:" 
-          className={this.state.selectedCategory == 'welcome_emails' ? 'current' : ''}
+        <li><a
+          href="javascript:"
+          className={this.state.selectedCategory === 'welcome_emails' ? 'current' : ''}
           onClick={() => this.selectCategory('welcome_emails')}
           > Welcome Emails
         </a></li>
-        <li><a 
-          href="javascript:" 
-          className={this.state.selectedCategory == 'post_notifications' ? 'current' : ''}
+        <li><a
+          href="javascript:"
+          className={this.state.selectedCategory === 'post_notifications' ? 'current' : ''}
           onClick={() => this.selectCategory('post_notifications')}
           > Post Notifications
         </a></li>
