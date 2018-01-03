@@ -90,9 +90,9 @@ define(
           });
         });
       },
-      saveTemplate: function (data, done) {
+      saveTemplate: function (response, done) {
         const iframe = document.createElement('iframe');
-        iframe.src = data.preview_url;
+        iframe.src = response.meta.preview_url;
         iframe.onload = () => {
           html2canvas(iframe.contentDocument.documentElement).then((thumbnail) => {
             document.body.removeChild(iframe);
@@ -101,10 +101,10 @@ define(
               endpoint: 'newsletterTemplates',
               action: 'save',
               data: {
-                name: data.subject,
-                description: data.preheader,
+                name: response.data.subject,
+                description: response.data.preheader,
                 thumbnail: thumbnail.toDataURL('image/jpeg'),
-                body: JSON.stringify(data.body),
+                body: JSON.stringify(response.data.body),
                 categories: '["recent"]',
               },
             }).then(done).fail(this.showError);
@@ -168,7 +168,7 @@ define(
                   },
                 }).done((response2) => {
                   // save template in recently sent category
-                  this.saveTemplate(response.data, () => {
+                  this.saveTemplate(response, () => {
                     // redirect to listing based on newsletter type
                     this.context.router.push(`/${this.state.item.type || ''}`);
 

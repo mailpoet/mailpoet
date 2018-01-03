@@ -135,10 +135,7 @@ class Newsletters extends APIEndpoint {
       Subscriber::getCurrentWPUser()
     );
 
-    $newsletter = $newsletter->asArray();
-    $newsletter['preview_url'] = $preview_url;
-
-    return $this->successResponse($newsletter);
+    return $this->successResponse($newsletter->asArray(), array('preview_url' => $preview_url));
   }
 
   function setStatus($data = array()) {
