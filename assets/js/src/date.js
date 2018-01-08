@@ -146,7 +146,7 @@ define('date',
 
         if (!format || format.length <= 0) return format;
 
-        replacements = formatMappings['date'];
+        replacements = formatMappings.date;
         convertedFormat = [];
         escapeToken = false;
 

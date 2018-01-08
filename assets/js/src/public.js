@@ -72,7 +72,7 @@ function (
             if (
                 window.frameElement !== null
                 && MailPoet !== undefined
-                && MailPoet['Iframe']
+                && MailPoet.Iframe
               ) {
               MailPoet.Iframe.autoSize(window.frameElement);
             }
