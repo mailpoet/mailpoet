@@ -42,7 +42,6 @@
     "no-extra-bind": 0,
     "brace-style": 0,
     "space-infix-ops": 0,
-    "prefer-template": 0,
     "func-names": 0
   }
 }
