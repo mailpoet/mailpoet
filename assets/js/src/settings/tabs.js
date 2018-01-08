@@ -80,7 +80,7 @@ define(
           }
         );
       }
-    }));
+    }))();
 
     jQuery(document).ready(function () {
       if (!Backbone.History.started) Backbone.history.start();

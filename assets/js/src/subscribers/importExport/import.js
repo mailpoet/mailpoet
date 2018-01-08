@@ -36,7 +36,7 @@ define(
           home: function () {
             this.navigate('step1', { trigger: true });
           }
-        }));
+        }))();
 
         function showCurrentStep() {
           MailPoet.Notice.hide();
