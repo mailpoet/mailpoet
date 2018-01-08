@@ -6,10 +6,10 @@
  */
 define([
   'backbone.marionette'
-], function (BackboneMarionette) {
+], function (BackboneMarionette) { // eslint-disable-line func-names
   var Marionette = BackboneMarionette;
   var BehaviorsLookup = {};
-  Marionette.Behaviors.behaviorsLookup = function () {
+  Marionette.Behaviors.behaviorsLookup = function () { // eslint-disable-line func-names
     return BehaviorsLookup;
   };
 

@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 define([
   'newsletter_editor/App',
   'underscore',

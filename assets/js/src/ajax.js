@@ -11,7 +11,7 @@ function requestFailed(errorMessage, xhr) {
   };
 }
 
-define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
+define('ajax', ['mailpoet', 'jquery', 'underscore'], function ajax(mp, jQuery, _) {
   var MailPoet = mp;
 
   MailPoet.Ajax = {
@@ -25,10 +25,10 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
       token: null,
       data: {}
     },
-    post: function (options) {
+    post: function post(options) {
       return this.request('post', options);
     },
-    init: function (options) {
+    init: function init(options) {
       // merge options
       this.options = jQuery.extend({}, this.defaults, options);
 
@@ -42,7 +42,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
         this.options.token = window.mailpoet_token;
       }
     },
-    getParams: function () {
+    getParams: function getParams() {
       return {
         action: 'mailpoet',
         api_version: this.options.api_version,
@@ -52,7 +52,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
         data: this.options.data || {}
       };
     },
-    request: function (method, options) {
+    request: function request(method, options) {
       var params;
       var deferred;
       // set options
@@ -63,7 +63,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
 
       // remove null values from the data object
       if (_.isObject(params.data)) {
-        params.data = _.pick(params.data, function (value) {
+        params.data = _.pick(params.data, function IsNotNull(value) {
           return (value !== null);
         });
       }
@@ -74,7 +74,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
           params,
           null,
           'json'
-        ).then(function (data) {
+        ).then(function resultHandler(data) {
           return data;
         }, _.partial(requestFailed, MailPoet.I18n.t('ajaxFailedErrorMessage')));
 

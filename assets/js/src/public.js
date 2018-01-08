@@ -3,23 +3,23 @@ define([
   'jquery',
   'parsleyjs'
 ],
-function (
+function ( // eslint-disable-line func-names
   MailPoet,
   jQuery
 ) {
-  jQuery(function ($) {
+  jQuery(function ($) { // eslint-disable-line func-names
     function isSameDomain(url) {
       var link = document.createElement('a');
       link.href = url;
       return (window.location.hostname === link.hostname);
     }
 
-    $(function () {
+    $(function () { // eslint-disable-line func-names
       // setup form validation
-      $('form.mailpoet_form').each(function () {
+      $('form.mailpoet_form').each(function () { // eslint-disable-line func-names
         var form = $(this);
 
-        form.parsley().on('form:validated', function () {
+        form.parsley().on('form:validated', function () { // eslint-disable-line func-names
           // clear messages
           form.find('.mailpoet_message > p').hide();
 
@@ -29,7 +29,7 @@ function (
           }
         });
 
-        form.parsley().on('form:submit', function (parsley) {
+        form.parsley().on('form:submit', function (parsley) { // eslint-disable-line func-names
           var formData = form.mailpoetSerializeObject() || {};
           // check if we're on the same domain
           if (isSameDomain(window.MailPoetForm.ajax_url) === false) {
@@ -44,13 +44,13 @@ function (
             endpoint: 'subscribers',
             action: 'subscribe',
             data: formData.data
-          }).fail(function (response) {
+          }).fail(function (response) { // eslint-disable-line func-names
             form.find('.mailpoet_validate_error').html(
-                response.errors.map(function (error) {
+                response.errors.map(function (error) { // eslint-disable-line func-names
                   return error.message;
                 }).join('<br />')
               ).show();
-          }).done(function (response) {
+          }).done(function (response) { // eslint-disable-line func-names
               // successfully subscribed
             if (
                 response.meta !== undefined

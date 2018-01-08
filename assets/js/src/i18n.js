@@ -1,7 +1,7 @@
 define('i18n',
   [
     'mailpoet'
-  ], function (
+  ], function i18n(
     mp
 ) {
     'use strict';
@@ -11,13 +11,13 @@ define('i18n',
     var translations = {};
 
     MailPoet.I18n = {
-      add: function (key, value) {
+      add: function add(key, value) {
         translations[key] = value;
       },
-      t: function (key) {
+      t: function t(key) {
         return translations[key] || 'TRANSLATION "%$1s" NOT FOUND'.replace('%$1s', key);
       },
-      all: function () {
+      all: function all() {
         return translations;
       }
     };

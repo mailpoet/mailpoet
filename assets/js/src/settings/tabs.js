@@ -4,7 +4,7 @@ define(
     'jquery',
     'mailpoet'
   ],
-  function (
+  function ( // eslint-disable-line func-names
     Backbone,
     jQuery,
     mp
@@ -20,7 +20,7 @@ define(
         'mta(/:group)': 'sendingMethodGroup',
         '(:tab)': 'tabs'
       },
-      sendingMethodGroup: function (group) {
+      sendingMethodGroup: function (group) { // eslint-disable-line func-names
         // display mta tab
         this.tabs('mta');
 
@@ -51,7 +51,7 @@ define(
           jQuery('#mailpoet_sending_method_setup').fadeIn();
         }
       },
-      tabs: function (tabStr) {
+      tabs: function (tabStr) { // eslint-disable-line func-names
         // set default tab
         var tab = tabStr || 'mta';
 
@@ -82,7 +82,7 @@ define(
       }
     }))();
 
-    jQuery(document).ready(function () {
+    jQuery(document).ready(function () { // eslint-disable-line func-names
       if (!Backbone.History.started) Backbone.history.start();
     });
   }

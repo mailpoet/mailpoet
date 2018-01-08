@@ -1,10 +1,10 @@
 define('admin', [
   'jquery'
 ],
-  function (jQuery) {
-    jQuery(function ($) {
+  function admin(jQuery) {
+    jQuery(function adminDomReady($) {
       // dom ready
-      $(function () {
+      $(function domReady() {
 
       });
     });

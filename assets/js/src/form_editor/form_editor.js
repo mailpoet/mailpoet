@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /*
  * name: MailPoet Form Editor
  * author: Jonathan Labreuille

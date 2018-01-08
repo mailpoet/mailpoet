@@ -1,10 +1,10 @@
-define('iframe', ['mailpoet'], function (mp) {
+define('iframe', ['mailpoet'], function iframeModule(mp) {
   'use strict';
 
   var MailPoet = mp;
   MailPoet.Iframe = {
     marginY: 20,
-    autoSize: function (iframe) {
+    autoSize: function autoSize(iframe) {
       if (!iframe) return;
 
       this.setSize(
@@ -12,7 +12,7 @@ define('iframe', ['mailpoet'], function (mp) {
         iframe.contentWindow.document.body.scrollHeight
       );
     },
-    setSize: function (sizeIframe, i) {
+    setSize: function setSize(sizeIframe, i) {
       var iframe = sizeIframe;
       if (!iframe) return;
 

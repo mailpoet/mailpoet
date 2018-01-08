@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /**
  * Container content block.
  * This is a special kind of block, as it can contain content blocks, as well

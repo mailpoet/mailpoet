@@ -7,7 +7,7 @@ define([
   'backbone.marionette',
   'underscore',
   'newsletter_editor/behaviors/BehaviorsLookup'
-], function (Marionette, _, BehaviorsLookup) {
+], function (Marionette, _, BehaviorsLookup) { // eslint-disable-line func-names
   var BL = BehaviorsLookup;
 
   BL.TextEditorBehavior = Marionette.Behavior.extend({
@@ -19,9 +19,9 @@ define([
       invalidElements: 'script',
       blockFormats: 'Paragraph=p',
       plugins: 'link textcolor colorpicker mailpoet_shortcodes',
-      configurationFilter: function (originalConfig) { return originalConfig; }
+      configurationFilter: function (originalConfig) { return originalConfig; } // eslint-disable-line func-names
     },
-    onDomRefresh: function () {
+    onDomRefresh: function () { // eslint-disable-line func-names
       var that = this;
       if (this.view.disableTextEditor === true) {
         return;
@@ -42,7 +42,7 @@ define([
         relative_urls: false,
         remove_script_host: false,
         convert_urls: true,
-        urlconverter_callback: function (url) {
+        urlconverter_callback: function (url) { // eslint-disable-line func-names
           if (url.match(/\[.+\]/g)) {
             // Do not convert URLs with shortcodes
             return url;
@@ -56,12 +56,12 @@ define([
 
         plugins: this.options.plugins,
 
-        setup: function (editor) {
-          editor.on('change', function () {
+        setup: function (editor) { // eslint-disable-line func-names
+          editor.on('change', function () { // eslint-disable-line func-names
             that.view.triggerMethod('text:editor:change', editor.getContent());
           });
 
-          editor.on('click', function (e) {
+          editor.on('click', function (e) { // eslint-disable-line func-names
             editor.focus();
             if (that._isActivationClick) {
               editor.selection.setRng(
@@ -71,12 +71,12 @@ define([
             }
           });
 
-          editor.on('focus', function () {
+          editor.on('focus', function () { // eslint-disable-line func-names
             that.view.triggerMethod('text:editor:focus');
             that._isActivationClick = true;
           });
 
-          editor.on('blur', function () {
+          editor.on('blur', function () { // eslint-disable-line func-names
             that.view.triggerMethod('text:editor:blur');
           });
         }

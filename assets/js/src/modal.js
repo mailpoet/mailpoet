@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 define('modal', ['mailpoet', 'jquery'],
   function (mp, jQuery) {
     'use strict';
