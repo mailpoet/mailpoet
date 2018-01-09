@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.3.3
+Stable tag: 3.3.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.3.4 - 2018-01-09 =
+* Fixed: the plugin no longer spams the same post notification email to subscribers. Thank you Mark, Bruno, Peter, Aaron, PJ, Silowe, Eytan, Beverly and others for your help!
+* Fixed: public assets are loaded for shortcode/PHP form placement methods. Thanks Ehsan!
 
 = 3.3.3 - 2018-01-02 =
 * Improved: Welcome emails are now sent for subscribers manually created by administrators;
