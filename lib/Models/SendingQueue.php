@@ -151,7 +151,7 @@ class SendingQueue extends Model {
       )
     );
     $this->subscribers = $subscribers;
-    $this->updateCount();
+    return $this->updateCount()->getErrors() === false;
   }
 
   function updateCount() {
@@ -175,5 +175,4 @@ class SendingQueue extends Model {
     }
     return $rendered_body;
   }
-
 }

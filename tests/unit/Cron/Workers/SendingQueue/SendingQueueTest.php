@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Cron\Workers\SendingQueue;
 
+use AspectMock\Test as Mock;
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
@@ -8,6 +9,7 @@ use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterPost;
@@ -572,6 +574,43 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker->process();
     $updated_queue = SendingQueue::findOne($this->queue->id);
     expect((int)$updated_queue->count_total)->equals(0);
+  }
+
+  function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
+    $queue = Mock::double(new \stdClass(), array(
+      'updateProcessedSubscribers' => false
+    ));
+    $queue->id = 100;
+    $sending_queue_worker = Stub::make(new SendingQueueWorker());
+    $sending_queue_worker->__construct(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array(
+          'send' => true
+        )
+      )
+    );
+    try {
+      $sending_queue_worker->sendNewsletters(
+        $queue,
+        $prepared_subscribers = array(),
+        $prepared_newsletters = false,
+        $prepared_subscribers = false,
+        $statistics = false
+      );
+      $this->fail('Paused sending exception was not thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('Sending has been paused.');
+    }
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
+    expect($mailer_log['error'])->equals(
+      array(
+        'operation' => 'processed_list_update',
+        'error_message' => 'QUEUE-100-PROCESSED-LIST-UPDATE'
+      )
+    );
   }
 
   function _after() {
