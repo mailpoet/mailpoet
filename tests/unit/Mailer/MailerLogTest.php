@@ -156,7 +156,28 @@ class MailerLogTest extends \MailPoetTest {
     expect($mailer_log['error'])->equals(
       array(
         'operation' => 'send',
-        'error_message' => 'email rejected'
+        'error_message' => $error
+      )
+    );
+  }
+
+  function testItPausesSendingAfterProcessingSendingError() {
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['error'])->null();
+    try {
+      MailerLog::processError($operation = 'send', $error = 'email rejected - sending paused', $error_code = null, $pause_sending = true);
+      $this->fail('Paused sending exception was not thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('Sending has been paused.');
+    }
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['retry_attempt'])->null();
+    expect($mailer_log['retry_at'])->null();
+    expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
+    expect($mailer_log['error'])->equals(
+      array(
+        'operation' => 'send',
+        'error_message' => $error
       )
     );
   }

@@ -75,7 +75,7 @@ class MailerLog {
     return self::resetMailerLog();
   }
 
-  static function processError($operation, $error_message, $error_code = null) {
+  static function processError($operation, $error_message, $error_code = null, $pause_sending = false) {
     $mailer_log = self::getMailerLog();
     (int)$mailer_log['retry_attempt']++;
     $mailer_log['retry_at'] = time() + self::RETRY_INTERVAL;
@@ -86,7 +86,11 @@ class MailerLog {
     if($error_code) {
       $mailer_log['error']['error_code'] = $error_code;
     }
-    self::updateMailerLog($mailer_log);
+    if($pause_sending) {
+      self::pauseSending($mailer_log);
+    } else {
+      self::updateMailerLog($mailer_log);
+    }
     return self::enforceExecutionRequirements();
   }
 
