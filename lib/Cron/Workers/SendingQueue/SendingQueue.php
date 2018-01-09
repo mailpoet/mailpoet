@@ -165,7 +165,14 @@ class SendingQueue {
       );
     }
     // update processed/to process list
-    $queue->updateProcessedSubscribers($prepared_subscribers_ids);
+    if(!$queue->updateProcessedSubscribers($prepared_subscribers_ids)) {
+      MailerLog::processError(
+        'processed_list_update',
+        sprintf('QUEUE-%d-PROCESSED-LIST-UPDATE', $queue->id),
+        null,
+        true
+      );
+    }
     // log statistics
     StatisticsNewslettersModel::createMultiple($statistics);
     // update the sent count
