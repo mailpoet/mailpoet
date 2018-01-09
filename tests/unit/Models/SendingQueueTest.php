@@ -74,6 +74,27 @@ class SendingQueueTest extends \MailPoetTest {
     expect(json_decode($queue->newsletter_rendered_body, true))->equals($data);
   }
 
+  function testItReencodesSerializedObjectToJsonEncoded() {
+    $queue = $this->queue;
+    $newsletter_rendered_body = $this->rendered_body;
+
+    // update queue with a serialized rendered newsletter body
+    \ORM::rawExecute(
+      'UPDATE `' . SendingQueue::$_table . '` SET `newsletter_rendered_body` = ? WHERE `id` = ?',
+      array(
+        serialize($newsletter_rendered_body),
+        $queue->id
+      )
+    );
+    $sending_queue = SendingQueue::findOne($queue->id);
+    expect($sending_queue->newsletter_rendered_body)->equals(serialize($newsletter_rendered_body));
+
+    // re-saving the queue will re-rencode the body using json_encode()
+    $sending_queue->save();
+    $sending_queue = SendingQueue::findOne($queue->id);
+    expect($sending_queue->newsletter_rendered_body)->equals(json_encode($newsletter_rendered_body));
+  }
+
   function _after() {
     Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

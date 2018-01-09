@@ -54,6 +54,7 @@ class SendingQueue extends Model {
   }
 
   function save() {
+    $this->newsletter_rendered_body = $this->getNewsletterRenderedBody();
     if(!is_serialized($this->subscribers) && !is_null($this->subscribers)) {
       $this->set('subscribers', serialize($this->subscribers));
     }
