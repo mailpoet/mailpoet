@@ -23,9 +23,7 @@ class Widget extends \WP_Widget {
     );
 
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
-
     if(!is_admin()) {
-      $this->setupDependencies();
       $this->setupIframe();
     } else {
       add_action('widgets_admin_page', array(
@@ -89,8 +87,6 @@ class Widget extends \WP_Widget {
   }
 
   function setupDependencies() {
-    if(wp_script_is('mailpoet_public', 'enqueued')) return;
-
     wp_enqueue_style(
       'mailpoet_public',
       Env::$assets_url . '/css/' . $this->renderer->getCssAsset('public.css')
@@ -236,6 +232,8 @@ EOL;
    * Output the widget itself.
    */
   function widget($args, $instance = null) {
+    $this->setupDependencies();
+
     // turn $args into variables
     extract($args);
 
