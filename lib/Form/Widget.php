@@ -110,7 +110,8 @@ class Widget extends \WP_Widget {
       true
     );
 
-    if(!empty(Setting::getValue('re_captcha')) && Setting::getValue('re_captcha.enabled')) {
+    $captcha = Setting::getValue('re_captcha');
+    if(!empty($captcha['enabled'])) {
       wp_enqueue_script(
         'mailpoet_recaptcha',
         'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit',

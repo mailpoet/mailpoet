@@ -72,6 +72,8 @@
             $('#settings_re_captcha_tokens_error').show();
             window.location.href = '#advanced';
             return false;
+          } else {
+            $('#settings_re_captcha_tokens_error').hide();
           }
           // if we're setting up a sending method, try to activate it
           if ($('.mailpoet_mta_setup_save').is(':visible')) {

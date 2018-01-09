@@ -9,12 +9,12 @@ function ( // eslint-disable-line func-names
 ) {
   jQuery(function ($) { // eslint-disable-line func-names
     window.reCaptchaCallback = function () {
-      $('.mailpoet_recaptcha').each(function() {
+      $('.mailpoet_recaptcha').each(function () {
         var sitekey = $(this).attr('data-sitekey');
         var container = $(this).find('> .mailpoet_recaptcha_container').get(0);
         var field = $(this).find('> .mailpoet_recaptcha_field');
-        var widget_id = window.grecaptcha.render(container, {sitekey: sitekey, size: 'compact'});
-        field.val(widget_id);
+        var widgetId = window.grecaptcha.render(container, { sitekey: sitekey, size: 'compact' });
+        field.val(widgetId);
       });
     };
 
