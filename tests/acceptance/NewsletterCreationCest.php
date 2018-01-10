@@ -23,8 +23,9 @@ class NewsletterCreationCest {
     $I->click('Next');
 
     // step 3 - select template
-    $post_notification_template = '[data-automation-id=\'select_template_14\']';
+    $post_notification_template = '[data-automation-id=\'select_template_0\']';
     $I->waitForElement($post_notification_template);
+    $I->see('Post Notifications', ['css' => 'a.current']);
     $I->seeInCurrentUrl('#/template');
     $I->click($post_notification_template);
 
