@@ -101,6 +101,7 @@ define(
               endpoint: 'newsletterTemplates',
               action: 'save',
               data: {
+                newsletter_id: response.data.id,
                 name: response.data.subject,
                 description: response.data.preheader,
                 thumbnail: thumbnail.toDataURL('image/jpeg'),
@@ -189,12 +190,17 @@ define(
                         'MailPoet Free version': window.mailpoet_version,
                       });
                     }
+                    this.setState({ loading: false });
                   });
-                }).fail(this.showError);
+                })
+                .fail((err) => {
+                  this.showError(err);
+                  this.setState({ loading: false });
+                });
             }
           })
-          .fail(this.showError)
-          .always(() => {
+          .fail((err) => {
+            this.showError(err);
             this.setState({ loading: false });
           });
         }

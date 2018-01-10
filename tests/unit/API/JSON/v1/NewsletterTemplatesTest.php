@@ -15,6 +15,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     NewsletterTemplate::createOrUpdate(array(
       'name' => 'Template #2',
+      'newsletter_id' => 1,
       'description' => 'My Second Template',
       'body' => '{"key2": "value2"}'
     ));
@@ -53,7 +54,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($response->data)->equals($templates);
   }
 
-  function testItCanSaveANewsletterTemplate() {
+  function testItCanSaveANewTemplate() {
     $template_data = array(
       'name' => 'Template #3',
       'description' => 'My Third Template',
@@ -66,6 +67,41 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($response->data)->equals(
       NewsletterTemplate::findOne($response->data['id'])->asArray()
     );
+  }
+
+  function testItCanSaveANewTemplateAssociatedWithANewsletter() {
+    $template_data = array(
+      'newsletter_id' => 2,
+      'name' => 'Template #3',
+      'description' => 'My Third Template',
+      'body' => '{"key3": "value3"}'
+    );
+
+    $router = new NewsletterTemplates();
+    $response = $router->save($template_data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      NewsletterTemplate::findOne($response->data['id'])->asArray()
+    );
+  }
+
+  function testItCanUpdateTemplateAssociatedWithANewsletter() {
+    $template_data = array(
+      'newsletter_id' => 1,
+      'name' => 'Template #2',
+      'description' => 'My Updated Second Template',
+      'body' => '{"key3": "value3"}'
+    );
+
+    $router = new NewsletterTemplates();
+    $response = $router->save($template_data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      NewsletterTemplate::findOne($response->data['id'])->asArray()
+    );
+
+    $template = NewsletterTemplate::whereEqual('newsletter_id', 1)->findOne();
+    expect($response->data)->equals($template->asArray());
   }
 
   function testItCanDeleteANewsletterTemplate() {

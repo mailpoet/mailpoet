@@ -244,6 +244,7 @@ class Migrator {
   function newsletterTemplates() {
     $attributes = array(
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int NULL DEFAULT 0,',
       'name varchar(250) NOT NULL,',
       'categories varchar(250) NOT NULL DEFAULT "[]",',
       'description varchar(250) NOT NULL,',
