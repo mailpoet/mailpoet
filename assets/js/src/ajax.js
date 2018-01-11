@@ -63,7 +63,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function ajax(mp, jQuery, _
 
       // remove null values from the data object
       if (_.isObject(params.data)) {
-        params.data = _.pick(params.data, function IsNotNull(value) {
+        params.data = _.pick(params.data, function isNotNull(value) {
           return (value !== null);
         });
       }
