@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Spacer content block
  */
@@ -5,14 +7,12 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/base',
   'underscore'
-], function (App, BaseBlock, _) {
-  'use strict';
-
+], function (App, BaseBlock, _) { // eslint-disable-line func-names
   var Module = {};
   var base = BaseBlock;
 
   Module.SpacerBlockModel = base.BlockModel.extend({
-    defaults: function () {
+    defaults: function () { // eslint-disable-line func-names
       return this._getDefaults({
         type: 'spacer',
         styles: {
@@ -27,7 +27,7 @@ define([
 
   Module.SpacerBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_spacer_block mailpoet_droppable_block',
-    getTemplate: function () { return window.templates.spacerBlock; },
+    getTemplate: function () { return window.templates.spacerBlock; }, // eslint-disable-line func-names
     behaviors: _.defaults({
       ResizableBehavior: {
         elementSelector: '.mailpoet_spacer',
@@ -40,33 +40,33 @@ define([
       }
     }, base.BlockView.prototype.behaviors),
     modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'),
-    onDragSubstituteBy: function () { return Module.SpacerWidgetView; },
-    initialize: function () {
+    onDragSubstituteBy: function () { return Module.SpacerWidgetView; }, // eslint-disable-line func-names
+    initialize: function () { // eslint-disable-line func-names
       base.BlockView.prototype.initialize.apply(this, arguments);
 
       this.listenTo(this.model, 'change:styles.block.backgroundColor', this.render);
       this.listenTo(this.model, 'change:styles.block.height', this.changeHeight);
     },
-    onRender: function () {
+    onRender: function () { // eslint-disable-line func-names
       this.toolsView = new Module.SpacerBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
     },
-    changeHeight: function () {
+    changeHeight: function () { // eslint-disable-line func-names
       this.$('.mailpoet_spacer').css('height', this.model.get('styles.block.height'));
       this.$('.mailpoet_resize_handle_text').text(this.model.get('styles.block.height'));
     },
-    onBeforeDestroy: function () {
+    onBeforeDestroy: function () { // eslint-disable-line func-names
       this.stopListening(this.model);
     }
   });
 
   Module.SpacerBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function () { return Module.SpacerBlockSettingsView; }
+    getSettingsView: function () { return Module.SpacerBlockSettingsView; } // eslint-disable-line func-names
   });
 
   Module.SpacerBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function () { return window.templates.spacerBlockSettings; },
-    events: function () {
+    getTemplate: function () { return window.templates.spacerBlockSettings; }, // eslint-disable-line func-names
+    events: function () { // eslint-disable-line func-names
       return {
         'change .mailpoet_field_spacer_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
         'click .mailpoet_done_editing': 'close'
@@ -75,18 +75,18 @@ define([
   });
 
   Module.SpacerWidgetView = base.WidgetView.extend({
-    getTemplate: function () { return window.templates.spacerInsertion; },
+    getTemplate: function () { return window.templates.spacerInsertion; }, // eslint-disable-line func-names
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,
-        drop: function () {
+        drop: function () { // eslint-disable-line func-names
           return new Module.SpacerBlockModel();
         }
       }
     }
   });
 
-  App.on('before:start', function (BeforeStartApp) {
+  App.on('before:start', function (BeforeStartApp) { // eslint-disable-line func-names
     BeforeStartApp.registerBlockType('spacer', {
       blockModel: Module.SpacerBlockModel,
       blockView: Module.SpacerBlockView

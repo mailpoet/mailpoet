@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /*
  * name: MailPoet Form Editor
  * author: Jonathan Labreuille
@@ -365,17 +366,17 @@ WysijaForm = {
     };
     // body
     WysijaForm.getBlocks().each(function (b) {
-      var blockData = (typeof (b.block['save']) === 'function') ? b.block.save() : null;
+      var blockData = (typeof (b.block.save) === 'function') ? b.block.save() : null;
 
       if (blockData !== null) {
         // set block position
-        blockData['position'] = position;
+        blockData.position = position;
 
         // increment position
         position++;
 
         // add block data to body
-        data['body'].push(blockData);
+        data.body.push(blockData);
       }
     });
 
@@ -480,7 +481,7 @@ WysijaForm = {
     WysijaForm.getBlocks().each(function (container) {
       container.setPosition(index++);
       // remove z-index value to avoid issues when resizing images
-      if (container['block'] !== undefined) {
+      if (container.block !== undefined) {
         container.block.element.setStyle({
           zIndex: ''
         });
@@ -774,7 +775,7 @@ WysijaForm.Block = window.Class.create({
     this.block.makeBlockDroppable();
 
     // setup events
-    if (this.block['setup'] !== undefined) {
+    if (this.block.setup !== undefined) {
       this.block.setup();
     }
     return this;
@@ -783,13 +784,13 @@ WysijaForm.Block = window.Class.create({
     this.element.writeAttribute('wysija_position', position);
   },
   hideControls: function () {
-    if (this['getControls']) {
+    if (this.getControls) {
       this.element.removeClassName('hover');
       this.getControls().hide();
     }
   },
   showControls: function () {
-    if (this['getControls']) {
+    if (this.getControls) {
       this.element.addClassName('hover');
       try {
         this.getControls().show();

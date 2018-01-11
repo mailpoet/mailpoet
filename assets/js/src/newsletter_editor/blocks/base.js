@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /**
  * Defines base classes for actual content blocks to extend.
  * Extending content block modules need to at least extend

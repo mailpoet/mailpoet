@@ -5,7 +5,7 @@ define(
     'mailpoet',
     'handlebars'
   ],
- function (
+ function (// eslint-disable-line func-names
    _,
    jQuery,
    MailPoet,
@@ -14,7 +14,7 @@ define(
    if (!jQuery('#mailpoet_subscribers_export').length) {
      return;
    }
-   jQuery(document).ready(function () {
+   jQuery(document).ready(function () { // eslint-disable-line func-names
      var segmentsContainerElement;
      var subscriberFieldsContainerElement;
      var exportConfirmedOptionElement;
@@ -47,7 +47,7 @@ define(
      exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]');
      groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]');
      nextStepButton = jQuery('a.mailpoet_export_process');
-     renderSegmentsAndFields = function (container, data) {
+     renderSegmentsAndFields = function (container, data) { // eslint-disable-line func-names
        if (container.data('select2')) {
          container
          .html('')
@@ -57,18 +57,18 @@ define(
        .select2({
          data: data,
          width: '20em',
-         templateResult: function (item) {
+         templateResult: function (item) { // eslint-disable-line func-names
            return (item.subscriberCount > 0)
             ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
             : item.name;
          },
-         templateSelection: function (item) {
+         templateSelection: function (item) { // eslint-disable-line func-names
            return (item.subscriberCount > 0)
             ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
             : item.name;
          }
        })
-       .on('select2:selecting', function (selectEvent) {
+       .on('select2:selecting', function (selectEvent) { // eslint-disable-line func-names
          var selectElement = this;
          var selectedOptionId = selectEvent.params.args.data.id;
          var fieldsToExclude = [
@@ -82,7 +82,7 @@ define(
              jQuery(selectElement).val('').trigger('change');
            } else {
              allOptions = [];
-             _.each(container.find('option'), function (field) {
+             _.each(container.find('option'), function (field) { // eslint-disable-line func-names
                if (!_.contains(fieldsToExclude, field.value)) {
                  allOptions.push(field.value);
                }
@@ -92,7 +92,7 @@ define(
            jQuery(selectElement).select2('close');
          }
        })
-       .on('change', function () {
+       .on('change', function () { // eslint-disable-line func-names
          if ((window.exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
           ||
           (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
@@ -125,7 +125,7 @@ define(
        'status'
      ]).trigger('change');
 
-     exportConfirmedOptionElement.change(function () {
+     exportConfirmedOptionElement.change(function () { // eslint-disable-line func-names
        var selectedSegments = segmentsContainerElement.val();
        if (this.value == 1) {
          window.exportData.exportConfirmedOption = true;
@@ -138,7 +138,7 @@ define(
        segmentsContainerElement.val(selectedSegments).trigger('change');
      });
 
-     nextStepButton.click(function () {
+     nextStepButton.click(function () { // eslint-disable-line func-names
        var exportFormat;
        if (jQuery(this).hasClass('button-disabled')) {
          return;
@@ -156,9 +156,9 @@ define(
            segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
            subscriber_fields: subscriberFieldsContainerElement.val()
          })
-       }).always(function () {
+       }).always(function () { // eslint-disable-line func-names
          MailPoet.Modal.loading(false);
-       }).done(function (response) {
+       }).done(function (response) { // eslint-disable-line func-names
          var resultMessage = MailPoet.I18n.t('exportMessage')
          .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
          .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
@@ -171,10 +171,10 @@ define(
            'File Format': exportFormat,
            'MailPoet Free version': window.mailpoet_version
          });
-       }).fail(function (response) {
+       }).fail(function (response) { // eslint-disable-line func-names
          if (response.errors.length > 0) {
            MailPoet.Notice.error(
-              response.errors.map(function (error) { return error.message; }),
+              response.errors.map(function (error) { return error.message; }), // eslint-disable-line func-names
               { scroll: true }
             );
          }

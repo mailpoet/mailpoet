@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   // Handlebars helpers
   Handlebars.registerHelper('concat', function () {

@@ -31,12 +31,12 @@ function exportMixpanel(mp) {
   if (window.mailpoet_analytics_enabled) {
     MailPoet.trackEvent = track;
   } else {
-    MailPoet.trackEvent = function () {};
+    MailPoet.trackEvent = function emptyFunction() {};
   }
 }
 
 function trackCachedEvents() {
-  eventsCache.map(function (event) {
+  eventsCache.map(function trackIfEnabled(event) {
     if (window.mailpoet_analytics_enabled || event.forced) {
       window.mixpanel.track(event.name, event.data);
     }
@@ -53,7 +53,7 @@ function cacheEvent(forced, name, data) {
 
 define(
   ['mailpoet', 'underscore'],
-  function (mp, _) {
+  function analyticsEvent(mp, _) {
     var MailPoet = mp;
 
     function initializeMixpanelWhenLoaded() {

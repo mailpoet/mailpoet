@@ -7,23 +7,23 @@ define([
   'backbone.marionette',
   'underscore',
   'newsletter_editor/behaviors/BehaviorsLookup'
-], function (Marionette, _, BehaviorsLookup) {
+], function (Marionette, _, BehaviorsLookup) { // eslint-disable-line func-names
   var BL = BehaviorsLookup;
 
   BL.SortableBehavior = Marionette.Behavior.extend({
-    onRender: function () {
+    onRender: function () { // eslint-disable-line func-names
       var collection = this.view.collection;
 
       if (_.isFunction(this.$el.sortable)) {
         this.$el.sortable({
           cursor: 'move',
-          start: function (event, ui) {
+          start: function (event, ui) { // eslint-disable-line func-names
             ui.item.data('previousIndex', ui.item.index());
           },
-          end: function (event, ui) {
+          end: function (event, ui) { // eslint-disable-line func-names
             ui.item.removeData('previousIndex');
           },
-          update: function (event, ui) {
+          update: function (event, ui) { // eslint-disable-line func-names
             var previousIndex = ui.item.data('previousIndex');
             var newIndex = ui.item.index();
             var model = collection.at(previousIndex);

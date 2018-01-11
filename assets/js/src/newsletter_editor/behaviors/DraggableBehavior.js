@@ -10,7 +10,7 @@ define([
   'jquery',
   'newsletter_editor/behaviors/BehaviorsLookup',
   'interact'
-], function (Marionette, _, jQuery, BehaviorsLookup, interact) {
+], function (Marionette, _, jQuery, BehaviorsLookup, interact) { // eslint-disable-line func-names
   var BL = BehaviorsLookup;
 
   BL.DraggableBehavior = Marionette.Behavior.extend({
@@ -24,14 +24,14 @@ define([
        *
        * @return Backbone.Model A model that will be passed to the receiver
        */
-      getDropModel: function () {
+      getDropModel: function () { // eslint-disable-line func-names
         throw "Missing 'drop' function for DraggableBehavior";
       },
 
-      onDrop: function () {},
-      testAttachToInstance: function () { return true; }
+      onDrop: function () {}, // eslint-disable-line func-names
+      testAttachToInstance: function () { return true; } // eslint-disable-line func-names
     },
-    onRender: function () {
+    onRender: function () { // eslint-disable-line func-names
       var that = this;
       var interactable;
 
@@ -47,7 +47,7 @@ define([
         // Scroll when dragging near edges of a window
         autoScroll: true,
 
-        onstart: function (startEvent) {
+        onstart: function (startEvent) { // eslint-disable-line func-names
           var event = startEvent;
           var centerXOffset;
           var centerYOffset;
@@ -86,7 +86,7 @@ define([
           }
         },
         // call this function on every dragmove event
-        onmove: function (event) {
+        onmove: function (event) { // eslint-disable-line func-names
           var target = event.target;
           // keep the dragged position in the data-x/data-y attributes
           var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
@@ -100,7 +100,7 @@ define([
           target.setAttribute('data-x', x);
           target.setAttribute('data-y', y);
         },
-        onend: function (event) {
+        onend: function (event) { // eslint-disable-line func-names
           var target = event.target;
           target.style.transform = '';
           target.style.webkitTransform = target.style.transform;
@@ -119,7 +119,7 @@ define([
       })
       .preventDefault('auto')
       .styleCursor(false)
-      .actionChecker(function (pointer, event, action) {
+      .actionChecker(function (pointer, event, action) { // eslint-disable-line func-names
         // Disable dragging with right click
         if (event.button !== 0) {
           return null;
@@ -133,7 +133,7 @@ define([
       } else {
         interactable.getDropModel = this.view.getDropFunc();
       }
-      interactable.onDrop = function (opts) {
+      interactable.onDrop = function (opts) { // eslint-disable-line func-names
         var options = opts;
         if (_.isObject(options)) {
           // Inject Draggable behavior if possible

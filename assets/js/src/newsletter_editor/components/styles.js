@@ -1,11 +1,12 @@
+
+'use strict';
+
 define([
   'newsletter_editor/App',
   'backbone.marionette',
   'backbone.supermodel',
   'underscore'
-], function (App, Marionette, SuperModel, _) {
-  'use strict';
-
+], function (App, Marionette, SuperModel, _) { // eslint-disable-line func-names
   var Module = {};
 
   Module.StylesModel = SuperModel.extend({
@@ -41,34 +42,34 @@ define([
         backgroundColor: '#cccccc'
       }
     },
-    initialize: function () {
-      this.on('change', function () { App.getChannel().trigger('autoSave'); });
+    initialize: function () { // eslint-disable-line func-names
+      this.on('change', function () { App.getChannel().trigger('autoSave'); }); // eslint-disable-line func-names
     }
   });
 
   Module.StylesView = Marionette.View.extend({
-    getTemplate: function () { return window.templates.styles; },
+    getTemplate: function () { return window.templates.styles; }, // eslint-disable-line func-names
     modelEvents: {
       change: 'render'
     },
-    serializeData: function () {
+    serializeData: function () { // eslint-disable-line func-names
       return this.model.toJSON();
     }
   });
 
   Module._globalStyles = new SuperModel();
-  Module.getGlobalStyles = function () {
+  Module.getGlobalStyles = function () { // eslint-disable-line func-names
     return Module._globalStyles;
   };
-  Module.setGlobalStyles = function (options) {
+  Module.setGlobalStyles = function (options) { // eslint-disable-line func-names
     Module._globalStyles = new Module.StylesModel(options);
     return Module._globalStyles;
   };
-  Module.getAvailableStyles = function () {
+  Module.getAvailableStyles = function () { // eslint-disable-line func-names
     return App.getConfig().get('availableStyles');
   };
 
-  App.on('before:start', function (BeforeStartApp, options) {
+  App.on('before:start', function (BeforeStartApp, options) { // eslint-disable-line func-names
     var Application = BeforeStartApp;
     var body;
     var globalStyles;
@@ -82,7 +83,7 @@ define([
     this.setGlobalStyles(globalStyles);
   });
 
-  App.on('start', function (StartApp) {
+  App.on('start', function (StartApp) { // eslint-disable-line func-names
     var stylesView = new Module.StylesView({ model: StartApp.getGlobalStyles() });
     StartApp._appView.showChildView('stylesRegion', stylesView);
   });

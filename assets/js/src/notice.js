@@ -1,6 +1,6 @@
-define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
-  'use strict';
+'use strict';
 
+define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disable-line func-names
   /*= =================================================================================================
 
       MailPoet Notice:
@@ -40,13 +40,13 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       onClose: null
     },
     options: {},
-    init: function (options) {
+    init: function init(options) {
       // set options
       this.options = jQuery.extend({}, this.defaults, options);
 
       return this;
     },
-    createNotice: function () {
+    createNotice: function createNotice() {
       var onClose;
       var positionAfter;
       // clone element
@@ -80,8 +80,8 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       }
 
       // listen to remove event
-      jQuery(this.element).on('close', function () {
-        jQuery(this).fadeOut(200, function () {
+      jQuery(this.element).on('close', function () { // eslint-disable-line func-names
+        jQuery(this).fadeOut(200, function () { // eslint-disable-line func-names
           // on close callback
           if (onClose !== null) {
             onClose();
@@ -92,19 +92,19 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       }.bind(this.element));
 
       // listen to message event
-      jQuery(this.element).on('setMessage', function (e, message) {
+      jQuery(this.element).on('setMessage', function (e, message) { // eslint-disable-line func-names
         MailPoet.Notice.setMessage(message);
       }.bind(this.element));
 
       return this;
     },
-    updateNotice: function () {
+    updateNotice: function updateNotice() {
       // update notice's message
       jQuery('[data-id="' + this.options.id + '"').first().trigger(
         'setMessage', this.options.message
       );
     },
-    setMessage: function (message) {
+    setMessage: function setMessage(message) {
       var formattedMessage = this.formatMessage(message);
 
       // let's sugar coat the message with a fancy <p>
@@ -112,13 +112,13 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       // set message
       return this.element.html(formattedMessage);
     },
-    formatMessage: function (message) {
+    formatMessage: function formatMessage(message) {
       if (Array.isArray(message)) {
         return message.join('<br />');
       }
       return message;
     },
-    show: function (options) {
+    show: function show(options) {
       // initialize
       this.init(options);
 
@@ -133,7 +133,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       }
       this.showNotice();
     },
-    showNotice: function () {
+    showNotice: function showNotice() {
       // set message
       this.setMessage(this.options.message);
 
@@ -166,7 +166,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
         this.element.delay(this.options.timeout).trigger('close');
       } else if (this.options.hideClose === false) {
         this.element.append('<a href="javascript:;" class="mailpoet_notice_close"><span class="dashicons dashicons-dismiss"></span></a>');
-        this.element.find('.mailpoet_notice_close').on('click', function () {
+        this.element.find('.mailpoet_notice_close').on('click', function () { // eslint-disable-line func-names
           jQuery(this).trigger('close');
         });
       }
@@ -176,7 +176,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
         this.options.onOpen(this.element);
       }
     },
-    hide: function (all) {
+    hide: function hide(all) {
       var id;
       if (all !== undefined && all === true) {
         // all notices
@@ -194,19 +194,19 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
           .trigger('close');
       }
     },
-    error: function (message, options) {
+    error: function error(message, options) {
       this.show(jQuery.extend({}, {
         type: 'error',
         message: message
       }, options));
     },
-    success: function (message, options) {
+    success: function success(message, options) {
       this.show(jQuery.extend({}, {
         type: 'success',
         message: message
       }, options));
     },
-    system: function (message, options) {
+    system: function system(message, options) {
       this.show(jQuery.extend({}, {
         type: 'system',
         static: true,

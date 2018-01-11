@@ -10,20 +10,20 @@
 
 /* jshint unused:false */
 /* global tinymce:true */
-tinymce.PluginManager.add('mailpoet_shortcodes', function (editor) {
-  var appendLabelAndClose = function (shortcode) {
+tinymce.PluginManager.add('mailpoet_shortcodes', function (editor) { // eslint-disable-line func-names
+  var appendLabelAndClose = function (shortcode) { // eslint-disable-line func-names
     editor.insertContent(shortcode);
     editor.windowManager.close();
   };
-  var generateOnClickFunc = function (shortcode) {
-    return function () {
+  var generateOnClickFunc = function (shortcode) { // eslint-disable-line func-names
+    return function () { // eslint-disable-line func-names
       appendLabelAndClose(shortcode);
     };
   };
 
   editor.addButton('mailpoet_shortcodes', {
     icon: 'mailpoet_shortcodes',
-    onclick: function () {
+    onclick: function () { // eslint-disable-line func-names
       var shortcodes = [];
       var configShortcodes = editor.settings.mailpoet_shortcodes;
       var segment;

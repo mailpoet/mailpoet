@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /**
  * Social icons content block
  */

@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 define('modal', ['mailpoet', 'jquery'],
   function (mp, jQuery) {
     'use strict';
@@ -254,7 +255,7 @@ define('modal', ['mailpoet', 'jquery'],
 
             // add sub panel wrapper
           jQuery('#mailpoet_' + this.options.type)
-              .append(this.templates['subpanel']);
+              .append(this.templates.subpanel);
 
             // add sub panel content
           jQuery('.mailpoet_' + this.options.type + '_body').last()

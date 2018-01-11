@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /**
  * Automated latest content block.
  * Only query parameters can be modified by the user. Posts pulled by this

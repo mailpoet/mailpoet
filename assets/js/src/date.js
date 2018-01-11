@@ -3,7 +3,7 @@ define('date',
     'mailpoet',
     'jquery',
     'moment'
-  ], function (
+  ], function ( // eslint-disable-line func-names
     mp,
     jQuery,
     Moment
@@ -19,7 +19,7 @@ define('date',
         offset: 0,
         format: 'F, d Y H:i:s'
       },
-      init: function (opts) {
+      init: function init(opts) {
         var options = opts || {};
 
       // set UTC offset
@@ -41,7 +41,7 @@ define('date',
 
         return this;
       },
-      format: function (date, opts) {
+      format: function format(date, opts) {
         var options = opts || {};
         var momentDate;
         this.init(options);
@@ -50,28 +50,28 @@ define('date',
         if (options.offset === 0) momentDate = momentDate.utc();
         return momentDate.format(this.convertFormat(this.options.format));
       },
-      toDate: function (date, opts) {
+      toDate: function toDate(date, opts) {
         var options = opts || {};
         this.init(options);
 
         return Moment(date, this.convertFormat(options.parseFormat)).toDate();
       },
-      short: function (date) {
+      short: function short(date) {
         return this.format(date, {
           format: 'F, j Y'
         });
       },
-      full: function (date) {
+      full: function full(date) {
         return this.format(date, {
           format: 'F, j Y H:i:s'
         });
       },
-      time: function (date) {
+      time: function time(date) {
         return this.format(date, {
           format: 'H:i:s'
         });
       },
-      convertFormat: function (format) {
+      convertFormat: function convertFormat(format) {
         var replacements;
         var convertedFormat;
         var escapeToken;
@@ -146,7 +146,7 @@ define('date',
 
         if (!format || format.length <= 0) return format;
 
-        replacements = formatMappings['date'];
+        replacements = formatMappings.date;
         convertedFormat = [];
         escapeToken = false;
 

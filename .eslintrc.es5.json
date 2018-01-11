@@ -41,13 +41,6 @@
     "no-throw-literal": 0,
     "no-extra-bind": 0,
     "brace-style": 0,
-    "strict": 0,
-    "space-infix-ops": 0,
-    "object-shorthand": 0,
-    "new-parens": 0,
-    "eol-last": 0,
-    "dot-notation": 0,
-    "prefer-template": 0,
-    "func-names": 0
+    "space-infix-ops": 0
   }
 }

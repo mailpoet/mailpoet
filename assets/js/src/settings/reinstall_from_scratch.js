@@ -2,7 +2,7 @@ define(
   [
     'mailpoet'
   ],
-  function (
+  function ( // eslint-disable-line func-names
     MailPoet
   ) {
     var element;
@@ -18,14 +18,14 @@ define(
           api_version: window.mailpoet_api_version,
           endpoint: 'setup',
           action: 'reset'
-        }).always(function () {
+        }).always(function () { // eslint-disable-line func-names
           MailPoet.Modal.loading(false);
-        }).done(function () {
+        }).done(function () { // eslint-disable-line func-names
           window.location = 'admin.php?page=mailpoet-newsletters';
-        }).fail(function (response) {
+        }).fail(function (response) { // eslint-disable-line func-names
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function (error) {
+              response.errors.map(function (error) { // eslint-disable-line func-names
                 return error.message;
               }),
               { scroll: true }

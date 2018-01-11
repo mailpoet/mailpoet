@@ -2,7 +2,7 @@ define(
   [
     'jquery'
   ],
-  function (
+  function ( // eslint-disable-line func-names
     jQuery
   ) {
     var $ = jQuery;
@@ -23,12 +23,12 @@ define(
      * Dual licensed under the MIT and GPL licenses.
      * http://benalman.com/about/license/
      */
-    $.fn.mailpoetSerializeObject = function (coerce) {
+    $.fn.mailpoetSerializeObject = function (coerce) { // eslint-disable-line func-names
       var obj = {};
       var coerceTypes = { true: !0, false: !1, null: null };
 
       // Iterate over all name=value pairs.
-      $.each(this.serializeArray(), function (j, v) {
+      $.each(this.serializeArray(), function (j, v) { // eslint-disable-line func-names
         var key = v.name;
         var val = v.value;
         var cur = obj;
