@@ -2,12 +2,16 @@
 
 namespace MailPoet\Services\Bridge;
 
+use MailPoet\WP\Hooks as WPHooks;
+
 if(!defined('ABSPATH')) exit;
 
 class API {
   const SENDING_STATUS_OK = 'ok';
   const SENDING_STATUS_CONNECTION_ERROR = 'connection_error';
   const SENDING_STATUS_SEND_ERROR = 'send_error';
+
+  const REQUEST_TIMEOUT = 10; // seconds
 
   const RESPONSE_CODE_KEY_INVALID = 401;
   const RESPONSE_CODE_STATS_SAVED = 204;
@@ -124,7 +128,7 @@ class API {
 
   private function request($url, $body, $method = 'POST') {
     $params = array(
-      'timeout' => 10,
+      'timeout' => WPHooks::applyFilters('mailpoet_bridge_api_request_timeout', self::REQUEST_TIMEOUT),
       'httpversion' => '1.0',
       'method' => $method,
       'headers' => array(

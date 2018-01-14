@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Services;
 
+use AspectMock\Test as Mock;
 use Codeception\Util\Stub;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -9,6 +10,7 @@ use MailPoet\Models\Setting;
 
 require_once('BridgeTestMockAPI.php');
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
+use MailPoet\WP\Hooks;
 
 class BridgeTest extends \MailPoetTest {
   function _before() {
@@ -252,6 +254,25 @@ class BridgeTest extends \MailPoetTest {
     expect(Bridge::pingBridge())->true();
   }
 
+  function testItAllowChangingRequestTimeout() {
+    $mock = Mock::func('MailPoet\Services\Bridge', 'wp_remote_post', true);
+    $api = new API('test_key');
+
+    // test default request value
+    $api->sendMessages('test');
+    expect($mock->getCallsForMethod('wp_remote_post')[0][1]['timeout'])->equals(API::REQUEST_TIMEOUT);
+
+    // test custom request value
+    $custom_request_value = 20;
+    $filter = function() use ($custom_request_value) {
+      return $custom_request_value;
+    };
+    Hooks::addFilter('mailpoet_bridge_api_request_timeout', $filter);
+    $api->sendMessages('test');
+    expect($mock->getCallsForMethod('wp_remote_post')[1][1]['timeout'])->equals($custom_request_value);
+    Hooks::removeFilter('mailpoet_bridge_api_request_timeout', $filter);
+  }
+
   private function setMailPoetSendingMethod() {
     Setting::setValue(
       Mailer::MAILER_CONFIG_SETTING_NAME,
@@ -286,6 +307,7 @@ class BridgeTest extends \MailPoetTest {
   }
 
   function _after() {
+    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }
