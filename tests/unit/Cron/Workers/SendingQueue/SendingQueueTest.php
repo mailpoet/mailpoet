@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Cron\Workers\SendingQueue;
 
 use AspectMock\Test as Mock;
@@ -24,6 +25,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Subscription\Url;
+use MailPoet\WP\Hooks;
 
 class SendingQueueTest extends \MailPoetTest {
   function _before() {
@@ -93,6 +95,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function testItConstructs() {
+    expect($this->sending_queue_worker->batch_size)->equals(SendingQueueWorker::BATCH_SIZE);
     expect($this->sending_queue_worker->mailer_task instanceof MailerTask);
     expect($this->sending_queue_worker->newsletter_task instanceof NewsletterTask);
     expect(strlen($this->sending_queue_worker->timer))->greaterOrEquals(5);
@@ -219,7 +222,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) use($directUnsubscribeURL) {
+          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) use ($directUnsubscribeURL) {
             expect(isset($extra_params['unsubscribe_url']))->true();
             expect($extra_params['unsubscribe_url'])->equals($directUnsubscribeURL);
             return true;
@@ -239,7 +242,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) use($trackedUnsubscribeURL) {
+          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) use ($trackedUnsubscribeURL) {
             expect(isset($extra_params['unsubscribe_url']))->true();
             expect($extra_params['unsubscribe_url'])->equals($trackedUnsubscribeURL);
             return true;
@@ -458,9 +461,11 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => Stub::exactly(1, function() {
-        return true;
-      })),
+      array(
+        'send' => Stub::exactly(1, function() {
+          return true;
+        })
+      ),
       $this
     );
     $sending_queue_worker->process();
@@ -611,6 +616,17 @@ class SendingQueueTest extends \MailPoetTest {
         'error_message' => 'QUEUE-100-PROCESSED-LIST-UPDATE'
       )
     );
+  }
+
+  function testItAllowsSettingCustomBatchSize() {
+    $custom_batch_size_value = 10;
+    $filter = function() use ($custom_batch_size_value) {
+      return $custom_batch_size_value;
+    };
+    Hooks::addFilter('mailpoet_cron_worker_sending_queue_bach_size', $filter);
+    $sending_queue_worker = new SendingQueueWorker();
+    expect($sending_queue_worker->batch_size)->equals($custom_batch_size_value);
+    Hooks::addFilter('mailpoet_cron_worker_sending_queue_bach_size', $filter);
   }
 
   function _after() {
