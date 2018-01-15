@@ -13,8 +13,11 @@ function ( // eslint-disable-line func-names
         var sitekey = $(this).attr('data-sitekey');
         var container = $(this).find('> .mailpoet_recaptcha_container').get(0);
         var field = $(this).find('> .mailpoet_recaptcha_field');
-        var widgetId = window.grecaptcha.render(container, { sitekey: sitekey, size: 'compact' });
-        field.val(widgetId);
+        var widgetId;
+        if (sitekey) {
+          widgetId = window.grecaptcha.render(container, { sitekey: sitekey, size: 'compact' });
+          field.val(widgetId);
+        }
       });
     };
 
@@ -66,7 +69,7 @@ function ( // eslint-disable-line func-names
                 }).join('<br />')
               ).show();
           }).done(function (response) { // eslint-disable-line func-names
-            if (window.grecaptcha) {
+            if (window.grecaptcha && formData.recaptcha) {
               window.grecaptcha.reset(formData.recaptcha);
             }
             return response;
@@ -88,7 +91,7 @@ function ( // eslint-disable-line func-names
               // reset validation
             parsley.reset();
             // reset captcha
-            if (window.grecaptcha) {
+            if (window.grecaptcha && formData.recaptcha) {
               window.grecaptcha.reset(formData.recaptcha);
             }
 

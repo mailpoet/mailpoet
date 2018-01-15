@@ -90,17 +90,18 @@ class Subscribers extends APIEndpoint {
       ));
     }
 
-    if(!empty($recaptcha['enabled']) && !isset($data['recaptcha'])) {
+    if(!empty($recaptcha['enabled']) && empty($data['recaptcha'])) {
       return $this->badRequest(array(
         APIError::BAD_REQUEST => __('Please check the captcha.', 'mailpoet')
       ));
     }
 
     if(!empty($recaptcha['enabled'])) {
+      $res = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
       $res = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
         'body' => array(
           'secret' => $recaptcha['secret_token'],
-          'response' => $data['recaptcha']
+          'response' => $res
         ) 
       ));
       if(is_wp_error($res)) {
@@ -124,7 +125,6 @@ class Subscribers extends APIEndpoint {
     );
     $segment_ids = $form->filterSegments($segment_ids);
     unset($data['segments']);
-
 
     if(empty($segment_ids)) {
       return $this->badRequest(array(
