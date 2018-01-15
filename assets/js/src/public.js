@@ -8,8 +8,8 @@ function ( // eslint-disable-line func-names
   jQuery
 ) {
   jQuery(function ($) { // eslint-disable-line func-names
-    window.reCaptchaCallback = function () {
-      $('.mailpoet_recaptcha').each(function () {
+    window.reCaptchaCallback = function reCaptchaCallback() {
+      $('.mailpoet_recaptcha').each(function () { // eslint-disable-line func-names
         var sitekey = $(this).attr('data-sitekey');
         var container = $(this).find('> .mailpoet_recaptcha_container').get(0);
         var field = $(this).find('> .mailpoet_recaptcha_field');
@@ -65,14 +65,12 @@ function ( // eslint-disable-line func-names
                   return error.message;
                 }).join('<br />')
               ).show();
-<<<<<<< HEAD
           }).done(function (response) { // eslint-disable-line func-names
-=======
             if (window.grecaptcha) {
               window.grecaptcha.reset(formData.recaptcha);
             }
-          }).done(function (response) {
->>>>>>> handling multiple instances of reCaptcha
+            return response;
+          }).done(function (response) { // eslint-disable-line func-names
               // successfully subscribed
             if (
                 response.meta !== undefined

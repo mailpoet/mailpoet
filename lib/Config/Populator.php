@@ -141,7 +141,7 @@ class Populator {
     }
 
     // set reCaptcha settings
-    $re_captcha = Setting::getValue('re_captcha', array());
+    $re_captcha = Setting::getValue('re_captcha');
     if(empty($re_captcha)) {
       Setting::setValue('re_captcha', array(
         'enabled' => false,

@@ -16,6 +16,8 @@ if(!defined('ABSPATH')) exit;
 class Widget extends \WP_Widget {
   private $renderer;
 
+  const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit';
+
   function __construct() {
     parent::__construct(
       'mailpoet_form',
@@ -49,7 +51,7 @@ class Widget extends \WP_Widget {
     wp_print_scripts('jquery');
     wp_print_scripts('mailpoet_vendor');
     wp_print_scripts('mailpoet_public');
-    echo '<script src="https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit" async defer></script>';
+    echo '<script src="'.self::RECAPTCHA_API_URL.'" async defer></script>';
     $scripts = ob_get_contents();
     ob_end_clean();
 
@@ -114,7 +116,7 @@ class Widget extends \WP_Widget {
     if(!empty($captcha['enabled'])) {
       wp_enqueue_script(
         'mailpoet_recaptcha',
-        'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit',
+        self::RECAPTCHA_API_URL,
         array('mailpoet_public')
       );
     }
