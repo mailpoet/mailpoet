@@ -5,6 +5,7 @@ namespace MailPoet\Services;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -55,8 +56,8 @@ class Bridge {
       'blocking' => true,
       'timeout' => 10
     );
-    $result = wp_remote_get(self::BRIDGE_URL, $params);
-    return wp_remote_retrieve_response_code($result) === 200;
+    $result = WPFunctions::wpRemoteGet(self::BRIDGE_URL, $params);
+    return WPFunctions::wpRemoteRetrieveResponseCode($result) === 200;
   }
 
   function initApi($api_key) {

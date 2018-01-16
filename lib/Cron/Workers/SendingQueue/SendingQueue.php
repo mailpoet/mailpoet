@@ -6,11 +6,11 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\WP\Hooks as WPHooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -24,6 +24,7 @@ class SendingQueue {
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
     $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
+    $this->batch_size = WPHooks::applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
   }
 
   function process() {
@@ -47,7 +48,7 @@ class SendingQueue {
       $queue->subscribers = $queue->getSubscribers();
       $subscriber_batches = array_chunk(
         $queue->subscribers['to_process'],
-        self::BATCH_SIZE
+        $this->batch_size
       );
       foreach($subscriber_batches as $subscribers_to_process_ids) {
         if(!empty($newsletter_segments_ids[0])) {

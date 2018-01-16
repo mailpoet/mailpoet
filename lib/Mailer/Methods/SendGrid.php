@@ -1,7 +1,9 @@
 <?php
+
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -18,14 +20,14 @@ class SendGrid {
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
-    $result = wp_remote_post(
+    $result = WPFunctions::wpRemotePost(
       $this->url,
       $this->request($newsletter, $subscriber, $extra_params)
     );
     if(is_wp_error($result)) {
       return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
     }
-    if(wp_remote_retrieve_response_code($result) !== 200) {
+    if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = json_decode($result['body'], true);
       $response = (!empty($response['errors'][0])) ?
         $response['errors'][0] :

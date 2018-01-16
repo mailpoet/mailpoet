@@ -1,5 +1,8 @@
 <?php
+
 namespace MailPoet\Services\Release;
+
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -17,10 +20,10 @@ class API {
       $this->url_products . $plugin_name
     );
 
-    $code = wp_remote_retrieve_response_code($result);
+    $code = WPFunctions::wpRemoteRetrieveResponseCode($result);
     switch($code) {
       case 200:
-        if($body = wp_remote_retrieve_body($result)) {
+        if($body = WPFunctions::wpRemoteRetrieveBody($result)) {
           $body = json_decode($body);
         }
         break;
@@ -47,6 +50,6 @@ class API {
       'timeout' => 10,
       'httpversion' => '1.0'
     );
-    return wp_remote_get($url, $args);
+    return WPFunctions::wpRemoteGet($url, $args);
   }
 }

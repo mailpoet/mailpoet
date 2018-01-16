@@ -63,3 +63,11 @@ function add_action() {
 function do_action() {
   return override(__FUNCTION__, func_get_args());
 }
+
+function wp_remote_post() {
+  return override(__FUNCTION__, func_get_args());
+}
+
+function wp_remote_get() {
+  return override(__FUNCTION__, func_get_args());
+}

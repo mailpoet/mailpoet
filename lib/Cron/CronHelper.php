@@ -7,6 +7,7 @@ use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Util\Security;
 use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -54,7 +55,7 @@ class CronHelper {
     );
     $result = self::queryCronUrl($url);
     if (is_wp_error($result)) return $result->get_error_message();
-    $response = wp_remote_retrieve_body($result);
+    $response = WPFunctions::wpRemoteRetrieveBody($result);
     return (!$validate_response) ?
       $response :
       $response === Daemon::PING_SUCCESS_RESPONSE;
@@ -67,7 +68,7 @@ class CronHelper {
       $data
     );
     $result = self::queryCronUrl($url);
-    return wp_remote_retrieve_body($result);
+    return WPFunctions::wpRemoteRetrieveBody($result);
   }
 
   static function queryCronUrl($url) {
@@ -80,7 +81,7 @@ class CronHelper {
         'user-agent' => 'MailPoet Cron'
       )
     );
-    return wp_remote_get($url, $args);
+    return WPFunctions::wpRemoteGet($url, $args);
   }
 
   static function getCronUrl($action, $data = false) {

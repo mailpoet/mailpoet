@@ -2,12 +2,17 @@
 
 namespace MailPoet\Services\Bridge;
 
+use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
+
 if(!defined('ABSPATH')) exit;
 
 class API {
   const SENDING_STATUS_OK = 'ok';
   const SENDING_STATUS_CONNECTION_ERROR = 'connection_error';
   const SENDING_STATUS_SEND_ERROR = 'send_error';
+
+  const REQUEST_TIMEOUT = 10; // seconds
 
   const RESPONSE_CODE_KEY_INVALID = 401;
   const RESPONSE_CODE_STATS_SAVED = 204;
@@ -30,10 +35,10 @@ class API {
       array('site' => home_url())
     );
 
-    $code = wp_remote_retrieve_response_code($result);
+    $code = WPFunctions::wpRemoteRetrieveResponseCode($result);
     switch($code) {
       case 200:
-        $body = json_decode(wp_remote_retrieve_body($result), true);
+        $body = json_decode(WPFunctions::wpRemoteRetrieveBody($result), true);
         break;
       default:
         $body = null;
@@ -49,10 +54,10 @@ class API {
       array('site' => home_url())
     );
 
-    $code = wp_remote_retrieve_response_code($result);
+    $code = WPFunctions::wpRemoteRetrieveResponseCode($result);
     switch($code) {
       case 200:
-        if($body = wp_remote_retrieve_body($result)) {
+        if($body = WPFunctions::wpRemoteRetrieveBody($result)) {
           $body = json_decode($body, true);
         }
         break;
@@ -76,11 +81,11 @@ class API {
         'message' => $result->get_error_message()
       );
     }
-    $response_code = wp_remote_retrieve_response_code($result);
+    $response_code = WPFunctions::wpRemoteRetrieveResponseCode($result);
     if($response_code !== 201) {
-      $response = (wp_remote_retrieve_body($result)) ?
-        wp_remote_retrieve_body($result) :
-        wp_remote_retrieve_response_message($result);
+      $response = (WPFunctions::wpRemoteRetrieveBody($result)) ?
+        WPFunctions::wpRemoteRetrieveBody($result) :
+        WPFunctions::wpRemoteRetrieveResponseMessage($result);
       return array(
         'status' => self::SENDING_STATUS_SEND_ERROR,
         'message' => $response,
@@ -95,8 +100,8 @@ class API {
       $this->url_bounces,
       $emails
     );
-    if(wp_remote_retrieve_response_code($result) === 200) {
-      return json_decode(wp_remote_retrieve_body($result), true);
+    if(WPFunctions::wpRemoteRetrieveResponseCode($result) === 200) {
+      return json_decode(WPFunctions::wpRemoteRetrieveBody($result), true);
     }
     return false;
   }
@@ -107,7 +112,7 @@ class API {
       array('subscriber_count' => (int)$count),
       'PUT'
     );
-    return wp_remote_retrieve_response_code($result) === self::RESPONSE_CODE_STATS_SAVED;
+    return WPFunctions::wpRemoteRetrieveResponseCode($result) === self::RESPONSE_CODE_STATS_SAVED;
   }
 
   function setKey($api_key) {
@@ -124,7 +129,7 @@ class API {
 
   private function request($url, $body, $method = 'POST') {
     $params = array(
-      'timeout' => 10,
+      'timeout' => WPHooks::applyFilters('mailpoet_bridge_api_request_timeout', self::REQUEST_TIMEOUT),
       'httpversion' => '1.0',
       'method' => $method,
       'headers' => array(
@@ -133,6 +138,6 @@ class API {
       ),
       'body' => json_encode($body)
     );
-    return wp_remote_post($url, $params);
+    return WPFunctions::wpRemotePost($url, $params);
   }
 }
