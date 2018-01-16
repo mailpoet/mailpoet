@@ -147,7 +147,7 @@ class CronHelperTest extends \MailPoetTest {
       return $request_args;
     };
     add_filter('mailpoet_cron_request_args', $filter);
-    Mock::func('MailPoet\Cron', 'wp_remote_get', function($url, $args) {
+    Mock::func('MailPoet\WP', 'wp_remote_get', function($url, $args) {
       return $args;
     });
     expect(CronHelper::queryCronUrl('test'))->equals($request_args);

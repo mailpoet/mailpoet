@@ -2,6 +2,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -51,7 +52,7 @@ class AmazonSES {
 
   function send($newsletter, $subscriber, $extra_params = array()) {
     try {
-      $result = wp_remote_post(
+      $result = WPFunctions::wpRemotePost(
         $this->url,
         $this->request($newsletter, $subscriber, $extra_params)
       );
@@ -61,8 +62,8 @@ class AmazonSES {
     if(is_wp_error($result)) {
       return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
     }
-    if(wp_remote_retrieve_response_code($result) !== 200) {
-      $response = simplexml_load_string(wp_remote_retrieve_body($result));
+    if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
+      $response = simplexml_load_string(WPFunctions::wpRemoteRetrieveBody($result));
       $response = ($response) ?
         $response->Error->Message->__toString() :
         sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
