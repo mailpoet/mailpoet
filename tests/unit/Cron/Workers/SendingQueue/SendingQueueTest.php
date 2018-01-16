@@ -626,7 +626,7 @@ class SendingQueueTest extends \MailPoetTest {
     Hooks::addFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
     $sending_queue_worker = new SendingQueueWorker();
     expect($sending_queue_worker->batch_size)->equals($custom_batch_size_value);
-    Hooks::addFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
+    Hooks::removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
   }
 
   function _after() {
