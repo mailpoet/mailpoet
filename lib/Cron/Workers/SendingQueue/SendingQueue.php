@@ -24,7 +24,7 @@ class SendingQueue {
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
     $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
-    $this->batch_size = WPHooks::applyFilters('mailpoet_cron_worker_sending_queue_bach_size', self::BATCH_SIZE);
+    $this->batch_size = WPHooks::applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
   }
 
   function process() {
