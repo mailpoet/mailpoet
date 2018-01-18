@@ -16,7 +16,7 @@ class Faith {
     return array(
       'name' => __("Faith", 'mailpoet'),
       'description' => __("A calm and muted faith template.", 'mailpoet'),
-      'categories' => json_encode(array('inspiration')),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

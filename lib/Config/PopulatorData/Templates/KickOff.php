@@ -16,7 +16,7 @@ class KickOff {
     return array(
       'name' => __("Kick-Off", 'mailpoet'),
       'description' => __("Sporty green template for your team or sport event.", 'mailpoet'),
-      'categories' => json_encode(array('inspiration')),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

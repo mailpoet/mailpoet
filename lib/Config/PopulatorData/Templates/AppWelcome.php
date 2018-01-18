@@ -16,7 +16,7 @@ class AppWelcome {
     return array(
       'name' => __("App Welcome", 'mailpoet'),
       'description' => __("A welcome email template for your app.", 'mailpoet'),
-      'categories' => json_encode(array('welcome_emails')),
+      'categories' => json_encode(array('welcome', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
