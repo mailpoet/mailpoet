@@ -231,6 +231,10 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run codeception --steps --debug -vvv');
   }
 
+  function deleteDocker() {
+    return $this->_exec('docker-compose down -v --remove-orphans --rmi all');
+  }
+
   function testFailed() {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build -c codeception.unit.yml');
