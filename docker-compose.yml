@@ -32,6 +32,8 @@ services:
       - 8080:80
     environment:
       WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
   mysql:
     image: mysql:5.6
