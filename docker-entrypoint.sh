@@ -23,15 +23,75 @@ if ! $(wp-su core is-installed); then
 
     echo "Installing WordPress"
 
-    wp-su core install --url=wordpress --title=tests --admin_user=admin --admin_email=test@test.com
+    if [ -z "${MULTISITE}" ]
+    then
 
-    echo "Configuring WordPress"
-    # The development version of Gravity Flow requires SCRIPT_DEBUG
-    wp-su core config --dbhost=mysql --dbname=wordpress --dbuser=wordpress --dbpass=wordpress --extra-php="define( 'SCRIPT_DEBUG', true );" --force
+      echo "Running in single site mode"
+
+      wp-su core install --url=wordpress --title=tests --admin_user=admin --admin_email=test@test.com
+
+      cp /project/tests/_data/acceptanceDump.sql /project/tests/_data/acceptanceGenerated.sql
+
+    else
+
+      wp-su core multisite-install --url=wordpress --title=tests --admin_user=admin --admin_email=test@test.com
+
+      cp /project/tests/_data/acceptanceMultisiteDump.sql /project/tests/_data/acceptanceGenerated.sql
+      cat /project/tests/_data/acceptanceDump.sql >> /project/tests/_data/acceptanceGenerated.sql
+      echo "Running in multi site mode"
+      echo "
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+
+# add a trailing slash to /wp-admin
+RewriteRule ^wp-admin$ wp-admin/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^(wp-(content|admin|includes).*) $1 [L]
+RewriteRule ^(.*\.php)$ $1 [L]
+RewriteRule . index.php [L]
+" > .htaccess
+    fi
+
+else
+
+    if [ -z "${MULTISITE}" ] &&  $(wp-su core is-installed --network)
+    then
+      echo "xyxicdufd"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m-------------------------WARNING!!!!!!!!----------------------------"
+      echo -e "\033[0;31m-            You are trying to run tests in single site mode       -"
+      echo -e "\033[0;31m-  But the container has been already installed in multi site mode -"
+      echo -e "\033[0;31m-    You need to delete your installation first. Use ./do d:d      -"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      exit
+
+    fi
+    if [ ! -z "${MULTISITE}" ] && ( ! $(wp-su core is-installed --network) )
+    then
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m-------------------------WARNING!!!!!!!!----------------------------"
+      echo -e "\033[0;31m-            You are trying to run tests in multi site mode        -"
+      echo -e "\033[0;31m- But the container has been already installed in single site mode -"
+      echo -e "\033[0;31m-    You need to delete your installation first. Use ./do d:d      -"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      echo -e "\033[0;31m--------------------------------------------------------------------"
+      exit
+    fi
+
 fi
 
-# Change default table prefix
-sed -i "s/\$table_prefix = 'wp_';/\$table_prefix = 'mp_';/" ./wp-config.php
+sed -i "s/define( *'WP_DEBUG', false *);/define('WP_DEBUG', true);define('WP_DEBUG_DISPLAY', true);define('WP_DEBUG_LOG', true);/" ./wp-config.php
 
 # Load Composer dependencies
 # Set KEEP_DEPS environment flag to not redownload them on each run, only for the 1st time, useful for development.

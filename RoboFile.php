@@ -231,6 +231,10 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run codeception --steps --debug -vvv');
   }
 
+  function testAcceptanceMultisite() {
+    return $this->_exec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run -e MULTISITE=1 codeception --steps --debug -vvv');
+  }
+
   function deleteDocker() {
     return $this->_exec('docker-compose down -v --remove-orphans --rmi all');
   }

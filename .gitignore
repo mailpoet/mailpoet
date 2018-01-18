@@ -22,3 +22,4 @@ assets/js/*.json
 lang
 .mp_svn
 /nbproject/
+tests/_data/acceptanceGenerated.sql

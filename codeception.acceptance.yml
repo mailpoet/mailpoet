@@ -34,11 +34,12 @@ modules:
             dbHost: mysql
             dbUser: wordpress
             dbPassword: wordpress
+            domain: wordpress
         WPDb:
             dsn: 'mysql:host=mysql;dbname=wordpress'
             user: wordpress
             password: wordpress
-            dump: tests/_data/acceptanceDump.sql
+            dump: tests/_data/acceptanceGenerated.sql
             populate: true
             cleanup: false
             url: 'http://wordpress'
