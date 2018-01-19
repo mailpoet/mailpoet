@@ -92,24 +92,27 @@ define(
       },
       saveTemplate: function (response, done) {
         const iframe = document.createElement('iframe');
+        iframe.width = 660;
         iframe.src = response.meta.preview_url;
         iframe.onload = () => {
-          html2canvas(iframe.contentDocument.documentElement).then((thumbnail) => {
-            document.body.removeChild(iframe);
-            MailPoet.Ajax.post({
-              api_version: window.mailpoet_api_version,
-              endpoint: 'newsletterTemplates',
-              action: 'save',
-              data: {
-                newsletter_id: response.data.id,
-                name: response.data.subject,
-                description: response.data.preheader,
-                thumbnail: thumbnail.toDataURL('image/jpeg'),
-                body: JSON.stringify(response.data.body),
-                categories: '["recent"]',
-              },
-            }).then(done).fail(this.showError);
-          });
+          setTimeout(() => {
+            html2canvas(iframe.contentDocument.documentElement).then((thumbnail) => {
+              document.body.removeChild(iframe);
+              MailPoet.Ajax.post({
+                api_version: window.mailpoet_api_version,
+                endpoint: 'newsletterTemplates',
+                action: 'save',
+                data: {
+                  newsletter_id: response.data.id,
+                  name: response.data.subject,
+                  description: response.data.preheader,
+                  thumbnail: thumbnail.toDataURL('image/jpeg'),
+                  body: JSON.stringify(response.data.body),
+                  categories: '["recent"]',
+                },
+              }).then(done).fail(this.showError);
+            });
+          }, 500);
         };
         // just to hide the iframe
         iframe.style.cssText ='position: absolute; opacity:0; z-index: -9999';
