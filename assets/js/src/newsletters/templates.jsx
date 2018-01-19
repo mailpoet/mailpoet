@@ -112,16 +112,17 @@ const templatesCategories = [
   {
     name: 'saved',
     label: MailPoet.I18n.t('savedTemplates'),
-  }
-]
+  },
+];
 
-const CategoryTab = ({name, label, selected, select}) =>
+const CategoryTab = ({ name, label, selected, select }) => (
   <li><a
     href="javascript:"
     className={selected === name ? 'current' : ''}
     onClick={() => select(name)}
     > {label}
   </a></li>
+);
 
 const NewsletterTemplates = React.createClass({
   getInitialState: function () {
@@ -158,12 +159,11 @@ const NewsletterTemplates = React.createClass({
           ];
         }
 
-        let templates = templatesCategories.reduce((result, {name}) => {
-          result[name] = [];
-          return result;
+        let templates = templatesCategories.reduce((result, { name }) => {
+          const obj = result;
+          obj[name] = [];
+          return obj;
         }, {});
-
-        console.log(response.data)
 
         templates = response.data.reduce((result, item) => {
           JSON.parse(item.categories).forEach((category) => {
@@ -343,8 +343,8 @@ const NewsletterTemplates = React.createClass({
       );
     });
 
-    if (templates.length == 0) {
-      templates = <p>{MailPoet.I18n.t('noTemplates')}</p>
+    if (templates.length === 0) {
+      templates = <p>{MailPoet.I18n.t('noTemplates')}</p>;
     }
 
     const boxClasses = classNames(
@@ -361,14 +361,14 @@ const NewsletterTemplates = React.createClass({
 
         <div className="wp-filter hide-if-no-js">
           <ul className="filter-links">
-            {templatesCategories.map(({name, label}) => 
-              <CategoryTab 
+            {templatesCategories.map(({ name, label }) => (
+              <CategoryTab
                 key={name}
                 name={name}
                 label={label}
                 selected={this.state.selectedCategory}
                 select={category => this.setState({ selectedCategory: category })} />
-            )}
+            ))}
           </ul>
         </div>
 

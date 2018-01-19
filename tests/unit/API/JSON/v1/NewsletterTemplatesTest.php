@@ -102,9 +102,13 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $template_data['body'] = json_decode($template_data['body'], true);
 
     $normalize = function($array) {
-      return array_filter($array, function($key) {
-        return in_array($key, ['newsletter_id', 'name', 'description', 'body']);
-      }, ARRAY_FILTER_USE_KEY);
+      $result = array();
+      foreach($array as $key => $value) {
+        if(in_array($key, ['newsletter_id', 'name', 'description', 'body'])) {
+          $result[$key] = $value;
+        }
+      }
+      return $result;
     };
 
     expect($normalize($response->data))->equals($template_data);
