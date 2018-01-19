@@ -104,8 +104,9 @@ define(
               {types.map((type, index) => (
                 <li key={index} data-type={type.id}>
                   <div>
-                    <div className="mailpoet_thumbnail"></div>
-
+                    <div className="mailpoet_thumbnail">
+                      {type.thumbnailImage ? <img src={type.thumbnailImage} /> : null}
+                    </div>
                     <div className="mailpoet_description">
                       <h3>{type.title}</h3>
                       <p>{type.description}</p>
