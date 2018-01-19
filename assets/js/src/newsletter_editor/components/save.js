@@ -93,25 +93,12 @@ define([
   };
 
   Module.saveTemplate = function (options) {
-    var categories = ['saved'];
+    var categories = [
+      'saved',
+      App.getNewsletter().get('type')
+    ];
 
-    return MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'get',
-      data: {
-        id: App.toJSON().id
-      }
-    }).then(function (response) {
-      var type = response.data.type;
-      if (type == 'welcome') {
-        categories.push('welcome_emails');
-      }
-      if (type == 'notification') {
-        categories.push('post_notifications');
-      }
-    }).then(function () {
-      return Module.getThumbnail(
+    return Module.getThumbnail(
         jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
       ).then(function (thumbnail) {
         var data = _.extend(options || {}, {
@@ -127,7 +114,6 @@ define([
           data: data
         });
       });
-    });
   };
 
   Module.exportTemplate = function (options) {
@@ -136,7 +122,8 @@ define([
     ).then(function (thumbnail) {
       var data = _.extend(options || {}, {
         thumbnail: thumbnail.toDataURL('image/jpeg'),
-        body: App.getBody()
+        body: App.getBody(),
+        categories: JSON.stringify([App.getNewsletter().get('type')])
       });
       var blob = new Blob(
         [JSON.stringify(data)],

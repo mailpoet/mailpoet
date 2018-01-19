@@ -15,6 +15,9 @@ const ImportTemplate = React.createClass({
       template.body = JSON.stringify(template.body);
     }
 
+    if (undefined === template.categories) {
+      template.categories = '["saved"]';
+    }
     MailPoet.Modal.loading(true);
 
     MailPoet.Ajax.post({
@@ -81,6 +84,45 @@ const ImportTemplate = React.createClass({
   },
 });
 
+const templatesCategories = [
+  {
+    name: 'standard',
+    label: MailPoet.I18n.t('tabStandardTitle'),
+  },
+  {
+    name: 'welcome',
+    label: MailPoet.I18n.t('tabWelcomeTitle'),
+  },
+  {
+    name: 'notification',
+    label: MailPoet.I18n.t('tabNotificationTitle'),
+  },
+  {
+    name: 'sample',
+    label: MailPoet.I18n.t('sample'),
+  },
+  {
+    name: 'blank',
+    label: MailPoet.I18n.t('blank'),
+  },
+  {
+    name: 'recent',
+    label: MailPoet.I18n.t('recentlySent'),
+  },
+  {
+    name: 'saved',
+    label: MailPoet.I18n.t('savedTemplates'),
+  }
+]
+
+const CategoryTab = ({name, label, selected, select}) =>
+  <li><a
+    href="javascript:"
+    className={selected === name ? 'current' : ''}
+    onClick={() => select(name)}
+    > {label}
+  </a></li>
+
 const NewsletterTemplates = React.createClass({
   getInitialState: function () {
     return {
@@ -110,25 +152,25 @@ const NewsletterTemplates = React.createClass({
                 MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
               description:
                 MailPoet.I18n.t('mailpoetGuideTemplateDescription'),
-              categories: '["welcome_emails", "post_notifications", "inspiration"]',
+              categories: '["welcome", "notification", "standard"]',
               readonly: '1',
             },
           ];
         }
 
-        const templates = response.data.reduce((result, item) => {
+        let templates = templatesCategories.reduce((result, {name}) => {
+          result[name] = [];
+          return result;
+        }, {});
+
+        console.log(response.data)
+
+        templates = response.data.reduce((result, item) => {
           JSON.parse(item.categories).forEach((category) => {
             result[category].push(item);
           });
           return result;
-        }, {
-          welcome_emails: [],
-          post_notifications: [],
-          inspiration: [],
-          blank: [],
-          recent: [],
-          saved: [],
-        });
+        }, templates);
 
         this.selectInitialCategory(templates);
       }
@@ -153,20 +195,9 @@ const NewsletterTemplates = React.createClass({
     }).always(() => {
       MailPoet.Modal.loading(false);
     }).done((response) => {
-      const type = response.data.type;
-      let category = 'inspiration';
-      if (type === 'welcome') {
-        category = 'welcome_emails';
-      } else if (type === 'notification') {
-        category = 'post_notifications';
-      } else if (templates.recent && templates.recent.length > 0) {
-        category = 'recent';
-      } else if (templates.saved && templates.saved.length > 0) {
-        category = 'saved';
-      }
       this.setState({
         templates: templates,
-        selectedCategory: category,
+        selectedCategory: response.data.type,
         loading: false,
       });
     }).fail((response) => {
@@ -177,9 +208,6 @@ const NewsletterTemplates = React.createClass({
         );
       }
     });
-  },
-  selectCategory: function (category) {
-    this.setState({ selectedCategory: category });
   },
   handleSelectTemplate: function (template) {
     let body = template.body;
@@ -315,52 +343,15 @@ const NewsletterTemplates = React.createClass({
       );
     });
 
+    if (templates.length == 0) {
+      templates = <p>{MailPoet.I18n.t('noTemplates')}</p>
+    }
+
     const boxClasses = classNames(
       'mailpoet_boxes',
       'clearfix',
       { mailpoet_boxes_loading: this.state.loading }
     );
-
-    const categories = (<div className="wp-filter hide-if-no-js">
-      <ul className="filter-links">
-        <li><a
-          href="javascript:"
-          className={this.state.selectedCategory === 'recent' ? 'current' : ''}
-          onClick={() => this.selectCategory('recent')}
-          > Recently sent
-        </a></li>
-        <li><a
-          href="javascript:"
-          className={this.state.selectedCategory === 'saved' ? 'current' : ''}
-          onClick={() => this.selectCategory('saved')}
-          > Your saved templates
-        </a></li>
-        <li><a
-          href="javascript:"
-          className={this.state.selectedCategory === 'blank' ? 'current' : ''}
-          onClick={() => this.selectCategory('blank')}
-          > Blank
-        </a></li>
-        <li><a
-          href="javascript:"
-          className={this.state.selectedCategory === 'inspiration' ? 'current' : ''}
-          onClick={() => this.selectCategory('inspiration')}
-          > Inspiration
-        </a></li>
-        <li><a
-          href="javascript:"
-          className={this.state.selectedCategory === 'welcome_emails' ? 'current' : ''}
-          onClick={() => this.selectCategory('welcome_emails')}
-          > Welcome Emails
-        </a></li>
-        <li><a
-          href="javascript:"
-          className={this.state.selectedCategory === 'post_notifications' ? 'current' : ''}
-          onClick={() => this.selectCategory('post_notifications')}
-          > Post Notifications
-        </a></li>
-      </ul>
-    </div>);
 
     return (
       <div>
@@ -368,7 +359,18 @@ const NewsletterTemplates = React.createClass({
 
         <Breadcrumb step="template" />
 
-        {categories}
+        <div className="wp-filter hide-if-no-js">
+          <ul className="filter-links">
+            {templatesCategories.map(({name, label}) => 
+              <CategoryTab 
+                key={name}
+                name={name}
+                label={label}
+                selected={this.state.selectedCategory}
+                select={category => this.setState({ selectedCategory: category })} />
+            )}
+          </ul>
+        </div>
 
         <ul className={boxClasses}>
           { templates }

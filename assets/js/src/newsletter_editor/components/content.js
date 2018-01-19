@@ -12,7 +12,7 @@ define([
   // Does not hold newsletter content nor newsletter styles, those are
   // handled by other components.
   Module.NewsletterModel = SuperModel.extend({
-    whitelisted: ['id', 'subject', 'preheader'],
+    whitelisted: ['id', 'subject', 'preheader', 'type'],
     initialize: function () { // eslint-disable-line func-names
       this.on('change', function () { // eslint-disable-line func-names
         App.getChannel().trigger('autoSave');

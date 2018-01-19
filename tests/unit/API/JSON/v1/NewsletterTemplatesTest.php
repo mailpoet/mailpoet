@@ -87,21 +87,29 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
   function testItCanUpdateTemplateAssociatedWithANewsletter() {
     $template_data = array(
-      'newsletter_id' => 1,
+      'newsletter_id' => '1',
       'name' => 'Template #2',
       'description' => 'My Updated Second Template',
       'body' => '{"key3": "value3"}'
     );
 
+    $template_id = NewsletterTemplate::whereEqual('newsletter_id', 1)->findOne()->id;
+
     $router = new NewsletterTemplates();
     $response = $router->save($template_data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      NewsletterTemplate::findOne($response->data['id'])->asArray()
-    );
 
-    $template = NewsletterTemplate::whereEqual('newsletter_id', 1)->findOne();
-    expect($response->data)->equals($template->asArray());
+    $template_data['body'] = json_decode($template_data['body'], true);
+
+    $normalize = function($array) {
+      return array_filter($array, function($key) {
+        return in_array($key, ['newsletter_id', 'name', 'description', 'body']);
+      }, ARRAY_FILTER_USE_KEY);
+    };
+
+    expect($normalize($response->data))->equals($template_data);
+    $template = NewsletterTemplate::findOne($template_id)->asArray();
+    expect($normalize($template))->equals($template_data);
   }
 
   function testItCanDeleteANewsletterTemplate() {
