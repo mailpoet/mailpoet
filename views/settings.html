@@ -64,6 +64,17 @@
       $(function() {
         // on form submission
         $('#mailpoet_settings_form').on('submit', function() {
+          // if reCAPTCHA is enabled but keys are emty, show error
+          var enabled = $('input[name="re_captcha[enabled]"]:checked').val(),
+              site_key = $('input[name="re_captcha[site_token]"]').val().trim(),
+              secret_key = $('input[name="re_captcha[secret_token]"]').val().trim();
+          if (enabled && (site_key == '' || secret_key == '')) {
+            $('#settings_re_captcha_tokens_error').show();
+            window.location.href = '#advanced';
+            return false;
+          } else {
+            $('#settings_re_captcha_tokens_error').hide();
+          }
           // if we're setting up a sending method, try to activate it
           if ($('.mailpoet_mta_setup_save').is(':visible')) {
             $('.mailpoet_mta_setup_save').trigger('click');
@@ -131,6 +142,17 @@
 
         $(document).on('click', 'input[data-toggle]', toggleContent);
         $('input[data-toggle]').each(toggleContent);
+
+        function toggleReCaptchaSettings() {
+          if ($('input[name="re_captcha[enabled]"]:checked').val()) {
+            $('#settings_re_captcha_tokens').show();
+          } else {
+            $('#settings_re_captcha_tokens').hide();
+          }
+        }
+        $('input[name="re_captcha[enabled]"]').on('click', toggleReCaptchaSettings);
+        toggleReCaptchaSettings();
+        $('#settings_re_captcha_tokens_error').hide();
 
         // page preview
         $('.mailpoet_page_preview').on('click', function() {

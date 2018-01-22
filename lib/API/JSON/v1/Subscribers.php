@@ -5,9 +5,10 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
-use MailPoet\Listing;
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Listing;
 use MailPoet\Models\Form;
+use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
@@ -76,6 +77,8 @@ class Subscribers extends APIEndpoint {
     $form = Form::findOne($form_id);
     unset($data['form_id']);
 
+    $recaptcha = Setting::getValue('re_captcha');
+
     if(!$form) {
       return $this->badRequest(array(
         APIError::BAD_REQUEST => __('Please specify a valid form ID.', 'mailpoet')
@@ -87,6 +90,33 @@ class Subscribers extends APIEndpoint {
       ));
     }
 
+    if(!empty($recaptcha['enabled']) && empty($data['recaptcha'])) {
+      return $this->badRequest(array(
+        APIError::BAD_REQUEST => __('Please check the captcha.', 'mailpoet')
+      ));
+    }
+
+    if(!empty($recaptcha['enabled'])) {
+      $res = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
+      $res = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
+        'body' => array(
+          'secret' => $recaptcha['secret_token'],
+          'response' => $res
+        ) 
+      ));
+      if(is_wp_error($res)) {
+        return $this->badRequest(array(
+          APIError::BAD_REQUEST => __('Error while validating the captcha.', 'mailpoet')
+        ));
+      }
+      $res = json_decode(wp_remote_retrieve_body($res));
+      if(empty($res->success)) {
+        return $this->badRequest(array(
+          APIError::BAD_REQUEST => __('Error while validating the captcha.', 'mailpoet')
+        ));
+      }
+    }
+
     $data = $this->deobfuscateFormPayload($data);
 
     $segment_ids = (!empty($data['segments'])
@@ -95,7 +125,6 @@ class Subscribers extends APIEndpoint {
     );
     $segment_ids = $form->filterSegments($segment_ids);
     unset($data['segments']);
-
 
     if(empty($segment_ids)) {
       return $this->badRequest(array(

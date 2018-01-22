@@ -7,6 +7,7 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
+use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
 use MailPoet\WP\Hooks;
 
@@ -14,6 +15,8 @@ if(!defined('ABSPATH')) exit;
 
 class Widget extends \WP_Widget {
   private $renderer;
+
+  const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit';
 
   function __construct() {
     parent::__construct(
@@ -48,6 +51,7 @@ class Widget extends \WP_Widget {
     wp_print_scripts('jquery');
     wp_print_scripts('mailpoet_vendor');
     wp_print_scripts('mailpoet_public');
+    echo '<script src="'.self::RECAPTCHA_API_URL.'" async defer></script>';
     $scripts = ob_get_contents();
     ob_end_clean();
 
@@ -107,6 +111,15 @@ class Widget extends \WP_Widget {
       Env::$version,
       true
     );
+
+    $captcha = Setting::getValue('re_captcha');
+    if(!empty($captcha['enabled'])) {
+      wp_enqueue_script(
+        'mailpoet_recaptcha',
+        self::RECAPTCHA_API_URL,
+        array('mailpoet_public')
+      );
+    }
 
     wp_localize_script('mailpoet_public', 'MailPoetForm', array(
       'ajax_url' => admin_url('admin-ajax.php'),
@@ -271,7 +284,6 @@ EOL;
 
     if(!empty($body)) {
       $form_id = $this->id_base . '_' . $form['id'];
-
       $data = array(
         'form_id' => $form_id,
         'form_type' => $form_type,

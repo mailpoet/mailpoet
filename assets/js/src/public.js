@@ -8,6 +8,19 @@ function ( // eslint-disable-line func-names
   jQuery
 ) {
   jQuery(function ($) { // eslint-disable-line func-names
+    window.reCaptchaCallback = function reCaptchaCallback() {
+      $('.mailpoet_recaptcha').each(function () { // eslint-disable-line func-names
+        var sitekey = $(this).attr('data-sitekey');
+        var container = $(this).find('> .mailpoet_recaptcha_container').get(0);
+        var field = $(this).find('> .mailpoet_recaptcha_field');
+        var widgetId;
+        if (sitekey) {
+          widgetId = window.grecaptcha.render(container, { sitekey: sitekey, size: 'compact' });
+          field.val(widgetId);
+        }
+      });
+    };
+
     function isSameDomain(url) {
       var link = document.createElement('a');
       link.href = url;
@@ -36,7 +49,12 @@ function ( // eslint-disable-line func-names
             // non ajax post request
             return true;
           }
-            // ajax request
+
+          if (window.grecaptcha && formData.recaptcha) {
+            formData.data.recaptcha = window.grecaptcha.getResponse(formData.recaptcha);
+          }
+
+          // ajax request
           MailPoet.Ajax.post({
             url: window.MailPoetForm.ajax_url,
             token: formData.token,
@@ -50,6 +68,11 @@ function ( // eslint-disable-line func-names
                   return error.message;
                 }).join('<br />')
               ).show();
+          }).done(function (response) { // eslint-disable-line func-names
+            if (window.grecaptcha && formData.recaptcha) {
+              window.grecaptcha.reset(formData.recaptcha);
+            }
+            return response;
           }).done(function (response) { // eslint-disable-line func-names
               // successfully subscribed
             if (
@@ -67,6 +90,10 @@ function ( // eslint-disable-line func-names
             form.trigger('reset');
               // reset validation
             parsley.reset();
+            // reset captcha
+            if (window.grecaptcha && formData.recaptcha) {
+              window.grecaptcha.reset(formData.recaptcha);
+            }
 
               // resize iframe
             if (

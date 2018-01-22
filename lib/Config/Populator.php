@@ -140,6 +140,16 @@ class Populator {
       Setting::setValue('installed_at', date("Y-m-d H:i:s"));
     }
 
+    // set reCaptcha settings
+    $re_captcha = Setting::getValue('re_captcha');
+    if(empty($re_captcha)) {
+      Setting::setValue('re_captcha', array(
+        'enabled' => false,
+        'site_token' => '',
+        'secret_token' => ''
+      ));
+    }
+
     // reset mailer log
     MailerLog::resetMailerLog();
   }
