@@ -143,6 +143,13 @@ define([
           });
 
           EditorApplication.getBody = sinon.stub();
+          EditorApplication.getNewsletter = function () {
+            return {
+              get: function () {
+                return 'standard';
+              }
+            };
+          };
           module = SaveInjector({
             mailpoet: {
               Ajax: {

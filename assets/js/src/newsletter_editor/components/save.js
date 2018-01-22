@@ -93,27 +93,33 @@ define([
   };
 
   Module.saveTemplate = function (options) {
-    var categories = [
-      'saved',
-      App.getNewsletter().get('type')
-    ];
+    var promise = jQuery.Deferred();
 
-    return Module.getThumbnail(
-        jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
-      ).then(function (thumbnail) {
-        var data = _.extend(options || {}, {
-          thumbnail: thumbnail.toDataURL('image/jpeg'),
-          body: JSON.stringify(App.getBody()),
-          categories: JSON.stringify(categories)
-        });
-
-        return MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'newsletterTemplates',
-          action: 'save',
-          data: data
-        });
+    promise.then(function (thumbnail) {
+      var data = _.extend(options || {}, {
+        thumbnail: thumbnail.toDataURL('image/jpeg'),
+        body: JSON.stringify(App.getBody()),
+        categories: JSON.stringify([
+          'saved',
+          App.getNewsletter().get('type')
+        ])
       });
+
+      return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'newsletterTemplates',
+        action: 'save',
+        data: data
+      });
+    });
+
+    Module.getThumbnail(
+      jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
+    ).then(function (thumbnail) {
+      promise.resolve(thumbnail);
+    });
+
+    return promise;
   };
 
   Module.exportTemplate = function (options) {
