@@ -102,6 +102,49 @@ jobs:
           path: tests/_output
       - store_test_results:
           path: tests/_output
+  acceptance_tests_multisite:
+      working_directory: /home/circleci/mailpoet
+      machine: true
+      steps:
+        - checkout
+        - run:
+            name: "Set up virtual host"
+            command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+        - restore_cache:
+            key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
+        - restore_cache:
+            key: npm-{{ checksum "package.json" }}
+        - run:
+            name: "Set up test environment"
+            command: |
+                sudo apt-get update
+                sudo apt-get install circleci-php-5.6.23
+                sudo rm /usr/bin/php
+                sudo ln -s /opt/circleci/php/5.6.23/bin/php /usr/bin/php
+                # Install NodeJS+NPM
+                curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+                sudo apt-get install nodejs build-essential
+                # install plugin dependencies
+                curl -sS https://getcomposer.org/installer | php
+                php composer.phar install
+                ./do install
+                ./do compile:all --env production
+        - save_cache:
+            key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
+            paths:
+              - vendor
+        - save_cache:
+            key: npm-{{ checksum "package.json" }}
+            paths:
+              - node_modules
+        - run:
+            name: Run acceptance tests
+            command: |
+                docker-compose run -e MULTISITE=1 codeception --steps --debug -vvv --html --xml
+        - store_artifacts:
+            path: tests/_output
+        - store_test_results:
+            path: tests/_output
   php7:
     working_directory: /home/circleci/mailpoet
     docker:
@@ -172,3 +215,4 @@ workflows:
       - php7
       - php7_multisite
       - acceptance_tests
+      - acceptance_tests_multisite
