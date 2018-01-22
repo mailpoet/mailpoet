@@ -50,7 +50,9 @@ if (container) {
         {/* Sending options */}
         <Route path="send/:id" component={NewsletterSend} />
         {/* Extra routes */}
-        { extraRoutes.map(rt => <Route key={rt.path} path={rt.path} component={rt.component} />) }
+        {extraRoutes.map(rt =>
+          <Route key={rt.path} path={rt.path} component={rt.component} data={rt.data || null} />
+        )}
       </Route>
     </Router>
   ), container);
