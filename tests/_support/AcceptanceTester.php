@@ -48,11 +48,11 @@ class AcceptanceTester extends \Codeception\Actor {
   public function amOnMailpoetPage($page) {
     $I = $this;
     $I->amOnPage('/wp-admin');
-    $I->waitForText('MailPoet', 3);
+    $I->waitForText('MailPoet', 10);
     $I->click('MailPoet');
-    $I->waitForText($page, 3);
+    $I->waitForText($page, 5);
     $I->click($page);
-    $I->waitForText($page, 3);
+    $I->waitForText($page, 5);
   }
 
 }
