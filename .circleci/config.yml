@@ -215,3 +215,4 @@ workflows:
       - php7
       - php7_multisite
       - acceptance_tests
+      - acceptance_tests_multisite
