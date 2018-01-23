@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.3.5
+Stable tag: 3.3.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.3.6 - 2018-01-23 =
+* Added: optional reCAPTCHA to protect subscription forms from fake signups.
 
 = 3.3.5 - 2018-01-16 =
 * Added: additional tools for our support team to mitigate sending issues;
