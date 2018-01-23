@@ -23,7 +23,7 @@ class ImportTest extends \MailPoetTest {
         array(
           'Adam',
           'Smith',
-          'adam@smith.com',
+          'Adam@smith.com',
           'France'
         ),
         array(
