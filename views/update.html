@@ -33,8 +33,8 @@
   <div class="feature-section one-col mailpoet_centered">
     <h2><%= __('Care to Give Your Opinion?') %></h2>
 
-    <% if(is_woocommerce_available) %>
-      <div class="pd-embed" id="pd_1513007087"></div>
+    <% if(is_new_user) %>
+      <div class="pd-embed" id="pd_1516701033"></div>
       <script type="text/javascript">
         var _polldaddy = [] || _polldaddy;
 
@@ -42,27 +42,15 @@
           type: "iframe",
           auto: "1",
           domain: "mailpoet.polldaddy.com/s/",
-          id: "woocommerce-01",
-          placeholder: "pd_1513007087"
+          id: "experience-so-far",
+          placeholder: "pd_1516701033"
         } );
 
         (function(d,c,j){if(!document.getElementById(j)){var pd=d.createElement(c),s;pd.id=j;pd.src=('https:'==document.location.protocol)?'https://polldaddy.com/survey.js':'http://i0.poll.fm/survey.js';s=document.getElementsByTagName(c)[0];s.parentNode.insertBefore(pd,s);}}(document,'script','pd-embed'));
       </script>
     <% else %>
-      <div class="pd-embed" id="pd_1509014259"></div>
-      <script type="text/javascript">
-        var _polldaddy = [] || _polldaddy;
-
-        _polldaddy.push( {
-          type: "iframe",
-          auto: "1",
-          domain: "mailpoet.polldaddy.com/s/",
-          id: "what-s-one-feature-that-s-missing-in-mailpoet-1",
-          placeholder: "pd_1509014259"
-        } );
-
-        (function(d,c,j){if(!document.getElementById(j)){var pd=d.createElement(c),s;pd.id=j;pd.src=('https:'==document.location.protocol)?'https://polldaddy.com/survey.js':'http://i0.poll.fm/survey.js';s=document.getElementsByTagName(c)[0];s.parentNode.insertBefore(pd,s);}}(document,'script','pd-embed'));
-      </script>
+      <script type="text/javascript" charset="utf-8" src="https://secure.polldaddy.com/p/9917505.js"></script>
+      <noscript><a href="https://polldaddy.com/poll/9917505/">Do you find this page useful?</a></noscript>
     <% endif %>
 
   <hr>

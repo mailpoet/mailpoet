@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
@@ -376,8 +377,14 @@ class Menu {
       'current_user' => wp_get_current_user(),
       'redirect_url' => $redirect_url,
       'sub_menu' => self::MAIN_PAGE_SLUG,
-      'is_woocommerce_available' => is_plugin_active('woocommerce/woocommerce.php'),
     );
+
+    $data['is_new_user'] = true;
+    if(!empty($data['settings']['installed_at'])) {
+      $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
+      $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+      $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
+    }
 
     $readme_file = Env::$path . '/readme.txt';
     if(is_readable($readme_file)) {
