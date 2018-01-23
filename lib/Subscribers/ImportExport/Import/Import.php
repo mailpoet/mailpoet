@@ -159,7 +159,7 @@ class Import {
             if(!is_email($email)) {
               $invalid_records[] = $index;
             }
-            return $email;
+            return strtolower($email);
           }, array_keys($data), $data
         );
       }
