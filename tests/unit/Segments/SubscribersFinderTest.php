@@ -126,6 +126,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder();
     $subscribers = $finder->findSubscribersInSegments(array($this->subscriber_3->id), array($this->segment_3->id));
     expect($subscribers)->count(1);
+    expect($subscribers)->contains($this->subscriber_3->id);
   }
 
   function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {

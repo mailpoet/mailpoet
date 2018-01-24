@@ -26,7 +26,7 @@ class SubscribersFinder {
     foreach($finders as $finder) {
       $subscribers = $finder->findSubscribersInSegment($segment, $subscribers_to_process_ids);
       if($subscribers) {
-        return $subscribers;
+        return Subscriber::extractSubscribersIds($subscribers);
       }
     }
     return array();
