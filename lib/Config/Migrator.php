@@ -161,8 +161,8 @@ class Migrator {
     $attributes = array(
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'wp_user_id bigint(20) NULL,',
-      'first_name tinytext NOT NULL DEFAULT "",',
-      'last_name tinytext NOT NULL DEFAULT "",',
+      'first_name varchar(255) NOT NULL DEFAULT "",',
+      'last_name varchar(255) NOT NULL DEFAULT "",',
       'email varchar(150) NOT NULL,',
       'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_UNCONFIRMED . '",',
       'subscribed_ip varchar(45) NULL,',
