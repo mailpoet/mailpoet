@@ -135,7 +135,7 @@ class Sending {
 
   public function updateProcessedSubscribers(array $processed_subscribers) {
     $this->task_subscribers->updateProcessedSubscribers($processed_subscribers);
-    $this->updateCount();
+    return $this->updateCount()->getErrors() === false;
   }
 
   function updateCount() {
