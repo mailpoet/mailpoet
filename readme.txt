@@ -1,4 +1,4 @@
-=== MailPoet 3 (New) ===
+=== MailPoet Newsletters (New) ===
 Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.7
