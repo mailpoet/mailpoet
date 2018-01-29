@@ -804,6 +804,10 @@ const Listing = React.createClass({
     if (this.props.messages !== undefined) {
       messages = this.props.messages;
     }
+    let extraActions;
+    if (typeof this.props.renderExtraActions === 'function') {
+      extraActions = this.props.renderExtraActions(this.state);
+    }
 
     return (
       <div>
@@ -824,6 +828,7 @@ const Listing = React.createClass({
             onSelectFilter={this.handleFilter}
             onEmptyTrash={this.handleEmptyTrash}
           />
+          {extraActions}
           <ListingPages
             count={this.state.count}
             page={this.state.page}
