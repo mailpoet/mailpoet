@@ -124,6 +124,7 @@ define(
         if (!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
+          MailPoet.Modal.loading(true);
           this.saveNewsletter(e).done(() => {
             this.setState({ loading: true });
           }).done((response) => {
@@ -193,18 +194,20 @@ define(
                         'MailPoet Free version': window.mailpoet_version,
                       });
                     }
-                    this.setState({ loading: false });
+                    MailPoet.Modal.loading(false);
                   });
                 })
                 .fail((err) => {
                   this.showError(err);
                   this.setState({ loading: false });
+                  MailPoet.Modal.loading(false);
                 });
             }
           })
           .fail((err) => {
             this.showError(err);
             this.setState({ loading: false });
+            MailPoet.Modal.loading(false);
           });
         }
         return false;
