@@ -17,6 +17,7 @@ class FoodBox {
     return array(
       'name' => __("Welcome to FoodBox", 'mailpoet'),
       'description' => __("A welcome email template for your takeaway.", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

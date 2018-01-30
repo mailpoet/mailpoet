@@ -38,6 +38,13 @@ class NewsletterTemplates extends APIEndpoint {
   }
 
   function save($data = array()) {
+    if(!empty($data['newsletter_id'])) {
+      $template = NewsletterTemplate::whereEqual('newsletter_id', $data['newsletter_id'])->findOne();
+      if(!empty($template)) {
+        $template = $template->asArray();
+        $data['id'] = $template['id'];
+      }
+    }
     $template = NewsletterTemplate::createOrUpdate($data);
     $errors = $template->getErrors();
 

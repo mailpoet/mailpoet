@@ -16,6 +16,7 @@ class TakeAHike {
     return array(
       'name' => __("Take a Hike", 'mailpoet'),
       'description' => __("Can you climb to the top?", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

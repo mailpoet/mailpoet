@@ -16,6 +16,7 @@ class CoffeeShop {
     return array(
       'name' => __("Coffee Shop", 'mailpoet'),
       'description' => __("Coffee and sugar in your coffee?", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

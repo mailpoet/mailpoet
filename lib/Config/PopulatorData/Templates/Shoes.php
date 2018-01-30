@@ -16,6 +16,7 @@ class Shoes {
     return array(
       'name' => __("Shoes", 'mailpoet'),
       'description' => __("Nothing like a pair that fits perfectly.", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

@@ -16,6 +16,7 @@ class SimpleText {
     return array(
       'name' => __("Simple Text", 'mailpoet'),
       'description' => __("A simple plain text template - just like a regular email.", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

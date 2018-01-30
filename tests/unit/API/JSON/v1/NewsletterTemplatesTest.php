@@ -15,6 +15,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     NewsletterTemplate::createOrUpdate(array(
       'name' => 'Template #2',
+      'newsletter_id' => 1,
       'description' => 'My Second Template',
       'body' => '{"key2": "value2"}'
     ));
@@ -53,7 +54,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($response->data)->equals($templates);
   }
 
-  function testItCanSaveANewsletterTemplate() {
+  function testItCanSaveANewTemplate() {
     $template_data = array(
       'name' => 'Template #3',
       'description' => 'My Third Template',
@@ -66,6 +67,53 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($response->data)->equals(
       NewsletterTemplate::findOne($response->data['id'])->asArray()
     );
+  }
+
+  function testItCanSaveANewTemplateAssociatedWithANewsletter() {
+    $template_data = array(
+      'newsletter_id' => 2,
+      'name' => 'Template #3',
+      'description' => 'My Third Template',
+      'body' => '{"key3": "value3"}'
+    );
+
+    $router = new NewsletterTemplates();
+    $response = $router->save($template_data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      NewsletterTemplate::findOne($response->data['id'])->asArray()
+    );
+  }
+
+  function testItCanUpdateTemplateAssociatedWithANewsletter() {
+    $template_data = array(
+      'newsletter_id' => '1',
+      'name' => 'Template #2',
+      'description' => 'My Updated Second Template',
+      'body' => '{"key3": "value3"}'
+    );
+
+    $template_id = NewsletterTemplate::whereEqual('newsletter_id', 1)->findOne()->id;
+
+    $router = new NewsletterTemplates();
+    $response = $router->save($template_data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    $template_data['body'] = json_decode($template_data['body'], true);
+
+    $normalize = function($array) {
+      $result = array();
+      foreach($array as $key => $value) {
+        if(in_array($key, ['newsletter_id', 'name', 'description', 'body'])) {
+          $result[$key] = $value;
+        }
+      }
+      return $result;
+    };
+
+    expect($normalize($response->data))->equals($template_data);
+    $template = NewsletterTemplate::findOne($template_id)->asArray();
+    expect($normalize($template))->equals($template_data);
   }
 
   function testItCanDeleteANewsletterTemplate() {

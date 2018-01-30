@@ -16,6 +16,7 @@ class NewsletterBlank121Column {
     return array(
       'name' => __("Newsletter: Blank 1:2:1 Column", 'mailpoet'),
       'description' => __("A blank Newsletter template with a 1:2:1 column layout.", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'blank')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

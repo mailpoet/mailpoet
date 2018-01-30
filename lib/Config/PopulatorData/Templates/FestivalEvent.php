@@ -16,6 +16,7 @@ class FestivalEvent {
     return array(
       'name' => __("Festival Event", 'mailpoet'),
       'description' => __("A colourful festival event template.", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

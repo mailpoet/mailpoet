@@ -16,6 +16,7 @@ class BurgerJoint {
     return array(
       'name' => __("Burger Joint", 'mailpoet'),
       'description' => __("Add more or less ketchup or mayo to this restaurant template.", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

@@ -16,6 +16,7 @@ class WelcomeBlank12Column {
     return array(
       'name' => __("Welcome Email: Blank 1:2 Column", 'mailpoet'),
       'description' => __("A blank Welcome Email template with a 1:2 column layout.", 'mailpoet'),
+      'categories' => json_encode(array('welcome', 'blank')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

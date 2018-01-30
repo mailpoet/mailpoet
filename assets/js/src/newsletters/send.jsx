@@ -11,6 +11,7 @@ define(
     'newsletters/breadcrumb.jsx',
     'help-tooltip.jsx',
     'jquery',
+    'html2canvas',
   ],
   (
     React,
@@ -23,7 +24,8 @@ define(
     WelcomeNewsletterFields,
     Breadcrumb,
     HelpTooltip,
-    jQuery
+    jQuery,
+    html2canvas
   ) => {
     const NewsletterSend = React.createClass({
       contextTypes: {
@@ -88,12 +90,38 @@ define(
           });
         });
       },
+      saveTemplate: function (response, done) {
+        const iframe = document.createElement('iframe');
+        iframe.src = response.meta.preview_url;
+        iframe.onload = () => {
+          html2canvas(iframe.contentDocument.documentElement).then((thumbnail) => {
+            document.body.removeChild(iframe);
+            MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
+              endpoint: 'newsletterTemplates',
+              action: 'save',
+              data: {
+                newsletter_id: response.data.id,
+                name: response.data.subject,
+                description: response.data.preheader,
+                thumbnail: thumbnail.toDataURL('image/jpeg'),
+                body: JSON.stringify(response.data.body),
+                categories: '["recent"]',
+              },
+            }).then(done).fail(this.showError);
+          });
+        };
+        // just to hide the iframe
+        iframe.className ='mailpoet_template_iframe';
+        document.body.appendChild(iframe);
+      },
       handleSend: function (e) {
         e.preventDefault();
 
         if (!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
+          MailPoet.Modal.loading(true);
           this.saveNewsletter(e).done(() => {
             this.setState({ loading: true });
           }).done((response) => {
@@ -109,29 +137,37 @@ define(
                     status: 'active',
                   },
                 }).done((response2) => {
-                  // redirect to listing based on newsletter type
-                  this.context.router.push(`/${this.state.item.type || ''}`);
-                  const opts = this.state.item.options;
-                  // display success message depending on newsletter type
-                  if (response2.data.type === 'welcome') {
-                    MailPoet.Notice.success(
-                      MailPoet.I18n.t('welcomeEmailActivated')
-                    );
-                    MailPoet.trackEvent('Emails > Welcome email activated', {
-                      'MailPoet Free version': window.mailpoet_version,
-                      'List type': opts.event,
-                      Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
-                    });
-                  } else if (response2.data.type === 'notification') {
-                    MailPoet.Notice.success(
-                      MailPoet.I18n.t('postNotificationActivated')
-                    );
-                    MailPoet.trackEvent('Emails > Post notifications activated', {
-                      'MailPoet Free version': window.mailpoet_version,
-                      Frequency: opts.intervalType,
-                    });
-                  }
-                }).fail(this.showError);
+                  // save template in recently sent category
+                  this.saveTemplate(response, () => {
+                    // redirect to listing based on newsletter type
+                    this.context.router.push(`/${this.state.item.type || ''}`);
+                    const opts = this.state.item.options;
+                    // display success message depending on newsletter type
+                    if (response2.data.type === 'welcome') {
+                      MailPoet.Notice.success(
+                        MailPoet.I18n.t('welcomeEmailActivated')
+                      );
+                      MailPoet.trackEvent('Emails > Welcome email activated', {
+                        'MailPoet Free version': window.mailpoet_version,
+                        'List type': opts.event,
+                        Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
+                      });
+                    } else if (response2.data.type === 'notification') {
+                      MailPoet.Notice.success(
+                        MailPoet.I18n.t('postNotificationActivated')
+                      );
+                      MailPoet.trackEvent('Emails > Post notifications activated', {
+                        'MailPoet Free version': window.mailpoet_version,
+                        Frequency: opts.intervalType,
+                      });
+                    }
+                    MailPoet.Modal.loading(false);
+                  });
+                }).fail((err) => {
+                  this.showError(err);
+                  this.setState({ loading: false });
+                  MailPoet.Modal.loading(false);
+                });
               default:
                 return MailPoet.Ajax.post({
                   api_version: window.mailpoet_api_version,
@@ -141,32 +177,42 @@ define(
                     newsletter_id: this.props.params.id,
                   },
                 }).done((response2) => {
-                  // redirect to listing based on newsletter type
-                  this.context.router.push(`/${this.state.item.type || ''}`);
+                  // save template in recently sent category
+                  this.saveTemplate(response, () => {
+                    // redirect to listing based on newsletter type
+                    this.context.router.push(`/${this.state.item.type || ''}`);
 
-                  if (response2.data.status === 'scheduled') {
-                    MailPoet.Notice.success(
-                      MailPoet.I18n.t('newsletterHasBeenScheduled')
-                    );
-                    MailPoet.trackEvent('Emails > Newsletter sent', {
-                      scheduled: true,
-                      'MailPoet Free version': window.mailpoet_version,
-                    });
-                  } else {
-                    MailPoet.Notice.success(
-                      MailPoet.I18n.t('newsletterBeingSent')
-                    );
-                    MailPoet.trackEvent('Emails > Newsletter sent', {
-                      scheduled: false,
-                      'MailPoet Free version': window.mailpoet_version,
-                    });
-                  }
-                }).fail(this.showError);
+                    if (response2.data.status === 'scheduled') {
+                      MailPoet.Notice.success(
+                        MailPoet.I18n.t('newsletterHasBeenScheduled')
+                      );
+                      MailPoet.trackEvent('Emails > Newsletter sent', {
+                        scheduled: true,
+                        'MailPoet Free version': window.mailpoet_version,
+                      });
+                    } else {
+                      MailPoet.Notice.success(
+                        MailPoet.I18n.t('newsletterBeingSent')
+                      );
+                      MailPoet.trackEvent('Emails > Newsletter sent', {
+                        scheduled: false,
+                        'MailPoet Free version': window.mailpoet_version,
+                      });
+                    }
+                    MailPoet.Modal.loading(false);
+                  });
+                })
+                .fail((err) => {
+                  this.showError(err);
+                  this.setState({ loading: false });
+                  MailPoet.Modal.loading(false);
+                });
             }
           })
-          .fail(this.showError)
-          .always(() => {
+          .fail((err) => {
+            this.showError(err);
             this.setState({ loading: false });
+            MailPoet.Modal.loading(false);
           });
         }
         return false;

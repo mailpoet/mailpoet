@@ -16,6 +16,7 @@ class TravelNomads {
     return array(
       'name' => __("Travel Nomads", 'mailpoet'),
       'description' => __("Ideal for sharing your travel adventures.", 'mailpoet'),
+      'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
