@@ -137,29 +137,32 @@ define(
                     status: 'active',
                   },
                 }).done((response2) => {
-                  // redirect to listing based on newsletter type
-                  this.context.router.push(`/${this.state.item.type || ''}`);
-                  const opts = this.state.item.options;
-                  // display success message depending on newsletter type
-                  if (response2.data.type === 'welcome') {
-                    MailPoet.Notice.success(
-                      MailPoet.I18n.t('welcomeEmailActivated')
-                    );
-                    MailPoet.trackEvent('Emails > Welcome email activated', {
-                      'MailPoet Free version': window.mailpoet_version,
-                      'List type': opts.event,
-                      Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
-                    });
-                  } else if (response2.data.type === 'notification') {
-                    MailPoet.Notice.success(
-                      MailPoet.I18n.t('postNotificationActivated')
-                    );
-                    MailPoet.trackEvent('Emails > Post notifications activated', {
-                      'MailPoet Free version': window.mailpoet_version,
-                      Frequency: opts.intervalType,
-                    });
-                  }
-                  MailPoet.Modal.loading(false);
+                  // save template in recently sent category
+                  this.saveTemplate(response, () => {
+                    // redirect to listing based on newsletter type
+                    this.context.router.push(`/${this.state.item.type || ''}`);
+                    const opts = this.state.item.options;
+                    // display success message depending on newsletter type
+                    if (response2.data.type === 'welcome') {
+                      MailPoet.Notice.success(
+                        MailPoet.I18n.t('welcomeEmailActivated')
+                      );
+                      MailPoet.trackEvent('Emails > Welcome email activated', {
+                        'MailPoet Free version': window.mailpoet_version,
+                        'List type': opts.event,
+                        Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
+                      });
+                    } else if (response2.data.type === 'notification') {
+                      MailPoet.Notice.success(
+                        MailPoet.I18n.t('postNotificationActivated')
+                      );
+                      MailPoet.trackEvent('Emails > Post notifications activated', {
+                        'MailPoet Free version': window.mailpoet_version,
+                        Frequency: opts.intervalType,
+                      });
+                    }
+                    MailPoet.Modal.loading(false);
+                  });
                 }).fail((err) => {
                   this.showError(err);
                   this.setState({ loading: false });
