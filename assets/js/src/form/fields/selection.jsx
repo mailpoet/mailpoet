@@ -55,7 +55,7 @@ define([
         return;
       }
 
-      const select2 = jQuery(`#${this.refs.select.id}`).select2({
+      let select2Options = {
         width: (this.props.width || ''),
         templateResult: function (item) {
           if (item.element && item.element.selected) {
@@ -65,7 +65,41 @@ define([
           }
           return item.text;
         },
-      });
+      };
+
+      const remoteQuery = this.props.field.remoteQuery || null;
+      if (remoteQuery) {
+        select2Options = Object.assign(select2Options, {
+          ajax: {
+            url: window.ajaxurl,
+            type: 'POST',
+            dataType: 'json',
+            data: function (params) {
+              return {
+                action: 'mailpoet',
+                api_version: window.mailpoet_api_version,
+                token: window.mailpoet_token,
+                endpoint: remoteQuery.endpoint,
+                method: remoteQuery.method,
+                data: Object.assign(
+                  remoteQuery.data,
+                  { query: params.term }
+                ),
+              };
+            },
+            processResults: function (response) {
+              return {
+                results: response.data.map(item => (
+                  { id: item.id || item.value, text: item.name || item.text }
+                )),
+              };
+            },
+          },
+          minimumInputLength: remoteQuery.minimumInputLength || 2,
+        });
+      }
+
+      const select2 = jQuery(`#${this.refs.select.id}`).select2(select2Options);
 
       let hasRemoved = false;
       select2.on('select2:unselecting', () => {
