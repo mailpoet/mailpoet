@@ -12,7 +12,7 @@ class ManageSubscriptionLinkCest {
   function sendEmail(\AcceptanceTester $I) {
     $I->wantTo('Create and send new email to WordPress Users list');
 
-    $I->loginAsAdmin();
+    $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id=\'new_email\']');
 

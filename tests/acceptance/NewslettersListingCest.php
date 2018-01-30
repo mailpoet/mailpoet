@@ -6,7 +6,7 @@ class NewslettersListingCest {
   function newslettersListing(\AcceptanceTester $I) {
     $I->wantTo('Open newsletters listings page');
 
-    $I->loginAsAdmin();
+    $I->login();
     $I->amOnMailpoetPage('Emails');
 
     // Standard newsletters is the default tab
@@ -22,7 +22,7 @@ class NewslettersListingCest {
   function statisticsColumn(\AcceptanceTester $I) {
     $I->wantTo('Check if statistics column is visible depending on tracking option');
 
-    $I->loginAsAdmin();
+    $I->login();
 
     // column is hidden when tracking is not enabled
     $I->cli('db query "UPDATE mp_mailpoet_settings SET value = null WHERE name = \'tracking\'" --allow-root');

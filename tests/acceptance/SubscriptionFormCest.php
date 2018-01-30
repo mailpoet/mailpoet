@@ -60,7 +60,7 @@ class SubscriptionFormCest {
     $I->seeNoJSErrors();
 
     $I->amOnUrl('http://wordpress');
-    $I->loginAsAdmin();
+    $I->login();
     $I->amOnMailpoetPage('Subscribers');
     $I->waitForText($this->subscriber_email);
     $I->see('Subscribed', Locator::contains('tr', $this->subscriber_email));

@@ -8,7 +8,7 @@ class NewsletterCreationCest {
 
     $newsletter_title = 'Post Notification ' . \MailPoet\Util\Security::generateRandomString();
 
-    $I->loginAsAdmin();
+    $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id=\'new_email\']');
 
