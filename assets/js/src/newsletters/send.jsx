@@ -159,7 +159,12 @@ define(
                       Frequency: opts.intervalType,
                     });
                   }
-                }).fail(this.showError);
+                  MailPoet.Modal.loading(false);
+                }).fail((err) => {
+                  this.showError(err);
+                  this.setState({ loading: false });
+                  MailPoet.Modal.loading(false);
+                });
               default:
                 return MailPoet.Ajax.post({
                   api_version: window.mailpoet_api_version,
