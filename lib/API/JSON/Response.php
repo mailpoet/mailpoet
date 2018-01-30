@@ -9,6 +9,7 @@ abstract class Response {
   const STATUS_UNAUTHORIZED = 401;
   const STATUS_FORBIDDEN = 403;
   const STATUS_NOT_FOUND = 404;
+  const STATUS_CONFLICT = 409;
   const STATUS_UNKNOWN = 500;
 
   public $status;
