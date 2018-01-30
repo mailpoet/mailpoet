@@ -27,6 +27,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $this->fillField('Username', 'admin');
     $this->fillField('Password', 'password');
     $this->click('Log In');
+    $this->waitForText('MailPoet', 10);
     // $this->saveSessionSnapshot('login');
   }
 
