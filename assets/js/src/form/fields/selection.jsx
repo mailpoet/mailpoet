@@ -27,13 +27,19 @@ define([
       }
     },
     componentDidUpdate: function (prevProps) {
-      if (
-        (this.props.item !== undefined && prevProps.item !== undefined)
+      if ((this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
       ) {
         jQuery(`#${this.refs.select.id}`)
           .val(this.getSelectedValues())
           .trigger('change');
+      }
+
+      if (this.isSelect2Initialized() &&
+        (this.getFieldId(this.props) !== this.getFieldId(prevProps)) &&
+        this.props.field.resetSelect2OnUpdate !== undefined
+      ) {
+        this.resetSelect2();
       }
     },
     componentWillUnmount: function () {
@@ -44,6 +50,10 @@ define([
     getFieldId: function (data) {
       const props = data || this.props;
       return props.field.id || props.field.name;
+    },
+    resetSelect2: function () {
+      this.destroySelect2();
+      this.setupSelect2();
     },
     destroySelect2: function () {
       if (this.isSelect2Initialized()) {
