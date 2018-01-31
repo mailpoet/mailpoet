@@ -110,6 +110,10 @@ define([
         });
       }
 
+      if (this.props.field.extendSelect2Options !== undefined) {
+        select2Options = Object.assign(select2Options, this.props.field.extendSelect2Options);
+      }
+
       const select2 = jQuery(`#${this.refs.select.id}`).select2(select2Options);
 
       let hasRemoved = false;
