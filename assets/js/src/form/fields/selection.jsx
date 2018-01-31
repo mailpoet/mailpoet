@@ -16,8 +16,11 @@ define([
     isSelect2Initialized: function () {
       return (jQuery(`#${this.refs.select.id}`).hasClass('select2-hidden-accessible') === true);
     },
+    isSelect2Component: function () {
+      return this.allowMultipleValues() || this.props.field.forceSelect2;
+    },
     componentDidMount: function () {
-      if (this.allowMultipleValues() || this.props.field.forceSelect2) {
+      if (this.isSelect2Component()) {
         this.setupSelect2();
       }
     },
@@ -38,7 +41,7 @@ define([
       }
     },
     componentWillUnmount: function () {
-      if (this.allowMultipleValues() || this.props.field.forceSelect2) {
+      if (this.isSelect2Component()) {
         this.destroySelect2();
       }
     },
@@ -74,6 +77,10 @@ define([
 
       let select2Options = {
         width: (this.props.width || ''),
+        placeholder: {
+          id: '', // the value of the option
+          text: this.props.field.placeholder,
+        },
         templateResult: function (item) {
           if (item.element && item.element.selected) {
             return null;
