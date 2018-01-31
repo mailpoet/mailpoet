@@ -22,14 +22,12 @@ class AcceptanceTester extends \Codeception\Actor {
    * Define custom actions here
    */
   public function login() {
-    // if($this->loadSessionSnapshot('login')) return;
     $this->amOnPage('/wp-login.php');
-    $this->wait(1);
+    $this->wait(1);// this needs to be here, Username is not filled properly without this line
     $this->fillField('Username', 'admin');
     $this->fillField('Password', 'password');
     $this->click('Log In');
     $this->waitForText('MailPoet', 10);
-    // $this->saveSessionSnapshot('login');
   }
 
   /**
