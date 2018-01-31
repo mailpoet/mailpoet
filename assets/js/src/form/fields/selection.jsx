@@ -57,7 +57,7 @@ define([
     },
     destroySelect2: function () {
       if (this.isSelect2Initialized()) {
-        jQuery(`#${this.refs.select.id}`).select2('destroy');
+        jQuery(`#${this.refs.select.id}`).select2('destroy').find('option:not(.default)').remove();
         this.state.select2 = false;
       }
     },
@@ -206,7 +206,7 @@ define([
       // For single selects only, in order for the placeholder value to appear,
       // we must have a blank <option> as the first option in the <select> control.
       if (this.allowMultipleValues()) return undefined;
-      if (this.props.field.placeholder) return (<option />);
+      if (this.props.field.placeholder) return (<option className="default" />);
       return undefined;
     },
     render: function () {
@@ -219,6 +219,7 @@ define([
         return (
           <option
             key={`option-${index}`}
+            className="default"
             value={value}
             title={searchLabel}
           >
