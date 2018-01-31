@@ -12,12 +12,8 @@ define([
   const Selection = React.createClass({
     getInitialState: function () {
       return {
-        items: [],
         select2: false,
       };
-    },
-    componentWillMount: function () {
-      this.loadCachedItems();
     },
     allowMultipleValues: function () {
       return (this.props.field.multiple === true);
@@ -130,7 +126,7 @@ define([
       }
       return null;
     },
-    loadCachedItems: function () {
+    loadItems: function () {
       let items;
       if (typeof (window[`mailpoet_${this.props.field.endpoint}`]) !== 'undefined') {
         items = window[`mailpoet_${this.props.field.endpoint}`];
@@ -142,11 +138,9 @@ define([
         if (this.props.field.filter !== undefined) {
           items = items.filter(this.props.field.filter);
         }
-
-        this.setState({
-          items: items,
-        });
       }
+
+      return items;
     },
     handleChange: function (e) {
       let value;
@@ -201,7 +195,8 @@ define([
       return undefined;
     },
     render: function () {
-      const options = this.state.items.map((item, index) => {
+      const items = this.loadItems(this.props.field);
+      const options = items.map((item, index) => {
         const label = this.getLabel(item);
         const searchLabel = this.getSearchLabel(item);
         const value = this.getValue(item);
