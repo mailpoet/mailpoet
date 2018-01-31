@@ -24,7 +24,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function login() {
     // if($this->loadSessionSnapshot('login')) return;
     $this->amOnPage('/wp-login.php');
-    $this->waitForElementVisible('#user_login');
+    $this->wait(1);
     $this->fillField('Username', 'admin');
     $this->fillField('Password', 'password');
     $this->click('Log In');
