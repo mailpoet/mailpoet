@@ -106,6 +106,10 @@ var baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.Form!babel-loader',
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/form/fields/selection.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.FormFieldSelection!babel-loader',
+      },
+      {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
         loader: 'expose-loader?' + globalPrefix + '.StatsBadge!babel-loader',
       },
