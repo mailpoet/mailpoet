@@ -44,6 +44,7 @@ define([
     destroySelect2: function () {
       if (this.isSelect2Initialized()) {
         jQuery(`#${this.refs.select.id}`).select2('destroy');
+        this.state.select2 = false;
       }
     },
     setupSelect2: function () {
@@ -110,7 +111,7 @@ define([
 
       select2.on('change', this.handleChange);
 
-      this.setState({ select2: true });
+      this.state.select2 = true;
     },
     getSelectedValues: function () {
       if (this.props.field.selected !== undefined) {
