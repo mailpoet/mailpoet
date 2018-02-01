@@ -351,7 +351,7 @@ define(
           return `${segment.name} (${parseInt(segment.subscribers, 10).toLocaleString()})`;
         },
         transformChangedValue: function (segmentIds) {
-          const allSegments = this.state.items;
+          const allSegments = this.getItems();
           return _.map(segmentIds, id => _.find(allSegments, segment => segment.id === id));
         },
         validation: {

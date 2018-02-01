@@ -145,7 +145,7 @@ define([
       }
       return null;
     },
-    loadItems: function () {
+    getItems: function () {
       let items;
       if (typeof (window[`mailpoet_${this.props.field.endpoint}`]) !== 'undefined') {
         items = window[`mailpoet_${this.props.field.endpoint}`];
@@ -214,7 +214,7 @@ define([
       return undefined;
     },
     render: function () {
-      const items = this.loadItems(this.props.field);
+      const items = this.getItems(this.props.field);
       const options = items.map((item, index) => {
         const label = this.getLabel(item);
         const searchLabel = this.getSearchLabel(item);
