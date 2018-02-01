@@ -6,7 +6,7 @@ class ListsListingCest {
   function listsListing(\AcceptanceTester $I) {
     $I->wantTo('Open lists listings page');
 
-    $I->loginAsAdmin();
+    $I->login();
     $I->amOnMailpoetPage('Lists');
 
     $I->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
