@@ -128,7 +128,7 @@ const NewsletterTemplates = React.createClass({
   getInitialState: function () {
     return {
       loading: false,
-      templates: {},
+      templates: {}, // {category1: [template11, template12, ..], category2: [template21, ...]}
       selectedCategory: '',
     };
   },
@@ -159,18 +159,27 @@ const NewsletterTemplates = React.createClass({
           ];
         }
 
-        let templates = templatesCategories.reduce((result, { name }) => {
-          const obj = result;
-          obj[name] = [];
-          return obj;
-        }, {});
+        const templates = {};
+        const categoriesNames = templatesCategories.map(category => category.name);
+        categoriesNames.forEach((name) => {
+          templates[name] = [];
+        });
 
-        templates = response.data.reduce((result, item) => {
-          JSON.parse(item.categories).forEach((category) => {
-            result[category].push(item);
+        response.data.forEach((template) => {
+          let categories;
+          try {
+            categories = JSON.parse(template.categories)
+              .filter(name => categoriesNames.indexOf(name) !== -1);
+          } catch (err) {
+            categories = [];
+          }
+          if (categories.length === 0) { // the template has no known category
+            categories = ['saved'];     // we add it to "Your saved templates"
+          }
+          categories.forEach((category) => {
+            templates[category].push(template);
           });
-          return result;
-        }, templates);
+        });
 
         this.selectInitialCategory(templates);
       }
