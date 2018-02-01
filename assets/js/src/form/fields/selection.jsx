@@ -10,16 +10,11 @@ define([
   jQuery
 ) => {
   const Selection = React.createClass({
-    getInitialState: function () {
-      return {
-        select2: false,
-      };
-    },
     allowMultipleValues: function () {
       return (this.props.field.multiple === true);
     },
     isSelect2Initialized: function () {
-      return (this.state.select2 === true);
+      return (jQuery(`#${this.refs.select.id}`).hasClass('select2-hidden-accessible') === true)
     },
     componentDidMount: function () {
       if (this.allowMultipleValues() || this.props.field.forceSelect2) {
@@ -58,7 +53,6 @@ define([
     destroySelect2: function () {
       if (this.isSelect2Initialized()) {
         jQuery(`#${this.refs.select.id}`).select2('destroy').find('option:not(.default)').remove();
-        this.state.select2 = false;
       }
     },
     setupSelect2: function () {
@@ -128,8 +122,6 @@ define([
       });
 
       select2.on('change', this.handleChange);
-
-      this.state.select2 = true;
     },
     getSelectedValues: function () {
       if (this.props.field.selected !== undefined) {
