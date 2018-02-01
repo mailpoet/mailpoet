@@ -14,7 +14,7 @@ define([
       return (this.props.field.multiple === true);
     },
     isSelect2Initialized: function () {
-      return (jQuery(`#${this.refs.select.id}`).hasClass('select2-hidden-accessible') === true)
+      return (jQuery(`#${this.refs.select.id}`).hasClass('select2-hidden-accessible') === true);
     },
     componentDidMount: function () {
       if (this.allowMultipleValues() || this.props.field.forceSelect2) {
@@ -52,8 +52,20 @@ define([
     },
     destroySelect2: function () {
       if (this.isSelect2Initialized()) {
-        jQuery(`#${this.refs.select.id}`).select2('destroy').find('option:not(.default)').remove();
+        jQuery(`#${this.refs.select.id}`).select2('destroy');
+        this.cleanupAfterSelect2();
       }
+    },
+    cleanupAfterSelect2: function () {
+      // remove DOM elements created by Select2 that are not tracked by React
+      jQuery(`#${this.refs.select.id}`)
+        .find('option:not(.default)')
+        .remove();
+
+      // unbind events (https://select2.org/programmatic-control/methods#event-unbinding)
+      jQuery(`#${this.refs.select.id}`)
+        .off('select2:unselecting')
+        .off('select2:opening');
     },
     setupSelect2: function () {
       if (this.isSelect2Initialized()) {
