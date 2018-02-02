@@ -13,6 +13,7 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\Segment;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
@@ -816,6 +817,7 @@ class NewslettersTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }
