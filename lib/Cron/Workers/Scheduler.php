@@ -106,10 +106,8 @@ class Scheduler {
 
   function processScheduledStandardNewsletter($newsletter, $queue) {
     $segments = $newsletter->segments()->findArray();
-    $segment_ids = array_map(function($segment) {
-      return $segment['id'];
-    }, $segments);
-    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
+    $finder = new SubscribersFinder();
+    $subscribers = $finder->getSubscribersByList($segments);
     $subscribers = Helpers::flattenArray($subscribers);
     // update current queue
     $queue->subscribers = serialize(
