@@ -4,6 +4,8 @@ namespace MailPoet\Test\API\JSON\v1;
 use MailPoet\API\JSON\v1\Segments;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 
 class SegmentsTest extends \MailPoetTest {
   function _before() {
@@ -122,6 +124,12 @@ class SegmentsTest extends \MailPoetTest {
   }
 
   function testItCanBulkDeleteSegments() {
+    $subscriber_segment = SubscriberSegment::create(array(
+      'subscriber_id' => 1,
+      'segment_id' => $this->segment_1->id,
+      'status' => Subscriber::STATUS_SUBSCRIBED
+    ));
+
     $router = new Segments();
     $response = $router->bulkAction(array(
       'action' => 'trash',
@@ -145,6 +153,8 @@ class SegmentsTest extends \MailPoetTest {
     ));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(0);
+
+    expect(SubscriberSegment::findOne($subscriber_segment->id))->equals(false);
   }
 
   function _after() {

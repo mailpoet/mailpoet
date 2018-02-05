@@ -258,9 +258,15 @@ class Segment extends Model {
   static function bulkDelete($orm) {
     $count = parent::bulkAction($orm, function($ids) {
       // delete segments (only default)
-      Segment::whereIn('id', $ids)
+      $segments = Segment::whereIn('id', $ids)
         ->where('type', Segment::TYPE_DEFAULT)
+        ->findMany();
+      $ids = array_map(function($segment) {
+        return $segment->id;
+      }, $segments);
+      SubscriberSegment::whereIn('segment_id', $ids)
         ->deleteMany();
+      Segment::whereIn('id', $ids)->deleteMany();
     });
 
     return array('count' => $count);
