@@ -3,7 +3,7 @@ var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 var chaiJq = require('chai-jq');
 var _ = require('underscore');
-var jsdom = require('jsdom').jsdom;
+var jsdom = require('jsdom/lib/old-api.js').jsdom;
 
 chai.use(sinonChai);
 chai.use(chaiJq);
@@ -19,7 +19,7 @@ if (!global.document || !global.window) {
     QuerySelector: false
   });
 
-  global.window = document.parentWindow;
+  global.window = document.defaultView;
   global.navigator = global.window.navigator;
 }
 const testHelpers = require('./loadHelpers.js');
