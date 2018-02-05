@@ -5,6 +5,8 @@ namespace MailPoet\Models;
 if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
+  const DUPLICATE_RECORD = 23000;
+
   protected $_errors;
   protected $_new_record;
 
@@ -26,13 +28,16 @@ class Model extends \Sudzy\ValidModel {
     }
   }
 
-  function setError($error = '') {
+  function setError($error = '', $error_code = null) {
+    if(!$error_code) {
+      $error_code = count($this->_errors);
+    }
     if(!empty($error)) {
       if(is_array($error)) {
         $this->_errors = array_merge($this->_errors, $error);
         $this->_errors = array_unique($this->_errors);
       } else {
-        $this->_errors[] = $error;
+        $this->_errors[$error_code] = $error;
       }
     }
   }
@@ -54,7 +59,8 @@ class Model extends \Sudzy\ValidModel {
               sprintf(
                 __('Another record already exists. Please specify a different "%1$s".', 'mailpoet'),
                 $column
-              )
+              ),
+              Model::DUPLICATE_RECORD
             );
           } else {
             $this->setError($e->getMessage());
