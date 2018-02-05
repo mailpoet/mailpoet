@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Cron\Workers;
 
+use AspectMock\Test as Mock;
 use Carbon\Carbon;
 use Codeception\Util\Stub;
 use MailPoet\Cron\CronHelper;
@@ -363,6 +364,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
+    $finder = Mock::double('MailPoet\Segments\SubscribersFinder');
 
     // return true
     expect($scheduler->processScheduledStandardNewsletter($newsletter, $queue))->true();
@@ -375,6 +377,8 @@ class SchedulerTest extends \MailPoetTest {
     // set newsletter's status to sending
     $updated_newsletter = Newsletter::findOne($newsletter->id);
     expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENDING);
+    // SubscribersFinder is used for getting subscribers
+    $finder->verifyInvoked('getSubscribersByList');
   }
 
   function testItFailsToProcessPostNotificationNewsletterWhenSegmentsDontExist() {
@@ -421,6 +425,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = Newsletter::filter('filterWithOptions')
       ->findOne($newsletter->id);
     $scheduler = new Scheduler();
+    $finder = Mock::double('MailPoet\Segments\SubscribersFinder');
 
     // return true
     expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->true();
@@ -438,6 +443,8 @@ class SchedulerTest extends \MailPoetTest {
     $updated_notification_history = Newsletter::where('parent_id', $newsletter->id)
       ->findOne();
     expect($updated_notification_history->status)->equals(Newsletter::STATUS_SENDING);
+    // SubscribersFinder is used for getting subscribers
+    $finder->verifyInvoked('getSubscribersByList');
   }
 
   function testItFailsToProcessWhenScheduledQueuesNotFound() {
@@ -662,6 +669,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function _after() {
+    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
