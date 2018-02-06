@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.4.0
+Stable tag: 3.4.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.4.1 - 2018-02-06 =
+* Fixed: previously saved templates are now under "Your saved templates";
+* Improved: imported templates with no matching category are now added to "Your saved templates".
 
 = 3.4.0 - 2018-01-30 =
 * Added: choices of templates are now categorized for clarity;
