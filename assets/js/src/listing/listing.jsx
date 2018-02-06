@@ -579,9 +579,12 @@ const Listing = React.createClass({
       action: 'delete',
       group: 'trash',
     }).done((response) => {
-      MailPoet.Notice.success(
-        MailPoet.I18n.t('permanentlyDeleted').replace('%d', response.meta.count)
-      );
+      if (
+        this.props.messages !== undefined
+        && this.props.messages.onDelete !== undefined
+      ) {
+        this.props.messages.onDelete(response);
+      }
       // redirect to default group
       this.handleGroup('all');
     }).fail((response) => {
