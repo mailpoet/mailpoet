@@ -2,6 +2,7 @@ import React from 'react';
 
 const FormFieldText = React.createClass({
   render() {
+    const name = this.props.field.name || null;
     const item = this.props.item || {};
     let value;
     let defaultValue;
@@ -17,6 +18,16 @@ const FormFieldText = React.createClass({
       defaultValue = this.props.field.defaultValue;
     }
 
+    let id = this.props.field.id || null;
+    if (!id && this.props.field.name) {
+      id = `field_${this.props.field.name}`;
+    }
+
+    let className = this.props.field.class || null;
+    if (!className && !this.props.field.size) {
+      className = 'regular-text';
+    }
+
     return (
       <input
         type="text"
@@ -25,14 +36,14 @@ const FormFieldText = React.createClass({
           ? this.props.field.disabled(this.props.item)
           : false
         }
-        className={(this.props.field.size) ? '' : 'regular-text'}
+        className={className}
         size={
           (this.props.field.size !== 'auto' && this.props.field.size > 0)
           ? this.props.field.size
           : false
         }
-        name={this.props.field.name}
-        id={`field_${this.props.field.name}`}
+        name={name}
+        id={id}
         value={value}
         defaultValue={defaultValue}
         placeholder={this.props.field.placeholder}
