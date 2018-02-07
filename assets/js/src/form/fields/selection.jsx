@@ -178,6 +178,7 @@ define([
           target: {
             value: transformedValue,
             name: this.props.field.name,
+            id: e.target.id,
           },
         });
       }
