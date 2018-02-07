@@ -11,20 +11,14 @@ class ScheduledTaskSubscriber extends Model {
   public static $_id_column = array('task_id', 'subscriber_id');
 
   static function createOrUpdate($data = array()) {
-    if(!is_array($data) || empty($data['task_id']) || empty($data['subscriber_id'])) return;
-
-    $task_subscriber = self::where('subscriber_id', $data['subscriber_id'])
-      ->where('task_id', $data['task_id'])
-      ->findOne();
-
-    if(empty($task_subscriber)) $task_subscriber = self::create();
-
-    $task_subscriber->task_id = $data['task_id'];
-    $task_subscriber->subscriber_id = $data['subscriber_id'];
-    $task_subscriber->processed = !empty($data['processed']) ? self::STATUS_PROCESSED : self::STATUS_UNPROCESSED;
-    $task_subscriber->save();
-
-    return $task_subscriber;
+    if(!is_array($data) || empty($data['task_id']) || empty($data['subscriber_id'])) {
+      return;
+    }
+    $data['processed'] = !empty($data['processed']) ? self::STATUS_PROCESSED : self::STATUS_UNPROCESSED;
+    return parent::internalCreateOrUpdate($data, array(
+      'subscriber_id' => $data['subscriber_id'],
+      'task_id' => $data['task_id']
+    ));
   }
 
   static function addSubscribers($task_id, array $subscriber_ids) {

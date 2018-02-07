@@ -220,22 +220,7 @@ class Segment extends Model {
   }
 
   static function createOrUpdate($data = array()) {
-    $segment = false;
-
-    if(isset($data['id']) && (int)$data['id'] > 0) {
-      $segment = self::findOne((int)$data['id']);
-    }
-
-    if($segment === false) {
-      $segment = self::create();
-      $segment->hydrate($data);
-    } else {
-      unset($data['id']);
-      $segment->set($data);
-    }
-
-    $segment->save();
-    return $segment;
+    return parent::internalCreateOrUpdate($data);
   }
 
   static function getPublic() {

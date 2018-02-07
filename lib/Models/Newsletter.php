@@ -793,15 +793,7 @@ class Newsletter extends Model {
   }
 
   static function createOrUpdate($data = array()) {
-    $newsletter = false;
-
-    if(isset($data['id']) && (int)$data['id'] > 0) {
-      $newsletter = self::findOne((int)$data['id']);
-    }
-
-    if($newsletter === false) {
-      $newsletter = self::create();
-
+    return parent::internalCreateOrUpdate($data, false, function($data) {
       // set default sender based on settings
       if(empty($data['sender'])) {
         $sender = Setting::getValue('sender', array());
@@ -832,14 +824,8 @@ class Newsletter extends Model {
         );
       }
 
-      $newsletter->hydrate($data);
-    } else {
-      unset($data['id']);
-      $newsletter->set($data);
-    }
-
-    $newsletter->save();
-    return $newsletter;
+      return $data;
+    });
   }
 
   static function getWelcomeNotificationsForSegments($segments) {

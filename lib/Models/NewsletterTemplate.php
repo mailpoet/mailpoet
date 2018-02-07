@@ -24,23 +24,8 @@ class NewsletterTemplate extends Model {
     }
     return $template;
   }
-
+  
   static function createOrUpdate($data = array()) {
-    $template = false;
-
-    if(isset($data['id']) && (int)$data['id'] > 0) {
-      $template = self::findOne((int)$data['id']);
-    }
-
-    if($template === false) {
-      $template = self::create();
-      $template->hydrate($data);
-    } else {
-      unset($data['id']);
-      $template->set($data);
-    }
-
-    $template->save();
-    return $template;
+    return parent::internalCreateOrUpdate($data);
   }
 }

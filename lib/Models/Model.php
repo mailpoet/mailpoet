@@ -20,6 +20,40 @@ class Model extends \Sudzy\ValidModel {
     return parent::create();
   }
 
+  static protected function internalCreateOrUpdate($data = array(), $conditions = false, $onCreate = false) {
+    $model = false;
+
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $model = self::findOne((int)$data['id']);
+    }
+
+    if(!empty($conditions)) {
+      $first = true;
+      foreach($conditions as $field => $value) {
+        if($first) {
+          $model = static::where($field, $value);
+          $first = false;
+        } else {
+          $model = $model->where($field, $value);
+        }
+      }
+      $model = $model->findOne();
+    }
+
+    if($model === false) {
+      if(!empty($onCreate)) {
+        $data = $onCreate($data);
+      }
+      $model = self::create();
+      $model->hydrate($data);
+    } else {
+      unset($data['id']);
+      $model->set($data);
+    }
+
+    return $model->save();
+  }
+
   function getErrors() {
     if(empty($this->_errors)) {
       return false;

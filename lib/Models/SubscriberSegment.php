@@ -151,26 +151,13 @@ class SubscriberSegment extends Model {
   }
 
   static function createOrUpdate($data = array()) {
-    $subscription = false;
-
-    if(isset($data['id']) && (int)$data['id'] > 0) {
-      $subscription = self::findOne((int)$data['id']);
-    }
-
+    $conditions = false;
     if(isset($data['subscriber_id']) && isset($data['segment_id'])) {
-      $subscription = self::where('subscriber_id', (int)$data['subscriber_id'])
-        ->where('segment_id', (int)$data['segment_id'])
-        ->findOne();
+      $conditions = array(
+        'subscriber_id' => (int)$data['subscriber_id'],
+        'segment_id' => (int)$data['segment_id']
+      );
     }
-
-    if($subscription === false) {
-      $subscription = self::create();
-      $subscription->hydrate($data);
-    } else {
-      unset($data['id']);
-      $subscription->set($data);
-    }
-
-    return $subscription->save();
+    return parent::internalCreateOrUpdate($data, $conditions);
   }
 }

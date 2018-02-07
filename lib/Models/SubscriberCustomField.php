@@ -37,18 +37,10 @@ class SubscriberCustomField extends Model {
       }
     }
 
-    $relation = self::where('custom_field_id', $data['custom_field_id'])
-      ->where('subscriber_id', $data['subscriber_id'])
-      ->findOne();
-
-    if($relation === false) {
-      $relation = self::create();
-      $relation->hydrate($data);
-    } else {
-      $relation->set($data);
-    }
-
-    return $relation->save();
+    return parent::internalCreateOrUpdate($data, array(
+      'custom_field_id' => $data['custom_field_id'],
+      'subscriber_id' => $data['subscriber_id']
+    ));
   }
 
   static function createMultiple($values) {
