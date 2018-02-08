@@ -573,6 +573,56 @@ class Menu {
     $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
 
+    $data['automatic_emails'] = array(
+      array(
+        'id' => 'woocommerce',
+        'premium' => true,
+        'title' => __('WooCommerce Automatic Emails', 'mailpoet'),
+        'description' => __("Put your store's email marketing on autopilot.", 'mailpoet'),
+        'events' => array(
+          array(
+            'id' => 'woocommerce',
+            'title' => __('Abandoned Shopping Cart', 'mailpoet'),
+            'description' => __('Send an email to logged-in visitors who have items in their shopping carts but left your website without checking out. Can convert up to 5% of abandoned carts.', 'mailpoet'),
+            'badge' => array(
+              'text' => __('Must-have', 'mailpoet'),
+              'style' => 'red'
+            )
+          ),
+          array(
+            'id' => 'woocommerce',
+            'title' => __('First Purchase', 'mailpoet'),
+            'description' => __('Send an email automatically to customers who have purchased for the first time.', 'mailpoet'),
+            'badge' => array(
+              'text' => __('Recommended', 'mailpoet'),
+              'style' => 'yellow'
+            )
+          ),
+          array(
+            'id' => 'woocommerce',
+            'title' => __('Purchased This Product', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who purchase a specific product.', 'mailpoet'),
+          ),
+          array(
+            'id' => 'woocommerce',
+            'title' => __('Purchased In This Category', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who purchase a product from a specific category.', 'mailpoet'),
+            'soon' => true
+          ),
+          array(
+            'id' => 'woocommerce',
+            'title' => __('Big Spender', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who have spent a certain amount to thank them, possibly with a coupon.', 'mailpoet'),
+            'soon' => true,
+            'badge' => array(
+              'text' => __('Smart to have', 'mailpoet'),
+              'style' => 'teal'
+            )
+          )
+        )
+      )
+    );
+
     wp_enqueue_script('jquery-ui');
     wp_enqueue_script('jquery-ui-datepicker');
 

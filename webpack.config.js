@@ -130,6 +130,14 @@ var baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.NewsletterCreationBreadcrumb!babel-loader',
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/events_list.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.AutomaticEmailsEventsList!babel-loader',
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/breadcrumb.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.AutomaticEmailsBreadcrumb!babel-loader',
+      },
+      {
         include: /Blob.js$/,
         loader: 'exports-loader?window.Blob',
       },
@@ -185,6 +193,8 @@ var adminConfig = {
       'form/form.jsx',
       'newsletters/badges/stats.jsx',
       'newsletters/breadcrumb.jsx',
+      'newsletters/types/automatic_emails/events_list.jsx',
+      'newsletters/types/automatic_emails/breadcrumb.jsx',
       'newsletters/types/welcome/scheduling.jsx',
       'history',
     ],

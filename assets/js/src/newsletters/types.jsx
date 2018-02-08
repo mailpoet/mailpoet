@@ -5,13 +5,15 @@ define(
     'wp-js-hooks',
     'react-router',
     'newsletters/breadcrumb.jsx',
+    'underscore',
   ],
   (
     React,
     MailPoet,
     Hooks,
     Router,
-    Breadcrumb
+    Breadcrumb,
+    _
   ) => {
     const NewsletterTypes = React.createClass({
       contextTypes: {
@@ -50,8 +52,29 @@ define(
           }
         });
       },
+      getAutomaticEmails: function () {
+        if (!window.mailpoet_automatic_emails) return [];
+
+        return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
+          const email = automaticEmail;
+          const disabled = !email.events;
+
+          email.action = (() => (
+            <div>
+              <a className="button button-primary"
+                disabled={disabled}
+                onClick={!disabled ? this.setupNewsletter.bind(null, automaticEmail.id) : null}
+              >
+                { MailPoet.I18n.t('setUp') }
+              </a>
+            </div>
+          ))();
+
+          return email;
+        });
+      },
       render: function () {
-        let types = [
+        const defaultTypes = [
           {
             id: 'standard',
             title: MailPoet.I18n.t('regularNewsletterTypeTitle'),
@@ -72,7 +95,7 @@ define(
               return (
                 <div>
                   <a href="?page=mailpoet-premium" target="_blank">
-                    {MailPoet.I18n.t('getPremiumVersion')}
+                    {MailPoet.I18n.t('premiumFeatureLink')}
                   </a>
                 </div>
               );
@@ -92,7 +115,7 @@ define(
           },
         ];
 
-        types = Hooks.applyFilters('mailpoet_newsletters_types', types, this);
+        const types = Hooks.applyFilters('mailpoet_newsletters_types', [...defaultTypes, ...this.getAutomaticEmails()], this);
 
         return (
           <div>
