@@ -5,10 +5,12 @@ use Codeception\Util\Fixtures;
 use Helper\WordPress;
 use MailPoet\Config\Shortcodes;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class ShortcodesTest extends \MailPoetTest {
   function _before() {
@@ -16,7 +18,7 @@ class ShortcodesTest extends \MailPoetTest {
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->status = Newsletter::STATUS_SENT;
     $this->newsletter = $newsletter->save();
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $this->queue = $queue->save();
@@ -128,6 +130,7 @@ class ShortcodesTest extends \MailPoetTest {
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

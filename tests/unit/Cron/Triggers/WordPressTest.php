@@ -7,8 +7,10 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class WordPressTest extends \MailPoetTest {
   function _before() {
@@ -103,7 +105,7 @@ class WordPressTest extends \MailPoetTest {
   }
 
   function _addQueue($status) {
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->hydrate(
       array(
         'newsletter_id' => 1,
@@ -118,6 +120,7 @@ class WordPressTest extends \MailPoetTest {
 
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

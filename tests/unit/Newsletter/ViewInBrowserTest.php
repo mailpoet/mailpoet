@@ -3,12 +3,14 @@ namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\ViewInBrowser;
 use MailPoet\Router\Router;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class ViewInBrowserTest extends \MailPoetTest {
   function _before() {
@@ -80,10 +82,10 @@ class ViewInBrowserTest extends \MailPoetTest {
     $subscriber->last_name = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_without_tracking;
-    $queue->subscribers = array('processed' => array($subscriber->id));
+    $queue->setSubscribers(array($subscriber->id));
     $this->queue = $queue->save();
     // create newsletter link associations
     $newsletter_link_1 = NewsletterLink::create();
@@ -177,6 +179,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

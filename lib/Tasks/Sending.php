@@ -30,13 +30,13 @@ class Sending {
     'count_to_process'
   );
 
-  public function __construct(ScheduledTask $task, SendingQueue $queue) {
-    $this->task = $task;
-    $this->queue = $queue;
-    $this->task_subscribers = new Subscribers($task);
-  }
+  private $common_fields = array(
+    'created_at',
+    'updated_at',
+    'deleted_at'
+  );
 
-  static function create(ScheduledTask $task = null, SendingQueue $queue = null) {
+  private function __construct(ScheduledTask $task = null, SendingQueue $queue = null) {
     if(is_null($task) && is_null($queue)) {
       $task = ScheduledTask::create();
       $task->type = self::TASK_TYPE;
@@ -48,6 +48,16 @@ class Sending {
       $queue->save();
     }
 
+    if($task->type !== self::TASK_TYPE) {
+      throw new \Exception('Only tasks of type "' . self::TASK_TYPE . '" are accepted by this class');
+    }
+
+    $this->task = $task;
+    $this->queue = $queue;
+    $this->task_subscribers = new Subscribers($task);
+  }
+
+  static function create(ScheduledTask $task = null, SendingQueue $queue = null) {
     return new self($task, $queue);
   }
 
@@ -89,6 +99,15 @@ class Sending {
     return array_merge($task, $queue);
   }
 
+  public function getErrors() {
+    $queue_errors = $this->queue->getErrors();
+    $task_errors = $this->task->getErrors();
+    if(empty($queue_errors) && empty($task_errors)) {
+      return false;
+    }
+    return array_merge((array)$queue_errors, (array)$task_errors);
+  }
+
   public function save() {
     $this->task->save();
     $this->queue->save();
@@ -113,8 +132,13 @@ class Sending {
     return $this->task_subscribers;
   }
 
-  public function getSubscribers() {
-    $subscribers = $this->task_subscribers->getSubscribers()->findArray();
+  public function getSubscribers($processed = null) {
+    $subscribers = $this->task_subscribers->getSubscribers();
+    if(!is_null($processed)) {
+      $status = ($processed) ? ScheduledTaskSubscriber::STATUS_PROCESSED : ScheduledTaskSubscriber::STATUS_UNPROCESSED;
+      $subscribers->where('processed', $status);
+    }
+    $subscribers = $subscribers->findArray();
     return Helpers::arrayColumn($subscribers, 'subscriber_id');
   }
 
@@ -145,6 +169,24 @@ class Sending {
     return $this->queue->save();
   }
 
+  public function hydrate(array $data) {
+    foreach($data as $k => $v) {
+      $this->__set($k, $v);
+    }
+  }
+
+  public function validate() {
+    return $this->queue->validate() && $this->task->validate();
+  }
+
+  public function __isset($prop) {
+    if($this->isQueueProperty($prop)) {
+      return isset($this->queue->$prop);
+    } else {
+      return isset($this->task->$prop);
+    }
+  }
+
   public function __get($prop) {
     if($this->isQueueProperty($prop)) {
       return $this->queue->$prop;
@@ -154,7 +196,10 @@ class Sending {
   }
 
   public function __set($prop, $value) {
-    if($this->isQueueProperty($prop)) {
+    if($this->isCommonProperty($prop)) {
+      $this->queue->$prop = $value;
+      $this->task->$prop = $value;
+    } elseif($this->isQueueProperty($prop)) {
       $this->queue->$prop = $value;
     } else {
       $this->task->$prop = $value;
@@ -168,6 +213,10 @@ class Sending {
 
   private function isQueueProperty($prop) {
     return in_array($prop, $this->queue_fields);
+  }
+
+  private function isCommonProperty($prop) {
+    return in_array($prop, $this->common_fields);
   }
 
   static function getScheduledQueues() {

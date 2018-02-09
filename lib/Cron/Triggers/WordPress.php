@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
 if(!defined('ABSPATH')) exit;
@@ -22,6 +23,7 @@ class WordPress {
 
   static function checkExecutionRequirements() {
     // migration
+    $migration_disabled = Setting::getValue('cron_trigger.method') === 'none';
     $migration_due_tasks = MigrationWorker::getAllDueTasks();
     $migration_future_tasks = MigrationWorker::getFutureTasks();
     // sending queue
@@ -46,7 +48,7 @@ class WordPress {
     $bounce_sync_active = ($mp_sending_enabled && ($bounce_due_tasks || !$bounce_future_tasks));
     $sending_service_key_check_active = ($mp_sending_enabled && ($msskeycheck_due_tasks || !$msskeycheck_future_tasks));
     $premium_key_check_active = ($premium_key_specified && ($premium_keycheck_due_tasks || !$premium_keycheck_future_tasks));
-    $migration_active = $migration_due_tasks || !$migration_future_tasks;
+    $migration_active = !$migration_disabled && ($migration_due_tasks || !$migration_future_tasks);
 
     return (
       $migration_active

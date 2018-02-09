@@ -181,11 +181,17 @@ class Newsletter extends Model {
     if($children) {
       $children = Helpers::flattenArray($children);
       $this->children()->deleteMany();
-      SendingQueue::getTasks()->whereIn('queues.newsletter_id', array_merge($children, array($this->id)))->deleteMany();
+      SendingQueue::getTasks()
+        ->whereIn('queues.newsletter_id', array_merge($children, array($this->id)))
+        ->findResultSet()
+        ->delete();
       SendingQueue::whereIn('newsletter_id', array_merge($children, array($this->id)))->deleteMany();
       NewsletterSegment::whereIn('newsletter_id', array_merge($children, array($this->id)))->deleteMany();
     } else {
-      SendingQueue::getTasks()->where('queues.newsletter_id', $this->id)->deleteMany();
+      SendingQueue::getTasks()
+        ->where('queues.newsletter_id', $this->id)
+        ->findResultSet()
+        ->delete();
       $this->queue()->deleteMany();
       $this->segmentRelations()->deleteMany();
     }
@@ -200,11 +206,17 @@ class Newsletter extends Model {
       if($children) {
         $children = Helpers::flattenArray($children);
         Newsletter::whereIn('parent_id', $ids)->deleteMany();
-        SendingQueue::getTasks()->whereIn('queues.newsletter_id', array_merge($children, $ids))->deleteMany();
+        SendingQueue::getTasks()
+          ->whereIn('queues.newsletter_id', array_merge($children, $ids))
+          ->findResultSet()
+          ->delete();
         SendingQueue::whereIn('newsletter_id', array_merge($children, $ids))->deleteMany();
         NewsletterSegment::whereIn('newsletter_id', array_merge($children, $ids))->deleteMany();
       } else {
-        SendingQueue::getTasks()->whereIn('queues.newsletter_id', $ids)->deleteMany();
+        SendingQueue::getTasks()
+          ->whereIn('queues.newsletter_id', $ids)
+          ->findResultSet()
+          ->delete();
         SendingQueue::whereIn('newsletter_id', $ids)->deleteMany();
         NewsletterSegment::whereIn('newsletter_id', $ids)->deleteMany();
       }
@@ -266,7 +278,7 @@ class Newsletter extends Model {
           ->save();
         SendingQueue::getTasks()
           ->whereIn('queues.newsletter_id', Helpers::flattenArray($children))
-          ->whereNotNull('deleted_at')
+          ->whereNotNull('tasks.deleted_at')
           ->findResultSet()
           ->set('deleted_at', null)
           ->save();
@@ -278,7 +290,7 @@ class Newsletter extends Model {
       } else {
         SendingQueue::getTasks()
           ->whereIn('queues.newsletter_id', $ids)
-          ->whereNotNull('deleted_at')
+          ->whereNotNull('tasks.deleted_at')
           ->findResultSet()
           ->set('deleted_at', null)
           ->save();

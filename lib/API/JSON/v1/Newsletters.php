@@ -166,7 +166,7 @@ class Newsletters extends APIEndpoint {
     // if there are past due notifications, reschedule them for the next send date
     if($newsletter->type === Newsletter::TYPE_NOTIFICATION && $status === Newsletter::STATUS_ACTIVE) {
       $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
-      $newsletter->queue()->task()
+      $newsletter->queue()->findOne()->task()
         ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
         ->where('status', SendingQueue::STATUS_SCHEDULED)
         ->findResultSet()

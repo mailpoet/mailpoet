@@ -109,8 +109,8 @@ class Scheduler {
     $next_run_date = self::getNextRunDate($newsletter->schedule);
     if(!$next_run_date) return;
     // do not schedule duplicate queues for the same time
-    $existing_queue = SendingQueue::where('newsletter_id', $newsletter->id)
-      ->where('scheduled_at', $next_run_date)
+    $existing_queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
+      ->where('tasks.scheduled_at', $next_run_date)
       ->findOne();
     if($existing_queue) return;
     $queue = SendingTask::create();

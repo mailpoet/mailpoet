@@ -46,7 +46,7 @@ class SendingQueue extends APIEndpoint {
     }
 
     // add newsletter to the sending queue
-    $queue = SendingQueueModel::findTaskByNewsletterId($newsletter->id)
+    $queue = SendingQueueModel::joinWithTasks()
       ->whereNull('tasks.status')
       ->findOne();
 

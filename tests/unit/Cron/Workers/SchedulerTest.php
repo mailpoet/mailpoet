@@ -11,10 +11,13 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\Segment;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class SchedulerTest extends \MailPoetTest {
   function testItDefinesConstants() {
@@ -40,7 +43,7 @@ class SchedulerTest extends \MailPoetTest {
 
   function testItCanGetScheduledQueues() {
     expect(Scheduler::getScheduledQueues())->isEmpty();
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = 1;
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
@@ -103,7 +106,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($queue->scheduled_at)->null();
     $newsletter->schedule = '0 5 * * *'; // set it to daily at 5
     $scheduler->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
-    $queue = SendingQueue::findOne($queue->id);
+    $queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     expect($queue->scheduled_at)->notNull();
   }
 
@@ -198,7 +201,7 @@ class SchedulerTest extends \MailPoetTest {
   function testItDoesNotProcessWelcomeNewsletterWhenThereAreNoSubscribersToProcess() {
     $newsletter = $this->_createNewsletter();
     $queue = $this->_createQueue($newsletter->id);
-    $queue->subscribers = serialize(array());
+    $queue->setSubscribers(array());
 
     // delete queue when the list of subscribers to process is blank
     $scheduler = new Scheduler();
@@ -211,7 +214,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $newsletter->event = 'user';
     $queue = $this->_createQueue($newsletter->id);
-    $queue->subscribers = serialize(array('to_process' => array(1)));
+    $queue->setSubscribers(array(1));
 
     // return false when WP user cannot be verified
     $scheduler = Stub::make(new Scheduler(), array(
@@ -226,7 +229,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $newsletter->event = 'segment';
     $queue = $this->_createQueue($newsletter->id);
-    $queue->subscribers = serialize(array('to_process' => array(1)));
+    $queue->setSubscribers(array(1));
 
     // return false when subscriber cannot be verified
     $scheduler = Stub::make(new Scheduler(), array(
@@ -243,13 +246,13 @@ class SchedulerTest extends \MailPoetTest {
 
     // return true when subsriber is verified and update the queue's status to null
     $queue = $this->_createQueue($newsletter->id);
-    $queue->subscribers = serialize(array('to_process' => array(1)));
+    $queue->setSubscribers(array(1));
     $scheduler = Stub::make(new Scheduler(), array(
       'verifyMailpoetSubscriber' => Stub::exactly(1)
     ), $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
-    $updated_queue = SendingQueue::findOne($queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     expect($updated_queue->status)->null();
   }
 
@@ -259,14 +262,14 @@ class SchedulerTest extends \MailPoetTest {
 
     // return true when WP user is verified
     $queue = $this->_createQueue($newsletter->id);
-    $queue->subscribers = serialize(array('to_process' => array(1)));
+    $queue->setSubscribers(array(1));
     $scheduler = Stub::make(new Scheduler(), array(
       'verifyWPSubscriber' => Stub::exactly(1)
     ), $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
     // update queue's status to null
-    $updated_queue = SendingQueue::findOne($queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     expect($updated_queue->status)->null();
   }
 
@@ -320,7 +323,7 @@ class SchedulerTest extends \MailPoetTest {
     $result = $scheduler->verifyMailpoetSubscriber($subscriber->id, $newsletter, $queue);
     expect($result)->false();
     // update the time queue is scheduled to run at
-    $updated_queue = SendingQueue::findOne($queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     expect(Carbon::parse($updated_queue->scheduled_at))->equals(
       Carbon::createFromTimestamp(current_time('timestamp'))
         ->addMinutes(Scheduler::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT)
@@ -369,9 +372,9 @@ class SchedulerTest extends \MailPoetTest {
     // return true
     expect($scheduler->processScheduledStandardNewsletter($newsletter, $queue))->true();
     // update queue's list of subscribers to process
-    $updated_queue = SendingQueue::findOne($queue->id);
-    $updated_queue_subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue_subscribers['to_process'])->equals(array($subscriber->id));
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
+    $updated_queue_subscribers = $updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    expect($updated_queue_subscribers)->equals(array($subscriber->id));
     // set queue's status to null
     expect($updated_queue->status)->null();
     // set newsletter's status to sending
@@ -435,9 +438,9 @@ class SchedulerTest extends \MailPoetTest {
     expect($notification_history)->notEmpty();
     // update queue with a list of subscribers to process and change newsletter id
     // to that of the notification history
-    $updated_queue = SendingQueue::findOne($queue->id);
-    $updated_queue_subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue_subscribers['to_process'])->equals(array($subscriber->id));
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
+    $updated_queue_subscribers = $updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    expect($updated_queue_subscribers)->equals(array($subscriber->id));
     expect($updated_queue->newsletter_id)->equals($notification_history->id);
     // set notification history's status to sending
     $updated_notification_history = Newsletter::where('parent_id', $newsletter->id)
@@ -637,7 +640,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function _createQueue($newsletter_id, $status = SendingQueue::STATUS_SCHEDULED) {
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->status = $status;
     $queue->newsletter_id = $newsletter_id;
     $queue->save();
@@ -672,6 +675,8 @@ class SchedulerTest extends \MailPoetTest {
     Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);

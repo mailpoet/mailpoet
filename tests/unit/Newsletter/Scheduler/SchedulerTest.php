@@ -6,8 +6,10 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterPost;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class SchedulerTest extends \MailPoetTest {
   function testItSetsConstants() {
@@ -79,9 +81,9 @@ class SchedulerTest extends \MailPoetTest {
       'afterTimeType' => 'hours'
     );
     $existing_subscriber = 678;
-    $existing_queue = SendingQueue::create();
+    $existing_queue = SendingTask::create();
     $existing_queue->newsletter_id = $newsletter->id;
-    $existing_queue->subscribers = array('to_process' => array($existing_subscriber));
+    $existing_queue->setSubscribers(array($existing_subscriber));
     $existing_queue->save();
 
     // queue is not scheduled
@@ -102,7 +104,7 @@ class SchedulerTest extends \MailPoetTest {
     // queue is scheduled delivery in 2 hours
     $newsletter->afterTimeType = 'hours';
     Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
-    $queue = SendingQueue::where('newsletter_id', 1)
+    $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     expect($queue->id)->greaterOrEquals(1);
@@ -115,7 +117,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter->afterTimeType = 'days';
     Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $queue = SendingQueue::where('newsletter_id', 1)
+    $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
@@ -127,7 +129,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter->afterTimeType = 'weeks';
     Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $queue = SendingQueue::where('newsletter_id', 1)
+    $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
@@ -139,7 +141,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter->afterTimeType = null;
     Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $queue = SendingQueue::where('newsletter_id', 1)
+    $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
@@ -156,7 +158,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // queue is not created when notification was already sent for the post
     Scheduler::schedulePostNotification($post_id = 10);
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect($queue)->false();
   }
@@ -177,7 +179,7 @@ class SchedulerTest extends \MailPoetTest {
     $next_run_date = ($current_time->hour < 5) ?
       $current_time :
       $current_time->addDay();
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect($queue->scheduled_at)->equals($next_run_date->format('Y-m-d 05:00:00'));
   }
@@ -191,7 +193,7 @@ class SchedulerTest extends \MailPoetTest {
     );
 
     // queue is not created
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect($queue)->false();
   }
@@ -219,7 +221,7 @@ class SchedulerTest extends \MailPoetTest {
       )
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addDay()->format('Y-m-d H:i'));
@@ -263,7 +265,7 @@ class SchedulerTest extends \MailPoetTest {
     );
 
     // queue is not created
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect($queue)->false();
   }
@@ -286,7 +288,7 @@ class SchedulerTest extends \MailPoetTest {
     );
 
     // queue is not created
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect($queue)->false();
   }
@@ -310,7 +312,7 @@ class SchedulerTest extends \MailPoetTest {
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
 
     // queue is created and scheduled for delivery one day later
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addDay()->format('Y-m-d H:i'));
@@ -335,7 +337,7 @@ class SchedulerTest extends \MailPoetTest {
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
 
     // queue is created and scheduled for delivery one day later
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addDay()->format('Y-m-d H:i'));
@@ -439,7 +441,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduled_at = null,
     $status = SendingQueue::STATUS_SCHEDULED
   ) {
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->status = $status;
     $queue->newsletter_id = $newsletter_id;
     $queue->scheduled_at = $scheduled_at;
@@ -482,6 +484,7 @@ class SchedulerTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

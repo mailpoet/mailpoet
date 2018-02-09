@@ -60,10 +60,6 @@ class SendingQueue extends Model {
         json_encode($this->encodeEmojisInBody($this->newsletter_rendered_body))
       );
     }
-    // set the default priority to medium
-    if(!$this->priority) {
-      $this->priority = self::PRIORITY_MEDIUM;
-    }
     parent::save();
     $this->newsletter_rendered_body = $this->getNewsletterRenderedBody();
     return $this;
@@ -147,7 +143,7 @@ class SendingQueue extends Model {
   }
 
   static function findTaskByNewsletterId($newsletter_id) {
-    return static::joinWithTasks()
+    return static::getTasks()
     ->where('queues.newsletter_id', $newsletter_id);
   }
 }

@@ -3,9 +3,12 @@ namespace MailPoet\Test\Router\Endpoints;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Track;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class TrackTest extends \MailPoetTest {
   function _before() {
@@ -20,9 +23,10 @@ class TrackTest extends \MailPoetTest {
     $subscriber->last_name = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->subscribers = array('processed' => array($subscriber->id));
+    $queue->setSubscribers(array($subscriber->id));
+    $queue->updateProcessedSubscribers(array($subscriber->id));
     $this->queue = $queue->save();
     // create link
     $link = NewsletterLink::create();
@@ -127,10 +131,10 @@ class TrackTest extends \MailPoetTest {
     $newsletter = Newsletter::create();
     $newsletter->type = 'type';
     $newsletter = $newsletter->save();
-    $queue = SendingQueue::create();
-    $queue->id = 123;
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->subscribers = array('processed' => array($this->subscriber->id));
+    $queue->setSubscribers(array($this->subscriber->id));
+    $queue->updateProcessedSubscribers(array($this->subscriber->id));
     $queue->save();
     $track_data = $this->track_data;
     $track_data['queue_id'] = $queue->id;
@@ -155,6 +159,9 @@ class TrackTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

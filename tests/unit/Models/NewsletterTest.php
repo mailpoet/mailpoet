@@ -4,6 +4,7 @@ namespace MailPoet\Test\Models;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
@@ -12,6 +13,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Util\Security;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class NewsletterTest extends \MailPoetTest {
   function _before() {
@@ -37,7 +39,7 @@ class NewsletterTest extends \MailPoetTest {
     $association->segment_id = $this->segment_2->id;
     $association->save();
 
-    $this->sending_queue = SendingQueue::create();
+    $this->sending_queue = SendingTask::create();
     $this->sending_queue->newsletter_id = $this->newsletter->id;
     $this->sending_queue->save();
   }
@@ -97,7 +99,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItCanBeQueued() {
     $queue = $this->newsletter->getQueue();
-    expect($queue->id() > 0)->true();
+    expect($queue->id > 0)->true();
     expect($queue->newsletter_id)->equals($this->newsletter->id);
   }
 
@@ -303,7 +305,7 @@ class NewsletterTest extends \MailPoetTest {
           'type' => $types[$i]
         )
       );
-      $sending_queues[$i] = SendingQueue::create();
+      $sending_queues[$i] = SendingTask::create();
       $sending_queues[$i]->newsletter_id = $newsletters[$i]->id;
       $sending_queues[$i]->status = SendingQueue::STATUS_COMPLETED;
       $sending_queues[$i]->save();
@@ -345,7 +347,7 @@ class NewsletterTest extends \MailPoetTest {
           'type' => $types[$i]
         )
       );
-      $sending_queues[$i] = SendingQueue::create();
+      $sending_queues[$i] = SendingTask::create();
       $sending_queues[$i]->newsletter_id = $newsletters[$i]->id;
       $sending_queues[$i]->status = SendingQueue::STATUS_COMPLETED;
       $sending_queues[$i]->save();
@@ -436,7 +438,7 @@ class NewsletterTest extends \MailPoetTest {
 
     // create multiple sending queues
     for($i = 1; $i <= 5; $i++) {
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
     }
@@ -464,7 +466,7 @@ class NewsletterTest extends \MailPoetTest {
           'parent_id' => $parent_newsletter->id
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
       $newsletter_segment = NewsletterSegment::create();
@@ -490,7 +492,7 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple sending queues
     $newsletter = $this->newsletter;
     for($i = 1; $i <= 5; $i++) {
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
     }
@@ -513,7 +515,7 @@ class NewsletterTest extends \MailPoetTest {
           'parent_id' => $parent_newsletter->id
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
     }
@@ -532,7 +534,7 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple sending queues
     $newsletter = $this->newsletter;
     for($i = 1; $i <= 5; $i++) {
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->deleted_at = date('Y-m-d H:i:s');
       $sending_queue->save();
@@ -564,7 +566,7 @@ class NewsletterTest extends \MailPoetTest {
           'deleted_at' => date('Y-m-d H:i:s')
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->deleted_at = date('Y-m-d H:i:s');
       $sending_queue->save();
@@ -589,7 +591,7 @@ class NewsletterTest extends \MailPoetTest {
           'type' => Newsletter::TYPE_STANDARD
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
     }
@@ -613,7 +615,7 @@ class NewsletterTest extends \MailPoetTest {
           'parent_id' => $this->newsletter->id,
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
     }
@@ -637,7 +639,7 @@ class NewsletterTest extends \MailPoetTest {
           'deleted_at' => date('Y-m-d H:i:s')
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->deleted_at = date('Y-m-d H:i:s');
       $sending_queue->save();
@@ -663,7 +665,7 @@ class NewsletterTest extends \MailPoetTest {
           'deleted_at' => date('Y-m-d H:i:s')
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->deleted_at = date('Y-m-d H:i:s');
       $sending_queue->save();
@@ -687,7 +689,7 @@ class NewsletterTest extends \MailPoetTest {
           'type' => Newsletter::TYPE_STANDARD
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
       $newsletter_segment = NewsletterSegment::create();
@@ -719,7 +721,7 @@ class NewsletterTest extends \MailPoetTest {
           'parent_id' => $this->newsletter->id
         )
       );
-      $sending_queue = SendingQueue::create();
+      $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
       $newsletter_segment = NewsletterSegment::create();
@@ -769,6 +771,7 @@ class NewsletterTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);

@@ -9,6 +9,7 @@ use MailPoet\Util\Helpers;
 class SendingQueueTest extends \MailPoetTest {
   function _before() {
     $this->queue = SendingQueue::create();
+    $this->queue->task_id = 0;
     $this->queue->newsletter_id = 1;
     $this->queue->save();
 
@@ -64,6 +65,7 @@ class SendingQueueTest extends \MailPoetTest {
       'html' => 'html',
       'text' => 'text'
     );
+    $queue->task_id = 0;
     $queue->newsletter_id = 1;
     $queue->newsletter_rendered_body = $data;
     $queue->save();

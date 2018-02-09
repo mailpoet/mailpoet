@@ -43,11 +43,13 @@ class Subscribers {
   }
 
   function updateProcessedSubscribers(array $processed_subscribers) {
-    $this->getSubscribers()
-      ->whereIn('subscriber_id', $processed_subscribers)
-      ->findResultSet()
-      ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
-      ->save();
+    if(!empty($processed_subscribers)) {
+      $this->getSubscribers()
+        ->whereIn('subscriber_id', $processed_subscribers)
+        ->findResultSet()
+        ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
+        ->save();
+    }
     $this->checkCompleted();
   }
 

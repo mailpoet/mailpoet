@@ -22,11 +22,15 @@ class Migration extends SimpleWorker {
   }
 
   function prepareTask(ScheduledTask $task) {
-    $unmigrated_queues_count = $this->getUnmigratedQueues()->count();
-    $unmigrated_queue_subscribers = $this->getTaskIdsForUnmigratedSubscribers();
+    $unmigrated_columns = self::checkUnmigratedColumnsExist();
+    if($unmigrated_columns) {
+      $unmigrated_queues_count = $this->getUnmigratedQueues()->count();
+      $unmigrated_queue_subscribers = $this->getTaskIdsForUnmigratedSubscribers();
+    }
 
-    if($unmigrated_queues_count == 0
-      && count($unmigrated_queue_subscribers) == 0
+    if(!$unmigrated_columns ||
+      ($unmigrated_queues_count == 0
+      && count($unmigrated_queue_subscribers) == 0)
     ) {
       // nothing to migrate
       $this->complete($task);
@@ -40,7 +44,7 @@ class Migration extends SimpleWorker {
     return parent::prepareTask($task);
   }
 
-  private function pauseSending() {
+  function pauseSending() {
     $mailer_log = MailerLog::getMailerLog();
     if(MailerLog::isSendingPaused($mailer_log)) {
       // sending is already paused
@@ -54,7 +58,7 @@ class Migration extends SimpleWorker {
     return MailerLog::pauseSending($mailer_log);
   }
 
-  private function resumeSending() {
+  function resumeSending() {
     $mailer_log = MailerLog::getMailerLog();
     if(!MailerLog::isSendingPaused($mailer_log)) {
       // sending is not paused
@@ -75,6 +79,12 @@ class Migration extends SimpleWorker {
     $this->resumeSending();
 
     return true;
+  }
+
+  static function checkUnmigratedColumnsExist() {
+    global $wpdb;
+    $existing_columns = $wpdb->get_col('DESC ' . SendingQueue::$_table, 0);
+    return in_array('type', $existing_columns);
   }
 
   function getUnmigratedQueues() {
