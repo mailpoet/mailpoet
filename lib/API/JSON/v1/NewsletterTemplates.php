@@ -45,8 +45,11 @@ class NewsletterTemplates extends APIEndpoint {
         $data['id'] = $template['id'];
       }
     }
+
     $template = NewsletterTemplate::createOrUpdate($data);
     $errors = $template->getErrors();
+
+    NewsletterTemplate::cleanRecentlySent($data);
 
     if(!empty($errors)) {
       return $this->errorResponse($errors);
