@@ -219,10 +219,6 @@ class Segment extends Model {
     return $query;
   }
 
-  static function createOrUpdate($data = array()) {
-    return parent::internalCreateOrUpdate($data);
-  }
-
   static function getPublic() {
     return self::getPublished()->where('type', self::TYPE_DEFAULT)->orderByAsc('name');
   }

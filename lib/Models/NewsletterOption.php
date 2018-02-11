@@ -10,7 +10,7 @@ class NewsletterOption extends Model {
     if(!is_array($data) || empty($data['newsletter_id']) || empty($data['option_field_id'])) {
       return;
     }
-    return parent::internalCreateOrUpdate($data, array(
+    return parent::_createOrUpdate($data, array(
       'option_field_id' => $data['option_field_id'],
       'newsletter_id' => $data['newsletter_id']
     ));

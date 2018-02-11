@@ -108,7 +108,4 @@ class Form extends Model {
     return $orm->whereNull('deleted_at');
   }
 
-  static function createOrUpdate($data = array()) {
-    return parent::internalCreateOrUpdate($data);
-  }
 }

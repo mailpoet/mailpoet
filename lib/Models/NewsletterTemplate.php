@@ -24,8 +24,5 @@ class NewsletterTemplate extends Model {
     }
     return $template;
   }
-  
-  static function createOrUpdate($data = array()) {
-    return parent::internalCreateOrUpdate($data);
-  }
+
 }

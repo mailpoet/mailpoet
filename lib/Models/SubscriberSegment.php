@@ -151,13 +151,13 @@ class SubscriberSegment extends Model {
   }
 
   static function createOrUpdate($data = array()) {
-    $conditions = false;
+    $keys = false;
     if(isset($data['subscriber_id']) && isset($data['segment_id'])) {
-      $conditions = array(
+      $keys = array(
         'subscriber_id' => (int)$data['subscriber_id'],
         'segment_id' => (int)$data['segment_id']
       );
     }
-    return parent::internalCreateOrUpdate($data, $conditions);
+    return parent::_createOrUpdate($data, $keys);
   }
 }

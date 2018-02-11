@@ -15,7 +15,7 @@ class ScheduledTaskSubscriber extends Model {
       return;
     }
     $data['processed'] = !empty($data['processed']) ? self::STATUS_PROCESSED : self::STATUS_UNPROCESSED;
-    return parent::internalCreateOrUpdate($data, array(
+    return parent::_createOrUpdate($data, array(
       'subscriber_id' => $data['subscriber_id'],
       'task_id' => $data['task_id']
     ));

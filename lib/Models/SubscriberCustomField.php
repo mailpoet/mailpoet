@@ -37,7 +37,7 @@ class SubscriberCustomField extends Model {
       }
     }
 
-    return parent::internalCreateOrUpdate($data, array(
+    return parent::_createOrUpdate($data, array(
       'custom_field_id' => $data['custom_field_id'],
       'subscriber_id' => $data['subscriber_id']
     ));

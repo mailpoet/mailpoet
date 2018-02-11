@@ -150,8 +150,8 @@ class Setting extends Model {
   }
 
   public static function createOrUpdate($data = array()) {
-    $conditions = isset($data['name']) ? array('name' => $data['name']) : false;
-    return parent::internalCreateOrUpdate($data, $conditions);
+    $keys = isset($data['name']) ? array('name' => $data['name']) : false;
+    return parent::_createOrUpdate($data, $keys);
   }
 
   public static function deleteValue($value) {

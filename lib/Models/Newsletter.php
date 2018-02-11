@@ -793,7 +793,7 @@ class Newsletter extends Model {
   }
 
   static function createOrUpdate($data = array()) {
-    return parent::internalCreateOrUpdate($data, false, function($data) {
+    return parent::_createOrUpdate($data, false, function($data) {
       // set default sender based on settings
       if(empty($data['sender'])) {
         $sender = Setting::getValue('sender', array());

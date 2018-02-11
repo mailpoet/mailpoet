@@ -131,6 +131,6 @@ class CustomField extends Model {
     if(empty($data['params']['label']) && isset($data['name'])) {
       $data['params']['label'] = $data['name'];
     }
-    return parent::internalCreateOrUpdate($data);
+    return parent::_createOrUpdate($data);
   }
 }

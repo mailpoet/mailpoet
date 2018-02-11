@@ -20,16 +20,26 @@ class Model extends \Sudzy\ValidModel {
     return parent::create();
   }
 
-  static protected function internalCreateOrUpdate($data = array(), $conditions = false, $onCreate = false) {
+  /**
+   * Creates a row, or updates it if already exists. It tries to find the existing 
+   * row by `id` (if given in `$data`), or by the given `$keys`. If `$onCreate` is 
+   * given, it's used to transform `$data` before creating the new row.
+   * 
+   * @param  array   $data
+   * @param  boolean $keys
+   * @param  callable $onCreate
+   * @return self
+   */
+  static protected function _createOrUpdate($data = array(), $keys = false, $onCreate = false) {
     $model = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
-      $model = self::findOne((int)$data['id']);
+      $model = static::findOne((int)$data['id']);
     }
 
-    if(!empty($conditions)) {
+    if(!empty($keys)) {
       $first = true;
-      foreach($conditions as $field => $value) {
+      foreach($keys as $field => $value) {
         if($first) {
           $model = static::where($field, $value);
           $first = false;
@@ -44,7 +54,7 @@ class Model extends \Sudzy\ValidModel {
       if(!empty($onCreate)) {
         $data = $onCreate($data);
       }
-      $model = self::create();
+      $model = static::create();
       $model->hydrate($data);
     } else {
       unset($data['id']);
@@ -52,6 +62,10 @@ class Model extends \Sudzy\ValidModel {
     }
 
     return $model->save();
+  }
+
+  static public function createOrUpdate($data = array()) {
+    return self::_createOrUpdate($data);
   }
 
   function getErrors() {
