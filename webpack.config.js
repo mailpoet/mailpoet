@@ -110,6 +110,14 @@ var baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.FormFieldSelection!babel-loader',
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/form/fields/text.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.FormFieldText!babel-loader',
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/scheduling/common.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.NewsletterSchedulingCommonOptions!babel-loader',
+      },
+      {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
         loader: 'expose-loader?' + globalPrefix + '.StatsBadge!babel-loader',
       },
