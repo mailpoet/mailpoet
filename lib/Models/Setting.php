@@ -150,20 +150,8 @@ class Setting extends Model {
   }
 
   public static function createOrUpdate($data = array()) {
-    $setting = false;
-
-    if(isset($data['name'])) {
-      $setting = self::where('name', $data['name'])->findOne();
-    }
-
-    if($setting === false) {
-      $setting = self::create();
-      $setting->hydrate($data);
-    } else {
-      $setting->value = $data['value'];
-    }
-
-    return $setting->save();
+    $keys = isset($data['name']) ? array('name' => $data['name']) : false;
+    return parent::_createOrUpdate($data, $keys);
   }
 
   public static function deleteValue($value) {

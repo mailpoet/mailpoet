@@ -127,25 +127,10 @@ class CustomField extends Model {
   }
 
   static function createOrUpdate($data = array()) {
-    $custom_field = false;
-
-    if(isset($data['id']) && (int)$data['id'] > 0) {
-      $custom_field = self::findOne((int)$data['id']);
-    }
-
     // set name as label by default
     if(empty($data['params']['label']) && isset($data['name'])) {
       $data['params']['label'] = $data['name'];
     }
-
-    if($custom_field === false) {
-      $custom_field = self::create();
-      $custom_field->hydrate($data);
-    } else {
-      unset($data['id']);
-      $custom_field->set($data);
-    }
-
-    return $custom_field->save();
+    return parent::_createOrUpdate($data);
   }
 }

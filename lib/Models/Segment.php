@@ -219,25 +219,6 @@ class Segment extends Model {
     return $query;
   }
 
-  static function createOrUpdate($data = array()) {
-    $segment = false;
-
-    if(isset($data['id']) && (int)$data['id'] > 0) {
-      $segment = self::findOne((int)$data['id']);
-    }
-
-    if($segment === false) {
-      $segment = self::create();
-      $segment->hydrate($data);
-    } else {
-      unset($data['id']);
-      $segment->set($data);
-    }
-
-    $segment->save();
-    return $segment;
-  }
-
   static function getPublic() {
     return self::getPublished()->where('type', self::TYPE_DEFAULT)->orderByAsc('name');
   }

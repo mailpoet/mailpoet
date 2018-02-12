@@ -108,21 +108,4 @@ class Form extends Model {
     return $orm->whereNull('deleted_at');
   }
 
-  static function createOrUpdate($data = array()) {
-    $form = false;
-
-    if(isset($data['id']) && (int)$data['id'] > 0) {
-      $form = self::findOne((int)$data['id']);
-    }
-
-    if($form === false) {
-      $form = self::create();
-      $form->hydrate($data);
-    } else {
-      unset($data['id']);
-      $form->set($data);
-    }
-
-    return $form->save();
-  }
 }
