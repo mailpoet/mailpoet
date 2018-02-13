@@ -76,6 +76,37 @@ class NewsletterTemplateTest extends \MailPoetTest {
     expect($template->name)->equals('Another template updated');
   }
 
+  function testItCanCleanRecentlySent() {
+    $total = NewsletterTemplate::RECENTLY_SENT_COUNT + 5;
+    for($i = 0; $i < $total; $i++) {
+      NewsletterTemplate::createOrUpdate(array(
+        'name' => 'Testing template ' . $i,
+        'description' => 'template description',
+        'body' => '{content: {}, globalStyles: {}}',
+        'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES
+      ));
+    }
+
+    NewsletterTemplate::cleanRecentlySent(array());
+    $count = NewsletterTemplate::where(
+      'categories', NewsletterTemplate::RECENTLY_SENT_CATEGORIES
+      )->count();
+    expect($count)->equals($total);
+
+    NewsletterTemplate::cleanRecentlySent(array(
+      'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES    
+    ));
+    $count = NewsletterTemplate::where(
+      'categories', NewsletterTemplate::RECENTLY_SENT_CATEGORIES
+      )->count();
+    expect($count)->equals(NewsletterTemplate::RECENTLY_SENT_COUNT);
+
+    $first = NewsletterTemplate::where(
+      'categories', NewsletterTemplate::RECENTLY_SENT_CATEGORIES
+      )->findOne();
+    expect($first->name)->equals('Testing template 5');
+  }
+
   function _after() {
     \ORM::for_table(NewsletterTemplate::$_table)
       ->deleteMany();
