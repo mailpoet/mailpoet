@@ -92,7 +92,8 @@ define(
       },
       saveTemplate: function (response, done) {
         const iframe = document.createElement('iframe');
-        iframe.src = response.meta.preview_url;
+        const protocol = location.href.startsWith('https://') ? 'https' : 'http';
+        iframe.src = protocol + response.meta.preview_url.replace(/^https?/, '');
         iframe.onload = () => {
           html2canvas(iframe.contentDocument.documentElement).then((thumbnail) => {
             document.body.removeChild(iframe);
@@ -111,9 +112,20 @@ define(
             }).then(done).fail(this.showError);
           });
         };
+        const onError = () => {
+          document.body.removeChild(iframe);
+          MailPoet.Notice.error([MailPoet.I18n.t('errorWhileTakingScreenshot')], { scroll: true });
+          done();
+        };
+        iframe.onerror = onError;
+        iframe.onError = onError;
         // just to hide the iframe
         iframe.className ='mailpoet_template_iframe';
-        document.body.appendChild(iframe);
+        try {
+          document.body.appendChild(iframe);
+        } catch (err) {
+          onError();
+        }
       },
       handleSend: function (e) {
         e.preventDefault();
