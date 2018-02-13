@@ -61,6 +61,9 @@ define([
           });
         }
       }
+      if (!_.isUndefined(json.body)) {
+        json.body = JSON.parse(json.body);
+      }
       App.getChannel().trigger('afterEditorSave', json, response);
     }).fail(function (response) {
       // TODO: Handle saving errors
@@ -306,7 +309,7 @@ define([
       }
 
       if ((App.getNewsletter().get('type') === 'notification') &&
-        contents.indexOf('automatedLatestContent') < 0
+        contents.indexOf('"type":"automatedLatestContent"') < 0
        ) {
         this.showValidationError(MailPoet.I18n.t('automatedLatestContentMissing'));
         return;
