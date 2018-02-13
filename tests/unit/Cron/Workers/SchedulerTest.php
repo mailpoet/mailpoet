@@ -381,7 +381,7 @@ class SchedulerTest extends \MailPoetTest {
     $updated_newsletter = Newsletter::findOne($newsletter->id);
     expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENDING);
     // SubscribersFinder is used for getting subscribers
-    $finder->verifyInvoked('getSubscribersByList');
+    $finder->verifyInvoked('addSubscribersToTaskFromSegments');
   }
 
   function testItFailsToProcessPostNotificationNewsletterWhenSegmentsDontExist() {
@@ -447,7 +447,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne();
     expect($updated_notification_history->status)->equals(Newsletter::STATUS_SENDING);
     // SubscribersFinder is used for getting subscribers
-    $finder->verifyInvoked('getSubscribersByList');
+    $finder->verifyInvoked('addSubscribersToTaskFromSegments');
   }
 
   function testItFailsToProcessWhenScheduledQueuesNotFound() {

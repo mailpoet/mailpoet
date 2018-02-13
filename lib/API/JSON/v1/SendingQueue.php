@@ -78,16 +78,14 @@ class SendingQueue extends APIEndpoint {
     } else {
       $segments = $newsletter->segments()->findArray();
       $finder = new SubscribersFinder();
-      $subscribers = $finder->getSubscribersByList($segments);
-      $subscribers = Helpers::flattenArray($subscribers);
-      if(!count($subscribers)) {
+      $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
+      if(!$subscribers_count) {
         return $this->errorResponse(array(
           APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet')
         ));
       }
       $queue->status = null;
       $queue->scheduled_at = null;
-      $queue->setSubscribers($subscribers);
 
       // set newsletter status
       $newsletter->setStatus(Newsletter::STATUS_SENDING);

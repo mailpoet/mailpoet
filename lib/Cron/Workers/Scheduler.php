@@ -78,10 +78,9 @@ class Scheduler {
     // ensure that subscribers are in segments
 
     $finder = new SubscribersFinder();
-    $subscribers = $finder->getSubscribersByList($segments);
-    $subscribers = Helpers::flattenArray($subscribers);
+    $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
-    if(empty($subscribers)) {
+    if(empty($subscribers_count)) {
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
 
@@ -91,7 +90,6 @@ class Scheduler {
 
     // queue newsletter for delivery
     $queue->newsletter_id = $notification_history->id;
-    $queue->setSubscribers($subscribers);
     $queue->status = null;
     $queue->save();
     // update notification status
@@ -102,10 +100,8 @@ class Scheduler {
   function processScheduledStandardNewsletter($newsletter, $queue) {
     $segments = $newsletter->segments()->findArray();
     $finder = new SubscribersFinder();
-    $subscribers = $finder->getSubscribersByList($segments);
-    $subscribers = Helpers::flattenArray($subscribers);
+    $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
     // update current queue
-    $queue->setSubscribers($subscribers);
     $queue->status = null;
     $queue->save();
     // update newsletter status
