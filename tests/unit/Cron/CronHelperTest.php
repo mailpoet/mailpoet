@@ -12,6 +12,10 @@ use MailPoet\WP\Hooks as WPHooks;
 class CronHelperTest extends \MailPoetTest {
   function _before() {
     Setting::setValue('db_version', MAILPOET_VERSION);
+    // Disable cron trigger to not run tasks like migration when pinging the daemon
+    Setting::setValue('cron_trigger', array(
+      'method' => 'none'
+    ));
   }
 
   function testItDefinesConstants() {
