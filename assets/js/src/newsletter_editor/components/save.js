@@ -305,6 +305,13 @@ define([
         return;
       }
 
+      if ((App.getNewsletter().get('type') === 'notification') &&
+        contents.indexOf('automatedLatestContent') < 0
+       ) {
+        this.showValidationError(MailPoet.I18n.t('automatedLatestContentMissing'));
+        return;
+      }
+
       this.hideValidationError();
     },
     showValidationError: function (message) {

@@ -101,13 +101,50 @@ define([
 
     describe('view', function () {
       before(function () {
+        var newsletter = { get: sinon.stub().withArgs('type').returns('newsletter') };
         EditorApplication._contentContainer = { isValid: sinon.stub().returns(true) };
         global.stubConfig(EditorApplication);
+        EditorApplication.getNewsletter = sinon.stub().returns(newsletter);
       });
 
       it('renders', function () {
         var view = new (SaveComponent.SaveView)();
         expect(view.render).to.not.throw();
+      });
+
+      describe('validateNewsletter', function () {
+        var hideValidationErrorStub;
+        var view;
+        beforeEach(function () {
+          view = new (SaveComponent.SaveView)();
+          hideValidationErrorStub = sinon.stub(view, 'hideValidationError');
+        });
+
+        it('hides errors for valid newsletter', function () {
+          view.validateNewsletter({});
+          expect(hideValidationErrorStub.callCount).to.be.equal(1);
+        });
+
+        it('hides errors for valid post notification', function () {
+          var newsletter = { get: sinon.stub().withArgs('type').returns('notification') };
+          EditorApplication.getNewsletter = sinon.stub().returns(newsletter);
+          view.validateNewsletter({
+            content: {
+              blocks: [
+                { type: 'automatedLatestContent' }
+              ]
+            }
+          });
+          expect(hideValidationErrorStub.callCount).to.be.equal(1);
+        });
+
+        it('shows error for notification email type when ALC content is not present', function () {
+          var newsletter = { get: sinon.stub().withArgs('type').returns('notification') };
+          var showValidationErrorStub = sinon.stub(view, 'showValidationError');
+          EditorApplication.getNewsletter = sinon.stub().returns(newsletter);
+          view.validateNewsletter({});
+          expect(showValidationErrorStub.callCount).to.be.equal(1);
+        });
       });
 
       describe('once rendered', function () {
