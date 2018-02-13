@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.4.1
+Stable tag: 3.4.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.4.2 - 2018-02-13 =
+* Premium: you can now segment your subscribers by opened/clicked/unopened events;
+* Improved: default post search parameters inside newsletter editor can be manually changed using a custom WordPress filter. Thanks Jose Salazar;
+* Fixed: saving email templates when website uses both HTTP and HTTPS protocols.
 
 = 3.4.1 - 2018-02-06 =
 * Fixed: previously saved templates are now under "Your saved templates";
