@@ -110,6 +110,14 @@ var baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.FormFieldSelection!babel-loader',
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/form/fields/text.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.FormFieldText!babel-loader',
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/scheduling/common.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.NewsletterSchedulingCommonOptions!babel-loader',
+      },
+      {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
         loader: 'expose-loader?' + globalPrefix + '.StatsBadge!babel-loader',
       },
@@ -120,6 +128,14 @@ var baseConfig = {
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/breadcrumb.jsx'),
         loader: 'expose-loader?' + globalPrefix + '.NewsletterCreationBreadcrumb!babel-loader',
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/events_list.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.AutomaticEmailsEventsList!babel-loader',
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/breadcrumb.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.AutomaticEmailsBreadcrumb!babel-loader',
       },
       {
         include: /Blob.js$/,
@@ -177,6 +193,8 @@ var adminConfig = {
       'form/form.jsx',
       'newsletters/badges/stats.jsx',
       'newsletters/breadcrumb.jsx',
+      'newsletters/types/automatic_emails/events_list.jsx',
+      'newsletters/types/automatic_emails/breadcrumb.jsx',
       'newsletters/types/welcome/scheduling.jsx',
       'history',
     ],

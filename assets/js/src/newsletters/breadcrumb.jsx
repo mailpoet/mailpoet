@@ -15,27 +15,28 @@ define(
 
     const Breadcrumb = React.createClass({
       getInitialState: function () {
+        const steps = this.props.steps || [
+          {
+            name: 'type',
+            label: MailPoet.I18n.t('selectType'),
+            link: '/new',
+          },
+          {
+            name: 'template',
+            label: MailPoet.I18n.t('template'),
+          },
+          {
+            name: 'editor',
+            label: MailPoet.I18n.t('designer'),
+          },
+          {
+            name: 'send',
+            label: MailPoet.I18n.t('send'),
+          },
+        ];
         return {
           step: null,
-          steps: [
-            {
-              name: 'type',
-              label: MailPoet.I18n.t('selectType'),
-              link: '/new',
-            },
-            {
-              name: 'template',
-              label: MailPoet.I18n.t('template'),
-            },
-            {
-              name: 'editor',
-              label: MailPoet.I18n.t('designer'),
-            },
-            {
-              name: 'send',
-              label: MailPoet.I18n.t('send'),
-            },
-          ],
+          steps: steps,
         };
       },
       render: function () {

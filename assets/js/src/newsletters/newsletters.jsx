@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 import { Router, Route, IndexRedirect, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
 import Hooks from 'wp-js-hooks';
+import _ from 'underscore';
 
 import NewsletterTypes from 'newsletters/types.jsx';
 import NewsletterTemplates from 'newsletters/templates.jsx';
 import NewsletterSend from 'newsletters/send.jsx';
-
 import NewsletterTypeStandard from 'newsletters/types/standard.jsx';
 import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx';
-
+import AutomaticEmailsEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
 import NewsletterListStandard from 'newsletters/listings/standard.jsx';
 import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
 import NewsletterListNotification from 'newsletters/listings/notification.jsx';
@@ -26,33 +26,82 @@ const App = React.createClass({
 
 const container = document.getElementById('newsletters_container');
 
+const getAutomaticEmailsRoutes = () => {
+  if (!window.mailpoet_automatic_emails) return null;
+
+  return _.map(window.mailpoet_automatic_emails, automaticEmail => ({
+    path: `new/${automaticEmail.id}`,
+    name: automaticEmail.id,
+    component: AutomaticEmailsEventsList,
+    data: {
+      automaticEmail: automaticEmail,
+    },
+  }));
+};
+
 if (container) {
-  let extraRoutes = [];
-  extraRoutes = Hooks.applyFilters('mailpoet_newsletters_before_router', extraRoutes);
+  let routes = [
+    /* Listings */
+    {
+      path: 'standard(/)**',
+      params: { tab: 'standard' },
+      component: NewsletterListStandard,
+    },
+    {
+      path: 'welcome(/)**',
+      component: NewsletterListWelcome,
+    },
+    {
+      path: 'notification/history/:parent_id(/)**',
+      component: NewsletterListNotificationHistory,
+    },
+    {
+      path: 'notification(/)**',
+      component: NewsletterListNotification,
+    },
+    /* Newsletter: type selection */
+    {
+      path: 'new',
+      component: NewsletterTypes,
+    },
+    /* New newsletter: types */
+    {
+      path: 'new/standard',
+      component: NewsletterTypeStandard,
+    },
+    {
+      path: 'new/notification',
+      component: NewsletterTypeNotification,
+    },
+    /* Template selection */
+    {
+      name: 'template',
+      path: 'template/:id',
+      component: NewsletterTemplates,
+    },
+    /* Sending options */
+    {
+      path: 'send/:id',
+      component: NewsletterSend,
+    },
+  ];
+
+  routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [...routes, ...getAutomaticEmailsRoutes()]);
 
   const mailpoetListing = ReactDOM.render((
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRedirect to="standard" />
-        {/* Listings */}
-        <Route path="standard(/)**" params={{ tab: 'standard' }} component={NewsletterListStandard} />
-        <Route path="welcome(/)**" component={NewsletterListWelcome} />
-        <Route path="notification/history/:parent_id(/)**"
-          component={NewsletterListNotificationHistory} />
-        <Route path="notification(/)**" component={NewsletterListNotification} />
-        {/* Newsletter: type selection */}
-        <Route path="new" component={NewsletterTypes} />
-        {/* New newsletter: types */}
-        <Route path="new/standard" component={NewsletterTypeStandard} />
-        <Route path="new/notification" component={NewsletterTypeNotification} />
-        {/* Template selection */}
-        <Route name="template" path="template/:id" component={NewsletterTemplates} />
-        {/* Sending options */}
-        <Route path="send/:id" component={NewsletterSend} />
-        {/* Extra routes */}
-        {extraRoutes.map(rt =>
-          <Route key={rt.path} path={rt.path} component={rt.component} data={rt.data || null} />
-        )}
+        {routes.map(route => (
+          <Route
+            key={route.path}
+            path={route.path}
+            component={route.component}
+            name={route.name || null}
+            params={route.params || null}
+            data={route.data || null}
+          />
+        ))}
       </Route>
     </Router>
   ), container);

@@ -16,6 +16,7 @@
     var mailpoet_date_storage_format = "Y-m-d";
     var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
     var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
+    var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
   </script>
 <% endblock %>
 
@@ -55,6 +56,8 @@
     'numberOfItemsMultiple': __('%$1d items'),
 
     'selectType': __('Select type'),
+    'events': __('Events'),
+    'conditions': _x('Conditions', 'Configuration options for automatic email events'),
     'template': __('Template'),
     'designer': __('Designer'),
     'send': __('Send'),
@@ -125,7 +128,7 @@
     'create': __('Create'),
     'welcomeNewsletterTypeTitle': __('Welcome Email'),
     'welcomeNewsletterTypeDescription': __('Automatically send an email (or series of emails) to new subscribers or WordPress users. Send a day, a week, or a month after they sign up.'),
-    'getPremiumVersion': __('Get premium version!'),
+    'premiumFeatureLink': __('This is a Premium feature'),
     'setUp': __('Set up'),
     'postNotificationNewsletterTypeTitle': __('Latest Post Notifications'),
     'postNotificationNewsletterTypeDescription': __('Let MailPoet email your subscribers with your latest content. You can send daily, weekly, monthly, or even immediately after publication.'),
@@ -272,7 +275,10 @@
     'sample': _x('Sample', 'Sample newsletters templates category'),
     'noTemplates': __('This category does not contain any template yet!'),
 
-    'errorWhileTakingScreenshot': __('An error occured while saving the template in "Recently sent"')
+    'soon': __('Soon'),
+    'beta': __('Beta'),
+	'errorWhileTakingScreenshot': __('An error occured while saving the template in "Recently sent"'),
+    'selectAutomaticEmailsEventsHeading': __('Select %1s events'),
   }) %>
 <% endblock %>
 
