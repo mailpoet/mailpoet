@@ -102,6 +102,7 @@ class Scheduler {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
     // update current queue
+    $queue->updateCount();
     $queue->status = null;
     $queue->save();
     // update newsletter status

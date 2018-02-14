@@ -47,6 +47,7 @@ class SendingQueue extends APIEndpoint {
 
     // add newsletter to the sending queue
     $queue = SendingQueueModel::joinWithTasks()
+      ->where('queues.newsletter_id', $newsletter->id)
       ->whereNull('tasks.status')
       ->findOne();
 
@@ -84,6 +85,7 @@ class SendingQueue extends APIEndpoint {
           APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet')
         ));
       }
+      $queue->updateCount();
       $queue->status = null;
       $queue->scheduled_at = null;
 
