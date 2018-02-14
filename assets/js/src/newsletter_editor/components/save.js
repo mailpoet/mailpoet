@@ -61,6 +61,9 @@ define([
           });
         }
       }
+      if (!_.isUndefined(json.body)) {
+        json.body = JSON.parse(json.body);
+      }
       App.getChannel().trigger('afterEditorSave', json, response);
     }).fail(function (response) {
       // TODO: Handle saving errors
@@ -302,6 +305,13 @@ define([
           contents.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
           contents.indexOf('[link:subscription_unsubscribe]') < 0) {
         this.showValidationError(MailPoet.I18n.t('unsubscribeLinkMissing'));
+        return;
+      }
+
+      if ((App.getNewsletter().get('type') === 'notification') &&
+        contents.indexOf('"type":"automatedLatestContent"') < 0
+       ) {
+        this.showValidationError(MailPoet.I18n.t('automatedLatestContentMissing'));
         return;
       }
 
