@@ -66,23 +66,15 @@ const Tabs = ({ tabs, selected, select }) => (
   </div>
 );
 
+/**
+ * props = {
+ *   index, id, newsletterId, name, description,
+ *   thumbnail, readonly, setLoading, afterDelete
+ * }
+ */
 class TemplateBox extends React.Component {
-  constructor({
-    index, id, newsletterId, name, description, 
-    thumbnail, readonly, setLoading, afterDelete
-  }) {
-    super()
-    this.props = {
-      index, id, newsletterId, name, description, 
-      thumbnail, readonly, setLoading, afterDelete
-    };
-    this.onDelete = this.onDelete.bind(this);
-    this.onPreview = this.onPreview.bind(this);
-    this.onSelect = this.onSelect.bind(this);
-  }
-
   onDelete() {
-    const {id, index, name, setLoading, afterDelete} = this.props;
+    const {id, name, setLoading, afterDelete} = this.props;
     const onConfirm = () => {
       setLoading(true);
       MailPoet.Ajax.post({
@@ -93,7 +85,7 @@ class TemplateBox extends React.Component {
           id: id,
         },
       }).done(() => {
-        afterDelete(true, index);
+        afterDelete(true, id);
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
@@ -101,7 +93,7 @@ class TemplateBox extends React.Component {
             { scroll: true }
           );
         }
-        afterDelete(false, index);
+        afterDelete(false, id);
       });
     };
     confirmAlert({
@@ -159,18 +151,21 @@ class TemplateBox extends React.Component {
   }
 
   render() {
-    const {index, name, thumbnail, description, readonly} = this.props
+    const {index, name, thumbnail, description, readonly} = this.props;
+    const onDelete = this.onDelete.bind(this);
+    const onPreview = this.onPreview.bind(this);
+    const onSelect = this.onSelect.bind(this);
     
     const deleteLink = (
       <div className="mailpoet_delete">
-        <a href="javascript:;" onClick={this.onDelete}>{MailPoet.I18n.t('delete')}</a>
+        <a href="javascript:;" onClick={onDelete}>{MailPoet.I18n.t('delete')}</a>
       </div>
     );
 
     let preview = '';
     if (typeof thumbnail === 'string' && thumbnail.length > 0) {
       preview = (
-        <a href="javascript:;" onClick={this.onPreview}>
+        <a href="javascript:;" onClick={onPreview}>
           <img src={thumbnail} />
           <div className="mailpoet_overlay"></div>
         </a>
@@ -191,13 +186,13 @@ class TemplateBox extends React.Component {
         <div className="mailpoet_actions">
           <a
             className="button button-secondary"
-            onClick={this.onPreview}
+            onClick={onPreview}
           >{MailPoet.I18n.t('preview')}</a>
             &nbsp;
           <a
             className="button button-primary"
             data-automation-id={`select_template_${index}`}
-            onClick={this.onSelect}
+            onClick={onSelect}
             > {MailPoet.I18n.t('select')} </a>
         </div>
         { readonly === '1' ? false : deleteLink }
@@ -206,11 +201,10 @@ class TemplateBox extends React.Component {
   }
 }
 
+/**
+ * props = {setLoading, afterImport}
+ */
 class ImportTemplate extends React.Component {
-  constructor({setLoading, afterImport}) {
-    super();
-    this.props = {setLoading, afterImport};
-  }
 
   saveTemplate(saveTemplate) {
     const template = saveTemplate;
@@ -220,11 +214,27 @@ class ImportTemplate extends React.Component {
       template.body = JSON.stringify(template.body);
     }
 
-    if (undefined === template.categories) {
-      template.categories = '["saved"]';
+    try {
+      template.categories = JSON.parse(template.categories);
+    } catch (err) {
+      template.categories = [];
     }
 
-    setLoading(true);
+    if (template.categories.indexOf('saved') === -1) {
+      template.categories.push('saved');
+    }
+
+    if (
+      template.categories.indexOf('standard') === -1 &&
+      template.categories.indexOf('welcome') === -1 &&
+      template.categories.indexOf('notification') === -1
+    ) {
+      template.categories.push('standard');
+    }
+
+    template.categories = JSON.stringify(template.categories);
+
+    this.props.setLoading(true);
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletterTemplates',
@@ -260,6 +270,7 @@ class ImportTemplate extends React.Component {
           'MailPoet Free version': window.mailpoet_version,
         });
       } catch (err) {
+        console.error(err)
         MailPoet.Notice.error(MailPoet.I18n.t('templateFileMalformedError'));
       }
     };
@@ -268,6 +279,7 @@ class ImportTemplate extends React.Component {
     return true;
   }
   render() {
+    const handleSubmit = this.handleSubmit.bind(this);
     return (
       <div>
         <h2>
@@ -278,7 +290,7 @@ class ImportTemplate extends React.Component {
             className="tooltip-help-import-template"
           />
         </h2>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <input type="file" placeholder={MailPoet.I18n.t('selectJsonFileToUpload')} ref="templateFile" />
           <p className="submit">
             <input
@@ -293,23 +305,17 @@ class ImportTemplate extends React.Component {
 }
 
 class NewsletterTemplates extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       loading: true,
       templates: {}, // {category1: [template11, template12, ..], category2: [template21, ...]}
       selectedTab: '',
     };
-    this.afterTemplateDelete = this.afterTemplateDelete.bind(this);
-    this.afterTemplateImport = this.afterTemplateImport.bind(this);
   }
 
   componentWillMount() {
-    const templates = {};
-    const categoriesNames = templatesCategories.map(category => category.name);
-    categoriesNames.forEach((name) => {
-      templates[name] = [];
-    });
+    let templates = {};
 
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -328,21 +334,9 @@ class NewsletterTemplates extends React.Component {
           },
         ];
       }
-      response.data.forEach((template) => {
-        let categories;
-        try {
-          categories = JSON.parse(template.categories)
-            .filter(name => categoriesNames.indexOf(name) !== -1);
-        } catch (err) {
-          categories = [];
-        }
-        if (categories.length === 0) { // the template has no known category
-          categories = ['saved'];     // we add it to "Your saved templates"
-        }
-        categories.forEach((category) => {
-          templates[category].push(template);
-        });
-      });
+
+      templates = response.data.reduce(this.addTemplate, {});
+
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -353,6 +347,32 @@ class NewsletterTemplates extends React.Component {
     }).always(() => {
       this.selectInitialCategory(templates);
     });
+  }
+
+  addTemplate(templates, template) {
+    const categoriesNames = templatesCategories.map(category => category.name);
+    let categories;
+    
+    try {
+      categories = JSON.parse(template.categories)
+        .filter(name => categoriesNames.indexOf(name) !== -1);
+    } catch (err) {
+      categories = [];
+    }
+    
+    // the template has no known category
+    // we add it to "Your saved templates"
+    if (categories.length === 0) {
+      categories.push('saved');
+    }
+
+    return categories.reduce((templates, category) => {
+      if (templates[category] === undefined) {
+        templates[category] = [];
+      }
+      templates[category].push(template);
+      return templates;
+    }, templates);
   }
 
   selectInitialCategory(templates) {
@@ -382,10 +402,12 @@ class NewsletterTemplates extends React.Component {
     });
   }
 
-  afterTemplateDelete(success, index) {
+  afterTemplateDelete(success, id) {
     let templates = this.state.templates;
     if (success) {
-      templates[this.state.selectedTab].splice(index, 1);
+      for (const category in templates) {
+        templates[category] = templates[category].filter(template => template.id != id);
+      }
     }
     this.setState({
       templates: templates,
@@ -393,18 +415,22 @@ class NewsletterTemplates extends React.Component {
     });
   }
 
-  afterTemplateImport(success, template) {
+  afterTemplateImport(success, importedTemplate) {
     let templates = this.state.templates;
     if (success) {
-      // WIP ...
+      templates = this.addTemplate(templates, importedTemplate, true);
     }
     this.setState({
       templates: templates,
+      selectedTab: success ? 'saved' : 'import',
       loading: false,
     })
   }
 
   render() {
+    const afterTemplateDelete = this.afterTemplateDelete.bind(this);
+    const afterTemplateImport = this.afterTemplateImport.bind(this);
+
     const tabs = templatesCategories.concat({
       name: 'import',
       label: MailPoet.I18n.t('tabImportTitle'),
@@ -414,7 +440,7 @@ class NewsletterTemplates extends React.Component {
     let content = null;
     if (selectedTab === 'import') {
       content = <ImportTemplate
-        afterImport={this.afterTemplateImport}
+        afterImport={afterTemplateImport}
         setLoading={value => this.setState({ loading: value })}
       />;
     } else {
@@ -427,7 +453,7 @@ class NewsletterTemplates extends React.Component {
             key={index}
             index={index}
             newsletterId={this.props.params.id}
-            afterDelete={this.afterTemplateDelete}
+            afterDelete={afterTemplateDelete}
             setLoading={value => this.setState({ loading: value })}
             {...template}
           />

@@ -132,7 +132,7 @@ define([
       var data = _.extend(options || {}, {
         thumbnail: thumbnail.toDataURL('image/jpeg'),
         body: App.getBody(),
-        categories: JSON.stringify([App.getNewsletter().get('type')])
+        categories: JSON.stringify(['saved', App.getNewsletter().get('type')])
       });
       var blob = new Blob(
         [JSON.stringify(data)],
