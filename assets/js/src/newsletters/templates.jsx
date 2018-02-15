@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import { confirmAlert } from 'react-confirm-alert';
-import classNames from 'classnames';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import HelpTooltip from 'help-tooltip.jsx';
 
@@ -55,7 +54,7 @@ const Tabs = ({ tabs, selected, select }) => (
   <div className="wp-filter hide-if-no-js">
     <ul className="filter-links">
       {tabs.map(({ name, label }) => (
-        <li key={ name }><a
+        <li key={name}><a
           href="javascript:"
           className={selected === name ? 'current' : ''}
           onClick={() => select(name)}
@@ -74,7 +73,7 @@ const Tabs = ({ tabs, selected, select }) => (
  */
 class TemplateBox extends React.Component {
   onDelete() {
-    const {id, name, setLoading, afterDelete} = this.props;
+    const { id, name, setLoading, afterDelete } = this.props;
     const onConfirm = () => {
       setLoading(true);
       MailPoet.Ajax.post({
@@ -115,7 +114,7 @@ class TemplateBox extends React.Component {
   }
 
   onSelect() {
-    const {newsletterId, name, setLoading} = this.props;
+    const { newsletterId, name, setLoading } = this.props;
     let body = this.props.body;
 
     if (!_.isUndefined(body)) {
@@ -123,7 +122,7 @@ class TemplateBox extends React.Component {
     }
 
     setLoading(true);
-    
+
     MailPoet.trackEvent('Emails > Template selected', {
       'MailPoet Free version': window.mailpoet_version,
       'Email name': name,
@@ -151,11 +150,11 @@ class TemplateBox extends React.Component {
   }
 
   render() {
-    const {index, name, thumbnail, description, readonly} = this.props;
+    const { index, name, thumbnail, description, readonly } = this.props;
     const onDelete = this.onDelete.bind(this);
     const onPreview = this.onPreview.bind(this);
     const onSelect = this.onSelect.bind(this);
-    
+
     const deleteLink = (
       <div className="mailpoet_delete">
         <a href="javascript:;" onClick={onDelete}>{MailPoet.I18n.t('delete')}</a>
@@ -262,7 +261,7 @@ class ImportTemplate extends React.Component {
 
     const file = _.first(this.refs.templateFile.files);
     const reader = new FileReader();
-    
+
     reader.onload = (evt) => {
       try {
         this.saveTemplate(JSON.parse(evt.target.result));
@@ -270,7 +269,6 @@ class ImportTemplate extends React.Component {
           'MailPoet Free version': window.mailpoet_version,
         });
       } catch (err) {
-        console.error(err)
         MailPoet.Notice.error(MailPoet.I18n.t('templateFileMalformedError'));
       }
     };
@@ -312,11 +310,10 @@ class NewsletterTemplates extends React.Component {
       templates: {}, // {category1: [template11, template12, ..], category2: [template21, ...]}
       selectedTab: '',
     };
+    this.templates = {};
   }
 
   componentWillMount() {
-    let templates = {};
-
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletterTemplates',
@@ -334,15 +331,8 @@ class NewsletterTemplates extends React.Component {
           },
         ];
       }
-
-      templates = response.data.reduce(this.addTemplate, {});
-
-      for(const category in templates) {
-        templates[category].sort((a, b) => 
-          parseInt(a.id) < parseInt(b.id) ? 1 : -1
-        );
-      }
-
+      response.data.forEach(this.addTemplate.bind(this));
+      this.sortTemplates();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -351,37 +341,47 @@ class NewsletterTemplates extends React.Component {
         );
       }
     }).always(() => {
-      this.selectInitialCategory(templates);
+      this.selectInitialTab();
     });
   }
 
-  addTemplate(templates, template) {
+  addTemplate(template) {
     const categoriesNames = templatesCategories.map(category => category.name);
     let categories;
-    
+
     try {
       categories = JSON.parse(template.categories)
         .filter(name => categoriesNames.indexOf(name) !== -1);
     } catch (err) {
       categories = [];
     }
-    
+
     // the template has no known category
     // we add it to "Your saved templates"
     if (categories.length === 0) {
       categories.push('saved');
     }
 
-    return categories.reduce((templates, category) => {
-      if (templates[category] === undefined) {
-        templates[category] = [];
+    categories.forEach((category) => {
+      if (this.templates[category] === undefined) {
+        this.templates[category] = [];
       }
-      templates[category].unshift(template);
-      return templates;
-    }, templates);
+      this.templates[category].unshift(template);
+    });
   }
 
-  selectInitialCategory(templates) {
+  sortTemplates() {
+    Object.keys(this.templates).forEach((category) => {
+      this.templates[category].sort((a, b) => {
+        if (parseInt(a.id, 10) < parseInt(b.id, 10)) {
+          return 1;
+        }
+        return -1;
+      });
+    });
+  }
+
+  selectInitialTab() {
     let selectedTab = 'standard';
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -401,7 +401,7 @@ class NewsletterTemplates extends React.Component {
       }
     }).always(() => {
       this.setState({
-        templates: templates,
+        templates: this.templates,
         selectedTab: selectedTab,
         loading: false,
       });
@@ -409,28 +409,26 @@ class NewsletterTemplates extends React.Component {
   }
 
   afterTemplateDelete(success, id) {
-    let templates = this.state.templates;
     if (success) {
-      for (const category in templates) {
-        templates[category] = templates[category].filter(template => template.id != id);
-      }
+      Object.keys(this.templates).forEach((category) => {
+        this.templates[category] = this.templates[category].filter(template => template.id !== id);
+      });
     }
     this.setState({
-      templates: templates,
+      templates: this.templates,
       loading: false,
     });
   }
 
-  afterTemplateImport(success, importedTemplate) {
-    let templates = this.state.templates;
+  afterTemplateImport(success, template) {
     if (success) {
-      templates = this.addTemplate(templates, importedTemplate, true);
+      this.addTemplate(template);
     }
     this.setState({
-      templates: templates,
+      templates: this.templates,
       selectedTab: success ? 'saved' : 'import',
       loading: false,
-    })
+    });
   }
 
   render() {
@@ -445,17 +443,19 @@ class NewsletterTemplates extends React.Component {
     const selectedTab = this.state.selectedTab;
     let content = null;
     if (selectedTab === 'import') {
-      content = <ImportTemplate
-        afterImport={afterTemplateImport}
-        setLoading={value => this.setState({ loading: value })}
-      />;
+      content = (
+        <ImportTemplate
+          afterImport={afterTemplateImport}
+          setLoading={value => this.setState({ loading: value })}
+        />
+      );
     } else {
       let templates = this.state.templates[this.state.selectedTab] || [];
       if (templates.length === 0) {
         templates = <p>{MailPoet.I18n.t('noTemplates')}</p>;
       } else {
-        templates = templates.map((template, index) =>
-          <TemplateBox 
+        templates = templates.map((template, index) => (
+          <TemplateBox
             key={index}
             index={index}
             newsletterId={this.props.params.id}
@@ -463,7 +463,7 @@ class NewsletterTemplates extends React.Component {
             setLoading={value => this.setState({ loading: value })}
             {...template}
           />
-        )
+        ));
       }
       content = <ul className="mailpoet_boxes clearfix">{templates}</ul>;
     }
@@ -473,13 +473,13 @@ class NewsletterTemplates extends React.Component {
         {this.state.loading && <Loading />}
 
         <h1>{MailPoet.I18n.t('selectTemplateTitle')}</h1>
-        
+
         <Breadcrumb step="template" />
 
-        <Tabs 
-          tabs={tabs} 
+        <Tabs
+          tabs={tabs}
           selected={this.state.selectedTab}
-          select={name => this.setState({selectedTab: name})}
+          select={name => this.setState({ selectedTab: name })}
         />
 
         {content}
