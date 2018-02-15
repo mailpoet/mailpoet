@@ -337,6 +337,12 @@ class NewsletterTemplates extends React.Component {
 
       templates = response.data.reduce(this.addTemplate, {});
 
+      for(const category in templates) {
+        templates[category].sort((a, b) => 
+          parseInt(a.id) < parseInt(b.id) ? 1 : -1
+        );
+      }
+
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -370,7 +376,7 @@ class NewsletterTemplates extends React.Component {
       if (templates[category] === undefined) {
         templates[category] = [];
       }
-      templates[category].push(template);
+      templates[category].unshift(template);
       return templates;
     }, templates);
   }
