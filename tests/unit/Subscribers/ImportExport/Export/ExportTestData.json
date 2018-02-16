@@ -1,6 +1,5 @@
 {
   "export_format_option": "csv",
-  "group_by_segment_option": false,
   "segments": [
     "1",
     "2"

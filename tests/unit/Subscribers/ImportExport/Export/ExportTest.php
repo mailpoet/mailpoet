@@ -103,8 +103,6 @@ class ExportTest extends \MailPoetTest {
   function testItCanConstruct() {
     expect($this->export->export_format_option)
       ->equals('csv');
-    expect($this->export->group_by_segment_option)
-      ->equals(false);
     expect($this->export->segments)
       ->equals(
         array(
@@ -177,39 +175,30 @@ class ExportTest extends \MailPoetTest {
   function testItCanGetSubscribers() {
     $this->export->segments = array(1);
     $subscribers = $this->export->getSubscribers(0, 10);
-    expect(count($subscribers))->equals(2);
+    expect($subscribers)->count(2);
     $this->export->segments = array(2);
     $subscribers = $this->export->getSubscribers(0, 10);
-    expect(count($subscribers))->equals(2);
+    expect($subscribers)->count(2);
     $this->export->segments = array(
       1,
       2
     );
     $subscribers = $this->export->getSubscribers(0, 10);
-    expect(count($subscribers))->equals(3);
+    expect($subscribers)->count(4);
   }
 
-  function testItCanGroupSubscribersBySegments() {
-    $this->export->group_by_segment_option = true;
+  function testItAlwaysGroupsSubscribersBySegments() {
     $this->export->subscribers_without_segment = true;
     $subscribers = $this->export->getSubscribers(0, 10);
-    expect(count($subscribers))->equals(5);
+    expect($subscribers)->count(5);
   }
 
   function testItCanGetSubscribersOnlyWithoutSegments() {
     $this->export->segments = array(0);
     $this->export->subscribers_without_segment = true;
     $subscribers = $this->export->getSubscribers(0, 10);
-    expect(count($subscribers))->equals(1);
+    expect($subscribers)->count(1);
     expect($subscribers[0]['segment_name'])->equals('Not In Segment');
-  }
-
-  function testItCanGetSubscribersOnlyInSegments() {
-    SubscriberSegment::where('subscriber_id', 3)
-      ->findOne()
-      ->delete();
-    $subscribers = $this->export->getSubscribers(0, 10);
-    expect(count($subscribers))->equals(2);
   }
 
   function testItRequiresWritableExportFile() {
@@ -231,7 +220,7 @@ class ExportTest extends \MailPoetTest {
     } catch(\Exception $e) {
       $this->fail('Export to .csv process threw an exception');
     }
-    expect($result['totalExported'])->equals(3);
+    expect($result['totalExported'])->equals(4);
     expect($result['exportFileURL'])->notEmpty();
 
     try {
@@ -241,7 +230,7 @@ class ExportTest extends \MailPoetTest {
     } catch(\Exception $e) {
       $this->fail('Export to .xlsx process threw an exception');
     }
-    expect($result['totalExported'])->equals(3);
+    expect($result['totalExported'])->equals(4);
     expect($result['exportFileURL'])->notEmpty();
   }
 
