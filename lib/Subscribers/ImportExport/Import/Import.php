@@ -106,6 +106,7 @@ class Import {
       if($new_subscribers['data']) {
         // add, if required, missing required fields to new subscribers
         $new_subscribers = $this->addMissingRequiredFields($new_subscribers);
+        $new_subscribers = $this->setSubscriptionStatusToSubscribed($new_subscribers);
         $created_subscribers =
           $this->createOrUpdateSubscribers(
             'create',
@@ -273,6 +274,14 @@ class Import {
       $subscribers['fields'][] = $required_field;
     }
     return $subscribers;
+  }
+
+  function setSubscriptionStatusToSubscribed($subscribers_data) {
+    if(!in_array('status', $subscribers_data['fields'])) return $subscribers_data;
+    $subscribers_data['data']['status'] = array_map(function() {
+      return Subscriber::STATUS_SUBSCRIBED;
+    }, $subscribers_data['data']['status']);
+    return $subscribers_data;
   }
 
   function getSubscribersFields($subscribers_fields) {

@@ -437,6 +437,23 @@ class ImportTest extends \MailPoetTest {
     expect($updated_subscriber->status)->equals('unsubscribed');
   }
 
+  function testItImportsNewsSubscribersWithSubscribedStatus() {
+    $data = $this->data;
+    $data['columns']['status'] = array('index' => 4);
+    $data['subscribers'][0][] = 'unsubscribed';
+    $data['subscribers'][1][] = 'unsubscribed';
+    $import = new Import($data);
+    $result = $import->process();
+    $new_subscribers = Subscriber::whereAnyIs(array(
+      array('email' => $data['subscribers'][0][2]),
+      array('email' => $data['subscribers'][1][2])
+      )
+    )->findMany();
+    expect($new_subscribers)->count(2);
+    expect($new_subscribers[0]->status)->equals('subscribed');
+    expect($new_subscribers[1]->status)->equals('subscribed');
+  }
+
   function testItRunsImport() {
     $result = $this->import->process();
     expect($result['created'])->equals(2);
