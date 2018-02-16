@@ -157,10 +157,10 @@ define(
         let errors;
         if (this.getErrors() !== undefined) {
           errors = this.getErrors().map((error, index) => (
-            <p key={`error-${index}`} className="mailpoet_error">
-              { error.message }
-            </p>
-            ));
+            <div className="mailpoet_notice notice inline error is-dismissible" key={`error-${index}`}>
+              <p>{ error.message }</p>
+            </div>
+          ));
         }
 
         const formClasses = classNames(
