@@ -122,7 +122,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'first_name',
       'last_name',
       'list_status',
-      'global_status'
+      'global_status',
+      'subscribed_ip'
     );
     foreach($export_fields as $field) {
       expect(in_array($field, array_keys($subsriberFields)))->true();

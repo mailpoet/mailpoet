@@ -181,6 +181,7 @@ class Export {
       'first_name',
       'last_name',
       'email',
+      'subscribed_ip',
       array(
         'global_status' => Subscriber::$_table . '.status'
       ),
