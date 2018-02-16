@@ -9,11 +9,11 @@ use MailPoet\Models\SubscriberSegment;
 
 class SegmentTest extends \MailPoetTest {
   function _before() {
-    $this->data = array(
+    $this->segment_data = array(
       'name' => 'some name',
       'description' => 'some description'
     );
-    $this->segment = Segment::createOrUpdate($this->data);
+    $this->segment = Segment::createOrUpdate($this->segment_data);
 
     $this->subscribers_data = array(
       array(
@@ -59,12 +59,12 @@ class SegmentTest extends \MailPoetTest {
   }
 
   function testItCanHaveName() {
-    expect($this->segment->name)->equals($this->data['name']);
+    expect($this->segment->name)->equals($this->segment_data['name']);
   }
 
   function nameMustBeUnique() {
     $segment = Segment::create();
-    $segment->hydrate($this->data);
+    $segment->hydrate($this->segment_data);
     $result = $segment->save();
     $errors = $result->getErrors();
 
@@ -75,7 +75,7 @@ class SegmentTest extends \MailPoetTest {
   }
 
   function testItCanHaveDescription() {
-    expect($this->segment->description)->equals($this->data['description']);
+    expect($this->segment->description)->equals($this->segment_data['description']);
   }
 
   function testItHasToBeValid() {
@@ -247,10 +247,16 @@ class SegmentTest extends \MailPoetTest {
       }
     }
     $segments = Segment::getSegmentsForExport();
-    expect(count($segments))->equals(2);
     expect($segments[0]['name'])->equals('Not in a List');
+    expect($segments[0]['subscribers'])->equals(3);
+    expect($segments[1]['name'])->equals($this->segment_data['name']);
+    expect($segments[1]['subscribers'])->equals(1);
     $segments = Segment::getSegmentsForExport($withConfirmedSubscribers = true);
-    expect(count($segments))->equals(1);
+    expect($segments[0]['name'])->equals('Not in a List');
+    // dave@maipoet.com is excluded because status is set to UNCONFIRMED
+    expect($segments[0]['subscribers'])->equals(2);
+    expect($segments[1]['name'])->equals($this->segment_data['name']);
+    expect($segments[1]['subscribers'])->equals(1);
   }
 
   function testListingQuery() {

@@ -109,10 +109,22 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $fields = array(
       'email',
       'first_name',
-      'last_name',
-      'status'
+      'last_name'
     );
     foreach($fields as $field) {
+      expect(in_array($field, array_keys($subsriberFields)))->true();
+    }
+    // export fields contain extra data
+    $this->importFactory->action = 'export';
+    $subsriberFields = $this->importFactory->getSubscriberFields();
+    $export_fields = array(
+      'email',
+      'first_name',
+      'last_name',
+      'list_status',
+      'global_status'
+    );
+    foreach($export_fields as $field) {
       expect(in_array($field, array_keys($subsriberFields)))->true();
     }
   }

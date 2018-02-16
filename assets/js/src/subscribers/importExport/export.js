@@ -122,7 +122,7 @@ define(
        'email',
        'first_name',
        'last_name',
-       'status'
+       'list_status'
      ]).trigger('change');
 
      exportConfirmedOptionElement.change(function () { // eslint-disable-line func-names
