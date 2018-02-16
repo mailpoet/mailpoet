@@ -137,9 +137,6 @@ class ImportExportFactory {
       );
       $data['maxPostSizeBytes'] = Helpers::getMaxPostSize('bytes');
       $data['maxPostSize'] = Helpers::getMaxPostSize();
-    } else {
-      $data['segmentsWithConfirmedSubscribers'] =
-        json_encode($this->getSegments($with_confirmed_subscribers = true));
     }
     return $data;
   }

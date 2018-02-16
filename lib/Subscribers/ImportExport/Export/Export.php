@@ -13,7 +13,6 @@ use MailPoet\Util\Security;
 use MailPoet\Util\XLSXWriter;
 
 class Export {
-  public $export_confirmed_option;
   public $export_format_option;
   public $group_by_segment_option;
   public $segments;
@@ -30,7 +29,6 @@ class Export {
     if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
-    $this->export_confirmed_option = $data['export_confirmed_option'];
     $this->export_format_option = $data['export_format_option'];
     $this->group_by_segment_option = $data['group_by_segment_option'];
     $this->segments = $data['segments'];
@@ -234,11 +232,6 @@ class Export {
     }
     if($this->group_by_segment_option) {
       $subscribers = $subscribers->groupBy(Segment::$_table . '.id');
-    }
-    if($this->export_confirmed_option) {
-      // select only subscribers with "subscribed" status
-      $subscribers =
-        $subscribers->whereNotEqual(Subscriber::$_table . '.status', Subscriber::STATUS_UNCONFIRMED);
     }
     $subscribers = $subscribers
       ->whereNull(Subscriber::$_table . '.deleted_at')

@@ -17,7 +17,6 @@ define(
    jQuery(document).ready(function () { // eslint-disable-line func-names
      var segmentsContainerElement;
      var subscriberFieldsContainerElement;
-     var exportConfirmedOptionElement;
      var groupBySegmentOptionElement;
      var nextStepButton;
      var renderSegmentsAndFields;
@@ -44,7 +43,6 @@ define(
      // define reusable variables
      segmentsContainerElement = jQuery('#export_lists');
      subscriberFieldsContainerElement = jQuery('#export_columns');
-     exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]');
      groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]');
      nextStepButton = jQuery('a.mailpoet_export_process');
      renderSegmentsAndFields = function (container, data) { // eslint-disable-line func-names
@@ -112,9 +110,6 @@ define(
        });
      };
 
-     // set confirmed subscribers export option to false
-     window.exportData.exportConfirmedOption = false;
-
      renderSegmentsAndFields(subscriberFieldsContainerElement, window.subscriberFieldsSelect2);
      renderSegmentsAndFields(segmentsContainerElement, window.segments);
 
@@ -124,19 +119,6 @@ define(
        'last_name',
        'list_status'
      ]).trigger('change');
-
-     exportConfirmedOptionElement.change(function () { // eslint-disable-line func-names
-       var selectedSegments = segmentsContainerElement.val();
-       if (this.value == 1) {
-         window.exportData.exportConfirmedOption = true;
-         renderSegmentsAndFields(segmentsContainerElement, window.segmentsWithConfirmedSubscribers);
-       }
-       else {
-         window.exportData.exportConfirmedOption = false;
-         renderSegmentsAndFields(segmentsContainerElement, window.segments);
-       }
-       segmentsContainerElement.val(selectedSegments).trigger('change');
-     });
 
      nextStepButton.click(function () { // eslint-disable-line func-names
        var exportFormat;
@@ -150,7 +132,6 @@ define(
          endpoint: 'ImportExport',
          action: 'processExport',
          data: JSON.stringify({
-           export_confirmed_option: window.exportData.exportConfirmedOption,
            export_format_option: exportFormat,
            group_by_segment_option: (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
            segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
@@ -167,7 +148,6 @@ define(
          window.location.href = response.data.exportFileURL;
          MailPoet.trackEvent('Subscribers export completed', {
            'Total exported': response.data.totalExported,
-           'Only confirmed?': window.exportData.exportConfirmedOption,
            'File Format': exportFormat,
            'MailPoet Free version': window.mailpoet_version
          });
