@@ -33,12 +33,13 @@ class ImportExportFactory {
       'first_name' => __('First name', 'mailpoet'),
       'last_name' => __('Last name', 'mailpoet')
     );
-    if ($this->action === 'export') {
+    if($this->action === 'export') {
       $fields = array_merge(
         $fields,
         array(
           'list_status' => _x('List status', 'Subscription status', 'mailpoet'),
-          'global_status' => _x('Global status', 'Subscription status', 'mailpoet')
+          'global_status' => _x('Global status', 'Subscription status', 'mailpoet'),
+          'subscribed_ip' => __('IP address', 'mailpoet')
         )
       );
     }
