@@ -251,58 +251,6 @@ class ImportTest extends \MailPoetTest {
     expect($fields)->equals(array(39));
   }
 
-  function testItFiltersSubscribersStatus() {
-    $subscribers_data = array(
-      'fields' => array('status'),
-      'data' => array(
-        'status' => array(
-          #subscribed
-          'subscribed',
-          'confirmed',
-          1,
-          '1',
-          'true',
-          #unconfirmed
-          'unconfirmed',
-          0,
-          "0",
-          #unsubscribed
-          'unsubscribed',
-          -1,
-          '-1',
-          'false',
-          #bounced
-          'bounced',
-          #unexpected
-          'qwerty',
-          null
-        ),
-      )
-    );
-    $result = $this->import->filterSubscribersStatus($subscribers_data);
-    expect($result['data'])->equals(
-      array(
-        'status' => array(
-          'subscribed',
-          'subscribed',
-          'subscribed',
-          'subscribed',
-          'subscribed',
-          'unconfirmed',
-          'unconfirmed',
-          'unconfirmed',
-          'unsubscribed',
-          'unsubscribed',
-          'unsubscribed',
-          'unsubscribed',
-          'bounced',
-          'subscribed',
-          'subscribed'
-        )
-      )
-    );
-  }
-
   function testItAddsOrUpdatesSubscribers() {
     $subscribers_data = array(
       'data' => $this->subscribers_data,
@@ -469,10 +417,10 @@ class ImportTest extends \MailPoetTest {
     expect($updated_subscriber->status)->equals('unsubscribed');
   }
 
-  function testItUpdatesExistingSubscribersStatusWhenStatusColumnIsPresent() {
+  function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsPresent() {
     $data = $this->data;
     $data['columns']['status'] = array('index' => 4);
-    $data['subscribers'][0][] = 'unsubscribed';
+    $data['subscribers'][0][] = 'subscribed';
     $data['subscribers'][1][] = 'subscribed';
     $import = new Import($data);
     $existing_subscriber = Subscriber::create();
@@ -481,7 +429,7 @@ class ImportTest extends \MailPoetTest {
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'Adam@Smith.com',
-        'status' => 'subscribed'
+        'status' => 'unsubscribed'
       ));
     $existing_subscriber->save();
     $result = $import->process();

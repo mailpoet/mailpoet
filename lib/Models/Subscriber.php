@@ -794,7 +794,8 @@ class Subscriber extends Model {
     $ignore_columns_on_update = array(
       'wp_user_id',
       'email',
-      'created_at'
+      'created_at',
+      'status'
     );
     // check if there is anything to update after excluding ignored columns
     if(!array_diff($columns, $ignore_columns_on_update)) return;

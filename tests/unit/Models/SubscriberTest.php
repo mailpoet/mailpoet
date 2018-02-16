@@ -383,29 +383,35 @@ class SubscriberTest extends \MailPoetTest {
     $columns = array(
       'first_name',
       'last_name',
-      'email'
+      'email',
+      'status'
     );
     $values = array(
       array(
         'first_name' => 'Adam',
         'last_name' => 'Smith',
-        'email' => 'adam@smith.com'
+        'email' => 'adam@smith.com',
+        'status' => 'unsubscribed'
       ),
       array(
         'first_name' => 'Mary',
         'last_name' => 'Jane',
-        'email' => 'mary@jane.com'
+        'email' => 'mary@jane.com',
+        'status' => 'unsubscribed'
       )
     );
     Subscriber::createMultiple($columns, $values);
     $subscribers = Subscriber::findArray();
     expect(count($subscribers))->equals(2);
     expect($subscribers[1]['email'])->equals($values[1]['email']);
+    expect($subscribers[1]['status'])->equals($values[1]['status']);
 
     $values[0]['first_name'] = 'John';
+    $values[0]['status'] = 'subscribed';
     Subscriber::updateMultiple($columns, $values);
     $subscribers = Subscriber::findArray();
     expect($subscribers[0]['first_name'])->equals($values[0]['first_name']);
+    expect($subscribers[0]['status'])->equals('unsubscribed');
   }
 
   function testItCanSubscribe() {
