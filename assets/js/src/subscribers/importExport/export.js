@@ -17,7 +17,6 @@ define(
    jQuery(document).ready(function () { // eslint-disable-line func-names
      var segmentsContainerElement;
      var subscriberFieldsContainerElement;
-     var groupBySegmentOptionElement;
      var nextStepButton;
      var renderSegmentsAndFields;
      var subscribersExportTemplate;
@@ -43,7 +42,6 @@ define(
      // define reusable variables
      segmentsContainerElement = jQuery('#export_lists');
      subscriberFieldsContainerElement = jQuery('#export_columns');
-     groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]');
      nextStepButton = jQuery('a.mailpoet_export_process');
      renderSegmentsAndFields = function (container, data) { // eslint-disable-line func-names
        if (container.data('select2')) {
@@ -100,13 +98,6 @@ define(
          else {
            toggleNextStepButton('off');
          }
-
-         if (segmentsContainerElement.select2('data').length > 1 && window.exportData.groupBySegmentOption) {
-           jQuery('.mailpoet_group_by_list').show();
-         }
-         else if (window.exportData.groupBySegmentOption) {
-           jQuery('.mailpoet_group_by_list').hide();
-         }
        });
      };
 
@@ -133,7 +124,6 @@ define(
          action: 'processExport',
          data: JSON.stringify({
            export_format_option: exportFormat,
-           group_by_segment_option: (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
            segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
            subscriber_fields: subscriberFieldsContainerElement.val()
          })
