@@ -176,15 +176,29 @@ class Export {
   }
 
   function getSubscribers($offset, $limit) {
-    // JOIN subscribers on segment and subscriber_segment tables
-    $subscribers = Subscriber::left_outer_join(
-      SubscriberSegment::$_table,
+    // define returned columns
+    $subscribers = Subscriber::selectMany(
+      'first_name',
+      'last_name',
+      'email',
       array(
-        Subscriber::$_table . '.id',
-        '=',
-        SubscriberSegment::$_table . '.subscriber_id'
+        'global_status' => Subscriber::$_table . '.status'
+      ),
+      array(
+        'list_status' => SubscriberSegment::$_table . '.status'
       )
-    )
+    );
+
+    // JOIN subscribers on segment and subscriber_segment tables
+    $subscribers = $subscribers
+      ->left_outer_join(
+        SubscriberSegment::$_table,
+        array(
+          Subscriber::$_table . '.id',
+          '=',
+          SubscriberSegment::$_table . '.subscriber_id'
+        )
+      )
       ->left_outer_join(
         Segment::$_table,
         array(
@@ -223,7 +237,7 @@ class Export {
     if($this->export_confirmed_option) {
       // select only subscribers with "subscribed" status
       $subscribers =
-        $subscribers->where(Subscriber::$_table . '.status', 'subscribed');
+        $subscribers->whereNotEqual(Subscriber::$_table . '.status', Subscriber::STATUS_UNCONFIRMED);
     }
     $subscribers = $subscribers
       ->whereNull(Subscriber::$_table . '.deleted_at')
@@ -258,7 +272,7 @@ class Export {
   }
 
   function formatSubscriberFields($subscriber_fields, $subscriber_custom_fields) {
-    $export_factory = new ImportExportFactory();
+    $export_factory = new ImportExportFactory('export');
     $translated_fields = $export_factory->getSubscriberFields();
     return array_map(function($field) use (
       $translated_fields, $subscriber_custom_fields

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Subscribers\ImportExport\Export;
 
 use MailPoet\Config\Env;
@@ -18,18 +19,17 @@ class ExportTest extends \MailPoetTest {
       'email' => 'Email',
       1 => 'Country'
     );
-
     $this->subscribers_data = array(
       array(
         'first_name' => 'Adam',
         'last_name' => 'Smith',
-        'email' => 'adam@smith.com'
+        'email' => 'adam@smith.com',
       ),
       array(
         'first_name' => 'Mary',
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
-        'status' => 'subscribed',
+        'status' => Subscriber::STATUS_SUBSCRIBED,
         1 => 'Brazil'
       ),
       array(
@@ -83,6 +83,7 @@ class ExportTest extends \MailPoetTest {
     $entity = SubscriberSegment::create();
     $entity->subscriber_id = 1;
     $entity->segment_id = 1;
+    $entity->status = Subscriber::STATUS_UNSUBSCRIBED;
     $entity->save();
     $entity = SubscriberSegment::create();
     $entity->subscriber_id = 1;
@@ -206,11 +207,20 @@ class ExportTest extends \MailPoetTest {
   }
 
   function testItCanGetOnlyConfirmedSubscribers() {
+    // be default, all global and list status are included
+    $subscribers = $this->export->getSubscribers(0, 10);
+    expect($subscribers)->count(3);
+    expect($subscribers[0]['email'])->equals($this->subscribers_data[0]['email']);
+    expect($subscribers[0]['global_status'])->equals(Subscriber::STATUS_UNCONFIRMED);
+    expect($subscribers[0]['list_status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
+
+    // "confirmed only" option excludes anyone with global UNCONFIRMED option
     $this->export->export_confirmed_option = true;
     $subscribers = $this->export->getSubscribers(0, 10);
-    expect(count($subscribers))->equals(1);
-    expect($subscribers[0]['email'])
-      ->equals($this->subscribers_data[1]['email']);
+    expect($subscribers)->count(1);
+    expect($subscribers[0]['email'])->equals($this->subscribers_data[1]['email']);
+    expect($subscribers[0]['global_status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscribers[0]['list_status'])->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   function testItCanGetSubscribersOnlyInSegments() {

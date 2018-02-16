@@ -192,17 +192,16 @@ class Segment extends Model {
       'LEFT JOIN ' . self::$_table . ' segments ON segments.id = relation.segment_id ' .
       'LEFT JOIN ' . MP_SUBSCRIBERS_TABLE . ' subscribers ON subscribers.id = relation.subscriber_id ' .
       (($withConfirmedSubscribers) ?
-        'WHERE subscribers.status = "' . Subscriber::STATUS_SUBSCRIBED . '" ' :
+        'WHERE subscribers.status != "' . Subscriber::STATUS_UNCONFIRMED . '"' :
         'WHERE relation.segment_id IS NOT NULL ') .
       'AND subscribers.deleted_at IS NULL ' .
-      'AND relation.status = "' . Subscriber::STATUS_SUBSCRIBED . '" ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
       '(SELECT 0 as id, "' . __('Not in a List', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
       'FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers ' .
       'LEFT JOIN ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation on relation.subscriber_id = subscribers.id ' .
       (($withConfirmedSubscribers) ?
-        'WHERE relation.subscriber_id is NULL AND subscribers.status = "' . Subscriber::STATUS_SUBSCRIBED . '" ' :
+        'WHERE relation.subscriber_id is NULL AND subscribers.status != "' . Subscriber::STATUS_UNCONFIRMED . '" ' :
         'WHERE relation.subscriber_id is NULL ') .
       'AND subscribers.deleted_at IS NULL ' .
       'HAVING subscribers) ' .
