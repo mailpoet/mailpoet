@@ -96,14 +96,6 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($segments[1]['subscriberCount'])->equals(1);
   }
 
-  function testItCanGetSegmentsWithConfirmedSubscribersForExport() {
-    $segments = $this->exportFactory->getSegments(
-      $withConfirmedSubscribers = true
-    );
-    expect(count($segments))->equals(1);
-    expect($segments[0]['name'])->equals('Confirmed Segment');
-  }
-
   function testItCanGetSubscriberFields() {
     $subsriberFields = $this->importFactory->getSubscriberFields();
     $fields = array(

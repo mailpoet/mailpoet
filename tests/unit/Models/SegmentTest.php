@@ -251,12 +251,6 @@ class SegmentTest extends \MailPoetTest {
     expect($segments[0]['subscribers'])->equals(3);
     expect($segments[1]['name'])->equals($this->segment_data['name']);
     expect($segments[1]['subscribers'])->equals(1);
-    $segments = Segment::getSegmentsForExport($withConfirmedSubscribers = true);
-    expect($segments[0]['name'])->equals('Not in a List');
-    // dave@maipoet.com is excluded because status is set to UNCONFIRMED
-    expect($segments[0]['subscribers'])->equals(2);
-    expect($segments[1]['name'])->equals($this->segment_data['name']);
-    expect($segments[1]['subscribers'])->equals(1);
   }
 
   function testListingQuery() {

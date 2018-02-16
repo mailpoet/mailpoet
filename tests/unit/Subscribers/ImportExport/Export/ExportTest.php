@@ -101,8 +101,6 @@ class ExportTest extends \MailPoetTest {
   }
 
   function testItCanConstruct() {
-    expect($this->export->export_confirmed_option)
-      ->equals(false);
     expect($this->export->export_format_option)
       ->equals('csv');
     expect($this->export->group_by_segment_option)
@@ -204,23 +202,6 @@ class ExportTest extends \MailPoetTest {
     $subscribers = $this->export->getSubscribers(0, 10);
     expect(count($subscribers))->equals(1);
     expect($subscribers[0]['segment_name'])->equals('Not In Segment');
-  }
-
-  function testItCanGetOnlyConfirmedSubscribers() {
-    // be default, all global and list status are included
-    $subscribers = $this->export->getSubscribers(0, 10);
-    expect($subscribers)->count(3);
-    expect($subscribers[0]['email'])->equals($this->subscribers_data[0]['email']);
-    expect($subscribers[0]['global_status'])->equals(Subscriber::STATUS_UNCONFIRMED);
-    expect($subscribers[0]['list_status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
-
-    // "confirmed only" option excludes anyone with global UNCONFIRMED option
-    $this->export->export_confirmed_option = true;
-    $subscribers = $this->export->getSubscribers(0, 10);
-    expect($subscribers)->count(1);
-    expect($subscribers[0]['email'])->equals($this->subscribers_data[1]['email']);
-    expect($subscribers[0]['global_status'])->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($subscribers[0]['list_status'])->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   function testItCanGetSubscribersOnlyInSegments() {
