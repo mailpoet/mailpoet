@@ -701,8 +701,6 @@ define(
                         columnId = 'first_name';
                       } else if (/last|last name/i.test(headerName)) {
                         columnId = 'last_name';
-                      } else if (/status/i.test(headerName)) {
-                        columnId = 'status';
                       }
                     }
                   }
