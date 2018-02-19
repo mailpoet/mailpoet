@@ -70,7 +70,7 @@ define([
             easing: 'easeOut',
             complete: function () {
               $openRegion.addClass('closed');
-            }.bind(this)
+            }
           }
         );
 

@@ -94,7 +94,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disab
       // listen to message event
       jQuery(this.element).on('setMessage', function (e, message) { // eslint-disable-line func-names
         MailPoet.Notice.setMessage(message);
-      }.bind(this.element));
+      });
 
       return this;
     },

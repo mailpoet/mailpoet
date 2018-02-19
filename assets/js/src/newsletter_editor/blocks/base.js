@@ -163,7 +163,7 @@ define([
           easing: easing,
           complete: function () {
             promise.resolve();
-          }.bind(this)
+          }
         }
       ).velocity(
         fadeDirection,

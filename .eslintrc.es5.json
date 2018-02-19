@@ -39,7 +39,6 @@
     "max-len": 0,
     "global-require": 0,
     "no-throw-literal": 0,
-    "no-extra-bind": 0,
     "brace-style": 0,
     "space-infix-ops": 0
   }
