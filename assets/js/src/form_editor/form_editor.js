@@ -47,7 +47,8 @@ function info(value) {
       var length = methods.length;
       var console = {};
       window.console = {};
-      while (length--) {
+      while (length) {
+        length -= 1;
         console[methods[length]] = noop;
       }
     }());
@@ -404,7 +405,7 @@ WysijaForm = {
         blockData.position = position;
 
         // increment position
-        position++;
+        position += 1;
 
         // add block data to body
         data.body.push(blockData);
@@ -513,7 +514,8 @@ WysijaForm = {
     WysijaForm.locks.dragging = false;
 
     WysijaForm.getBlocks().each(function (container) {
-      container.setPosition(index++);
+      container.setPosition(index);
+      index += 1;
       // remove z-index value to avoid issues when resizing images
       if (container.block !== undefined) {
         container.block.element.setStyle({

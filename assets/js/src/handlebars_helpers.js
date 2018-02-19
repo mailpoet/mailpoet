@@ -5,7 +5,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     var size = (arguments.length - 1);
     var output = '';
     var i;
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i += 1) {
       output += arguments[i];
     }
     return output;

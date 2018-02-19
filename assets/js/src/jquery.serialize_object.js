@@ -73,7 +73,7 @@ define(
           //   object or array based on the type of the next keys part.
           // * Move the 'cur' pointer to the next level.
           // * Rinse & repeat.
-          for (; i <= keysLast; i++) {
+          for (; i <= keysLast; i += 1) {
             key = keys[i] === '' ? cur.length : keys[i];
             cur[key] = i < keysLast
               ? cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ? {} : [])

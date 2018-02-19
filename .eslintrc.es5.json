@@ -31,7 +31,6 @@
     "no-empty": 0,
     "no-useless-escape": 0,
     "wrap-iife": 0,
-    "no-plusplus": 0,
     "brace-style": 0,
     "space-infix-ops": 0
   }

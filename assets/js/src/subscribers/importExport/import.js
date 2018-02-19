@@ -1080,7 +1080,7 @@ define(
                     );
                   }
                 });
-                batchNumber++;
+                batchNumber += 1;
               });
             });
 
