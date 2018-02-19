@@ -1,9 +1,6 @@
 import React from 'react';
-import _ from 'underscore';
 import MailPoet from 'mailpoet';
-import { confirmAlert } from 'react-confirm-alert';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
-import HelpTooltip from 'help-tooltip.jsx';
 import Loading from 'common/loading.jsx';
 import Tabs from 'newsletters/templates/tabs.jsx';
 import TemplateBox from 'newsletters/templates/template_box.jsx';

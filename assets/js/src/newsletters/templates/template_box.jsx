@@ -1,11 +1,12 @@
 import React from 'react';
+import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import { confirmAlert } from 'react-confirm-alert';
 
 /**
  * props = {
- *   index, id, newsletterId, name, description, thumbnail, readonly, 
- *   beforeDelete, afterDelete, beforeSelect, afterSelect 
+ *   index, id, newsletterId, name, description, thumbnail, readonly,
+ *   beforeDelete, afterDelete, beforeSelect, afterSelect
  * }
  */
 class TemplateBox extends React.Component {
