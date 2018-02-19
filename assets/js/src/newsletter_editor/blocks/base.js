@@ -1,4 +1,3 @@
-/* eslint-disable func-names */
 /**
  * Defines base classes for actual content blocks to extend.
  * Extending content block modules need to at least extend
@@ -13,7 +12,7 @@ define([
   'jquery',
   'mailpoet',
   'modal'
-], function (App, Marionette, SuperModel, _, jQuery, MailPoet) {
+], function base(App, Marionette, SuperModel, _, jQuery, MailPoet) {
   'use strict';
 
   var Module = {};
@@ -21,12 +20,12 @@ define([
 
   Module.BlockModel = SuperModel.extend({
     stale: [], // Attributes to be removed upon saving
-    initialize: function () {
-      this.on('change', function () {
+    initialize: function initialize() {
+      this.on('change', function onChange() {
         App.getChannel().trigger('autoSave');
       });
     },
-    _getDefaults: function (blockDefaults, configDefaults) {
+    _getDefaults: function getDefaults(blockDefaults, configDefaults) {
       var defaults = (_.isObject(configDefaults) && _.isFunction(configDefaults.toJSON)) ? configDefaults.toJSON() : configDefaults;
 
       // Patch the resulting JSON object and fix it's constructors to be Object.
@@ -35,11 +34,11 @@ define([
       // TODO: Investigate for a better solution
       return JSON.parse(JSON.stringify(jQuery.extend(blockDefaults, defaults || {})));
     },
-    toJSON: function () {
+    toJSON: function toJSON() {
       // Remove stale attributes from resulting JSON object
       return _.omit(SuperModel.prototype.toJSON.call(this), this.stale);
     },
-    getChildren: function () {
+    getChildren: function getChildren() {
       return [];
     }
   });
@@ -61,12 +60,12 @@ define([
       DraggableBehavior: {
         cloneOriginal: true,
         hideOriginal: true,
-        onDrop: function (options) {
+        onDrop: function onDrop(options) {
           // After a clone of model has been dropped, cleanup
           // and destroy self
           options.dragBehavior.view.model.destroy();
         },
-        onDragSubstituteBy: function (behavior) {
+        onDragSubstituteBy: function onDragSubstituteBy(behavior) {
           var WidgetView;
           var node;
           // When block is being dragged, display the widget icon instead.
@@ -84,76 +83,76 @@ define([
       },
       HighlightEditingBehavior: {}
     },
-    templateContext: function () {
+    templateContext: function templateContext() {
       return {
         model: this.model.toJSON(),
         viewCid: this.cid
       };
     },
-    constructor: function () {
+    constructor: function constructor() {
       AugmentedView.apply(this, arguments);
       this.$el.addClass('mailpoet_editor_view_' + this.cid);
     },
-    initialize: function () {
+    initialize: function initialize() {
       this.on('showSettings', this.showSettings, this);
       this.on('dom:refresh', this.showBlock, this);
       this._isFirstRender = true;
     },
-    showTools: function () {
+    showTools: function showTools() {
       if (!this.showingToolsDisabled) {
         this.$('> .mailpoet_tools').addClass('mailpoet_display_tools');
         this.toolsView.triggerMethod('showTools');
       }
     },
-    hideTools: function () {
+    hideTools: function hideTools() {
       this.$('> .mailpoet_tools').removeClass('mailpoet_display_tools');
       this.toolsView.triggerMethod('hideTools');
     },
-    enableShowingTools: function () {
+    enableShowingTools: function enableShowingTools() {
       this.showingToolsDisabled = false;
     },
-    disableShowingTools: function () {
+    disableShowingTools: function disableShowingTools() {
       this.showingToolsDisabled = true;
       this.hideTools();
     },
-    showSettings: function (options) {
+    showSettings: function showSettings(options) {
       this.toolsView.triggerMethod('showSettings', options);
     },
     /**
      * Defines drop behavior of BlockView instance
      */
-    getDropFunc: function () {
-      return function () {
+    getDropFunc: function getDropFunc() {
+      return function getDropFuncClone() {
         return this.model.clone();
       }.bind(this);
     },
-    disableDragging: function () {
+    disableDragging: function disableDragging() {
       this.$el.addClass('mailpoet_ignore_drag');
     },
-    enableDragging: function () {
+    enableDragging: function enableDragging() {
       this.$el.removeClass('mailpoet_ignore_drag');
     },
-    showBlock: function () {
+    showBlock: function showBlock() {
       if (this._isFirstRender) {
         this.transitionIn();
         this._isFirstRender = false;
       }
     },
-    deleteBlock: function () {
-      this.transitionOut().then(function () {
+    deleteBlock: function deleteBlock() {
+      this.transitionOut().then(function deleteBlockDestroy() {
         this.model.destroy();
       }.bind(this));
     },
-    duplicateBlock: function () {
+    duplicateBlock: function duplicateBlock() {
       this.model.collection.add(this.model.toJSON(), { at: this.model.collection.findIndex(this.model) });
     },
-    transitionIn: function () {
+    transitionIn: function transitionIn() {
       return this._transition('slideDown', 'fadeIn', 'easeOut');
     },
-    transitionOut: function () {
+    transitionOut: function transitionOut() {
       return this._transition('slideUp', 'fadeOut', 'easeIn');
     },
-    _transition: function (slideDirection, fadeDirection, easing) {
+    _transition: function transition(slideDirection, fadeDirection, easing) {
       var promise = jQuery.Deferred();
 
       this.$el.velocity(
@@ -161,7 +160,7 @@ define([
         {
           duration: 250,
           easing: easing,
-          complete: function () {
+          complete: function complete() {
             promise.resolve();
           }
         }
@@ -179,7 +178,7 @@ define([
   });
 
   Module.BlockToolsView = AugmentedView.extend({
-    getTemplate: function () { return window.templates.genericBlockTools; },
+    getTemplate: function getTemplate() { return window.templates.genericBlockTools; },
     events: {
       'click .mailpoet_edit_block': 'changeSettings',
       'click .mailpoet_delete_block_activate': 'showDeletionConfirmation',
@@ -194,8 +193,8 @@ define([
       duplicate: true,
       move: true
     },
-    getSettingsView: function () { return Module.BlockSettingsView; },
-    initialize: function (opts) {
+    getSettingsView: function getSettingsView() { return Module.BlockSettingsView; },
+    initialize: function initialize(opts) {
       var options = opts || {};
       if (!_.isUndefined(options.tools)) {
         // Make a new block specific tool config object
@@ -206,18 +205,18 @@ define([
       this.on('hideTools', this.hideDeletionConfirmation, this);
       this.on('showSettings', this.changeSettings);
     },
-    templateContext: function () {
+    templateContext: function templateContext() {
       return {
         model: this.model.toJSON(),
         viewCid: this.cid,
         tools: this.tools
       };
     },
-    changeSettings: function (options) {
+    changeSettings: function changeSettings(options) {
       var ViewType = this.getSettingsView();
       (new ViewType(_.extend({ model: this.model }, options || {}))).render();
     },
-    showDeletionConfirmation: function () {
+    showDeletionConfirmation: function showDeletionConfirmation() {
       this.$('.mailpoet_delete_block')
         .closest('.mailpoet_block')
         .find('> .mailpoet_block_highlight')
@@ -225,7 +224,7 @@ define([
 
       this.$('.mailpoet_delete_block').addClass('mailpoet_delete_block_activated');
     },
-    hideDeletionConfirmation: function () {
+    hideDeletionConfirmation: function hideDeletionConfirmation() {
       this.$('.mailpoet_delete_block')
         .closest('.mailpoet_block')
         .find('> .mailpoet_block_highlight')
@@ -233,12 +232,12 @@ define([
 
       this.$('.mailpoet_delete_block').removeClass('mailpoet_delete_block_activated');
     },
-    deleteBlock: function (event) {
+    deleteBlock: function deleteBlock(event) {
       event.preventDefault();
       this.model.trigger('delete');
       return false;
     },
-    duplicateBlock: function (event) {
+    duplicateBlock: function duplicateBlock(event) {
       event.preventDefault();
       this.model.trigger('duplicate');
       return false;
@@ -250,7 +249,7 @@ define([
     behaviors: {
       ColorPickerBehavior: {}
     },
-    initialize: function (params) {
+    initialize: function initialize(params) {
       var panelParams;
       this.model.trigger('startEditing');
       panelParams = {
@@ -258,7 +257,7 @@ define([
         template: '',
         position: 'right',
         width: App.getConfig().get('sidepanelWidth'),
-        onCancel: function () {
+        onCancel: function onCancel() {
           this.destroy();
         }.bind(this)
       };
@@ -269,37 +268,37 @@ define([
         MailPoet.Modal.panel(panelParams);
       }
     },
-    templateContext: function () {
+    templateContext: function templateContext() {
       return {
         model: this.model.toJSON()
       };
     },
-    close: function () {
+    close: function close() {
       this.destroy();
     },
-    changeField: function (field, event) {
+    changeField: function changeField(field, event) {
       this.model.set(field, jQuery(event.target).val());
     },
-    changePixelField: function (field, event) {
+    changePixelField: function changePixelField(field, event) {
       this.changeFieldWithSuffix(field, event, 'px');
     },
-    changeFieldWithSuffix: function (field, event, suffix) {
+    changeFieldWithSuffix: function changeFieldWithSuffix(field, event, suffix) {
       this.model.set(field, jQuery(event.target).val() + suffix);
     },
-    changeBoolField: function (field, event) {
+    changeBoolField: function changeBoolField(field, event) {
       this.model.set(field, (jQuery(event.target).val() === 'true'));
     },
-    changeBoolCheckboxField: function (field, event) {
+    changeBoolCheckboxField: function changeBoolCheckboxField(field, event) {
       this.model.set(field, (!!jQuery(event.target).prop('checked')));
     },
-    changeColorField: function (field, event) {
+    changeColorField: function changeColorField(field, event) {
       var value = jQuery(event.target).val();
       if (value === '') {
         value = 'transparent';
       }
       this.model.set(field, value);
     },
-    onBeforeDestroy: function () {
+    onBeforeDestroy: function onBeforeDestroy() {
       MailPoet.Modal.close();
       this.model.trigger('stopEditing');
     }
@@ -309,8 +308,8 @@ define([
     className: 'mailpoet_widget mailpoet_droppable_block mailpoet_droppable_widget',
     behaviors: {
       DraggableBehavior: {
-        drop: function () {
-          throw 'Unsupported operation';
+        drop: function drop() {
+          throw new Error('Unsupported operation');
         }
       }
     }
