@@ -10,7 +10,7 @@ class ImportTemplate extends React.Component {
 
   saveTemplate(saveTemplate) {
     const template = saveTemplate;
-    const {beforeImport, afterImport} = this.props;
+    const { beforeImport, afterImport } = this.props;
 
     // Stringify to enable transmission of primitive non-string value types
     if (!_.isUndefined(template.body)) {
