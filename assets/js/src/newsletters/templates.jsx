@@ -5,7 +5,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import HelpTooltip from 'help-tooltip.jsx';
 
-const editorURL = id => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
+const getEditorUrl = id => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
 
 const templatesCategories = [
   {
@@ -424,7 +424,7 @@ class NewsletterTemplates extends React.Component {
 
   afterTemplateSelect(success, id) {
     if (success) {
-      window.location = editorURL(id);
+      window.location = getEditorUrl(id);
     } else {
       this.setState({ loading: false });
     }
