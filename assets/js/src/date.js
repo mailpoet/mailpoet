@@ -155,16 +155,14 @@ define('date',
           if (escapeToken === true) {
             convertedFormat.push('[' + token + ']');
             escapeToken = false;
-          } else {
-            if (token === '\\') {
+          } else if (token === '\\') {
             // Slash escapes the next symbol to be treated as literal
-              escapeToken = true;
-              continue;
-            } else if (replacements[token] !== undefined) {
-              convertedFormat.push(replacements[token]);
-            } else {
-              convertedFormat.push('[' + token + ']');
-            }
+            escapeToken = true;
+            continue;
+          } else if (replacements[token] !== undefined) {
+            convertedFormat.push(replacements[token]);
+          } else {
+            convertedFormat.push('[' + token + ']');
           }
         }
 

@@ -559,10 +559,8 @@ define('modal', ['mailpoet', 'jquery'],
               .subpanels[(this.subpanels.length - 1)]
               .onSuccess(this.subpanels[(this.subpanels.length - 1)].data);
           }
-        } else {
-          if (this.options.onSuccess !== null) {
-            this.options.onSuccess(this.options.data);
-          }
+        } else if (this.options.onSuccess !== null) {
+          this.options.onSuccess(this.options.data);
         }
         this.close();
 
@@ -575,10 +573,8 @@ define('modal', ['mailpoet', 'jquery'],
               .subpanels[(this.subpanels.length - 1)]
               .onCancel(this.subpanels[(this.subpanels.length - 1)].data);
           }
-        } else {
-          if (this.options.onCancel !== null) {
-            this.options.onCancel(this.options.data);
-          }
+        } else if (this.options.onCancel !== null) {
+          this.options.onCancel(this.options.data);
         }
         this.close();
 

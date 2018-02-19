@@ -582,11 +582,9 @@ WysijaForm = {
 
     if (window.isRtl) {
       if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = 0;
-    } else {
-      if (WysijaForm.toolbar.left === null) {
-        WysijaForm.toolbar.left =
+    } else if (WysijaForm.toolbar.left === null) {
+      WysijaForm.toolbar.left =
           parseInt(window.$(WysijaForm.options.container).positionedOffset().left);
-      }
     }
     if (WysijaForm.toolbar.x === null) {
       WysijaForm.toolbar.x =

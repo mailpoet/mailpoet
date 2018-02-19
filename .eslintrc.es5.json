@@ -33,7 +33,6 @@
     "wrap-iife": 0,
     "no-plusplus": 0,
     "default-case": 0,
-    "no-lonely-if": 0,
     "brace-style": 0,
     "space-infix-ops": 0
   }

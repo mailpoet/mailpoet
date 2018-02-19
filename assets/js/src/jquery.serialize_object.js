@@ -80,21 +80,16 @@ define(
               : val;
             cur = cur[key];
           }
+        } else if ($.isArray(obj[key])) {
+          // val is already an array, so push on the next value.
+          obj[key].push(val);
+        } else if (obj[key] !== undefined) {
+          // val isn't an array, but since a second value has been specified,
+          // convert val into an array.
+          obj[key] = [obj[key], val];
         } else {
-          // Simple key, even simpler rules, since only scalars and shallow
-          // arrays are allowed.
-
-          if ($.isArray(obj[key])) {
-            // val is already an array, so push on the next value.
-            obj[key].push(val);
-          } else if (obj[key] !== undefined) {
-            // val isn't an array, but since a second value has been specified,
-            // convert val into an array.
-            obj[key] = [obj[key], val];
-          } else {
-            // val is a scalar.
-            obj[key] = val;
-          }
+          // val is a scalar.
+          obj[key] = val;
         }
       });
 
