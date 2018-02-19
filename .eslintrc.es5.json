@@ -37,7 +37,6 @@
     "no-mixed-operators": 0,
     "eqeqeq": 0,
     "max-len": 0,
-    "global-require": 0,
     "brace-style": 0,
     "space-infix-ops": 0
   }
