@@ -67,15 +67,15 @@ const Tabs = ({ tabs, selected, select }) => (
 
 /**
  * props = {
- *   index, id, newsletterId, name, description,
- *   thumbnail, readonly, setLoading, afterDelete
+ *   index, id, newsletterId, name, description, thumbnail, readonly, 
+ *   beforeDelete, afterDelete, beforeSelect, afterSelect 
  * }
  */
 class TemplateBox extends React.Component {
   onDelete() {
-    const { id, name, setLoading, afterDelete } = this.props;
+    const { id, name, beforeDelete, afterDelete } = this.props;
     const onConfirm = () => {
-      setLoading(true);
+      beforeDelete();
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'newsletterTemplates',
@@ -92,7 +92,7 @@ class TemplateBox extends React.Component {
             { scroll: true }
           );
         }
-        afterDelete(false, id);
+        afterDelete(false);
       });
     };
     confirmAlert({
@@ -114,14 +114,14 @@ class TemplateBox extends React.Component {
   }
 
   onSelect() {
-    const { newsletterId, name, setLoading } = this.props;
+    const { newsletterId, name, beforeSelect } = this.props;
     let body = this.props.body;
 
     if (!_.isUndefined(body)) {
       body = JSON.stringify(body);
     }
 
-    setLoading(true);
+    beforeSelect();
 
     MailPoet.trackEvent('Emails > Template selected', {
       'MailPoet Free version': window.mailpoet_version,
@@ -137,7 +137,7 @@ class TemplateBox extends React.Component {
         body: body,
       },
     }).done((response) => {
-      window.location = editorURL(response.data.id);
+      afterSelect(true, response.data.id);
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -145,7 +145,7 @@ class TemplateBox extends React.Component {
           { scroll: true }
         );
       }
-      setLoading(false);
+      afterSelect(false);
     });
   }
 
@@ -201,12 +201,13 @@ class TemplateBox extends React.Component {
 }
 
 /**
- * props = {setLoading, afterImport}
+ * props = {beforeImport, afterImport}
  */
 class ImportTemplate extends React.Component {
 
   saveTemplate(saveTemplate) {
     const template = saveTemplate;
+    const {beforeImport, afterImport} = this.props;
 
     // Stringify to enable transmission of primitive non-string value types
     if (!_.isUndefined(template.body)) {
@@ -233,14 +234,15 @@ class ImportTemplate extends React.Component {
 
     template.categories = JSON.stringify(template.categories);
 
-    this.props.setLoading(true);
+
+    beforeImport();
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletterTemplates',
       action: 'save',
       data: template,
     }).done((response) => {
-      this.props.afterImport(true, response.data);
+      afterImport(true, response.data);
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -248,7 +250,7 @@ class ImportTemplate extends React.Component {
           { scroll: true }
         );
       }
-      this.props.afterImport(false);
+      afterImport(false);
     });
   }
 
@@ -420,6 +422,14 @@ class NewsletterTemplates extends React.Component {
     });
   }
 
+  afterTemplateSelect(success, id) {
+    if (success) {
+      window.location = editorURL(id);
+    } else {
+      this.setState({ loading: false });
+    }
+  }
+
   afterTemplateImport(success, template) {
     if (success) {
       this.addTemplate(template);
@@ -433,6 +443,7 @@ class NewsletterTemplates extends React.Component {
 
   render() {
     const afterTemplateDelete = this.afterTemplateDelete.bind(this);
+    const afterTemplateSelect = this.afterTemplateSelect.bind(this);
     const afterTemplateImport = this.afterTemplateImport.bind(this);
 
     const tabs = templatesCategories.concat({
@@ -445,8 +456,8 @@ class NewsletterTemplates extends React.Component {
     if (selectedTab === 'import') {
       content = (
         <ImportTemplate
+          beforeImport={() => this.setState({ loading: true })}
           afterImport={afterTemplateImport}
-          setLoading={value => this.setState({ loading: value })}
         />
       );
     } else {
@@ -459,8 +470,10 @@ class NewsletterTemplates extends React.Component {
             key={index}
             index={index}
             newsletterId={this.props.params.id}
+            beforeDelete={() => this.setState({ loading: true })}
             afterDelete={afterTemplateDelete}
-            setLoading={value => this.setState({ loading: value })}
+            beforeSelect={() => this.setState({ loading: true })}
+            afterSelect={afterTemplateSelect}
             {...template}
           />
         ));
