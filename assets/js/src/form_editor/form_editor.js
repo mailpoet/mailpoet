@@ -134,7 +134,7 @@ Object.extend(document, (function () {
       return document;
     }
   };
-})());
+}()));
 
 Observable = (function () {
   function getEventName(nameA, namespace) {
@@ -188,7 +188,7 @@ Observable = (function () {
       delete this.handlers[selector];
     }
   };
-})();
+}());
 
 // override droppables
 Object.extend(window.Droppables, {
