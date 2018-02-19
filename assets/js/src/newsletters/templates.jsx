@@ -463,7 +463,11 @@ class NewsletterTemplates extends React.Component {
     } else {
       let templates = this.state.templates[this.state.selectedTab] || [];
       if (templates.length === 0) {
-        templates = <p>{MailPoet.I18n.t('noTemplates')}</p>;
+        if (this.state.loading) {
+          templates = null;
+        } else {
+          templates = <p>{MailPoet.I18n.t('noTemplates')}</p>;
+        }
       } else {
         templates = templates.map((template, index) => (
           <TemplateBox
