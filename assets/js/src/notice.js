@@ -151,6 +151,9 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disab
         case 'error':
           this.element.addClass('notice notice-error');
           break;
+        default:
+          this.element.addClass('notice');
+          break;
       }
 
       // make the notice appear

@@ -340,6 +340,7 @@ define('modal', ['mailpoet', 'jquery'],
             }
             jQuery('#mailpoet_panel').css({ minHeight: 'auto' });
             break;
+          default: throw new Error('Incorrect type');
         }
 
         return this;
@@ -376,6 +377,7 @@ define('modal', ['mailpoet', 'jquery'],
               }
             }.bind(this), 0);
             break;
+          default: throw new Error('Incorrect type');
         }
 
         return this;
