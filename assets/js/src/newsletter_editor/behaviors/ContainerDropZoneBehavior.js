@@ -20,7 +20,9 @@ define([
       columnLimit: 3
     },
     onRender: function () {
-      var dragAndDropDisabled = _.isObject(this.view.options.renderOptions) && this.view.options.renderOptions.disableDragAndDrop === true;
+      var dragAndDropDisabled =
+        _.isObject(this.view.options.renderOptions)
+        && this.view.options.renderOptions.disableDragAndDrop === true;
       if (!dragAndDropDisabled) {
         this.addDropZone();
       }
@@ -60,8 +62,11 @@ define([
           // 1. Compute actual location of the mouse within the container
           // 2. Check if insertion is regular (between blocks) or special (with container insertion)
           // 3a. If insertion is regular, compute position where insertion should happen
-          // 3b. If insertion is special, compute position (which side) and which cell the insertion belongs to
-          // 4. If insertion at that position is not visualized, display position visualization there, remove other visualizations from this container
+          // 3b. If insertion is special,
+          //      compute position (which side) and which cell the insertion belongs to
+          // 4. If insertion at that position is not visualized,
+          //     display position visualization there,
+          //     remove other visualizations from this container
           var dropPosition = that.getDropPosition(
             event.dragmove.pageX,
             event.dragmove.pageY,
@@ -99,7 +104,11 @@ define([
             markerHeight = targetElement.height();
           } else {
             isLastBlockInsertion = that.getCollection().length === dropPosition.index;
-            targetModel = isLastBlockInsertion ? viewCollection.at(dropPosition.index - 1) : viewCollection.at(dropPosition.index);
+            if (isLastBlockInsertion) {
+              targetModel = viewCollection.at(dropPosition.index - 1);
+            } else {
+              targetModel = viewCollection.at(dropPosition.index);
+            }
 
             targetView = that.getChildren().findByModel(targetModel);
             targetElement = targetView.$el;
@@ -156,9 +165,15 @@ define([
           // compensated for to position marker right in the middle of two
           // blocks
           if (dropPosition.position === 'before') {
-            $targetBlock = that.getChildren().findByModel(viewCollection.at(dropPosition.index - 1)).$el;
+            $targetBlock = that
+              .getChildren()
+              .findByModel(viewCollection.at(dropPosition.index - 1))
+              .$el;
           } else {
-            $targetBlock = that.getChildren().findByModel(viewCollection.at(dropPosition.index)).$el;
+            $targetBlock = that
+              .getChildren()
+              .findByModel(viewCollection.at(dropPosition.index))
+              .$el;
           }
           margin = $targetBlock.outerHeight(true) - $targetBlock.outerHeight();
 
@@ -179,7 +194,8 @@ define([
           //     3b1. compute position (which side) and which cell the insertion belongs to
           //     3b2. remove element at that position from the collection
           //     3b3. create a new collection, insert the removed element to it
-          //     3b4. insert the droppable model at the start or end of the new collection, depending on 3b1. position
+          //     3b4. insert the droppable model at the start or end of the new collection,
+          //            depending on 3b1. position
           //     3b5. insert the new collection into the old collection to cell from 3b1.
           // 4. Perform cleanup actions
 
@@ -260,7 +276,11 @@ define([
             viewCollection.add(tempCollection, { at: dropPosition.index });
 
             // Call post add actions
-            droppedView = that.getChildren().findByModel(tempCollection).children.findByModel(droppableModel);
+            droppedView = that
+              .getChildren()
+              .findByModel(tempCollection)
+              .children
+              .findByModel(droppableModel);
           }
 
           // Call post add actions
@@ -331,11 +351,17 @@ define([
         SPECIAL_AREA_INSERTION_WIDTH = 0.5;
       }
 
-      if (relativeOffset <= elementLength * SPECIAL_AREA_INSERTION_WIDTH && (unsafe || canAcceptSpecialInsertion)) {
+      if (
+        relativeOffset <= elementLength * SPECIAL_AREA_INSERTION_WIDTH
+        && (unsafe || canAcceptSpecialInsertion)
+      ) {
         insertionType = 'special';
         position = 'before';
         index = this._computeSpecialIndex(eventX, eventY);
-      } else if (relativeOffset > elementLength * (1 - SPECIAL_AREA_INSERTION_WIDTH) && (unsafe || canAcceptSpecialInsertion)) {
+      } else if (
+        relativeOffset > elementLength * (1 - SPECIAL_AREA_INSERTION_WIDTH)
+        && (unsafe || canAcceptSpecialInsertion)
+      ) {
         insertionType = 'special';
         position = 'after';
         index = this._computeSpecialIndex(eventX, eventY);

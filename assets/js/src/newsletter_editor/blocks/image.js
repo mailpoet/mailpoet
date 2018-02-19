@@ -357,7 +357,10 @@ define([
             function (size) { return Math.abs(targetImageWidth - sizes[size].width); }
           );
           var bestWidth = sizes[_.first(increasingByWidthDifference)].width;
-          var imagesOfBestWidth = _.filter(_.values(sizes), function (size) { return size.width === bestWidth; });
+          var imagesOfBestWidth = _.filter(
+            _.values(sizes),
+            function (size) { return size.width === bestWidth; }
+          );
 
           // Maximize the height if there are multiple images with same width
           var mainSize = _.max(imagesOfBestWidth, function (size) { return size.height; });

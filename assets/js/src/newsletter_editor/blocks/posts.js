@@ -65,7 +65,6 @@ define([
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
         featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
-        // imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
         showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -95,8 +94,14 @@ define([
     },
     initialize: function () {
       var POST_REFRESH_DELAY_MS = 500;
-      var refreshAvailablePosts = _.debounce(this.fetchAvailablePosts.bind(this), POST_REFRESH_DELAY_MS);
-      var refreshTransformedPosts = _.debounce(this._refreshTransformedPosts.bind(this), POST_REFRESH_DELAY_MS);
+      var refreshAvailablePosts = _.debounce(
+        this.fetchAvailablePosts.bind(this),
+        POST_REFRESH_DELAY_MS
+      );
+      var refreshTransformedPosts = _.debounce(
+        this._refreshTransformedPosts.bind(this),
+        POST_REFRESH_DELAY_MS
+      );
 
       // Attach Radio.Requests API primarily for highlighting
       _.extend(this, Radio.Requests);

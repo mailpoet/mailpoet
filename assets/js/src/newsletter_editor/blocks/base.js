@@ -26,7 +26,12 @@ define([
       });
     },
     _getDefaults: function getDefaults(blockDefaults, configDefaults) {
-      var defaults = (_.isObject(configDefaults) && _.isFunction(configDefaults.toJSON)) ? configDefaults.toJSON() : configDefaults;
+      var defaults;
+      if (_.isObject(configDefaults) && _.isFunction(configDefaults.toJSON)) {
+        defaults = configDefaults.toJSON();
+      } else {
+        defaults = configDefaults;
+      }
 
       // Patch the resulting JSON object and fix it's constructors to be Object.
       // Otherwise SuperModel interprets it not as a simpleObject
@@ -144,7 +149,10 @@ define([
       }.bind(this));
     },
     duplicateBlock: function duplicateBlock() {
-      this.model.collection.add(this.model.toJSON(), { at: this.model.collection.findIndex(this.model) });
+      this.model.collection.add(
+        this.model.toJSON(),
+        { at: this.model.collection.findIndex(this.model) }
+      );
     },
     transitionIn: function transitionIn() {
       return this._transition('slideDown', 'fadeIn', 'easeOut');

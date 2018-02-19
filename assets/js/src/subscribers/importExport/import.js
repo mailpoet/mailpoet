@@ -211,7 +211,8 @@ define(
                         if (emailColumnPosition === null
                           && window.emailRegex.test(emailAddress)) {
                           emailColumnPosition = column;
-                          parsedEmails[emailAddress] = true; // add current e-mail to an object index
+                          // add current e-mail to an object index
+                          parsedEmails[emailAddress] = true;
                           rowData[column] = emailAddress;
                           processedSubscribers[emailAddress] = rowData;
                         }
@@ -763,7 +764,12 @@ define(
                 var columnId = jQuery(element).data('column-id');
                 var validationRule = jQuery(element).data('validation-rule');
                 jQuery(element).val(columnId).trigger('change');
-                return { id: columnId, index: elementIndex, validationRule: validationRule, element: element };
+                return {
+                  id: columnId,
+                  index: elementIndex,
+                  validationRule: validationRule,
+                  element: element
+                };
               });
             // iterate through the object of mailpoet columns
             jQuery.map(window.mailpoetColumns, function (column) {
@@ -774,7 +780,10 @@ define(
               var allowedDateFormats;
               // check if the column id matches the selected id of one of the
               // subscriber's data columns
-              var matchedColumn = _.find(displayedColumns, function (data) { return data.id === column.id; });
+              var matchedColumn = _.find(
+                displayedColumns,
+                function (data) { return data.id === column.id; }
+               );
               // EMAIL filter: if the first value in the column doesn't have a valid
               // email, hide the next button
               if (column.id === 'email') {
@@ -974,7 +983,8 @@ define(
                       .each(function () {
                         var element = this;
                         var elementId = jQuery(element).val();
-                        // if another column has the same value and it's not an 'ignore', prompt user
+                        // if another column has the same value and it's not an 'ignore',
+                        // prompt user
                         if (elementId === selectedOptionId
                             && elementId !== 'ignore') {
                           if (confirm(MailPoet.I18n.t('selectedValueAlreadyMatched') + ' ' + MailPoet.I18n.t('confirmCorrespondingColumn'))) {
@@ -1057,7 +1067,8 @@ define(
                   clickImportResults.created += response.data.created;
                   clickImportResults.updated += response.data.updated;
                   clickImportResults.segments = response.data.segments;
-                  clickImportResults.added_to_segment_with_welcome_notification = response.data.added_to_segment_with_welcome_notification;
+                  clickImportResults.added_to_segment_with_welcome_notification =
+                    response.data.added_to_segment_with_welcome_notification;
                   addQueue.run();
                 }).fail(function (response) {
                   MailPoet.Modal.loading(false);
@@ -1076,7 +1087,11 @@ define(
 
             queue.onComplete(function () {
               MailPoet.Modal.loading(false);
-              if (clickImportResults.errors.length > 0 && !clickImportResults.updated && !clickImportResults.created) {
+              if (
+                clickImportResults.errors.length > 0
+                && !clickImportResults.updated
+                && !clickImportResults.created
+              ) {
                 MailPoet.Notice.error(_.flatten(clickImportResults.errors)
                 );
               }
@@ -1134,7 +1149,8 @@ define(
                   .replace('%2$s', '"' + window.importData.step2.segments.join('", "') + '"')
                   : false,
             no_action: (!window.importData.step2.created && !window.importData.step2.updated),
-            added_to_segment_with_welcome_notification: window.importData.step2.added_to_segment_with_welcome_notification
+            added_to_segment_with_welcome_notification:
+              window.importData.step2.added_to_segment_with_welcome_notification
           };
 
           jQuery('#subscribers_data_import_results')

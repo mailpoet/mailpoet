@@ -5,7 +5,7 @@ define(
     'mailpoet',
     'handlebars'
   ],
- function (// eslint-disable-line func-names
+ function exportSubscribers(
    _,
    jQuery,
    MailPoet,
@@ -14,7 +14,7 @@ define(
    if (!jQuery('#mailpoet_subscribers_export').length) {
      return;
    }
-   jQuery(document).ready(function () { // eslint-disable-line func-names
+   jQuery(document).ready(function documentReady() {
      var segmentsContainerElement;
      var subscriberFieldsContainerElement;
      var nextStepButton;
@@ -43,7 +43,7 @@ define(
      segmentsContainerElement = jQuery('#export_lists');
      subscriberFieldsContainerElement = jQuery('#export_columns');
      nextStepButton = jQuery('a.mailpoet_export_process');
-     renderSegmentsAndFields = function (container, data) { // eslint-disable-line func-names
+     renderSegmentsAndFields = function renderSegmentsFields(container, data) {
        if (container.data('select2')) {
          container
          .html('')
@@ -53,18 +53,18 @@ define(
        .select2({
          data: data,
          width: '20em',
-         templateResult: function (item) { // eslint-disable-line func-names
+         templateResult: function templateResult(item) {
            return (item.subscriberCount > 0)
             ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
             : item.name;
          },
-         templateSelection: function (item) { // eslint-disable-line func-names
+         templateSelection: function templateSelection(item) {
            return (item.subscriberCount > 0)
             ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
             : item.name;
          }
        })
-       .on('select2:selecting', function (selectEvent) { // eslint-disable-line func-names
+       .on('select2:selecting', function onSelect2Selecting(selectEvent) {
          var selectElement = this;
          var selectedOptionId = selectEvent.params.args.data.id;
          var fieldsToExclude = [
@@ -78,7 +78,7 @@ define(
              jQuery(selectElement).val('').trigger('change');
            } else {
              allOptions = [];
-             _.each(container.find('option'), function (field) { // eslint-disable-line func-names
+             _.each(container.find('option'), function eachOption(field) {
                if (!_.contains(fieldsToExclude, field.value)) {
                  allOptions.push(field.value);
                }
@@ -88,7 +88,7 @@ define(
            jQuery(selectElement).select2('close');
          }
        })
-       .on('change', function () { // eslint-disable-line func-names
+       .on('change', function onCHange() {
          if ((window.exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
           ||
           (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
@@ -111,7 +111,7 @@ define(
        'list_status'
      ]).trigger('change');
 
-     nextStepButton.click(function () { // eslint-disable-line func-names
+     nextStepButton.click(function nextClick() {
        var exportFormat;
        if (jQuery(this).hasClass('button-disabled')) {
          return;
@@ -127,9 +127,9 @@ define(
            segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
            subscriber_fields: subscriberFieldsContainerElement.val()
          })
-       }).always(function () { // eslint-disable-line func-names
+       }).always(function always() {
          MailPoet.Modal.loading(false);
-       }).done(function (response) { // eslint-disable-line func-names
+       }).done(function done(response) {
          var resultMessage = MailPoet.I18n.t('exportMessage')
          .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
          .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
@@ -141,10 +141,10 @@ define(
            'File Format': exportFormat,
            'MailPoet Free version': window.mailpoet_version
          });
-       }).fail(function (response) { // eslint-disable-line func-names
+       }).fail(function fail(response) {
          if (response.errors.length > 0) {
            MailPoet.Notice.error(
-              response.errors.map(function (error) { return error.message; }), // eslint-disable-line func-names
+              response.errors.map(function mapError(error) { return error.message; }),
               { scroll: true }
             );
          }

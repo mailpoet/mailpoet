@@ -1,7 +1,7 @@
 'use strict';
 
 define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disable-line func-names
-  /*= =================================================================================================
+  /*= ==========================================================================================
 
       MailPoet Notice:
 
@@ -22,7 +22,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disab
           // system message (static: true)
           MailPoet.Notice.system('You need to updated ASAP!');
 
-  ================================================================================================== */
+  =========================================================================================== */
   var MailPoet = mp;
   MailPoet.Notice = {
     version: 1.0,

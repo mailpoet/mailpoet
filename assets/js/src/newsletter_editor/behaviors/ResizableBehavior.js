@@ -14,7 +14,8 @@ define([
     defaults: {
       elementSelector: null,
       resizeHandleSelector: true, // true will use edges of the element itself
-      transformationFunction: function transformationFunction(y) { return y; },  // for blocks that use the default onResize function
+      // for blocks that use the default onResize function
+      transformationFunction: function transformationFunction(y) { return y; },
       minLength: 0,
       maxLength: Infinity,
       modelField: 'styles.block.height',
@@ -37,8 +38,13 @@ define([
       }
     },
     attachResize: function () { // eslint-disable-line func-names
-      var domElement = (this.options.elementSelector === null) ? this.view.$el.get(0) : this.view.$(this.options.elementSelector).get(0);
+      var domElement;
       var that = this;
+      if (this.options.elementSelector === null) {
+        domElement = this.view.$el.get(0);
+      } else {
+        domElement = this.view.$(this.options.elementSelector).get(0);
+      }
       interact(domElement).resizable({
         // axis: 'y',
         edges: {

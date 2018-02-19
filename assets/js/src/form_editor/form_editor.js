@@ -19,7 +19,31 @@ function info(value) {
   if (!(window.console && console.log)) {
     (function () {
       var noop = function () {};
-      var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
+      var methods = [
+        'assert',
+        'clear',
+        'count',
+        'debug',
+        'dir',
+        'dirxml',
+        'error',
+        'exception',
+        'group',
+        'groupCollapsed',
+        'groupEnd',
+        'info',
+        'log',
+        'markTimeline',
+        'profile',
+        'profileEnd',
+        'markTimeline',
+        'table',
+        'time',
+        'timeEnd',
+        'timeStamp',
+        'trace',
+        'warn'
+      ];
       var length = methods.length;
       var console = {};
       window.console = {};
@@ -186,7 +210,9 @@ Object.extend(window.Droppables, {
     if (this.last_active && this.last_active !== drop) this.deactivate(this.last_active, element);
     if (drop) {
       window.Position.within(drop.element, point[0], point[1]);
-      if (drop.onHover) drop.onHover(element, drop.element, window.Position.overlap(drop.overlap, drop.element));
+      if (drop.onHover) {
+        drop.onHover(element, drop.element, window.Position.overlap(drop.overlap, drop.element));
+      }
       if (drop !== this.last_active) window.Droppables.activate(drop, element);
     }
   },
@@ -358,11 +384,16 @@ WysijaForm = {
   },
   save: function () {
     var position = 1;
-    var data = {
+    var styles = null;
+    var data;
+    if (window.MailPoet.CodeEditor !== undefined) {
+      styles = window.MailPoet.CodeEditor.getValue();
+    }
+    data = {
       name: window.$F('mailpoet_form_name'),
       settings: window.$('mailpoet_form_settings').serialize(true),
       body: [],
-      styles: (window.MailPoet.CodeEditor !== undefined) ? window.MailPoet.CodeEditor.getValue() : null
+      styles: styles
     };
     // body
     WysijaForm.getBlocks().each(function (b) {
@@ -437,9 +468,12 @@ WysijaForm = {
     var hasSegmentSelection;
     window.$$('a[wysija_unique="1"]').invoke('removeClassName', 'disabled');
 
-    // loop through each unique field already inserted in the editor and disable its toolbar equivalent
+    // loop through each unique field already inserted in the editor
+    // and disable its toolbar equivalent
     window.$$('#' + WysijaForm.options.editor + ' [wysija_unique="1"]').map(function (element) {
-      var field = window.$$('#' + WysijaForm.options.toolbar + ' [wysija_id="' + element.readAttribute('wysija_id') + '"]');
+      var field = window.$$(
+        '#' + WysijaForm.options.toolbar + ' [wysija_id="' + element.readAttribute('wysija_id') + '"]'
+      );
       if (field.length > 0) {
         field.first().addClassName('disabled');
       }
@@ -538,15 +572,30 @@ WysijaForm = {
     });
   },
   initToolbarPosition: function () {
-    if (WysijaForm.toolbar.top === null) WysijaForm.toolbar.top = parseInt(window.$(WysijaForm.options.container).positionedOffset().top);
-    if (WysijaForm.toolbar.y === null) WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top);
+    if (WysijaForm.toolbar.top === null) {
+      WysijaForm.toolbar.top =
+        parseInt(window.$(WysijaForm.options.container).positionedOffset().top);
+    }
+    if (WysijaForm.toolbar.y === null) {
+      WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top);
+    }
 
     if (window.isRtl) {
       if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = 0;
     } else {
-      if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = parseInt(window.$(WysijaForm.options.container).positionedOffset().left);
+      if (WysijaForm.toolbar.left === null) {
+        WysijaForm.toolbar.left =
+          parseInt(window.$(WysijaForm.options.container).positionedOffset().left);
+      }
     }
-    if (WysijaForm.toolbar.x === null) WysijaForm.toolbar.x = parseInt(WysijaForm.toolbar.left + window.$(WysijaForm.options.container).getDimensions().width + 15);
+    if (WysijaForm.toolbar.x === null) {
+      WysijaForm.toolbar.x =
+        parseInt(
+          WysijaForm.toolbar.left
+          + window.$(WysijaForm.options.container).getDimensions().width
+          + 15
+        , 10);
+    }
   },
   setToolbarPosition: function () {
     var position;
@@ -847,7 +896,11 @@ WysijaForm.Block = window.Class.create({
       // setup events for block controls
       this.element.observe('mouseover', function () {
         // special cases where controls shouldn't be displayed
-        if (WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true || WysijaForm.locks.showingTools === true) return;
+        if (
+          WysijaForm.locks.dragging === true
+          || WysijaForm.locks.selectingColor === true
+          || WysijaForm.locks.showingTools === true
+        ) return;
 
         // set block flag
         this.element.addClassName('hover');

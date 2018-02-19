@@ -57,7 +57,9 @@ define([
 
           if (that.options.cloneOriginal === true) {
             // Use substitution instead of a clone
-            tempClone = (_.isFunction(that.options.onDragSubstituteBy)) ? that.options.onDragSubstituteBy(that) : undefined;
+            if (_.isFunction(that.options.onDragSubstituteBy)) {
+              tempClone = that.options.onDragSubstituteBy(that);
+            }
             // Or use a clone
             clone = tempClone || event.target.cloneNode(true);
             jQuery(event.target);
