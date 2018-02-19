@@ -61,7 +61,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
         // Move the progress bar
         var progress = 0;
         if ((result.total !== undefined) && (Number(result.total) !== 0)) {
-          progress = Math.round(Number(result.current) / Number(result.total) * 100);
+          progress = Math.round((Number(result.current) / Number(result.total)) * 100);
         }
         jQuery('#progressbar').progressbar('option', 'value', progress);
         jQuery('#progresslabel').html(progress + '%');

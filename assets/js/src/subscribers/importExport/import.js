@@ -246,8 +246,9 @@ define(
                 processedSubscribers = _.values(processedSubscribers);
                 // if the header options is set, there should be at least
                 // 2 data rows, otherwise at least 1 data row
-                if (processedSubscribers &&
-                  (isHeaderFound && processedSubscribers.length >= 2) ||
+                if (
+                  (processedSubscribers && (isHeaderFound && processedSubscribers.length >= 2))
+                  ||
                   (!isHeaderFound && processedSubscribers.length >= 1)
                 ) {
                   // since we assume that the header line is always present, we need

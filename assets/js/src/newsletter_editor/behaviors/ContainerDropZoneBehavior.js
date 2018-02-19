@@ -418,7 +418,7 @@ define([
         elementDimension = element.outerWidth(true);
       }
 
-      if (eventOffset <= closeOffset + elementDimension / 2) {
+      if (eventOffset <= closeOffset + (elementDimension / 2)) {
         // First half of the element
         return {
           index: index,
