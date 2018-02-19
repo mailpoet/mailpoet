@@ -24,7 +24,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       // set date format
       f = block.hash.format || 'MMM Do, YYYY';
       // check if we passed a timestamp
-      if (parseInt(timestamp, 10) == timestamp) {
+      if (/^\d+$/.test(timestamp)) {
         return window.moment.unix(timestamp).format(f);
       }
       return window.moment.utc(timestamp).format(f);
@@ -40,11 +40,11 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
     switch (operator) {
       case '==':
-        return (v1 == v2) ? options.fn(this) : options.inverse(this);
+        return (v1 == v2) ? options.fn(this) : options.inverse(this); // eslint-disable-line eqeqeq
       case '===':
         return (v1 === v2) ? options.fn(this) : options.inverse(this);
       case '!=':
-        return (v1 != v2) ? options.fn(this) : options.inverse(this);
+        return (v1 != v2) ? options.fn(this) : options.inverse(this); // eslint-disable-line eqeqeq
       case '!==':
         return (v1 !== v2) ? options.fn(this) : options.inverse(this);
       case '<':

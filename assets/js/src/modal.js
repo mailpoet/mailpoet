@@ -418,7 +418,7 @@ define('modal', ['mailpoet', 'jquery'],
         return this;
       },
       focus: function () {
-        if (this.options.type == 'popup') {
+        if (this.options.type === 'popup') {
           jQuery('#mailpoet_' + this.options.type).focus();
         } else {
             // panel and subpanel

@@ -613,7 +613,7 @@ define(
               template: jQuery('#new_segment_template').html()
             });
             jQuery('#new_segment_name').keypress(function (e) {
-              if (e.which == 13) {
+              if (e.which === 13) {
                 jQuery('#new_segment_process').click();
               }
             });

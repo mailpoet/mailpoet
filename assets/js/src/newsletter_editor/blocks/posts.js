@@ -524,10 +524,10 @@ define([
     },
     changeReadMoreType: function (event) {
       var value = jQuery(event.target).val();
-      if (value == 'link') {
+      if (value === 'link') {
         this.$('.mailpoet_posts_read_more_text').removeClass('mailpoet_hidden');
         this.$('.mailpoet_posts_select_button').addClass('mailpoet_hidden');
-      } else if (value == 'button') {
+      } else if (value === 'button') {
         this.$('.mailpoet_posts_read_more_text').addClass('mailpoet_hidden');
         this.$('.mailpoet_posts_select_button').removeClass('mailpoet_hidden');
       }
@@ -535,7 +535,7 @@ define([
     },
     changeDisplayType: function (event) {
       var value = jQuery(event.target).val();
-      if (value == 'titleOnly') {
+      if (value === 'titleOnly') {
         this.$('.mailpoet_posts_title_as_list').removeClass('mailpoet_hidden');
         this.$('.mailpoet_posts_image_full_width_option').addClass('mailpoet_hidden');
         this.$('.mailpoet_posts_image_separator').addClass('mailpoet_hidden');
@@ -562,7 +562,7 @@ define([
     },
     changeTitleFormat: function (event) {
       var value = jQuery(event.target).val();
-      if (value == 'ul') {
+      if (value === 'ul') {
         this.$('.mailpoet_posts_non_title_list_options').addClass('mailpoet_hidden');
 
         this.model.set('titleIsLink', true);
