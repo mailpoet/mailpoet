@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.4.2
+Stable tag: 3.4.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.4.3 - 2018-02-20 =
+* Improved: export includes IP address column and differentiates between global and list subscription status;
+* Improved: email designer checks if "Automatic Latest Content" widget is present in Post Notification emails.
 
 = 3.4.2 - 2018-02-13 =
 * Premium: you can now segment your subscribers by opened/clicked/unopened events;
