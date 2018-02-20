@@ -48,6 +48,11 @@ class NewsletterTemplates extends React.Component {
       selectedTab: '',
     };
     this.templates = {};
+
+    this.addTemplate = this.addTemplate.bind(this);
+    this.afterTemplateDelete = this.afterTemplateDelete.bind(this);
+    this.afterTemplateSelect = this.afterTemplateSelect.bind(this);
+    this.afterTemplateImport = this.afterTemplateImport.bind(this);
   }
 
   componentWillMount() {
@@ -68,7 +73,7 @@ class NewsletterTemplates extends React.Component {
           },
         ];
       }
-      response.data.forEach(this.addTemplate.bind(this));
+      response.data.forEach(this.addTemplate);
       this.sortTemplates();
     }).fail((response) => {
       if (response.errors.length > 0) {
@@ -177,10 +182,6 @@ class NewsletterTemplates extends React.Component {
   }
 
   render() {
-    const afterTemplateDelete = this.afterTemplateDelete.bind(this);
-    const afterTemplateSelect = this.afterTemplateSelect.bind(this);
-    const afterTemplateImport = this.afterTemplateImport.bind(this);
-
     const tabs = templatesCategories.concat({
       name: 'import',
       label: MailPoet.I18n.t('tabImportTitle'),
@@ -192,7 +193,7 @@ class NewsletterTemplates extends React.Component {
       content = (
         <ImportTemplate
           beforeImport={() => this.setState({ loading: true })}
-          afterImport={afterTemplateImport}
+          afterImport={this.afterTemplateImport}
         />
       );
     } else {
@@ -210,9 +211,9 @@ class NewsletterTemplates extends React.Component {
             index={index}
             newsletterId={this.props.params.id}
             beforeDelete={() => this.setState({ loading: true })}
-            afterDelete={afterTemplateDelete}
+            afterDelete={this.afterTemplateDelete}
             beforeSelect={() => this.setState({ loading: true })}
-            afterSelect={afterTemplateSelect}
+            afterSelect={this.afterTemplateSelect}
             {...template}
           />
         ));

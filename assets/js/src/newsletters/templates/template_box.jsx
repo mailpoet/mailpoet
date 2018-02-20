@@ -10,6 +10,12 @@ import { confirmAlert } from 'react-confirm-alert';
  * }
  */
 class TemplateBox extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onPreview = this.onPreview.bind(this);
+    this.onDelete = this.onDelete.bind(this);
+    this.onSelect = this.onSelect.bind(this);
+  }
   onDelete() {
     const { id, name, beforeDelete, afterDelete } = this.props;
     const onConfirm = () => {
@@ -89,20 +95,17 @@ class TemplateBox extends React.Component {
 
   render() {
     const { index, name, thumbnail, description, readonly } = this.props;
-    const onDelete = this.onDelete.bind(this);
-    const onPreview = this.onPreview.bind(this);
-    const onSelect = this.onSelect.bind(this);
 
     const deleteLink = (
       <div className="mailpoet_delete">
-        <a href="javascript:;" onClick={onDelete}>{MailPoet.I18n.t('delete')}</a>
+        <a href="javascript:;" onClick={this.onDelete}>{MailPoet.I18n.t('delete')}</a>
       </div>
     );
 
     let preview = '';
     if (typeof thumbnail === 'string' && thumbnail.length > 0) {
       preview = (
-        <a href="javascript:;" onClick={onPreview}>
+        <a href="javascript:;" onClick={this.onPreview}>
           <img src={thumbnail} />
           <div className="mailpoet_overlay"></div>
         </a>
@@ -123,13 +126,13 @@ class TemplateBox extends React.Component {
         <div className="mailpoet_actions">
           <a
             className="button button-secondary"
-            onClick={onPreview}
+            onClick={this.onPreview}
           >{MailPoet.I18n.t('preview')}</a>
             &nbsp;
           <a
             className="button button-primary"
             data-automation-id={`select_template_${index}`}
-            onClick={onSelect}
+            onClick={this.onSelect}
             > {MailPoet.I18n.t('select')} </a>
         </div>
         { readonly === '1' ? false : deleteLink }

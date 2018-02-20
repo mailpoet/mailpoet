@@ -7,6 +7,10 @@ import HelpTooltip from 'help-tooltip.jsx';
  * props = {beforeImport, afterImport}
  */
 class ImportTemplate extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
   saveTemplate(saveTemplate) {
     const template = saveTemplate;
@@ -82,7 +86,6 @@ class ImportTemplate extends React.Component {
     return true;
   }
   render() {
-    const handleSubmit = this.handleSubmit.bind(this);
     return (
       <div>
         <h2>
@@ -93,7 +96,7 @@ class ImportTemplate extends React.Component {
             className="tooltip-help-import-template"
           />
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={this.handleSubmit}>
           <input type="file" placeholder={MailPoet.I18n.t('selectJsonFileToUpload')} ref="templateFile" />
           <p className="submit">
             <input
