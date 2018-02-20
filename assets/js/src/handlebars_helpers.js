@@ -24,7 +24,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       // set date format
       f = block.hash.format || 'MMM Do, YYYY';
       // check if we passed a timestamp
-      if (/^\d+$/.test(timestamp)) {
+      if (/^\s*\d+\s*$/.test(timestamp)) {
         return window.moment.unix(timestamp).format(f);
       }
       return window.moment.utc(timestamp).format(f);

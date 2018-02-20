@@ -46,8 +46,10 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
         jQuery('#logger').append('<span class="error_msg">' + MailPoet.MP2Migrator.fatal_error + '</span>' + '<br />\n');
       }).always(function () {
         if (MailPoet.MP2Migrator.is_logging) {
-          MailPoet.MP2Migrator.displayLogs_timeout
-            = setTimeout(MailPoet.MP2Migrator.displayLogs, 1000);
+          MailPoet.MP2Migrator.displayLogs_timeout = setTimeout(
+            MailPoet.MP2Migrator.displayLogs,
+            1000
+          );
         }
       });
     },
@@ -71,8 +73,10 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
           jQuery('#logger-container').show();
         }
         if (MailPoet.MP2Migrator.is_logging) {
-          MailPoet.MP2Migrator.updateProgressbar_timeout
-            = setTimeout(MailPoet.MP2Migrator.updateProgressbar, 1000);
+          MailPoet.MP2Migrator.updateProgressbar_timeout = setTimeout(
+            MailPoet.MP2Migrator.updateProgressbar,
+            1000
+          );
         }
       });
     },

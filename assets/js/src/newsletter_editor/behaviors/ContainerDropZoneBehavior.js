@@ -20,9 +20,10 @@ define([
       columnLimit: 3
     },
     onRender: function () {
-      var dragAndDropDisabled =
+      var dragAndDropDisabled = (
         _.isObject(this.view.options.renderOptions)
-        && this.view.options.renderOptions.disableDragAndDrop === true;
+        && this.view.options.renderOptions.disableDragAndDrop === true
+      );
       if (!dragAndDropDisabled) {
         this.addDropZone();
       }
