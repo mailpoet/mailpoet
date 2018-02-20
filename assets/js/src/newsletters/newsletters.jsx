@@ -10,7 +10,7 @@ import NewsletterTemplates from 'newsletters/templates.jsx';
 import NewsletterSend from 'newsletters/send.jsx';
 import NewsletterTypeStandard from 'newsletters/types/standard.jsx';
 import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx';
-import AutomaticEmailsEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
+import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
 import NewsletterListStandard from 'newsletters/listings/standard.jsx';
 import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
 import NewsletterListNotification from 'newsletters/listings/notification.jsx';
@@ -32,7 +32,7 @@ const getAutomaticEmailsRoutes = () => {
   return _.map(window.mailpoet_automatic_emails, automaticEmail => ({
     path: `new/${automaticEmail.slug}`,
     name: automaticEmail.slug,
-    component: AutomaticEmailsEventsList,
+    component: AutomaticEmailEventsList,
     data: {
       automaticEmail: automaticEmail,
     },

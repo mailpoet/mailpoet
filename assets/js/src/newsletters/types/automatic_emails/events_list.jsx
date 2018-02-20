@@ -3,7 +3,7 @@ import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadc
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 
-class AutomaticEmailsEventsList extends React.Component {
+class AutomaticEmailEventsList extends React.Component {
   constructor(props) {
     super(props);
     this.automaticEmail = this.props.route.data.automaticEmail;
@@ -90,4 +90,4 @@ class AutomaticEmailsEventsList extends React.Component {
   }
 }
 
-module.exports = AutomaticEmailsEventsList;
+module.exports = AutomaticEmailEventsList;
