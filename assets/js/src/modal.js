@@ -340,6 +340,7 @@ define('modal', ['mailpoet', 'jquery'],
             }
             jQuery('#mailpoet_panel').css({ minHeight: 'auto' });
             break;
+          default: throw new Error('Incorrect type');
         }
 
         return this;
@@ -376,6 +377,7 @@ define('modal', ['mailpoet', 'jquery'],
               }
             }.bind(this), 0);
             break;
+          default: throw new Error('Incorrect type');
         }
 
         return this;
@@ -418,7 +420,7 @@ define('modal', ['mailpoet', 'jquery'],
         return this;
       },
       focus: function () {
-        if (this.options.type == 'popup') {
+        if (this.options.type === 'popup') {
           jQuery('#mailpoet_' + this.options.type).focus();
         } else {
             // panel and subpanel
@@ -555,12 +557,12 @@ define('modal', ['mailpoet', 'jquery'],
       success: function () {
         if (this.subpanels.length > 0) {
           if (this.subpanels[(this.subpanels.length - 1)].onSuccess !== undefined) {
-            this.subpanels[(this.subpanels.length - 1)].onSuccess(this.subpanels[(this.subpanels.length - 1)].data);
+            this
+              .subpanels[(this.subpanels.length - 1)]
+              .onSuccess(this.subpanels[(this.subpanels.length - 1)].data);
           }
-        } else {
-          if (this.options.onSuccess !== null) {
-            this.options.onSuccess(this.options.data);
-          }
+        } else if (this.options.onSuccess !== null) {
+          this.options.onSuccess(this.options.data);
         }
         this.close();
 
@@ -569,12 +571,12 @@ define('modal', ['mailpoet', 'jquery'],
       cancel: function () {
         if (this.subpanels.length > 0) {
           if (this.subpanels[(this.subpanels.length - 1)].onCancel !== undefined) {
-            this.subpanels[(this.subpanels.length - 1)].onCancel(this.subpanels[(this.subpanels.length - 1)].data);
+            this
+              .subpanels[(this.subpanels.length - 1)]
+              .onCancel(this.subpanels[(this.subpanels.length - 1)].data);
           }
-        } else {
-          if (this.options.onCancel !== null) {
-            this.options.onCancel(this.options.data);
-          }
+        } else if (this.options.onCancel !== null) {
+          this.options.onCancel(this.options.data);
         }
         this.close();
 

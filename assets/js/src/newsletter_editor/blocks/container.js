@@ -175,7 +175,9 @@ define([
       }));
 
       // TODO: Look for a better way to do this than here
-      // Sets child container orientation HTML class here, as child CollectionView won't have access to model and will overwrite existing region element instead
+      // Sets child container orientation HTML class here,
+      // as child CollectionView won't have access to model
+      // and will overwrite existing region element instead
       this.$('> .mailpoet_container').attr('class', 'mailpoet_container mailpoet_container_' + this.model.get('orientation'));
     },
     showTools: function () {

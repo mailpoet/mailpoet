@@ -84,7 +84,6 @@ define([
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
         featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
-        // imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
         showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -300,10 +299,10 @@ define([
     },
     changeReadMoreType: function (event) {
       var value = jQuery(event.target).val();
-      if (value == 'link') {
+      if (value === 'link') {
         this.$('.mailpoet_automated_latest_content_read_more_text').removeClass('mailpoet_hidden');
         this.$('.mailpoet_automated_latest_content_select_button').addClass('mailpoet_hidden');
-      } else if (value == 'button') {
+      } else if (value === 'button') {
         this.$('.mailpoet_automated_latest_content_read_more_text').addClass('mailpoet_hidden');
         this.$('.mailpoet_automated_latest_content_select_button').removeClass('mailpoet_hidden');
       }
@@ -312,7 +311,7 @@ define([
     changeDisplayType: function (event) {
       var value = jQuery(event.target).val();
 
-      if (value == 'titleOnly') {
+      if (value === 'titleOnly') {
         this.$('.mailpoet_automated_latest_content_title_as_list').removeClass('mailpoet_hidden');
         this.$('.mailpoet_automated_latest_content_image_full_width_option').addClass('mailpoet_hidden');
         this.$('.mailpoet_automated_latest_content_image_separator').addClass('mailpoet_hidden');
@@ -338,7 +337,7 @@ define([
     },
     changeTitleFormat: function (event) {
       var value = jQuery(event.target).val();
-      if (value == 'ul') {
+      if (value === 'ul') {
         this.$('.mailpoet_automated_latest_content_non_title_list_options').addClass('mailpoet_hidden');
 
         this.model.set('titleIsLink', true);

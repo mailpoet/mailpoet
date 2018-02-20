@@ -10,7 +10,7 @@ define([
   'jquery',
   'newsletter_editor/behaviors/BehaviorsLookup',
   'interact'
-], function (Marionette, _, jQuery, BehaviorsLookup, interact) { // eslint-disable-line func-names
+], function DraggableBehavior(Marionette, _, jQuery, BehaviorsLookup, interact) {
   var BL = BehaviorsLookup;
 
   BL.DraggableBehavior = Marionette.Behavior.extend({
@@ -24,14 +24,14 @@ define([
        *
        * @return Backbone.Model A model that will be passed to the receiver
        */
-      getDropModel: function () { // eslint-disable-line func-names
-        throw "Missing 'drop' function for DraggableBehavior";
+      getDropModel: function getDropModel() {
+        throw new Error("Missing 'drop' function for DraggableBehavior");
       },
 
-      onDrop: function () {}, // eslint-disable-line func-names
-      testAttachToInstance: function () { return true; } // eslint-disable-line func-names
+      onDrop: function onDrop() {},
+      testAttachToInstance: function testAttachToInstance() { return true; }
     },
-    onRender: function () { // eslint-disable-line func-names
+    onRender: function onRender() {
       var that = this;
       var interactable;
 
@@ -47,7 +47,7 @@ define([
         // Scroll when dragging near edges of a window
         autoScroll: true,
 
-        onstart: function (startEvent) { // eslint-disable-line func-names
+        onstart: function onstart(startEvent) {
           var event = startEvent;
           var centerXOffset;
           var centerYOffset;
@@ -57,7 +57,9 @@ define([
 
           if (that.options.cloneOriginal === true) {
             // Use substitution instead of a clone
-            tempClone = (_.isFunction(that.options.onDragSubstituteBy)) ? that.options.onDragSubstituteBy(that) : undefined;
+            if (_.isFunction(that.options.onDragSubstituteBy)) {
+              tempClone = that.options.onDragSubstituteBy(that);
+            }
             // Or use a clone
             clone = tempClone || event.target.cloneNode(true);
             jQuery(event.target);
@@ -86,7 +88,7 @@ define([
           }
         },
         // call this function on every dragmove event
-        onmove: function (event) { // eslint-disable-line func-names
+        onmove: function onmove(event) {
           var target = event.target;
           // keep the dragged position in the data-x/data-y attributes
           var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
@@ -100,7 +102,7 @@ define([
           target.setAttribute('data-x', x);
           target.setAttribute('data-y', y);
         },
-        onend: function (event) { // eslint-disable-line func-names
+        onend: function onend(event) {
           var target = event.target;
           target.style.transform = '';
           target.style.webkitTransform = target.style.transform;
@@ -119,7 +121,7 @@ define([
       })
       .preventDefault('auto')
       .styleCursor(false)
-      .actionChecker(function (pointer, event, action) { // eslint-disable-line func-names
+      .actionChecker(function actionChecker(pointer, event, action) {
         // Disable dragging with right click
         if (event.button !== 0) {
           return null;
@@ -133,7 +135,7 @@ define([
       } else {
         interactable.getDropModel = this.view.getDropFunc();
       }
-      interactable.onDrop = function (opts) { // eslint-disable-line func-names
+      interactable.onDrop = function onDrop(opts) {
         var options = opts;
         if (_.isObject(options)) {
           // Inject Draggable behavior if possible

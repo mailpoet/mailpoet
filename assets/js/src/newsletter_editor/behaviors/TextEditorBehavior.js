@@ -7,7 +7,7 @@ define([
   'backbone.marionette',
   'underscore',
   'newsletter_editor/behaviors/BehaviorsLookup'
-], function (Marionette, _, BehaviorsLookup) { // eslint-disable-line func-names
+], function textEditorBehavior(Marionette, _, BehaviorsLookup) {
   var BL = BehaviorsLookup;
 
   BL.TextEditorBehavior = Marionette.Behavior.extend({
@@ -19,9 +19,9 @@ define([
       invalidElements: 'script',
       blockFormats: 'Paragraph=p',
       plugins: 'link textcolor colorpicker mailpoet_shortcodes',
-      configurationFilter: function (originalConfig) { return originalConfig; } // eslint-disable-line func-names
+      configurationFilter: function configurationFilter(originalConfig) { return originalConfig; }
     },
-    onDomRefresh: function () { // eslint-disable-line func-names
+    onDomRefresh: function onDomRefresh() {
       var that = this;
       if (this.view.disableTextEditor === true) {
         return;
@@ -42,7 +42,7 @@ define([
         relative_urls: false,
         remove_script_host: false,
         convert_urls: true,
-        urlconverter_callback: function (url) { // eslint-disable-line func-names
+        urlconverter_callback: function urlconverterCallback(url) {
           if (url.match(/\[.+\]/g)) {
             // Do not convert URLs with shortcodes
             return url;
@@ -56,27 +56,31 @@ define([
 
         plugins: this.options.plugins,
 
-        setup: function (editor) { // eslint-disable-line func-names
-          editor.on('change', function () { // eslint-disable-line func-names
+        setup: function setup(editor) {
+          editor.on('change', function onChange() {
             that.view.triggerMethod('text:editor:change', editor.getContent());
           });
 
-          editor.on('click', function (e) { // eslint-disable-line func-names
+          editor.on('click', function onClick(e) {
             editor.focus();
             if (that._isActivationClick) {
               editor.selection.setRng(
-                  window.tinymce.dom.RangeUtils.getCaretRangeFromPoint(e.clientX, e.clientY, editor.getDoc())
+                  window.tinymce.dom.RangeUtils.getCaretRangeFromPoint(
+                    e.clientX,
+                    e.clientY,
+                    editor.getDoc()
+                  )
               );
               that._isActivationClick = false;
             }
           });
 
-          editor.on('focus', function () { // eslint-disable-line func-names
+          editor.on('focus', function onFocus() {
             that.view.triggerMethod('text:editor:focus');
             that._isActivationClick = true;
           });
 
-          editor.on('blur', function () { // eslint-disable-line func-names
+          editor.on('blur', function onBlur() {
             that.view.triggerMethod('text:editor:blur');
           });
         }
