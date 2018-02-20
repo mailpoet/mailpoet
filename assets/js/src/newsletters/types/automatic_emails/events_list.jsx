@@ -11,8 +11,8 @@ class AutomaticEmailsEventsList extends React.Component {
     this.eventsConfigurator = this.eventsConfigurator.bind(this);
   }
 
-  eventsConfigurator(eventId) {
-    this.props.router.push(`new/${this.automaticEmail.id}/${eventId}/conditions`);
+  eventsConfigurator(eventSlug) {
+    this.props.router.push(`new/${this.automaticEmail.slug}/${eventSlug}/conditions`);
   }
 
   displayEvents() {
@@ -32,7 +32,7 @@ class AutomaticEmailsEventsList extends React.Component {
         action = (
           <a className="button button-primary"
             disabled={disabled}
-            onClick={!disabled ? this.eventsConfigurator.bind(null, event.id) : null}
+            onClick={!disabled ? this.eventsConfigurator.bind(null, event.slug) : null}
           >
             {event.actionButtonTitle || MailPoet.I18n.t('setUp')}
           </a>
@@ -40,7 +40,7 @@ class AutomaticEmailsEventsList extends React.Component {
       }
 
       return (
-        <li key={index} data-type={event.id}>
+        <li key={index} data-type={event.slug}>
           <div>
             <div className="mailpoet_thumbnail">
               {event.thumbnailImage ? <img src={event.thumbnailImage} /> : null}

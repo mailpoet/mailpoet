@@ -63,7 +63,7 @@ define(
             <div>
               <a className="button button-primary"
                 disabled={disabled}
-                onClick={!disabled ? this.setupNewsletter.bind(null, automaticEmail.id) : null}
+                onClick={!disabled ? this.setupNewsletter.bind(null, automaticEmail.slug) : null}
               >
                 { MailPoet.I18n.t('setUp') }
               </a>
@@ -76,7 +76,7 @@ define(
       render: function () {
         const defaultTypes = [
           {
-            id: 'standard',
+            slug: 'standard',
             title: MailPoet.I18n.t('regularNewsletterTypeTitle'),
             description: MailPoet.I18n.t('regularNewsletterTypeDescription'),
             action: function () {
@@ -88,7 +88,7 @@ define(
             }.bind(this)(),
           },
           {
-            id: 'welcome',
+            slug: 'welcome',
             title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
             description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
             action: (function () {
@@ -102,7 +102,7 @@ define(
             }()),
           },
           {
-            id: 'notification',
+            slug: 'notification',
             title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
             description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
             action: function () {
@@ -125,7 +125,7 @@ define(
 
             <ul className="mailpoet_boxes clearfix">
               {types.map((type, index) => (
-                <li key={index} data-type={type.id}>
+                <li key={index} data-type={type.slug}>
                   <div>
                     <div className="mailpoet_thumbnail">
                       {type.thumbnailImage ? <img src={type.thumbnailImage} /> : null}
