@@ -19,7 +19,7 @@ class Reporter {
     $isCronTriggerMethodWP = Setting::getValue('cron_trigger.method') === CronTrigger::$available_methods['wordpress'];
     $checker = new ServicesChecker();
     $bounceAddress = Setting::getValue('bounce.address');
-    $segmets = Segment::getAnalytics();
+    $segments = Segment::getAnalytics();
 
     return array(
       'PHP version' => PHP_VERSION,
@@ -50,8 +50,8 @@ class Reporter {
       'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters'],
       'Number of active post notifications' => $newsletters['notifications_count'],
       'Number of active welcome emails' => $newsletters['welcome_newsletters_count'],
-      'Number of segments' => $segmets['dynamic'],
-      'Number of lists' => $segmets['default'],
+      'Number of segments' => (int)isset($segments['dynamic']) ? $segments['dynamic'] : 0,
+      'Number of lists' => (int)$segments['default'],
       'Plugin > MailPoet Premium' => is_plugin_active('mailpoet-premium/mailpoet-premium.php'),
       'Plugin > bounce add-on' => is_plugin_active('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
       'Plugin > Bloom' => is_plugin_active('bloom-for-publishers/bloom.php'),

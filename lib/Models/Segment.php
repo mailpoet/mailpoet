@@ -249,9 +249,10 @@ class Segment extends Model {
   }
 
   static function getAnalytics() {
-    return Segment::select_expr('type, count(*) as count')
+    $analytics = Segment::select_expr('type, count(*) as count')
       ->whereNull('deleted_at')
       ->groupBy('type')
       ->findArray();
+    return array_combine(array_column($analytics, 'type'), array_column($analytics, 'count'));
   }
 }
