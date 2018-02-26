@@ -125,7 +125,7 @@ class SendingTest extends \MailPoetTest {
     expect($this->sending->count_processed)->equals(1);
   }
 
-  function testItGetsSchedulesQueues() {
+  function testItGetsScheduledQueues() {
     $this->sending->status = ScheduledTask::STATUS_SCHEDULED;
     $this->sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
     $this->sending->save();

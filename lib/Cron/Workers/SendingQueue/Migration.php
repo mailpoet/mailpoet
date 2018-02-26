@@ -83,7 +83,7 @@ class Migration extends SimpleWorker {
 
   static function checkUnmigratedColumnsExist() {
     global $wpdb;
-    $existing_columns = $wpdb->get_col('DESC ' . SendingQueue::$_table, 0);
+    $existing_columns = $wpdb->get_col('DESC ' . SendingQueue::$_table);
     return in_array('type', $existing_columns);
   }
 

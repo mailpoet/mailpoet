@@ -95,8 +95,8 @@ class SendingQueue extends Model {
   }
 
   function isSubscriberProcessed($subscriber_id) {
-    return (new TaskSubscribers($this->task()->findOne()))
-      ->isSubscriberProcessed($subscriber_id);
+    $task_subscribers = new TaskSubscribers($this->task()->findOne());
+    return $task_subscribers->isSubscriberProcessed($subscriber_id);
   }
 
   function asArray() {

@@ -83,8 +83,6 @@ class MailerLog {
     self::updateMailerLog($mailer_log);
     if($pause_sending) {
       self::pauseSending($mailer_log);
-    } else {
-      self::updateMailerLog($mailer_log);
     }
     return self::enforceExecutionRequirements();
   }

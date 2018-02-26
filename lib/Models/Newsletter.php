@@ -533,7 +533,7 @@ class Newsletter extends Model {
       } else {
         $row = $statisticsExpr
           ->join(MP_SENDING_QUEUES_TABLE, array("queue_id", "=", "qt.id"), "qt")
-          ->join(MP_SCHEDULED_TASKS_TABLE, array("qt.task_Id", "=", "tasks.id"), "tasks")
+          ->join(MP_SCHEDULED_TASKS_TABLE, array("qt.task_id", "=", "tasks.id"), "tasks")
           ->where(array(
             "tasks.status" => SendingQueue::STATUS_COMPLETED,
             "stat.newsletter_id" => $this->id,

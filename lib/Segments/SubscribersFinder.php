@@ -101,7 +101,7 @@ class SubscribersFinder {
         Subscriber::STATUS_SUBSCRIBED
       )
     );
-    return \ORM::get_last_statement()->rowCount();
+    return \ORM::getLastStatement()->rowCount();
   }
 
   private function addSubscribersToTaskFromDynamicSegments(ScheduledTask $task, array $segments) {
@@ -139,7 +139,7 @@ class SubscribersFinder {
         Subscriber::STATUS_SUBSCRIBED
       )
     );
-    return \ORM::get_last_statement()->rowCount();
+    return \ORM::getLastStatement()->rowCount();
   }
 
   private function unique($subscribers) {
