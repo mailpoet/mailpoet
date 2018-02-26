@@ -108,7 +108,8 @@ define(
        'email',
        'first_name',
        'last_name',
-       'list_status'
+       'list_status',
+       'global_status',
      ]).trigger('change');
 
      nextStepButton.click(function nextClick() {
