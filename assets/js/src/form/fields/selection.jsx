@@ -227,6 +227,7 @@ define([
     },
     render: function () {
       const items = this.getItems(this.props.field);
+      const selectedValues = this.getSelectedValues();
       const options = items.map((item, index) => {
         const label = this.getLabel(item);
         const searchLabel = this.getSearchLabel(item);
@@ -238,6 +239,7 @@ define([
             className="default"
             value={value}
             title={searchLabel}
+            selected={value === selectedValues}
           >
             { label }
           </option>
@@ -251,7 +253,7 @@ define([
           disabled={this.props.field.disabled}
           data-placeholder={this.props.field.placeholder}
           multiple={this.props.field.multiple}
-          defaultValue={this.getSelectedValues()}
+          defaultValue={selectedValues}
           {...this.props.field.validation}
         >
           { this.insertEmptyOption() }
