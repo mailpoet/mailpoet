@@ -682,8 +682,8 @@ class MP2Migrator {
         'segment_id' => $segment_id,
         'status' => $status,
         'created_at' => $datetime->formatTime($user_list['sub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
-        'updated_at' => !empty($user_list['unsub_date']) ? $datetime->formatTime($user_list['unsub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
       );
+      $data['updated_at'] = !empty($user_list['unsub_date']) ? $datetime->formatTime($user_list['unsub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : $data['created_at'];
       $subscriber_segment = new SubscriberSegment();
       $subscriber_segment->createOrUpdate($data);
     }
