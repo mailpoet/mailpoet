@@ -109,7 +109,7 @@ define(
        'first_name',
        'last_name',
        'list_status',
-       'global_status',
+       'global_status'
      ]).trigger('change');
 
      nextStepButton.click(function nextClick() {

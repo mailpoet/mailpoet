@@ -37,6 +37,12 @@
       <th scope="row">
         <label for="export_columns">
           <%= __('List of fields to export') %>
+          <p class="description">
+            <%= __('<strong>[link]Read the guide on the fields.[/link]')
+            |replaceLinkTags('http://beta.docs.mailpoet.com/article/XXX', {'target' : '_blank'})
+            |raw
+            %>
+          </p>
         </label>
       </th>
       <td>
