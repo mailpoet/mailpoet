@@ -30,6 +30,9 @@ class ScheduledTaskSubscriber extends Model {
     return static::addSubscribers($task_id, $subscriber_ids);
   }
 
+  /**
+   * For large batches use MailPoet\Segments\SubscribersFinder::addSubscribersToTaskFromSegments()
+   */
   static function addSubscribers($task_id, array $subscriber_ids) {
     foreach($subscriber_ids as $subscriber_id) {
       self::createOrUpdate(array(
