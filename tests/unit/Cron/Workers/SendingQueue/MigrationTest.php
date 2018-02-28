@@ -31,8 +31,6 @@ class MigrationTest extends \MailPoetTest {
     // subscribers should be migrated
     $this->queue_running = $this->createSendingQueue();
     $this->queue_paused = $this->createSendingQueue(SendingQueue::STATUS_PAUSED);
-
-    // subscribers should not be migrated
     $this->queue_completed = $this->createSendingQueue(SendingQueue::STATUS_COMPLETED);
     $this->queue_scheduled = $this->createSendingQueue(SendingQueue::STATUS_SCHEDULED);
 
@@ -85,7 +83,7 @@ class MigrationTest extends \MailPoetTest {
 
     expect($this->worker->getUnmigratedQueues()->count())->equals(0);
     expect(ScheduledTask::where('type', SendingTask::TASK_TYPE)->findMany())->count(4);
-    expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(4); // 2 for running, 2 for paused
+    expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(8); // 2 for task of each status
 
     $queue = SendingQueue::findOne($this->queue_running->id);
     $task = ScheduledTask::findOne($queue->task_id);
