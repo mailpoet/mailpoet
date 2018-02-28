@@ -184,7 +184,7 @@ class Model extends \Sudzy\ValidModel {
       return (int)$model['id'];
     }, $rows);
 
-    if($callback !== false) {
+    if(is_callable($callback)) {
       $callback($ids);
     }
 
