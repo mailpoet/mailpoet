@@ -131,7 +131,7 @@ var baseConfig = {
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/events_list.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.AutomaticEmailsEventsList!babel-loader',
+        loader: 'expose-loader?' + globalPrefix + '.AutomaticEmailEventsList!babel-loader',
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/breadcrumb.jsx'),
