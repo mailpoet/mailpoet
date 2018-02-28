@@ -360,7 +360,8 @@ const StatisticsMixin = {
 const MailerMixin = {
   checkMailerStatus: function (state) {
     if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
-      MailPoet.Notice.error(
+      const errorType = this.getMailerErrorType(state);
+      MailPoet.Notice[errorType](
         '',
         { static: true, id: 'mailpoet_mailer_error' }
       );
@@ -375,6 +376,14 @@ const MailerMixin = {
   },
   getMailerError(state) {
     let mailerErrorNotice;
+    if (state.meta.mta_log.error.operation === 'migration') {
+      mailerErrorNotice = state.meta.mta_log.error.error_message;
+      return (
+        <div>
+          <p>{ mailerErrorNotice }</p>
+        </div>
+      );
+    }
     const mailerCheckSettingsNotice = ReactStringReplace(
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
@@ -408,6 +417,12 @@ const MailerMixin = {
         </p>
       </div>
     );
+  },
+  getMailerErrorType(state) {
+    if (state.meta.mta_log.error.operation === 'migration') {
+      return 'system';
+    }
+    return 'error';
   },
   resumeMailerSending() {
     MailPoet.Ajax.post({
