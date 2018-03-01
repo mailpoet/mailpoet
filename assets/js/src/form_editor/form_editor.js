@@ -879,7 +879,7 @@ WysijaForm.Block = window.Class.create({
   createBlockDroppable: function () {
     info('block -> createBlockDroppable');
     this.element.insert({
-      before: '<div class=\"block_placeholder\">' + window.$('block_placeholder').innerHTML + '</div>'
+      before: '<div class="block_placeholder">' + window.$('block_placeholder').innerHTML + '</div>'
     });
     return this.element.previous('.block_placeholder');
   },

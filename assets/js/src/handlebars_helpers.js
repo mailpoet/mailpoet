@@ -83,7 +83,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return url + value;
   });
   Handlebars.registerHelper('emailFromMailto', function (value) {
-    var mailtoMatchingRegex = /^mailto\:/i;
+    var mailtoMatchingRegex = /^mailto:/i;
     if (typeof value === 'string' && value.match(mailtoMatchingRegex)) {
       return value.replace(mailtoMatchingRegex, '');
     }
