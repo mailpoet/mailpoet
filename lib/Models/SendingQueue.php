@@ -65,6 +65,20 @@ class SendingQueue extends Model {
     return $this;
   }
 
+  /**
+   * Used only for checking processed subscribers in old queues
+   */
+  private function getSubscribers() {
+    if(!is_serialized($this->subscribers)) {
+      return $this->subscribers;
+    }
+    $subscribers = unserialize($this->subscribers);
+    if(empty($subscribers['processed'])) {
+      $subscribers['processed'] = array();
+    }
+    return $subscribers;
+  }
+
   function getNewsletterRenderedBody($type = false) {
     $rendered_newsletter = $this->decodeRenderedNewsletterBodyObject($this->newsletter_rendered_body);
     return ($type && !empty($rendered_newsletter[$type])) ?
@@ -95,8 +109,18 @@ class SendingQueue extends Model {
   }
 
   function isSubscriberProcessed($subscriber_id) {
-    $task_subscribers = new TaskSubscribers($this->task()->findOne());
-    return $task_subscribers->isSubscriberProcessed($subscriber_id);
+    if(!empty($this->subscribers)
+      && ScheduledTaskSubscriber::getTotalCount($this->task_id) === 0
+    ) {
+      $subscribers = $this->getSubscribers();
+      return in_array($subscriber_id, $subscribers['processed']);
+    } else {
+      if($task = $this->task()->findOne()) {
+        $task_subscribers = new TaskSubscribers($task);
+        return $task_subscribers->isSubscriberProcessed($subscriber_id);
+      }
+      return false;
+    }
   }
 
   function asArray() {

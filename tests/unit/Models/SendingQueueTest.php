@@ -3,7 +3,10 @@
 namespace MailPoet\Test\Models;
 
 use AspectMock\Test as Mock;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 
 class SendingQueueTest extends \MailPoetTest {
@@ -37,6 +40,23 @@ class SendingQueueTest extends \MailPoetTest {
     ]);
     $this->queue->decodeEmojisInBody($this->rendered_body);
     $mock->verifyInvokedMultipleTimes('decodeEntities', 2);
+  }
+
+  function testItChecksProcessedSubscribersForOldQueues() {
+    $subscriber_id = 123;
+    expect($this->queue->isSubscriberProcessed($subscriber_id))->false();
+    $this->queue->subscribers = array('processed' => array($subscriber_id));
+    expect($this->queue->isSubscriberProcessed($subscriber_id))->true();
+  }
+
+  function testItChecksProcessedSubscribersForNewQueues() {
+    $subscriber_id = 123;
+    $queue = SendingTask::create();
+    $queue->setSubscribers(array($subscriber_id));
+    $queue->save();
+    expect($queue->isSubscriberProcessed($subscriber_id))->false();
+    $queue->updateProcessedSubscribers(array($subscriber_id));
+    expect($queue->isSubscriberProcessed($subscriber_id))->true();
   }
 
   function testItReadsSerializedRenderedNewsletterBody() {
@@ -99,6 +119,8 @@ class SendingQueueTest extends \MailPoetTest {
 
   function _after() {
     Mock::clean();
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }
