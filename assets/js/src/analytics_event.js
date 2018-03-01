@@ -36,7 +36,7 @@ function exportMixpanel(mp) {
 }
 
 function trackCachedEvents() {
-  eventsCache.map(function trackIfEnabled(event) {
+  eventsCache.forEach(function trackIfEnabled(event) {
     if (window.mailpoet_analytics_enabled || event.forced) {
       window.mixpanel.track(event.name, event.data);
     }
