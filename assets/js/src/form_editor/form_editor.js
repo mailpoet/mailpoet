@@ -16,7 +16,7 @@ var WysijaForm;
 function info(value) {
   if (WysijaForm.options.debug === false) return;
 
-  if (!(window.console && console.log)) {
+  if (!(window.console && console.log)) { // eslint-disable-line no-console
     (function () {
       var noop = function () {};
       var methods = [
@@ -54,7 +54,7 @@ function info(value) {
     }());
   }
   try {
-    console.log('[DEBUG] ' + value);
+    console.log('[DEBUG] ' + value); // eslint-disable-line no-console
   } catch (e) {}
 }
 
