@@ -471,7 +471,7 @@ WysijaForm = {
 
     // loop through each unique field already inserted in the editor
     // and disable its toolbar equivalent
-    window.$$('#' + WysijaForm.options.editor + ' [wysija_unique="1"]').map(function (element) {
+    window.$$('#' + WysijaForm.options.editor + ' [wysija_unique="1"]').forEach(function (element) {
       var field = window.$$(
         '#' + WysijaForm.options.toolbar + ' [wysija_id="' + element.readAttribute('wysija_id') + '"]'
       );
