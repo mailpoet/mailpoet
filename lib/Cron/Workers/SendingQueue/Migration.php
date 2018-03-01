@@ -96,7 +96,7 @@ class Migration extends SimpleWorker {
     global $wpdb;
     $query = sprintf(
       'SELECT queues.`task_id` FROM %1$s queues INNER JOIN %2$s tasks ON queues.`task_id` = tasks.`id` ' .
-      'WHERE tasks.`type` = "sending" ' .
+      'WHERE tasks.`type` = "sending" AND (tasks.`status` IS NULL OR tasks.`status` = "paused") ' .
       'AND queues.`subscribers` != "" AND queues.`subscribers` != "N;"' .
       'AND queues.`count_total` > (SELECT COUNT(*) FROM %3$s subs WHERE subs.`task_id` = queues.`task_id`)',
       MP_SENDING_QUEUES_TABLE,
