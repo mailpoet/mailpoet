@@ -143,9 +143,9 @@ Observable = (function () {
     return name.underscore().split('_').join(':');
   }
 
-  function getWrapper(handler, klass) {
+  function getWrapper(handler, Klass) {
     return function (event) {
-      return handler.call(new klass(this), event, event.memo);
+      return handler.call(new Klass(this), event, event.memo);
     };
   }
 
@@ -159,9 +159,9 @@ Observable = (function () {
     });
   }
 
-  function onDomLoad(selector, klass) {
+  function onDomLoad(selector, Klass) {
     window.$$(selector).each(function (element) {
-      new klass(element).onDomLoaded();
+      new Klass(element).onDomLoaded();
     });
   }
   return {
