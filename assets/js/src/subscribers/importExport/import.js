@@ -731,8 +731,8 @@ define(
           });
 
           // start array index from 1
-          Handlebars.registerHelper('calculate_index', function (index) {
-            var index = parseInt(index);
+          Handlebars.registerHelper('calculate_index', function (rawIndex) {
+            var index = parseInt(rawIndex);
             // display filler data (e.g., ellipsis) if we've reached the maximum number of rows and
             // subscribers count is greater than the maximum number of rows we're displaying
             if (index === maxRowsToShow && subscribers.subscribersCount > (maxRowsToShow + 1)) {
