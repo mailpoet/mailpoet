@@ -59,8 +59,6 @@
   </div>
 
   <script type="text/javascript">
-    // RFC 5322 standard; http://emailregex.com/
-    emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     jQuery(function($) {
       // on dom loaded
       $(function() {
@@ -68,7 +66,7 @@
         $('#mailpoet_settings_form').on('submit', function() {
           // Check if filled emails are valid
           var invalidEmails = $.map($('#mailpoet_settings_form')[0].elements, function(el) {
-            return el.type === 'email' && el.value && !window.emailRegex.test(el.value) ? el.value : null;
+            return el.type === 'email' && el.value && !window.mailpoet_email_regex.test(el.value) ? el.value : null;
           }).filter(function(val) { return !!val; });
           if (invalidEmails.length) {
             MailPoet.Notice.error(

@@ -48,6 +48,8 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
   var mailpoet_premium_version = <%= json_encode(mailpoet_premium_version()) %>;
   var mailpoet_analytics_enabled = <%= is_analytics_enabled() | json_encode %>;
   var mailpoet_analytics_data = <%= json_encode(get_analytics_data()) %>;
+  // RFC 5322 standard; http://emailregex.com/
+  var mailpoet_email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 </script>
 
 <!-- javascripts -->
