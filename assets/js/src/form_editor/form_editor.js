@@ -55,7 +55,9 @@ function info(value) {
   }
   try {
     console.log('[DEBUG] ' + value); // eslint-disable-line no-console
-  } catch (e) {}
+  } catch (e) {
+    // continue regardless of error
+  }
 }
 
 Event.cacheDelegated = {};
@@ -654,7 +656,9 @@ WysijaForm = {
   hideControls: function () {
     try {
       WysijaForm.getBlocks().invoke('hideControls');
-    } catch (e) {}
+    } catch (e) {
+      // continue regardless of error
+    }
   },
   hideTools: function () {
     window.$$('.wysija_tools').invoke('hide');
@@ -844,6 +848,7 @@ WysijaForm.Block = window.Class.create({
       try {
         this.getControls().show();
       } catch (e) {
+        // continue regardless of error
       }
     }
   },
