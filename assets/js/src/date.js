@@ -158,7 +158,6 @@ define('date',
           } else if (token === '\\') {
             // Slash escapes the next symbol to be treated as literal
             escapeToken = true;
-            continue;
           } else if (replacements[token] !== undefined) {
             convertedFormat.push(replacements[token]);
           } else {
