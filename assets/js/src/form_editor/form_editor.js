@@ -796,7 +796,7 @@ WysijaForm.DraggableItem = window.Class.create({
         window.Droppables.hideArea();
       },
       starteffect: function (element) {
-        new window.Effect.Opacity(element, {
+        new window.Effect.Opacity(element, {// eslint-disable-line no-new
           duration: 0.2,
           from: element.getOpacity(),
           to: 0.7
