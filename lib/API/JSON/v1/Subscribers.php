@@ -12,6 +12,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\WP\Hooks;
@@ -246,12 +247,12 @@ class Subscribers extends APIEndpoint {
 
   function bulkAction($data = array()) {
     try {
-      $bulk_action = new Listing\BulkAction(
-        '\MailPoet\Models\Subscriber',
-        $data
-      );
-      $meta = $bulk_action->apply();
-      return $this->successResponse(null, $meta);
+      if(!isset($data['listing']['filter']['segment'])) {
+        $bulk_action = new Listing\BulkAction('\MailPoet\Models\Subscriber', $data);
+      } else {
+        $bulk_action = new BulkAction($data);
+      }
+      return $this->successResponse(null, $bulk_action->apply());
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
