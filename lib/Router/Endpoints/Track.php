@@ -65,7 +65,9 @@ class Track {
     if(!$data->subscriber || !$data->queue || !$data->newsletter) return false;
     $subscriber_token_match =
       Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
-    if(!$subscriber_token_match) return false;
+    if(!$subscriber_token_match) {
+      $this->terminate(403);
+    }
     // return if this is a WP user previewing the newsletter
     if($data->subscriber->isWPUser() && $data->preview) {
       return $data;
@@ -74,5 +76,11 @@ class Track {
     return ($data->queue->isSubscriberProcessed($data->subscriber->id)) ?
       $data :
       false;
+  }
+
+  private function terminate($code) {
+    status_header($code);
+    get_template_part((string)$code);
+    exit;
   }
 }

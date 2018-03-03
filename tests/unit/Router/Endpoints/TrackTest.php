@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Router\Endpoints;
 
+use AspectMock\Test as Mock;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
@@ -69,7 +70,9 @@ class TrackTest extends \MailPoetTest {
       )
     );
     $data->subscriber->email = 'random@email.com';
-    expect($this->track->_validateTrackData($data))->false();
+    $track = Mock::double($this->track, array('terminate' => null));
+    $track->_validateTrackData($data);
+    $track->verifyInvokedOnce('terminate', array(403));
   }
 
   function testItFailsWhenSubscriberIsNotOnProcessedList() {
