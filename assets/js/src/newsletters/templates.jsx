@@ -133,7 +133,9 @@ class NewsletterTemplates extends React.Component {
         id: this.props.params.id,
       },
     }).done((response) => {
-      selectedTab = response.data.type;
+      if (response.data.type !== 'automatic') {
+        selectedTab = response.data.type;
+      }
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
