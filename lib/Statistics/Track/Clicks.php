@@ -49,6 +49,7 @@ class Clicks {
 
   function abort() {
     status_header(404);
+    get_template_part((string)404);
     exit;
   }
 
