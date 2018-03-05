@@ -73,43 +73,43 @@ define([
 
   Module.saveTemplate = function (options) {
     return Thumbnail.fromNewsletter(App.toJSON())
-    .then(function (thumbnail) {
-      var data = _.extend(options || {}, {
-        thumbnail: thumbnail,
-        body: JSON.stringify(App.getBody()),
-        categories: JSON.stringify([
-          'saved',
-          App.getNewsletter().get('type')
-        ])
-      });
+      .then(function (thumbnail) {
+        var data = _.extend(options || {}, {
+          thumbnail: thumbnail,
+          body: JSON.stringify(App.getBody()),
+          categories: JSON.stringify([
+            'saved',
+            App.getNewsletter().get('type')
+          ])
+        });
 
-      return MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'newsletterTemplates',
-        action: 'save',
-        data: data
+        return MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'newsletterTemplates',
+          action: 'save',
+          data: data
+        });
       });
-    });
   };
 
   Module.exportTemplate = function (options) {
     return Thumbnail.fromNewsletter(App.toJSON())
-    .then(function (thumbnail) {
-      var data = _.extend(options || {}, {
-        thumbnail: thumbnail,
-        body: App.getBody(),
-        categories: JSON.stringify(['saved', App.getNewsletter().get('type')])
-      });
-      var blob = new Blob(
-        [JSON.stringify(data)],
-        { type: 'application/json;charset=utf-8' }
-      );
+      .then(function (thumbnail) {
+        var data = _.extend(options || {}, {
+          thumbnail: thumbnail,
+          body: App.getBody(),
+          categories: JSON.stringify(['saved', App.getNewsletter().get('type')])
+        });
+        var blob = new Blob(
+          [JSON.stringify(data)],
+          { type: 'application/json;charset=utf-8' }
+        );
 
-      FileSaver.saveAs(blob, 'template.json');
-      MailPoet.trackEvent('Editor > Template exported', {
-        'MailPoet Free version': window.mailpoet_version
+        FileSaver.saveAs(blob, 'template.json');
+        MailPoet.trackEvent('Editor > Template exported', {
+          'MailPoet Free version': window.mailpoet_version
+        });
       });
-    });
   };
 
   Module.SaveView = Marionette.View.extend({

@@ -92,22 +92,22 @@ define(
       },
       saveTemplate: function (response, done) {
         Thumbnail.fromUrl(response.meta.preview_url)
-        .then(function (thumbnail) {
-          MailPoet.Ajax.post({
-            api_version: window.mailpoet_api_version,
-            endpoint: 'newsletterTemplates',
-            action: 'save',
-            data: {
-              newsletter_id: response.data.id,
-              name: response.data.subject,
-              description: response.data.preheader,
-              thumbnail: thumbnail,
-              body: JSON.stringify(response.data.body),
-              categories: '["recent"]',
-            },
-          }).then(done).fail(this.showError);
-        })
-        .catch(err => this.showError({ errors: [err] }));
+          .then(function (thumbnail) {
+            MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
+              endpoint: 'newsletterTemplates',
+              action: 'save',
+              data: {
+                newsletter_id: response.data.id,
+                name: response.data.subject,
+                description: response.data.preheader,
+                thumbnail: thumbnail,
+                body: JSON.stringify(response.data.body),
+                categories: '["recent"]',
+              },
+            }).then(done).fail(this.showError);
+          })
+          .catch(err => this.showError({ errors: [err] }));
       },
       handleSend: function (e) {
         e.preventDefault();

@@ -10,7 +10,7 @@ import html2canvas from 'html2canvas';
  */
 export const fromDom = element =>
   html2canvas(element, {
-    allowTaint: true,
+    allowTaint: false,
     useCORS: true,
     foreignObjectRendering: true,
     logging: false,
@@ -25,19 +25,19 @@ export const fromDom = element =>
 export const fromUrl = url =>
   new Promise((resolve, reject) => {
     const iframe = document.createElement('iframe');
-    const protocol = location.href.startsWith('https://') ? 'https' : 'http';
-    iframe.src = protocol + url.replace(/^https?/, '');
+    const protocol = location.href.startsWith('https://') ? 'https:' : 'http:';
+    iframe.src = protocol + url.replace(/^https?:/, '');
     iframe.style.opacity = 0;
     iframe.onload = () => {
       fromDom(iframe.contentDocument.documentElement)
-      .then((image) => {
-        document.body.removeChild(iframe);
-        resolve(image);
-      })
-      .catch(() => {
-        document.body.removeChild(iframe);
-        reject(MailPoet.I18n.t('errorWhileTakingScreenshot'));
-      });
+        .then((image) => {
+          document.body.removeChild(iframe);
+          resolve(image);
+        })
+        .catch(() => {
+          document.body.removeChild(iframe);
+          reject(MailPoet.I18n.t('errorWhileTakingScreenshot'));
+        });
     };
     const onError = () => {
       document.body.removeChild(iframe);
