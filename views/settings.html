@@ -64,17 +64,6 @@
       $(function() {
         // on form submission
         $('#mailpoet_settings_form').on('submit', function() {
-          // Check if filled emails are valid
-          var invalidEmails = $.map($('#mailpoet_settings_form')[0].elements, function(el) {
-            return el.type === 'email' && el.value && !window.mailpoet_email_regex.test(el.value) ? el.value : null;
-          }).filter(function(val) { return !!val; });
-          if (invalidEmails.length) {
-            MailPoet.Notice.error(
-              "<%= __('Invalid email addresses: ') | escape('js') %>" + invalidEmails.join(', '),
-              { scroll: true }
-            );
-            return false;
-          }
           // if reCAPTCHA is enabled but keys are emty, show error
           var enabled = $('input[name="re_captcha[enabled]"]:checked').val(),
               site_key = $('input[name="re_captcha[site_token]"]').val().trim(),

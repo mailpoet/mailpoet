@@ -3,7 +3,6 @@ namespace MailPoet\Subscribers\ImportExport\Import;
 
 use MailPoet\Form\Block\Date;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
@@ -149,13 +148,12 @@ class Import {
 
   function validateSubscribersData($subscribers_data, $validation_rules) {
     $invalid_records = array();
-    $validator = new ModelValidator();
     foreach($subscribers_data as $column => &$data) {
       $validation_rule = $validation_rules[$column];
       if($validation_rule === 'email') {
         $data = array_map(
-          function($index, $email) use(&$invalid_records, $validator) {
-            if(!$validator->validateEmail($email)) {
+          function($index, $email) use(&$invalid_records) {
+            if(!is_email($email)) {
               $invalid_records[] = $index;
             }
             return strtolower($email);

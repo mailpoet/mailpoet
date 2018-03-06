@@ -209,7 +209,7 @@ define(
                       for (column in rowData) {
                         emailAddress = detectAndCleanupEmail(rowData[column]);
                         if (emailColumnPosition === null
-                          && window.mailpoet_email_regex.test(emailAddress)) {
+                          && window.emailRegex.test(emailAddress)) {
                           emailColumnPosition = column;
                           // add current e-mail to an object index
                           parsedEmails[emailAddress] = true;
@@ -229,7 +229,7 @@ define(
                       if (_.has(parsedEmails, email)) {
                         duplicateEmails.push(email);
                       }
-                      else if (!window.mailpoet_email_regex.test(email)) {
+                      else if (!window.emailRegex.test(email)) {
                         invalidEmails.push(rowData[emailColumnPosition]);
                       }
                       // if we haven't yet processed this e-mail and it passed
@@ -257,7 +257,7 @@ define(
                   // since we assume that the header line is always present, we need
                   // to detect the header by checking if it contains a valid e-mail address
                   window.importData.step1 = {
-                    header: (!window.mailpoet_email_regex.test(
+                    header: (!window.emailRegex.test(
                         processedSubscribers[0][emailColumnPosition])
                     ) ? processedSubscribers.shift() : null,
                     subscribers: processedSubscribers,
@@ -690,7 +690,7 @@ define(
                   columnData = helperSubscribers.subscribers[0][i];
                   columnId = 'ignore'; // set default column type
                   // if the column is not undefined and has a valid e-mail, set type as email
-                  if (columnData % 1 !== 0 && window.mailpoet_email_regex.test(columnData)) {
+                  if (columnData % 1 !== 0 && window.emailRegex.test(columnData)) {
                     columnId = 'email';
                   } else if (helperSubscribers.header) {
                     headerName = helperSubscribers.header[i];
@@ -791,9 +791,7 @@ define(
               // EMAIL filter: if the first value in the column doesn't have a valid
               // email, hide the next button
               if (column.id === 'email') {
-                if (!window.mailpoet_email_regex.test(
-                  subscribersClone.subscribers[0][matchedColumn.index])
-                ) {
+                if (!window.emailRegex.test(subscribersClone.subscribers[0][matchedColumn.index])) {
                   preventNextStep = true;
                   if (!jQuery('[data-id="notice_invalidEmail"]').length) {
                     MailPoet.Notice.error(MailPoet.I18n.t('columnContainsInvalidElement'), {
