@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.4.4
+Stable tag: 3.5.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.5.0 - 2018-03-06 =
+* Premium: bulk actions can now be executed on subscribers belonging to a selected segment;
+* Improved: a proper error page is displayed if user credentials can't be verified when clicking a tracked newsletter link. Thanks, Bernhard;
+* Fixed: MailPoet polyfills missing mbstring function for WordPress core. Thanks Dioni!
 
 = 3.4.4 - 2018-02-27 =
 * Premium: send emails to WooCommerce customers who purchased a specific product or in a specific product category;
