@@ -398,9 +398,6 @@ define(
             name: 'reply_to_address',
             type: 'text',
             placeholder: MailPoet.I18n.t('replyToAddressPlaceholder'),
-            validation: {
-              'data-parsley-type': 'email',
-            },
           },
         ],
       },
