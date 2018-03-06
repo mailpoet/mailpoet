@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -124,7 +125,8 @@ class Newsletters extends APIEndpoint {
       } else {
         $queue->newsletter_rendered_body = null;
         $queue->newsletter_rendered_subject = null;
-        $queue->save();
+        $newsletterQueueTask = new NewsletterQueueTask();
+        $newsletterQueueTask->preProcessNewsletter($newsletter, $queue);
       }
     }
 
