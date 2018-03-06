@@ -21,3 +21,9 @@ if(!function_exists('mb_strtoupper')) {
     return MbstringPolyfill::mb_strtoupper($s, $encoding);
   }
 }
+
+if(!function_exists('mb_detect_order')) {
+  function mb_detect_order($encodingList = null) {
+    return MbstringPolyfill::mb_detect_order($encodingList);
+  }
+}
