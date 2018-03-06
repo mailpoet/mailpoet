@@ -110,20 +110,20 @@ class WP {
 
   private static function updateSubscribersEmails() {
     global $wpdb;
-    $subscribers_table = Subscriber::$_table;
-    $changed_email_user_ids = \ORM::for_table(Subscriber::$_table)->raw_query(sprintf(
-      'SELECT %1$s.wp_user_id as id, wu.user_email as email FROM %1$s
-        INNER JOIN %2$s AS wu ON %1$s.wp_user_id = wu.id
-        WHERE wu.user_email != %1$s.email
-      ', $subscribers_table, $wpdb->users))->findArray();
+    Subscriber::raw_execute('SELECT NOW();');
+    $start_time = Subscriber::get_last_statement()->fetch(\PDO::FETCH_COLUMN);
 
+    $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE IGNORE %1$s
         INNER JOIN %2$s as wu ON %1$s.wp_user_id = wu.id
-      SET %1$s.email = wu.user_email
-        WHERE wu.user_email != %1$s.email AND wu.user_email != ""
+      SET %1$s.email = wu.user_email;
     ', $subscribers_table, $wpdb->users));
-    return $changed_email_user_ids;
+
+    return \ORM::for_table(Subscriber::$_table)->raw_query(sprintf(
+      'SELECT wp_user_id as id, email FROM %s
+        WHERE updated_at >= \'%s\';
+      ', $subscribers_table, $start_time))->findArray();
   }
 
   private static function insertSubscribers() {
