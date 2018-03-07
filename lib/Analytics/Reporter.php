@@ -9,6 +9,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\Pages;
+use MailPoet\Util\Helpers;
 
 class Reporter {
 
@@ -52,7 +53,7 @@ class Reporter {
       'Number of active welcome emails' => $newsletters['welcome_newsletters_count'],
       'Number of segments' => isset($segments['dynamic']) ? (int)$segments['dynamic'] : 0,
       'Number of lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
-      'Plugin > MailPoet Premium' => is_plugin_active('mailpoet-premium/mailpoet-premium.php'),
+      'Plugin > MailPoet Premium' => Helpers::isPremiumActive(),
       'Plugin > bounce add-on' => is_plugin_active('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
       'Plugin > Bloom' => is_plugin_active('bloom-for-publishers/bloom.php'),
       'Plugin > WP Holler' => is_plugin_active('holler-box/holler-box.php'),

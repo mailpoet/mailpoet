@@ -159,4 +159,8 @@ class Helpers {
       ? $_SERVER['REMOTE_ADDR']
       : null;
   }
+
+  static function isPremiumActive() {
+    return is_plugin_active('mailpoet-premium/mailpoet-premium.php');
+  }
 }
