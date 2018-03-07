@@ -380,10 +380,12 @@ class Menu {
     );
 
     $data['is_new_user'] = true;
+    $data['is_old_user'] = false;
     if(!empty($data['settings']['installed_at'])) {
       $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
       $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
       $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
+      $data['is_old_user'] = $current_time->diffInMonths($installed_at) >= 6;
     }
 
     $readme_file = Env::$path . '/readme.txt';
