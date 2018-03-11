@@ -196,6 +196,7 @@ var adminConfig = {
       'newsletters/types/automatic_emails/events_list.jsx',
       'newsletters/types/automatic_emails/breadcrumb.jsx',
       'newsletters/types/welcome/scheduling.jsx',
+      'newsletter_editor/initializer.jsx',
       'history',
     ],
     admin: [
