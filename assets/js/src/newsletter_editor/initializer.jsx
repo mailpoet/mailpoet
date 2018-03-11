@@ -35,9 +35,16 @@ const initializeEditor = (config) => {
   .done((response) => {
     const newsletter = response.data;
 
-    window.EditorApplication.start({
-      newsletter: newsletter,
-      config: config,
+    Promise.resolve(Hooks.applyFilters('mailpoet_newsletters_editor_extend_config', config, newsletter)).then((extendedConfig) => {
+      window.EditorApplication.start({
+        newsletter: newsletter,
+        config: extendedConfig,
+      });
+    }).catch(() => {
+      window.EditorApplication.start({
+        newsletter: newsletter,
+        config: config,
+      });
     });
 
     renderBreadcrumb(newsletter.type);
