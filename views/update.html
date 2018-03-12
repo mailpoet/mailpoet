@@ -55,11 +55,9 @@
         <br><%= __('Every star counts.') %>
 
       <p>
-        <a class="button" href="admin.php?page=mailpoet-newsletters"><%= __('No thanks') %></a>
+        <a class="button" id="no-thanks"><%= __('No thanks') %></a>
         <a class="button" href="admin.php?page=mailpoet-newsletters"><%= __('Next time') %></a>
-        <a class="button button-primary" target="_blank" href="https://wordpress.org/support/plugin/mailpoet/reviews/?rate=5#new-post">
-          <%= __('Rate now') %>
-        </a>
+        <a class="button button-primary" id="rate-now" href="https://wordpress.org/support/plugin/mailpoet/reviews/?rate=5#new-post" target="_blank"><%= __('Rate now') %></a>
       <p>
         <%= __('Care to share criticism or a feature request instead?') %>
         <br><%= __('Click on the question mark (?) in the blue circle at the bottom right of this page to send us a message.') %>
@@ -79,6 +77,25 @@
 
 <script type="text/javascript">
   jQuery(function($) {
+    function stopShowingCallForRating() {
+      return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'settings',
+        action: 'set',
+        data: {
+          stopCallForRatings: true,
+        }
+      });
+    }
+    $('#no-thanks').click(function (e) {
+      e.preventDefault();
+      stopShowingCallForRating().done(function () {
+        window.location.href = 'admin.php?page=mailpoet-newsletters';
+      });
+      return false;
+    });
+    $('#rate-now').click(stopShowingCallForRating);
+
     $(function() {
       MailPoet.trackEvent(
         'User has updated MailPoet',
@@ -105,6 +122,7 @@
     });
 
   });
+
 
 </script>
 <% endblock %>
