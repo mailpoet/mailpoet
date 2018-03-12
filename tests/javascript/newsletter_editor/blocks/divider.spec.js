@@ -6,6 +6,7 @@ define([
   'newsletter_editor/blocks/divider'
 ], function (App, DividerBlock) {
   var EditorApplication = App;
+  var sandbox;
 
   describe('Divider', function () {
     describe('model', function () {
@@ -18,10 +19,12 @@ define([
         });
         global.stubAvailableStyles(EditorApplication);
         model = new (DividerBlock.DividerBlockModel)();
+        sandbox = sinon.sandbox.create();
       });
 
       afterEach(function () {
         delete EditorApplication.getChannel;
+        sandbox.restore();
       });
 
       it('has a divider type', function () {
@@ -93,6 +96,14 @@ define([
         expect(innerModel.get('styles.block.borderStyle')).to.equal('inset');
         expect(innerModel.get('styles.block.borderWidth')).to.equal('7px');
         expect(innerModel.get('styles.block.borderColor')).to.equal('#345678');
+      });
+
+      it('updates blockDefaults.divider when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.trigger('change');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.divider');
+        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
       });
     });
 

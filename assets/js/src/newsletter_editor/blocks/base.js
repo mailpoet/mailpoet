@@ -22,6 +22,7 @@ define([
     stale: [], // Attributes to be removed upon saving
     initialize: function initialize() {
       this.on('change', function onChange() {
+        this._updateDefaults();
         App.getChannel().trigger('autoSave');
       });
     },
@@ -38,6 +39,9 @@ define([
       // and misbehaves
       // TODO: Investigate for a better solution
       return JSON.parse(JSON.stringify(jQuery.extend(blockDefaults, defaults || {})));
+    },
+    _updateDefaults: function updateDefaults() {
+      App.getConfig().set('blockDefaults.' + this.get('type'), this.toJSON());
     },
     toJSON: function toJSON() {
       // Remove stale attributes from resulting JSON object
