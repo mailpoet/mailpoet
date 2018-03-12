@@ -69,6 +69,7 @@ define([
     initialize: function () {
       this.get('icons').on('add remove change', this._iconsChanged, this);
       this.on('change:iconSet', this.changeIconSet, this);
+      this.on('change', this._updateDefaults, this);
     },
     getIconSet: function () {
       return App.getAvailableStyles().get('socialIconSets').get(this.get('iconSet'));
@@ -80,6 +81,7 @@ define([
       });
     },
     _iconsChanged: function () {
+      this._updateDefaults();
       App.getChannel().trigger('autoSave');
     }
   });
@@ -270,30 +272,7 @@ define([
       DraggableBehavior: {
         cloneOriginal: true,
         drop: function () {
-          return new Module.SocialBlockModel({
-            type: 'social',
-            iconSet: 'default',
-            icons: [
-              {
-                type: 'socialIcon',
-                iconType: 'facebook',
-                link: 'http://www.facebook.com',
-                image: App.getAvailableStyles().get('socialIconSets.default.facebook'),
-                height: '32px',
-                width: '32px',
-                text: 'Facebook'
-              },
-              {
-                type: 'socialIcon',
-                iconType: 'twitter',
-                link: 'http://www.twitter.com',
-                image: App.getAvailableStyles().get('socialIconSets.default.twitter'),
-                height: '32px',
-                width: '32px',
-                text: 'Twitter'
-              }
-            ]
-          }, { parse: true });
+          return new Module.SocialBlockModel();
         }
       }
     }

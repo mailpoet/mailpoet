@@ -9,10 +9,17 @@ define([
   describe('Social', function () {
     describe('block model', function () {
       var model;
+      var sandbox;
+
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         model = new (SocialBlock.SocialBlockModel)();
+        sandbox = sinon.sandbox.create();
+      });
+
+      afterEach(function () {
+        sandbox.restore();
       });
 
       it('has a social type', function () {
@@ -38,6 +45,22 @@ define([
         model = new (SocialBlock.SocialBlockModel)();
 
         expect(model.get('iconSet')).to.equal('customConfigIconSet');
+      });
+
+      it('updates blockDefaults.social when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.trigger('change');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.social');
+        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
+      });
+
+      it('updates blockDefaults.social when icons changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.get('icons').trigger('change');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.social');
+        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
       });
     });
 
