@@ -41,7 +41,8 @@ define([
       return JSON.parse(JSON.stringify(jQuery.extend(blockDefaults, defaults || {})));
     },
     _updateDefaults: function updateDefaults() {
-      App.getConfig().set('blockDefaults.' + this.get('type'), this.toJSON());
+      var context = this.get('context') || this.get('type');
+      App.getConfig().set('blockDefaults.' + context, this.toJSON());
     },
     toJSON: function toJSON() {
       // Remove stale attributes from resulting JSON object

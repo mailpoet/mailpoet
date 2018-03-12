@@ -118,6 +118,14 @@ define([
         expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
       });
 
+      it('updates blockDefaults for usage context when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.set('context', 'posts.readMoreButton');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.posts.readMoreButton');
+        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
+      });
+
       it('uses defaults from config when they are set', function () {
         global.stubConfig(EditorApplication, {
           blockDefaults: {
