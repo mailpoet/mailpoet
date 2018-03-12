@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Segments;
 
+use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
@@ -80,8 +81,9 @@ class WP {
 
   static function synchronizeUsers() {
 
-    self::updateSubscribersEmails();
-    self::insertSubscribers();
+    $updated_users_emails = self::updateSubscribersEmails();
+    $inserted_users_emails = self::insertSubscribers();
+    self::removeUpdatedSubscribersWithInvalidEmail(array_merge($updated_users_emails, $inserted_users_emails));
     self::removeFromTrash();
     self::updateFirstNames();
     self::updateLastNames();
@@ -92,20 +94,48 @@ class WP {
     return true;
   }
 
+  private static function removeUpdatedSubscribersWithInvalidEmail($updated_emails) {
+    $validator = new ModelValidator();
+    $invalid_wp_user_ids = array_map(function($item) {
+      return $item['id'];
+    },
+    array_filter($updated_emails, function($updated_email) use($validator) {
+      return !$validator->validateEmail($updated_email['email']);
+    }));
+    if(!$invalid_wp_user_ids) {
+      return;
+    }
+    \ORM::for_table(Subscriber::$_table)->whereIn('wp_user_id', $invalid_wp_user_ids)->delete_many();
+  }
+
   private static function updateSubscribersEmails() {
     global $wpdb;
+    Subscriber::raw_execute('SELECT NOW();');
+    $start_time = Subscriber::get_last_statement()->fetch(\PDO::FETCH_COLUMN);
+
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE IGNORE %1$s
-        JOIN %2$s as wu ON %1$s.wp_user_id = wu.id
-      SET %1$s.email = wu.user_email
-        WHERE %1$s.wp_user_id IS NOT NULL AND wu.user_email != ""
+        INNER JOIN %2$s as wu ON %1$s.wp_user_id = wu.id
+      SET %1$s.email = wu.user_email;
     ', $subscribers_table, $wpdb->users));
+
+    return \ORM::for_table(Subscriber::$_table)->raw_query(sprintf(
+      'SELECT wp_user_id as id, email FROM %s
+        WHERE updated_at >= \'%s\';
+      ', $subscribers_table, $start_time))->findArray();
   }
 
   private static function insertSubscribers() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
+
+    $inserterd_user_ids = \ORM::for_table($wpdb->users)->raw_query(sprintf(
+      'SELECT %2$s.id, %2$s.user_email as email FROM %2$s
+        LEFT JOIN %1$s AS mps ON mps.wp_user_id = %2$s.id
+        WHERE mps.wp_user_id IS NULL AND %2$s.user_email != ""
+      ', $subscribers_table, $wpdb->users))->findArray();
+
     Subscriber::raw_execute(sprintf('
       INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at)
         SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %2$s wu
@@ -113,6 +143,8 @@ class WP {
           WHERE mps.wp_user_id IS NULL AND wu.user_email != ""
       ON DUPLICATE KEY UPDATE wp_user_id = wu.id
     ', $subscribers_table, $wpdb->users));
+
+    return $inserterd_user_ids;
   }
 
   private static function updateFirstNames() {

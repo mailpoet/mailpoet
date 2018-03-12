@@ -174,7 +174,8 @@ class Migrator {
       'unconfirmed_data longtext,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
-      'KEY wp_user_id (wp_user_id)',
+      'KEY wp_user_id (wp_user_id),',
+      'KEY updated_at (updated_at)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
