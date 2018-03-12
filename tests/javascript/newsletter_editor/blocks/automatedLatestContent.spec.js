@@ -73,6 +73,7 @@ define([
     describe('model', function () {
       var model;
       var module;
+      var sandbox;
 
       before(function () {
         module = AutomatedLatestContentBlock;
@@ -83,11 +84,13 @@ define([
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
         model = new (module.AutomatedLatestContentBlockModel)();
+        sandbox = sinon.sandbox.create();
       });
 
       afterEach(function () {
         delete EditorApplication.getChannel;
         delete EditorApplication.getBlockTypeModel;
+        sandbox.restore();
       });
 
       it('has automatedLatestContent type', function () {
@@ -264,6 +267,29 @@ define([
 
         expect(model.get('_container.blocks').size()).to.equal(1);
         expect(model.get('_container.blocks').first().get('type')).to.equal('someCustomType');
+      });
+
+      it('updates blockDefaults.automatedLatestContent when handling changes', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.set('amount', '17');
+        model.set('contentType', 'mailpoet_page');
+        model.set('terms', []);
+        model.set('inclusionType', 'exclude');
+        model.set('displayType', 'full');
+        model.set('titleFormat', 'h3');
+        model.set('titleAlignment', 'right');
+        model.set('titleIsLink', true);
+        model.set('imageFullWidth', true);
+        model.set('featuredImagePosition', 'aboveTitle');
+        model.set('showAuthor', 'belowText');
+        model.set('authorPrecededBy', 'Custom config author preceded by');
+        model.set('showCategories', 'belowText');
+        model.set('categoriesPrecededBy', 'Custom config categories preceded by');
+        model.set('sortBy', 'oldest');
+        model.set('showDivider', false);
+        expect(stub.callCount).to.equal(16);
+        expect(stub.getCall(15).args[0]).to.equal('blockDefaults.automatedLatestContent');
+        expect(stub.getCall(15).args[1]).to.deep.equal(model.toJSON());
       });
     });
 
