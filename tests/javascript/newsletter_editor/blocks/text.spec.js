@@ -1,4 +1,5 @@
 const expect = global.expect;
+const sinon = global.sinon;
 
 define([
   'newsletter_editor/App',
@@ -7,10 +8,16 @@ define([
   describe('Text', function () {
     describe('model', function () {
       var model;
+      var sandbox;
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         model = new (TextBlock.TextBlockModel)();
+        sandbox = sinon.sandbox.create();
+      });
+
+      afterEach(function () {
+        sandbox.restore();
       });
 
       it('has a text type', function () {
@@ -32,6 +39,12 @@ define([
         model = new (TextBlock.TextBlockModel)();
 
         expect(model.get('text')).to.equal('some custom config text');
+      });
+
+      it('do not update blockDefaults.text when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.trigger('change');
+        expect(stub.callCount).to.equal(0);
       });
     });
 

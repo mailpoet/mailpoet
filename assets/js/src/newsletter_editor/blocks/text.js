@@ -18,7 +18,8 @@ define([
         type: 'text',
         text: 'Edit this to insert text'
       }, App.getConfig().get('blockDefaults.text'));
-    }
+    },
+    _updateDefaults: function updateDefaults() {}
   });
 
   Module.TextBlockView = base.BlockView.extend({
