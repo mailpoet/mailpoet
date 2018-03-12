@@ -28,6 +28,7 @@ export const fromUrl = url =>
     const protocol = location.href.startsWith('https://') ? 'https:' : 'http:';
     iframe.src = protocol + url.replace(/^https?:/, '');
     iframe.style.opacity = 0;
+    iframe.scrolling = 'no';
     iframe.onload = () => {
       fromDom(iframe.contentDocument.documentElement)
         .then((image) => {
