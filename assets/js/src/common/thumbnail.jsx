@@ -10,9 +10,6 @@ import html2canvas from 'html2canvas';
  */
 export const fromDom = element =>
   html2canvas(element, {
-    allowTaint: false,
-    useCORS: true,
-    foreignObjectRendering: true,
     logging: false,
   }).then(canvas => canvas.toDataURL('image/jpeg'));
 
