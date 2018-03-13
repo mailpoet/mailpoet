@@ -40,6 +40,8 @@ class SendingQueue {
         $queue->delete();
         continue;
       }
+      // clone the original object to be used for processing
+      $_newsletter = (object) $newsletter->asArray();
       // configure mailer
       $this->mailer_task->configureMailer($newsletter);
       // get newsletter segments
@@ -79,7 +81,7 @@ class SendingQueue {
         }
         $queue = $this->processQueue(
           $queue,
-          $newsletter,
+          $_newsletter,
           $found_subscribers
         );
         if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
