@@ -107,6 +107,7 @@ define([
       _.extend(this, Radio.Requests);
 
       this.fetchAvailablePosts();
+      this.on('change', this._updateDefaults, this);
       this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailablePosts);
       this.on('loadMorePosts', this._loadMorePosts, this);
 
