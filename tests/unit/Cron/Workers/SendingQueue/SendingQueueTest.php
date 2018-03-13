@@ -618,6 +618,25 @@ class SendingQueueTest extends \MailPoetTest {
     );
   }
 
+  function testItDoesNotUpdateNewsletterHashDuringSending() {
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array(
+          'send' => Stub::once()
+        ),
+        $this
+      )
+    );
+    $sending_queue_worker->process();
+
+    // newsletter is sent and hash remains intact
+    $updated_newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
+    expect($updated_newsletter->hash)->equals($this->newsletter->hash);
+  }
+
   function testItAllowsSettingCustomBatchSize() {
     $custom_batch_size_value = 10;
     $filter = function() use ($custom_batch_size_value) {
