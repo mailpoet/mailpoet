@@ -41,7 +41,7 @@ class SendingQueue {
         continue;
       }
       // clone the original object to be used for processing
-      $_newsletter = (object) $newsletter->asArray();
+      $_newsletter = (object)$newsletter->asArray();
       // configure mailer
       $this->mailer_task->configureMailer($newsletter);
       // get newsletter segments
