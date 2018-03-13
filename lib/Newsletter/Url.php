@@ -12,7 +12,7 @@ class Url {
 
   static function getViewInBrowserUrl(
     $type,
-    NewsletterModel $newsletter,
+    $newsletter,
     $subscriber = false,
     $queue = false,
     $preview = false
