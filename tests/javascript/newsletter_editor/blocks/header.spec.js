@@ -124,7 +124,9 @@ define([
         model.trigger('change');
         expect(stub.callCount).to.equal(1);
         expect(stub.getCall(0).args[0]).to.equal('blockDefaults.header');
-        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
+        expect(stub.getCall(0).args[1].type).to.equal(model.toJSON().type);
+        expect(stub.getCall(0).args[1].styles).to.deep.equal(model.toJSON().styles);
+        expect(stub.getCall(0).args[1].text).to.equal(undefined);
       });
     });
 
