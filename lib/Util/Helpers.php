@@ -160,7 +160,4 @@ class Helpers {
       : null;
   }
 
-  static function isPremiumActive() {
-    return is_plugin_active('mailpoet-premium/mailpoet-premium.php');
-  }
 }

@@ -21,8 +21,7 @@ class DefaultSubscribersGetter {
     $this->get_subscribers_without_segment = (array_search(0, $segments_ids) !== false);
     $this->segments_ids = $this->filterSegmentIds($segments_ids);
     $this->batch_size = $batch_size;
-    $this->offset = 0;
-    $this->finished = false;
+    $this->reset();
   }
 
   protected function filterSegmentIds($ids) {
@@ -39,17 +38,13 @@ class DefaultSubscribersGetter {
     return $ids;
   }
 
-  /**
-   * Resets the `offset` and `finished` properties;
-   * to be able to start getting subscribers again.
-   */
   public function reset() {
     $this->offset = 0;
     $this->finished = false;
   }
 
   /**
-   * Gets the next batch of subscribers or `false` no more!
+   * Gets the next batch of subscribers or `false` if no more!
    */
   public function get() {
     if($this->finished) {
