@@ -9,7 +9,7 @@ define([
   'jquery',
   'blob',
   'file-saver',
-  'html2canvas',
+  'common/thumbnail.jsx',
   'underscore',
   'jquery'
 ], function (
@@ -22,7 +22,7 @@ define([
   jQuery,
   Blob,
   FileSaver,
-  html2canvas,
+  Thumbnail,
   _,
   $
 ) {
@@ -71,79 +71,45 @@ define([
     });
   };
 
-  Module.getThumbnail = function (element, options) {
-    var promise = html2canvas(element, options || {});
-
-    return promise.then(function (oldCanvas) {
-      // Temporary workaround for html2canvas-alpha2.
-      // Removes 1px left transparent border from resulting canvas.
-
-      var newCanvas = document.createElement('canvas');
-      var newContext = newCanvas.getContext('2d');
-      var leftBorderWidth = 1;
-
-      newCanvas.width = oldCanvas.width;
-      newCanvas.height = oldCanvas.height;
-
-      newContext.drawImage(
-        oldCanvas,
-        leftBorderWidth, 0, oldCanvas.width - leftBorderWidth, oldCanvas.height,
-        0, 0, oldCanvas.width, oldCanvas.height
-      );
-
-      return newCanvas;
-    });
-  };
-
   Module.saveTemplate = function (options) {
-    var promise = jQuery.Deferred();
+    return Thumbnail.fromNewsletter(App.toJSON())
+      .then(function (thumbnail) {
+        var data = _.extend(options || {}, {
+          thumbnail: thumbnail,
+          body: JSON.stringify(App.getBody()),
+          categories: JSON.stringify([
+            'saved',
+            App.getNewsletter().get('type')
+          ])
+        });
 
-    promise.then(function (thumbnail) {
-      var data = _.extend(options || {}, {
-        thumbnail: thumbnail.toDataURL('image/jpeg'),
-        body: JSON.stringify(App.getBody()),
-        categories: JSON.stringify([
-          'saved',
-          App.getNewsletter().get('type')
-        ])
+        return MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'newsletterTemplates',
+          action: 'save',
+          data: data
+        });
       });
-
-      return MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'newsletterTemplates',
-        action: 'save',
-        data: data
-      });
-    });
-
-    Module.getThumbnail(
-      jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
-    ).then(function (thumbnail) {
-      promise.resolve(thumbnail);
-    });
-
-    return promise;
   };
 
   Module.exportTemplate = function (options) {
-    return Module.getThumbnail(
-      jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
-    ).then(function (thumbnail) {
-      var data = _.extend(options || {}, {
-        thumbnail: thumbnail.toDataURL('image/jpeg'),
-        body: App.getBody(),
-        categories: JSON.stringify(['saved', App.getNewsletter().get('type')])
-      });
-      var blob = new Blob(
-        [JSON.stringify(data)],
-        { type: 'application/json;charset=utf-8' }
-      );
+    return Thumbnail.fromNewsletter(App.toJSON())
+      .then(function (thumbnail) {
+        var data = _.extend(options || {}, {
+          thumbnail: thumbnail,
+          body: App.getBody(),
+          categories: JSON.stringify(['saved', App.getNewsletter().get('type')])
+        });
+        var blob = new Blob(
+          [JSON.stringify(data)],
+          { type: 'application/json;charset=utf-8' }
+        );
 
-      FileSaver.saveAs(blob, 'template.json');
-      MailPoet.trackEvent('Editor > Template exported', {
-        'MailPoet Free version': window.mailpoet_version
+        FileSaver.saveAs(blob, 'template.json');
+        MailPoet.trackEvent('Editor > Template exported', {
+          'MailPoet Free version': window.mailpoet_version
+        });
       });
-    });
   };
 
   Module.SaveView = Marionette.View.extend({
@@ -220,7 +186,7 @@ define([
         Module.saveTemplate({
           name: templateName,
           description: templateDescription
-        }).done(function () {
+        }).then(function () {
           MailPoet.Notice.success(
             MailPoet.I18n.t('templateSaved'),
             {
@@ -231,7 +197,7 @@ define([
           MailPoet.trackEvent('Editor > Template saved', {
             'MailPoet Free version': window.mailpoet_version
           });
-        }).fail(function () {
+        }).catch(function () {
           MailPoet.Notice.error(
             MailPoet.I18n.t('templateSaveFailed'),
             {

@@ -172,12 +172,14 @@ define([
 
         it('triggers template saving when clicked on "save as template" button', function () {
           var mock = sinon.mock({ post: function () {} }).expects('post').once().returns(jQuery.Deferred());
-          var html2canvasMock = jQuery.Deferred();
+          var promiseMock = {};
           var module;
 
-          html2canvasMock.resolve({
-            toDataURL: function () { return 'somedataurl'; }
-          });
+          promiseMock.then = function (cb) {
+            cb();
+            return promiseMock;
+          };
+          promiseMock.catch = promiseMock.then;
 
           EditorApplication.getBody = sinon.stub();
           EditorApplication.getNewsletter = function () {
@@ -202,10 +204,10 @@ define([
               trackEvent: function () {}
             },
             'newsletter_editor/App': EditorApplication,
-            html2canvas: function () {
-              return {
-                then: function () { return html2canvasMock; }
-              };
+            'common/thumbnail.jsx': {
+              fromNewsletter: function () {
+                return promiseMock;
+              }
             }
           });
           view = new (module.SaveView)();

@@ -11,7 +11,7 @@ define(
     'newsletters/breadcrumb.jsx',
     'help-tooltip.jsx',
     'jquery',
-    'html2canvas',
+    'common/thumbnail.jsx',
   ],
   (
     React,
@@ -25,7 +25,7 @@ define(
     Breadcrumb,
     HelpTooltip,
     jQuery,
-    html2canvas
+    Thumbnail
   ) => {
     const NewsletterSend = React.createClass({
       contextTypes: {
@@ -91,12 +91,8 @@ define(
         });
       },
       saveTemplate: function (response, done) {
-        const iframe = document.createElement('iframe');
-        const protocol = location.href.startsWith('https://') ? 'https' : 'http';
-        iframe.src = protocol + response.meta.preview_url.replace(/^https?/, '');
-        iframe.onload = () => {
-          html2canvas(iframe.contentDocument.documentElement).then((thumbnail) => {
-            document.body.removeChild(iframe);
+        Thumbnail.fromUrl(response.meta.preview_url)
+          .then(function (thumbnail) {
             MailPoet.Ajax.post({
               api_version: window.mailpoet_api_version,
               endpoint: 'newsletterTemplates',
@@ -105,27 +101,13 @@ define(
                 newsletter_id: response.data.id,
                 name: response.data.subject,
                 description: response.data.preheader,
-                thumbnail: thumbnail.toDataURL('image/jpeg'),
+                thumbnail: thumbnail,
                 body: JSON.stringify(response.data.body),
                 categories: '["recent"]',
               },
             }).then(done).fail(this.showError);
-          });
-        };
-        const onError = () => {
-          document.body.removeChild(iframe);
-          MailPoet.Notice.error([MailPoet.I18n.t('errorWhileTakingScreenshot')], { scroll: true });
-          done();
-        };
-        iframe.onerror = onError;
-        iframe.onError = onError;
-        // just to hide the iframe
-        iframe.className ='mailpoet_template_iframe';
-        try {
-          document.body.appendChild(iframe);
-        } catch (err) {
-          onError();
-        }
+          })
+          .catch(err => this.showError({ errors: [err] }));
       },
       handleSend: function (e) {
         e.preventDefault();
