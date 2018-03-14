@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.5.0
+Stable tag: 3.5.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.5.1 - 2018-03-13 =
+* Improved: email validation for WordPress user synchronization;
+* Fixed: import no longer discards e-mails with dashes. A big thank-you to everyone who reported the issue;
+* Fixed: sending does not get stuck on the last step of the newsletter creation process. Thanks, Rene!
 
 = 3.5.0 - 2018-03-06 =
 * Premium: bulk actions can now be executed on subscribers belonging to a selected segment;
