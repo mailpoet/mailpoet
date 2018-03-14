@@ -129,7 +129,8 @@ class APITest extends \MailPoetTest {
         1,
         array(
           2
-        )
+        ),
+        array()
       )
     );
   }
