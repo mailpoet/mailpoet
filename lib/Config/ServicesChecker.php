@@ -93,7 +93,7 @@ class ServicesChecker {
         $date_time = new DateTime();
         $date = $date_time->formatDate(strtotime($premium_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
-          __("Your License Key is expiring! Don't forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.", 'mailpoet'),
+          __("Your License Key for MailPoet is expiring! Don't forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.", 'mailpoet'),
           'https://account.mailpoet.com',
           array('target' => '_blank')
         );
