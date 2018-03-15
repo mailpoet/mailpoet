@@ -345,6 +345,11 @@ define([
         this.$('.mailpoet_post_selection_loading').css('visibility', 'hidden');
       }
     },
+    templateContext: function () {
+      return {
+        model: this.model.toJSON()
+      };
+    },
     onRender: function () {
       var postsView;
       // Dynamically update available post types
