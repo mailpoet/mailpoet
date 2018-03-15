@@ -130,14 +130,16 @@ const WelcomeScheduling = React.createClass({
         <Select
           field={roleField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleRoleChange} />
+          onValueChange={this.handleRoleChange}
+        />
       );
     } else {
       roleSegmentSelection = (
         <Select
           field={segmentField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleSegmentChange} />
+          onValueChange={this.handleSegmentChange}
+        />
       );
     }
     if (value.afterTimeType !== 'immediate') {
@@ -145,7 +147,8 @@ const WelcomeScheduling = React.createClass({
         <Text
           field={afterTimeNumberField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleAfterTimeNumberChange} />
+          onValueChange={this.handleAfterTimeNumberChange}
+        />
       );
     }
 
@@ -154,7 +157,8 @@ const WelcomeScheduling = React.createClass({
         <Select
           field={events}
           item={this.getCurrentValue()}
-          onValueChange={this.handleEventChange} />
+          onValueChange={this.handleEventChange}
+        />
 
         { roleSegmentSelection }
 
@@ -163,7 +167,8 @@ const WelcomeScheduling = React.createClass({
         <Select
           field={afterTimeTypeField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleAfterTimeTypeChange} />
+          onValueChange={this.handleAfterTimeTypeChange}
+        />
       </div>
     );
   },

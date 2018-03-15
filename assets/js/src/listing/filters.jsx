@@ -52,12 +52,12 @@ define([
             ref={`filter-${i}`}
             key={`filter-${i}`}
             name={filter}
-            >
+          >
             { filters[filter].map((option, j) => (
               <option
                 value={option.value}
                 key={`filter-option-${j}`}
-                >{ option.label }</option>
+              >{ option.label }</option>
                 )) }
           </select>
           ));
@@ -71,7 +71,8 @@ define([
             onClick={this.handleFilterAction}
             type="submit"
             defaultValue={MailPoet.I18n.t('filter')}
-            className="button" />
+            className="button"
+          />
         );
       }
 

@@ -101,7 +101,7 @@ const QueueMixin = {
                 ? 'inline-block' : 'none' }}
             href="javascript:;"
             onClick={this.resumeSending.bind(null, newsletter)}
-            >{MailPoet.I18n.t('resume')}</a>
+          >{MailPoet.I18n.t('resume')}</a>
           <a
             id={`pause_${newsletter.id}`}
             className="button mailpoet_pause"
@@ -109,7 +109,7 @@ const QueueMixin = {
                   ? 'inline-block' : 'none' }}
             href="javascript:;"
             onClick={this.pauseSending.bind(null, newsletter)}
-            >{MailPoet.I18n.t('pause')}</a>
+          >{MailPoet.I18n.t('pause')}</a>
         </span>
         );
     }
@@ -129,7 +129,7 @@ const QueueMixin = {
           <span
             className="mailpoet_progress_bar"
             style={{ width: `${progressBarWidth}%` }}
-               />
+          />
           <span className="mailpoet_progress_label">
             { percentage }
           </span>
@@ -309,7 +309,7 @@ const StatisticsMixin = {
             key={`stats-${newsletter.id}`}
             to={params.link}
             onClick={params.onClick || null}
-            >
+          >
             {content}
           </Link>
           {afterContent}

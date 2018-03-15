@@ -78,7 +78,8 @@ define([
           previousPage = (
             <a href="javascript:;"
               onClick={this.setPreviousPage}
-              className="prev-page">
+              className="prev-page"
+            >
               <span className="screen-reader-text">{MailPoet.I18n.t('previousPage')}</span>
               <span aria-hidden="true">‹</span>
             </a>
@@ -89,7 +90,8 @@ define([
           firstPage = (
             <a href="javascript:;"
               onClick={this.setFirstPage}
-              className="first-page">
+              className="first-page"
+            >
               <span className="screen-reader-text">{MailPoet.I18n.t('firstPage')}</span>
               <span aria-hidden="true">«</span>
             </a>
@@ -100,7 +102,8 @@ define([
           nextPage = (
             <a href="javascript:;"
               onClick={this.setNextPage}
-              className="next-page">
+              className="next-page"
+            >
               <span className="screen-reader-text">{MailPoet.I18n.t('nextPage')}</span>
               <span aria-hidden="true">›</span>
             </a>
@@ -111,7 +114,8 @@ define([
           lastPage = (
             <a href="javascript:;"
               onClick={this.setLastPage}
-              className="last-page">
+              className="last-page"
+            >
               <span className="screen-reader-text">{MailPoet.I18n.t('lastPage')}</span>
               <span aria-hidden="true">»</span>
             </a>
@@ -132,7 +136,8 @@ define([
             <span className="paging-input">
               <label
                 className="screen-reader-text"
-                htmlFor="current-page-selector">{MailPoet.I18n.t('currentPage')}</label>
+                htmlFor="current-page-selector"
+              >{MailPoet.I18n.t('currentPage')}</label>
               <input
                 type="text"
                 onChange={this.handleChangeManualPage}
@@ -144,7 +149,8 @@ define([
                 value={pageValue}
                 name="paged"
                 id="current-page-selector"
-                className="current-page" />
+                className="current-page"
+              />
               {MailPoet.I18n.t('pageOutOf')}&nbsp;
               <span className="total-pages">
                 {Math.ceil(this.props.count / this.props.limit).toLocaleString()}

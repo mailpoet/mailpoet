@@ -20,7 +20,8 @@ const ListingHeader = React.createClass({
           onSort={this.props.onSort}
           sort_by={this.props.sort_by}
           key={`column-${index}`}
-          column={renderColumn} />
+          column={renderColumn}
+        />
       );
     });
 
@@ -29,7 +30,8 @@ const ListingHeader = React.createClass({
     if (this.props.is_selectable === true) {
       checkbox = (
         <th
-          className="manage-column column-cb check-column">
+          className="manage-column column-cb check-column"
+        >
           <label className="screen-reader-text">
             {MailPoet.I18n.t('selectAll')}
           </label>
@@ -38,7 +40,8 @@ const ListingHeader = React.createClass({
             name="select_all"
             ref="toggle"
             checked={this.props.selection}
-            onChange={this.handleSelectItems} />
+            onChange={this.handleSelectItems}
+          />
         </th>
       );
     }

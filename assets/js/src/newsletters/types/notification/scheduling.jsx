@@ -93,7 +93,8 @@ const NotificationScheduling = React.createClass({
         <Select
           field={timeOfDayField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleTimeOfDayChange} />
+          onValueChange={this.handleTimeOfDayChange}
+        />
       );
     }
 
@@ -102,7 +103,8 @@ const NotificationScheduling = React.createClass({
         <Select
           field={weekDayField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleWeekDayChange} />
+          onValueChange={this.handleWeekDayChange}
+        />
       );
     }
 
@@ -111,7 +113,8 @@ const NotificationScheduling = React.createClass({
         <Select
           field={monthDayField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleMonthDayChange} />
+          onValueChange={this.handleMonthDayChange}
+        />
       );
     }
 
@@ -120,7 +123,8 @@ const NotificationScheduling = React.createClass({
         <Select
           field={nthWeekDayField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleNthWeekDayChange} />
+          onValueChange={this.handleNthWeekDayChange}
+        />
       );
     }
 
@@ -129,7 +133,8 @@ const NotificationScheduling = React.createClass({
         <Select
           field={intervalField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleIntervalChange} />
+          onValueChange={this.handleIntervalChange}
+        />
 
         {nthWeekDaySelection}
         {monthDaySelection}

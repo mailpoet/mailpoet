@@ -102,7 +102,8 @@ class ImportTemplate extends React.Component {
             <input
               className="button button-primary"
               type="submit"
-              value={MailPoet.I18n.t('upload')} />
+              value={MailPoet.I18n.t('upload')}
+            />
           </p>
         </form>
       </div>

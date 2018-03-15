@@ -194,7 +194,8 @@ define(
               field={field}
               item={this.getValues()}
               onValueChange={onValueChange}
-              key={`field-${i}`} />
+              key={`field-${i}`}
+            />
           );
         });
 
@@ -207,7 +208,8 @@ define(
               className="button button-primary"
               type="submit"
               value={MailPoet.I18n.t('save')}
-              disabled={this.state.loading} />
+              disabled={this.state.loading}
+            />
           );
         }
 

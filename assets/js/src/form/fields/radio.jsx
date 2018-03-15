@@ -20,7 +20,8 @@ define([
                 checked={selectedValue === value}
                 value={value}
                 onChange={this.props.onValueChange}
-                name={this.props.field.name} />
+                name={this.props.field.name}
+              />
               { this.props.field.values[value] }
             </label>
           </p>

@@ -160,7 +160,8 @@ define(
             disabled={this.props.disabled}
             onChange={this.onChange}
             ref="dateInput"
-            {...this.props.validation} />
+            {...this.props.validation}
+          />
         );
       },
     });
@@ -171,7 +172,8 @@ define(
           (value, index) => (
             <option
               key={`option-${index}`}
-              value={value}>
+              value={value}
+            >
               { timeOfDayItems[value] }
             </option>
             )
@@ -238,13 +240,15 @@ define(
               displayFormat={dateDisplayFormat}
               storageFormat={dateStorageFormat}
               disabled={this.props.disabled}
-              validation={this.props.dateValidation} />
+              validation={this.props.dateValidation}
+            />
             <TimeSelect
               name="time"
               value={this.state.time}
               onChange={this.handleChange}
               disabled={this.props.disabled}
-              validation={this.props.timeValidation} />
+              validation={this.props.timeValidation}
+            />
           </span>
         );
       },
@@ -298,7 +302,8 @@ define(
                 value={this.getCurrentValue().scheduledAt}
                 onChange={this.handleValueChange}
                 disabled={this.props.field.disabled}
-                dateValidation={this.getDateValidation()} />
+                dateValidation={this.getDateValidation()}
+              />
               &nbsp;
               <span>
                 {MailPoet.I18n.t('websiteTimeIs')} <code>{currentTime}</code>
@@ -315,7 +320,8 @@ define(
               checked={this.isScheduled()}
               disabled={this.props.field.disabled}
               name="isScheduled"
-              onChange={this.handleCheckboxChange} />
+              onChange={this.handleCheckboxChange}
+            />
 
             {schedulingOptions}
           </div>

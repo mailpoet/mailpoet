@@ -22,7 +22,7 @@ define([
           <option
             key={i}
             value={i}
-         >{ i }</option>
+          >{ i }</option>
         ));
       }
       return (
@@ -52,7 +52,7 @@ define([
           <option
             key={i}
             value={i}
-         >{ this.props.monthNames[i - 1] }</option>
+          >{ this.props.monthNames[i - 1] }</option>
         ));
       }
       return (

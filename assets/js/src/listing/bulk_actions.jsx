@@ -84,7 +84,8 @@ define([
         <div className="alignleft actions bulkactions">
           <label
             className="screen-reader-text"
-            htmlFor="bulk-action-selector-top">
+            htmlFor="bulk-action-selector-top"
+          >
             {MailPoet.I18n.t('selectBulkAction')}
           </label>
 
@@ -99,14 +100,15 @@ define([
               <option
                 value={action.name}
                 key={`action-${index}`}
-                >{ action.label }</option>
+              >{ action.label }</option>
               )) }
           </select>
           <input
             onClick={this.handleApplyAction}
             type="submit"
             defaultValue={MailPoet.I18n.t('apply')}
-            className="button action" />
+            className="button action"
+          />
 
           { this.state.extra }
         </div>

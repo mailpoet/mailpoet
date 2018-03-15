@@ -50,7 +50,8 @@ const FormFieldSelect = React.createClass({
         (value, index) => (
           <option
             key={`option-${index}`}
-            value={value}>
+            value={value}
+          >
             { this.props.field.values[value] }
           </option>
           )

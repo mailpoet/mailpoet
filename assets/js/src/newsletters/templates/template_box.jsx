@@ -133,7 +133,7 @@ class TemplateBox extends React.Component {
             className="button button-primary"
             data-automation-id={`select_template_${index}`}
             onClick={this.onSelect}
-            > {MailPoet.I18n.t('select')} </a>
+          > {MailPoet.I18n.t('select')} </a>
         </div>
         { readonly === '1' ? false : deleteLink }
       </li>

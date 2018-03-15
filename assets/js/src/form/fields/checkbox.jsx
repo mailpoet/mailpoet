@@ -28,7 +28,7 @@ define([
                 checked={isChecked}
                 onChange={this.onValueChange}
                 name={this.props.field.name}
-                />
+              />
               { this.props.field.values[value] }
             </label>
           </p>

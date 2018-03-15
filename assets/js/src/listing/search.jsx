@@ -30,11 +30,13 @@ define([
               id="search_input"
               ref="search"
               name="s"
-              defaultValue={this.props.search} />
+              defaultValue={this.props.search}
+            />
             <input
               type="submit"
               defaultValue={MailPoet.I18n.t('searchLabel')}
-              className="button" />
+              className="button"
+            />
           </p>
         </form>
       );

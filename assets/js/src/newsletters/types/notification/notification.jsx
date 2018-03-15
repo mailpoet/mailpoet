@@ -75,14 +75,16 @@ define(
             <Scheduling
               item={this.state}
               field={field}
-              onValueChange={this.handleValueChange} />
+              onValueChange={this.handleValueChange}
+            />
 
             <p className="submit">
               <input
                 className="button button-primary"
                 type="button"
                 onClick={this.handleNext}
-                value={MailPoet.I18n.t('next')} />
+                value={MailPoet.I18n.t('next')}
+              />
             </p>
           </div>
         );

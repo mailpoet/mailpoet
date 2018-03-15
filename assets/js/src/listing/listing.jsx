@@ -53,7 +53,8 @@ const ListingItem = React.createClass({
               this.props.item.selected || this.props.selection === 'all'
             }
             onChange={this.handleSelectItem}
-            disabled={this.props.selection === 'all'} />
+            disabled={this.props.selection === 'all'}
+          />
         </th>
       );
     }
@@ -77,7 +78,8 @@ const ListingItem = React.createClass({
                 onClick={this.handleTrashItem.bind(
                   null,
                   this.props.item.id
-                )}>
+                )}
+              >
                 {MailPoet.I18n.t('moveToTrash')}
               </a>
             </span>
@@ -86,7 +88,8 @@ const ListingItem = React.createClass({
           customAction = (
             <span
               onClick={this.props.onRefreshItems}
-              key={`action-${index}`} className={action.name}>
+              key={`action-${index}`} className={action.name}
+            >
               {(!isFirst) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -94,7 +97,8 @@ const ListingItem = React.createClass({
         } else if (action.link) {
           customAction = (
             <span
-              key={`action-${index}`} className={action.name}>
+              key={`action-${index}`} className={action.name}
+            >
               {(!isFirst) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -102,7 +106,8 @@ const ListingItem = React.createClass({
         } else {
           customAction = (
             <span
-              key={`action-${index}`} className={action.name}>
+              key={`action-${index}`} className={action.name}
+            >
               {(!isFirst) ? ' | ' : ''}
               <a href="javascript:;" onClick={
                 (action.onClick !== undefined)
@@ -111,7 +116,8 @@ const ListingItem = React.createClass({
                     this.props.onRefreshItems
                   )
                 : false
-              }>{ action.label }</a>
+              }
+              >{ action.label }</a>
             </span>
           );
         }
@@ -159,7 +165,8 @@ const ListingItem = React.createClass({
           </div>
           <button
             onClick={this.handleToggleItem.bind(null, this.props.item.id)}
-            className="toggle-row" type="button">
+            className="toggle-row" type="button"
+          >
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
           </button>
         </div>
@@ -172,7 +179,8 @@ const ListingItem = React.createClass({
           </div>
           <button
             onClick={this.handleToggleItem.bind(null, this.props.item.id)}
-            className="toggle-row" type="button">
+            className="toggle-row" type="button"
+          >
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
           </button>
         </div>
@@ -213,7 +221,8 @@ const ListingItems = React.createClass({
                 this.props.columns.length
                 + (this.props.is_selectable ? 1 : 0)
               }
-              className="colspanchange">
+              className="colspanchange"
+            >
               {message}
             </td>
           </tr>
@@ -235,7 +244,8 @@ const ListingItems = React.createClass({
           <td colSpan={
                 this.props.columns.length
                 + (this.props.is_selectable ? 1 : 0)
-              }>
+              }
+          >
             {
                 (this.props.selection !== 'all')
                 ? MailPoet.I18n.t('selectAllLabel')
@@ -247,7 +257,8 @@ const ListingItems = React.createClass({
               &nbsp;
             <a
               onClick={this.props.onSelectAll}
-              href="javascript:;">{
+              href="javascript:;"
+            >{
                   (this.props.selection !== 'all')
                   ? MailPoet.I18n.t('selectAllLink')
                   : MailPoet.I18n.t('clearSelection')
@@ -274,7 +285,8 @@ const ListingItems = React.createClass({
               item_actions={this.props.item_actions}
               group={this.props.group}
               key={`item-${renderItem.id}-${index}`}
-              item={renderItem} />
+              item={renderItem}
+            />
           );
         })}
       </tbody>
@@ -822,7 +834,8 @@ const Listing = React.createClass({
             bulk_actions={bulkActions}
             selection={this.state.selection}
             selected_ids={this.state.selected_ids}
-            onBulkAction={this.handleBulkAction} />
+            onBulkAction={this.handleBulkAction}
+          />
           <ListingFilters
             filters={this.state.filters}
             filter={this.state.filter}
@@ -836,7 +849,8 @@ const Listing = React.createClass({
             count={this.state.count}
             page={this.state.page}
             limit={this.state.limit}
-            onSetPage={this.handleSetPage} />
+            onSetPage={this.handleSetPage}
+          />
         </div>
         <table className={tableClasses}>
           <thead>
@@ -847,7 +861,8 @@ const Listing = React.createClass({
               sort_by={sortBy}
               sort_order={sortOrder}
               columns={columns}
-              is_selectable={bulkActions.length > 0} />
+              is_selectable={bulkActions.length > 0}
+            />
           </thead>
 
           <ListingItems
@@ -868,7 +883,8 @@ const Listing = React.createClass({
             limit={this.state.limit}
             item_actions={itemActions}
             messages={messages}
-            items={items} />
+            items={items}
+          />
 
           <tfoot>
             <ListingHeader
@@ -878,7 +894,8 @@ const Listing = React.createClass({
               sort_by={sortBy}
               sort_order={sortOrder}
               columns={columns}
-              is_selectable={bulkActions.length > 0} />
+              is_selectable={bulkActions.length > 0}
+            />
           </tfoot>
 
         </table>
@@ -888,12 +905,14 @@ const Listing = React.createClass({
             bulk_actions={bulkActions}
             selection={this.state.selection}
             selected_ids={this.state.selected_ids}
-            onBulkAction={this.handleBulkAction} />
+            onBulkAction={this.handleBulkAction}
+          />
           <ListingPages
             count={this.state.count}
             page={this.state.page}
             limit={this.state.limit}
-            onSetPage={this.handleSetPage} />
+            onSetPage={this.handleSetPage}
+          />
         </div>
       </div>
     );

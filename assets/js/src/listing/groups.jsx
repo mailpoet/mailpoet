@@ -19,7 +19,8 @@ define(['react', 'classnames'], (React, classNames) => {
             <a
               href="javascript:;"
               className={classes}
-              onClick={this.handleSelect.bind(this, group.name)} >
+              onClick={this.handleSelect.bind(this, group.name)}
+            >
               {group.label}
               <span className="count">({ parseInt(group.count, 10).toLocaleString() })</span>
             </a>

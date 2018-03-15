@@ -346,7 +346,8 @@ define(
                       className="button button-primary"
                       type="button"
                       onClick={this.handleResume}
-                      value={MailPoet.I18n.t('resume')} />
+                      value={MailPoet.I18n.t('resume')}
+                    />
                   :
                     <input
                       className="button button-primary"
@@ -354,19 +355,21 @@ define(
                       onClick={this.handleSend}
                       value={MailPoet.I18n.t('send')}
                       {...sendButtonOptions}
-                  />
+                    />
                 }
                 &nbsp;
                 <input
                   className="button button-secondary"
                   type="submit"
-                  value={MailPoet.I18n.t('saveDraftAndClose')} />
+                  value={MailPoet.I18n.t('saveDraftAndClose')}
+                />
                 &nbsp;{MailPoet.I18n.t('orSimply')}&nbsp;
                 <a
                   href={
                     `?page=mailpoet-newsletter-editor&id=${this.props.params.id}`
                   }
-                  onClick={this.handleRedirectToDesign}>
+                  onClick={this.handleRedirectToDesign}
+                >
                   {MailPoet.I18n.t('goBackToDesign')}
                 </a>.
               </p>

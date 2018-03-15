@@ -8,7 +8,7 @@ const Tabs = ({ tabs, selected, select }) => (
           href="javascript:"
           className={selected === name ? 'current' : ''}
           onClick={() => select(name)}
-          > {label}
+        > {label}
         </a></li>
       ))}
     </ul>
