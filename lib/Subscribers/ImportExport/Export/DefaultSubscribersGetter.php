@@ -9,63 +9,25 @@ use MailPoet\Models\SubscriberSegment;
 /**
  * Gets batches of subscribers from default segments.
  */
-class DefaultSubscribersGetter {
+class DefaultSubscribersGetter extends SubscribersGetter {
 
-  protected $segments_ids;
-  protected $batch_size;
-  protected $offset;
-  protected $finished;
+  /**
+   * @var bool
+   */
   protected $get_subscribers_without_segment;
 
   public function __construct($segments_ids, $batch_size) {
+    parent::__construct($segments_ids, $batch_size);
     $this->get_subscribers_without_segment = (array_search(0, $segments_ids) !== false);
-    $this->segments_ids = $this->filterSegmentIds($segments_ids);
-    $this->batch_size = $batch_size;
-    $this->reset();
   }
 
-  protected function filterSegmentIds($ids) {
-    $ids = array_map(function($data) {
-      return $data['id'];
-    }, Segment::select('id')
-      ->whereIn('id', $ids)
-      ->where('type', Segment::TYPE_DEFAULT)
-      ->findArray()
-    );
-    if($this->get_subscribers_without_segment) {
-      $ids[] = 0;
-    }
-    return $ids;
-  }
-
-  public function reset() {
-    $this->offset = 0;
-    $this->finished = false;
-  }
-
-  /**
-   * Gets the next batch of subscribers or `false` if no more!
-   */
-  public function get() {
-    if($this->finished) {
-      return false;
-    }
-    // define returned columns
-    $subscribers = Subscriber::selectMany(
-      'first_name',
-      'last_name',
-      'email',
-      'subscribed_ip',
-      array(
-        'global_status' => Subscriber::$_table . '.status'
-      ),
-      array(
-        'list_status' => SubscriberSegment::$_table . '.status'
+  protected function filter($subscribers) {
+    $subscribers =  $subscribers
+      ->selectMany(
+        array(
+          'list_status' => SubscriberSegment::$_table . '.status'
+        )
       )
-    );
-
-    // JOIN subscribers on segment and subscriber_segment tables
-    $subscribers = $subscribers
       ->left_outer_join(
         SubscriberSegment::$_table,
         array(
@@ -82,7 +44,6 @@ class DefaultSubscribersGetter {
           SubscriberSegment::$_table . '.segment_id'
         )
       )
-      ->filter('filterWithCustomFieldsForExport')
       ->groupBy(Subscriber::$_table . '.id')
       ->groupBy(Segment::$_table . '.id');
 
@@ -107,18 +68,13 @@ class DefaultSubscribersGetter {
         ->selectExpr('MAX(' . Segment::$_table . '.name) as segment_name')
         ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments_ids);
     }
+
     $subscribers = $subscribers
-      ->whereNull(Subscriber::$_table . '.deleted_at')
       ->offset($this->offset)
       ->limit($this->batch_size)
       ->findArray();
 
-    $this->offset += $this->batch_size;
-
-    if(count($subscribers) < $this->batch_size) {
-      $this->finished = true;
-    }
-
     return $subscribers;
   }
+
 }

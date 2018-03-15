@@ -18,13 +18,15 @@ class ImportExportFactory {
   }
 
   function getSegments($with_confirmed_subscribers = false) {
-    $segments = ($this->action === self::IMPORT_ACTION) ?
-      Segment::getSegmentsForImport() :
-      Segment::getSegmentsForExport($with_confirmed_subscribers);
-    $segments = Hooks::applyFilters('mailpoet_segments_with_subscriber_count', $segments);
-    $segments = array_values(array_filter($segments, function($segment) {
-      return $segment['subscribers'] > 0;
-    }));
+    if($this->action === self::IMPORT_ACTION) {
+      $segments = Segment::getSegmentsForImport();
+    } else {
+      $segments = Segment::getSegmentsForExport($with_confirmed_subscribers);
+      $segments = Hooks::applyFilters('mailpoet_segments_with_subscriber_count', $segments);
+      $segments = array_values(array_filter($segments, function($segment) {
+        return $segment['subscribers'] > 0;
+      }));
+    }
 
     return array_map(function($segment) {
       if(!$segment['name']) $segment['name'] = __('Not In List', 'mailpoet');

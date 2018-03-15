@@ -23,6 +23,7 @@ class Export {
   public $export_file;
   public $export_file_URL;
   public $default_subscribers_getter;
+  public $dynamic_subscribers_getter;
 
   public function __construct($data) {
     if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
@@ -30,6 +31,11 @@ class Export {
     }
 
     $this->default_subscribers_getter = new DefaultSubscribersGetter(
+      $data['segments'], 
+      self::SUBSCRIBER_BATCH_SIZE
+    );
+
+    $this->dynamic_subscribers_getter = new DynamicSubscribersGetter(
       $data['segments'], 
       self::SUBSCRIBER_BATCH_SIZE
     );
@@ -162,6 +168,9 @@ class Export {
 
   function getSubscribers() {
     $subscribers = $this->default_subscribers_getter->get();
+    if($subscribers === false) {
+      $subscribers = $this->dynamic_subscribers_getter->get();
+    }
     return $subscribers;
   }
 
