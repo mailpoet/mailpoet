@@ -21,7 +21,7 @@ define([
   jQuery
 ) => {
   const FormField = React.createClass({
-    renderField: function (data, inline = false) {
+    renderField: function renderField(data, inline = false) {
       let description = false;
       if (data.field.description) {
         description = (
@@ -89,7 +89,7 @@ define([
         </div>
       );
     },
-    render: function () {
+    render: function render() {
       let field = false;
 
       if (this.props.field.fields !== undefined) {

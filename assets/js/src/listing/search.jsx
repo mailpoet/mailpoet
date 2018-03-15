@@ -6,16 +6,16 @@ define([
     React
   ) => {
   const ListingSearch = React.createClass({
-    handleSearch: function (e) {
+    handleSearch: function handleSearch(e) {
       e.preventDefault();
       this.props.onSearch(
         this.search.value.trim()
       );
     },
-    componentWillReceiveProps: function (nextProps) {
+    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
       this.search.value = nextProps.search;
     },
-    render: function () {
+    render: function render() {
       if (this.props.search === false) {
         return false;
       }

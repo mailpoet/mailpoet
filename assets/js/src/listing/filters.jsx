@@ -9,7 +9,7 @@ define([
   MailPoet
 ) => {
   const ListingFilters = React.createClass({
-    handleFilterAction: function () {
+    handleFilterAction: function handleFilterAction() {
       const filters = {};
       this.getAvailableFilters().forEach((filter, i) => {
         filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
@@ -19,10 +19,10 @@ define([
       }
       return this.props.onSelectFilter(filters);
     },
-    handleEmptyTrash: function () {
+    handleEmptyTrash: function handleEmptyTrash() {
       return this.props.onEmptyTrash();
     },
-    getAvailableFilters: function () {
+    getAvailableFilters: function getAvailableFilters() {
       const filters = this.props.filters;
       return Object.keys(filters).filter(filter => !(
           filters[filter].length === 0
@@ -32,7 +32,7 @@ define([
           )
         ));
     },
-    componentDidUpdate: function () {
+    componentDidUpdate: function componentDidUpdate() {
       const selectedFilters = this.props.filter;
       this.getAvailableFilters().forEach(
         (filter, i) => {
@@ -44,7 +44,7 @@ define([
         }
         );
     },
-    render: function () {
+    render: function render() {
       const filters = this.props.filters;
       const availableFilters = this.getAvailableFilters()
         .map((filter, i) => (

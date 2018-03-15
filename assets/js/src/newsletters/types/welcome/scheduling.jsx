@@ -51,10 +51,10 @@ const WelcomeScheduling = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired,
   },
-  getCurrentValue: function () {
+  getCurrentValue: function getCurrentValue() {
     return (this.props.item[this.props.field.name] || {});
   },
-  handleValueChange: function (name, value) {
+  handleValueChange: function handleValueChange(name, value) {
     const oldValue = this.getCurrentValue();
     const newValue = {};
 
@@ -67,37 +67,37 @@ const WelcomeScheduling = React.createClass({
       },
     });
   },
-  handleEventChange: function (event) {
+  handleEventChange: function handleEventChange(event) {
     return this.handleValueChange(
       'event',
       event.target.value
     );
   },
-  handleSegmentChange: function (event) {
+  handleSegmentChange: function handleSegmentChange(event) {
     return this.handleValueChange(
       'segment',
       event.target.value
     );
   },
-  handleRoleChange: function (event) {
+  handleRoleChange: function handleRoleChange(event) {
     return this.handleValueChange(
       'role',
       event.target.value
     );
   },
-  handleAfterTimeNumberChange: function (event) {
+  handleAfterTimeNumberChange: function handleAfterTimeNumberChange(event) {
     return this.handleValueChange(
       'afterTimeNumber',
       event.target.value
     );
   },
-  handleAfterTimeTypeChange: function (event) {
+  handleAfterTimeTypeChange: function handleAfterTimeTypeChange(event) {
     return this.handleValueChange(
       'afterTimeType',
       event.target.value
     );
   },
-  handleNext: function () {
+  handleNext: function handleNext() {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -117,10 +117,10 @@ const WelcomeScheduling = React.createClass({
       }
     });
   },
-  showTemplateSelection: function (newsletterId) {
+  showTemplateSelection: function showTemplateSelection(newsletterId) {
     this.context.router.push(`/template/${newsletterId}`);
   },
-  render: function () {
+  render: function render() {
     const value = this.getCurrentValue();
     let roleSegmentSelection;
     let timeNumber;

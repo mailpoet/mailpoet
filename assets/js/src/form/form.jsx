@@ -19,25 +19,25 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      getDefaultProps: function () {
+      getDefaultProps: function getDefaultProps() {
         return {
           params: {},
         };
       },
-      getInitialState: function () {
+      getInitialState: function getInitialState() {
         return {
           loading: false,
           errors: [],
           item: {},
         };
       },
-      getValues: function () {
+      getValues: function getValues() {
         return this.props.item ? this.props.item : this.state.item;
       },
-      getErrors: function () {
+      getErrors: function getErrors() {
         return this.props.errors ? this.props.errors : this.state.errors;
       },
-      componentDidMount: function () {
+      componentDidMount: function componentDidMount() {
         if (this.isMounted()) {
           if (this.props.params.id !== undefined) {
             this.loadItem(this.props.params.id);
@@ -50,7 +50,7 @@ define(
           }
         }
       },
-      componentWillReceiveProps: function (props) {
+      componentWillReceiveProps: function componentWillReceiveProps(props) {
         if (props.params.id === undefined) {
           setImmediate(() => {
             this.setState({
@@ -63,7 +63,7 @@ define(
           }
         }
       },
-      loadItem: function (id) {
+      loadItem: function loadItem(id) {
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
@@ -85,12 +85,12 @@ define(
           this.setState({
             loading: false,
             item: {},
-          }, function () {
+          }, function failSetStateCallback() {
             this.context.router.push('/new');
           });
         });
       },
-      handleSubmit: function (e) {
+      handleSubmit: function handleSubmit(e) {
         e.preventDefault();
 
         // handle validation
@@ -143,7 +143,7 @@ define(
           }
         });
       },
-      handleValueChange: function (e) {
+      handleValueChange: function handleValueChange(e) {
         if (this.props.onChange) {
           return this.props.onChange(e);
         }
@@ -157,7 +157,7 @@ define(
         });
         return true;
       },
-      render: function () {
+      render: function render() {
         let errors;
         if (this.getErrors() !== undefined) {
           errors = this.getErrors().map((error, index) => (

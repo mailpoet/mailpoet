@@ -76,10 +76,10 @@ define(
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
-      getFields: function () {
+      getFields: function getFields() {
         return fields;
       },
-      getSendButtonOptions: function () {
+      getSendButtonOptions: function getSendButtonOptions() {
         return {
           value: MailPoet.I18n.t('activate'),
         };

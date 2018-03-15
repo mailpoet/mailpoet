@@ -8,54 +8,54 @@ define([
     MailPoet
   ) => {
   const ListingPages = React.createClass({
-    getInitialState: function () {
+    getInitialState: function getInitialState() {
       return {
         page: null,
       };
     },
-    setPage: function (page) {
+    setPage: function setPage(page) {
       this.setState({
         page: null,
       }, () => {
         this.props.onSetPage(this.constrainPage(page));
       });
     },
-    setFirstPage: function () {
+    setFirstPage: function setFirstPage() {
       this.setPage(1);
     },
-    setLastPage: function () {
+    setLastPage: function setLastPage() {
       this.setPage(this.getLastPage());
     },
-    setPreviousPage: function () {
+    setPreviousPage: function setPreviousPage() {
       this.setPage(this.constrainPage(
         parseInt(this.props.page, 10) - 1)
       );
     },
-    setNextPage: function () {
+    setNextPage: function setNextPage() {
       this.setPage(this.constrainPage(
         parseInt(this.props.page, 10) + 1)
       );
     },
-    constrainPage: function (page) {
+    constrainPage: function constrainPage(page) {
       return Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
     },
-    handleSetManualPage: function (e) {
+    handleSetManualPage: function handleSetManualPage(e) {
       if (e.which === 13) {
         this.setPage(this.state.page);
       }
     },
-    handleChangeManualPage: function (e) {
+    handleChangeManualPage: function handleChangeManualPage(e) {
       this.setState({
         page: e.target.value,
       });
     },
-    handleBlurManualPage: function (e) {
+    handleBlurManualPage: function handleBlurManualPage(e) {
       this.setPage(e.target.value);
     },
-    getLastPage: function () {
+    getLastPage: function getLastPage() {
       return Math.ceil(this.props.count / this.props.limit);
     },
-    render: function () {
+    render: function render() {
       if (this.props.count === 0) {
         return false;
       }

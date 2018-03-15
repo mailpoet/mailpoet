@@ -85,7 +85,7 @@ const itemActions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
-    link: function (item) {
+    link: function link(item) {
       return (
         <a href={`admin.php?page=mailpoet-form-editor&id=${item.id}`}>{MailPoet.I18n.t('edit')}</a>
       );
@@ -94,7 +94,7 @@ const itemActions = [
   {
     name: 'duplicate',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: function (item, refresh) {
+    onClick: function onClick(item, refresh) {
       return MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'forms',

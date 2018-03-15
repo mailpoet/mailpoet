@@ -19,7 +19,7 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      setupNewsletter: function (type) {
+      setupNewsletter: function setupNewsletter(type) {
         if (type !== undefined) {
           this.context.router.push(`/new/${type}`);
           MailPoet.trackEvent('Emails > Type selected', {
@@ -28,7 +28,7 @@ define(
           });
         }
       },
-      createNewsletter: function (type) {
+      createNewsletter: function createNewsletter(type) {
         MailPoet.trackEvent('Emails > Type selected', {
           'MailPoet Free version': window.mailpoet_version,
           'Email type': type,
@@ -52,7 +52,7 @@ define(
           }
         });
       },
-      getAutomaticEmails: function () {
+      getAutomaticEmails: function getAutomaticEmails() {
         if (!window.mailpoet_automatic_emails) return [];
 
         return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
@@ -73,13 +73,13 @@ define(
           return email;
         });
       },
-      render: function () {
+      render: function render() {
         const defaultTypes = [
           {
             slug: 'standard',
             title: MailPoet.I18n.t('regularNewsletterTypeTitle'),
             description: MailPoet.I18n.t('regularNewsletterTypeDescription'),
-            action: function () {
+            action: function action() {
               return (
                 <a
                   className="button button-primary"
@@ -97,7 +97,7 @@ define(
             slug: 'welcome',
             title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
             description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
-            action: (function () {
+            action: (function action() {
               return (
                 <div>
                   <a href="?page=mailpoet-premium" target="_blank">
@@ -111,7 +111,7 @@ define(
             slug: 'notification',
             title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
             description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
-            action: function () {
+            action: function action() {
               return (
                 <a
                   className="button button-primary"

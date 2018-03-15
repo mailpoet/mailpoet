@@ -25,7 +25,7 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      getInitialState: function () {
+      getInitialState: function getInitialState() {
         return {
           options: {
             intervalType: 'daily',
@@ -36,12 +36,12 @@ define(
           },
         };
       },
-      handleValueChange: function (event) {
+      handleValueChange: function handleValueChange(event) {
         const state = this.state;
         state[event.target.name] = event.target.value;
         this.setState(state);
       },
-      handleNext: function () {
+      handleNext: function handleNext() {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
@@ -61,10 +61,10 @@ define(
           }
         });
       },
-      showTemplateSelection: function (newsletterId) {
+      showTemplateSelection: function showTemplateSelection(newsletterId) {
         this.context.router.push(`/template/${newsletterId}`);
       },
-      render: function () {
+      render: function render() {
         return (
           <div>
             <h1>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h1>

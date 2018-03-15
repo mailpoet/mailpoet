@@ -10,21 +10,21 @@ define([
   jQuery
 ) => {
   const Selection = React.createClass({
-    allowMultipleValues: function () {
+    allowMultipleValues: function allowMultipleValues() {
       return (this.props.field.multiple === true);
     },
-    isSelect2Initialized: function () {
+    isSelect2Initialized: function isSelect2Initialized() {
       return (jQuery(`#${this.select.id}`).hasClass('select2-hidden-accessible') === true);
     },
-    isSelect2Component: function () {
+    isSelect2Component: function isSelect2Component() {
       return this.allowMultipleValues() || this.props.field.forceSelect2;
     },
-    componentDidMount: function () {
+    componentDidMount: function componentDidMount() {
       if (this.isSelect2Component()) {
         this.setupSelect2();
       }
     },
-    componentDidUpdate: function (prevProps) {
+    componentDidUpdate: function componentDidUpdate(prevProps) {
       if ((this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
       ) {
@@ -40,26 +40,26 @@ define([
         this.resetSelect2();
       }
     },
-    componentWillUnmount: function () {
+    componentWillUnmount: function componentWillUnmount() {
       if (this.isSelect2Component()) {
         this.destroySelect2();
       }
     },
-    getFieldId: function (data) {
+    getFieldId: function getFieldId(data) {
       const props = data || this.props;
       return props.field.id || props.field.name;
     },
-    resetSelect2: function () {
+    resetSelect2: function resetSelect2() {
       this.destroySelect2();
       this.setupSelect2();
     },
-    destroySelect2: function () {
+    destroySelect2: function destroySelect2() {
       if (this.isSelect2Initialized()) {
         jQuery(`#${this.select.id}`).select2('destroy');
         this.cleanupAfterSelect2();
       }
     },
-    cleanupAfterSelect2: function () {
+    cleanupAfterSelect2: function cleanupAfterSelect2() {
       // remove DOM elements created by Select2 that are not tracked by React
       jQuery(`#${this.select.id}`)
         .find('option:not(.default)')
@@ -70,7 +70,7 @@ define([
         .off('select2:unselecting')
         .off('select2:opening');
     },
-    setupSelect2: function () {
+    setupSelect2: function setupSelect2() {
       if (this.isSelect2Initialized()) {
         return;
       }
@@ -81,7 +81,7 @@ define([
           id: '', // the value of the option
           text: this.props.field.placeholder,
         },
-        templateResult: function (item) {
+        templateResult: function templateResult(item) {
           if (item.element && item.element.selected) {
             return null;
           } else if (item.title) {
@@ -98,7 +98,7 @@ define([
             url: window.ajaxurl,
             type: 'POST',
             dataType: 'json',
-            data: function (params) {
+            data: function data(params) {
               return {
                 action: 'mailpoet',
                 api_version: window.mailpoet_api_version,
@@ -111,7 +111,7 @@ define([
                 ),
               };
             },
-            processResults: function (response) {
+            processResults: function processResults(response) {
               return {
                 results: response.data.map(item => (
                   { id: item.id || item.value, text: item.name || item.text }
@@ -142,7 +142,7 @@ define([
 
       select2.on('change', this.handleChange);
     },
-    getSelectedValues: function () {
+    getSelectedValues: function getSelectedValues() {
       if (this.props.field.selected !== undefined) {
         return this.props.field.selected(this.props.item);
       } else if (this.props.item !== undefined && this.props.field.name !== undefined) {
@@ -156,7 +156,7 @@ define([
       }
       return null;
     },
-    getItems: function () {
+    getItems: function getItems() {
       let items;
       if (typeof (window[`mailpoet_${this.props.field.endpoint}`]) !== 'undefined') {
         items = window[`mailpoet_${this.props.field.endpoint}`];
@@ -172,7 +172,7 @@ define([
 
       return items;
     },
-    handleChange: function (e) {
+    handleChange: function handleChange(e) {
       let value;
       if (this.props.onValueChange !== undefined) {
         if (this.props.field.multiple) {
@@ -190,19 +190,19 @@ define([
         });
       }
     },
-    getLabel: function (item) {
+    getLabel: function getLabel(item) {
       if (this.props.field.getLabel !== undefined) {
         return this.props.field.getLabel(item, this.props.item);
       }
       return item.name;
     },
-    getSearchLabel: function (item) {
+    getSearchLabel: function getSearchLabel(item) {
       if (this.props.field.getSearchLabel !== undefined) {
         return this.props.field.getSearchLabel(item, this.props.item);
       }
       return null;
     },
-    getValue: function (item) {
+    getValue: function getValue(item) {
       if (this.props.field.getValue !== undefined) {
         return this.props.field.getValue(item, this.props.item);
       }
@@ -211,13 +211,13 @@ define([
     // When it's impossible to represent the desired value in DOM,
     // this function may be used to transform the placeholder value into
     // desired value.
-    transformChangedValue: function (value) {
+    transformChangedValue: function transformChangedValue(value) {
       if (typeof this.props.field.transformChangedValue === 'function') {
         return this.props.field.transformChangedValue.call(this, value);
       }
       return value;
     },
-    insertEmptyOption: function () {
+    insertEmptyOption: function insertEmptyOption() {
       // https://select2.org/placeholders
       // For single selects only, in order for the placeholder value to appear,
       // we must have a blank <option> as the first option in the <select> control.
@@ -225,7 +225,7 @@ define([
       if (this.props.field.placeholder) return (<option className="default" />);
       return undefined;
     },
-    render: function () {
+    render: function render() {
       const items = this.getItems(this.props.field);
       const selectedValues = this.getSelectedValues();
       const options = items.map((item, index) => {

@@ -12,12 +12,12 @@ import ListingGroups from 'listing/groups.jsx';
 import ListingFilters from 'listing/filters.jsx';
 
 const ListingItem = React.createClass({
-  getInitialState: function () {
+  getInitialState: function getInitialState() {
     return {
       expanded: false,
     };
   },
-  handleSelectItem: function (e) {
+  handleSelectItem: function handleSelectItem(e) {
     this.props.onSelectItem(
       parseInt(e.target.value, 10),
       e.target.checked
@@ -25,19 +25,19 @@ const ListingItem = React.createClass({
 
     return !e.target.checked;
   },
-  handleRestoreItem: function (id) {
+  handleRestoreItem: function handleRestoreItem(id) {
     this.props.onRestoreItem(id);
   },
-  handleTrashItem: function (id) {
+  handleTrashItem: function handleTrashItem(id) {
     this.props.onTrashItem(id);
   },
-  handleDeleteItem: function (id) {
+  handleDeleteItem: function handleDeleteItem(id) {
     this.props.onDeleteItem(id);
   },
-  handleToggleItem: function () {
+  handleToggleItem: function handleToggleItem() {
     this.setState({ expanded: !this.state.expanded });
   },
-  render: function () {
+  render: function render() {
     let checkbox = false;
 
     if (this.props.is_selectable === true) {
@@ -203,7 +203,7 @@ const ListingItem = React.createClass({
 
 
 const ListingItems = React.createClass({
-  render: function () {
+  render: function render() {
     if (this.props.items.length === 0) {
       let message;
       if (this.props.loading === true) {
@@ -301,7 +301,7 @@ const Listing = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired,
   },
-  getInitialState: function () {
+  getInitialState: function getInitialState() {
     return {
       loading: false,
       search: '',
@@ -320,12 +320,12 @@ const Listing = React.createClass({
       meta: {},
     };
   },
-  getParam: function (param) {
+  getParam: function getParam(param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
     return [matches[1], matches[2]];
   },
-  initWithParams: function (params) {
+  initWithParams: function initWithParams(params) {
     const state = this.getInitialState();
      // check for url params
     if (params.splat) {
@@ -366,7 +366,7 @@ const Listing = React.createClass({
       this.getItems();
     });
   },
-  getParams: function () {
+  getParams: function getParams() {
     // get all route parameters (without the "splat")
     const params = _.omit(this.props.params, 'splat');
     // TODO:
@@ -377,7 +377,7 @@ const Listing = React.createClass({
     }
     return params;
   },
-  setParams: function () {
+  setParams: function setParams() {
     if (this.props.location) {
       const params = Object.keys(this.state)
         .filter(key => (
@@ -414,7 +414,7 @@ const Listing = React.createClass({
       }
     }
   },
-  getUrlWithParams: function (params) {
+  getUrlWithParams: function getUrlWithParams(params) {
     let baseUrl = (this.props.base_url !== undefined)
       ? this.props.base_url
       : null;
@@ -425,7 +425,7 @@ const Listing = React.createClass({
     }
     return `/${params}`;
   },
-  setBaseUrlParams: function (baseUrl) {
+  setBaseUrlParams: function setBaseUrlParams(baseUrl) {
     let ret = baseUrl;
     if (ret.indexOf(':') !== -1) {
       const params = this.getParams();
@@ -438,7 +438,7 @@ const Listing = React.createClass({
 
     return ret;
   },
-  componentDidMount: function () {
+  componentDidMount: function componentDidMount() {
     if (this.isMounted()) {
       const params = this.props.params || {};
       this.initWithParams(params);
@@ -450,11 +450,11 @@ const Listing = React.createClass({
       }
     }
   },
-  componentWillReceiveProps: function (nextProps) {
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     const params = nextProps.params || {};
     this.initWithParams(params);
   },
-  getItems: function () {
+  getItems: function getItems() {
     if (this.isMounted()) {
       this.setState({ loading: true });
 
@@ -505,7 +505,7 @@ const Listing = React.createClass({
       });
     }
   },
-  handleRestoreItem: function (id) {
+  handleRestoreItem: function handleRestoreItem(id) {
     this.setState({
       loading: true,
       page: 1,
@@ -533,7 +533,7 @@ const Listing = React.createClass({
       );
     });
   },
-  handleTrashItem: function (id) {
+  handleTrashItem: function handleTrashItem(id) {
     this.setState({
       loading: true,
       page: 1,
@@ -561,7 +561,7 @@ const Listing = React.createClass({
       );
     });
   },
-  handleDeleteItem: function (id) {
+  handleDeleteItem: function handleDeleteItem(id) {
     this.setState({
       loading: true,
       page: 1,
@@ -589,7 +589,7 @@ const Listing = React.createClass({
       );
     });
   },
-  handleEmptyTrash: function () {
+  handleEmptyTrash: function handleEmptyTrash() {
     return this.handleBulkAction('all', {
       action: 'delete',
       group: 'trash',
@@ -609,7 +609,7 @@ const Listing = React.createClass({
       );
     });
   },
-  handleBulkAction: function (selectedIds, params) {
+  handleBulkAction: function handleBulkAction(selectedIds, params) {
     if (
       this.state.selection === false
       && this.state.selected_ids.length === 0
@@ -649,7 +649,7 @@ const Listing = React.createClass({
       }
     });
   },
-  handleSearch: function (search) {
+  handleSearch: function handleSearch(search) {
     this.setState({
       search: search,
       page: 1,
@@ -659,7 +659,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleSort: function (sortBy, sortOrder = 'asc') {
+  handleSort: function handleSort(sortBy, sortOrder = 'asc') {
     this.setState({
       sort_by: sortBy,
       sort_order: (sortOrder === 'asc') ? 'asc' : 'desc',
@@ -667,7 +667,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleSelectItem: function (id, isChecked) {
+  handleSelectItem: function handleSelectItem(id, isChecked) {
     let selectedIds = this.state.selected_ids;
     let selection = false;
 
@@ -688,7 +688,7 @@ const Listing = React.createClass({
       selected_ids: selectedIds,
     });
   },
-  handleSelectItems: function (isChecked) {
+  handleSelectItems: function handleSelectItems(isChecked) {
     if (isChecked === false) {
       this.clearSelection();
     } else {
@@ -700,7 +700,7 @@ const Listing = React.createClass({
       });
     }
   },
-  handleSelectAll: function () {
+  handleSelectAll: function handleSelectAll() {
     if (this.state.selection === 'all') {
       this.clearSelection();
     } else {
@@ -710,13 +710,13 @@ const Listing = React.createClass({
       });
     }
   },
-  clearSelection: function () {
+  clearSelection: function clearSelection() {
     this.setState({
       selection: false,
       selected_ids: [],
     });
   },
-  handleFilter: function (filters) {
+  handleFilter: function handleFilter(filters) {
     this.setState({
       filter: filters,
       page: 1,
@@ -724,7 +724,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleGroup: function (group) {
+  handleGroup: function handleGroup(group) {
     // reset search
     jQuery('#search_input').val('');
 
@@ -737,7 +737,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleSetPage: function (page) {
+  handleSetPage: function handleSetPage(page) {
     this.setState({
       page: page,
       selection: false,
@@ -746,14 +746,14 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleRenderItem: function (item, actions) {
+  handleRenderItem: function handleRenderItem(item, actions) {
     const render = this.props.onRenderItem(item, actions, this.state.meta);
     return render.props.children;
   },
-  handleRefreshItems: function () {
+  handleRefreshItems: function handleRefreshItems() {
     this.getItems();
   },
-  render: function () {
+  render: function render() {
     const items = this.state.items;
     const sortBy = this.state.sort_by;
     const sortOrder = this.state.sort_order;

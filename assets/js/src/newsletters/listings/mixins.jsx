@@ -10,7 +10,7 @@ import Hooks from 'wp-js-hooks';
 import StatsBadge from 'newsletters/badges/stats.jsx';
 
 const QueueMixin = {
-  pauseSending: function (newsletter) {
+  pauseSending: function pauseSending(newsletter) {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
@@ -30,7 +30,7 @@ const QueueMixin = {
       }
     });
   },
-  resumeSending: function (newsletter) {
+  resumeSending: function resumeSending(newsletter) {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
@@ -50,7 +50,7 @@ const QueueMixin = {
       }
     });
   },
-  renderQueueStatus: function (newsletter, mailerLog) {
+  renderQueueStatus: function renderQueueStatus(newsletter, mailerLog) {
     if (!newsletter.queue) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
@@ -142,15 +142,15 @@ const QueueMixin = {
   },
 };
 
-const trackStatsCTAClicked = function () {
+function trackStatsCTAClicked() {
   MailPoet.trackEvent(
     'User has clicked a CTA to view detailed stats',
     { 'MailPoet Free version': window.mailpoet_version }
   );
-};
+}
 
 const StatisticsMixin = {
-  renderStatistics: function (newsletter, isSent, currentTime) {
+  renderStatistics: function renderStatistics(newsletter, isSent, currentTime) {
     let sent = isSent;
     if (sent === undefined) {
       // condition for standard and post notification listings
@@ -324,20 +324,20 @@ const StatisticsMixin = {
       </div>
     );
   },
-  addStatsCTAAction: function (actions) {
+  addStatsCTAAction: function addStatsCTAAction(actions) {
     if (window.mailpoet_premium_active) {
       return actions;
     }
     actions.unshift({
       name: 'stats',
-      link: function () {
+      link: function link() {
         return (
           <a href={'admin.php?page=mailpoet-premium'} onClick={trackStatsCTAClicked}>
             {MailPoet.I18n.t('statsListingActionTitle')}
           </a>
         );
       },
-      display: function (newsletter) {
+      display: function display(newsletter) {
         // welcome emails provide explicit total_sent value
         const countProcessed = newsletter.queue && newsletter.queue.count_processed;
         return Number(newsletter.total_sent || countProcessed) > 0;
@@ -345,7 +345,7 @@ const StatisticsMixin = {
     });
     return actions;
   },
-  addStatsCTALink: function (params) {
+  addStatsCTALink: function addStatsCTALink(params) {
     if (window.mailpoet_premium_active) {
       return params;
     }
@@ -358,7 +358,7 @@ const StatisticsMixin = {
 };
 
 const MailerMixin = {
-  checkMailerStatus: function (state) {
+  checkMailerStatus: function checkMailerStatus(state) {
     if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
       MailPoet.Notice.error(
         '',

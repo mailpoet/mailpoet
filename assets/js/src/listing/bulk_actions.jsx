@@ -7,13 +7,13 @@ define([
   MailPoet
 ) => {
   const ListingBulkActions = React.createClass({
-    getInitialState: function () {
+    getInitialState: function getInitialState() {
       return {
         action: false,
         extra: false,
       };
     },
-    handleChangeAction: function (e) {
+    handleChangeAction: function handleChangeAction(e) {
       this.setState({
         action: e.target.value,
         extra: false,
@@ -28,7 +28,7 @@ define([
         }
       });
     },
-    handleApplyAction: function (e) {
+    handleApplyAction: function handleApplyAction(e) {
       e.preventDefault();
 
       const action = this.getSelectedAction();
@@ -47,7 +47,7 @@ define([
 
       data.action = this.state.action;
 
-      let onSuccess = function () {};
+      let onSuccess = () => {};
       if (action.onSuccess !== undefined) {
         onSuccess = action.onSuccess;
       }
@@ -64,7 +64,7 @@ define([
         extra: false,
       });
     },
-    getSelectedAction: function () {
+    getSelectedAction: function getSelectedAction() {
       const selectedAction = this.action.value;
       if (selectedAction.length > 0) {
         const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
@@ -75,7 +75,7 @@ define([
       }
       return null;
     },
-    render: function () {
+    render: function render() {
       if (this.props.bulk_actions.length === 0) {
         return null;
       }

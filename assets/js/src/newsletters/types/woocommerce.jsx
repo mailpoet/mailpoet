@@ -17,7 +17,7 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      setupNewsletter: function (type) {
+      setupNewsletter: function setupNewsletter(type) {
         if (type !== undefined) {
           this.context.router.push(`/new/${type}`);
           MailPoet.trackEvent('Emails > Type selected', {
@@ -26,7 +26,7 @@ define(
           });
         }
       },
-      createNewsletter: function (type) {
+      createNewsletter: function createNewsletter(type) {
         MailPoet.trackEvent('Emails > Type selected', {
           'MailPoet Free version': window.mailpoet_version,
           'Email type': type,
@@ -50,7 +50,7 @@ define(
           }
         });
       },
-      render: function () {
+      render: function render() {
         const types = [
           {
             id: 'woocommerce',
