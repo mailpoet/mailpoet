@@ -12,7 +12,7 @@ define([
     handleFilterAction: function () {
       const filters = {};
       this.getAvailableFilters().forEach((filter, i) => {
-        filters[this.refs[`filter-${i}`].name] = this.refs[`filter-${i}`].value;
+        filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
       });
       if (this.props.onBeforeSelectFilter) {
         this.props.onBeforeSelectFilter(filters);
@@ -37,7 +37,7 @@ define([
       this.getAvailableFilters().forEach(
         (filter, i) => {
           if (selectedFilters[filter] !== undefined && selectedFilters[filter]) {
-            jQuery(this.refs[`filter-${i}`])
+            jQuery(this[`filter-${i}`])
               .val(selectedFilters[filter])
               .trigger('change');
           }
@@ -49,7 +49,7 @@ define([
       const availableFilters = this.getAvailableFilters()
         .map((filter, i) => (
           <select
-            ref={`filter-${i}`}
+            ref={(c) => { this[`filter-${i}`] = c; }}
             key={`filter-${i}`}
             name={filter}
           >
