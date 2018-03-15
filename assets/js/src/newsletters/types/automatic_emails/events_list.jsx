@@ -44,7 +44,7 @@ class AutomaticEmailEventsList extends React.Component {
         <li key={index} data-type={event.slug}>
           <div>
             <div className="mailpoet_thumbnail">
-              {event.thumbnailImage ? <img src={event.thumbnailImage} /> : null}
+              {event.thumbnailImage ? <img src={event.thumbnailImage} alt="" /> : null}
             </div>
             <div className="mailpoet_description">
               <div className="title_and_badge">

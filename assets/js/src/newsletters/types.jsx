@@ -140,7 +140,7 @@ define(
                 <li key={index} data-type={type.slug}>
                   <div>
                     <div className="mailpoet_thumbnail">
-                      {type.thumbnailImage ? <img src={type.thumbnailImage} /> : null}
+                      {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
                     </div>
                     <div className="mailpoet_description">
                       <h3>{type.title}</h3>

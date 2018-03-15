@@ -106,7 +106,7 @@ class TemplateBox extends React.Component {
     if (typeof thumbnail === 'string' && thumbnail.length > 0) {
       preview = (
         <a href="javascript:;" onClick={this.onPreview}>
-          <img src={thumbnail} />
+          <img src={thumbnail} alt={MailPoet.I18n.t('templatePreview')} />
           <div className="mailpoet_overlay" />
         </a>
       );

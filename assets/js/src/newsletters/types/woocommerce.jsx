@@ -132,7 +132,7 @@ define(
                 <li key={index} data-type={type.id}>
                   <div>
                     <div className="mailpoet_thumbnail">
-                      {type.thumbnailImage ? <img src={type.thumbnailImage} /> : null}
+                      {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
                     </div>
                     <div className="mailpoet_description">
                       <div className="title_and_badge">
