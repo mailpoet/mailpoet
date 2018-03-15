@@ -43,7 +43,7 @@ const ListingItem = React.createClass({
     if (this.props.is_selectable === true) {
       checkbox = (
         <th className="check-column" scope="row">
-          <label className="screen-reader-text">{
+          <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>{
             `Select ${this.props.item[this.props.columns[0].name]}`
           }</label>
           <input
@@ -54,6 +54,7 @@ const ListingItem = React.createClass({
             }
             onChange={this.handleSelectItem}
             disabled={this.props.selection === 'all'}
+            id={`listing-row-checkbox-${this.props.item.id}`}
           />
         </th>
       );

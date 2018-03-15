@@ -32,12 +32,13 @@ const ListingHeader = React.createClass({
         <th
           className="manage-column column-cb check-column"
         >
-          <label className="screen-reader-text">
+          <label className="screen-reader-text" htmlFor="select_all">
             {MailPoet.I18n.t('selectAll')}
           </label>
           <input
             type="checkbox"
             name="select_all"
+            id="select_all"
             ref={(c) => { this.toggle = c; }}
             checked={this.props.selection}
             onChange={this.handleSelectItems}
