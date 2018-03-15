@@ -516,7 +516,7 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'restore',
       data: {
-        id: id,
+        id,
       },
     }).done((response) => {
       if (
@@ -544,7 +544,7 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'trash',
       data: {
-        id: id,
+        id,
       },
     }).done((response) => {
       if (
@@ -572,7 +572,7 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'delete',
       data: {
-        id: id,
+        id,
       },
     }).done((response) => {
       if (
@@ -637,7 +637,7 @@ const Listing = React.createClass({
       api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
       action: 'bulkAction',
-      data: data,
+      data,
     }).done(() => {
       this.getItems();
     }).fail((response) => {
@@ -651,7 +651,7 @@ const Listing = React.createClass({
   },
   handleSearch: function handleSearch(search) {
     this.setState({
-      search: search,
+      search,
       page: 1,
       selection: false,
       selected_ids: [],
@@ -684,7 +684,7 @@ const Listing = React.createClass({
     }
 
     this.setState({
-      selection: selection,
+      selection,
       selected_ids: selectedIds,
     });
   },
@@ -729,7 +729,7 @@ const Listing = React.createClass({
     jQuery('#search_input').val('');
 
     this.setState({
-      group: group,
+      group,
       filter: {},
       search: '',
       page: 1,
@@ -739,7 +739,7 @@ const Listing = React.createClass({
   },
   handleSetPage: function handleSetPage(page) {
     this.setState({
-      page: page,
+      page,
       selection: false,
       selected_ids: [],
     }, () => {

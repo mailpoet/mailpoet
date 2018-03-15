@@ -71,7 +71,7 @@ define(
           endpoint: this.props.endpoint,
           action: 'get',
           data: {
-            id: id,
+            id,
           },
         }).done((response) => {
           this.setState({
@@ -153,7 +153,7 @@ define(
         item[field] = e.target.value;
 
         this.setState({
-          item: item,
+          item,
         });
         return true;
       },

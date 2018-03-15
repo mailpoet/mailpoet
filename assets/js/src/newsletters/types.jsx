@@ -38,7 +38,7 @@ define(
           endpoint: 'newsletters',
           action: 'create',
           data: {
-            type: type,
+            type,
             subject: MailPoet.I18n.t('draftNewsletterTitle'),
           },
         }).done((response) => {

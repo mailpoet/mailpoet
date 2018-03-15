@@ -102,13 +102,13 @@ define(
             // Transform string format to Date object
             return MailPoet.Date.toDate(value, {
               parseFormat: dateDisplayFormat,
-              format: format,
+              format,
             });
           };
           jQuery.datepicker.formatDate = function formatDate(format, value) {
             // Transform Date object to string format
             const newValue = MailPoet.Date.format(value, {
-              format: format,
+              format,
             });
             return newValue;
           };
@@ -120,7 +120,7 @@ define(
               that.onChange({
                 target: {
                   name: that.getFieldName(),
-                  value: value,
+                  value,
                 },
               });
             },
@@ -205,8 +205,8 @@ define(
         const value = props.value || defaultDateTime;
         const [date, time] = value.split(this.DATE_TIME_SEPARATOR);
         return {
-          date: date,
-          time: time,
+          date,
+          time,
         };
       },
       handleChange: function handleChange(event) {

@@ -25,7 +25,7 @@ class TemplateBox extends React.Component {
         endpoint: 'newsletterTemplates',
         action: 'delete',
         data: {
-          id: id,
+          id,
         },
       }).done(() => {
         afterDelete(true, id);
@@ -44,7 +44,7 @@ class TemplateBox extends React.Component {
       message: MailPoet.I18n.t('confirmTemplateDeletion').replace('%$1s', name),
       confirmLabel: MailPoet.I18n.t('confirmLabel'),
       cancelLabel: MailPoet.I18n.t('cancelLabel'),
-      onConfirm: onConfirm,
+      onConfirm,
       onCancel: () => {},
     });
   }
@@ -78,7 +78,7 @@ class TemplateBox extends React.Component {
       action: 'save',
       data: {
         id: newsletterId,
-        body: body,
+        body,
       },
     }).done((response) => {
       afterSelect(true, response.data.id);

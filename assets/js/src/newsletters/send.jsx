@@ -73,7 +73,7 @@ define(
           endpoint: 'newsletters',
           action: 'get',
           data: {
-            id: id,
+            id,
           },
         }).done((response) => {
           this.setState({
@@ -101,7 +101,7 @@ define(
                 newsletter_id: response.data.id,
                 name: response.data.subject,
                 description: response.data.preheader,
-                thumbnail: thumbnail,
+                thumbnail,
                 body: JSON.stringify(response.data.body),
                 categories: '["recent"]',
               },
@@ -309,7 +309,7 @@ define(
         item[field] = e.target.value;
 
         this.setState({
-          item: item,
+          item,
         });
         return true;
       },

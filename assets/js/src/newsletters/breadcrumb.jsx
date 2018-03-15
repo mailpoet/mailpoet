@@ -36,7 +36,7 @@ define(
         ];
         return {
           step: null,
-          steps: steps,
+          steps,
         };
       },
       render: function render() {
