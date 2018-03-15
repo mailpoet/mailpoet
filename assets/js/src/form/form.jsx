@@ -42,17 +42,21 @@ define(
           if (this.props.params.id !== undefined) {
             this.loadItem(this.props.params.id);
           } else {
-            this.setState({
-              item: jQuery('.mailpoet_form').mailpoetSerializeObject(),
+            setImmediate(() => {
+              this.setState({
+                item: jQuery('.mailpoet_form').mailpoetSerializeObject(),
+              });
             });
           }
         }
       },
       componentWillReceiveProps: function (props) {
         if (props.params.id === undefined) {
-          this.setState({
-            loading: false,
-            item: {},
+          setImmediate(() => {
+            this.setState({
+              loading: false,
+              item: {},
+            });
           });
           if (props.item === undefined) {
             this.form.reset();
