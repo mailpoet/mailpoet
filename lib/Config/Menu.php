@@ -396,7 +396,7 @@ class Menu {
         $data['changelog'] = $changelog;
       }
     }
-
+    //ddd($data);
     $this->displayPage('update.html', $data);
   }
 
