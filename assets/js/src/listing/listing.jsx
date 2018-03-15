@@ -90,6 +90,8 @@ const ListingItem = React.createClass({
             <span
               onClick={this.props.onRefreshItems}
               key={`action-${index}`} className={action.name}
+              role="button"
+              tabIndex={index}
             >
               {(!isFirst) ? ' | ' : ''}
               { action.link(this.props.item) }

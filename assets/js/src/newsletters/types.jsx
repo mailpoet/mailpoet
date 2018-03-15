@@ -81,7 +81,13 @@ define(
             description: MailPoet.I18n.t('regularNewsletterTypeDescription'),
             action: function () {
               return (
-                <a className="button button-primary" data-automation-id="create_standard" onClick={this.createNewsletter.bind(null, 'standard')}>
+                <a
+                  className="button button-primary"
+                  data-automation-id="create_standard"
+                  onClick={this.createNewsletter.bind(null, 'standard')}
+                  role="button"
+                  tabIndex={0}
+                >
                   {MailPoet.I18n.t('create')}
                 </a>
               );
@@ -107,7 +113,13 @@ define(
             description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
             action: function () {
               return (
-                <a className="button button-primary" data-automation-id="create_notification" onClick={this.setupNewsletter.bind(null, 'notification')}>
+                <a
+                  className="button button-primary"
+                  data-automation-id="create_notification"
+                  onClick={this.setupNewsletter.bind(null, 'notification')}
+                  role="button"
+                  tabIndex={0}
+                >
                   {MailPoet.I18n.t('setUp')}
                 </a>
               );

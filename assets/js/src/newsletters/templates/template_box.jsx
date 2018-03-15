@@ -127,12 +127,16 @@ class TemplateBox extends React.Component {
           <a
             className="button button-secondary"
             onClick={this.onPreview}
+            role="button"
+            tabIndex={0}
           >{MailPoet.I18n.t('preview')}</a>
             &nbsp;
           <a
             className="button button-primary"
             data-automation-id={`select_template_${index}`}
             onClick={this.onSelect}
+            role="button"
+            tabIndex={0}
           > {MailPoet.I18n.t('select')} </a>
         </div>
         { readonly === '1' ? false : deleteLink }

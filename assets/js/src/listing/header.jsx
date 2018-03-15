@@ -74,7 +74,11 @@ const ListingColumn = React.createClass({
 
     if (this.props.column.sortable === true) {
       label = (
-        <a onClick={this.handleSort}>
+        <a
+          onClick={this.handleSort}
+          role="button"
+          tabIndex={0}
+        >
           <span>{ this.props.column.label }</span>
           <span className="sorting-indicator" />
         </a>
@@ -84,6 +88,7 @@ const ListingColumn = React.createClass({
     }
     return (
       <th
+        role="columnheader"
         className={classes}
         id={this.props.column.name}
         scope="col"
