@@ -84,7 +84,6 @@ class API {
 
     // schedule welcome email
     if($schedule_welcome_email) {
-      $subscriber = Subscriber::findOne($subscriber_id);
       $this->_scheduleWelcomeNotification($subscriber, $found_segments_ids);
     }
 
