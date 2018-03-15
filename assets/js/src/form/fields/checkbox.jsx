@@ -6,7 +6,7 @@ define([
 ) => {
   const FormFieldCheckbox = React.createClass({
     onValueChange: function (e) {
-      e.target.value = this.refs.checkbox.checked ? '1' : '0';
+      e.target.value = this.checkbox.checked ? '1' : '0';
       return this.props.onValueChange(e);
     },
     render: function () {
@@ -22,7 +22,7 @@ define([
           <p key={`checkbox-${index}`}>
             <label>
               <input
-                ref="checkbox"
+                ref={(c) => { this.checkbox = c; }}
                 type="checkbox"
                 value="1"
                 checked={isChecked}

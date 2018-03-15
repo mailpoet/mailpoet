@@ -65,7 +65,7 @@ define([
       });
     },
     getSelectedAction: function () {
-      const selectedAction = this.refs.action.value;
+      const selectedAction = this.action.value;
       if (selectedAction.length > 0) {
         const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
 
@@ -91,7 +91,7 @@ define([
 
           <select
             name="bulk_actions"
-            ref="action"
+            ref={(c) => { this.action = c; }}
             value={this.state.action}
             onChange={this.handleChangeAction}
           >

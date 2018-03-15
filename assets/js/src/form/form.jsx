@@ -55,7 +55,7 @@ define(
             item: {},
           });
           if (props.item === undefined) {
-            this.refs.form.reset();
+            this.form.reset();
           }
         }
       },
@@ -218,7 +218,7 @@ define(
             { beforeFormContent }
             <form
               id={this.props.id}
-              ref="form"
+              ref={(c) => { this.form = c; }}
               className={formClasses}
               onSubmit={
                 (this.props.onSubmit !== undefined)

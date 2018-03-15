@@ -14,7 +14,7 @@ define([
       return (this.props.field.multiple === true);
     },
     isSelect2Initialized: function () {
-      return (jQuery(`#${this.refs.select.id}`).hasClass('select2-hidden-accessible') === true);
+      return (jQuery(`#${this.select.id}`).hasClass('select2-hidden-accessible') === true);
     },
     isSelect2Component: function () {
       return this.allowMultipleValues() || this.props.field.forceSelect2;
@@ -28,7 +28,7 @@ define([
       if ((this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
       ) {
-        jQuery(`#${this.refs.select.id}`)
+        jQuery(`#${this.select.id}`)
           .val(this.getSelectedValues())
           .trigger('change');
       }
@@ -55,18 +55,18 @@ define([
     },
     destroySelect2: function () {
       if (this.isSelect2Initialized()) {
-        jQuery(`#${this.refs.select.id}`).select2('destroy');
+        jQuery(`#${this.select.id}`).select2('destroy');
         this.cleanupAfterSelect2();
       }
     },
     cleanupAfterSelect2: function () {
       // remove DOM elements created by Select2 that are not tracked by React
-      jQuery(`#${this.refs.select.id}`)
+      jQuery(`#${this.select.id}`)
         .find('option:not(.default)')
         .remove();
 
       // unbind events (https://select2.org/programmatic-control/methods#event-unbinding)
-      jQuery(`#${this.refs.select.id}`)
+      jQuery(`#${this.select.id}`)
         .off('select2:unselecting')
         .off('select2:opening');
     },
@@ -127,7 +127,7 @@ define([
         select2Options = Object.assign(select2Options, this.props.field.extendSelect2Options);
       }
 
-      const select2 = jQuery(`#${this.refs.select.id}`).select2(select2Options);
+      const select2 = jQuery(`#${this.select.id}`).select2(select2Options);
 
       let hasRemoved = false;
       select2.on('select2:unselecting', () => {
@@ -176,7 +176,7 @@ define([
       let value;
       if (this.props.onValueChange !== undefined) {
         if (this.props.field.multiple) {
-          value = jQuery(`#${this.refs.select.id}`).val();
+          value = jQuery(`#${this.select.id}`).val();
         } else {
           value = e.target.value;
         }
@@ -249,7 +249,7 @@ define([
       return (
         <select
           id={this.getFieldId()}
-          ref="select"
+          ref={(c) => { this.select = c; }}
           disabled={this.props.field.disabled}
           data-placeholder={this.props.field.placeholder}
           multiple={this.props.field.multiple}

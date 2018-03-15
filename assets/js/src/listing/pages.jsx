@@ -145,7 +145,6 @@ define([
                 onBlur={this.handleBlurManualPage}
                 aria-describedby="table-paging"
                 size="2"
-                ref="page"
                 value={pageValue}
                 name="paged"
                 id="current-page-selector"

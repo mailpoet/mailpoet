@@ -211,7 +211,6 @@ define([
           case 'YYYY':
             return (<FormFieldDateYear
               onValueChange={this.onValueChange.bind(this)}
-              ref={'year'}
               key={'year'}
               name={this.props.field.name}
               year={this.state.year}
@@ -221,7 +220,6 @@ define([
           case 'MM':
             return (<FormFieldDateMonth
               onValueChange={this.onValueChange.bind(this)}
-              ref={'month'}
               key={'month'}
               name={this.props.field.name}
               month={this.state.month}
@@ -232,7 +230,6 @@ define([
           case 'DD':
             return (<FormFieldDateDay
               onValueChange={this.onValueChange.bind(this)}
-              ref={'day'}
               key={'day'}
               name={this.props.field.name}
               day={this.state.day}

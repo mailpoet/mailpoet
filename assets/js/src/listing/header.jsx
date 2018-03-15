@@ -5,7 +5,7 @@ import classNames from 'classnames';
 const ListingHeader = React.createClass({
   handleSelectItems: function () {
     return this.props.onSelectItems(
-      this.refs.toggle.checked
+      this.toggle.checked
     );
   },
   render: function () {
@@ -38,7 +38,7 @@ const ListingHeader = React.createClass({
           <input
             type="checkbox"
             name="select_all"
-            ref="toggle"
+            ref={(c) => { this.toggle = c; }}
             checked={this.props.selection}
             onChange={this.handleSelectItems}
           />

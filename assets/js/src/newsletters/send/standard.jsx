@@ -94,7 +94,7 @@ define(
         this.props.onChange(changeEvent);
       },
       componentDidMount: function () {
-        const $element = jQuery(this.refs.dateInput);
+        const $element = jQuery(this.dateInput);
         const that = this;
         if ($element.datepicker) {
           // Override jQuery UI datepicker Date parsing and formatting
@@ -131,7 +131,7 @@ define(
       },
       componentWillUnmount: function () {
         if (this.datepickerInitialized) {
-          jQuery(this.refs.dateInput).datepicker('destroy');
+          jQuery(this.dateInput).datepicker('destroy');
         }
       },
       getFieldName: function () {
@@ -159,7 +159,7 @@ define(
             readOnly={true}
             disabled={this.props.disabled}
             onChange={this.onChange}
-            ref="dateInput"
+            ref={(c) => { this.dateInput = c; }}
             {...this.props.validation}
           />
         );
@@ -278,7 +278,7 @@ define(
       },
       handleCheckboxChange: function (event) {
         const changeEvent = event;
-        changeEvent.target.value = this.refs.isScheduled.checked ? '1' : '0';
+        changeEvent.target.value = this.refs.isScheduledInput.checked ? '1' : '0';
         return this.handleValueChange(changeEvent);
       },
       isScheduled: function () {
@@ -314,7 +314,7 @@ define(
         return (
           <div>
             <input
-              ref="isScheduled"
+              ref={(c) => { this.isScheduledInput = c; }}
               type="checkbox"
               value="1"
               checked={this.isScheduled()}

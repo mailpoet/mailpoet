@@ -9,11 +9,11 @@ define([
     handleSearch: function (e) {
       e.preventDefault();
       this.props.onSearch(
-        this.refs.search.value.trim()
+        this.search.value.trim()
       );
     },
     componentWillReceiveProps: function (nextProps) {
-      this.refs.search.value = nextProps.search;
+      this.search.value = nextProps.search;
     },
     render: function () {
       if (this.props.search === false) {
@@ -28,7 +28,7 @@ define([
             <input
               type="search"
               id="search_input"
-              ref="search"
+              ref={(c) => { this.search = c; }}
               name="s"
               defaultValue={this.props.search}
             />
