@@ -37,11 +37,13 @@ class API {
     return $data;
   }
 
-  function subscribeToList($subscriber_id, $segment_id) {
-    return $this->subscribeToLists($subscriber_id, array($segment_id));
+  function subscribeToList($subscriber_id, $segment_id, $options = array()) {
+    return $this->subscribeToLists($subscriber_id, array($segment_id), $options);
   }
 
-  function subscribeToLists($subscriber_id, array $segments_ids) {
+  function subscribeToLists($subscriber_id, array $segments_ids, $options = array()) {
+    $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
+
     if(empty($segments_ids)) {
       throw new \Exception(__('At least one segment ID is required.', 'mailpoet'));
     }
@@ -79,6 +81,12 @@ class API {
     }
 
     SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
+
+    // schedule welcome email
+    if($schedule_welcome_email) {
+      $this->_scheduleWelcomeNotification($subscriber, $found_segments_ids);
+    }
+
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 

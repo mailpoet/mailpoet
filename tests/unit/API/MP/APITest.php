@@ -129,7 +129,8 @@ class APITest extends \MailPoetTest {
         1,
         array(
           2
-        )
+        ),
+        array()
       )
     );
   }
@@ -172,6 +173,45 @@ class APITest extends \MailPoetTest {
     expect($result['id'])->equals($subscriber->id);
     expect($result['subscriptions'])->notEmpty();
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
+  }
+
+  function testItSchedulesWelcomeNotificationByDefaultAfterSubscriberSubscriberToLists() {
+    $API = Stub::makeEmptyExcept(
+      new \MailPoet\API\MP\v1\API(),
+      'subscribeToLists',
+      array(
+        '_scheduleWelcomeNotification' => Stub::once()
+      ), $this);
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $API->subscribeToLists($subscriber->id, array($segment->id));
+  }
+
+  function testItDoesNotScheduleWelcomeNotificationAfterSubscribingSubscriberToListsWhenDisabledByOption() {
+    $API = Stub::makeEmptyExcept(
+      new \MailPoet\API\MP\v1\API(),
+      'subscribeToLists',
+      array(
+        '_scheduleWelcomeNotification' => Stub::never()
+      ), $this);
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $options = array('schedule_welcome_email' => false);
+    $API->subscribeToLists($subscriber->id, array($segment->id), $options);
   }
 
   function testItGetsSegments() {
