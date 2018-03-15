@@ -32,8 +32,7 @@ function Tooltip(props) {
         data-event="click"
         data-tip
         data-for={tooltipId}
-      >
-      </span>
+       />
       <ReactTooltip
         globalEventOff="click"
         multiline={true}

@@ -107,7 +107,7 @@ class TemplateBox extends React.Component {
       preview = (
         <a href="javascript:;" onClick={this.onPreview}>
           <img src={thumbnail} />
-          <div className="mailpoet_overlay"></div>
+          <div className="mailpoet_overlay" />
         </a>
       );
     }

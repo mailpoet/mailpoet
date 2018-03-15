@@ -72,7 +72,7 @@ const ListingColumn = React.createClass({
       label = (
         <a onClick={this.handleSort}>
           <span>{ this.props.column.label }</span>
-          <span className="sorting-indicator"></span>
+          <span className="sorting-indicator" />
         </a>
       );
     } else {

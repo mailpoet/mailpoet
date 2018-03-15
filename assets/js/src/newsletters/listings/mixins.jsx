@@ -129,7 +129,7 @@ const QueueMixin = {
           <span
             className="mailpoet_progress_bar"
             style={{ width: `${progressBarWidth}%` }}
-              ></span>
+               />
           <span className="mailpoet_progress_label">
             { percentage }
           </span>
