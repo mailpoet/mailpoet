@@ -278,7 +278,7 @@ define(
       },
       handleCheckboxChange: function (event) {
         const changeEvent = event;
-        changeEvent.target.value = this.refs.isScheduledInput.checked ? '1' : '0';
+        changeEvent.target.value = this.isScheduledInput.checked ? '1' : '0';
         return this.handleValueChange(changeEvent);
       },
       isScheduled: function () {
