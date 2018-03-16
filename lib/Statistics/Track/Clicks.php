@@ -3,6 +3,7 @@ namespace MailPoet\Statistics\Track;
 
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
+use MailPoet\Newsletter\Shortcodes\Shortcodes;
 
 if(!defined('ABSPATH')) exit;
 
@@ -43,6 +44,9 @@ class Clicks {
         $queue,
         $wp_user_preview
       );
+    } else {
+      $shortcodes = new Shortcodes($newsletter, $subscriber, $queue, $wp_user_preview);
+      $url = $shortcodes->replace($url);
     }
     return $url;
   }
