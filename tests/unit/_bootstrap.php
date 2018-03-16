@@ -1,5 +1,6 @@
 <?php
 use Codeception\Util\Fixtures;
+use MailPoet\Models\Subscriber;
 
 $newsletter_body_text =
 
@@ -164,3 +165,18 @@ Fixtures::add(
     ),
   )
 );
+
+/**
+ * Simple class mocking dynamic segment filter.
+ */
+class DynamicSegmentFilter {
+  protected $ids;
+
+  function __construct($ids) {
+    $this->ids = $ids;
+  }
+  
+  public function toSql($orm) {
+    return $orm->whereIn(Subscriber::$_table . '.id', $this->ids);
+  }
+}

@@ -44,7 +44,6 @@ class DefaultSubscribersGetter extends SubscribersGetter {
           SubscriberSegment::$_table . '.segment_id'
         )
       )
-      ->groupBy(Subscriber::$_table . '.id')
       ->groupBy(Segment::$_table . '.id');
 
     if($this->get_subscribers_without_segment !== false) {

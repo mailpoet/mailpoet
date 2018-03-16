@@ -22,7 +22,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
     $segment_id = $this->segments_ids[$this->segment_index];
 
     $filters = Hooks::applyFilters(
-      'mailpoet_add_segment_filters', 
+      'mailpoet_get_segment_filters', 
       $segment_id
     );
     

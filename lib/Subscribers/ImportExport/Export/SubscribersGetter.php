@@ -41,6 +41,7 @@ abstract class SubscribersGetter {
       )
     )
     ->filter('filterWithCustomFieldsForExport')
+    ->groupBy(Subscriber::$_table . '.id')
     ->whereNull(Subscriber::$_table . '.deleted_at');
   }
 
