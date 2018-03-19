@@ -981,18 +981,19 @@
           readMoreButton: {
             text: '<%= __('Read more') | escape('js') %>',
             url: '[postLink]',
+            context: 'automatedLatestContent.readMoreButton',
             styles: {
               block: {
-                backgroundColor: '#ffffff',
-                borderColor: '#00ddff',
+                backgroundColor: '#2ea1cd',
+                borderColor: '#0074a2',
                 borderWidth: '1px',
                 borderRadius: '5px',
                 borderStyle: 'solid',
-                width: '120px',
-                lineHeight: '30px',
-                fontColor: '#00ddff',
-                fontFamily: 'Arial',
-                fontSize: '20px',
+                width: '180px',
+                lineHeight: '40px',
+                fontColor: '#ffffff',
+                fontFamily: 'Verdana',
+                fontSize: '18px',
                 fontWeight: 'normal',
                 textAlign: 'center',
               }
@@ -1001,6 +1002,7 @@
           sortBy: 'newest', // 'newest'|'oldest',
           showDivider: true, // true|false
           divider: {
+            context: 'automatedLatestContent.divider',
             styles: {
               block: {
                 backgroundColor: 'transparent',
@@ -1103,18 +1105,19 @@
           readMoreButton: {
             text: '<%= __('Read more') | escape('js') %>',
             url: '[postLink]',
+            context: 'posts.readMoreButton',
             styles: {
               block: {
-                backgroundColor: '#ffffff',
-                borderColor: '#000000',
+                backgroundColor: '#2ea1cd',
+                borderColor: '#0074a2',
                 borderWidth: '1px',
                 borderRadius: '5px',
                 borderStyle: 'solid',
-                width: '120px',
-                lineHeight: '30px',
-                fontColor: '#000000',
-                fontFamily: 'Arial',
-                fontSize: '20px',
+                width: '180px',
+                lineHeight: '40px',
+                fontColor: '#ffffff',
+                fontFamily: 'Verdana',
+                fontSize: '18px',
                 fontWeight: 'normal',
                 textAlign: 'center',
               },
@@ -1123,6 +1126,7 @@
           sortBy: 'newest', // 'newest'|'oldest',
           showDivider: true, // true|false
           divider: {
+            context: 'posts.divider',
             styles: {
               block: {
                 backgroundColor: 'transparent',

@@ -10,12 +10,18 @@ define([
   describe('Footer', function () {
     describe('model', function () {
       var model;
+      var sandbox;
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
           blockDefaults: {}
         });
         model = new (FooterBlock.FooterBlockModel)();
+        sandbox = sinon.sandbox.create();
+      });
+
+      afterEach(function () {
+        sandbox.restore();
       });
 
       it('has a footer type', function () {
@@ -112,6 +118,16 @@ define([
         expect(innerModel.get('styles.text.textAlign')).to.equal('right');
         expect(innerModel.get('styles.link.fontColor')).to.equal('#345678');
         expect(innerModel.get('styles.link.textDecoration')).to.equal('underline');
+      });
+
+      it('updates blockDefaults.footer when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.trigger('change');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.footer');
+        expect(stub.getCall(0).args[1].type).to.equal(model.toJSON().type);
+        expect(stub.getCall(0).args[1].styles).to.deep.equal(model.toJSON().styles);
+        expect(stub.getCall(0).args[1].text).to.equal(undefined);
       });
     });
 

@@ -10,12 +10,17 @@ define([
   describe('Image', function () {
     describe('model', function () {
       var model;
+      var sandbox;
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
           blockDefaults: {}
         });
         model = new (ImageBlock.ImageBlockModel)();
+        sandbox = sinon.sandbox.create();
+      });
+      afterEach(function () {
+        sandbox.restore();
       });
 
       it('has an image type', function () {
@@ -101,6 +106,12 @@ define([
         expect(innerModel.get('width')).to.equal('1234px');
         expect(innerModel.get('height')).to.equal('2345px');
         expect(innerModel.get('styles.block.textAlign')).to.equal('right');
+      });
+
+      it('do not update blockDefaults.image when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.trigger('change');
+        expect(stub.callCount).to.equal(0);
       });
     });
 

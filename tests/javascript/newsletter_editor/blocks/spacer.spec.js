@@ -10,6 +10,7 @@ define([
   describe('Spacer', function () {
     describe('model', function () {
       var model;
+      var sandbox;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
@@ -18,10 +19,12 @@ define([
         });
         global.stubAvailableStyles(EditorApplication);
         model = new (SpacerBlock.SpacerBlockModel)();
+        sandbox = sinon.sandbox.create();
       });
 
       afterEach(function () {
         delete EditorApplication.getChannel;
+        sandbox.restore();
       });
 
       it('has spacer type', function () {
@@ -71,6 +74,14 @@ define([
 
         expect(model.get('styles.block.backgroundColor')).to.equal('#567890');
         expect(model.get('styles.block.height')).to.equal('19px');
+      });
+
+      it('updates blockDefaults.spacer when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.trigger('change');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.spacer');
+        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
       });
     });
 

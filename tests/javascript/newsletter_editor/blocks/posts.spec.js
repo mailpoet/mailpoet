@@ -23,6 +23,7 @@ define([
     };
     describe('model', function () {
       var model;
+      var sandbox;
 
       before(function () {
         CommunicationComponent.getPosts = function () {
@@ -37,10 +38,12 @@ define([
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
         model = new (PostsBlock.PostsBlockModel)();
+        sandbox = sinon.sandbox.create();
       });
 
       afterEach(function () {
         delete EditorApplication.getChannel;
+        sandbox.restore();
       });
 
       it('has posts type', function () {
@@ -258,6 +261,14 @@ define([
         expect(spy.withArgs('loadingMorePosts').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
         expect(spy.withArgs('morePostsLoaded').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
         expect(model.get('_availablePosts').length).to.equal(3);
+      });
+
+      it('updates blockDefaults.posts when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.trigger('change');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.posts');
+        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
       });
     });
 

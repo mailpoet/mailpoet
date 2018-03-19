@@ -109,10 +109,10 @@ define([
     },
     initialize: function () {
       base.BlockView.prototype.initialize.apply(this, arguments);
-      this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
-      this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
-      this.listenTo(this.get('divider'), 'change', this._scheduleFetchPosts);
-      this.on('add remove update reset', this._scheduleFetchPosts);
+      this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._handleChanges, this);
+      this.listenTo(this.get('readMoreButton'), 'change', this._handleChanges);
+      this.listenTo(this.get('divider'), 'change', this._handleChanges);
+      this.on('add remove update reset', this._handleChanges);
       this.on('refreshPosts', this.updatePosts, this);
     },
     updatePosts: function (posts) {
@@ -122,7 +122,8 @@ define([
      * Batch more changes during a specific time, instead of fetching
      * ALC posts on each model change
      */
-    _scheduleFetchPosts: function () {
+    _handleChanges: function () {
+      this._updateDefaults();
       App.getChannel().trigger('automatedLatestContentRefresh');
     }
   });

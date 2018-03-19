@@ -107,6 +107,7 @@ define([
       _.extend(this, Radio.Requests);
 
       this.fetchAvailablePosts();
+      this.on('change', this._updateDefaults, this);
       this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailablePosts);
       this.on('loadMorePosts', this._loadMorePosts, this);
 
@@ -343,6 +344,11 @@ define([
       morePostsLoaded: function () {
         this.$('.mailpoet_post_selection_loading').css('visibility', 'hidden');
       }
+    },
+    templateContext: function () {
+      return {
+        model: this.model.toJSON()
+      };
     },
     onRender: function () {
       var postsView;

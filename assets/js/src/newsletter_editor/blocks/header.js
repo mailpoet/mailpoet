@@ -33,6 +33,9 @@ define([
           }
         }
       }, App.getConfig().get('blockDefaults.header'));
+    },
+    _updateDefaults: function updateDefaults() {
+      App.getConfig().set('blockDefaults.header', _.omit(this.toJSON(), 'text'));
     }
   });
 

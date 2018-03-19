@@ -33,6 +33,9 @@ define([
           }
         }
       }, App.getConfig().get('blockDefaults.footer'));
+    },
+    _updateDefaults: function updateDefaults() {
+      App.getConfig().set('blockDefaults.footer', _.omit(this.toJSON(), 'text'));
     }
   });
 

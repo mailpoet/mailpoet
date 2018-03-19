@@ -1,7 +1,8 @@
 define([
   'newsletter_editor/App',
-  'backbone.supermodel'
-], function (App, SuperModel) { // eslint-disable-line func-names
+  'backbone.supermodel',
+  'underscore'
+], function (App, SuperModel, _) { // eslint-disable-line func-names
   var Module = {};
 
   Module.ConfigModel = SuperModel.extend({
@@ -25,11 +26,17 @@ define([
 
   App.on('before:start', function (BeforeStartApp, options) { // eslint-disable-line func-names
     var Application = BeforeStartApp;
+    var config = _.clone(options.config);
     // Expose config methods globally
     Application.getConfig = Module.getConfig;
     Application.setConfig = Module.setConfig;
 
-    Application.setConfig(options.config);
+    config.blockDefaults = _.extend(
+      config.blockDefaults,
+      options.newsletter.body.blockDefaults || {}
+    );
+
+    Application.setConfig(config);
   });
 
   return Module;

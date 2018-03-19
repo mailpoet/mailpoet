@@ -46,7 +46,8 @@ define([
   Module.getBody = function getBody() {
     return {
       content: App._contentContainer.toJSON(),
-      globalStyles: App.getGlobalStyles().toJSON()
+      globalStyles: App.getGlobalStyles().toJSON(),
+      blockDefaults: _.omit(App.getConfig().toJSON().blockDefaults, 'text', 'image')
     };
   };
 

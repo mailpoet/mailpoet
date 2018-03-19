@@ -89,6 +89,9 @@ define([
         var newsletterFields = {
           subject: 'test newsletter subject'
         };
+        var blockDefaults = {
+          button: {}
+        };
         EditorApplication._contentContainer = {
           toJSON: function () {
             return dataField;
@@ -108,11 +111,13 @@ define([
             }
           };
         };
+        EditorApplication.getConfig().set('blockDefaults', blockDefaults);
         json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
           body: {
             content: dataField,
-            globalStyles: stylesField
+            globalStyles: stylesField,
+            blockDefaults: blockDefaults
           }
         }, newsletterFields));
       });

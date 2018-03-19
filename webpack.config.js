@@ -227,7 +227,6 @@ var adminConfig = {
       'blob',
       'file-saver',
       'velocity-animate',
-      'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',
       'newsletter_editor/components/styles.js',
@@ -331,7 +330,6 @@ var testConfig = {
       'i18n',
       'help-tooltip',
 
-      'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',
       'newsletter_editor/components/styles.js',

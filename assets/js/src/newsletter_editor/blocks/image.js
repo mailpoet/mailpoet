@@ -31,7 +31,8 @@ define([
           }
         }
       }, App.getConfig().get('blockDefaults.image'));
-    }
+    },
+    _updateDefaults: function () {}
   });
 
   Module.ImageBlockView = base.BlockView.extend({

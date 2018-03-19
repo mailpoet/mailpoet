@@ -6,6 +6,7 @@ define([
   'newsletter_editor/blocks/button'
 ], function (App, ButtonBlock) {
   var EditorApplication = App;
+  var sandbox;
 
   describe('Button', function () {
     describe('model', function () {
@@ -17,12 +18,14 @@ define([
           blockDefaults: {}
         });
         model = new (ButtonBlock.ButtonBlockModel)();
+        sandbox = sinon.sandbox.create();
       });
 
       afterEach(function () {
         if (EditorApplication.getChannel) {
           delete EditorApplication.getChannel;
         }
+        sandbox.restore();
       });
 
       it('has a button type', function () {
@@ -105,6 +108,22 @@ define([
         model.set('styles.block.fontSize', '10px');
         model.set('styles.block.fontWeight', 'bold');
         mock.verify();
+      });
+
+      it('updates blockDefaults.button when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.trigger('change');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.button');
+        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
+      });
+
+      it('updates blockDefaults for usage context when changed', function () {
+        var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+        model.set('context', 'posts.readMoreButton');
+        expect(stub.callCount).to.equal(1);
+        expect(stub.getCall(0).args[0]).to.equal('blockDefaults.posts.readMoreButton');
+        expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
       });
 
       it('uses defaults from config when they are set', function () {
