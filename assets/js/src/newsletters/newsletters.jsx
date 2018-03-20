@@ -34,7 +34,7 @@ const getAutomaticEmailsRoutes = () => {
     name: automaticEmail.slug,
     component: AutomaticEmailEventsList,
     data: {
-      automaticEmail,
+      automaticEmail: automaticEmail,
     },
   }));
 };

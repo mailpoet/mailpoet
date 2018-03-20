@@ -25,7 +25,7 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      getInitialState: function getInitialState() {
+      getInitialState: function () {
         return {
           options: {
             intervalType: 'daily',
@@ -36,12 +36,12 @@ define(
           },
         };
       },
-      handleValueChange: function handleValueChange(event) {
+      handleValueChange: function (event) {
         const state = this.state;
         state[event.target.name] = event.target.value;
         this.setState(state);
       },
-      handleNext: function handleNext() {
+      handleNext: function () {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
@@ -61,10 +61,10 @@ define(
           }
         });
       },
-      showTemplateSelection: function showTemplateSelection(newsletterId) {
+      showTemplateSelection: function (newsletterId) {
         this.context.router.push(`/template/${newsletterId}`);
       },
-      render: function render() {
+      render: function () {
         return (
           <div>
             <h1>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h1>
@@ -75,16 +75,14 @@ define(
             <Scheduling
               item={this.state}
               field={field}
-              onValueChange={this.handleValueChange}
-            />
+              onValueChange={this.handleValueChange} />
 
             <p className="submit">
               <input
                 className="button button-primary"
                 type="button"
                 onClick={this.handleNext}
-                value={MailPoet.I18n.t('next')}
-              />
+                value={MailPoet.I18n.t('next')} />
             </p>
           </div>
         );

@@ -64,11 +64,11 @@ class ImportTemplate extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    if (_.size(this.templateFile.files) <= 0) {
+    if (_.size(this.refs.templateFile.files) <= 0) {
       return false;
     }
 
-    const file = _.first(this.templateFile.files);
+    const file = _.first(this.refs.templateFile.files);
     const reader = new FileReader();
 
     reader.onload = (evt) => {
@@ -97,17 +97,12 @@ class ImportTemplate extends React.Component {
           />
         </h2>
         <form onSubmit={this.handleSubmit}>
-          <input
-            type="file"
-            placeholder={MailPoet.I18n.t('selectJsonFileToUpload')}
-            ref={(c) => { this.templateFile = c; }}
-          />
+          <input type="file" placeholder={MailPoet.I18n.t('selectJsonFileToUpload')} ref="templateFile" />
           <p className="submit">
             <input
               className="button button-primary"
               type="submit"
-              value={MailPoet.I18n.t('upload')}
-            />
+              value={MailPoet.I18n.t('upload')} />
           </p>
         </form>
       </div>

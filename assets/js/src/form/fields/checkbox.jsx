@@ -5,11 +5,11 @@ define([
   React
 ) => {
   const FormFieldCheckbox = React.createClass({
-    onValueChange: function onValueChange(e) {
-      e.target.value = this.checkbox.checked ? '1' : '0';
+    onValueChange: function (e) {
+      e.target.value = this.refs.checkbox.checked ? '1' : '0';
       return this.props.onValueChange(e);
     },
-    render: function render() {
+    render: function () {
       if (this.props.field.values === undefined) {
         return false;
       }
@@ -20,16 +20,15 @@ define([
       const options = Object.keys(this.props.field.values).map(
         (value, index) => (
           <p key={`checkbox-${index}`}>
-            <label htmlFor={this.props.field.name}>
+            <label>
               <input
-                ref={(c) => { this.checkbox = c; }}
+                ref="checkbox"
                 type="checkbox"
                 value="1"
                 checked={isChecked}
                 onChange={this.onValueChange}
                 name={this.props.field.name}
-                id={this.props.field.name}
-              />
+                />
               { this.props.field.values[value] }
             </label>
           </p>
