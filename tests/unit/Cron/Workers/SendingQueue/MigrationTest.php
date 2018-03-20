@@ -109,7 +109,7 @@ class MigrationTest extends \MailPoetTest {
   }
 
   function testItUsesWPTimeToReturnNextRunDate() {
-    $timestamp = 1514801410; // 01/01/2018 @ 10:10am (UTC)
+    $timestamp = 1514801410;
 
     WordPressHelper::interceptFunction('current_time', function($time) use($timestamp) {
       // "timestamp" string is passed as an argument
