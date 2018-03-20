@@ -10,7 +10,7 @@ import Hooks from 'wp-js-hooks';
 import StatsBadge from 'newsletters/badges/stats.jsx';
 
 const QueueMixin = {
-  pauseSending: function pauseSending(newsletter) {
+  pauseSending: function (newsletter) {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
@@ -30,7 +30,7 @@ const QueueMixin = {
       }
     });
   },
-  resumeSending: function resumeSending(newsletter) {
+  resumeSending: function (newsletter) {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
@@ -50,7 +50,7 @@ const QueueMixin = {
       }
     });
   },
-  renderQueueStatus: function renderQueueStatus(newsletter, mailerLog) {
+  renderQueueStatus: function (newsletter, mailerLog) {
     if (!newsletter.queue) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
@@ -101,7 +101,7 @@ const QueueMixin = {
                 ? 'inline-block' : 'none' }}
             href="javascript:;"
             onClick={this.resumeSending.bind(null, newsletter)}
-          >{MailPoet.I18n.t('resume')}</a>
+            >{MailPoet.I18n.t('resume')}</a>
           <a
             id={`pause_${newsletter.id}`}
             className="button mailpoet_pause"
@@ -109,7 +109,7 @@ const QueueMixin = {
                   ? 'inline-block' : 'none' }}
             href="javascript:;"
             onClick={this.pauseSending.bind(null, newsletter)}
-          >{MailPoet.I18n.t('pause')}</a>
+            >{MailPoet.I18n.t('pause')}</a>
         </span>
         );
     }
@@ -129,7 +129,7 @@ const QueueMixin = {
           <span
             className="mailpoet_progress_bar"
             style={{ width: `${progressBarWidth}%` }}
-          />
+              ></span>
           <span className="mailpoet_progress_label">
             { percentage }
           </span>
@@ -142,15 +142,15 @@ const QueueMixin = {
   },
 };
 
-function trackStatsCTAClicked() {
+const trackStatsCTAClicked = function () {
   MailPoet.trackEvent(
     'User has clicked a CTA to view detailed stats',
     { 'MailPoet Free version': window.mailpoet_version }
   );
-}
+};
 
 const StatisticsMixin = {
-  renderStatistics: function renderStatistics(newsletter, isSent, currentTime) {
+  renderStatistics: function (newsletter, isSent, currentTime) {
     let sent = isSent;
     if (sent === undefined) {
       // condition for standard and post notification listings
@@ -309,7 +309,7 @@ const StatisticsMixin = {
             key={`stats-${newsletter.id}`}
             to={params.link}
             onClick={params.onClick || null}
-          >
+            >
             {content}
           </Link>
           {afterContent}
@@ -324,20 +324,20 @@ const StatisticsMixin = {
       </div>
     );
   },
-  addStatsCTAAction: function addStatsCTAAction(actions) {
+  addStatsCTAAction: function (actions) {
     if (window.mailpoet_premium_active) {
       return actions;
     }
     actions.unshift({
       name: 'stats',
-      link: function link() {
+      link: function () {
         return (
           <a href={'admin.php?page=mailpoet-premium'} onClick={trackStatsCTAClicked}>
             {MailPoet.I18n.t('statsListingActionTitle')}
           </a>
         );
       },
-      display: function display(newsletter) {
+      display: function (newsletter) {
         // welcome emails provide explicit total_sent value
         const countProcessed = newsletter.queue && newsletter.queue.count_processed;
         return Number(newsletter.total_sent || countProcessed) > 0;
@@ -345,7 +345,7 @@ const StatisticsMixin = {
     });
     return actions;
   },
-  addStatsCTALink: function addStatsCTALink(params) {
+  addStatsCTALink: function (params) {
     if (window.mailpoet_premium_active) {
       return params;
     }
@@ -358,7 +358,7 @@ const StatisticsMixin = {
 };
 
 const MailerMixin = {
-  checkMailerStatus: function checkMailerStatus(state) {
+  checkMailerStatus: function (state) {
     if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
       const errorType = this.getMailerErrorType(state);
       MailPoet.Notice[errorType](

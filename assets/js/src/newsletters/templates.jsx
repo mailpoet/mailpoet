@@ -144,7 +144,7 @@ class NewsletterTemplates extends React.Component {
     }).always(() => {
       this.setState({
         templates: this.templates,
-        selectedTab,
+        selectedTab: selectedTab,
         loading: false,
       });
     });

@@ -19,7 +19,7 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      setupNewsletter: function setupNewsletter(type) {
+      setupNewsletter: function (type) {
         if (type !== undefined) {
           this.context.router.push(`/new/${type}`);
           MailPoet.trackEvent('Emails > Type selected', {
@@ -28,7 +28,7 @@ define(
           });
         }
       },
-      createNewsletter: function createNewsletter(type) {
+      createNewsletter: function (type) {
         MailPoet.trackEvent('Emails > Type selected', {
           'MailPoet Free version': window.mailpoet_version,
           'Email type': type,
@@ -38,7 +38,7 @@ define(
           endpoint: 'newsletters',
           action: 'create',
           data: {
-            type,
+            type: type,
             subject: MailPoet.I18n.t('draftNewsletterTitle'),
           },
         }).done((response) => {
@@ -52,7 +52,7 @@ define(
           }
         });
       },
-      getAutomaticEmails: function getAutomaticEmails() {
+      getAutomaticEmails: function () {
         if (!window.mailpoet_automatic_emails) return [];
 
         return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
@@ -73,21 +73,15 @@ define(
           return email;
         });
       },
-      render: function render() {
+      render: function () {
         const defaultTypes = [
           {
             slug: 'standard',
             title: MailPoet.I18n.t('regularNewsletterTypeTitle'),
             description: MailPoet.I18n.t('regularNewsletterTypeDescription'),
-            action: function action() {
+            action: function () {
               return (
-                <a
-                  className="button button-primary"
-                  data-automation-id="create_standard"
-                  onClick={this.createNewsletter.bind(null, 'standard')}
-                  role="button"
-                  tabIndex={0}
-                >
+                <a className="button button-primary" data-automation-id="create_standard" onClick={this.createNewsletter.bind(null, 'standard')}>
                   {MailPoet.I18n.t('create')}
                 </a>
               );
@@ -97,7 +91,7 @@ define(
             slug: 'welcome',
             title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
             description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
-            action: (function action() {
+            action: (function () {
               return (
                 <div>
                   <a href="?page=mailpoet-premium" target="_blank">
@@ -111,15 +105,9 @@ define(
             slug: 'notification',
             title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
             description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
-            action: function action() {
+            action: function () {
               return (
-                <a
-                  className="button button-primary"
-                  data-automation-id="create_notification"
-                  onClick={this.setupNewsletter.bind(null, 'notification')}
-                  role="button"
-                  tabIndex={0}
-                >
+                <a className="button button-primary" data-automation-id="create_notification" onClick={this.setupNewsletter.bind(null, 'notification')}>
                   {MailPoet.I18n.t('setUp')}
                 </a>
               );
@@ -140,7 +128,7 @@ define(
                 <li key={index} data-type={type.slug}>
                   <div>
                     <div className="mailpoet_thumbnail">
-                      {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
+                      {type.thumbnailImage ? <img src={type.thumbnailImage} /> : null}
                     </div>
                     <div className="mailpoet_description">
                       <h3>{type.title}</h3>

@@ -12,12 +12,12 @@ import ListingGroups from 'listing/groups.jsx';
 import ListingFilters from 'listing/filters.jsx';
 
 const ListingItem = React.createClass({
-  getInitialState: function getInitialState() {
+  getInitialState: function () {
     return {
       expanded: false,
     };
   },
-  handleSelectItem: function handleSelectItem(e) {
+  handleSelectItem: function (e) {
     this.props.onSelectItem(
       parseInt(e.target.value, 10),
       e.target.checked
@@ -25,25 +25,25 @@ const ListingItem = React.createClass({
 
     return !e.target.checked;
   },
-  handleRestoreItem: function handleRestoreItem(id) {
+  handleRestoreItem: function (id) {
     this.props.onRestoreItem(id);
   },
-  handleTrashItem: function handleTrashItem(id) {
+  handleTrashItem: function (id) {
     this.props.onTrashItem(id);
   },
-  handleDeleteItem: function handleDeleteItem(id) {
+  handleDeleteItem: function (id) {
     this.props.onDeleteItem(id);
   },
-  handleToggleItem: function handleToggleItem() {
+  handleToggleItem: function () {
     this.setState({ expanded: !this.state.expanded });
   },
-  render: function render() {
+  render: function () {
     let checkbox = false;
 
     if (this.props.is_selectable === true) {
       checkbox = (
         <th className="check-column" scope="row">
-          <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>{
+          <label className="screen-reader-text">{
             `Select ${this.props.item[this.props.columns[0].name]}`
           }</label>
           <input
@@ -53,9 +53,7 @@ const ListingItem = React.createClass({
               this.props.item.selected || this.props.selection === 'all'
             }
             onChange={this.handleSelectItem}
-            disabled={this.props.selection === 'all'}
-            id={`listing-row-checkbox-${this.props.item.id}`}
-          />
+            disabled={this.props.selection === 'all'} />
         </th>
       );
     }
@@ -79,8 +77,7 @@ const ListingItem = React.createClass({
                 onClick={this.handleTrashItem.bind(
                   null,
                   this.props.item.id
-                )}
-              >
+                )}>
                 {MailPoet.I18n.t('moveToTrash')}
               </a>
             </span>
@@ -89,10 +86,7 @@ const ListingItem = React.createClass({
           customAction = (
             <span
               onClick={this.props.onRefreshItems}
-              key={`action-${index}`} className={action.name}
-              role="button"
-              tabIndex={index}
-            >
+              key={`action-${index}`} className={action.name}>
               {(!isFirst) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -100,8 +94,7 @@ const ListingItem = React.createClass({
         } else if (action.link) {
           customAction = (
             <span
-              key={`action-${index}`} className={action.name}
-            >
+              key={`action-${index}`} className={action.name}>
               {(!isFirst) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -109,8 +102,7 @@ const ListingItem = React.createClass({
         } else {
           customAction = (
             <span
-              key={`action-${index}`} className={action.name}
-            >
+              key={`action-${index}`} className={action.name}>
               {(!isFirst) ? ' | ' : ''}
               <a href="javascript:;" onClick={
                 (action.onClick !== undefined)
@@ -119,8 +111,7 @@ const ListingItem = React.createClass({
                     this.props.onRefreshItems
                   )
                 : false
-              }
-              >{ action.label }</a>
+              }>{ action.label }</a>
             </span>
           );
         }
@@ -168,8 +159,7 @@ const ListingItem = React.createClass({
           </div>
           <button
             onClick={this.handleToggleItem.bind(null, this.props.item.id)}
-            className="toggle-row" type="button"
-          >
+            className="toggle-row" type="button">
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
           </button>
         </div>
@@ -182,8 +172,7 @@ const ListingItem = React.createClass({
           </div>
           <button
             onClick={this.handleToggleItem.bind(null, this.props.item.id)}
-            className="toggle-row" type="button"
-          >
+            className="toggle-row" type="button">
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
           </button>
         </div>
@@ -203,7 +192,7 @@ const ListingItem = React.createClass({
 
 
 const ListingItems = React.createClass({
-  render: function render() {
+  render: function () {
     if (this.props.items.length === 0) {
       let message;
       if (this.props.loading === true) {
@@ -224,8 +213,7 @@ const ListingItems = React.createClass({
                 this.props.columns.length
                 + (this.props.is_selectable ? 1 : 0)
               }
-              className="colspanchange"
-            >
+              className="colspanchange">
               {message}
             </td>
           </tr>
@@ -247,8 +235,7 @@ const ListingItems = React.createClass({
           <td colSpan={
                 this.props.columns.length
                 + (this.props.is_selectable ? 1 : 0)
-              }
-          >
+              }>
             {
                 (this.props.selection !== 'all')
                 ? MailPoet.I18n.t('selectAllLabel')
@@ -260,8 +247,7 @@ const ListingItems = React.createClass({
               &nbsp;
             <a
               onClick={this.props.onSelectAll}
-              href="javascript:;"
-            >{
+              href="javascript:;">{
                   (this.props.selection !== 'all')
                   ? MailPoet.I18n.t('selectAllLink')
                   : MailPoet.I18n.t('clearSelection')
@@ -288,8 +274,7 @@ const ListingItems = React.createClass({
               item_actions={this.props.item_actions}
               group={this.props.group}
               key={`item-${renderItem.id}-${index}`}
-              item={renderItem}
-            />
+              item={renderItem} />
           );
         })}
       </tbody>
@@ -301,7 +286,7 @@ const Listing = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired,
   },
-  getInitialState: function getInitialState() {
+  getInitialState: function () {
     return {
       loading: false,
       search: '',
@@ -320,12 +305,12 @@ const Listing = React.createClass({
       meta: {},
     };
   },
-  getParam: function getParam(param) {
+  getParam: function (param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
     return [matches[1], matches[2]];
   },
-  initWithParams: function initWithParams(params) {
+  initWithParams: function (params) {
     const state = this.getInitialState();
      // check for url params
     if (params.splat) {
@@ -366,7 +351,7 @@ const Listing = React.createClass({
       this.getItems();
     });
   },
-  getParams: function getParams() {
+  getParams: function () {
     // get all route parameters (without the "splat")
     const params = _.omit(this.props.params, 'splat');
     // TODO:
@@ -377,7 +362,7 @@ const Listing = React.createClass({
     }
     return params;
   },
-  setParams: function setParams() {
+  setParams: function () {
     if (this.props.location) {
       const params = Object.keys(this.state)
         .filter(key => (
@@ -414,7 +399,7 @@ const Listing = React.createClass({
       }
     }
   },
-  getUrlWithParams: function getUrlWithParams(params) {
+  getUrlWithParams: function (params) {
     let baseUrl = (this.props.base_url !== undefined)
       ? this.props.base_url
       : null;
@@ -425,7 +410,7 @@ const Listing = React.createClass({
     }
     return `/${params}`;
   },
-  setBaseUrlParams: function setBaseUrlParams(baseUrl) {
+  setBaseUrlParams: function (baseUrl) {
     let ret = baseUrl;
     if (ret.indexOf(':') !== -1) {
       const params = this.getParams();
@@ -438,7 +423,7 @@ const Listing = React.createClass({
 
     return ret;
   },
-  componentDidMount: function componentDidMount() {
+  componentDidMount: function () {
     if (this.isMounted()) {
       const params = this.props.params || {};
       this.initWithParams(params);
@@ -450,11 +435,11 @@ const Listing = React.createClass({
       }
     }
   },
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps: function (nextProps) {
     const params = nextProps.params || {};
     this.initWithParams(params);
   },
-  getItems: function getItems() {
+  getItems: function () {
     if (this.isMounted()) {
       this.setState({ loading: true });
 
@@ -505,7 +490,7 @@ const Listing = React.createClass({
       });
     }
   },
-  handleRestoreItem: function handleRestoreItem(id) {
+  handleRestoreItem: function (id) {
     this.setState({
       loading: true,
       page: 1,
@@ -516,7 +501,7 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'restore',
       data: {
-        id,
+        id: id,
       },
     }).done((response) => {
       if (
@@ -533,7 +518,7 @@ const Listing = React.createClass({
       );
     });
   },
-  handleTrashItem: function handleTrashItem(id) {
+  handleTrashItem: function (id) {
     this.setState({
       loading: true,
       page: 1,
@@ -544,7 +529,7 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'trash',
       data: {
-        id,
+        id: id,
       },
     }).done((response) => {
       if (
@@ -561,7 +546,7 @@ const Listing = React.createClass({
       );
     });
   },
-  handleDeleteItem: function handleDeleteItem(id) {
+  handleDeleteItem: function (id) {
     this.setState({
       loading: true,
       page: 1,
@@ -572,7 +557,7 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'delete',
       data: {
-        id,
+        id: id,
       },
     }).done((response) => {
       if (
@@ -589,7 +574,7 @@ const Listing = React.createClass({
       );
     });
   },
-  handleEmptyTrash: function handleEmptyTrash() {
+  handleEmptyTrash: function () {
     return this.handleBulkAction('all', {
       action: 'delete',
       group: 'trash',
@@ -609,7 +594,7 @@ const Listing = React.createClass({
       );
     });
   },
-  handleBulkAction: function handleBulkAction(selectedIds, params) {
+  handleBulkAction: function (selectedIds, params) {
     if (
       this.state.selection === false
       && this.state.selected_ids.length === 0
@@ -637,7 +622,7 @@ const Listing = React.createClass({
       api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
       action: 'bulkAction',
-      data,
+      data: data,
     }).done(() => {
       this.getItems();
     }).fail((response) => {
@@ -649,9 +634,9 @@ const Listing = React.createClass({
       }
     });
   },
-  handleSearch: function handleSearch(search) {
+  handleSearch: function (search) {
     this.setState({
-      search,
+      search: search,
       page: 1,
       selection: false,
       selected_ids: [],
@@ -659,7 +644,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleSort: function handleSort(sortBy, sortOrder = 'asc') {
+  handleSort: function (sortBy, sortOrder = 'asc') {
     this.setState({
       sort_by: sortBy,
       sort_order: (sortOrder === 'asc') ? 'asc' : 'desc',
@@ -667,7 +652,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleSelectItem: function handleSelectItem(id, isChecked) {
+  handleSelectItem: function (id, isChecked) {
     let selectedIds = this.state.selected_ids;
     let selection = false;
 
@@ -684,11 +669,11 @@ const Listing = React.createClass({
     }
 
     this.setState({
-      selection,
+      selection: selection,
       selected_ids: selectedIds,
     });
   },
-  handleSelectItems: function handleSelectItems(isChecked) {
+  handleSelectItems: function (isChecked) {
     if (isChecked === false) {
       this.clearSelection();
     } else {
@@ -700,7 +685,7 @@ const Listing = React.createClass({
       });
     }
   },
-  handleSelectAll: function handleSelectAll() {
+  handleSelectAll: function () {
     if (this.state.selection === 'all') {
       this.clearSelection();
     } else {
@@ -710,13 +695,13 @@ const Listing = React.createClass({
       });
     }
   },
-  clearSelection: function clearSelection() {
+  clearSelection: function () {
     this.setState({
       selection: false,
       selected_ids: [],
     });
   },
-  handleFilter: function handleFilter(filters) {
+  handleFilter: function (filters) {
     this.setState({
       filter: filters,
       page: 1,
@@ -724,12 +709,12 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleGroup: function handleGroup(group) {
+  handleGroup: function (group) {
     // reset search
     jQuery('#search_input').val('');
 
     this.setState({
-      group,
+      group: group,
       filter: {},
       search: '',
       page: 1,
@@ -737,23 +722,23 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
-  handleSetPage: function handleSetPage(page) {
+  handleSetPage: function (page) {
     this.setState({
-      page,
+      page: page,
       selection: false,
       selected_ids: [],
     }, () => {
       this.setParams();
     });
   },
-  handleRenderItem: function handleRenderItem(item, actions) {
+  handleRenderItem: function (item, actions) {
     const render = this.props.onRenderItem(item, actions, this.state.meta);
     return render.props.children;
   },
-  handleRefreshItems: function handleRefreshItems() {
+  handleRefreshItems: function () {
     this.getItems();
   },
-  render: function render() {
+  render: function () {
     const items = this.state.items;
     const sortBy = this.state.sort_by;
     const sortOrder = this.state.sort_order;
@@ -837,8 +822,7 @@ const Listing = React.createClass({
             bulk_actions={bulkActions}
             selection={this.state.selection}
             selected_ids={this.state.selected_ids}
-            onBulkAction={this.handleBulkAction}
-          />
+            onBulkAction={this.handleBulkAction} />
           <ListingFilters
             filters={this.state.filters}
             filter={this.state.filter}
@@ -852,8 +836,7 @@ const Listing = React.createClass({
             count={this.state.count}
             page={this.state.page}
             limit={this.state.limit}
-            onSetPage={this.handleSetPage}
-          />
+            onSetPage={this.handleSetPage} />
         </div>
         <table className={tableClasses}>
           <thead>
@@ -864,8 +847,7 @@ const Listing = React.createClass({
               sort_by={sortBy}
               sort_order={sortOrder}
               columns={columns}
-              is_selectable={bulkActions.length > 0}
-            />
+              is_selectable={bulkActions.length > 0} />
           </thead>
 
           <ListingItems
@@ -886,8 +868,7 @@ const Listing = React.createClass({
             limit={this.state.limit}
             item_actions={itemActions}
             messages={messages}
-            items={items}
-          />
+            items={items} />
 
           <tfoot>
             <ListingHeader
@@ -897,8 +878,7 @@ const Listing = React.createClass({
               sort_by={sortBy}
               sort_order={sortOrder}
               columns={columns}
-              is_selectable={bulkActions.length > 0}
-            />
+              is_selectable={bulkActions.length > 0} />
           </tfoot>
 
         </table>
@@ -908,14 +888,12 @@ const Listing = React.createClass({
             bulk_actions={bulkActions}
             selection={this.state.selection}
             selected_ids={this.state.selected_ids}
-            onBulkAction={this.handleBulkAction}
-          />
+            onBulkAction={this.handleBulkAction} />
           <ListingPages
             count={this.state.count}
             page={this.state.page}
             limit={this.state.limit}
-            onSetPage={this.handleSetPage}
-          />
+            onSetPage={this.handleSetPage} />
         </div>
       </div>
     );

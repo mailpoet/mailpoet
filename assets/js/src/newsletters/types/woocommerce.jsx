@@ -17,7 +17,7 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      setupNewsletter: function setupNewsletter(type) {
+      setupNewsletter: function (type) {
         if (type !== undefined) {
           this.context.router.push(`/new/${type}`);
           MailPoet.trackEvent('Emails > Type selected', {
@@ -26,7 +26,7 @@ define(
           });
         }
       },
-      createNewsletter: function createNewsletter(type) {
+      createNewsletter: function (type) {
         MailPoet.trackEvent('Emails > Type selected', {
           'MailPoet Free version': window.mailpoet_version,
           'Email type': type,
@@ -36,7 +36,7 @@ define(
           endpoint: 'newsletters',
           action: 'create',
           data: {
-            type,
+            type: type,
             subject: MailPoet.I18n.t('draftNewsletterTitle'),
           },
         }).done((response) => {
@@ -50,7 +50,7 @@ define(
           }
         });
       },
-      render: function render() {
+      render: function () {
         const types = [
           {
             id: 'woocommerce',
@@ -132,7 +132,7 @@ define(
                 <li key={index} data-type={type.id}>
                   <div>
                     <div className="mailpoet_thumbnail">
-                      {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
+                      {type.thumbnailImage ? <img src={type.thumbnailImage} /> : null}
                     </div>
                     <div className="mailpoet_description">
                       <div className="title_and_badge">

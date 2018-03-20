@@ -97,12 +97,12 @@ const bulkActions = [
 const itemActions = [
   {
     name: 'edit',
-    link: function link(item) {
+    link: function (item) {
       return (
         <Link to={`/edit/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
       );
     },
-    display: function display(segment) {
+    display: function (segment) {
       return (segment.type !== 'wp_users');
     },
   },
@@ -127,13 +127,13 @@ const itemActions = [
           { scroll: true }
         );
     }),
-    display: function display(segment) {
+    display: function (segment) {
       return (segment.type !== 'wp_users');
     },
   },
   {
     name: 'read_more',
-    link: function link() {
+    link: function () {
       return (
         <a
           href="http://docs.mailpoet.com/article/133-the-wordpress-users-list"
@@ -141,14 +141,14 @@ const itemActions = [
         >{MailPoet.I18n.t('readMore')}</a>
       );
     },
-    display: function display(segment) {
+    display: function (segment) {
       return (segment.type === 'wp_users');
     },
   },
   {
     name: 'synchronize_segment',
     label: MailPoet.I18n.t('forceSync'),
-    onClick: function onClick(item, refresh) {
+    onClick: function (item, refresh) {
       MailPoet.Modal.loading(true);
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
@@ -170,13 +170,13 @@ const itemActions = [
         }
       });
     },
-    display: function display(segment) {
+    display: function (segment) {
       return (segment.type === 'wp_users');
     },
   },
   {
     name: 'view_subscribers',
-    link: function link(item) {
+    link: function (item) {
       return (
         <a href={item.subscribers_url}>{MailPoet.I18n.t('viewSubscribers')}</a>
       );
@@ -184,14 +184,14 @@ const itemActions = [
   },
   {
     name: 'trash',
-    display: function display(segment) {
+    display: function (segment) {
       return (segment.type !== 'wp_users');
     },
   },
 ];
 
 const SegmentList = React.createClass({
-  renderItem: function renderItem(segment, actions) {
+  renderItem: function (segment, actions) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -248,7 +248,7 @@ const SegmentList = React.createClass({
       </div>
     );
   },
-  render: function render() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

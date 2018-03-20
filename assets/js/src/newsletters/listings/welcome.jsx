@@ -101,7 +101,7 @@ const bulkActions = [
 let newsletterActions = [
   {
     name: 'view',
-    link: function link(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={newsletter.preview_url} target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -111,7 +111,7 @@ let newsletterActions = [
   },
   {
     name: 'edit',
-    link: function link(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
           {MailPoet.I18n.t('edit')}
@@ -129,7 +129,7 @@ newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_no
 
 const NewsletterListWelcome = React.createClass({
   mixins: [StatisticsMixin, MailerMixin],
-  updateStatus: function updateStatus(e) {
+  updateStatus: function (e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -155,7 +155,7 @@ const NewsletterListWelcome = React.createClass({
       e.target.value = response.status;
     });
   },
-  renderStatus: function renderStatus(newsletter) {
+  renderStatus: function (newsletter) {
     const totalSent = (
       MailPoet.I18n.t('sentToXSubscribers')
       .replace('%$1d', newsletter.total_sent.toLocaleString())
@@ -177,7 +177,7 @@ const NewsletterListWelcome = React.createClass({
       </div>
     );
   },
-  renderSettings: function renderSettings(newsletter) {
+  renderSettings: function (newsletter) {
     let sendingEvent;
     let sendingDelay;
     let segment;
@@ -254,7 +254,7 @@ const NewsletterListWelcome = React.createClass({
       </span>
     );
   },
-  renderItem: function renderItem(newsletter, actions) {
+  renderItem: function (newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -292,7 +292,7 @@ const NewsletterListWelcome = React.createClass({
       </div>
     );
   },
-  render: function render() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

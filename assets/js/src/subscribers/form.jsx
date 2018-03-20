@@ -18,7 +18,7 @@ define(
         name: 'email',
         label: MailPoet.I18n.t('email'),
         type: 'text',
-        disabled: function disabled(subscriber) {
+        disabled: function (subscriber) {
           return Number(subscriber.wp_user_id > 0);
         },
       },
@@ -26,7 +26,7 @@ define(
         name: 'first_name',
         label: MailPoet.I18n.t('firstname'),
         type: 'text',
-        disabled: function disabled(subscriber) {
+        disabled: function (subscriber) {
           return Number(subscriber.wp_user_id > 0);
         },
       },
@@ -34,7 +34,7 @@ define(
         name: 'last_name',
         label: MailPoet.I18n.t('lastname'),
         type: 'text',
-        disabled: function disabled(subscriber) {
+        disabled: function (subscriber) {
           return Number(subscriber.wp_user_id > 0);
         },
       },
@@ -48,7 +48,7 @@ define(
           unsubscribed: MailPoet.I18n.t('unsubscribed'),
           bounced: MailPoet.I18n.t('bounced'),
         },
-        filter: function filter(subscriber, value) {
+        filter: function (subscriber, value) {
           if (Number(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
             return false;
           }
@@ -64,7 +64,7 @@ define(
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         multiple: true,
-        selected: function selected(subscriber) {
+        selected: function (subscriber) {
           if (Array.isArray(subscriber.subscriptions) === false) {
             return null;
           }
@@ -73,13 +73,13 @@ define(
             .filter(subscription => subscription.status === 'subscribed')
             .map(subscription => subscription.segment_id);
         },
-        filter: function filter(segment) {
+        filter: function (segment) {
           return (!segment.deleted_at && segment.type === 'default');
         },
-        getLabel: function getLabel(segment) {
+        getLabel: function (segment) {
           return `${segment.name} (${segment.subscribers})`;
         },
-        getSearchLabel: function getSearchLabel(segment, subscriber) {
+        getSearchLabel: function (segment, subscriber) {
           let label = '';
 
           if (subscriber.subscriptions !== undefined) {
@@ -142,10 +142,10 @@ define(
     });
 
     const messages = {
-      onUpdate: function onUpdate() {
+      onUpdate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('subscriberUpdated'));
       },
-      onCreate: function onCreate() {
+      onCreate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('subscriberAdded'));
         MailPoet.trackEvent('Subscribers > Add new', {
           'MailPoet Free version': window.mailpoet_version,
@@ -153,7 +153,7 @@ define(
       },
     };
 
-    function beforeFormContent(subscriber) {
+    const beforeFormContent = function (subscriber) {
       if (Number(subscriber.wp_user_id) > 0) {
         return (
           <p className="description">
@@ -172,9 +172,9 @@ define(
         );
       }
       return undefined;
-    }
+    };
 
-    function afterFormContent() {
+    const afterFormContent = function () {
       return (
         <p className="description">
           <strong>
@@ -182,12 +182,12 @@ define(
           </strong> { MailPoet.I18n.t('customFieldsTip') }
         </p>
       );
-    }
+    };
 
     const Link = Router.Link;
 
     const SubscriberForm = React.createClass({
-      render: function render() {
+      render: function () {
         return (
           <div>
             <h1 className="title">

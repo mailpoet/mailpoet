@@ -84,7 +84,7 @@ define(
     };
 
     const DateText = React.createClass({
-      onChange: function onChange(event) {
+      onChange: function (event) {
         const changeEvent = event;
         // Swap display format to storage format
         const displayDate = changeEvent.target.value;
@@ -93,22 +93,22 @@ define(
         changeEvent.target.value = storageDate;
         this.props.onChange(changeEvent);
       },
-      componentDidMount: function componentDidMount() {
-        const $element = jQuery(this.dateInput);
+      componentDidMount: function () {
+        const $element = jQuery(this.refs.dateInput);
         const that = this;
         if ($element.datepicker) {
           // Override jQuery UI datepicker Date parsing and formatting
-          jQuery.datepicker.parseDate = function parseDate(format, value) {
+          jQuery.datepicker.parseDate = function (format, value) {
             // Transform string format to Date object
             return MailPoet.Date.toDate(value, {
               parseFormat: dateDisplayFormat,
-              format,
+              format: format,
             });
           };
-          jQuery.datepicker.formatDate = function formatDate(format, value) {
+          jQuery.datepicker.formatDate = function (format, value) {
             // Transform Date object to string format
             const newValue = MailPoet.Date.format(value, {
-              format,
+              format: format,
             });
             return newValue;
           };
@@ -116,11 +116,11 @@ define(
           $element.datepicker(_.extend({
             dateFormat: this.props.displayFormat,
             isRTL: false,
-            onSelect: function onSelect(value) {
+            onSelect: function (value) {
               that.onChange({
                 target: {
                   name: that.getFieldName(),
-                  value,
+                  value: value,
                 },
               });
             },
@@ -129,27 +129,27 @@ define(
           this.datepickerInitialized = true;
         }
       },
-      componentWillUnmount: function componentWillUnmount() {
+      componentWillUnmount: function () {
         if (this.datepickerInitialized) {
-          jQuery(this.dateInput).datepicker('destroy');
+          jQuery(this.refs.dateInput).datepicker('destroy');
         }
       },
-      getFieldName: function getFieldName() {
+      getFieldName: function () {
         return this.props.name || 'date';
       },
-      getDisplayDate: function getDisplayDate(date) {
+      getDisplayDate: function (date) {
         return MailPoet.Date.format(date, {
           parseFormat: this.props.storageFormat,
           format: this.props.displayFormat,
         });
       },
-      getStorageDate: function getStorageDate(date) {
+      getStorageDate: function (date) {
         return MailPoet.Date.format(date, {
           parseFormat: this.props.displayFormat,
           format: this.props.storageFormat,
         });
       },
-      render: function render() {
+      render: function () {
         return (
           <input
             type="text"
@@ -159,21 +159,19 @@ define(
             readOnly={true}
             disabled={this.props.disabled}
             onChange={this.onChange}
-            ref={(c) => { this.dateInput = c; }}
-            {...this.props.validation}
-          />
+            ref="dateInput"
+            {...this.props.validation} />
         );
       },
     });
 
     const TimeSelect = React.createClass({
-      render: function render() {
+      render: function () {
         const options = Object.keys(timeOfDayItems).map(
           (value, index) => (
             <option
               key={`option-${index}`}
-              value={value}
-            >
+              value={value}>
               { timeOfDayItems[value] }
             </option>
             )
@@ -195,27 +193,29 @@ define(
 
     const DateTime = React.createClass({
       DATE_TIME_SEPARATOR: ' ',
-      getInitialState: function getInitialState() {
+      getInitialState: function () {
         return this.buildStateFromProps(this.props);
       },
-      componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+      componentWillReceiveProps: function (nextProps) {
         this.setState(this.buildStateFromProps(nextProps));
       },
-      buildStateFromProps: function buildStateFromProps(props) {
+      buildStateFromProps: function (props) {
         const value = props.value || defaultDateTime;
         const [date, time] = value.split(this.DATE_TIME_SEPARATOR);
         return {
-          date,
-          time,
+          date: date,
+          time: time,
         };
       },
-      handleChange: function handleChange(event) {
+      handleChange: function (event) {
         const newState = {};
         newState[event.target.name] = event.target.value;
 
-        this.setState(newState, this.propagateChange);
+        this.setState(newState, function () {
+          this.propagateChange();
+        });
       },
-      propagateChange: function propagateChange() {
+      propagateChange: function () {
         if (this.props.onChange) {
           this.props.onChange({
             target: {
@@ -225,10 +225,10 @@ define(
           });
         }
       },
-      getDateTime: function getDateTime() {
+      getDateTime: function () {
         return [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
       },
-      render: function render() {
+      render: function () {
         return (
           <span>
             <DateText
@@ -238,22 +238,20 @@ define(
               displayFormat={dateDisplayFormat}
               storageFormat={dateStorageFormat}
               disabled={this.props.disabled}
-              validation={this.props.dateValidation}
-            />
+              validation={this.props.dateValidation} />
             <TimeSelect
               name="time"
               value={this.state.time}
               onChange={this.handleChange}
               disabled={this.props.disabled}
-              validation={this.props.timeValidation}
-            />
+              validation={this.props.timeValidation} />
           </span>
         );
       },
     });
 
     const StandardScheduling = React.createClass({
-      getCurrentValue: function getCurrentValue() {
+      getCurrentValue: function () {
         return _.defaults(
           this.props.item[this.props.field.name] || {},
           {
@@ -262,7 +260,7 @@ define(
           }
         );
       },
-      handleValueChange: function handleValueChange(event) {
+      handleValueChange: function (event) {
         const oldValue = this.getCurrentValue();
         const newValue = {};
         newValue[event.target.name] = event.target.value;
@@ -274,22 +272,22 @@ define(
           },
         });
       },
-      handleCheckboxChange: function handleCheckboxChange(event) {
+      handleCheckboxChange: function (event) {
         const changeEvent = event;
-        changeEvent.target.value = this.isScheduledInput.checked ? '1' : '0';
+        changeEvent.target.value = this.refs.isScheduled.checked ? '1' : '0';
         return this.handleValueChange(changeEvent);
       },
-      isScheduled: function isScheduled() {
+      isScheduled: function () {
         return this.getCurrentValue().isScheduled === '1';
       },
-      getDateValidation: function getDateValidation() {
+      getDateValidation: function () {
         return {
           'data-parsley-required': true,
           'data-parsley-required-message': MailPoet.I18n.t('noScheduledDateError'),
           'data-parsley-errors-container': '#mailpoet_scheduling',
         };
       },
-      render: function render() {
+      render: function () {
         let schedulingOptions;
 
         if (this.isScheduled()) {
@@ -300,8 +298,7 @@ define(
                 value={this.getCurrentValue().scheduledAt}
                 onChange={this.handleValueChange}
                 disabled={this.props.field.disabled}
-                dateValidation={this.getDateValidation()}
-              />
+                dateValidation={this.getDateValidation()} />
               &nbsp;
               <span>
                 {MailPoet.I18n.t('websiteTimeIs')} <code>{currentTime}</code>
@@ -312,14 +309,13 @@ define(
         return (
           <div>
             <input
-              ref={(c) => { this.isScheduledInput = c; }}
+              ref="isScheduled"
               type="checkbox"
               value="1"
               checked={this.isScheduled()}
               disabled={this.props.field.disabled}
               name="isScheduled"
-              onChange={this.handleCheckboxChange}
-            />
+              onChange={this.handleCheckboxChange} />
 
             {schedulingOptions}
           </div>
@@ -348,13 +344,13 @@ define(
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         multiple: true,
-        filter: function filter(segment) {
+        filter: function (segment) {
           return !segment.deleted_at;
         },
-        getLabel: function getLabel(segment) {
+        getLabel: function (segment) {
           return `${segment.name} (${parseInt(segment.subscribers, 10).toLocaleString()})`;
         },
-        transformChangedValue: function transformChangedValue(segmentIds) {
+        transformChangedValue: function (segmentIds) {
           const allSegments = this.getItems();
           return _.map(segmentIds, id => _.find(allSegments, segment => segment.id === id));
         },
@@ -419,10 +415,10 @@ define(
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
-      getFields: function getFields() {
+      getFields: function () {
         return fields;
       },
-      getSendButtonOptions: function getSendButtonOptions(newsletter) {
+      getSendButtonOptions: function (newsletter) {
         const newsletterOptions = newsletter || {};
 
         const isScheduled = (

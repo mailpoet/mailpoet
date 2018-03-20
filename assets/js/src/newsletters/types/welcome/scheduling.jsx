@@ -51,10 +51,10 @@ const WelcomeScheduling = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired,
   },
-  getCurrentValue: function getCurrentValue() {
+  getCurrentValue: function () {
     return (this.props.item[this.props.field.name] || {});
   },
-  handleValueChange: function handleValueChange(name, value) {
+  handleValueChange: function (name, value) {
     const oldValue = this.getCurrentValue();
     const newValue = {};
 
@@ -67,37 +67,37 @@ const WelcomeScheduling = React.createClass({
       },
     });
   },
-  handleEventChange: function handleEventChange(event) {
+  handleEventChange: function (event) {
     return this.handleValueChange(
       'event',
       event.target.value
     );
   },
-  handleSegmentChange: function handleSegmentChange(event) {
+  handleSegmentChange: function (event) {
     return this.handleValueChange(
       'segment',
       event.target.value
     );
   },
-  handleRoleChange: function handleRoleChange(event) {
+  handleRoleChange: function (event) {
     return this.handleValueChange(
       'role',
       event.target.value
     );
   },
-  handleAfterTimeNumberChange: function handleAfterTimeNumberChange(event) {
+  handleAfterTimeNumberChange: function (event) {
     return this.handleValueChange(
       'afterTimeNumber',
       event.target.value
     );
   },
-  handleAfterTimeTypeChange: function handleAfterTimeTypeChange(event) {
+  handleAfterTimeTypeChange: function (event) {
     return this.handleValueChange(
       'afterTimeType',
       event.target.value
     );
   },
-  handleNext: function handleNext() {
+  handleNext: function () {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -117,10 +117,10 @@ const WelcomeScheduling = React.createClass({
       }
     });
   },
-  showTemplateSelection: function showTemplateSelection(newsletterId) {
+  showTemplateSelection: function (newsletterId) {
     this.context.router.push(`/template/${newsletterId}`);
   },
-  render: function render() {
+  render: function () {
     const value = this.getCurrentValue();
     let roleSegmentSelection;
     let timeNumber;
@@ -130,16 +130,14 @@ const WelcomeScheduling = React.createClass({
         <Select
           field={roleField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleRoleChange}
-        />
+          onValueChange={this.handleRoleChange} />
       );
     } else {
       roleSegmentSelection = (
         <Select
           field={segmentField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleSegmentChange}
-        />
+          onValueChange={this.handleSegmentChange} />
       );
     }
     if (value.afterTimeType !== 'immediate') {
@@ -147,8 +145,7 @@ const WelcomeScheduling = React.createClass({
         <Text
           field={afterTimeNumberField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleAfterTimeNumberChange}
-        />
+          onValueChange={this.handleAfterTimeNumberChange} />
       );
     }
 
@@ -157,8 +154,7 @@ const WelcomeScheduling = React.createClass({
         <Select
           field={events}
           item={this.getCurrentValue()}
-          onValueChange={this.handleEventChange}
-        />
+          onValueChange={this.handleEventChange} />
 
         { roleSegmentSelection }
 
@@ -167,8 +163,7 @@ const WelcomeScheduling = React.createClass({
         <Select
           field={afterTimeTypeField}
           item={this.getCurrentValue()}
-          onValueChange={this.handleAfterTimeTypeChange}
-        />
+          onValueChange={this.handleAfterTimeTypeChange} />
       </div>
     );
   },

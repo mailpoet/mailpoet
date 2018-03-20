@@ -32,14 +32,15 @@ function Tooltip(props) {
         data-event="click"
         data-tip
         data-for={tooltipId}
-      />
+      >
+      </span>
       <ReactTooltip
         globalEventOff="click"
         multiline={true}
         id={tooltipId}
         efect="solid"
         place={props.place}
-      >
+        >
         {tooltip}
       </ReactTooltip>
     </span>

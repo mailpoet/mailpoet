@@ -9,20 +9,20 @@ define([
   MailPoet
 ) => {
   const ListingFilters = React.createClass({
-    handleFilterAction: function handleFilterAction() {
+    handleFilterAction: function () {
       const filters = {};
       this.getAvailableFilters().forEach((filter, i) => {
-        filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
+        filters[this.refs[`filter-${i}`].name] = this.refs[`filter-${i}`].value;
       });
       if (this.props.onBeforeSelectFilter) {
         this.props.onBeforeSelectFilter(filters);
       }
       return this.props.onSelectFilter(filters);
     },
-    handleEmptyTrash: function handleEmptyTrash() {
+    handleEmptyTrash: function () {
       return this.props.onEmptyTrash();
     },
-    getAvailableFilters: function getAvailableFilters() {
+    getAvailableFilters: function () {
       const filters = this.props.filters;
       return Object.keys(filters).filter(filter => !(
           filters[filter].length === 0
@@ -32,32 +32,32 @@ define([
           )
         ));
     },
-    componentDidUpdate: function componentDidUpdate() {
+    componentDidUpdate: function () {
       const selectedFilters = this.props.filter;
       this.getAvailableFilters().forEach(
         (filter, i) => {
           if (selectedFilters[filter] !== undefined && selectedFilters[filter]) {
-            jQuery(this[`filter-${i}`])
+            jQuery(this.refs[`filter-${i}`])
               .val(selectedFilters[filter])
               .trigger('change');
           }
         }
         );
     },
-    render: function render() {
+    render: function () {
       const filters = this.props.filters;
       const availableFilters = this.getAvailableFilters()
         .map((filter, i) => (
           <select
-            ref={(c) => { this[`filter-${i}`] = c; }}
+            ref={`filter-${i}`}
             key={`filter-${i}`}
             name={filter}
-          >
+            >
             { filters[filter].map((option, j) => (
               <option
                 value={option.value}
                 key={`filter-option-${j}`}
-              >{ option.label }</option>
+                >{ option.label }</option>
                 )) }
           </select>
           ));
@@ -71,8 +71,7 @@ define([
             onClick={this.handleFilterAction}
             type="submit"
             defaultValue={MailPoet.I18n.t('filter')}
-            className="button"
-          />
+            className="button" />
         );
       }
 
