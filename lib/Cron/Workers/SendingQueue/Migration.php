@@ -242,6 +242,6 @@ class Migration extends SimpleWorker {
 
   static function getNextRunDate() {
     // run migration immediately
-    return Carbon::now();
+    return Carbon::createFromTimestamp(current_time('timestamp'));
   }
 }
