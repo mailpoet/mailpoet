@@ -1,5 +1,8 @@
 <?php
+
 namespace MailPoet\Models;
+
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -34,7 +37,7 @@ class ScheduledTask extends Model {
   }
 
   function complete() {
-    $this->processed_at = current_time('mysql');
+    $this->processed_at = WPFunctions::currentTime('mysql');
     $this->set('status', self::STATUS_COMPLETED);
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);

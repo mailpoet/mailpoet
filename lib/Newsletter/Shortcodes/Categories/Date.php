@@ -2,6 +2,8 @@
 
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Date {
   static function process(
     $action,
@@ -17,10 +19,10 @@ class Date {
       'y' => 'Y'
     );
     if(!empty($action_mapping[$action])) {
-      return date_i18n($action_mapping[$action], current_time('timestamp'));
+      return date_i18n($action_mapping[$action], WPFunctions::currentTime('timestamp'));
     }
     return ($action === 'custom' && $action_argument === 'format') ?
-      date_i18n($action_argument_value, current_time('timestamp')) :
+      date_i18n($action_argument_value, WPFunctions::currentTime('timestamp')) :
       false;
   }
 }

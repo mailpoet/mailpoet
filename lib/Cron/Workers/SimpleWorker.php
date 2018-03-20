@@ -1,9 +1,11 @@
 <?php
+
 namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -94,19 +96,19 @@ abstract class SimpleWorker {
   }
 
   function complete(ScheduledTask $task) {
-    $task->processed_at = current_time('mysql');
+    $task->processed_at = WPFunctions::currentTime('mysql');
     $task->status = ScheduledTask::STATUS_COMPLETED;
     $task->save();
   }
 
   function reschedule(ScheduledTask $task, $timeout) {
-    $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $scheduled_at = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
     $task->scheduled_at = $scheduled_at->addMinutes($timeout);
     $task->save();
   }
 
   static function getNextRunDate() {
-    $date = Carbon::createFromTimestamp(current_time('timestamp'));
+    $date = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
     // Random day of the next week
     $date->setISODate($date->format('o'), $date->format('W') + 1, mt_rand(1, 7));
     $date->startOfDay();
@@ -116,7 +118,7 @@ abstract class SimpleWorker {
   static function getScheduledTasks($future = false) {
     $dateWhere = ($future) ? 'whereGt' : 'whereLte';
     return ScheduledTask::where('type', static::TASK_TYPE)
-      ->$dateWhere('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
+      ->$dateWhere('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
       ->findMany();
@@ -124,7 +126,7 @@ abstract class SimpleWorker {
 
   static function getRunningTasks() {
     return ScheduledTask::where('type', static::TASK_TYPE)
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
+      ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->findMany();

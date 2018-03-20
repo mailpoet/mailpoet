@@ -19,6 +19,7 @@ use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -169,7 +170,7 @@ class Newsletters extends APIEndpoint {
       $queue = $newsletter->queue()->findOne();
       if($queue) {
         $queue->task()
-          ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
+          ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
           ->where('status', SendingQueue::STATUS_SCHEDULED)
           ->findResultSet()
           ->set('scheduled_at', $next_run_date)
@@ -414,7 +415,7 @@ class Newsletters extends APIEndpoint {
       'groups' => $listing_data['groups'],
       'mta_log' => Setting::getValue('mta_log'),
       'mta_method' => Setting::getValue('mta.method'),
-      'current_time' => current_time('mysql')
+      'current_time' => WPFunctions::currentTime('mysql')
     ));
   }
 

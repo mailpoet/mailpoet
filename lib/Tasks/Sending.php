@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Tasks;
 
 use Carbon\Carbon;
@@ -6,6 +7,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -221,7 +223,7 @@ class Sending {
 
   static function getScheduledQueues() {
     $tasks = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
+      ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->where('type', 'sending')
       ->findMany();
     $result = array();
