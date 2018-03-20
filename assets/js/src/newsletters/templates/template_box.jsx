@@ -25,7 +25,7 @@ class TemplateBox extends React.Component {
         endpoint: 'newsletterTemplates',
         action: 'delete',
         data: {
-          id: id,
+          id,
         },
       }).done(() => {
         afterDelete(true, id);
@@ -44,7 +44,7 @@ class TemplateBox extends React.Component {
       message: MailPoet.I18n.t('confirmTemplateDeletion').replace('%$1s', name),
       confirmLabel: MailPoet.I18n.t('confirmLabel'),
       cancelLabel: MailPoet.I18n.t('cancelLabel'),
-      onConfirm: onConfirm,
+      onConfirm,
       onCancel: () => {},
     });
   }
@@ -78,7 +78,7 @@ class TemplateBox extends React.Component {
       action: 'save',
       data: {
         id: newsletterId,
-        body: body,
+        body,
       },
     }).done((response) => {
       afterSelect(true, response.data.id);
@@ -106,8 +106,8 @@ class TemplateBox extends React.Component {
     if (typeof thumbnail === 'string' && thumbnail.length > 0) {
       preview = (
         <a href="javascript:;" onClick={this.onPreview}>
-          <img src={thumbnail} />
-          <div className="mailpoet_overlay"></div>
+          <img src={thumbnail} alt={MailPoet.I18n.t('templatePreview')} />
+          <div className="mailpoet_overlay" />
         </a>
       );
     }
@@ -127,13 +127,17 @@ class TemplateBox extends React.Component {
           <a
             className="button button-secondary"
             onClick={this.onPreview}
+            role="button"
+            tabIndex={0}
           >{MailPoet.I18n.t('preview')}</a>
             &nbsp;
           <a
             className="button button-primary"
             data-automation-id={`select_template_${index}`}
             onClick={this.onSelect}
-            > {MailPoet.I18n.t('select')} </a>
+            role="button"
+            tabIndex={0}
+          > {MailPoet.I18n.t('select')} </a>
         </div>
         { readonly === '1' ? false : deleteLink }
       </li>

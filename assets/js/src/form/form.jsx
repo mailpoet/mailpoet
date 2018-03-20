@@ -19,47 +19,51 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      getDefaultProps: function () {
+      getDefaultProps: function getDefaultProps() {
         return {
           params: {},
         };
       },
-      getInitialState: function () {
+      getInitialState: function getInitialState() {
         return {
           loading: false,
           errors: [],
           item: {},
         };
       },
-      getValues: function () {
+      getValues: function getValues() {
         return this.props.item ? this.props.item : this.state.item;
       },
-      getErrors: function () {
+      getErrors: function getErrors() {
         return this.props.errors ? this.props.errors : this.state.errors;
       },
-      componentDidMount: function () {
+      componentDidMount: function componentDidMount() {
         if (this.isMounted()) {
           if (this.props.params.id !== undefined) {
             this.loadItem(this.props.params.id);
           } else {
-            this.setState({
-              item: jQuery('.mailpoet_form').mailpoetSerializeObject(),
+            setImmediate(() => {
+              this.setState({
+                item: jQuery('.mailpoet_form').mailpoetSerializeObject(),
+              });
             });
           }
         }
       },
-      componentWillReceiveProps: function (props) {
+      componentWillReceiveProps: function componentWillReceiveProps(props) {
         if (props.params.id === undefined) {
-          this.setState({
-            loading: false,
-            item: {},
+          setImmediate(() => {
+            this.setState({
+              loading: false,
+              item: {},
+            });
           });
           if (props.item === undefined) {
-            this.refs.form.reset();
+            this.form.reset();
           }
         }
       },
-      loadItem: function (id) {
+      loadItem: function loadItem(id) {
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
@@ -67,7 +71,7 @@ define(
           endpoint: this.props.endpoint,
           action: 'get',
           data: {
-            id: id,
+            id,
           },
         }).done((response) => {
           this.setState({
@@ -81,12 +85,12 @@ define(
           this.setState({
             loading: false,
             item: {},
-          }, function () {
+          }, function failSetStateCallback() {
             this.context.router.push('/new');
           });
         });
       },
-      handleSubmit: function (e) {
+      handleSubmit: function handleSubmit(e) {
         e.preventDefault();
 
         // handle validation
@@ -139,7 +143,7 @@ define(
           }
         });
       },
-      handleValueChange: function (e) {
+      handleValueChange: function handleValueChange(e) {
         if (this.props.onChange) {
           return this.props.onChange(e);
         }
@@ -149,11 +153,11 @@ define(
         item[field] = e.target.value;
 
         this.setState({
-          item: item,
+          item,
         });
         return true;
       },
-      render: function () {
+      render: function render() {
         let errors;
         if (this.getErrors() !== undefined) {
           errors = this.getErrors().map((error, index) => (
@@ -194,7 +198,8 @@ define(
               field={field}
               item={this.getValues()}
               onValueChange={onValueChange}
-              key={`field-${i}`} />
+              key={`field-${i}`}
+            />
           );
         });
 
@@ -207,7 +212,8 @@ define(
               className="button button-primary"
               type="submit"
               value={MailPoet.I18n.t('save')}
-              disabled={this.state.loading} />
+              disabled={this.state.loading}
+            />
           );
         }
 
@@ -216,7 +222,7 @@ define(
             { beforeFormContent }
             <form
               id={this.props.id}
-              ref="form"
+              ref={(c) => { this.form = c; }}
               className={formClasses}
               onSubmit={
                 (this.props.onSubmit !== undefined)

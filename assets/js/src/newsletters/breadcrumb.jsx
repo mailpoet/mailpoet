@@ -14,7 +14,7 @@ define(
     const Link = Router.Link;
 
     const Breadcrumb = React.createClass({
-      getInitialState: function () {
+      getInitialState: function getInitialState() {
         const steps = this.props.steps || [
           {
             name: 'type',
@@ -36,10 +36,10 @@ define(
         ];
         return {
           step: null,
-          steps: steps,
+          steps,
         };
       },
-      render: function () {
+      render: function render() {
         const steps = this.state.steps.map((step, index) => {
           const stepClasses = classNames(
             { mailpoet_current: (this.props.step === step.name) }

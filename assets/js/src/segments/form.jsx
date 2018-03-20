@@ -26,10 +26,10 @@ define(
     ];
 
     const messages = {
-      onUpdate: function () {
+      onUpdate: function onUpdate() {
         MailPoet.Notice.success(MailPoet.I18n.t('segmentUpdated'));
       },
-      onCreate: function () {
+      onCreate: function onCreate() {
         MailPoet.Notice.success(MailPoet.I18n.t('segmentAdded'));
         MailPoet.trackEvent('Lists > Add new', {
           'MailPoet Free version': window.mailpoet_version,
@@ -40,7 +40,7 @@ define(
     const Link = Router.Link;
 
     const SegmentForm = React.createClass({
-      render: function () {
+      render: function render() {
         return (
           <div>
             <h1 className="title">

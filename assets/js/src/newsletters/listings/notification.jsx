@@ -102,7 +102,7 @@ const bulkActions = [
 const newsletterActions = [
   {
     name: 'view',
-    link: function (newsletter) {
+    link: function link(newsletter) {
       return (
         <a href={newsletter.preview_url} target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -112,7 +112,7 @@ const newsletterActions = [
   },
   {
     name: 'edit',
-    link: function (newsletter) {
+    link: function link(newsletter) {
       return (
         <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
           {MailPoet.I18n.t('edit')}
@@ -123,7 +123,7 @@ const newsletterActions = [
   {
     name: 'duplicate',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: function (newsletter, refresh) {
+    onClick: function onClick(newsletter, refresh) {
       return MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'newsletters',
@@ -155,7 +155,7 @@ const newsletterActions = [
 
 const NewsletterListNotification = React.createClass({
   mixins: [MailerMixin],
-  updateStatus: function (e) {
+  updateStatus: function updateStatus(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -181,7 +181,7 @@ const NewsletterListNotification = React.createClass({
       e.target.value = response.status;
     });
   },
-  renderStatus: function (newsletter) {
+  renderStatus: function renderStatus(newsletter) {
     return (
       <select
         data-id={newsletter.id}
@@ -193,7 +193,7 @@ const NewsletterListNotification = React.createClass({
       </select>
     );
   },
-  renderSettings: function (newsletter) {
+  renderSettings: function renderSettings(newsletter) {
     let sendingFrequency;
 
     // get list of segments' name
@@ -261,7 +261,7 @@ const NewsletterListNotification = React.createClass({
       </span>
     );
   },
-  renderHistoryLink: function (newsletter) {
+  renderHistoryLink: function renderHistoryLink(newsletter) {
     const childrenCount = Number((newsletter.children_count));
     if (childrenCount === 0) {
       return (
@@ -271,10 +271,10 @@ const NewsletterListNotification = React.createClass({
     return (
       <Link
         to={`/notification/history/${newsletter.id}`}
-        >{ MailPoet.I18n.t('viewHistory') }</Link>
+      >{ MailPoet.I18n.t('viewHistory') }</Link>
     );
   },
-  renderItem: function (newsletter, actions) {
+  renderItem: function renderItem(newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -307,7 +307,7 @@ const NewsletterListNotification = React.createClass({
       </div>
     );
   },
-  render: function () {
+  render: function render() {
     return (
       <div>
         <h1 className="title">

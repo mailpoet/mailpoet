@@ -122,7 +122,7 @@ const confirmEdit = (newsletter) => {
 let newsletterActions = [
   {
     name: 'view',
-    link: function (newsletter) {
+    link: function link(newsletter) {
       return (
         <a href={newsletter.preview_url} target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -138,7 +138,7 @@ let newsletterActions = [
   {
     name: 'duplicate',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: function (newsletter, refresh) {
+    onClick: function onClick(newsletter, refresh) {
       return MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'newsletters',
@@ -173,7 +173,7 @@ newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_a
 
 const NewsletterListStandard = React.createClass({
   mixins: [QueueMixin, StatisticsMixin, MailerMixin],
-  renderItem: function (newsletter, actions, meta) {
+  renderItem: function renderItem(newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -211,7 +211,7 @@ const NewsletterListStandard = React.createClass({
       </div>
     );
   },
-  render: function () {
+  render: function render() {
     return (
       <div>
         <h1 className="title">

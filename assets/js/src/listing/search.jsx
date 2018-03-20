@@ -6,16 +6,16 @@ define([
     React
   ) => {
   const ListingSearch = React.createClass({
-    handleSearch: function (e) {
+    handleSearch: function handleSearch(e) {
       e.preventDefault();
       this.props.onSearch(
-        this.refs.search.value.trim()
+        this.search.value.trim()
       );
     },
-    componentWillReceiveProps: function (nextProps) {
-      this.refs.search.value = nextProps.search;
+    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+      this.search.value = nextProps.search;
     },
-    render: function () {
+    render: function render() {
       if (this.props.search === false) {
         return false;
       }
@@ -28,13 +28,15 @@ define([
             <input
               type="search"
               id="search_input"
-              ref="search"
+              ref={(c) => { this.search = c; }}
               name="s"
-              defaultValue={this.props.search} />
+              defaultValue={this.props.search}
+            />
             <input
               type="submit"
               defaultValue={MailPoet.I18n.t('searchLabel')}
-              className="button" />
+              className="button"
+            />
           </p>
         </form>
       );

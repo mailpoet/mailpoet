@@ -31,41 +31,41 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      getInitialState: function () {
+      getInitialState: function getInitialState() {
         return {
           fields: [],
           item: {},
           loading: false,
         };
       },
-      getFieldsByNewsletter: function (newsletter) {
+      getFieldsByNewsletter: function getFieldsByNewsletter(newsletter) {
         const type = this.getSubtype(newsletter);
         return type.getFields(newsletter);
       },
-      getSendButtonOptions: function () {
+      getSendButtonOptions: function getSendButtonOptions() {
         const type = this.getSubtype(this.state.item);
         return type.getSendButtonOptions(this.state.item);
       },
-      getSubtype: function (newsletter) {
+      getSubtype: function getSubtype(newsletter) {
         switch (newsletter.type) {
           case 'notification': return NotificationNewsletterFields;
           case 'welcome': return WelcomeNewsletterFields;
           default: return StandardNewsletterFields;
         }
       },
-      isValid: function () {
+      isValid: function isValid() {
         return jQuery('#mailpoet_newsletter').parsley().isValid();
       },
-      componentDidMount: function () {
+      componentDidMount: function componentDidMount() {
         if (this.isMounted()) {
           this.loadItem(this.props.params.id);
         }
         jQuery('#mailpoet_newsletter').parsley();
       },
-      componentWillReceiveProps: function (props) {
+      componentWillReceiveProps: function componentWillReceiveProps(props) {
         this.loadItem(props.params.id);
       },
-      loadItem: function (id) {
+      loadItem: function loadItem(id) {
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
@@ -73,7 +73,7 @@ define(
           endpoint: 'newsletters',
           action: 'get',
           data: {
-            id: id,
+            id,
           },
         }).done((response) => {
           this.setState({
@@ -90,9 +90,9 @@ define(
           });
         });
       },
-      saveTemplate: function (response, done) {
+      saveTemplate: function saveTemplate(response, done) {
         Thumbnail.fromUrl(response.meta.preview_url)
-          .then(function (thumbnail) {
+          .then(function saveTemplateAjax(thumbnail) {
             MailPoet.Ajax.post({
               api_version: window.mailpoet_api_version,
               endpoint: 'newsletterTemplates',
@@ -101,7 +101,7 @@ define(
                 newsletter_id: response.data.id,
                 name: response.data.subject,
                 description: response.data.preheader,
-                thumbnail: thumbnail,
+                thumbnail,
                 body: JSON.stringify(response.data.body),
                 categories: '["recent"]',
               },
@@ -109,7 +109,7 @@ define(
           })
           .catch(err => this.showError({ errors: [err] }));
       },
-      handleSend: function (e) {
+      handleSend: function handleSend(e) {
         e.preventDefault();
 
         if (!this.isValid()) {
@@ -211,7 +211,7 @@ define(
         }
         return false;
       },
-      handleResume: function (e) {
+      handleResume: function handleResume(e) {
         e.preventDefault();
         if (!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
@@ -247,7 +247,7 @@ define(
         }
         return false;
       },
-      handleSave: function (e) {
+      handleSave: function handleSave(e) {
         e.preventDefault();
 
         this.saveNewsletter(e).done(() => {
@@ -258,7 +258,7 @@ define(
           this.context.router.push(`/${this.state.item.type || ''}`);
         }).fail(this.showError);
       },
-      handleRedirectToDesign: function (e) {
+      handleRedirectToDesign: function handleRedirectToDesign(e) {
         e.preventDefault();
         const redirectTo = e.target.href;
 
@@ -270,7 +270,7 @@ define(
           window.location = redirectTo;
         }).fail(this.showError);
       },
-      saveNewsletter: function () {
+      saveNewsletter: function saveNewsletter() {
         const data = this.state.item;
         data.queue = undefined;
         this.setState({ loading: true });
@@ -302,18 +302,18 @@ define(
           );
         }
       },
-      handleFormChange: function (e) {
+      handleFormChange: function handleFormChange(e) {
         const item = this.state.item;
         const field = e.target.name;
 
         item[field] = e.target.value;
 
         this.setState({
-          item: item,
+          item,
         });
         return true;
       },
-      render: function () {
+      render: function render() {
         const isPaused = this.state.item.status === 'sending'
           && this.state.item.queue
           && this.state.item.queue.status === 'paused';
@@ -346,7 +346,8 @@ define(
                       className="button button-primary"
                       type="button"
                       onClick={this.handleResume}
-                      value={MailPoet.I18n.t('resume')} />
+                      value={MailPoet.I18n.t('resume')}
+                    />
                   :
                     <input
                       className="button button-primary"
@@ -354,19 +355,21 @@ define(
                       onClick={this.handleSend}
                       value={MailPoet.I18n.t('send')}
                       {...sendButtonOptions}
-                  />
+                    />
                 }
                 &nbsp;
                 <input
                   className="button button-secondary"
                   type="submit"
-                  value={MailPoet.I18n.t('saveDraftAndClose')} />
+                  value={MailPoet.I18n.t('saveDraftAndClose')}
+                />
                 &nbsp;{MailPoet.I18n.t('orSimply')}&nbsp;
                 <a
                   href={
                     `?page=mailpoet-newsletter-editor&id=${this.props.params.id}`
                   }
-                  onClick={this.handleRedirectToDesign}>
+                  onClick={this.handleRedirectToDesign}
+                >
                   {MailPoet.I18n.t('goBackToDesign')}
                 </a>.
               </p>

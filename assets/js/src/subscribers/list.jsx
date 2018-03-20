@@ -104,12 +104,12 @@ const bulkActions = [
   {
     name: 'moveToList',
     label: MailPoet.I18n.t('moveToList'),
-    onSelect: function () {
+    onSelect: function onSelect() {
       const field = {
         id: 'move_to_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
-        filter: function (segment) {
+        filter: function filter(segment) {
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
@@ -120,12 +120,12 @@ const bulkActions = [
         <Selection field={field} />
       );
     },
-    getData: function () {
+    getData: function getData() {
       return {
         segment_id: Number(jQuery('#move_to_segment').val()),
       };
     },
-    onSuccess: function (response) {
+    onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
         .replace('%$1d', (Number(response.meta.count)).toLocaleString())
@@ -136,12 +136,12 @@ const bulkActions = [
   {
     name: 'addToList',
     label: MailPoet.I18n.t('addToList'),
-    onSelect: function () {
+    onSelect: function onSelect() {
       const field = {
         id: 'add_to_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
-        filter: function (segment) {
+        filter: function filter(segment) {
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
@@ -152,12 +152,12 @@ const bulkActions = [
         <Selection field={field} />
       );
     },
-    getData: function () {
+    getData: function getData() {
       return {
         segment_id: Number(jQuery('#add_to_segment').val()),
       };
     },
-    onSuccess: function (response) {
+    onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
         .replace('%$1d', (Number(response.meta.count)).toLocaleString())
@@ -168,12 +168,12 @@ const bulkActions = [
   {
     name: 'removeFromList',
     label: MailPoet.I18n.t('removeFromList'),
-    onSelect: function () {
+    onSelect: function onSelect() {
       const field = {
         id: 'remove_from_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
-        filter: function (segment) {
+        filter: function filter(segment) {
           return !!(
             segment.type === 'default'
           );
@@ -184,12 +184,12 @@ const bulkActions = [
         <Selection field={field} />
       );
     },
-    getData: function () {
+    getData: function getData() {
       return {
         segment_id: Number(jQuery('#remove_from_segment').val()),
       };
     },
-    onSuccess: function (response) {
+    onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
         .replace('%$1d', (Number(response.meta.count)).toLocaleString())
@@ -200,7 +200,7 @@ const bulkActions = [
   {
     name: 'removeFromAllLists',
     label: MailPoet.I18n.t('removeFromAllLists'),
-    onSuccess: function (response) {
+    onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
         .replace('%$1d', (Number(response.meta.count)).toLocaleString())
@@ -210,7 +210,7 @@ const bulkActions = [
   {
     name: 'sendConfirmationEmail',
     label: MailPoet.I18n.t('resendConfirmationEmail'),
-    onSuccess: function (response) {
+    onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleConfirmationEmailsSent')
         .replace('%$1d', (Number(response.meta.count)).toLocaleString())
@@ -228,7 +228,7 @@ const itemActions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
-    link: function (subscriber) {
+    link: function link(subscriber) {
       return (
         <Link to={`/edit/${subscriber.id}`}>{MailPoet.I18n.t('edit')}</Link>
       );
@@ -236,14 +236,14 @@ const itemActions = [
   },
   {
     name: 'trash',
-    display: function (subscriber) {
+    display: function display(subscriber) {
       return Number(subscriber.wp_user_id) === 0;
     },
   },
 ];
 
 const SubscriberList = React.createClass({
-  getSegmentFromId: function (segmentId) {
+  getSegmentFromId: function getSegmentFromId(segmentId) {
     let result = false;
     window.mailpoet_segments.forEach((segment) => {
       if (segment.id === segmentId) {
@@ -252,7 +252,7 @@ const SubscriberList = React.createClass({
     });
     return result;
   },
-  renderItem: function (subscriber, actions) {
+  renderItem: function renderItem(subscriber, actions) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -334,7 +334,7 @@ const SubscriberList = React.createClass({
       </div>
     );
   },
-  render: function () {
+  render: function render() {
     return (
       <div>
         <h1 className="title">

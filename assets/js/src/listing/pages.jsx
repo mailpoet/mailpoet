@@ -8,54 +8,54 @@ define([
     MailPoet
   ) => {
   const ListingPages = React.createClass({
-    getInitialState: function () {
+    getInitialState: function getInitialState() {
       return {
         page: null,
       };
     },
-    setPage: function (page) {
+    setPage: function setPage(page) {
       this.setState({
         page: null,
       }, () => {
         this.props.onSetPage(this.constrainPage(page));
       });
     },
-    setFirstPage: function () {
+    setFirstPage: function setFirstPage() {
       this.setPage(1);
     },
-    setLastPage: function () {
+    setLastPage: function setLastPage() {
       this.setPage(this.getLastPage());
     },
-    setPreviousPage: function () {
+    setPreviousPage: function setPreviousPage() {
       this.setPage(this.constrainPage(
         parseInt(this.props.page, 10) - 1)
       );
     },
-    setNextPage: function () {
+    setNextPage: function setNextPage() {
       this.setPage(this.constrainPage(
         parseInt(this.props.page, 10) + 1)
       );
     },
-    constrainPage: function (page) {
+    constrainPage: function constrainPage(page) {
       return Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
     },
-    handleSetManualPage: function (e) {
+    handleSetManualPage: function handleSetManualPage(e) {
       if (e.which === 13) {
         this.setPage(this.state.page);
       }
     },
-    handleChangeManualPage: function (e) {
+    handleChangeManualPage: function handleChangeManualPage(e) {
       this.setState({
         page: e.target.value,
       });
     },
-    handleBlurManualPage: function (e) {
+    handleBlurManualPage: function handleBlurManualPage(e) {
       this.setPage(e.target.value);
     },
-    getLastPage: function () {
+    getLastPage: function getLastPage() {
       return Math.ceil(this.props.count / this.props.limit);
     },
-    render: function () {
+    render: function render() {
       if (this.props.count === 0) {
         return false;
       }
@@ -78,7 +78,8 @@ define([
           previousPage = (
             <a href="javascript:;"
               onClick={this.setPreviousPage}
-              className="prev-page">
+              className="prev-page"
+            >
               <span className="screen-reader-text">{MailPoet.I18n.t('previousPage')}</span>
               <span aria-hidden="true">‹</span>
             </a>
@@ -89,7 +90,8 @@ define([
           firstPage = (
             <a href="javascript:;"
               onClick={this.setFirstPage}
-              className="first-page">
+              className="first-page"
+            >
               <span className="screen-reader-text">{MailPoet.I18n.t('firstPage')}</span>
               <span aria-hidden="true">«</span>
             </a>
@@ -100,7 +102,8 @@ define([
           nextPage = (
             <a href="javascript:;"
               onClick={this.setNextPage}
-              className="next-page">
+              className="next-page"
+            >
               <span className="screen-reader-text">{MailPoet.I18n.t('nextPage')}</span>
               <span aria-hidden="true">›</span>
             </a>
@@ -111,7 +114,8 @@ define([
           lastPage = (
             <a href="javascript:;"
               onClick={this.setLastPage}
-              className="last-page">
+              className="last-page"
+            >
               <span className="screen-reader-text">{MailPoet.I18n.t('lastPage')}</span>
               <span aria-hidden="true">»</span>
             </a>
@@ -132,7 +136,8 @@ define([
             <span className="paging-input">
               <label
                 className="screen-reader-text"
-                htmlFor="current-page-selector">{MailPoet.I18n.t('currentPage')}</label>
+                htmlFor="current-page-selector"
+              >{MailPoet.I18n.t('currentPage')}</label>
               <input
                 type="text"
                 onChange={this.handleChangeManualPage}
@@ -140,11 +145,11 @@ define([
                 onBlur={this.handleBlurManualPage}
                 aria-describedby="table-paging"
                 size="2"
-                ref="page"
                 value={pageValue}
                 name="paged"
                 id="current-page-selector"
-                className="current-page" />
+                className="current-page"
+              />
               {MailPoet.I18n.t('pageOutOf')}&nbsp;
               <span className="total-pages">
                 {Math.ceil(this.props.count / this.props.limit).toLocaleString()}

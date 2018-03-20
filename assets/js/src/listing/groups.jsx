@@ -1,9 +1,9 @@
 define(['react', 'classnames'], (React, classNames) => {
   const ListingGroups = React.createClass({
-    handleSelect: function (group) {
+    handleSelect: function handleSelect(group) {
       return this.props.onSelectGroup(group);
     },
-    render: function () {
+    render: function render() {
       const groups = this.props.groups.map((group, index) => {
         if (group.name === 'trash' && group.count === 0) {
           return false;
@@ -19,7 +19,8 @@ define(['react', 'classnames'], (React, classNames) => {
             <a
               href="javascript:;"
               className={classes}
-              onClick={this.handleSelect.bind(this, group.name)} >
+              onClick={this.handleSelect.bind(this, group.name)}
+            >
               {group.label}
               <span className="count">({ parseInt(group.count, 10).toLocaleString() })</span>
             </a>

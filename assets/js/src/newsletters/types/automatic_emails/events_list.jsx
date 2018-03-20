@@ -22,7 +22,8 @@ class AutomaticEmailEventsList extends React.Component {
       if (this.automaticEmail.premium) {
         action = (
           <a href="?page=mailpoet-premium"
-            target="_blank">
+            target="_blank"
+          >
             {MailPoet.I18n.t('premiumFeatureLink')}
           </a>
         );
@@ -43,7 +44,7 @@ class AutomaticEmailEventsList extends React.Component {
         <li key={index} data-type={event.slug}>
           <div>
             <div className="mailpoet_thumbnail">
-              {event.thumbnailImage ? <img src={event.thumbnailImage} /> : null}
+              {event.thumbnailImage ? <img src={event.thumbnailImage} alt="" /> : null}
             </div>
             <div className="mailpoet_description">
               <div className="title_and_badge">

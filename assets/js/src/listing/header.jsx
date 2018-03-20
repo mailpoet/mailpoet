@@ -3,12 +3,12 @@ import React from 'react';
 import classNames from 'classnames';
 
 const ListingHeader = React.createClass({
-  handleSelectItems: function () {
+  handleSelectItems: function handleSelectItems() {
     return this.props.onSelectItems(
-      this.refs.toggle.checked
+      this.toggle.checked
     );
   },
-  render: function () {
+  render: function render() {
     const columns = this.props.columns.map((column, index) => {
       const renderColumn = column;
       renderColumn.is_primary = (index === 0);
@@ -20,7 +20,8 @@ const ListingHeader = React.createClass({
           onSort={this.props.onSort}
           sort_by={this.props.sort_by}
           key={`column-${index}`}
-          column={renderColumn} />
+          column={renderColumn}
+        />
       );
     });
 
@@ -29,16 +30,19 @@ const ListingHeader = React.createClass({
     if (this.props.is_selectable === true) {
       checkbox = (
         <th
-          className="manage-column column-cb check-column">
-          <label className="screen-reader-text">
+          className="manage-column column-cb check-column"
+        >
+          <label className="screen-reader-text" htmlFor="select_all">
             {MailPoet.I18n.t('selectAll')}
           </label>
           <input
             type="checkbox"
             name="select_all"
-            ref="toggle"
+            id="select_all"
+            ref={(c) => { this.toggle = c; }}
             checked={this.props.selection}
-            onChange={this.handleSelectItems} />
+            onChange={this.handleSelectItems}
+          />
         </th>
       );
     }
@@ -53,12 +57,12 @@ const ListingHeader = React.createClass({
 });
 
 const ListingColumn = React.createClass({
-  handleSort: function () {
+  handleSort: function handleSort() {
     const sortBy = this.props.column.name;
     const sortOrder = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
     this.props.onSort(sortBy, sortOrder);
   },
-  render: function () {
+  render: function render() {
     const classes = classNames(
       'manage-column',
       { 'column-primary': this.props.column.is_primary },
@@ -70,9 +74,13 @@ const ListingColumn = React.createClass({
 
     if (this.props.column.sortable === true) {
       label = (
-        <a onClick={this.handleSort}>
+        <a
+          onClick={this.handleSort}
+          role="button"
+          tabIndex={0}
+        >
           <span>{ this.props.column.label }</span>
-          <span className="sorting-indicator"></span>
+          <span className="sorting-indicator" />
         </a>
       );
     } else {
@@ -80,6 +88,7 @@ const ListingColumn = React.createClass({
     }
     return (
       <th
+        role="columnheader"
         className={classes}
         id={this.props.column.name}
         scope="col"

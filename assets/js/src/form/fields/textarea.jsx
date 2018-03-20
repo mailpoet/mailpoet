@@ -5,7 +5,7 @@ define([
   React
 ) => {
   const FormFieldTextarea = React.createClass({
-    render: function () {
+    render: function render() {
       return (
         <textarea
           type="text"

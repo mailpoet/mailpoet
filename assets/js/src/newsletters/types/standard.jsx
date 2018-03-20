@@ -15,10 +15,10 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired,
       },
-      showTemplateSelection: function (newsletterId) {
+      showTemplateSelection: function showTemplateSelection(newsletterId) {
         this.context.router.push(`/template/${newsletterId}`);
       },
-      componentDidMount: function () {
+      componentDidMount: function componentDidMount() {
         // No options for this type, create a newsletter upon mounting
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
@@ -38,7 +38,7 @@ define(
           }
         });
       },
-      render: function () {
+      render: function render() {
         return (
           <div>
             <h1>{MailPoet.I18n.t('regularNewsletterTypeTitle')}</h1>

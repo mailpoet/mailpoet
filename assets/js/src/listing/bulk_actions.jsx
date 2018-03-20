@@ -7,13 +7,13 @@ define([
   MailPoet
 ) => {
   const ListingBulkActions = React.createClass({
-    getInitialState: function () {
+    getInitialState: function getInitialState() {
       return {
         action: false,
         extra: false,
       };
     },
-    handleChangeAction: function (e) {
+    handleChangeAction: function handleChangeAction(e) {
       this.setState({
         action: e.target.value,
         extra: false,
@@ -28,7 +28,7 @@ define([
         }
       });
     },
-    handleApplyAction: function (e) {
+    handleApplyAction: function handleApplyAction(e) {
       e.preventDefault();
 
       const action = this.getSelectedAction();
@@ -47,7 +47,7 @@ define([
 
       data.action = this.state.action;
 
-      let onSuccess = function () {};
+      let onSuccess = () => {};
       if (action.onSuccess !== undefined) {
         onSuccess = action.onSuccess;
       }
@@ -64,8 +64,8 @@ define([
         extra: false,
       });
     },
-    getSelectedAction: function () {
-      const selectedAction = this.refs.action.value;
+    getSelectedAction: function getSelectedAction() {
+      const selectedAction = this.action.value;
       if (selectedAction.length > 0) {
         const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
 
@@ -75,7 +75,7 @@ define([
       }
       return null;
     },
-    render: function () {
+    render: function render() {
       if (this.props.bulk_actions.length === 0) {
         return null;
       }
@@ -84,13 +84,14 @@ define([
         <div className="alignleft actions bulkactions">
           <label
             className="screen-reader-text"
-            htmlFor="bulk-action-selector-top">
+            htmlFor="bulk-action-selector-top"
+          >
             {MailPoet.I18n.t('selectBulkAction')}
           </label>
 
           <select
             name="bulk_actions"
-            ref="action"
+            ref={(c) => { this.action = c; }}
             value={this.state.action}
             onChange={this.handleChangeAction}
           >
@@ -99,14 +100,15 @@ define([
               <option
                 value={action.name}
                 key={`action-${index}`}
-                >{ action.label }</option>
+              >{ action.label }</option>
               )) }
           </select>
           <input
             onClick={this.handleApplyAction}
             type="submit"
             defaultValue={MailPoet.I18n.t('apply')}
-            className="button action" />
+            className="button action"
+          />
 
           { this.state.extra }
         </div>

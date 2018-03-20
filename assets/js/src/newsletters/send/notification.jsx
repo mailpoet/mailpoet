@@ -38,13 +38,13 @@ define(
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         multiple: true,
-        filter: function (segment) {
+        filter: function filter(segment) {
           return !segment.deleted_at;
         },
-        getLabel: function (segment) {
+        getLabel: function getLabel(segment) {
           return `${segment.name} (${parseInt(segment.subscribers, 10).toLocaleString()})`;
         },
-        transformChangedValue: function (segmentIds) {
+        transformChangedValue: function transformChangedValue(segmentIds) {
           const allSegments = this.getItems();
           return _.map(segmentIds, id => _.find(allSegments, segment => segment.id === id));
         },
@@ -103,10 +103,10 @@ define(
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
-      getFields: function () {
+      getFields: function getFields() {
         return fields;
       },
-      getSendButtonOptions: function () {
+      getSendButtonOptions: function getSendButtonOptions() {
         return {
           value: MailPoet.I18n.t('activate'),
         };

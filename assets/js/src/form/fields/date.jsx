@@ -5,97 +5,91 @@ define([
   React,
   Moment
 ) => {
-  class FormFieldDateYear extends React.Component {
-    render() {
-      const yearsRange = 100;
-      const years = [];
+  function FormFieldDateYear(props) {
+    const yearsRange = 100;
+    const years = [];
 
-      if (this.props.placeholder !== undefined) {
-        years.push((
-          <option value="" key={0}>{ this.props.placeholder }</option>
-        ));
-      }
-
-      const currentYear = Moment().year();
-      for (let i = currentYear; i >= currentYear - yearsRange; i -= 1) {
-        years.push((
-          <option
-            key={i}
-            value={i}
-         >{ i }</option>
-        ));
-      }
-      return (
-        <select
-          name={`${this.props.name}[year]`}
-          value={this.props.year}
-          onChange={this.props.onValueChange}
-        >
-          { years }
-        </select>
-      );
+    if (props.placeholder !== undefined) {
+      years.push((
+        <option value="" key={0}>{ props.placeholder }</option>
+      ));
     }
+
+    const currentYear = Moment().year();
+    for (let i = currentYear; i >= currentYear - yearsRange; i -= 1) {
+      years.push((
+        <option
+          key={i}
+          value={i}
+        >{ i }</option>
+      ));
+    }
+    return (
+      <select
+        name={`${props.name}[year]`}
+        value={props.year}
+        onChange={props.onValueChange}
+      >
+        { years }
+      </select>
+    );
   }
 
-  class FormFieldDateMonth extends React.Component {
-    render() {
-      const months = [];
+  function FormFieldDateMonth(props) {
+    const months = [];
 
-      if (this.props.placeholder !== undefined) {
-        months.push((
-          <option value="" key={0}>{ this.props.placeholder }</option>
-        ));
-      }
-
-      for (let i = 1; i <= 12; i += 1) {
-        months.push((
-          <option
-            key={i}
-            value={i}
-         >{ this.props.monthNames[i - 1] }</option>
-        ));
-      }
-      return (
-        <select
-          name={`${this.props.name}[month]`}
-          value={this.props.month}
-          onChange={this.props.onValueChange}
-        >
-          { months }
-        </select>
-      );
+    if (props.placeholder !== undefined) {
+      months.push((
+        <option value="" key={0}>{ props.placeholder }</option>
+      ));
     }
+
+    for (let i = 1; i <= 12; i += 1) {
+      months.push((
+        <option
+          key={i}
+          value={i}
+        >{ props.monthNames[i - 1] }</option>
+      ));
+    }
+    return (
+      <select
+        name={`${props.name}[month]`}
+        value={props.month}
+        onChange={props.onValueChange}
+      >
+        { months }
+      </select>
+    );
   }
 
-  class FormFieldDateDay extends React.Component {
-    render() {
-      const days = [];
+  function FormFieldDateDay(props) {
+    const days = [];
 
-      if (this.props.placeholder !== undefined) {
-        days.push((
-          <option value="" key={0}>{ this.props.placeholder }</option>
-        ));
-      }
-
-      for (let i = 1; i <= 31; i += 1) {
-        days.push((
-          <option
-            key={i}
-            value={i}
-          >{ i }</option>
-        ));
-      }
-
-      return (
-        <select
-          name={`${this.props.name}[day]`}
-          value={this.props.day}
-          onChange={this.props.onValueChange}
-        >
-          { days }
-        </select>
-      );
+    if (props.placeholder !== undefined) {
+      days.push((
+        <option value="" key={0}>{ props.placeholder }</option>
+      ));
     }
+
+    for (let i = 1; i <= 31; i += 1) {
+      days.push((
+        <option
+          key={i}
+          value={i}
+        >{ i }</option>
+      ));
+    }
+
+    return (
+      <select
+        name={`${props.name}[day]`}
+        value={props.day}
+        onChange={props.onValueChange}
+      >
+        { days }
+      </select>
+    );
   }
 
   class FormFieldDate extends React.Component {
@@ -211,7 +205,6 @@ define([
           case 'YYYY':
             return (<FormFieldDateYear
               onValueChange={this.onValueChange.bind(this)}
-              ref={'year'}
               key={'year'}
               name={this.props.field.name}
               year={this.state.year}
@@ -221,7 +214,6 @@ define([
           case 'MM':
             return (<FormFieldDateMonth
               onValueChange={this.onValueChange.bind(this)}
-              ref={'month'}
               key={'month'}
               name={this.props.field.name}
               month={this.state.month}
@@ -232,7 +224,6 @@ define([
           case 'DD':
             return (<FormFieldDateDay
               onValueChange={this.onValueChange.bind(this)}
-              ref={'day'}
               key={'day'}
               name={this.props.field.name}
               day={this.state.day}

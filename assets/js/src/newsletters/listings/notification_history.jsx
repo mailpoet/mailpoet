@@ -42,7 +42,7 @@ const columns = [
 let newsletterActions = [
   {
     name: 'view',
-    link: function (newsletter) {
+    link: function link(newsletter) {
       return (
         <a href={newsletter.preview_url} target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -57,7 +57,7 @@ newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_notificati
 
 const NewsletterListNotificationHistory = React.createClass({
   mixins: [QueueMixin, StatisticsMixin, MailerMixin],
-  renderItem: function (newsletter, actions, meta) {
+  renderItem: function renderItem(newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -94,7 +94,7 @@ const NewsletterListNotificationHistory = React.createClass({
       </div>
     );
   },
-  render: function () {
+  render: function render() {
     return (
       <div>
         <h1 className="title">
