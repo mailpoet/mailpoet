@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter\Scheduler;
 
 use Carbon\Carbon;
@@ -8,6 +9,7 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Scheduler {
   const SECONDS_IN_HOUR = 3600;
@@ -85,7 +87,7 @@ class Scheduler {
     $after_time_type = $newsletter->afterTimeType;
     $after_time_number = $newsletter->afterTimeNumber;
     $scheduled_at = null;
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
     switch($after_time_type) {
       case 'hours':
         $scheduled_at = $current_time->addHours($after_time_number);
@@ -162,7 +164,7 @@ class Scheduler {
   }
 
   static function getNextRunDate($schedule, $from_timestamp = false) {
-    $from_timestamp = ($from_timestamp) ? $from_timestamp : current_time('timestamp');
+    $from_timestamp = ($from_timestamp) ? $from_timestamp : WPFunctions::currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $next_run_date = $schedule->getNextRunDate(Carbon::createFromTimestamp($from_timestamp))
@@ -174,7 +176,7 @@ class Scheduler {
   }
 
   static function getPreviousRunDate($schedule, $from_timestamp = false) {
-    $from_timestamp = ($from_timestamp) ? $from_timestamp : current_time('timestamp');
+    $from_timestamp = ($from_timestamp) ? $from_timestamp : WPFunctions::currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $previous_run_date = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($from_timestamp))

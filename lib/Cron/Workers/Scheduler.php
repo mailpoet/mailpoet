@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
@@ -8,8 +9,8 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Util\Helpers;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
@@ -125,7 +126,7 @@ class Scheduler {
     // check if subscriber is confirmed (subscribed)
     if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
       // reschedule delivery in 5 minutes
-      $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+      $scheduled_at = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
       $queue->scheduled_at = $scheduled_at->addMinutes(
         self::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT
       );

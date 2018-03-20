@@ -8,6 +8,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -242,6 +243,6 @@ class Migration extends SimpleWorker {
 
   static function getNextRunDate() {
     // run migration immediately
-    return Carbon::now();
+    return Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
   }
 }

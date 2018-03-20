@@ -71,3 +71,7 @@ function wp_remote_post() {
 function wp_remote_get() {
   return override(__FUNCTION__, func_get_args());
 }
+
+function current_time() {
+  return override(__FUNCTION__, func_get_args());
+}

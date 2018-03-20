@@ -1,5 +1,8 @@
 <?php
+
 namespace MailPoet\WP;
+
+use MailPoet\WP\Functions as WPFunctions;
 
 class DateTime {
 
@@ -24,7 +27,7 @@ class DateTime {
 
   function getCurrentTime($format=false) {
     if (empty($format)) $format = $this->getTimeFormat();
-    return current_time($format);
+    return WPFunctions::currentTime($format);
   }
 
   function getCurrentDate($format=false) {
