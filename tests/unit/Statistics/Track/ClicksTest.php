@@ -17,6 +17,7 @@ class ClicksTest extends \MailPoetTest {
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->type = 'type';
+    $newsletter->subject = 'Subject';
     $this->newsletter = $newsletter->save();
     // create subscriber
     $subscriber = Subscriber::create();
@@ -138,7 +139,6 @@ class ClicksTest extends \MailPoetTest {
     expect($link)->equals('[link:unknown_shortcode]');
   }
 
-
   function testItDoesNotConvertRegularUrls() {
     $link = $this->clicks->processUrl(
       'http://example.com',
@@ -148,6 +148,17 @@ class ClicksTest extends \MailPoetTest {
       $preview = false
     );
     expect($link)->equals('http://example.com');
+  }
+
+  function testItProcessesShortcodesInRegularUrls() {
+    $link = $this->clicks->processUrl(
+      'http://example.com/?email=[subscriber:email]&newsletter_subject=[newsletter:subject]',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    expect($link)->equals('http://example.com/?email=test@example.com&newsletter_subject=Subject');
   }
 
   function _after() {
