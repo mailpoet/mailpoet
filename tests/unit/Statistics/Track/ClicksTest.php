@@ -4,11 +4,13 @@ namespace MailPoet\Test\Statistics\Track;
 use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Clicks;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class ClicksTest extends \MailPoetTest {
   function _before() {
@@ -23,9 +25,10 @@ class ClicksTest extends \MailPoetTest {
     $subscriber->last_name = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->subscribers = array('processed' => array($subscriber->id));
+    $queue->setSubscribers(array($subscriber->id));
+    $queue->updateProcessedSubscribers(array($subscriber->id));
     $this->queue = $queue->save();
     // create link
     $link = NewsletterLink::create();
@@ -151,6 +154,7 @@ class ClicksTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);

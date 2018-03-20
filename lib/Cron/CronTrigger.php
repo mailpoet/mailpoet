@@ -9,7 +9,8 @@ class CronTrigger {
   public $current_method;
   public static $available_methods = array(
     'mailpoet' => 'MailPoet',
-    'wordpress' => 'WordPress'
+    'wordpress' => 'WordPress',
+    'none' => 'Disabled'
   );
   const DEFAULT_METHOD = 'WordPress';
   const SETTING_NAME = 'cron_trigger';

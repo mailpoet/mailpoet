@@ -18,7 +18,8 @@ class CronTriggerTest extends \MailPoetTest {
     expect(CronTrigger::$available_methods)->equals(
       array(
         'mailpoet' => 'MailPoet',
-        'wordpress' => 'WordPress'
+        'wordpress' => 'WordPress',
+        'none' => 'Disabled'
       )
     );
   }

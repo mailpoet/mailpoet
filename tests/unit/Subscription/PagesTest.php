@@ -5,6 +5,7 @@ use Codeception\Util\Fixtures;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -83,14 +84,15 @@ class PagesTest extends \MailPoetTest {
 
     // confirm subscription and ensure that welcome email is scheduled
     $this->subscription->confirm();
-    $scheduled_notification = SendingQueue::where('newsletter_id', $newsletter->id)
-      ->where('status', SendingQueue::STATUS_SCHEDULED)
+    $scheduled_notification = SendingQueue::findTaskByNewsletterId($newsletter->id)
+      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
       ->findOne();
     expect($scheduled_notification)->notEmpty();
   }
 
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);

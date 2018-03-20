@@ -12,6 +12,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\SendingQueue;
@@ -19,6 +20,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class NewslettersTest extends \MailPoetTest {
   function _before() {
@@ -168,7 +170,7 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanClearRenderedQueueUponSave() {
-    $sending_queue = SendingQueue::create();
+    $sending_queue = SendingTask::create();
     $sending_queue->newsletter_id = $this->newsletter->id;
     $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
     $sending_queue->newsletter_rendered_body = array('html' => 'html', 'text' => 'text');
@@ -257,13 +259,13 @@ class NewslettersTest extends \MailPoetTest {
 
     // create sending queues
     $current_time = Carbon::now();
-    $sending_queue_1 = SendingQueue::create();
+    $sending_queue_1 = SendingTask::create();
     $sending_queue_1->newsletter_id = 1;
     $sending_queue_1->status = SendingQueue::STATUS_SCHEDULED;
     $sending_queue_1->scheduled_at = $current_time;
     $sending_queue_1->save();
 
-    $sending_queue_2 = SendingQueue::create();
+    $sending_queue_2 = SendingTask::create();
     $sending_queue_2->newsletter_id = 1;
     $sending_queue_2->save();
 
@@ -284,8 +286,8 @@ class NewslettersTest extends \MailPoetTest {
       )
     );
     $newsletter = $router->save($newsletter_data);
-    $sending_queue_1 = SendingQueue::findOne($sending_queue_1->id);
-    $sending_queue_2 = SendingQueue::findOne($sending_queue_2->id);
+    $sending_queue_1 = SendingTask::createFromQueue(SendingQueue::findOne($sending_queue_1->id));
+    $sending_queue_2 = SendingTask::createFromQueue(SendingQueue::findOne($sending_queue_2->id));
     expect($sending_queue_1->scheduled_at)->notEquals($current_time);
     expect($sending_queue_1->scheduled_at)->equals(
       Scheduler::getNextRunDate($newsletter->data['schedule'])
@@ -375,17 +377,17 @@ class NewslettersTest extends \MailPoetTest {
         'value' => $schedule
       )
     );
-    $sending_queue_1 = SendingQueue::create();
+    $sending_queue_1 = SendingTask::create();
     $sending_queue_1->newsletter_id = $this->post_notification->id;
     $sending_queue_1->scheduled_at = Scheduler::getPreviousRunDate($schedule);
     $sending_queue_1->status = SendingQueue::STATUS_SCHEDULED;
     $sending_queue_1->save();
-    $sending_queue_2 = SendingQueue::create();
+    $sending_queue_2 = SendingTask::create();
     $sending_queue_2->newsletter_id = $this->post_notification->id;
     $sending_queue_2->scheduled_at = $random_future_date;
     $sending_queue_2->status = SendingQueue::STATUS_SCHEDULED;
     $sending_queue_2->save();
-    $sending_queue_3 = SendingQueue::create();
+    $sending_queue_3 = SendingTask::create();
     $sending_queue_3->newsletter_id = $this->post_notification->id;
     $sending_queue_3->scheduled_at = Scheduler::getPreviousRunDate($schedule);
     $sending_queue_3->save();
@@ -397,13 +399,13 @@ class NewslettersTest extends \MailPoetTest {
         'status' => Newsletter::STATUS_ACTIVE
       )
     );
-    $sending_queues = SendingQueue::findMany();
+    $tasks = ScheduledTask::findMany();
     // previously scheduled notification is rescheduled for future date
-    expect($sending_queues[0]->scheduled_at)->equals(Scheduler::getNextRunDate($schedule));
+    expect($tasks[0]->scheduled_at)->equals(Scheduler::getNextRunDate($schedule));
     // future scheduled notifications are left intact
-    expect($sending_queues[1]->scheduled_at)->equals($random_future_date);
+    expect($tasks[1]->scheduled_at)->equals($random_future_date);
     // previously unscheduled (e.g., sent/sending) notifications are left intact
-    expect($sending_queues[2]->scheduled_at)->equals(Scheduler::getPreviousRunDate($schedule));
+    expect($tasks[2]->scheduled_at)->equals(Scheduler::getPreviousRunDate($schedule));
   }
 
   function testItCanRestoreANewsletter() {
@@ -710,8 +712,8 @@ class NewslettersTest extends \MailPoetTest {
       'mailer' => Stub::makeEmpty(
         '\MailPoet\Mailer\Mailer',
         array(
-          'send' => function($newsletter, $subscriber, $extra_params) 
-            use ($unsubscribeLink, $manageLink, $viewInBrowserLink) 
+          'send' => function($newsletter, $subscriber, $extra_params)
+            use ($unsubscribeLink, $manageLink, $viewInBrowserLink)
           {
             expect(is_array($newsletter))->true();
             expect($newsletter['body']['text'])->contains('Hello test');
@@ -785,7 +787,7 @@ class NewslettersTest extends \MailPoetTest {
     $newsletter->save();
     expect($newsletter->getErrors())->false();
 
-    $sending_queue = SendingQueue::create();
+    $sending_queue = SendingTask::create();
     $sending_queue->newsletter_id = $newsletter->id;
     $sending_queue->newsletter_rendered_body = array(
       'html' => 'html',
@@ -816,6 +818,7 @@ class NewslettersTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

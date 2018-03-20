@@ -4,10 +4,10 @@ namespace MailPoet\Cron\Workers;
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 
@@ -46,12 +46,12 @@ class Scheduler {
   }
 
   function processWelcomeNewsletter($newsletter, $queue) {
-    $subscriber = unserialize($queue->subscribers);
-    if(empty($subscriber['to_process'][0])) {
+    $subscribers = $queue->getSubscribers();
+    if(empty($subscribers[0])) {
       $queue->delete();
       return false;
     }
-    $subscriber_id = (int)$subscriber['to_process'][0];
+    $subscriber_id = (int)$subscribers[0];
     if($newsletter->event === 'segment') {
       if($this->verifyMailpoetSubscriber($subscriber_id, $newsletter, $queue) === false) {
         return false;
@@ -78,10 +78,9 @@ class Scheduler {
     // ensure that subscribers are in segments
 
     $finder = new SubscribersFinder();
-    $subscribers = $finder->getSubscribersByList($segments);
-    $subscribers = Helpers::flattenArray($subscribers);
+    $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
-    if(empty($subscribers)) {
+    if(empty($subscribers_count)) {
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
 
@@ -91,12 +90,6 @@ class Scheduler {
 
     // queue newsletter for delivery
     $queue->newsletter_id = $notification_history->id;
-    $queue->subscribers = serialize(
-      array(
-        'to_process' => $subscribers
-      )
-    );
-    $queue->count_total = $queue->count_to_process = count($subscribers);
     $queue->status = null;
     $queue->save();
     // update notification status
@@ -107,15 +100,9 @@ class Scheduler {
   function processScheduledStandardNewsletter($newsletter, $queue) {
     $segments = $newsletter->segments()->findArray();
     $finder = new SubscribersFinder();
-    $subscribers = $finder->getSubscribersByList($segments);
-    $subscribers = Helpers::flattenArray($subscribers);
+    $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
     // update current queue
-    $queue->subscribers = serialize(
-      array(
-        'to_process' => $subscribers
-      )
-    );
-    $queue->count_total = $queue->count_to_process = count($subscribers);
+    $queue->updateCount();
     $queue->status = null;
     $queue->save();
     // update newsletter status
@@ -189,9 +176,6 @@ class Scheduler {
   }
 
   static function getScheduledQueues() {
-    return SendingQueue::where('status', SendingQueue::STATUS_SCHEDULED)
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
-      ->whereNull('type')
-      ->findMany();
+    return SendingTask::getScheduledQueues();
   }
 }

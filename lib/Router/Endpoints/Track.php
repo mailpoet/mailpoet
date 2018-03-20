@@ -10,6 +10,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
+use MailPoet\Tasks\Sending as SendingTask;
 
 if(!defined('ABSPATH')) exit;
 
@@ -49,6 +50,9 @@ class Track {
       return false;
     }
     $data->queue = SendingQueue::findOne($data->queue_id);
+    if($data->queue) {
+      $data->queue = SendingTask::createFromQueue($data->queue);
+    }
     $data->subscriber = Subscriber::findOne($data->subscriber_id);
     $data->newsletter = (!empty($data->queue->newsletter_id)) ?
       Newsletter::findOne($data->queue->newsletter_id) :

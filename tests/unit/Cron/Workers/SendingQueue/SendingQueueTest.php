@@ -15,6 +15,8 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
@@ -25,6 +27,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Subscription\Url;
+use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Hooks;
 
 class SendingQueueTest extends \MailPoetTest {
@@ -56,14 +59,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter_segment->newsletter_id = $this->newsletter->id;
     $this->newsletter_segment->segment_id = $this->segment->id;
     $this->newsletter_segment->save();
-    $this->queue = SendingQueue::create();
+    $this->queue = SendingTask::create();
     $this->queue->newsletter_id = $this->newsletter->id;
-    $this->queue->subscribers = serialize(
-      array(
-        'to_process' => array($this->subscriber->id),
-        'processed' => array()
-      )
-    );
+    $this->queue->setSubscribers(array($this->subscriber->id));
     $this->queue->count_total = 1;
     $this->queue->save();
     $this->newsletter_link = NewsletterLink::create();
@@ -277,17 +275,14 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     expect($updated_queue->status)->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    $updated_queue->subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue->subscribers)->equals(
-      array(
-        'to_process' => array(),
-        'processed' => array($this->subscriber->id)
-      )
-    );
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->equals(array());
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals(array($this->subscriber->id));
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -326,17 +321,14 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     expect($updated_queue->status)->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    $updated_queue->subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue->subscribers)->equals(
-      array(
-        'to_process' => array(),
-        'processed' => array($this->subscriber->id)
-      )
-    );
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->equals(array());
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals(array($this->subscriber->id));
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -368,7 +360,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker->process();
 
     // queue status is set to completed
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     expect($updated_queue->status)->equals(SendingQueue::STATUS_COMPLETED);
 
     // newsletter status is set to sent and sent_at date is populated
@@ -377,13 +369,10 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updated_newsletter->sent_at)->equals($updated_queue->processed_at);
 
     // queue subscriber processed/to process count is updated
-    $updated_queue->subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue->subscribers)->equals(
-      array(
-        'to_process' => array(),
-        'processed' => array($this->subscriber->id)
-      )
-    );
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->equals(array());
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals(array($this->subscriber->id));
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -422,17 +411,14 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     expect($updated_queue->status)->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    $updated_queue->subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue->subscribers)->equals(
-      array(
-        'to_process' => array(),
-        'processed' => array($this->subscriber->id)
-      )
-    );
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->equals(array());
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals(array($this->subscriber->id));
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -447,15 +433,10 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItRemovesNonexistentSubscribersFromProcessingList() {
     $queue = $this->queue;
-    $queue->subscribers = serialize(
-      array(
-        'to_process' => array(
-          $this->subscriber->id(),
-          12345645454
-        ),
-        'processed' => array()
-      )
-    );
+    $queue->setSubscribers(array(
+      $this->subscriber->id(),
+      12345645454
+    ));
     $queue->count_total = 2;
     $queue->save();
     $sending_queue_worker = $this->sending_queue_worker;
@@ -470,15 +451,12 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sending_queue_worker->process();
 
-    $updated_queue = SendingQueue::findOne($queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     // queue subscriber processed/to process count is updated
-    $updated_queue->subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue->subscribers)->equals(
-      array(
-        'to_process' => array(),
-        'processed' => array($this->subscriber->id)
-      )
-    );
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->equals(array());
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals(array($this->subscriber->id));
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -490,15 +468,10 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItUpdatesQueueSubscriberCountWhenNoneOfSubscribersExist() {
     $queue = $this->queue;
-    $queue->subscribers = serialize(
-      array(
-        'to_process' => array(
-          123,
-          456
-        ),
-        'processed' => array()
-      )
-    );
+    $queue->setSubscribers(array(
+      123,
+      456
+    ));
     $queue->count_total = 2;
     $queue->save();
     $sending_queue_worker = $this->sending_queue_worker;
@@ -508,15 +481,12 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sending_queue_worker->process();
 
-    $updated_queue = SendingQueue::findOne($queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     // queue subscriber processed/to process count is updated
-    $updated_queue->subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue->subscribers)->equals(
-      array(
-        'to_process' => array(),
-        'processed' => array()
-      )
-    );
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->equals(array());
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals(array());
     expect($updated_queue->count_total)->equals(0);
     expect($updated_queue->count_processed)->equals(0);
     expect($updated_queue->count_to_process)->equals(0);
@@ -531,7 +501,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter is sent to existing subscriber
     $sending_queue_worker->process();
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     expect((int)$updated_queue->count_total)->equals(1);
 
     // newsletter is not sent to trashed subscriber
@@ -541,7 +511,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber->deleted_at = Carbon::now();
     $subscriber->save();
     $sending_queue_worker->process();
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
@@ -559,7 +529,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber->save();
     $sending_queue_worker->process();
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
@@ -577,7 +547,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber_segment->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber_segment->save();
     $sending_queue_worker->process();
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
@@ -651,6 +621,8 @@ class SendingQueueTest extends \MailPoetTest {
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);

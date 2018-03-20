@@ -5,9 +5,11 @@ namespace MailPoet\Test\Router\Endpoints;
 use Codeception\Util\Stub;
 use MailPoet\Config\AccessControl;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\ViewInBrowser;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class ViewInBrowserTest extends \MailPoetTest {
   function _before() {
@@ -22,9 +24,10 @@ class ViewInBrowserTest extends \MailPoetTest {
     $subscriber->last_name = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->subscribers = array('processed' => array($subscriber->id));
+    $queue->setSubscribers(array($subscriber->id));
+    $queue->updateProcessedSubscribers(array($subscriber->id));
     $this->queue = $queue->save();
     // build browser preview data
     $this->browser_preview_data = array(
@@ -118,7 +121,8 @@ class ViewInBrowserTest extends \MailPoetTest {
     $result = $this->view_in_browser->_validateBrowserPreviewData($data);
     expect($result)->notEmpty();
     $queue = $this->queue;
-    $queue->subscribers = array('processed' => array());
+    $queue->setSubscribers(array());
+    $queue->updateProcessedSubscribers(array());
     $queue->save();
     $result = $this->view_in_browser->_validateBrowserPreviewData($data);
     expect($result)->false();
@@ -205,6 +209,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     // reset WP user role
     $wp_user = wp_get_current_user();

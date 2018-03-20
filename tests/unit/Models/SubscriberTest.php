@@ -8,6 +8,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
@@ -479,8 +480,8 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber = Subscriber::subscribe($this->data, array($segment->id()));
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(1);
-    $scheduled_notification = SendingQueue::where('newsletter_id', $newsletter->id)
-      ->where('status', SendingQueue::STATUS_SCHEDULED)
+    $scheduled_notification = SendingQueue::findTaskByNewsletterId($newsletter->id)
+      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
       ->findOne();
     expect($scheduled_notification)->notEmpty();
   }
@@ -526,10 +527,10 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber = Subscriber::subscribe($this->data, array($segment->id()));
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(1);
-    $scheduled_notification = SendingQueue::where('newsletter_id', $newsletter->id)
-      ->where('status', SendingQueue::STATUS_SCHEDULED)
+    $scheduled_notification = SendingQueue::findTaskByNewsletterId($newsletter->id)
+      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
       ->findOne();
-    expect($scheduled_notification)->notEmpty();
+    expect($scheduled_notification)->isEmpty();
   }
 
   function testItCannotSubscribeWithReservedColumns() {
@@ -1157,12 +1158,16 @@ class SubscriberTest extends \MailPoetTest {
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

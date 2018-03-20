@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Cron;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
+use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
@@ -49,6 +50,7 @@ class Daemon {
     $daemon['token'] = $this->token;
     CronHelper::saveDaemon($daemon);
     try {
+      $this->executeMigrationWorker();
       $this->executeScheduleWorker();
       $this->executeQueueWorker();
       $this->executeSendingServiceKeyCheckWorker();
@@ -98,6 +100,11 @@ class Daemon {
   function executeBounceWorker() {
     $bounce = new BounceWorker($this->timer);
     return $bounce->process();
+  }
+
+  function executeMigrationWorker() {
+    $migration = new MigrationWorker($this->timer);
+    return $migration->process();
   }
 
   function callSelf() {

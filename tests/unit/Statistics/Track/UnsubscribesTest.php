@@ -2,10 +2,12 @@
 namespace MailPoet\Test\Statistics\Track;
 
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class UnsubscribesTest extends \MailPoetTest {
   function _before() {
@@ -20,9 +22,10 @@ class UnsubscribesTest extends \MailPoetTest {
     $subscriber->last_name = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->subscribers = array('processed' => array($subscriber->id));
+    $queue->setSubscribers(array($subscriber->id));
+    $queue->updateProcessedSubscribers(array($subscriber->id));
     $this->queue = $queue->save();
     // instantiate class
     $this->unsubscribes = new Unsubscribes();

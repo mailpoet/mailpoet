@@ -79,6 +79,15 @@ class MailerLog {
     $mailer_log = self::getMailerLog();
     (int)$mailer_log['retry_attempt']++;
     $mailer_log['retry_at'] = time() + self::RETRY_INTERVAL;
+    $mailer_log = self::setError($mailer_log, $operation, $error_message, $error_code);
+    self::updateMailerLog($mailer_log);
+    if($pause_sending) {
+      self::pauseSending($mailer_log);
+    }
+    return self::enforceExecutionRequirements();
+  }
+
+  static function setError($mailer_log, $operation, $error_message, $error_code = null) {
     $mailer_log['error'] = array(
       'operation' => $operation,
       'error_message' => $error_message
@@ -86,12 +95,12 @@ class MailerLog {
     if($error_code) {
       $mailer_log['error']['error_code'] = $error_code;
     }
-    if($pause_sending) {
-      self::pauseSending($mailer_log);
-    } else {
-      self::updateMailerLog($mailer_log);
-    }
-    return self::enforceExecutionRequirements();
+    return $mailer_log;
+  }
+
+  static function getError($mailer_log = false) {
+    $mailer_log = self::getMailerLog($mailer_log);
+    return isset($mailer_log['error']) ? $mailer_log['error'] : null;
   }
 
   static function incrementSentCount() {

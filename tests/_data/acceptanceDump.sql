@@ -315,6 +315,9 @@ CREATE TABLE `mp_mailpoet_scheduled_tasks` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
+INSERT INTO `mp_mailpoet_scheduled_tasks` (`id`, `type`, `status`, `created_at`, `updated_at`) VALUES
+(1,	'migration',	'completed',	'2017-03-02 11:20:00',	'2017-03-02 16:21:00');
+
 
 DROP TABLE IF EXISTS `mp_mailpoet_scheduled_task_subscribers`;
 CREATE TABLE `mp_mailpoet_scheduled_task_subscribers` (
@@ -346,18 +349,14 @@ INSERT INTO `mp_mailpoet_segments` (`id`, `name`, `type`, `description`, `create
 DROP TABLE IF EXISTS `mp_mailpoet_sending_queues`;
 CREATE TABLE `mp_mailpoet_sending_queues` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `type` varchar(90) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  `task_id` int(11) unsigned NOT NULL,
   `newsletter_id` int(11) unsigned NOT NULL,
   `newsletter_rendered_body` longtext COLLATE utf8mb4_unicode_520_ci,
   `newsletter_rendered_subject` varchar(250) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
   `subscribers` longtext COLLATE utf8mb4_unicode_520_ci,
-  `status` varchar(12) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `priority` mediumint(9) NOT NULL DEFAULT '0',
   `count_total` int(11) unsigned NOT NULL DEFAULT '0',
   `count_processed` int(11) unsigned NOT NULL DEFAULT '0',
   `count_to_process` int(11) unsigned NOT NULL DEFAULT '0',
-  `scheduled_at` timestamp NULL DEFAULT NULL,
-  `processed_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,

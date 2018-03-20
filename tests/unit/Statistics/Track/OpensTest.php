@@ -3,10 +3,12 @@ namespace MailPoet\Test\Statistics\Track;
 
 use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Opens;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class OpensTest extends \MailPoetTest {
   function _before() {
@@ -21,9 +23,10 @@ class OpensTest extends \MailPoetTest {
     $subscriber->last_name = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
-    $queue = SendingQueue::create();
+    $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->subscribers = array('processed' => array($subscriber->id));
+    $queue->setSubscribers(array($subscriber->id));
+    $queue->updateProcessedSubscribers(array($subscriber->id));
     $this->queue = $queue->save();
     // build track data
     $this->track_data = (object)array(
@@ -88,6 +91,7 @@ class OpensTest extends \MailPoetTest {
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
   }

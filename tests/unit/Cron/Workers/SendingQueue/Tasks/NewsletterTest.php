@@ -10,9 +10,12 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Router;
+use MailPoet\Tasks\Sending as SendingTask;
 
 if(!defined('ABSPATH')) exit;
 
@@ -38,7 +41,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->parent_newsletter->body = 'parent body';
     $this->parent_newsletter->preheader = '';
     $this->parent_newsletter->save();
-    $this->queue = SendingQueue::create();
+    $this->queue = SendingTask::create();
     $this->queue->newsletter_id = $this->newsletter->id;
     $this->queue->save();
   }
@@ -129,7 +132,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
       ->findOne();
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     $rendered_newsletter = $updated_queue->getNewsletterRenderedBody();
     expect($rendered_newsletter['html'])
       ->contains('[mailpoet_click_data]-' . $link->hash);
@@ -150,7 +153,7 @@ class NewsletterTest extends \MailPoetTest {
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
       ->findOne();
     expect($link)->false();
-    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
     $rendered_newsletter = $updated_queue->getNewsletterRenderedBody();
     expect($rendered_newsletter['html'])
       ->notContains('[mailpoet_click_data]');
@@ -277,9 +280,10 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItLogsErrorWhenExistingRenderedNewsletterBodyIsInvalid() {
     $queue_mock = Mock::double(
-      new \stdClass(),
+      $this->queue,
       array(
-        'getNewsletterRenderedBody' => 'a:2:{s:4:"html"'
+        'getNewsletterRenderedBody' => 'a:2:{s:4:"html"',
+        'validate' => false
       )
     );
     try {
@@ -295,7 +299,7 @@ class NewsletterTest extends \MailPoetTest {
   function testItLogsErrorWhenNewlyRenderedNewsletterBodyIsInvalid() {
     $queue = $this->queue;
     $queue_mock = Mock::double(
-      new \stdClass(),
+      $this->queue,
       array(
         'getNewsletterRenderedBody' => null
       )
@@ -333,8 +337,10 @@ class NewsletterTest extends \MailPoetTest {
 
   function _after() {
     WPHooksHelper::releaseAllHooks();
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
