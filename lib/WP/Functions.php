@@ -22,6 +22,10 @@ class Functions {
     return self::callWithFallback('wp_remote_retrieve_response_message', func_get_args());
   }
 
+  static function currentTime() {
+    return self::callWithFallback('current_time', func_get_args());
+  }
+
   private static function callWithFallback($func, $args) {
     $local_func = __NAMESPACE__ . '\\' . $func;
     if(function_exists($local_func)) {
