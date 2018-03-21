@@ -150,7 +150,8 @@ class Migrator {
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
-      'PRIMARY KEY  (id)',
+      'PRIMARY KEY  (id),',
+      'KEY task_id (task_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
