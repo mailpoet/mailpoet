@@ -11,6 +11,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 
 class WordPressTest extends \MailPoetTest {
   function _before() {
@@ -56,6 +57,23 @@ class WordPressTest extends \MailPoetTest {
     $this->_addMTAConfigAndLog($sent = null);
     expect(WordPress::checkExecutionRequirements())->true();
     $this->_addMTAConfigAndLog($sent = 0, $status = MailerLog::STATUS_PAUSED);
+    expect(WordPress::checkExecutionRequirements())->false();
+  }
+
+  function testItExecutesWhenMigrationIsNotPresent() {
+    $this->_enableMigration();
+    expect(WordPress::checkExecutionRequirements())->true();
+  }
+
+  function testItExecutesWhenMigrationIsDue() {
+    $this->_enableMigration();
+    $this->_addScheduledTask(MigrationWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
+    expect(WordPress::checkExecutionRequirements())->true();
+  }
+
+  function testItDoesNotExecuteWhenMigrationIsCompleted() {
+    $this->_enableMigration();
+    $this->_addScheduledTask(MigrationWorker::TASK_TYPE, $status = ScheduledTask::STATUS_COMPLETED);
     expect(WordPress::checkExecutionRequirements())->false();
   }
 
@@ -116,6 +134,28 @@ class WordPressTest extends \MailPoetTest {
       )
     );
     return $queue->save();
+  }
+
+  function _addScheduledTask($type, $status) {
+    $task = ScheduledTask::create();
+    $task->hydrate(
+      array(
+        'type' => $type,
+        'status' => $status,
+        'scheduled_at' => ($status === ScheduledTask::STATUS_SCHEDULED) ?
+          Carbon::createFromTimestamp(current_time('timestamp')) :
+          null
+      )
+    );
+    return $task->save();
+  }
+
+  function _enableMigration() {
+    // Migration can be triggered only if cron execution method is selected
+    // and is not "none"
+    Setting::setValue('cron_trigger', array(
+      'method' => 'WordPress'
+    ));
   }
 
   function _after() {
