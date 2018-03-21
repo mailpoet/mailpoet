@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.6.1
+Stable tag: 3.6.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.6.2 - 2018-03-21 =
+* Fixed: sending is faster and uses less resources on sites with large number of emails. Thanks Donald and Hostek support team!
+* Fixed: scheduled newsletter task no longer runs non-stop when "site visitor" option is enabled. Thanks to @amedic, @conorsboyd and @aspasa for reporting the issue on the forum!
 
 = 3.6.1 - 2018-03-20 =
 * Fixed: prevents sending from being paused for long time during plugin update. Big thanks to Deborah, Kelley, Ciro and Justin!
