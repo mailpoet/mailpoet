@@ -50,6 +50,14 @@ define([
 
           expect(innerModel.get('styles.block.backgroundColor')).to.equal('#123456');
         });
+
+        it('do not update blockDefaults.container when changed', function () {
+          var sandbox = sinon.sandbox.create();
+          var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+          model.trigger('change');
+          expect(stub.callCount).to.equal(0);
+          sandbox.restore();
+        });
       });
 
       describe('when creating with children', function () {
