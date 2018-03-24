@@ -56,11 +56,13 @@ class SendingQueue extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter is already being sent.', 'mailpoet')
       ));
     }
-    $task = SendingQueueModel::findTaskByNewsletterId($newsletter->id)
+
+    $scheduled_queue = SendingQueueModel::joinWithTasks()
+      ->where('queues.newsletter_id', $newsletter->id)
       ->where('tasks.status', SendingQueueModel::STATUS_SCHEDULED)
       ->findOne();
-    if($task) {
-      $queue = SendingTask::createFromTask($task);
+    if($scheduled_queue) {
+      $queue = SendingTask::createFromQueue($scheduled_queue);
     } else {
       $queue = SendingTask::create();
       $queue->newsletter_id = $newsletter->id;
