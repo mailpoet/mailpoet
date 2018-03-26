@@ -12,6 +12,8 @@ define(
     'help-tooltip.jsx',
     'jquery',
     'common/thumbnail.jsx',
+    'common/loading.jsx',
+    'wp-js-hooks'
   ],
   (
     React,
@@ -25,7 +27,9 @@ define(
     Breadcrumb,
     HelpTooltip,
     jQuery,
-    Thumbnail
+    Thumbnail,
+    Loading,
+    Hooks
   ) => {
     const NewsletterSend = React.createClass({
       contextTypes: {
@@ -35,7 +39,7 @@ define(
         return {
           fields: [],
           item: {},
-          loading: false,
+          loading: true,
         };
       },
       getFieldsByNewsletter: function getFieldsByNewsletter(newsletter) {
@@ -325,11 +329,15 @@ define(
           return newField;
         });
         const sendButtonOptions = this.getSendButtonOptions();
+
+        let breadcrumb = Hooks.applyFilters('mailpoet_newsletters_send_breadcrumb', this.state.item.type, 'send');
+        breadcrumb = (breadcrumb !== this.state.item.type) ? breadcrumb : <Breadcrumb step="send" />;
+
         return (
           <div>
             <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
 
-            <Breadcrumb step="send" />
+            {breadcrumb}
 
             <Form
               id="mailpoet_newsletter"
