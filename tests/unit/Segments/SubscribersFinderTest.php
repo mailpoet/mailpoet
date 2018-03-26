@@ -181,7 +181,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue(array($this->subscriber_1->id)));
+      ->will($this->returnValue(array(array('id' => $this->subscriber_1->id))));
 
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
     Hooks::addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
