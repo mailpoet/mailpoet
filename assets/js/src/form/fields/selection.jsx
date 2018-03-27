@@ -2,12 +2,14 @@ define([
   'react',
   'react-dom',
   'jquery',
+  'underscore',
   'select2',
 ],
 (
   React,
   ReactDOM,
-  jQuery
+  jQuery,
+  _
 ) => {
   const Selection = React.createClass({
     allowMultipleValues: function allowMultipleValues() {
@@ -148,7 +150,7 @@ define([
         return this.props.field.selected(this.props.item);
       } else if (this.props.item !== undefined && this.props.field.name !== undefined) {
         if (this.allowMultipleValues()) {
-          if (Array.isArray(this.props.item[this.props.field.name])) {
+          if (_.isArray(this.props.item[this.props.field.name])) {
             return this.props.item[this.props.field.name].map(item => item.id);
           }
         } else {
@@ -165,7 +167,7 @@ define([
         items = this.props.field.values;
       }
 
-      if (Array.isArray(items)) {
+      if (_.isArray(items)) {
         if (this.props.field.filter !== undefined) {
           items = items.filter(this.props.field.filter);
         }
@@ -174,22 +176,21 @@ define([
       return items;
     },
     handleChange: function handleChange(e) {
-      let value;
-      if (this.props.onValueChange !== undefined) {
-        if (this.props.field.multiple) {
-          value = jQuery(`#${this.select.id}`).val();
-        } else {
-          value = e.target.value;
-        }
-        const transformedValue = this.transformChangedValue(value);
-        this.props.onValueChange({
-          target: {
-            value: transformedValue,
-            name: this.props.field.name,
-            id: e.target.id,
-          },
-        });
-      }
+      if (this.props.onValueChange === undefined) return;
+
+      const valueTextPair = jQuery(`#${this.select.id}`).children(':selected').map(function element() {
+        return { id: jQuery(this).val(), text: jQuery(this).text() };
+      });
+      const value = (this.props.field.multiple) ? _.pluck(valueTextPair, 'id') : _.pluck(valueTextPair, 'id').toString();
+      const transformedValue = this.transformChangedValue(value, valueTextPair);
+
+      this.props.onValueChange({
+        target: {
+          value: transformedValue,
+          name: this.props.field.name,
+          id: e.target.id,
+        },
+      });
     },
     getLabel: function getLabel(item) {
       if (this.props.field.getLabel !== undefined) {
@@ -212,9 +213,9 @@ define([
     // When it's impossible to represent the desired value in DOM,
     // this function may be used to transform the placeholder value into
     // desired value.
-    transformChangedValue: function transformChangedValue(value) {
+    transformChangedValue: function transformChangedValue(value, textValuePair) {
       if (typeof this.props.field.transformChangedValue === 'function') {
-        return this.props.field.transformChangedValue.call(this, value);
+        return this.props.field.transformChangedValue.call(this, value, textValuePair);
       }
       return value;
     },
