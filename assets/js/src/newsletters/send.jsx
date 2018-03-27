@@ -54,7 +54,7 @@ define(
         switch (newsletter.type) {
           case 'notification': return NotificationNewsletterFields;
           case 'welcome': return WelcomeNewsletterFields;
-          default: return StandardNewsletterFields;
+          default: return Hooks.applyFilters('mailpoet_newsletters_send_newsletter_fields', newsletter, StandardNewsletterFields);
         }
       },
       isValid: function isValid() {
