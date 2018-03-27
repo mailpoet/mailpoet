@@ -76,6 +76,7 @@ define([
       }
 
       let select2Options = {
+        disabled: this.props.disabled || false,
         width: (this.props.width || ''),
         placeholder: {
           id: '', // the value of the option
