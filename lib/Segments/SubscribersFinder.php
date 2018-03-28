@@ -125,8 +125,9 @@ class SubscribersFinder {
   }
 
   private function addSubscribersToTaskByIds(ScheduledTask $task, array $subscribers) {
+    $subscribers = Helpers::arrayColumn($subscribers, 'id');
     Subscriber::rawExecute(
-      'INSERT INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
+      'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
        (task_id, subscriber_id, processed)
        SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id, ? as processed
        FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers
