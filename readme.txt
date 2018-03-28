@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.6.2
+Stable tag: 3.6.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.6.3 - 2018-03-28 =
+* Fixed: scheduled emails can now be sent normally again. Thanks Neil;
+* Fixed: sending to dynamic segments (Premium feature). Thanks to Jilfar;
+* Fixed: changing the background colour of column layouts no longer corrupts their display. Thanks Neil!
 
 = 3.6.2 - 2018-03-21 =
 * Fixed: sending is faster and uses less resources on sites with large number of emails. Thanks Donald and Hostek support team!
