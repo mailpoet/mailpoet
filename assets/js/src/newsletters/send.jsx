@@ -13,7 +13,7 @@ define(
     'jquery',
     'common/thumbnail.jsx',
     'common/loading.jsx',
-    'wp-js-hooks'
+    'wp-js-hooks',
   ],
   (
     React,
@@ -54,7 +54,7 @@ define(
         switch (newsletter.type) {
           case 'notification': return NotificationNewsletterFields;
           case 'welcome': return WelcomeNewsletterFields;
-          default: return Hooks.applyFilters('mailpoet_newsletters_send_newsletter_fields', newsletter, StandardNewsletterFields);
+          default: return Hooks.applyFilters('mailpoet_newsletters_send_newsletter_fields', StandardNewsletterFields, newsletter);
         }
       },
       isValid: function isValid() {
@@ -167,20 +167,29 @@ define(
                   MailPoet.Modal.loading(false);
                 });
               default:
-                return MailPoet.Ajax.post({
-                  api_version: window.mailpoet_api_version,
-                  endpoint: 'sendingQueue',
-                  action: 'add',
-                  data: {
-                    newsletter_id: this.props.params.id,
-                  },
-                }).done((response2) => {
+                return MailPoet.Ajax.post(
+                  Hooks.applyFilters(
+                    'mailpoet_newsletters_send_server_request_parameters',
+                    {
+                      api_version: window.mailpoet_api_version,
+                      endpoint: 'sendingQueue',
+                      action: 'add',
+                      data: {
+                        newsletter_id: this.state.item.id,
+                      },
+                    },
+                    this.state.item
+                  )
+                )
+                .done((response2) => {
                   // save template in recently sent category
                   this.saveTemplate(response, () => {
                     // redirect to listing based on newsletter type
                     this.context.router.push(`/${this.state.item.type || ''}`);
-
-                    if (response2.data.status === 'scheduled') {
+                    const customResponse = Hooks.applyFilters('mailpoet_newsletters_send_server_request_response', this.state.item, response2);
+                    if (_.isFunction(customResponse)) {
+                      customResponse();
+                    } else if (response2.data.status === 'scheduled') {
                       MailPoet.Notice.success(
                         MailPoet.I18n.t('newsletterHasBeenScheduled')
                       );
@@ -331,7 +340,8 @@ define(
         const sendButtonOptions = this.getSendButtonOptions();
 
         let breadcrumb = Hooks.applyFilters('mailpoet_newsletters_send_breadcrumb', this.state.item.type, 'send');
-        breadcrumb = (breadcrumb !== this.state.item.type) ? breadcrumb : <Breadcrumb step="send" />;
+        breadcrumb = (breadcrumb !== this.state.item.type) ?
+          breadcrumb : <Breadcrumb step="send" />;
 
         return (
           <div>
