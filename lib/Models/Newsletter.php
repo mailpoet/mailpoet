@@ -11,6 +11,7 @@ if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
+  const TYPE_AUTOMATIC = 'automatic';
   const TYPE_STANDARD = 'standard';
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
@@ -574,7 +575,6 @@ class Newsletter extends Model {
       ->whereGte('tasks.processed_at', Carbon::now()->subMonths(3))
       ->count();
 
-
     return array(
       'welcome_newsletters_count' => $welcome_newsletters_count,
       'notifications_count' => $notifications_count,
@@ -748,6 +748,7 @@ class Newsletter extends Model {
 
       case self::TYPE_WELCOME:
       case self::TYPE_NOTIFICATION:
+      case self::TYPE_AUTOMATIC:
         $groups = array_merge($groups, array(
           array(
             'name' => self::STATUS_ACTIVE,
@@ -821,6 +822,7 @@ class Newsletter extends Model {
     if(in_array($type, array(
       self::TYPE_STANDARD,
       self::TYPE_WELCOME,
+      self::TYPE_AUTOMATIC,
       self::TYPE_NOTIFICATION,
       self::TYPE_NOTIFICATION_HISTORY
     ))) {

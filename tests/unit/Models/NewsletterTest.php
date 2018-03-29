@@ -333,6 +333,7 @@ class NewsletterTest extends \MailPoetTest {
       Newsletter::TYPE_STANDARD,
       Newsletter::TYPE_STANDARD, // should be returned
       Newsletter::TYPE_WELCOME,
+      Newsletter::TYPE_AUTOMATIC,
       Newsletter::TYPE_NOTIFICATION,
       Newsletter::TYPE_NOTIFICATION_HISTORY, // should be returned
       Newsletter::TYPE_NOTIFICATION_HISTORY
@@ -352,14 +353,14 @@ class NewsletterTest extends \MailPoetTest {
       $sending_queues[$i]->status = SendingQueue::STATUS_COMPLETED;
       $sending_queues[$i]->save();
     }
-    // set teh sending queue status of the first newsletter to null
+    // set the sending queue status of the first newsletter to null
     $sending_queues[0]->status = null;
     $sending_queues[0]->save();
 
     // trash the last newsletter
     end($newsletters)->trash();
 
-    expect(Newsletter::findMany())->count(6);
+    expect(Newsletter::findMany())->count(7);
 
     // archives return only:
     // 1. STANDARD and NOTIFICATION HISTORY newsletters
@@ -369,7 +370,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($results)->count(2);
     expect($results[0]->id)->equals($newsletters[1]->id);
     expect($results[0]->type)->equals(Newsletter::TYPE_STANDARD);
-    expect($results[1]->id)->equals($newsletters[4]->id);
+    expect($results[1]->id)->equals($newsletters[5]->id);
     expect($results[1]->type)->equals(Newsletter::TYPE_NOTIFICATION_HISTORY);
   }
 
