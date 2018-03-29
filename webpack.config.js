@@ -106,6 +106,14 @@ var baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.Form!babel-loader',
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/mixins.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.NewslettersListingsMixins!babel-loader',
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/tabs.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.NewslettersListingsTabs!babel-loader',
+      },
+      {
         include: path.resolve(__dirname, 'assets/js/src/form/fields/selection.jsx'),
         loader: 'expose-loader?' + globalPrefix + '.FormFieldSelection!babel-loader',
       },
@@ -157,6 +165,10 @@ var baseConfig = {
         include: require.resolve('velocity-animate'),
         loader: 'imports-loader?jQuery=jquery',
       },
+      {
+        include: require.resolve('classnames'),
+        loader: 'expose-loader?' + globalPrefix + '.ClassNames!babel-loader',
+      },
     ]
   }
 };
@@ -193,11 +205,14 @@ var adminConfig = {
       'form/form.jsx',
       'newsletters/badges/stats.jsx',
       'newsletters/breadcrumb.jsx',
+      'newsletters/listings/tabs.jsx',
+      'newsletters/listings/mixins.jsx',
       'newsletters/types/automatic_emails/events_list.jsx',
       'newsletters/types/automatic_emails/breadcrumb.jsx',
       'newsletters/types/welcome/scheduling.jsx',
       'newsletter_editor/initializer.jsx',
       'history',
+      'classnames'
     ],
     admin: [
       'subscribers/subscribers.jsx',
