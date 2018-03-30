@@ -156,10 +156,10 @@ const NewsletterListWelcome = React.createClass({
     });
   },
   renderStatus: function renderStatus(newsletter) {
-    const totalSent = (
+    const totalSent = (!parseInt(newsletter.total_sent, 10) === 0) ?
       MailPoet.I18n.t('sentToXSubscribers')
-      .replace('%$1d', newsletter.total_sent.toLocaleString())
-    );
+        .replace('%$1d', newsletter.total_sent.toLocaleString()) :
+      MailPoet.I18n.t('notSentYet');
 
     return (
       <div>
@@ -239,13 +239,11 @@ const NewsletterListWelcome = React.createClass({
             break;
 
           default:
-            sendingDelay = 'Invalid sending delay';
+            sendingDelay = MailPoet.I18n.t('sendingDelayInvalid');
             break;
         }
-        sendingEvent += ` [${sendingDelay}]`;
+        sendingEvent += ` [${sendingDelay}].`;
       }
-      // add a "period" at the end if we do have a sendingEvent
-      sendingEvent += '.';
     }
 
     return (
