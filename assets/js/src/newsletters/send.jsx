@@ -185,7 +185,7 @@ define(
                   // save template in recently sent category
                   this.saveTemplate(response, () => {
                     // redirect to listing based on newsletter type
-                    this.context.router.push(`/${this.state.item.type || ''}`);
+                    this.context.router.push(Hooks.applyFilters('mailpoet_newsletters_send_server_request_response_redirect', `/${this.state.item.type || ''}`, this.state.item));
                     const customResponse = Hooks.applyFilters('mailpoet_newsletters_send_server_request_response', this.state.item, response2);
                     if (_.isFunction(customResponse)) {
                       customResponse();
