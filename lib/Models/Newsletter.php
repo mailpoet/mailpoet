@@ -644,7 +644,8 @@ class Newsletter extends Model {
     // filter by type
     $type = isset($data['params']['type']) ? $data['params']['type'] : null;
     if($type !== null) {
-      $orm->filter('filterType', $type);
+      $group = (isset($data['params']['group'])) ? $data['params']['group'] : null;
+      $orm->filter('filterType', $type, $group);
     }
 
     // filter by parent id
@@ -818,7 +819,7 @@ class Newsletter extends Model {
     return $orm;
   }
 
-  static function filterType($orm, $type = false) {
+  static function filterType($orm, $type = false, $group = false) {
     if(in_array($type, array(
       self::TYPE_STANDARD,
       self::TYPE_WELCOME,
@@ -826,7 +827,26 @@ class Newsletter extends Model {
       self::TYPE_NOTIFICATION,
       self::TYPE_NOTIFICATION_HISTORY
     ))) {
-      $orm->where('type', $type);
+      if($type === self::TYPE_AUTOMATIC && $group) {
+        $orm = $orm->join(
+          NewsletterOptionField::$_table,
+          array(
+            'option_fields.newsletter_type', '=', self::$_table . '.type',
+            'option_fields.name', '=', 'group'
+          ),
+          'option_fields'
+        )
+        ->join(
+          NewsletterOption::$_table,
+          array(
+            'options.newsletter_id', '=', self::$_table . '.id'
+          ),
+          'options'
+        )
+        ->whereRaw('`options`.`option_field_id` = `option_fields`.`id`')
+        ->where('options.value', $group);
+      }
+      $orm = $orm->where(self::$_table . '.type', $type);
     }
     return $orm;
   }
@@ -834,14 +854,14 @@ class Newsletter extends Model {
   static function listingQuery($data = array()) {
     $query = self::select(
       array(
-        'id',
-        'subject',
-        'hash',
-        'type',
-        'status',
-        'sent_at',
-        'updated_at',
-        'deleted_at'
+        self::$_table . '.id',
+        self::$_table . '.subject',
+        self::$_table . '.hash',
+        self::$_table . '.type',
+        self::$_table . '.status',
+        self::$_table . '.sent_at',
+        self::$_table . '.updated_at',
+        self::$_table . '.deleted_at'
       )
     );
     if($data['sort_by'] === 'sent_at') {

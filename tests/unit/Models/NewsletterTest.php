@@ -742,7 +742,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(NewsletterSegment::findArray())->count(0);
   }
 
-  function testDuplicatesNewsletter() {
+  function testItDuplicatesNewsletter() {
     $original_newsletter = $this->newsletter;
     $original_newsletter->status = Newsletter::STATUS_SENT;
     $original_newsletter->sent_at = $original_newsletter->deleted_at = $original_newsletter->created_at = $original_newsletter->updated_at = date( '2000-m-d H:i:s');
@@ -764,6 +764,79 @@ class NewsletterTest extends \MailPoetTest {
     // body and subject are the same
     expect($duplicate_newsletter->body)->equals($original_newsletter->body);
     expect($duplicate_newsletter->subject)->equals($data['subject']);
+  }
+
+  function testItCanQueryAutomaticEmailsByGroup() {
+    $newsletter_1 = Newsletter::createOrUpdate(
+      array(
+        'subject' => 'WooCommerce',
+        'preheader' => 'Pre Header',
+        'type' => Newsletter::TYPE_AUTOMATIC
+      )
+    );
+    $newsletter_2 = Newsletter::createOrUpdate(
+      array(
+        'subject' => 'Unicrons',
+        'preheader' => 'Pre Header',
+        'type' => Newsletter::TYPE_AUTOMATIC
+      )
+    );
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->hydrate(
+      array(
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'name' => 'group'
+      )
+    );
+    $newsletter_option_field->save();
+    $newsletter_option_1 = NewsletterOption::create();
+    $newsletter_option_1->hydrate(
+      array(
+        'newsletter_id' => $newsletter_1->id,
+        'option_field_id' => $newsletter_option_field->id,
+        'value' => 'woocommerce'
+      )
+    );
+    $newsletter_option_1->save();
+    $newsletter_option_2 = NewsletterOption::create();
+    $newsletter_option_2->hydrate(
+      array(
+        'newsletter_id' => $newsletter_2->id,
+        'option_field_id' => $newsletter_option_field->id,
+        'value' => 'unicorns'
+      )
+    );
+    $newsletter_option_2->save();
+    $listings_data = array(
+      'params' => array(
+        'type' => Newsletter::TYPE_AUTOMATIC
+      ),
+      'sort_by' => 'updated_at',
+      'sort_order' => 'desc',
+      'offset' => 0,
+      'limit' => 20,
+      'group' => 'all',
+      'search' => ''
+    );
+
+    // get "woocommerce" emails
+    $listings_data['params']['group'] = 'woocommerce';
+    $result = Newsletter::listingQuery($listings_data)->findMany();
+    expect($result)->count(1);
+    expect($result[0]->id)->equals($newsletter_1->id);
+
+    // get "unicorn" emails
+    $listings_data['params']['group'] = 'unicorns';
+    $result = Newsletter::listingQuery($listings_data)->findMany();
+    expect($result)->count(1);
+    expect($result[0]->id)->equals($newsletter_2->id);
+
+    // get all automatic emails
+    unset($listings_data['params']['group']);
+    $result = Newsletter::listingQuery($listings_data)->findMany();
+    expect($result)->count(2);
+    expect($result[0]->id)->equals($newsletter_1->id);
+    expect($result[1]->id)->equals($newsletter_2->id);
   }
 
   function _after() {
