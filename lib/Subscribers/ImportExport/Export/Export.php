@@ -97,6 +97,7 @@ class Export {
         )
       ) . PHP_EOL
     );
+
     $subscribers = $this->getSubscribers();
     while($subscribers !== false) {
       $processed_subscribers += count($subscribers);

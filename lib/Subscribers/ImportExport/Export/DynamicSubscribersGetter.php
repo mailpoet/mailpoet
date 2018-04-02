@@ -11,7 +11,7 @@ use MailPoet\WP\Hooks;
  */
 class DynamicSubscribersGetter extends SubscribersGetter {
 
-  protected $segment_index;
+  protected $segment_index = 0;
 
   public function reset() {
     parent::reset();
@@ -25,7 +25,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
       'mailpoet_get_segment_filters', 
       $segment_id
     );
-    
+
     if(!is_array($filters) || empty($filters)) {
       return array();
     }
@@ -40,7 +40,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
       ->selectMany(array(
         'list_status' => Subscriber::$_table . '.status'
       ))
-      ->selectExpr("'{$name}' AS segment_name")
+      ->selectExpr("'". $name . "' AS segment_name")
       ->offset($this->offset)
       ->limit($this->batch_size)
       ->findArray();

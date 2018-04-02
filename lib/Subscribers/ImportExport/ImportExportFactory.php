@@ -17,11 +17,11 @@ class ImportExportFactory {
     $this->action = $action;
   }
 
-  function getSegments($with_confirmed_subscribers = false) {
+  function getSegments() {
     if($this->action === self::IMPORT_ACTION) {
       $segments = Segment::getSegmentsForImport();
     } else {
-      $segments = Segment::getSegmentsForExport($with_confirmed_subscribers);
+      $segments = Segment::getSegmentsForExport();
       $segments = Hooks::applyFilters('mailpoet_segments_with_subscriber_count', $segments);
       $segments = array_values(array_filter($segments, function($segment) {
         return $segment['subscribers'] > 0;
