@@ -4,10 +4,6 @@ import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const editorContainer = document.getElementById('mailpoet_editor');
-
-const getUrlParam = param => (location.search.split(`${param}=`)[1] || '').split('&')[0];
-
 const renderBreadcrumb = (newsletterType) => {
   const breadcrumbContainer = document.getElementById('mailpoet_editor_breadcrumb');
   const breadcrumb = Hooks.applyFilters(
@@ -21,6 +17,9 @@ const renderBreadcrumb = (newsletterType) => {
 };
 
 const initializeEditor = (config) => {
+  const editorContainer = document.getElementById('mailpoet_editor');
+  const getUrlParam = param => (location.search.split(`${param}=`)[1] || '').split('&')[0];
+
   if (!editorContainer || !window.EditorApplication) return;
 
   MailPoet.Modal.loading(true);
