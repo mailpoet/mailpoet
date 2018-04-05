@@ -6,6 +6,7 @@ import Tabs from 'newsletters/templates/tabs.jsx';
 import TemplateBox from 'newsletters/templates/template_box.jsx';
 import ImportTemplate from 'newsletters/templates/import_template.jsx';
 import Hooks from 'wp-js-hooks';
+import _ from 'underscore';
 
 const getEditorUrl = id => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
 
@@ -137,7 +138,7 @@ class NewsletterTemplates extends React.Component {
       },
     }).done((response) => {
       emailType = response.data.type;
-      if (response.data.type !== 'automatic') {
+      if (_.findWhere(templatesCategories, { name: response.data.type })) {
         selectedTab = response.data.type;
       }
     }).fail((response) => {
