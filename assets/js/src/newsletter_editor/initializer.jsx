@@ -10,12 +10,14 @@ const getUrlParam = param => (location.search.split(`${param}=`)[1] || '').split
 
 const renderBreadcrumb = (newsletterType) => {
   const breadcrumbContainer = document.getElementById('mailpoet_editor_breadcrumb');
-  let breadcrumb = Hooks.applyFilters('mailpoet_newsletters_editor_breadcrumb', newsletterType, 'editor');
-  breadcrumb = (breadcrumb !== newsletterType) ? breadcrumb : <Breadcrumb step="editor" />;
+  const breadcrumb = Hooks.applyFilters(
+    'mailpoet_newsletters_editor_breadcrumb',
+    <Breadcrumb step="editor" />,
+    newsletterType,
+    'editor'
+  );
 
-  if (breadcrumbContainer) {
-    ReactDOM.render(breadcrumb, breadcrumbContainer);
-  }
+  ReactDOM.render(breadcrumb, breadcrumbContainer);
 };
 
 const initializeEditor = (config) => {

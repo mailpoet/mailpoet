@@ -338,10 +338,12 @@ define(
           return newField;
         });
         const sendButtonOptions = this.getSendButtonOptions();
-
-        let breadcrumb = Hooks.applyFilters('mailpoet_newsletters_send_breadcrumb', this.state.item.type, 'send');
-        breadcrumb = (breadcrumb !== this.state.item.type) ?
-          breadcrumb : <Breadcrumb step="send" />;
+        const breadcrumb = Hooks.applyFilters(
+          'mailpoet_newsletters_send_breadcrumb',
+          <Breadcrumb step="send" />,
+          this.state.item.type,
+          'send'
+        );
 
         return (
           <div>

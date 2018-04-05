@@ -230,9 +230,12 @@ class NewsletterTemplates extends React.Component {
       content = <ul className="mailpoet_boxes clearfix">{templates}</ul>;
     }
 
-    let breadcrumb = Hooks.applyFilters('mailpoet_newsletters_template_breadcrumb', this.state.emailType, 'template');
-    breadcrumb = (breadcrumb !== this.state.emailType) ?
-      breadcrumb : <Breadcrumb step="template" />;
+    const breadcrumb = Hooks.applyFilters(
+      'mailpoet_newsletters_template_breadcrumb',
+      <Breadcrumb step="template" />,
+      this.state.emailType,
+      'template'
+    );
 
     return (
       <div>
