@@ -30,6 +30,9 @@ class Daemon {
 
   function run() {
     ignore_user_abort(true);
+    if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+      set_time_limit(0);
+    }
     if(!$this->request_data) {
       $error = __('Invalid or missing request data.', 'mailpoet');
     } else {
