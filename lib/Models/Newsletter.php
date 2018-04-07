@@ -591,6 +591,7 @@ class Newsletter extends Model {
 
   static function filters($data = array()) {
     $type = isset($data['params']['type']) ? $data['params']['type'] : null;
+    $group = (isset($data['params']['group'])) ? $data['params']['group'] : null;
 
     // newsletter types without filters
     if(in_array($type, array(
@@ -608,7 +609,7 @@ class Newsletter extends Model {
 
     foreach($segments as $segment) {
       $newsletters = $segment->newsletters()
-        ->filter('filterType', $type)
+        ->filter('filterType', $type, $group)
         ->filter('groupBy', $data);
 
       $newsletters_count = $newsletters->count();
@@ -691,6 +692,7 @@ class Newsletter extends Model {
 
   static function groups($data = array()) {
     $type = isset($data['params']['type']) ? $data['params']['type'] : null;
+    $group = (isset($data['params']['group'])) ? $data['params']['group'] : null;
 
     // newsletter types without groups
     if(in_array($type, array(
@@ -704,7 +706,7 @@ class Newsletter extends Model {
         'name' => 'all',
         'label' => __('All', 'mailpoet'),
         'count' => Newsletter::getPublished()
-          ->filter('filterType', $type)
+          ->filter('filterType', $type, $group)
           ->count()
       )
     );
@@ -716,7 +718,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_DRAFT,
             'label' => __('Draft', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_DRAFT)
               ->count()
           ),
@@ -724,7 +726,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_SCHEDULED,
             'label' => __('Scheduled', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_SCHEDULED)
               ->count()
           ),
@@ -732,7 +734,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_SENDING,
             'label' => __('Sending', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_SENDING)
               ->count()
           ),
@@ -740,7 +742,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_SENT,
             'label' => __('Sent', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_SENT)
               ->count()
           )
@@ -755,7 +757,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_ACTIVE,
             'label' => __('Active', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_ACTIVE)
               ->count()
           ),
@@ -763,7 +765,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_DRAFT,
             'label' => __('Not active', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_DRAFT)
               ->count()
           )
@@ -775,7 +777,7 @@ class Newsletter extends Model {
       'name' => 'trash',
       'label' => __('Trash', 'mailpoet'),
       'count' => Newsletter::getTrashed()
-        ->filter('filterType', $type)
+        ->filter('filterType', $type, $group)
         ->count()
     );
 
