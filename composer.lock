@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "06b0529dcf7867d51ac5b80efe913a54",
+    "content-hash": "da2fe33a4683f03def7d068eaf02ce58",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -451,16 +451,16 @@
         },
         {
             "name": "soundasleep/html2text",
-            "version": "0.3.4",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mailpoet/html2text.git",
-                "reference": "a1f77b8f340c8425b746bef1d1040189e89be334"
+                "reference": "95c5f266e7ea1a79b3879555cf27289985b1e4c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mailpoet/html2text/zipball/a1f77b8f340c8425b746bef1d1040189e89be334",
-                "reference": "a1f77b8f340c8425b746bef1d1040189e89be334",
+                "url": "https://api.github.com/repos/mailpoet/html2text/zipball/95c5f266e7ea1a79b3879555cf27289985b1e4c7",
+                "reference": "95c5f266e7ea1a79b3879555cf27289985b1e4c7",
                 "shasum": ""
             },
             "require": {
@@ -498,9 +498,9 @@
             ],
             "support": {
                 "email": "support@jevon.org",
-                "source": "https://github.com/mailpoet/html2text/tree/0.3.4"
+                "source": "https://github.com/mailpoet/html2text/tree/master"
             },
-            "time": "2016-06-09T04:56:16+00:00"
+            "time": "2018-04-08 14:18:46"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -7740,6 +7740,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "soundasleep/html2text": 20,
         "simplyadmire/composer-plugins": 20
     },
     "prefer-stable": false,
