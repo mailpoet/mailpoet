@@ -78,7 +78,7 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 <%= javascript('lib/analytics.js') %>
 
 <% set helpscout_form_id = (mailpoet_has_valid_premium_key()) ? '6974b88d-8d85-11e7-b5b5-0ec85169275a' : 'dd918048-8d73-11e7-b5b5-0ec85169275a' %>
-<script>!function(e,o,n){window.HSCW=o,window.HS=n,n.beacon=n.beacon||{};var t=n.beacon;t.userConfig={},t.readyQueue=[],t.config=function(e){this.userConfig=e},t.ready=function(e){this.readyQueue.push(e)},o.config={docs:{enabled:!0,baseUrl:"//mailpoet3.helpscoutdocs.com/"},contact:{enabled:!0,formId:"<%= helpscout_form_id %>"}};var r=e.getElementsByTagName("script")[0],c=e.createElement("script");c.type="text/javascript",c.async=!0,c.src="https://djtflbt20bdde.cloudfront.net/",r.parentNode.insertBefore(c,r)}(document,window.HSCW||{},window.HS||{});</script>
+<script>!function(e,o,n){window.HSCW=o,window.HS=n,n.beacon=n.beacon||{};var t=n.beacon;t.userConfig={},t.readyQueue=[],t.config=function(e){this.userConfig=e},t.ready=function(e){this.readyQueue.push(e)},o.config={docs:{enabled:!0,baseUrl:"https://mailpoet3.helpscoutdocs.com/"},contact:{enabled:!0,formId:"<%= helpscout_form_id %>"}};var r=e.getElementsByTagName("script")[0],c=e.createElement("script");c.type="text/javascript",c.async=!0,c.src="https://djtflbt20bdde.cloudfront.net/",r.parentNode.insertBefore(c,r)}(document,window.HSCW||{},window.HS||{});</script>
 
 <script type="text/javascript">
   if(window['HS'] !== undefined) {
