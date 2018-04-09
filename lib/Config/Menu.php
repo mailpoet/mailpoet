@@ -601,7 +601,7 @@ class Menu {
   }
 
   function import() {
-    $import = new ImportExportFactory('import');
+    $import = new ImportExportFactory(ImportExportFactory::IMPORT_ACTION);
     $data = $import->bootstrap();
     $data = array_merge($data, array(
       'date_types' => Block\Date::getDateTypes(),
@@ -613,7 +613,7 @@ class Menu {
   }
 
   function export() {
-    $export = new ImportExportFactory('export');
+    $export = new ImportExportFactory(ImportExportFactory::EXPORT_ACTION);
     $data = $export->bootstrap();
     $data['sub_menu'] = 'mailpoet-subscribers';
     $this->displayPage('subscribers/importExport/export.html', $data);

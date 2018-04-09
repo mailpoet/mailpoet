@@ -13,24 +13,34 @@ use MailPoet\Util\Security;
 use MailPoet\Util\XLSXWriter;
 
 class Export {
+  const SUBSCRIBER_BATCH_SIZE = 15000;
+
   public $export_format_option;
-  public $segments;
-  public $subscribers_without_segment;
   public $subscriber_fields;
   public $subscriber_custom_fields;
   public $formatted_subscriber_fields;
   public $export_path;
   public $export_file;
   public $export_file_URL;
-  public $subscriber_batch_size;
+  public $default_subscribers_getter;
+  public $dynamic_subscribers_getter;
 
   public function __construct($data) {
     if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
+
+    $this->default_subscribers_getter = new DefaultSubscribersGetter(
+      $data['segments'], 
+      self::SUBSCRIBER_BATCH_SIZE
+    );
+
+    $this->dynamic_subscribers_getter = new DynamicSubscribersGetter(
+      $data['segments'], 
+      self::SUBSCRIBER_BATCH_SIZE
+    );
+
     $this->export_format_option = $data['export_format_option'];
-    $this->segments = $data['segments'];
-    $this->subscribers_without_segment = array_search(0, $this->segments);
     $this->subscriber_fields = $data['subscriber_fields'];
     $this->subscriber_custom_fields = $this->getSubscriberCustomFields();
     $this->formatted_subscriber_fields = $this->formatSubscriberFields(
@@ -40,10 +50,10 @@ class Export {
     $this->export_path = Env::$temp_path;
     $this->export_file = $this->getExportFile($this->export_format_option);
     $this->export_file_URL = $this->getExportFileURL($this->export_file);
-    $this->subscriber_batch_size = 15000;
   }
 
   function process() {
+    $this->default_subscribers_getter->reset();
     try {
       if(is_writable($this->export_path) === false) {
         throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
@@ -68,7 +78,6 @@ class Export {
 
   function generateCSV() {
     $processed_subscribers = 0;
-    $offset = 0;
     $formatted_subscriber_fields = $this->formatted_subscriber_fields;
     $CSV_file = fopen($this->export_file, 'w');
     $format_CSV = function($row) {
@@ -88,29 +97,30 @@ class Export {
         )
       ) . PHP_EOL
     );
-    do {
-      $subscribers = $this->getSubscribers($offset, $this->subscriber_batch_size);
+
+    $subscribers = $this->getSubscribers();
+    while($subscribers !== false) {
       $processed_subscribers += count($subscribers);
       foreach($subscribers as $subscriber) {
         $row = $this->formatSubscriberData($subscriber);
         $row[] = ucwords($subscriber['segment_name']);
         fwrite($CSV_file, implode(',', array_map($format_CSV, $row)) . "\n");
       }
-      $offset += $this->subscriber_batch_size;
-    } while(count($subscribers) === $this->subscriber_batch_size);
+      $subscribers = $this->getSubscribers();
+    }
     fclose($CSV_file);
     return $processed_subscribers;
   }
 
   function generateXLSX() {
     $processed_subscribers = 0;
-    $offset = 0;
     $XLSX_writer = new XLSXWriter();
     $XLSX_writer->setAuthor('MailPoet (www.mailpoet.com)');
     $last_segment = false;
     $processed_segments = array();
-    do {
-      $subscribers = $this->getSubscribers($offset, $this->subscriber_batch_size);
+
+    $subscribers = $this->getSubscribers();
+    while($subscribers !== false) {
       $processed_subscribers += count($subscribers);
       foreach($subscribers as $i => $subscriber) {
         $current_segment = ucwords($subscriber['segment_name']);
@@ -147,8 +157,8 @@ class Export {
           $this->formatSubscriberData($subscriber)
         );
       }
-      $offset += $this->subscriber_batch_size;
-    } while(count($subscribers) === $this->subscriber_batch_size);
+      $subscribers = $this->getSubscribers();
+    }
     $XLSX_writer->writeToFile($this->export_file);
     return $processed_subscribers;
   }
@@ -157,69 +167,11 @@ class Export {
     return $XLSX_writer->writeSheetRow(ucwords($segment), $data);
   }
 
-  function getSubscribers($offset, $limit) {
-    // define returned columns
-    $subscribers = Subscriber::selectMany(
-      'first_name',
-      'last_name',
-      'email',
-      'subscribed_ip',
-      array(
-        'global_status' => Subscriber::$_table . '.status'
-      ),
-      array(
-        'list_status' => SubscriberSegment::$_table . '.status'
-      )
-    );
-
-    // JOIN subscribers on segment and subscriber_segment tables
-    $subscribers = $subscribers
-      ->left_outer_join(
-        SubscriberSegment::$_table,
-        array(
-          Subscriber::$_table . '.id',
-          '=',
-          SubscriberSegment::$_table . '.subscriber_id'
-        )
-      )
-      ->left_outer_join(
-        Segment::$_table,
-        array(
-          Segment::$_table . '.id',
-          '=',
-          SubscriberSegment::$_table . '.segment_id'
-        )
-      )
-      ->filter('filterWithCustomFieldsForExport')
-      ->groupBy(Subscriber::$_table . '.id')
-      ->groupBy(Segment::$_table . '.id');
-
-    if($this->subscribers_without_segment !== false) {
-      // if there are subscribers who do not belong to any segment, use
-      // a CASE function to group them under "Not In Segment"
-      $subscribers = $subscribers
-        ->selectExpr(
-          'MAX(CASE WHEN ' . Segment::$_table . '.name IS NOT NULL ' .
-          'THEN ' . Segment::$_table . '.name ' .
-          'ELSE "' . __('Not In Segment', 'mailpoet') . '" END) as segment_name'
-        )
-        ->whereRaw(
-          SubscriberSegment::$_table . '.segment_id IN (' .
-          rtrim(str_repeat('?,', count($this->segments)), ',') . ') ' .
-          'OR ' . SubscriberSegment::$_table . '.segment_id IS NULL ',
-          $this->segments
-        );
-    } else {
-      // if all subscribers belong to at least one segment, select the segment name
-      $subscribers = $subscribers
-        ->selectExpr('MAX(' . Segment::$_table . '.name) as segment_name')
-        ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments);
+  function getSubscribers() {
+    $subscribers = $this->default_subscribers_getter->get();
+    if($subscribers === false) {
+      $subscribers = $this->dynamic_subscribers_getter->get();
     }
-    $subscribers = $subscribers
-      ->whereNull(Subscriber::$_table . '.deleted_at')
-      ->offset($offset)
-      ->limit($limit)
-      ->findArray();
     return $subscribers;
   }
 

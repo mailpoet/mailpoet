@@ -3,19 +3,31 @@ namespace MailPoet\Subscribers\ImportExport;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
+use MailPoet\Premium\Models\DynamicSegment;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Hooks;
 
 class ImportExportFactory {
+  const IMPORT_ACTION = 'import'; 
+  const EXPORT_ACTION = 'export';
+
   public $action;
 
   function __construct($action = null) {
     $this->action = $action;
   }
 
-  function getSegments($with_confirmed_subscribers = false) {
-    $segments = ($this->action === 'import') ?
-      Segment::getSegmentsForImport() :
-      Segment::getSegmentsForExport($with_confirmed_subscribers);
+  function getSegments() {
+    if($this->action === self::IMPORT_ACTION) {
+      $segments = Segment::getSegmentsForImport();
+    } else {
+      $segments = Segment::getSegmentsForExport();
+      $segments = Hooks::applyFilters('mailpoet_segments_with_subscriber_count', $segments);
+      $segments = array_values(array_filter($segments, function($segment) {
+        return $segment['subscribers'] > 0;
+      }));
+    }
+
     return array_map(function($segment) {
       if(!$segment['name']) $segment['name'] = __('Not In List', 'mailpoet');
       if(!$segment['id']) $segment['id'] = 0;

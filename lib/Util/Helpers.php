@@ -159,4 +159,5 @@ class Helpers {
       ? $_SERVER['REMOTE_ADDR']
       : null;
   }
+
 }

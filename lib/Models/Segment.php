@@ -190,7 +190,7 @@ class Segment extends Model {
       '(SELECT segments.id, segments.name, COUNT(relation.subscriber_id) as subscribers ' .
       'FROM ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation ' .
       'LEFT JOIN ' . self::$_table . ' segments ON segments.id = relation.segment_id ' .
-      'LEFT JOIN ' . MP_SUBSCRIBERS_TABLE . ' subscribers ON subscribers.id = relation.subscriber_id ' .
+      'INNER JOIN ' . MP_SUBSCRIBERS_TABLE . ' subscribers ON subscribers.id = relation.subscriber_id ' .
       'WHERE relation.segment_id IS NOT NULL ' .
       'AND subscribers.deleted_at IS NULL ' .
       'GROUP BY segments.id) ' .

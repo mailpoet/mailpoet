@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\Export\Export;
+use MailPoet\Subscribers\ImportExport\Export\DefaultSubscribersGetter;
 
 class ExportTest extends \MailPoetTest {
   function _before() {
@@ -103,15 +104,6 @@ class ExportTest extends \MailPoetTest {
   function testItCanConstruct() {
     expect($this->export->export_format_option)
       ->equals('csv');
-    expect($this->export->segments)
-      ->equals(
-        array(
-          1,
-          2
-        )
-      );
-    expect($this->export->subscribers_without_segment)
-      ->equals(0);
     expect($this->export->subscriber_fields)
       ->equals(
         array(
@@ -143,7 +135,6 @@ class ExportTest extends \MailPoetTest {
         basename($this->export->export_file) .
         '|', $this->export->export_file_URL)
     )->equals(1);
-    expect($this->export->subscriber_batch_size)->notNull();
   }
 
   function testItCanGetSubscriberCustomFields() {
@@ -173,30 +164,29 @@ class ExportTest extends \MailPoetTest {
   }
 
   function testItCanGetSubscribers() {
-    $this->export->segments = array(1);
-    $subscribers = $this->export->getSubscribers(0, 10);
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(1), 100);
+    $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
-    $this->export->segments = array(2);
-    $subscribers = $this->export->getSubscribers(0, 10);
+    
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(2), 100);
+    $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
-    $this->export->segments = array(
-      1,
-      2
-    );
-    $subscribers = $this->export->getSubscribers(0, 10);
+    
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(1, 2), 100);
+    $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(4);
+
   }
 
   function testItAlwaysGroupsSubscribersBySegments() {
-    $this->export->subscribers_without_segment = true;
-    $subscribers = $this->export->getSubscribers(0, 10);
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(0, 1, 2), 100);
+    $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(5);
   }
 
   function testItCanGetSubscribersOnlyWithoutSegments() {
-    $this->export->segments = array(0);
-    $this->export->subscribers_without_segment = true;
-    $subscribers = $this->export->getSubscribers(0, 10);
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(0), 100);
+    $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(1);
     expect($subscribers[0]['segment_name'])->equals('Not In Segment');
   }
