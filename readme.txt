@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.6.4
+Stable tag: 3.6.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.6.5 - 2018-04-10 =
+* Premium: subscriber export tool now supports dynamic segments;
+* Improved: sending was optimized for large newsletters and slow hosts. Thanks, Alison;
+* Fixed: help icon functionality was restored for all users.
 
 = 3.6.4 - 2018-04-03 =
 * Fixed: editing sent emails will not remove them from email archive. Thanks David!
