@@ -6,7 +6,6 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers;
 
@@ -132,8 +131,13 @@ class SendingTest extends \MailPoetTest {
     $tasks = SendingTask::getScheduledQueues();
     expect($tasks)->notEmpty();
     foreach($tasks as $task) {
-      expect_that($task instanceof SendingTask);
+      expect($task)->isInstanceOf('MailPoet\Tasks\Sending');
     }
+
+    // if task exists but sending queue is missing, results should not contain empty (false) values
+    $this->queue->delete();
+    $tasks = SendingTask::getRunningQueues();
+    expect($tasks)->isEmpty();
   }
 
   function testItGetsRunningQueues() {
@@ -143,8 +147,13 @@ class SendingTest extends \MailPoetTest {
     $tasks = SendingTask::getRunningQueues();
     expect($tasks)->notEmpty();
     foreach($tasks as $task) {
-      expect_that($task instanceof SendingTask);
+      expect($task)->isInstanceOf('MailPoet\Tasks\Sending');
     }
+
+    // if task exists but sending queue is missing, results should not contain empty (false) values
+    $this->queue->delete();
+    $tasks = SendingTask::getRunningQueues();
+    expect($tasks)->isEmpty();
   }
 
   function _after() {
