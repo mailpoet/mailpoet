@@ -57,13 +57,11 @@ define(
 
         return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
           const email = automaticEmail;
-          const disabled = !email.events;
 
           email.action = (() => (
             <div>
               <a className="button button-primary"
-                disabled={disabled}
-                onClick={!disabled ? this.setupNewsletter.bind(null, automaticEmail.slug) : null}
+                onClick={this.setupNewsletter.bind(null, automaticEmail.slug)}
               >
                 { MailPoet.I18n.t('setUp') }
               </a>
