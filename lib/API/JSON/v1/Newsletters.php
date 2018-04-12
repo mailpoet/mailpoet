@@ -50,6 +50,8 @@ class Newsletters extends APIEndpoint {
   }
 
   function save($data = array()) {
+    $data = Hooks::applyFilters('mailpoet_api_newsletters_save_before', $data);
+
     $segments = array();
     if(isset($data['segments'])) {
       $segments = $data['segments'];
@@ -61,8 +63,6 @@ class Newsletters extends APIEndpoint {
       $options = $data['options'];
       unset($data['options']);
     }
-
-    $data = Hooks::applyFilters('mailpoet_api_newsletters_save_before', $data);
 
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
