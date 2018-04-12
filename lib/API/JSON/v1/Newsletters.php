@@ -408,7 +408,7 @@ class Newsletters extends APIEndpoint {
         $queue
       );
 
-      $data[] = $newsletter->asArray();
+      $data[] = Hooks::applyFilters('mailpoet_api_newsletters_listing_item', $newsletter->asArray());
     }
 
     return $this->successResponse($data, array(
