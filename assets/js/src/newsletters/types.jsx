@@ -62,6 +62,8 @@ define(
             <div>
               <a className="button button-primary"
                 onClick={this.setupNewsletter.bind(null, automaticEmail.slug)}
+                role="button"
+                tabIndex={0}
               >
                 { MailPoet.I18n.t('setUp') }
               </a>

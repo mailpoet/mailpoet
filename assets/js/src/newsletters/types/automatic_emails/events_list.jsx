@@ -6,20 +6,20 @@ import _ from 'underscore';
 class AutomaticEmailEventsList extends React.Component {
   constructor(props) {
     super(props);
-    this.automaticEmail = this.props.route.data.automaticEmail;
-    this.automaticEmailEvents = this.automaticEmail.events;
+    this.email = this.props.route.data.email;
+    this.emailEvents = this.email.events;
     this.eventsConfigurator = this.eventsConfigurator.bind(this);
   }
 
   eventsConfigurator(eventSlug) {
-    this.props.router.push(`new/${this.automaticEmail.slug}/${eventSlug}/conditions`);
+    this.props.router.push(`new/${this.email.slug}/${eventSlug}/conditions`);
   }
 
   displayEvents() {
-    const events = _.map(this.automaticEmailEvents, (event, index) => {
+    const events = _.map(this.emailEvents, (event, index) => {
       let action;
 
-      if (this.automaticEmail.premium) {
+      if (this.email.premium) {
         action = (
           <a href="?page=mailpoet-premium"
             target="_blank"
@@ -75,7 +75,7 @@ class AutomaticEmailEventsList extends React.Component {
 
   render() {
     const heading = MailPoet.I18n.t('selectAutomaticEmailsEventsHeading')
-      .replace('%1s', this.automaticEmail.title);
+      .replace('%1s', this.email.title);
 
     return (
       <div>
