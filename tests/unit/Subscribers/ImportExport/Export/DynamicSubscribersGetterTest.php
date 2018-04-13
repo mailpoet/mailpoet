@@ -86,6 +86,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     $entity->value = $this->subscribers_data[1][1];
     $entity->save();
 
+    Hooks::removeAllFilters('mailpoet_get_segment_filters');
     Hooks::addAction(
       'mailpoet_get_segment_filters',
       function($segment_id) {
@@ -104,7 +105,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
       $data = array();
       foreach($subscriber as $key => $value) {
         if(in_array($key, array(
-          'first_name', 'last_name', 'email', 'global_status', 
+          'first_name', 'last_name', 'email', 'global_status',
           'status', 'list_status', 'segment_name', 1
         )))
           $data[$key] = $value;
@@ -122,7 +123,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Newspapers',
         1 => null
@@ -132,7 +133,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        'global_status' => Subscriber::STATUS_SUBSCRIBED, 
+        'global_status' => Subscriber::STATUS_SUBSCRIBED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
@@ -150,7 +151,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Newspapers',
         1 => null
@@ -160,20 +161,20 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        'global_status' => Subscriber::STATUS_SUBSCRIBED, 
+        'global_status' => Subscriber::STATUS_SUBSCRIBED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
       )
     ]);
-    
+
     expect($this->filterSubscribersData($getter->get()))->equals([
       array(
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null
@@ -183,7 +184,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Kookoo',
         'email' => 'john@kookoo.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null,
@@ -193,7 +194,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Newman',
         'email' => 'paul@newman.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null,
@@ -211,7 +212,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Newspapers',
         1 => null
@@ -221,13 +222,13 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        'global_status' => Subscriber::STATUS_SUBSCRIBED, 
+        'global_status' => Subscriber::STATUS_SUBSCRIBED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
       )
     ]);
-    
+
     expect($this->filterSubscribersData($getter->get()))->equals([]);
 
     expect($this->filterSubscribersData($getter->get()))->equals([
@@ -236,7 +237,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null
@@ -246,7 +247,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Kookoo',
         'email' => 'john@kookoo.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null,
@@ -259,7 +260,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Newman',
         'email' => 'paul@newman.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null,

@@ -26,6 +26,10 @@ class Hooks {
     return self::callWithFallback('remove_action', func_get_args());
   }
 
+  static function removeAllFilters() {
+    return self::callWithFallback('remove_all_filters', func_get_args());
+  }
+
   private static function callWithFallback($func, $args) {
     $local_func = __NAMESPACE__ . '\\' . $func;
     if(function_exists($local_func)) {
