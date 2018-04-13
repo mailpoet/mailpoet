@@ -50,6 +50,8 @@ class Newsletters extends APIEndpoint {
   }
 
   function save($data = array()) {
+    $data = Hooks::applyFilters('mailpoet_api_newsletters_save_before', $data);
+
     $segments = array();
     if(isset($data['segments'])) {
       $segments = $data['segments'];
@@ -61,8 +63,6 @@ class Newsletters extends APIEndpoint {
       $options = $data['options'];
       unset($data['options']);
     }
-
-    $data = Hooks::applyFilters('mailpoet_api_newsletters_save_before', $data);
 
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
@@ -377,7 +377,7 @@ class Newsletters extends APIEndpoint {
           ->withSegments(true)
           ->withSendingQueue()
           ->withStatistics();
-      } else if($newsletter->type === Newsletter::TYPE_WELCOME) {
+      } else if($newsletter->type === Newsletter::TYPE_WELCOME || $newsletter->type === Newsletter::TYPE_AUTOMATIC) {
         $newsletter
           ->withOptions()
           ->withTotalSent()
@@ -408,7 +408,7 @@ class Newsletters extends APIEndpoint {
         $queue
       );
 
-      $data[] = $newsletter->asArray();
+      $data[] = Hooks::applyFilters('mailpoet_api_newsletters_listing_item', $newsletter->asArray());
     }
 
     return $this->successResponse($data, array(

@@ -170,7 +170,7 @@ class Populator {
     }
   }
 
-  private function newsletterOptionFields() {
+  protected function newsletterOptionFields() {
     $option_fields = array(
       array(
         'name' => 'isScheduled',
@@ -200,7 +200,6 @@ class Populator {
         'name' => 'afterTimeType',
         'newsletter_type' => 'welcome',
       ),
-
       array(
         'name' => 'intervalType',
         'newsletter_type' => 'notification',
@@ -236,7 +235,7 @@ class Populator {
     );
   }
 
-  private function newsletterTemplates() {
+  protected function newsletterTemplates() {
     $templates = array();
     foreach($this->templates as $template) {
       $template = self::TEMPLATES_NAMESPACE . $template;
@@ -252,7 +251,7 @@ class Populator {
     );
   }
 
-  private function populate($model) {
+  protected function populate($model) {
     $modelMethod = Helpers::underscoreToCamelCase($model);
     $table = $this->prefix . $model;
     $data_descriptor = $this->$modelMethod();

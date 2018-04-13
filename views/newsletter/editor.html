@@ -226,27 +226,21 @@
 <% block content %>
 <!-- Hidden heading for notices to appear under -->
 <h1 style="display:none"><%= __('Newsletter Editor') %></h1>
-
 <div id="mailpoet_editor">
-    <div id="mailpoet_editor_heading"></div>
-    <div class="mailpoet_breadcrumbs">
-      <%= __('Select type') %> &gt; <%= __('Template') %> &gt; <strong><%= __('Designer') %></strong> &gt; <%= __('Send') %>
-    </div>
-    <div class="clearfix"></div>
-    <div id="mailpoet_editor_main_wrapper">
-      <div id="mailpoet_editor_styles">
+  <div id="mailpoet_editor_heading"></div>
+  <div id="mailpoet_editor_breadcrumb" class="mailpoet_breadcrumbs"></div>
+  <div class="clearfix"></div>
+  <div id="mailpoet_editor_main_wrapper">
+    <div id="mailpoet_editor_styles"></div>
+    <div id="mailpoet_editor_content_container">
+      <div class="mailpoet_newsletter_wrapper">
+        <div id="mailpoet_editor_content"></div>
       </div>
-      <div id="mailpoet_editor_content_container">
-        <div class="mailpoet_newsletter_wrapper">
-          <div id="mailpoet_editor_content"></div>
-        </div>
-      </div>
-      <div id="mailpoet_editor_sidebar"></div>
-      <div class="clear"></div>
     </div>
-    <div id="mailpoet_editor_bottom">
-    </div>
+    <div id="mailpoet_editor_sidebar"></div>
+    <div class="clear"></div>
   </div>
+  <div id="mailpoet_editor_bottom"></div>
 
   <div class="mailpoet_layer_overlay" style="display:none;"></div>
 
@@ -256,68 +250,68 @@
     class="wp-core-ui search-panel-visible"
     style="display: none"
   >
-    <form id="wp-link" tabindex="-1">
-      <%= wp_nonce_field('internal-linking', '_ajax_linking_nonce', false) %>
-      <div id="link-modal-title">
-        <%= __('Insert/edit link') %>
-        <div id="wp-link-close" tabindex="0"></div>
-      </div>
-      <div id="link-selector">
-        <div id="link-options">
-          <div>
-            <label>
-              <span><%= __('Type') %></span>
-              <select id="url-type-field" name="urltype">
-                <option value="http://"><%= __('Link to a web page') %></option>
-                <option value="[viewInBrowserUrl]"><%= __('Browser version') %></option>
-                <option value="[unsubscribeUrl]"><%= __('Unsubcribe page') %></option>
-                <option value="[manageSubscriptionUrl]"><%= __('Manage your subscription page') %></option>
-              </select>
-            </label>
-          </div>
-          <div id="link-href-field">
-            <label><span><%= __('Link') %></span><input id="url-field" type="text" name="href" /></label>
-          </div>
-          <div class="mailpoet_hidden">
-            <label><span><%= __('Title') %></span><input id="link-title-field" type="text" name="linktitle" /></label>
-          </div>
-          <div class="link-target mailpoet_hidden">
-            <label><span>&nbsp;</span><input type="checkbox" id="link-target-checkbox" /> <%= __('Open link in a new window/tab') %></label>
-          </div>
+  <form id="wp-link" tabindex="-1">
+    <%= wp_nonce_field('internal-linking', '_ajax_linking_nonce', false) %>
+    <div id="link-modal-title">
+      <%= __('Insert/edit link') %>
+      <div id="wp-link-close" tabindex="0"></div>
+    </div>
+    <div id="link-selector">
+      <div id="link-options">
+        <div>
+          <label>
+            <span><%= __('Type') %></span>
+            <select id="url-type-field" name="urltype">
+              <option value="http://"><%= __('Link to a web page') %></option>
+              <option value="[viewInBrowserUrl]"><%= __('Browser version') %></option>
+              <option value="[unsubscribeUrl]"><%= __('Unsubcribe page') %></option>
+              <option value="[manageSubscriptionUrl]"><%= __('Manage your subscription page') %></option>
+            </select>
+          </label>
         </div>
-        <div id="search-panel">
-          <div class="link-search-wrapper">
-            <label>
-              <span class="search-label"><%= __('Search your content') %></span>
-              <input type="search" id="search-field" class="link-search-field" autocomplete="off" />
-              <span class="spinner"></span>
-            </label>
-          </div>
-          <div id="search-results" class="query-results">
-            <ul></ul>
-            <div class="river-waiting">
-              <span class="spinner"></span>
-            </div>
-          </div>
-          <div id="most-recent-results" class="query-results">
-            <div class="query-notice"><em><%= __('No search term specified. Showing recent items.') %></em></div>
-            <ul></ul>
-            <div class="river-waiting">
-              <span class="spinner"></span>
-            </div>
-          </div>
+        <div id="link-href-field">
+          <label><span><%= __('Link') %></span><input id="url-field" type="text" name="href" /></label>
+        </div>
+        <div class="mailpoet_hidden">
+          <label><span><%= __('Title') %></span><input id="link-title-field" type="text" name="linktitle" /></label>
+        </div>
+        <div class="link-target mailpoet_hidden">
+          <label><span>&nbsp;</span><input type="checkbox" id="link-target-checkbox" /> <%= __('Open link in a new window/tab') %></label>
         </div>
       </div>
-      <div class="submitbox">
-        <div id="wp-link-update">
-          <input type="submit" value="<%= __('Add Link') %>" class="button button-primary" id="wp-link-submit" name="wp-link-submit">
+      <div id="search-panel">
+        <div class="link-search-wrapper">
+          <label>
+            <span class="search-label"><%= __('Search your content') %></span>
+            <input type="search" id="search-field" class="link-search-field" autocomplete="off" />
+            <span class="spinner"></span>
+          </label>
         </div>
-        <div id="wp-link-cancel">
-          <a class="submitdelete deletion" href="#"><%= __('Cancel') %></a>
+        <div id="search-results" class="query-results">
+          <ul></ul>
+          <div class="river-waiting">
+            <span class="spinner"></span>
+          </div>
+        </div>
+        <div id="most-recent-results" class="query-results">
+          <div class="query-notice"><em><%= __('No search term specified. Showing recent items.') %></em></div>
+          <ul></ul>
+          <div class="river-waiting">
+            <span class="spinner"></span>
+          </div>
         </div>
       </div>
-    </form>
-  </div>
+    </div>
+    <div class="submitbox">
+      <div id="wp-link-update">
+        <input type="submit" value="<%= __('Add Link') %>" class="button button-primary" id="wp-link-submit" name="wp-link-submit">
+      </div>
+      <div id="wp-link-cancel">
+        <a class="submitdelete deletion" href="#"><%= __('Cancel') %></a>
+      </div>
+    </div>
+  </form>
+</div>
 <% endblock %>
 
 <% block translations %>
@@ -352,6 +346,13 @@
     'selectColor': _x('Select', 'select color'),
     'cancelColorSelection': _x('Cancel', 'cancel color selection'),
     'newsletterIsPaused': __('Email sending has been paused.'),
+
+    'selectType': __('Select type'),
+    'events': __('Events'),
+    'conditions': _x('Conditions', 'Configuration options for automatic email events'),
+    'template': __('Template'),
+    'designer': __('Designer'),
+    'send': __('Send'),
   }) %>
 <% endblock %>
 
@@ -370,9 +371,9 @@
     'newsletter_editor.js'
   ) %>
 
-  <script type="text/javascript">
-    MailPoet.Modal.loading(true);
+  <%= do_action('mailpoet_newsletter_editor_after_javascript') %>
 
+  <script type="text/javascript">
     var templates = {
       styles: Handlebars.compile(
         jQuery('#newsletter_editor_template_styles').html()
@@ -553,9 +554,7 @@
         jQuery('#newsletter_editor_template_text_settings').html()
       )
     };
-  </script>
 
-  <script type="text/javascript">
     var config = {
       availableStyles: {
         textSizes: [
@@ -1214,48 +1213,6 @@
         ) %>',
       },
     };
-
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'get',
-      data: {
-        id: "<%= params('id') | intval %>",
-      }
-    }).always(function() {
-      MailPoet.Modal.loading(false);
-    }).done(function(response) {
-      EditorApplication.start({
-        newsletter: response.data,
-        config: config,
-      });
-      var queue = response.data.queue;
-      if (response.data.status == 'sending' && queue && queue.status === null) {
-        MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'sending_queue',
-          action: 'pause',
-          data: {
-            newsletter_id: response.data.id
-          }
-        }).done(function(respose) {
-          MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused'))
-        }).fail(function(response) {
-          if (response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
-              { scroll: true, static: true }
-            );
-          }
-        });
-      }
-    }).fail(function(response) {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map(function(error) { return error.message; }),
-          { scroll: true, static: true }
-        );
-      }
-    });
+    wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
   </script>
 <% endblock %>

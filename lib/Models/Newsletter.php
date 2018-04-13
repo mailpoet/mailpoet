@@ -11,6 +11,7 @@ if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
+  const TYPE_AUTOMATIC = 'automatic';
   const TYPE_STANDARD = 'standard';
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
@@ -574,7 +575,6 @@ class Newsletter extends Model {
       ->whereGte('tasks.processed_at', Carbon::now()->subMonths(3))
       ->count();
 
-
     return array(
       'welcome_newsletters_count' => $welcome_newsletters_count,
       'notifications_count' => $notifications_count,
@@ -591,6 +591,7 @@ class Newsletter extends Model {
 
   static function filters($data = array()) {
     $type = isset($data['params']['type']) ? $data['params']['type'] : null;
+    $group = (isset($data['params']['group'])) ? $data['params']['group'] : null;
 
     // newsletter types without filters
     if(in_array($type, array(
@@ -608,7 +609,7 @@ class Newsletter extends Model {
 
     foreach($segments as $segment) {
       $newsletters = $segment->newsletters()
-        ->filter('filterType', $type)
+        ->filter('filterType', $type, $group)
         ->filter('groupBy', $data);
 
       $newsletters_count = $newsletters->count();
@@ -644,7 +645,8 @@ class Newsletter extends Model {
     // filter by type
     $type = isset($data['params']['type']) ? $data['params']['type'] : null;
     if($type !== null) {
-      $orm->filter('filterType', $type);
+      $group = (isset($data['params']['group'])) ? $data['params']['group'] : null;
+      $orm->filter('filterType', $type, $group);
     }
 
     // filter by parent id
@@ -690,6 +692,7 @@ class Newsletter extends Model {
 
   static function groups($data = array()) {
     $type = isset($data['params']['type']) ? $data['params']['type'] : null;
+    $group = (isset($data['params']['group'])) ? $data['params']['group'] : null;
 
     // newsletter types without groups
     if(in_array($type, array(
@@ -703,7 +706,7 @@ class Newsletter extends Model {
         'name' => 'all',
         'label' => __('All', 'mailpoet'),
         'count' => Newsletter::getPublished()
-          ->filter('filterType', $type)
+          ->filter('filterType', $type, $group)
           ->count()
       )
     );
@@ -715,7 +718,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_DRAFT,
             'label' => __('Draft', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_DRAFT)
               ->count()
           ),
@@ -723,7 +726,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_SCHEDULED,
             'label' => __('Scheduled', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_SCHEDULED)
               ->count()
           ),
@@ -731,7 +734,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_SENDING,
             'label' => __('Sending', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_SENDING)
               ->count()
           ),
@@ -739,7 +742,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_SENT,
             'label' => __('Sent', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_SENT)
               ->count()
           )
@@ -748,12 +751,13 @@ class Newsletter extends Model {
 
       case self::TYPE_WELCOME:
       case self::TYPE_NOTIFICATION:
+      case self::TYPE_AUTOMATIC:
         $groups = array_merge($groups, array(
           array(
             'name' => self::STATUS_ACTIVE,
             'label' => __('Active', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_ACTIVE)
               ->count()
           ),
@@ -761,7 +765,7 @@ class Newsletter extends Model {
             'name' => self::STATUS_DRAFT,
             'label' => __('Not active', 'mailpoet'),
             'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
+              ->filter('filterType', $type, $group)
               ->filter('filterStatus', self::STATUS_DRAFT)
               ->count()
           )
@@ -773,7 +777,7 @@ class Newsletter extends Model {
       'name' => 'trash',
       'label' => __('Trash', 'mailpoet'),
       'count' => Newsletter::getTrashed()
-        ->filter('filterType', $type)
+        ->filter('filterType', $type, $group)
         ->count()
     );
 
@@ -817,14 +821,34 @@ class Newsletter extends Model {
     return $orm;
   }
 
-  static function filterType($orm, $type = false) {
+  static function filterType($orm, $type = false, $group = false) {
     if(in_array($type, array(
       self::TYPE_STANDARD,
       self::TYPE_WELCOME,
+      self::TYPE_AUTOMATIC,
       self::TYPE_NOTIFICATION,
       self::TYPE_NOTIFICATION_HISTORY
     ))) {
-      $orm->where('type', $type);
+      if($type === self::TYPE_AUTOMATIC && $group) {
+        $orm = $orm->join(
+          NewsletterOptionField::$_table,
+          array(
+            'option_fields.newsletter_type', '=', self::$_table . '.type',
+            'option_fields.name', '=', 'group'
+          ),
+          'option_fields'
+        )
+        ->join(
+          NewsletterOption::$_table,
+          array(
+            'options.newsletter_id', '=', self::$_table . '.id'
+          ),
+          'options'
+        )
+        ->whereRaw('`options`.`option_field_id` = `option_fields`.`id`')
+        ->where('options.value', $group);
+      }
+      $orm = $orm->where(self::$_table . '.type', $type);
     }
     return $orm;
   }
@@ -832,14 +856,14 @@ class Newsletter extends Model {
   static function listingQuery($data = array()) {
     $query = self::select(
       array(
-        'id',
-        'subject',
-        'hash',
-        'type',
-        'status',
-        'sent_at',
-        'updated_at',
-        'deleted_at'
+        self::$_table . '.id',
+        self::$_table . '.subject',
+        self::$_table . '.hash',
+        self::$_table . '.type',
+        self::$_table . '.status',
+        self::$_table . '.sent_at',
+        self::$_table . '.updated_at',
+        self::$_table . '.deleted_at'
       )
     );
     if($data['sort_by'] === 'sent_at') {

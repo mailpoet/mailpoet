@@ -2,12 +2,13 @@ import React from 'react';
 import { Link } from 'react-router';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
+import Hooks from 'wp-js-hooks';
 
 const ListingTabs = React.createClass({
   getInitialState() {
     return {
       tab: null,
-      tabs: [
+      tabs: Hooks.applyFilters('mailpoet_newsletters_listings_tabs', [
         {
           name: 'standard',
           label: MailPoet.I18n.t('tabStandardTitle'),
@@ -23,7 +24,7 @@ const ListingTabs = React.createClass({
           label: MailPoet.I18n.t('tabNotificationTitle'),
           link: '/notification',
         },
-      ],
+      ]),
     };
   },
   render() {

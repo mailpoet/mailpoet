@@ -5,6 +5,8 @@ import Loading from 'common/loading.jsx';
 import Tabs from 'newsletters/templates/tabs.jsx';
 import TemplateBox from 'newsletters/templates/template_box.jsx';
 import ImportTemplate from 'newsletters/templates/import_template.jsx';
+import Hooks from 'wp-js-hooks';
+import _ from 'underscore';
 
 const getEditorUrl = id => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
 
@@ -45,6 +47,7 @@ class NewsletterTemplates extends React.Component {
     this.state = {
       loading: true,
       templates: {}, // {category1: [template11, template12, ..], category2: [template21, ...]}
+      emailType: null,
       selectedTab: '',
     };
     this.templates = {};
@@ -124,6 +127,7 @@ class NewsletterTemplates extends React.Component {
   }
 
   selectInitialTab() {
+    let emailType;
     let selectedTab = 'standard';
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -133,7 +137,10 @@ class NewsletterTemplates extends React.Component {
         id: this.props.params.id,
       },
     }).done((response) => {
-      selectedTab = response.data.type;
+      emailType = response.data.type;
+      if (_.findWhere(templatesCategories, { name: response.data.type })) {
+        selectedTab = response.data.type;
+      }
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -144,6 +151,7 @@ class NewsletterTemplates extends React.Component {
     }).always(() => {
       this.setState({
         templates: this.templates,
+        emailType,
         selectedTab,
         loading: false,
       });
@@ -182,6 +190,8 @@ class NewsletterTemplates extends React.Component {
   }
 
   render() {
+    if (this.state.loading) return <Loading />;
+
     const tabs = templatesCategories.concat({
       name: 'import',
       label: MailPoet.I18n.t('tabImportTitle'),
@@ -221,13 +231,18 @@ class NewsletterTemplates extends React.Component {
       content = <ul className="mailpoet_boxes clearfix">{templates}</ul>;
     }
 
+    const breadcrumb = Hooks.applyFilters(
+      'mailpoet_newsletters_template_breadcrumb',
+      <Breadcrumb step="template" />,
+      this.state.emailType,
+      'template'
+    );
+
     return (
       <div>
-        {this.state.loading && <Loading />}
-
         <h1>{MailPoet.I18n.t('selectTemplateTitle')}</h1>
 
-        <Breadcrumb step="template" />
+        {breadcrumb}
 
         <Tabs
           tabs={tabs}
