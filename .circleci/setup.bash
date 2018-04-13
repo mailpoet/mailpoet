@@ -5,22 +5,6 @@ function setup {
 	local wp_cli_wordpress_path="--path=wordpress"
 	local wp_cli_allow_root="--allow-root"
 
-	# install PHP dependencies for WordPress
-	if [[ $version == "php7" ]] || [[ $version == "php7_multisite" ]]; then
-		echo "deb http://packages.dotdeb.org jessie all" | sudo tee -a /etc/apt/sources.list.d/dotdeb.list
-		echo "deb-src http://packages.dotdeb.org jessie all" | sudo tee -a /etc/apt/sources.list.d/dotdeb.list
-		wget -qO - http://www.dotdeb.org/dotdeb.gpg | sudo apt-key add -
-		# ref: https://github.com/docker-library/php/pull/542
-		sudo rm /etc/apt/preferences.d/no-debian-php
-		sudo apt-get update
-		sudo apt-get install mysql-client php7.0-mysql zlib1g-dev
-		sudo docker-php-ext-install mysqli pdo pdo_mysql zip
-	else
-		sudo apt-get update
-		sudo apt-get install mysql-client php5-mysql zlib1g-dev
-		sudo docker-php-ext-install mysql mysqli pdo pdo_mysql zip
-	fi
-
 	# Add a fake sendmail mailer
 	sudo cp ./.circleci/fake-sendmail.php /usr/local/bin/
 
@@ -32,10 +16,6 @@ function setup {
 	sudo a2enmod rewrite
 	sudo service apache2 restart
 
-	# Install NodeJS+NPM
-	curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-	sudo apt-get install nodejs build-essential
-
 	# install plugin dependencies
 	curl -sS https://getcomposer.org/installer | php
 	./composer.phar install
@@ -43,9 +23,6 @@ function setup {
 
 	# Set up WordPress
 	mysql -h 127.0.0.1 -u root -e "create database wordpress"
-	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-	chmod +x wp-cli.phar
-	sudo mv wp-cli.phar /usr/local/bin/wp
 	wp core download $wp_cli_wordpress_path $wp_cli_allow_root
 
 	# Generate `wp-config.php` file with debugging enabled
