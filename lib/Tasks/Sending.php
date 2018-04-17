@@ -230,7 +230,7 @@ class Sending {
     foreach($tasks as $task) {
       $result[] = static::createFromTask($task);
     }
-    return $result;
+    return array_filter($result);
   }
 
   static function getRunningQueues() {
@@ -244,6 +244,6 @@ class Sending {
     foreach($tasks as $task) {
       $result[] = static::createFromTask($task);
     }
-    return $result;
+    return array_filter($result);
   }
 }

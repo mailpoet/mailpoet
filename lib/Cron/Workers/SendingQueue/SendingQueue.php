@@ -32,6 +32,8 @@ class SendingQueue {
   function process() {
     $this->enforceSendingAndExecutionLimits();
     foreach(self::getRunningQueues() as $queue) {
+      if(!$queue instanceof SendingTask) continue;
+
       $newsletter = $this->newsletter_task->getNewsletterFromQueue($queue);
       if(!$newsletter) {
         continue;
