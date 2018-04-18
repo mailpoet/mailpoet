@@ -1,6 +1,7 @@
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import React from 'react';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 
 function AutomaticEmailsBreadcrumb(props) {
   const steps = [
@@ -35,5 +36,9 @@ function AutomaticEmailsBreadcrumb(props) {
     <Breadcrumb step={props.step} steps={steps} />
   );
 }
+
+AutomaticEmailsBreadcrumb.propTypes = {
+  step: PropTypes.string.isRequired,
+};
 
 module.exports = AutomaticEmailsBreadcrumb;

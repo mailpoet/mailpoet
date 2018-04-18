@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import { confirmAlert } from 'react-confirm-alert';
+import PropTypes from 'prop-types';
 
 /**
  * props = {
@@ -144,5 +145,20 @@ class TemplateBox extends React.Component {
     );
   }
 }
+
+TemplateBox.propTypes = {
+  index: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
+  newsletterId: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  thumbnail: PropTypes.string.isRequired,
+  readonly: PropTypes.string.isRequired,
+  beforeDelete: PropTypes.func.isRequired,
+  afterDelete: PropTypes.func.isRequired,
+  beforeSelect: PropTypes.func.isRequired,
+  afterSelect: PropTypes.func.isRequired,
+  body: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 export default TemplateBox;
