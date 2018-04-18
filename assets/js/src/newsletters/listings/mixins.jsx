@@ -6,6 +6,7 @@ import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import moment from 'moment';
 import jQuery from 'jquery';
+import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 import StatsBadge from 'newsletters/badges/stats.jsx';
 
@@ -90,6 +91,7 @@ const QueueMixin = {
         </span>
         );
     } else {
+      const resumeSendingClick = _.partial(this.resumeSending, newsletter);
       label = (
         <span>
           { newsletter.queue.count_processed } / { newsletter.queue.count_total }
@@ -100,7 +102,7 @@ const QueueMixin = {
             style={{ display: (newsletter.queue.status === 'paused')
                 ? 'inline-block' : 'none' }}
             href="javascript:;"
-            onClick={this.resumeSending.bind(null, newsletter)}
+            onClick={resumeSendingClick}
           >{MailPoet.I18n.t('resume')}</a>
           <a
             id={`pause_${newsletter.id}`}
@@ -108,7 +110,7 @@ const QueueMixin = {
             style={{ display: (newsletter.queue.status === null)
                   ? 'inline-block' : 'none' }}
             href="javascript:;"
-            onClick={this.pauseSending.bind(null, newsletter)}
+            onClick={resumeSendingClick}
           >{MailPoet.I18n.t('pause')}</a>
         </span>
         );
@@ -410,7 +412,8 @@ const MailerMixin = {
         <p>{ mailerErrorNotice }</p>
         <p>{ mailerCheckSettingsNotice }</p>
         <p>
-          <a href="javascript:;"
+          <a
+            href="javascript:;"
             className="button"
             onClick={this.resumeMailerSending}
           >{ MailPoet.I18n.t('mailerResumeSendingButton') }</a>
