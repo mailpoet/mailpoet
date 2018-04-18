@@ -7,6 +7,7 @@ import TemplateBox from 'newsletters/templates/template_box.jsx';
 import ImportTemplate from 'newsletters/templates/import_template.jsx';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
+import PropTypes from 'prop-types';
 
 const getEditorUrl = id => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
 
@@ -217,7 +218,7 @@ class NewsletterTemplates extends React.Component {
       } else {
         templates = templates.map((template, index) => (
           <TemplateBox
-            key={index}
+            key={template.id}
             index={index}
             newsletterId={this.props.params.id}
             beforeDelete={() => this.setState({ loading: true })}
@@ -256,5 +257,11 @@ class NewsletterTemplates extends React.Component {
     );
   }
 }
+
+NewsletterTemplates.propTypes = {
+  params: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default NewsletterTemplates;
