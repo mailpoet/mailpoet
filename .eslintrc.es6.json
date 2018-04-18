@@ -17,22 +17,6 @@
     // Exceptions
     "comma-dangle": ["error", "always-multiline"],
     "no-script-url": 0,
-    "import/extensions": 0, // we wouldn't be able to import jQuery without this line
-    // Temporary
-    "import/no-amd": 0,
-    "react/no-multi-comp": 0,
-    "react/sort-comp": 0,
-    "react/jsx-max-props-per-line": 0,
-    "react/prop-types": 0,
-    "react/jsx-first-prop-new-line": 0,
-    "react/no-is-mounted": 0,
-    "react/jsx-no-target-blank": 0,
-    "react/no-render-return-value": 0,
-    "react/jsx-boolean-value": 0,
-    "react/jsx-no-bind": 0,
-    "react/no-array-index-key": 0,
-    "space-unary-ops": 0,
-    "space-infix-ops": 0,
-    "no-irregular-whitespace": 0
+    "import/extensions": 0 // we wouldn't be able to import jQuery without this line
   }
 }
