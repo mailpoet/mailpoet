@@ -88,7 +88,7 @@ if (container) {
 
   routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [...routes, ...getAutomaticEmailsRoutes()]);
 
-  const mailpoetListing = ReactDOM.render((
+  const mailpoetListing = ReactDOM.render(( // eslint-disable-line react/no-render-return-value
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRedirect to="standard" />
