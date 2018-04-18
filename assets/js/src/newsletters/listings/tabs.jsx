@@ -28,7 +28,7 @@ const ListingTabs = React.createClass({
     };
   },
   render() {
-    const tabs = this.state.tabs.map(tab => {
+    const tabs = this.state.tabs.map((tab) => {
       const tabClasses = classNames(
         'nav-tab',
         { 'nav-tab-active': (this.props.tab === tab.name) }
