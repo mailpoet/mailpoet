@@ -20,8 +20,8 @@ Tabs.propTypes = {
   selected: PropTypes.string.isRequired,
   select: PropTypes.func.isRequired,
   tabs: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.func.isRequired,
-    name: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
   }).isRequired).isRequired,
 };
 
