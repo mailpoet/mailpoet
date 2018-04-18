@@ -216,7 +216,9 @@ const NewsletterListStandard = React.createClass({
       <div>
         <h1 className="title">
           {MailPoet.I18n.t('pageTitle')}
-          <Link className="page-title-action" to="/new"
+          <Link
+            className="page-title-action"
+            to="/new"
             onClick={() => MailPoet.trackEvent('Emails > Add New',
               { 'MailPoet Free version': window.mailpoet_version }
             )}
@@ -240,7 +242,7 @@ const NewsletterListStandard = React.createClass({
           bulk_actions={bulkActions}
           item_actions={newsletterActions}
           messages={messages}
-          auto_refresh={true}
+          auto_refresh
           sort_by="sent_at"
           sort_order="desc"
           afterGetItems={this.checkMailerStatus}
