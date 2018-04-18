@@ -57,10 +57,13 @@ define(
 
         // Coerce values.
         if (coerce) {
-          val = val && !isNaN(val) ? +val              // number
-            : val === 'undefined' ? undefined         // undefined
-            : coerceTypes[val] !== undefined ? coerceTypes[val] // true, false, null
-            : val;                                                // string
+          if (val && !isNaN(val)) { // number
+            val = +val;
+          } else if (val === 'undefined') { // undefined
+            val = undefined;
+          } else if (coerceTypes[val] !== undefined) { // true, false, null
+            val = coerceTypes[val];
+          }
         }
 
         if (keysLast) {
