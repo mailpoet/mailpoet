@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import ReactTooltip from 'react-tooltip';
+import PropTypes from 'prop-types';
 
 function Badge(props) {
   const badgeClasses = classNames(
@@ -24,12 +25,26 @@ function Badge(props) {
       { tooltip && (
         <ReactTooltip
           place="right"
-          multiline={true}
+          multiline
           id={tooltipId}
         />
       ) }
     </span>
   );
 }
+
+Badge.propTypes = {
+  name: PropTypes.string.isRequired,
+  tooltip: PropTypes.string,
+  tooltipId: PropTypes.string,
+  type: PropTypes.string,
+};
+
+Badge.defaultProps = {
+  type: undefined,
+  tooltipId: undefined,
+  tooltip: undefined,
+};
+
 
 export default Badge;
