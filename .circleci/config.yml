@@ -209,10 +209,10 @@ jobs:
           destination: fake-mailer
 workflows:
   version: 2
-  build_and_test:
-    jobs:
-      - qa_js_security_php5
-      - php7
-      - php7_multisite
-      - acceptance_tests
-      - acceptance_tests_multisite
+#  build_and_test:
+#    jobs:
+#      - qa_js_security_php5
+#      - php7
+#      - php7_multisite
+#      - acceptance_tests
+#      - acceptance_tests_multisite
