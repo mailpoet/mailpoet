@@ -47,9 +47,9 @@ const FormFieldSelect = React.createClass({
         return filter(this.props.item, value);
       })
       .map(
-        (value, index) => (
+        value => (
           <option
-            key={`option-${index}`}
+            key={`option-${value}`}
             value={value}
           >
             { this.props.field.values[value] }
