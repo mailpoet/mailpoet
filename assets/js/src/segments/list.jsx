@@ -138,6 +138,7 @@ const itemActions = [
         <a
           href="http://docs.mailpoet.com/article/133-the-wordpress-users-list"
           target="_blank"
+          rel="noopener noreferrer"
         >{MailPoet.I18n.t('readMore')}</a>
       );
     },
