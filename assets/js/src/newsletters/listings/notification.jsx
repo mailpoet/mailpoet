@@ -328,7 +328,7 @@ const NewsletterListNotification = React.createClass({
           bulk_actions={bulkActions}
           item_actions={newsletterActions}
           messages={messages}
-          auto_refresh={true}
+          auto_refresh
           sort_by="updated_at"
           sort_order="desc"
           afterGetItems={this.checkMailerStatus}
