@@ -111,12 +111,12 @@ define([
       callable(event);
     },
     updateMaxWidth: function () {
-      var maxWidth = parseInt(this.model.get('maxWidth'));
+      var maxWidth = parseInt(this.model.get('maxWidth'), 10);
       this.$('.mailpoet_field_image_width').attr('max', maxWidth);
       this.$('.mailpoet_field_image_width_input').attr('max', maxWidth);
     },
     updateWidth: function () {
-      var width = parseInt(this.model.get('width'));
+      var width = parseInt(this.model.get('width'), 10);
       this.$('.mailpoet_field_image_width').val(width);
       this.$('.mailpoet_field_image_width_input').val(width);
     },

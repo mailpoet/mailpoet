@@ -184,12 +184,10 @@ define(
               complete: function (CSV) {
                 var email;
                 var emailAddress;
-                var column;
-                var rowCount;
                 var rowData;
                 var rowColumnCount;
                 var errorNotice;
-                for (rowCount in CSV.data) {
+                Object.keys(CSV.data).forEach(function csvDataEach(rowCount) {
                   rowData = CSV.data[rowCount].map(function (el) {
                     return el.trim();
                   });
@@ -207,7 +205,7 @@ define(
                     // determine position of email address inside an array; this is
                     // done once and then email regex is run just on that element for each row
                     if (emailColumnPosition === null) {
-                      for (column in rowData) {
+                      Object.keys(rowData).forEach(function rowDataEach(column) {
                         emailAddress = detectAndCleanupEmail(rowData[column]);
                         if (emailColumnPosition === null
                           && window.mailpoet_email_regex.test(emailAddress)) {
@@ -217,32 +215,29 @@ define(
                           rowData[column] = emailAddress;
                           processedSubscribers[emailAddress] = rowData;
                         }
-                      }
+                      });
                       if (emailColumnPosition === null
                         && advancedOptionHeader
-                        && parseInt(rowCount) === 0) {
+                        && parseInt(rowCount, 10) === 0) {
                         isHeaderFound = true;
                         processedSubscribers[0] = rowData;
                       }
-                    }
-                    else if (rowData[emailColumnPosition] !== '') {
+                    } else if (rowData[emailColumnPosition] !== '') {
                       email = detectAndCleanupEmail(rowData[emailColumnPosition]);
                       if (_.has(parsedEmails, email)) {
                         duplicateEmails.push(email);
-                      }
-                      else if (!window.mailpoet_email_regex.test(email)) {
+                      } else if (!window.mailpoet_email_regex.test(email)) {
                         invalidEmails.push(rowData[emailColumnPosition]);
-                      }
-                      // if we haven't yet processed this e-mail and it passed
-                      // the regex test, then process the row
-                      else {
+                      } else {
+                        // if we haven't yet processed this e-mail and it passed
+                        // the regex test, then process the row
                         parsedEmails[email] = true;
                         rowData[emailColumnPosition] = email;
                         processedSubscribers[email] = rowData;
                       }
                     }
                   }
-                }
+                });
                 // reindex array to avoid non-numeric indices
                 processedSubscribers = _.values(processedSubscribers);
                 // if the header options is set, there should be at least
@@ -271,8 +266,7 @@ define(
                     'MailPoet Free version': window.mailpoet_version
                   });
                   router.navigate('step2', { trigger: true });
-                }
-                else {
+                } else {
                   MailPoet.Modal.loading(false);
                   errorNotice = MailPoet.I18n.t('noValidRecords');
                   errorNotice = errorNotice.replace('[link]', MailPoet.I18n.t('csvKBLink'));
@@ -288,8 +282,7 @@ define(
             if (listSelectElement.data('select2')) {
               listSelectElement.select2('data', data);
               listSelectElement.trigger('change');
-            }
-            else {
+            } else {
               listSelectElement
                 .select2({
                   data: data,
@@ -304,8 +297,7 @@ define(
                 .change(function () {
                   if (jQuery(this).val() !== null) {
                     toggleNextStepButton(mailChimpProcessButtonElement, 'on');
-                  }
-                  else {
+                  } else {
                     toggleNextStepButton(mailChimpProcessButtonElement, 'off');
                   }
                 })
@@ -474,7 +466,6 @@ define(
           var fillerPosition;
           var importResults;
           var duplicates;
-          var email;
           if (typeof (window.importData.step1) === 'undefined') {
             router.navigate('step1', { trigger: true });
             return;
@@ -521,14 +512,13 @@ define(
               duplicates[subscriberEmail] = (duplicates[subscriberEmail] || 0) + 1;
             });
             subscribers.duplicate = [];
-            for (email in duplicates) {
+            Object.keys(duplicates).forEach(function emailDuplicates(email) {
               if (duplicates[email] > 1) {
                 subscribers.duplicate.push(email + ' (x' + duplicates[email] + ')');
-              }
-              else {
+              } else {
                 subscribers.duplicate.push(email);
               }
-            }
+            });
 
             importResults = {
               notice: MailPoet.I18n.t('importNoticeSkipped').replace(
@@ -564,8 +554,7 @@ define(
           // show available segments
           if (window.mailpoetSegments.length) {
             jQuery('.mailpoet_segments').show();
-          }
-          else {
+          } else {
             jQuery('.mailpoet_no_segments').show();
           }
 
@@ -681,46 +670,46 @@ define(
               function (helperSubscribers, options) {
                 var displayedColumns = [];
                 var displayedColumnsIds = [];
-                var i;
                 var columnData;
                 var columnId;
                 var headerName;
                 var headerNameMatch;
                 // go through all elements of the first row in subscribers data
-                for (i in helperSubscribers.subscribers[0]) {
-                  columnData = helperSubscribers.subscribers[0][i];
-                  columnId = 'ignore'; // set default column type
-                  // if the column is not undefined and has a valid e-mail, set type as email
-                  if (columnData % 1 !== 0 && window.mailpoet_email_regex.test(columnData)) {
-                    columnId = 'email';
-                  } else if (helperSubscribers.header) {
-                    headerName = helperSubscribers.header[i];
-                    headerNameMatch = window.mailpoetColumns.map(function (el) {
-                      return el.name;
-                    }).indexOf(headerName);
-                    // set column type using header
-                    if (headerNameMatch !== -1) {
-                      columnId = window.mailpoetColumns[headerNameMatch].id;
-                    }// set column type using header name
-                    else if (headerName) {
-                      if (/first|first name|given name/i.test(headerName)) {
-                        columnId = 'first_name';
-                      } else if (/last|last name/i.test(headerName)) {
-                        columnId = 'last_name';
+                Object
+                  .keys(helperSubscribers.subscribers[0])
+                  .forEach(function helperSubscribersLoop(i) {
+                    columnData = helperSubscribers.subscribers[0][i];
+                    columnId = 'ignore'; // set default column type
+                    // if the column is not undefined and has a valid e-mail, set type as email
+                    if (columnData % 1 !== 0 && window.mailpoet_email_regex.test(columnData)) {
+                      columnId = 'email';
+                    } else if (helperSubscribers.header) {
+                      headerName = helperSubscribers.header[i];
+                      headerNameMatch = window.mailpoetColumns.map(function (el) {
+                        return el.name;
+                      }).indexOf(headerName);
+                      // set column type using header
+                      if (headerNameMatch !== -1) {
+                        columnId = window.mailpoetColumns[headerNameMatch].id;
+                      } else if (headerName) { // set column type using header name
+                        if (/first|first name|given name/i.test(headerName)) {
+                          columnId = 'first_name';
+                        } else if (/last|last name/i.test(headerName)) {
+                          columnId = 'last_name';
+                        }
                       }
                     }
-                  }
-                  // make sure the column id has not been previously selected
-                  // (e.g., subscriber_first_name shouldn't be autodetected twice),
-                  // except for "ignore"
-                  columnId =
-                      (columnId !== 'ignore'
-                      && displayedColumnsIds.indexOf(columnId) === -1)
-                          ? columnId
-                          : 'ignore';
-                  displayedColumns[i] = { column_id: columnId };
-                  displayedColumnsIds.push(columnId);
-                }
+                    // make sure the column id has not been previously selected
+                    // (e.g., subscriber_first_name shouldn't be autodetected twice),
+                    // except for "ignore"
+                    columnId =
+                        (columnId !== 'ignore'
+                        && displayedColumnsIds.indexOf(columnId) === -1)
+                            ? columnId
+                            : 'ignore';
+                    displayedColumns[i] = { column_id: columnId };
+                    displayedColumnsIds.push(columnId);
+                  });
                 return options.fn(displayedColumns);
               });
 
@@ -733,15 +722,14 @@ define(
 
           // start array index from 1
           Handlebars.registerHelper('calculate_index', function (rawIndex) {
-            var index = parseInt(rawIndex);
+            var index = parseInt(rawIndex, 10);
             // display filler data (e.g., ellipsis) if we've reached the maximum number of rows and
             // subscribers count is greater than the maximum number of rows we're displaying
             if (index === maxRowsToShow && subscribers.subscribersCount > (maxRowsToShow + 1)) {
               fillerPosition = index;
               return filler;
-            }
+            } else if (index === (subscribers.subscribers.length - 1)) {
             // if we're on the last line, show the total count of subscribers data
-            else if (index === (subscribers.subscribers.length - 1)) {
               return subscribers.subscribersCount.toLocaleString();
             }
             return index + 1;
@@ -781,7 +769,6 @@ define(
               var firstRowData;
               var validationRule;
               var testedFormat;
-              var format;
               var allowedDateFormats;
               // check if the column id matches the selected id of one of the
               // subscriber's data columns
@@ -804,8 +791,7 @@ define(
                       id: 'invalidEmail'
                     });
                   }
-                }
-                else {
+                } else {
                   MailPoet.Notice.hide('invalidEmail');
                 }
               }
@@ -832,9 +818,8 @@ define(
                     + MailPoet.I18n.t('emptyFirstRowDate')
                     + '</span> ';
                   preventNextStep = true;
-                }
-                else {
-                  for (format in allowedDateFormats) {
+                } else {
+                  Object.keys(allowedDateFormats).forEach(function allowedDateFormatsLoop(format) {
                     testedFormat = allowedDateFormats[format];
                     if (Moment(firstRowData, testedFormat, true).isValid()) {
                       validationRule = (typeof (testedFormat) === 'function') ?
@@ -842,12 +827,12 @@ define(
                         testedFormat;
                       // set validation on the column element
                       jQuery(matchedColumn.element).data('validation-rule', validationRule);
-                      break;
+                      return;
                     }
                     if (validationRule === 'datetime') {
                       validationRule = Moment.ISO_8601;
                     }
-                  }
+                  });
                 }
                 jQuery.map(subscribersClone.subscribers, function (dataSubscribers, index) {
                   var data = dataSubscribers;
@@ -863,8 +848,7 @@ define(
                       + MailPoet.Date.format(date)
                       + '</span> '
                     );
-                  }
-                  else {
+                  } else {
                     data[matchedColumn.index] = new Handlebars.SafeString(
                       Handlebars.Utils.escapeExpression(data[matchedColumn.index])
                       + '<span class="mailpoet_data_match mailpoet_import_error" title="'
@@ -891,8 +875,7 @@ define(
 
             if (preventNextStep) {
               toggleNextStepButton('off');
-            }
-            else if (!jQuery('.mailpoet_notice.error:visible').length
+            } else if (!jQuery('.mailpoet_notice.error:visible').length
               && segmentSelectElement.val()) {
               toggleNextStepButton('on');
             }
@@ -982,9 +965,8 @@ define(
                     });
                     return false;
                   });
-                }
+                } else {
                 // CHANGE COLUMN
-                else {
                   // check for duplicate values in all select options
                   jQuery('select.mailpoet_subscribers_column_data_match')
                       .each(function () {
@@ -994,10 +976,9 @@ define(
                         // prompt user
                         if (elementId === selectedOptionId
                             && elementId !== 'ignore') {
-                          if (confirm(MailPoet.I18n.t('selectedValueAlreadyMatched') + ' ' + MailPoet.I18n.t('confirmCorrespondingColumn'))) {
+                          if (confirm(MailPoet.I18n.t('selectedValueAlreadyMatched') + ' ' + MailPoet.I18n.t('confirmCorrespondingColumn'))) { // eslint-disable-line no-alert
                             jQuery(element).data('column-id', 'ignore');
-                          }
-                          else {
+                          } else {
                             selectEvent.preventDefault();
                             jQuery(selectElement).select2('close');
                           }
@@ -1101,8 +1082,7 @@ define(
               ) {
                 MailPoet.Notice.error(_.flatten(clickImportResults.errors)
                 );
-              }
-              else {
+              } else {
                 window.mailpoetSegments = clickImportResults.segments;
                 clickImportResults.segments = _.map(segmentSelectElement.select2('data'),
                   function (data) {
