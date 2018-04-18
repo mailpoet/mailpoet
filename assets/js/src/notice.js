@@ -180,15 +180,14 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disab
       }
     },
     hide: function hide(all) {
-      var id;
       if (all !== undefined && all === true) {
         // all notices
         jQuery('.mailpoet_notice:not([id])').trigger('close');
       } else if (all !== undefined && jQuery.isArray(all)) {
         // array of ids
-        for (id in all) {
+        Object.keys(all).forEach(function close(id) {
           jQuery('[data-id="' + all[id] + '"]').trigger('close');
-        }
+        });
       } if (all !== undefined) {
         // single id
         jQuery('[data-id="' + all + '"]').trigger('close');
