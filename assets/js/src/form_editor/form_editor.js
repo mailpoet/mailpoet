@@ -570,7 +570,7 @@ WysijaForm = {
       }
       // set position for button
       window.$(element).setStyle({
-        left: parseInt((parentDim.width / 2) - (element.getWidth() / 2)) + 'px',
+        left: parseInt((parentDim.width / 2) - (element.getWidth() / 2), 10) + 'px',
         top: relativeTop + 'px'
       });
     });
@@ -578,17 +578,17 @@ WysijaForm = {
   initToolbarPosition: function () {
     if (WysijaForm.toolbar.top === null) {
       WysijaForm.toolbar.top =
-        parseInt(window.$(WysijaForm.options.container).positionedOffset().top);
+        parseInt(window.$(WysijaForm.options.container).positionedOffset().top, 10);
     }
     if (WysijaForm.toolbar.y === null) {
-      WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top);
+      WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top, 10);
     }
 
     if (window.isRtl) {
       if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = 0;
     } else if (WysijaForm.toolbar.left === null) {
       WysijaForm.toolbar.left =
-          parseInt(window.$(WysijaForm.options.container).positionedOffset().left);
+          parseInt(window.$(WysijaForm.options.container).positionedOffset().left, 10);
     }
     if (WysijaForm.toolbar.x === null) {
       WysijaForm.toolbar.x =
@@ -624,7 +624,7 @@ WysijaForm = {
     if (WysijaForm.toolbar.effect !== null) WysijaForm.toolbar.effect.cancel();
 
     if (WysijaForm.scroll.top >= (WysijaForm.toolbar.top - 20)) {
-      WysijaForm.toolbar.y = parseInt(20 + WysijaForm.scroll.top);
+      WysijaForm.toolbar.y = parseInt(20 + WysijaForm.scroll.top, 10);
       // start effect
       WysijaForm.toolbar.effect = new window.Effect.Move(WysijaForm.options.toolbar, {
         x: WysijaForm.toolbar.x,
