@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import MailPoet from 'mailpoet';
 import Form from 'form/form.jsx';
+import PropTypes from 'prop-types';
 
 const fields = [
   {
@@ -29,7 +30,7 @@ const messages = {
   },
 };
 
-const SegmentForm = params => (
+const SegmentForm = ({ params }) => (
   <div>
     <h1 className="title">
       {MailPoet.I18n.t('segment')}
@@ -44,5 +45,11 @@ const SegmentForm = params => (
     />
   </div>
 );
+
+SegmentForm.propTypes = {
+  params: PropTypes.shape({
+    id: PropTypes.string,
+  }).isRequired,
+};
 
 export default SegmentForm;
