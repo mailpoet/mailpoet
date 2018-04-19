@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
+import 'react-router';
 
 const NewsletterTypes = React.createClass({
   contextTypes: {
@@ -65,7 +66,7 @@ const NewsletterTypes = React.createClass({
   },
   render: function render() {
     const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');
-    const createNotificationNewsletter = _.partial(this.createNewsletter, 'notification');
+    const createNotificationNewsletter = _.partial(this.setupNewsletter, 'notification');
     const defaultTypes = [
       {
         slug: 'standard',

@@ -1,5 +1,5 @@
 import React from 'react';
-import Router from 'react-router';
+import { Link } from 'react-router';
 import MailPoet from 'mailpoet';
 import Form from 'form/form.jsx';
 
@@ -28,8 +28,6 @@ const messages = {
     });
   },
 };
-
-const Link = Router.Link;
 
 const SegmentForm = params => (
   <div>

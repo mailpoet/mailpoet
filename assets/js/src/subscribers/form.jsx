@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router } from 'react-router';
+import { Link } from 'react-router';
 import MailPoet from 'mailpoet';
 import Form from 'form/form.jsx';
 import ReactStringReplace from 'react-string-replace';
@@ -174,8 +174,6 @@ function afterFormContent() {
     </p>
   );
 }
-
-const Link = Router.Link;
 
 const SubscriberForm = React.createClass({
   render: function render() {

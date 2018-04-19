@@ -51,10 +51,7 @@ ListingGroups.propTypes = {
     name: PropTypes.string,
     count: PropTypes.number,
   })).isRequired,
-  group: PropTypes.shape({
-    name: PropTypes.string,
-    count: PropTypes.number,
-  }).isRequired,
+  group: PropTypes.any.isRequired, //  eslint-disable-line react/forbid-prop-types
 };
 
 export default ListingGroups;
