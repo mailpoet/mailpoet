@@ -2,10 +2,8 @@ import React from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import HelpTooltip from 'help-tooltip.jsx';
+import PropTypes from 'prop-types';
 
-/**
- * props = {beforeImport, afterImport}
- */
 class ImportTemplate extends React.Component {
   constructor(props) {
     super(props);
@@ -114,5 +112,10 @@ class ImportTemplate extends React.Component {
     );
   }
 }
+
+ImportTemplate.propTypes = {
+  beforeImport: PropTypes.func.isRequired,
+  afterImport: PropTypes.func.isRequired,
+};
 
 export default ImportTemplate;

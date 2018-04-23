@@ -28,7 +28,7 @@ const ListingTabs = React.createClass({
     };
   },
   render() {
-    const tabs = this.state.tabs.map((tab, index) => {
+    const tabs = this.state.tabs.map((tab) => {
       const tabClasses = classNames(
         'nav-tab',
         { 'nav-tab-active': (this.props.tab === tab.name) }
@@ -36,7 +36,7 @@ const ListingTabs = React.createClass({
 
       return (
         <Link
-          key={`tab-${index}`}
+          key={`tab-${tab.label}`}
           className={tabClasses}
           to={tab.link}
           onClick={() => MailPoet.trackEvent(`Tab Emails > ${tab.name} clicked`,

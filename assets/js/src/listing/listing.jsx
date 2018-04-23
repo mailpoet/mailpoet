@@ -72,14 +72,11 @@ const ListingItem = React.createClass({
 
         if (action.name === 'trash') {
           customAction = (
-            <span key={`action-${index}`} className="trash">
+            <span key={`action-${action.name}`} className="trash">
               {(!isFirst) ? ' | ' : ''}
               <a
                 href="javascript:;"
-                onClick={this.handleTrashItem.bind(
-                  null,
-                  this.props.item.id
-                )}
+                onClick={() => this.handleTrashItem(this.props.item.id)}
               >
                 {MailPoet.I18n.t('moveToTrash')}
               </a>
@@ -89,7 +86,8 @@ const ListingItem = React.createClass({
           customAction = (
             <span
               onClick={this.props.onRefreshItems}
-              key={`action-${index}`} className={action.name}
+              key={`action-${action.name}`}
+              className={action.name}
               role="button"
               tabIndex={index}
             >
@@ -100,7 +98,8 @@ const ListingItem = React.createClass({
         } else if (action.link) {
           customAction = (
             <span
-              key={`action-${index}`} className={action.name}
+              key={`action-${action.name}`}
+              className={action.name}
             >
               {(!isFirst) ? ' | ' : ''}
               { action.link(this.props.item) }
@@ -109,17 +108,17 @@ const ListingItem = React.createClass({
         } else {
           customAction = (
             <span
-              key={`action-${index}`} className={action.name}
+              key={`action-${action.name}`}
+              className={action.name}
             >
               {(!isFirst) ? ' | ' : ''}
-              <a href="javascript:;" onClick={
-                (action.onClick !== undefined)
-                ? action.onClick.bind(null,
-                    this.props.item,
-                    this.props.onRefreshItems
-                  )
-                : false
-              }
+              <a
+                href="javascript:;"
+                onClick={
+                  (action.onClick !== undefined)
+                  ? () => action.onClick(this.props.item, this.props.onRefreshItems)
+                  : false
+                }
               >{ action.label }</a>
             </span>
           );
@@ -148,10 +147,7 @@ const ListingItem = React.createClass({
             <span>
               <a
                 href="javascript:;"
-                onClick={this.handleRestoreItem.bind(
-                  null,
-                  this.props.item.id
-                )}
+                onClick={() => this.handleRestoreItem(this.props.item.id)}
               >{MailPoet.I18n.t('restore')}</a>
             </span>
             { ' | ' }
@@ -159,16 +155,14 @@ const ListingItem = React.createClass({
               <a
                 className="submitdelete"
                 href="javascript:;"
-                onClick={this.handleDeleteItem.bind(
-                  null,
-                  this.props.item.id
-                )}
+                onClick={() => this.handleDeleteItem(this.props.item.id)}
               >{MailPoet.I18n.t('deletePermanently')}</a>
             </span>
           </div>
           <button
-            onClick={this.handleToggleItem.bind(null, this.props.item.id)}
-            className="toggle-row" type="button"
+            onClick={() => this.handleToggleItem(this.props.item.id)}
+            className="toggle-row"
+            type="button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
           </button>
@@ -181,8 +175,9 @@ const ListingItem = React.createClass({
             { itemActions }
           </div>
           <button
-            onClick={this.handleToggleItem.bind(null, this.props.item.id)}
-            className="toggle-row" type="button"
+            onClick={() => this.handleToggleItem(this.props.item.id)}
+            className="toggle-row"
+            type="button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
           </button>
@@ -269,7 +264,7 @@ const ListingItems = React.createClass({
           </td>
         </tr>
 
-        {this.props.items.map((item, index) => {
+        {this.props.items.map((item) => {
           const renderItem = item;
           renderItem.id = parseInt(item.id, 10);
           renderItem.selected = (this.props.selected_ids.indexOf(renderItem.id) !== -1);
@@ -287,7 +282,7 @@ const ListingItems = React.createClass({
               is_selectable={this.props.is_selectable}
               item_actions={this.props.item_actions}
               group={this.props.group}
-              key={`item-${renderItem.id}-${index}`}
+              key={`item-${renderItem.id}-${item.id}`}
               item={renderItem}
             />
           );
@@ -439,23 +434,25 @@ const Listing = React.createClass({
     return ret;
   },
   componentDidMount: function componentDidMount() {
-    if (this.isMounted()) {
-      const params = this.props.params || {};
-      this.initWithParams(params);
+    this.isComponentMounted = true;
+    const params = this.props.params || {};
+    this.initWithParams(params);
 
-      if (this.props.auto_refresh) {
-        jQuery(document).on('heartbeat-tick.mailpoet', () => {
-          this.getItems();
-        });
-      }
+    if (this.props.auto_refresh) {
+      jQuery(document).on('heartbeat-tick.mailpoet', () => {
+        this.getItems();
+      });
     }
+  },
+  componentWillUnmount: function componentWillUnmount() {
+    this.isComponentMounted = false;
   },
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     const params = nextProps.params || {};
     this.initWithParams(params);
   },
   getItems: function getItems() {
-    if (this.isMounted()) {
+    if (this.isComponentMounted) {
       this.setState({ loading: true });
 
       this.clearSelection();

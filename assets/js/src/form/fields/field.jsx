@@ -1,132 +1,119 @@
-define([
-  'react',
-  'form/fields/text.jsx',
-  'form/fields/textarea.jsx',
-  'form/fields/select.jsx',
-  'form/fields/radio.jsx',
-  'form/fields/checkbox.jsx',
-  'form/fields/selection.jsx',
-  'form/fields/date.jsx',
-  'jquery',
-],
-(
-  React,
-  FormFieldText,
-  FormFieldTextarea,
-  FormFieldSelect,
-  FormFieldRadio,
-  FormFieldCheckbox,
-  FormFieldSelection,
-  FormFieldDate,
-  jQuery
-) => {
-  const FormField = React.createClass({
-    renderField: function renderField(data, inline = false) {
-      let description = false;
-      if (data.field.description) {
-        description = (
-          <p className="description">{ data.field.description }</p>
-        );
-      }
+import React from 'react';
+import FormFieldText from 'form/fields/text.jsx';
+import FormFieldTextarea from 'form/fields/textarea.jsx';
+import FormFieldSelect from 'form/fields/select.jsx';
+import FormFieldRadio from 'form/fields/radio.jsx';
+import FormFieldCheckbox from 'form/fields/checkbox.jsx';
+import FormFieldSelection from 'form/fields/selection.jsx';
+import FormFieldDate from 'form/fields/date.jsx';
+import jQuery from 'jquery';
 
-      let field = false;
-      let dataField = data.field;
+const FormField = React.createClass({
+  renderField: function renderField(data, inline = false) {
+    let description = false;
+    if (data.field.description) {
+      description = (
+        <p className="description">{ data.field.description }</p>
+      );
+    }
 
-      if (data.field.field !== undefined) {
-        dataField = jQuery.merge(dataField, data.field.field);
-      }
+    let field = false;
+    let dataField = data.field;
 
-      switch (dataField.type) {
-        case 'text':
-          field = (<FormFieldText {...data} />);
-          break;
+    if (data.field.field !== undefined) {
+      dataField = jQuery.merge(dataField, data.field.field);
+    }
 
-        case 'textarea':
-          field = (<FormFieldTextarea {...data} />);
-          break;
+    switch (dataField.type) {
+      case 'text':
+        field = (<FormFieldText {...data} />);
+        break;
 
-        case 'select':
-          field = (<FormFieldSelect {...data} />);
-          break;
+      case 'textarea':
+        field = (<FormFieldTextarea {...data} />);
+        break;
 
-        case 'radio':
-          field = (<FormFieldRadio {...data} />);
-          break;
+      case 'select':
+        field = (<FormFieldSelect {...data} />);
+        break;
 
-        case 'checkbox':
-          field = (<FormFieldCheckbox {...data} />);
-          break;
+      case 'radio':
+        field = (<FormFieldRadio {...data} />);
+        break;
 
-        case 'selection':
-          field = (<FormFieldSelection {...data} />);
-          break;
+      case 'checkbox':
+        field = (<FormFieldCheckbox {...data} />);
+        break;
 
-        case 'date':
-          field = (<FormFieldDate {...data} />);
-          break;
+      case 'selection':
+        field = (<FormFieldSelection {...data} />);
+        break;
 
-        case 'reactComponent':
-          field = (<data.field.component {...data} />);
-          break;
+      case 'date':
+        field = (<FormFieldDate {...data} />);
+        break;
 
-        default:
-          field = 'invalid';
-          break;
-      }
+      case 'reactComponent':
+        field = (<data.field.component {...data} />);
+        break;
 
-      if (inline === true) {
-        return (
-          <span key={`field-${data.index || 0}`}>
-            { field }
-            { description }
-          </span>
-        );
-      }
+      default:
+        field = 'invalid';
+        break;
+    }
+
+    if (inline === true) {
       return (
-        <div key={`field-${data.index || 0}`}>
+        <span key={`field-${data.index || 0}`}>
           { field }
           { description }
-        </div>
+        </span>
       );
-    },
-    render: function render() {
-      let field = false;
+    }
+    return (
+      <div key={`field-${data.index || 0}`}>
+        { field }
+        { description }
+      </div>
+    );
+  },
+  render: function render() {
+    let field = false;
 
-      if (this.props.field.fields !== undefined) {
-        field = this.props.field.fields.map((subfield, index) => this.renderField({
-          index,
-          field: subfield,
-          item: this.props.item,
-          onValueChange: this.props.onValueChange || false,
-        }));
-      } else {
-        field = this.renderField(this.props);
-      }
+    if (this.props.field.fields !== undefined) {
+      field = this.props.field.fields.map((subfield, index) => this.renderField({
+        index,
+        field: subfield,
+        item: this.props.item,
+        onValueChange: this.props.onValueChange || false,
+      }));
+    } else {
+      field = this.renderField(this.props);
+    }
 
-      let tip = false;
-      if (this.props.field.tip) {
-        tip = (
-          <p className="description">{ this.props.field.tip }</p>
-        );
-      }
-
-      return (
-        <tr className={`form-field-row-${this.props.field.name}`}>
-          <th scope="row">
-            <label
-              htmlFor={`field_${this.props.field.name}`}
-            >
-              { this.props.field.label }
-              { tip }
-            </label>
-          </th>
-          <td>
-            { field }
-          </td>
-        </tr>
+    let tip = false;
+    if (this.props.field.tip) {
+      tip = (
+        <p className="description">{ this.props.field.tip }</p>
       );
-    },
-  });
+    }
 
-  return FormField;
+    return (
+      <tr className={`form-field-row-${this.props.field.name}`}>
+        <th scope="row">
+          <label
+            htmlFor={`field_${this.props.field.name}`}
+          >
+            { this.props.field.label }
+            { tip }
+          </label>
+        </th>
+        <td>
+          { field }
+        </td>
+      </tr>
+    );
+  },
 });
+
+export default FormField;

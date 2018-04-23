@@ -35,15 +35,13 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
           var row = resultRow;
           if (row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row === MailPoet.I18n.t('import_stopped_by_user')) {
             row = '<span class="error_msg">' + row + '</span>'; // Mark the errors in red
-          }
-          // Test if the import is complete
-          else if (row === MailPoet.I18n.t('import_complete')) {
+          } else if (row === MailPoet.I18n.t('import_complete')) { // Test if the import is complete
             jQuery('#import-actions').hide();
             jQuery('#upgrade-completed').show();
           }
           jQuery('#logger').append(row + '<br />\n');
         });
-        jQuery('#logger').append('<span class="error_msg">' + MailPoet.MP2Migrator.fatal_error + '</span>' + '<br />\n');
+        jQuery('#logger').append('<span class="error_msg">' + MailPoet.MP2Migrator.fatal_error + '</span><br />\n');
       }).always(function () {
         if (MailPoet.MP2Migrator.is_logging) {
           MailPoet.MP2Migrator.displayLogs_timeout = setTimeout(

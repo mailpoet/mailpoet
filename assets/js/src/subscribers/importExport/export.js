@@ -33,8 +33,7 @@ define(
        var disabled = 'button-disabled';
        if (condition === 'on') {
          nextStepButton.removeClass(disabled);
-       }
-       else {
+       } else {
          nextStepButton.addClass(disabled);
        }
      }
@@ -55,12 +54,12 @@ define(
          width: '20em',
          templateResult: function templateResult(item) {
            return (item.subscriberCount > 0)
-            ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
+            ? item.name + ' (' + parseInt(item.subscriberCount, 10).toLocaleString() + ')'
             : item.name;
          },
          templateSelection: function templateSelection(item) {
            return (item.subscriberCount > 0)
-            ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
+            ? item.name + ' (' + parseInt(item.subscriberCount, 10).toLocaleString() + ')'
             : item.name;
          }
        })
@@ -94,8 +93,7 @@ define(
           (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
          ) {
            toggleNextStepButton('on');
-         }
-         else {
+         } else {
            toggleNextStepButton('off');
          }
        });
@@ -132,7 +130,7 @@ define(
          MailPoet.Modal.loading(false);
        }).done(function done(response) {
          var resultMessage = MailPoet.I18n.t('exportMessage')
-         .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
+         .replace('%1$s', '<strong>' + parseInt(response.data.totalExported, 133).toLocaleString() + '</strong>')
          .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
          .replace('[/link]', '</a>');
          jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();

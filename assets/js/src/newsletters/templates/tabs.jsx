@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Tabs = ({ tabs, selected, select }) => (
   <div className="wp-filter hide-if-no-js">
@@ -14,5 +15,14 @@ const Tabs = ({ tabs, selected, select }) => (
     </ul>
   </div>
 );
+
+Tabs.propTypes = {
+  selected: PropTypes.string.isRequired,
+  select: PropTypes.func.isRequired,
+  tabs: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+  }).isRequired).isRequired,
+};
 
 export default Tabs;

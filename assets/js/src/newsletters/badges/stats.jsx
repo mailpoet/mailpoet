@@ -1,5 +1,6 @@
 import MailPoet from 'mailpoet';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Badge from './badge.jsx';
 
@@ -101,5 +102,16 @@ class StatsBadge extends React.Component {
     return content;
   }
 }
+
+StatsBadge.propTypes = {
+  stat: PropTypes.string.isRequired,
+  rate: PropTypes.number.isRequired,
+  tooltipId: PropTypes.string.isRequired,
+  headline: PropTypes.string,
+};
+
+StatsBadge.defaultProps = {
+  headline: '',
+};
 
 export default StatsBadge;

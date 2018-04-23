@@ -35,7 +35,7 @@ function Tooltip(props) {
       />
       <ReactTooltip
         globalEventOff="click"
-        multiline={true}
+        multiline
         id={tooltipId}
         efect="solid"
         place={props.place}

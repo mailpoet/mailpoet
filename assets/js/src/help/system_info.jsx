@@ -12,7 +12,7 @@ function printData(data) {
     const printableData = Object.keys(data).map(key => `${key}: ${data[key]}`);
 
     return (<textarea
-      readOnly={true}
+      readOnly
       onFocus={handleFocus}
       value={printableData.join('\n')}
       style={{

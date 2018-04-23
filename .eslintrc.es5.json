@@ -8,19 +8,6 @@
     "ecmaVersion": 5
   },
   "rules": {
-    // Exceptions
-    "no-underscore-dangle": 0, // Backbone uses underscores, we cannot remove them
-    // Temporary
-    "import/no-amd": 0,
-    "prefer-arrow-callback": 0,
-    "radix": 0,
-    "no-alert": 0,
-    "guard-for-in": 0,
-    "no-prototype-builtins": 0,
-    "no-restricted-syntax": 0,
-    "no-useless-concat": 0,
-    "no-nested-ternary": 0,
-    "brace-style": 0,
-    "space-infix-ops": 0
+    "no-underscore-dangle": 0 // Backbone uses underscores, we cannot remove them
   }
 }

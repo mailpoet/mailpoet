@@ -2,12 +2,12 @@ define(
   [
     'mailpoet'
   ],
-  function ( // eslint-disable-line func-names
+  function reinstallFromScratch(
     MailPoet
   ) {
     var element;
     function eventHandler() {
-      if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) {
+      if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) { // eslint-disable-line no-alert
         MailPoet.trackEvent(
           'User has reinstalled MailPoet via Settings',
           { 'MailPoet Free version': window.mailpoet_version }
@@ -18,14 +18,14 @@ define(
           api_version: window.mailpoet_api_version,
           endpoint: 'setup',
           action: 'reset'
-        }).always(function () { // eslint-disable-line func-names
+        }).always(function alwaysCb() {
           MailPoet.Modal.loading(false);
-        }).done(function () { // eslint-disable-line func-names
+        }).done(function doneCb() {
           window.location = 'admin.php?page=mailpoet-newsletters';
-        }).fail(function (response) { // eslint-disable-line func-names
+        }).fail(function failCb(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function (error) { // eslint-disable-line func-names
+              response.errors.map(function responseMapCb(error) {
                 return error.message;
               }),
               { scroll: true }

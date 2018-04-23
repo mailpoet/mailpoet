@@ -118,7 +118,7 @@ const NewsletterListNotificationHistory = React.createClass({
           onRenderItem={this.renderItem}
           columns={columns}
           item_actions={newsletterActions}
-          auto_refresh={true}
+          auto_refresh
           sort_by="sent_at"
           sort_order="desc"
           afterGetItems={this.checkMailerStatus}

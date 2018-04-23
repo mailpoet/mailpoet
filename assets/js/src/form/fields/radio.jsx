@@ -1,41 +1,36 @@
-define([
-  'react',
-],
-(
-  React
-) => {
-  const FormFieldRadio = React.createClass({
-    render: function render() {
-      if (this.props.field.values === undefined) {
-        return false;
-      }
+import React from 'react';
 
-      const selectedValue = this.props.item[this.props.field.name];
-      const options = Object.keys(this.props.field.values).map(
-        (value, index) => (
-          <p key={`radio-${index}`}>
-            <label htmlFor={this.props.field.name}>
-              <input
-                type="radio"
-                checked={selectedValue === value}
-                value={value}
-                onChange={this.props.onValueChange}
-                name={this.props.field.name}
-                id={this.props.field.name}
-              />
-              { this.props.field.values[value] }
-            </label>
-          </p>
-          )
-      );
+const FormFieldRadio = React.createClass({
+  render: function render() {
+    if (this.props.field.values === undefined) {
+      return false;
+    }
 
-      return (
-        <div>
-          { options }
-        </div>
-      );
-    },
-  });
+    const selectedValue = this.props.item[this.props.field.name];
+    const options = Object.keys(this.props.field.values).map(
+      value => (
+        <p key={`radio-${value}`}>
+          <label htmlFor={this.props.field.name}>
+            <input
+              type="radio"
+              checked={selectedValue === value}
+              value={value}
+              onChange={this.props.onValueChange}
+              name={this.props.field.name}
+              id={this.props.field.name}
+            />
+            { this.props.field.values[value] }
+          </label>
+        </p>
+        )
+    );
 
-  return FormFieldRadio;
+    return (
+      <div>
+        { options }
+      </div>
+    );
+  },
 });
+
+export default FormFieldRadio;

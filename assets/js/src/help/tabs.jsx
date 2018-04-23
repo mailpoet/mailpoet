@@ -22,7 +22,7 @@ const tabs = [
 ];
 
 function Tabs(props) {
-  const tabLinks = tabs.map((tab, index) => {
+  const tabLinks = tabs.map((tab) => {
     const tabClasses = classNames(
       'nav-tab',
       { 'nav-tab-active': (props.tab === tab.name) }
@@ -30,7 +30,7 @@ function Tabs(props) {
 
     return (
       <Link
-        key={`tab-${index}`}
+        key={`tab-${tab.name}`}
         className={tabClasses}
         to={tab.link}
       >{ tab.label }</Link>

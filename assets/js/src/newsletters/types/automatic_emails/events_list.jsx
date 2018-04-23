@@ -2,6 +2,7 @@ import React from 'react';
 import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadcrumb.jsx';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
+import PropTypes from 'prop-types';
 
 class AutomaticEmailEventsList extends React.Component {
   constructor(props) {
@@ -21,7 +22,8 @@ class AutomaticEmailEventsList extends React.Component {
 
       if (this.email.premium) {
         action = (
-          <a href="?page=mailpoet-premium"
+          <a
+            href="?page=mailpoet-premium"
             target="_blank"
           >
             {MailPoet.I18n.t('premiumFeatureLink')}
@@ -31,7 +33,8 @@ class AutomaticEmailEventsList extends React.Component {
         const disabled = event.soon;
 
         action = (
-          <a className="button button-primary"
+          <a
+            className="button button-primary"
             disabled={disabled}
             onClick={!disabled ? this.eventsConfigurator.bind(null, event.slug) : null}
           >
@@ -90,5 +93,19 @@ class AutomaticEmailEventsList extends React.Component {
     );
   }
 }
+
+AutomaticEmailEventsList.propTypes = {
+
+  route: PropTypes.shape({
+    data: PropTypes.shape({
+      email: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+
+  router: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+
+};
 
 module.exports = AutomaticEmailEventsList;
