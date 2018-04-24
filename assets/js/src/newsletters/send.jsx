@@ -87,9 +87,13 @@ const NewsletterSend = React.createClass({
             body: JSON.stringify(response.data.body),
             categories: '["recent"]',
           },
-        }).then(done).fail(this.showError);
+        }).then(done).fail((err) => {
+          this.showError(err);
+        });
       })
-      .catch(err => this.showError({ errors: [err] }));
+      .catch((err) => {
+        this.showError({ errors: [err] });
+      });
   },
   handleSend: function handleSend(e) {
     e.preventDefault();
@@ -236,7 +240,9 @@ const NewsletterSend = React.createClass({
           }
         });
       })
-      .fail(this.showError)
+      .fail((err) => {
+        this.showError(err);
+      })
       .always(() => {
         this.setState({ loading: false });
       });
@@ -252,7 +258,9 @@ const NewsletterSend = React.createClass({
       );
     }).done(() => {
       this.context.router.push(`/${this.state.item.type || ''}`);
-    }).fail(this.showError);
+    }).fail((err) => {
+      this.showError(err);
+    });
   },
   handleRedirectToDesign: function handleRedirectToDesign(e) {
     e.preventDefault();
@@ -264,7 +272,9 @@ const NewsletterSend = React.createClass({
       );
     }).done(() => {
       window.location = redirectTo;
-    }).fail(this.showError);
+    }).fail((err) => {
+      this.showError(err);
+    });
   },
   saveNewsletter: function saveNewsletter() {
     const data = this.state.item;
