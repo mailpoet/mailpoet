@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.6.6
+Stable tag: 3.6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.6.7 - 2018-04-24 =
+* Fixed: Duplicates in the database will not stop scheduled newsletters anymore.
 
 = 3.6.6 - 2018-04-17 =
 * Fixed: missing database records no longer break the sending process. Thanks, Catalin;
