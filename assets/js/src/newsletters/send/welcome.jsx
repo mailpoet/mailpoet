@@ -68,7 +68,7 @@ let fields = [
 
 fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
-module.export = {
+module.exports = {
   getFields: function getFields() {
     return fields;
   },
