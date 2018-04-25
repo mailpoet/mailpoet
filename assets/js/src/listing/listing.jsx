@@ -268,6 +268,10 @@ const ListingItems = React.createClass({
           const renderItem = item;
           renderItem.id = parseInt(item.id, 10);
           renderItem.selected = (this.props.selected_ids.indexOf(renderItem.id) !== -1);
+          let key = `item-${renderItem.id}-${item.id}`;
+          if (typeof this.props.getListingItemKey === 'function') {
+            key = this.props.getListingItemKey(item);
+          }
 
           return (
             <ListingItem
@@ -282,7 +286,7 @@ const ListingItems = React.createClass({
               is_selectable={this.props.is_selectable}
               item_actions={this.props.item_actions}
               group={this.props.group}
-              key={`item-${renderItem.id}-${item.id}`}
+              key={key}
               item={renderItem}
             />
           );
@@ -867,6 +871,7 @@ const Listing = React.createClass({
 
           <ListingItems
             onRenderItem={this.handleRenderItem}
+            getListingItemKey={this.props.getListingItemKey}
             onDeleteItem={this.handleDeleteItem}
             onRestoreItem={this.handleRestoreItem}
             onTrashItem={this.handleTrashItem}
