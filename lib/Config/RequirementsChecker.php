@@ -127,8 +127,6 @@ class RequirementsChecker {
     $error_string = null;
     if(version_compare($php_version, '5.5', '<')) {
       $error_string = 'Your website is running on PHP %s. MailPoet will require version 7 soon. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]';
-    } elseif(version_compare($php_version, '5.6', '<')) {
-      $error_string = 'Your website is running on PHP %s. MailPoet will require version 7 by the end of the year. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]';
     }
     if(!is_null($error_string) && Menu::isOnMailPoetAdminPage()) {
       $error_string = sprintf($error_string, $php_version);
