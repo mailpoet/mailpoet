@@ -3,7 +3,15 @@ namespace MailPoet\Util;
 
 class Url {
   static function getCurrentUrl() {
-    return home_url(add_query_arg(null, null));
+    $home_url = parse_url(home_url());
+    $query_args = add_query_arg(null, null);
+
+    // Remove home_url() path from add_query_arg
+    if(isset($home_url['path'])) {
+      $query_args = str_replace($home_url['path'], null, $query_args);
+    }
+
+    return home_url($query_args);
   }
 
   static function redirectTo($url = null) {
