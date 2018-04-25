@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 class ListingSearch extends React.Component {
   componentWillReceiveProps(nextProps) {
     this.search.value = nextProps.search;
+    this.handleSearch = this.handleSearch.bind(this);
   }
 
   handleSearch(e) {
