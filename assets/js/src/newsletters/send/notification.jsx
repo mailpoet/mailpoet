@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
-import Scheduling from 'newsletters/types/welcome/scheduling.jsx';
+import Scheduling from 'newsletters/types/notification/scheduling.jsx';
 
 
 let fields = [
