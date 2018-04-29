@@ -148,6 +148,7 @@ class Migrator {
       'count_total int(11) unsigned NOT NULL DEFAULT 0,',
       'count_processed int(11) unsigned NOT NULL DEFAULT 0,',
       'count_to_process int(11) unsigned NOT NULL DEFAULT 0,',
+      'meta longtext,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
