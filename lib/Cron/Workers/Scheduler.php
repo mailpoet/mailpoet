@@ -32,8 +32,7 @@ class Scheduler {
     if(!count($scheduled_queues)) return false;
     $this->updateTasks($scheduled_queues);
     foreach($scheduled_queues as $i => $queue) {
-      $newsletter = Newsletter::filter('filterWithOptions')
-        ->findOne($queue->newsletter_id);
+      $newsletter = Newsletter::filter('filterWithOptions')->findOne($queue->newsletter_id);
       if(!$newsletter || $newsletter->deleted_at !== null) {
         $queue->delete();
       } elseif($newsletter->status !== Newsletter::STATUS_ACTIVE && $newsletter->status !== Newsletter::STATUS_SCHEDULED) {
@@ -44,6 +43,8 @@ class Scheduler {
         $this->processPostNotificationNewsletter($newsletter, $queue);
       } elseif($newsletter->type === Newsletter::TYPE_STANDARD) {
         $this->processScheduledStandardNewsletter($newsletter, $queue);
+      } elseif($newsletter->type === Newsletter::TYPE_AUTOMATIC) {
+        $this->processScheduledAutomaticEmail($newsletter, $queue);
       }
       CronHelper::enforceExecutionLimit($this->timer);
     }
@@ -98,6 +99,22 @@ class Scheduler {
     $queue->save();
     // update notification status
     $notification_history->setStatus(Newsletter::STATUS_SENDING);
+    return true;
+  }
+
+  function processScheduledAutomaticEmail($newsletter, $queue) {
+    if($newsletter->sendTo === 'segment') {
+      $segment = Segment::findOne($newsletter->segment)->asArray();
+      $finder = new SubscribersFinder();
+      $result = $finder->addSubscribersToTaskFromSegments($queue->task(), array($segment));
+      if(empty($result)) {
+        $queue->delete();
+        return false;
+      }
+    }
+
+    $queue->status = null;
+    $queue->save();
     return true;
   }
 
