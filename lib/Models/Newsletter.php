@@ -975,4 +975,10 @@ class Newsletter extends Model {
     return parent::where('hash', $hash)
       ->findOne();
   }
+
+  function getMeta() {
+    if(!$this->meta) return;
+
+    return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
+  }
 }
