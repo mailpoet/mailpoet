@@ -840,7 +840,6 @@ class Newsletter extends Model {
           NewsletterOptionField::$_table,
           array(
             'option_fields.newsletter_type', '=', self::$_table . '.type',
-            'option_fields.name', '=', 'group'
           ),
           'option_fields'
         )
