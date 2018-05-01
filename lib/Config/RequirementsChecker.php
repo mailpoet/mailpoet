@@ -13,7 +13,6 @@ class RequirementsChecker {
   const TEST_XML_EXTENSION = 'XmlExtension';
   const TEST_ZIP_EXTENSION = 'ZipExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
-  const TEST_PHP_VERSION = 'PHPVersion';
   const TWIG_SUPPORTED_VERSIONS = '1.26.0-1.34.4';
 
   public $display_error_notice;
@@ -50,8 +49,7 @@ class RequirementsChecker {
       self::TEST_MBSTRING_EXTENSION,
       self::TEST_XML_EXTENSION,
       self::TEST_ZIP_EXTENSION,
-      self::TEST_VENDOR_SOURCE,
-      self::TEST_PHP_VERSION,
+      self::TEST_VENDOR_SOURCE
     );
     $results = array();
     foreach($available_tests as $test) {
@@ -120,23 +118,6 @@ class RequirementsChecker {
       array('target' => '_blank')
     );
     return $this->processError($error);
-  }
-
-  function checkPHPVersion() {
-    $php_version = phpversion();
-    $error_string = null;
-    if(version_compare($php_version, '5.5', '<')) {
-      $error_string = 'Your website is running on PHP %s. MailPoet will require version 7 soon. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]';
-    }
-    if(!is_null($error_string) && Menu::isOnMailPoetAdminPage()) {
-      $error_string = sprintf($error_string, $php_version);
-      $error = Helpers::replaceLinkTags(
-        __($error_string, 'mailpoet'),
-        'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version',
-        array('target' => '_blank')
-      );
-      $this->processError($error);
-    }
   }
 
   function checkVendorSource() {

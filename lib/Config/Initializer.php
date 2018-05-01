@@ -138,6 +138,8 @@ class Initializer {
 
       $this->setupPages();
 
+      $this->setupPHPVersionWarnings();
+
       do_action('mailpoet_initialized', MAILPOET_VERSION);
     } catch(\Exception $e) {
       return $this->handleFailedInitialization($e);
@@ -268,6 +270,12 @@ class Initializer {
   function setupPersonalDataExporters() {
     $exporters = new PersonalDataExporters();
     $exporters->init();
+  }
+
+  function setupPHPVersionWarnings() {
+    $php_version_warnings = new PHPVersionWarnings();
+    $warnings = $php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
+    if(is_string($warnings)) echo $warnings;
   }
 
   function handleFailedInitialization($exception) {

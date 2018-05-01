@@ -195,6 +195,7 @@ var adminConfig = {
       'analytics_event',
       'help-tooltip.jsx',
       'help-tooltip',
+      'notice-php-warning.jsx',
     ],
     admin_vendor: [
       'react',
