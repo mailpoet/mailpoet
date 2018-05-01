@@ -571,6 +571,58 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler->process();
   }
 
+  function testItProcessesScheduledAutomaticEmailWhenSendingToUser() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC, Newsletter::STATUS_SCHEDULED);
+    $task = SendingTask::create();
+    $task->newsletter_id = $newsletter->id;
+    $task->status = SendingQueue::STATUS_SCHEDULED;
+    $task->scheduled_at = Carbon::now()->subDay(1)->toDateTimeString();
+    $task->save();
+
+    // scheduled task should exist
+    $task = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect($task->newsletter_id)->equals($newsletter->id);
+
+    // task should have its status set to null (i.e., sending)
+    $scheduler = new Scheduler();
+    $scheduler->process();
+    $task = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    expect($task->status)->null();
+  }
+
+  function testItProcessesScheduledAutomaticEmailWhenSendingToSegment() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC, Newsletter::STATUS_SCHEDULED);
+    $segment = $this->_createSegment();
+    $subscriber = $this->_createSubscriber();
+    $segment_subscriber = $this->_createSubscriberSegment($subscriber->id, $segment->id);
+    $options = array('sendTo' => 'segment', 'segment' => $segment->id);
+    foreach($options as $option => $value) {
+      $newsletter_option_field = $this->_createNewsletterOptionField($option, Newsletter::TYPE_AUTOMATIC);
+      $newsletter_option = $this->_createNewsletterOption($newsletter_option_field->id, $newsletter->id, $value);
+    }
+    $task = SendingTask::create();
+    $task->newsletter_id = $newsletter->id;
+    $task->status = SendingQueue::STATUS_SCHEDULED;
+    $task->scheduled_at = Carbon::now()->subDay(1)->toDateTimeString();
+    $task->save();
+
+    // scheduled task should exist
+    $task = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect($task->newsletter_id)->equals($newsletter->id);
+
+    // task should have its status set to null (i.e., sending)
+    $scheduler = new Scheduler();
+    $scheduler->process();
+    $task = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    expect($task->status)->null();
+    // task should have 1 subscriber added from segment
+    $subscribers = $task->subscribers()->findMany();
+    expect($subscribers)->count(1);
+    expect($subscribers[0]->id)->equals($subscriber->id);
+  }
+
   function testItUpdatesUpdateTime() {
     $originalUpdated = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(5)->toDateTimeString();
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_WELCOME, Newsletter::STATUS_DRAFT);
