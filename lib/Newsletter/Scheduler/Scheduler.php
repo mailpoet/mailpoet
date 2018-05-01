@@ -96,7 +96,7 @@ class Scheduler {
     $queue->setSubscribers(array($subscriber_id));
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->priority = SendingQueue::PRIORITY_HIGH;
-    $queue->scheduled_at = self::getScheduledTimeForWelcomeOrAutomaticEmails(
+    $queue->scheduled_at = self::getScheduledTimeForWelcomeNotificationOrAutomaticEmail(
       $newsletter->afterTimeType,
       $newsletter->afterTimeNumber
     );
@@ -114,7 +114,7 @@ class Scheduler {
     }
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->priority = SendingQueue::PRIORITY_MEDIUM;
-    $queue->scheduled_at = self::getScheduledTimeForWelcomeNotificationOrAutomaticEmails(
+    $queue->scheduled_at = self::getScheduledTimeForWelcomeNotificationOrAutomaticEmail(
       $newsletter->afterTimeType,
       $newsletter->afterTimeNumber
     );
@@ -221,7 +221,7 @@ class Scheduler {
     return Carbon::parse($datetime_string)->format('Y-m-d H:i:s');
   }
 
-  static function getScheduledTimeForWelcomeNotificationOrAutomaticEmails($after_time_type, $after_time_number) {
+  static function getScheduledTimeForWelcomeNotificationOrAutomaticEmail($after_time_type, $after_time_number) {
     $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
     switch($after_time_type) {
       case 'hours':
