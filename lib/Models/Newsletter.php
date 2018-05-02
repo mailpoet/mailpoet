@@ -535,7 +535,7 @@ class Newsletter extends Model {
     $result = array();
 
     foreach($statisticsExprs as $name => $statisticsExpr) {
-      if($this->type !== self::TYPE_WELCOME) {
+      if(!in_array($this->type, array(self::TYPE_WELCOME, self::TYPE_AUTOMATIC))) {
         $row = $statisticsExpr->whereRaw('`queue_id` = ?', array($this->queue['id']))->findOne();
       } else {
         $row = $statisticsExpr
