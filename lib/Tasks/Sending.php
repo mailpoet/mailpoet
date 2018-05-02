@@ -221,10 +221,11 @@ class Sending {
     return in_array($prop, $this->common_fields);
   }
 
-  static function getScheduledQueues() {
+  static function getScheduledQueues($amount = 5) {
     $tasks = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->where('type', 'sending')
+      ->limit($amount)
       ->findMany();
     $result = array();
     foreach($tasks as $task) {
@@ -233,12 +234,13 @@ class Sending {
     return array_filter($result);
   }
 
-  static function getRunningQueues() {
+  static function getRunningQueues($amount = 5) {
     $tasks = ScheduledTask::orderByAsc('priority')
       ->orderByAsc('created_at')
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->where('type', 'sending')
+      ->limit($amount)
       ->findMany();
     $result = array();
     foreach($tasks as $task) {

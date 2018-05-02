@@ -12,6 +12,8 @@ if(!defined('ABSPATH')) exit;
 abstract class SimpleWorker {
   public $timer;
 
+  const TASK_BATCH_SIZE = 5;
+
   function __construct($timer = false) {
     if(!defined('static::TASK_TYPE')) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
@@ -121,6 +123,7 @@ abstract class SimpleWorker {
       ->$dateWhere('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
+      ->limit(self::TASK_BATCH_SIZE)
       ->findMany();
   }
 
@@ -129,10 +132,11 @@ abstract class SimpleWorker {
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->whereNull('deleted_at')
       ->whereNull('status')
+      ->limit(self::TASK_BATCH_SIZE)
       ->findMany();
   }
 
-  static function getAllDueTasks() {
+  static function getDueTasks() {
     $scheduled_tasks = self::getScheduledTasks();
     $running_tasks = self::getRunningTasks();
     return array_merge((array)$scheduled_tasks, (array)$running_tasks);
@@ -146,6 +150,7 @@ abstract class SimpleWorker {
     return ScheduledTask::where('type', static::TASK_TYPE)
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_COMPLETED)
+      ->limit(self::TASK_BATCH_SIZE)
       ->findMany();
   }
 }

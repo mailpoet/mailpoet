@@ -140,6 +140,14 @@ class SendingTest extends \MailPoetTest {
     expect($tasks)->isEmpty();
   }
 
+  function testItGetsBatchOfScheduledQueues() {
+    $amount = 5;
+    for($i = 0; $i < $amount + 3; $i += 1) {
+      $this->createNewSendingTask(ScheduledTask::STATUS_SCHEDULED);
+    }
+    expect(count(SendingTask::getScheduledQueues($amount)))->equals($amount);
+  }
+
   function testItGetsRunningQueues() {
     $this->sending->status = null;
     $this->sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
@@ -154,6 +162,35 @@ class SendingTest extends \MailPoetTest {
     $this->queue->delete();
     $tasks = SendingTask::getRunningQueues();
     expect($tasks)->isEmpty();
+  }
+
+  function testItGetsBatchOfRunningQueues() {
+    $amount = 5;
+    for($i = 0; $i < $amount + 3; $i += 1) {
+      $this->createNewSendingTask(null);
+    }
+    expect(count(SendingTask::getRunningQueues($amount)))->equals($amount);
+  }
+
+  function createNewSendingTask($status = null) {
+    $newsletter = Newsletter::create();
+    $newsletter->type = Newsletter::TYPE_STANDARD;
+    $newsletter->save();
+
+    $task = ScheduledTask::create();
+    $task->type = SendingTask::TASK_TYPE;
+    $task->save();
+
+    $queue = SendingQueue::create();
+    $queue->newsletter_id = $newsletter->id;
+    $queue->task_id = $task->id;
+    $queue->save();
+
+    $sending = SendingTask::create($task, $queue);
+    $sending->setSubscribers(array(123, 456)); // random IDs
+    $sending->status = $status;
+    $sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
+    $sending->save();
   }
 
   function _after() {
