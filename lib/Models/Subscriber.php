@@ -883,4 +883,20 @@ class Subscriber extends Model {
     }
     return array($data, $custom_fields);
   }
+
+  public function getAllSegmentNamesWithStatus() {
+    return Segment::table_alias('segment')
+      ->select('name')
+      ->select('subscriber_segment.segment_id', 'segment_id')
+      ->select('subscriber_segment.status', 'status')
+      ->select('subscriber_segment.updated_at', 'updated_at')
+      ->join(
+        SubscriberSegment::$_table,
+        array('subscriber_segment.segment_id', '=', 'segment.id'),
+        'subscriber_segment'
+      )
+      ->where('subscriber_segment.subscriber_id', $this->id)
+      ->orderByAsc('name')
+      ->findArray();
+  }
 }

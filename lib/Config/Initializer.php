@@ -130,6 +130,7 @@ class Initializer {
       $this->setupMenu();
       $this->setupShortcodes();
       $this->setupImages();
+      $this->setupPersonalDataExporters();
 
       $this->setupChangelog();
       $this->setupCronTrigger();
@@ -262,6 +263,11 @@ class Initializer {
   function setupHooks() {
     $hooks = new Hooks();
     $hooks->init();
+  }
+
+  function setupPersonalDataExporters() {
+    $exporters = new PersonalDataExporters();
+    $exporters->init();
   }
 
   function handleFailedInitialization($exception) {
