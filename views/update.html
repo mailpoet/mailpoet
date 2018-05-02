@@ -8,6 +8,10 @@
   <p class="about-text"><%= __('The new MailPoet. Simply better. And with regular updates.') %></p>
   <div class="mailpoet-logo"><img src="<%= image_url('welcome_template/mailpoet-logo.png') %>" alt="MailPoet Logo" /></div>
 
+  <div class="feature-section one-col mailpoet_centered">
+    <a class="button button-primary go-to-plugin" href="<%= redirect_url %>"><%= __('I don\'t care about the update, back to work!') %> &rarr;</a>
+  </div>
+
   <h2 class="nav-tab-wrapper wp-clearfix">
     <a href="admin.php?page=mailpoet-welcome" class="nav-tab"><%= __('Welcome') %></a>
     <a href="admin.php?page=mailpoet-update" class="nav-tab nav-tab-active"><%= __("What's New") %></a>
@@ -70,7 +74,7 @@
   <hr>
 
   <div class="feature-section one-col mailpoet_centered">
-    <a class="button button-primary go-to-plugin" href="admin.php?page=mailpoet-newsletters"><%= __('Awesome! Now, take me to MailPoet') %> &rarr;</a>
+    <a class="button button-primary go-to-plugin" href="<%= redirect_url %>"><%= __('Thanks, now take me to where I was going.') %> &rarr;</a>
   </div>
 
 </div>

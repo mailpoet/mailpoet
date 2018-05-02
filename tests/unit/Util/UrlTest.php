@@ -4,8 +4,9 @@ namespace MailPoet\Test\Util;
 use MailPoet\Util\Url;
 
 class UrlTest extends \MailPoetTest {
-  function testItCanReturnCurrentUrl() {
+  function testCurrentUrlReturnsHomeUrlOnHome() {
     $current_url = Url::getCurrentUrl();
-    expect($current_url)->startsWith('http');
+    $home_url = home_url();
+    expect($current_url)->equals($home_url);
   }
 }
