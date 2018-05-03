@@ -11,21 +11,17 @@ use MailPoet\Tasks\Subscribers;
 
 class SendingTest extends \MailPoetTest {
   function _before() {
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_STANDARD;
-    $this->newsletter = $newsletter->save();
-
-    $task = ScheduledTask::create();
-    $task->type = SendingTask::TASK_TYPE;
-    $this->task = $task->save();
-
-    $queue = SendingQueue::create();
-    $queue->newsletter_id = $this->newsletter->id;
-    $queue->task_id = $this->task->id;
-    $this->queue = $queue->save();
-
-    $this->sending = SendingTask::create($this->task, $this->queue);
-    $this->sending->setSubscribers(array(123, 456)); // random IDs
+    $this->newsletter = $this->createNewNewsletter();
+    $this->task = $this->createNewScheduledTask();
+    $this->queue = $this->createNewSendingQueue([
+      'newsletter' => $this->newsletter,
+      'task' => $this->task
+    ]);
+    $this->sending = $this->createNewSendingTask([
+      'status' => null,
+      'task' =>  $this->task,
+      'queue' => $this->queue
+    ]);
   }
 
   function testItCanBeConstructed() {
@@ -141,11 +137,12 @@ class SendingTest extends \MailPoetTest {
   }
 
   function testItGetsBatchOfScheduledQueues() {
+    $this->_after();
     $amount = 5;
     for($i = 0; $i < $amount + 3; $i += 1) {
-      $this->createNewSendingTask(ScheduledTask::STATUS_SCHEDULED);
+      $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
     }
-    expect(count(SendingTask::getScheduledQueues($amount)))->equals($amount);
+    expect(SendingTask::getScheduledQueues($amount))->count($amount);
   }
 
   function testItGetsRunningQueues() {
@@ -165,32 +162,46 @@ class SendingTest extends \MailPoetTest {
   }
 
   function testItGetsBatchOfRunningQueues() {
+    $this->_after();
     $amount = 5;
     for($i = 0; $i < $amount + 3; $i += 1) {
-      $this->createNewSendingTask(null);
+      $this->createNewSendingTask(['status' => null]);
     }
-    expect(count(SendingTask::getRunningQueues($amount)))->equals($amount);
+    expect(SendingTask::getRunningQueues($amount))->count($amount);
   }
 
-  function createNewSendingTask($status = null) {
+  function createNewNewsletter() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
-    $newsletter->save();
+    return $newsletter->save();
+  }
 
+  function createNewScheduledTask() {
     $task = ScheduledTask::create();
     $task->type = SendingTask::TASK_TYPE;
-    $task->save();
+    return $task->save();
+  }
+
+  function createNewSendingQueue($args = []) {
+    $newsletter = isset($args['newsletter']) ? $args['newsletter'] : $this->createNewNewsletter();
+    $task = isset($args['task']) ? $args['task'] : $this->createNewScheduledTask();
 
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
     $queue->task_id = $task->id;
-    $queue->save();
+    return $queue->save();
+  }
+
+  function createNewSendingTask($args = []) {
+    $task = isset($args['task']) ? $args['task'] : $this->createNewScheduledTask();
+    $queue = isset($args['queue']) ? $args['queue'] : $this->createNewSendingQueue(['task' => $task]);
+    $status = isset($args['status']) ? $args['status'] : null;
 
     $sending = SendingTask::create($task, $queue);
     $sending->setSubscribers(array(123, 456)); // random IDs
     $sending->status = $status;
     $sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
-    $sending->save();
+    return $sending->save();
   }
 
   function _after() {
