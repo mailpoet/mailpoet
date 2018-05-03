@@ -67,7 +67,6 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   function testItCanGetABatchOfScheduledTasks() {
-    expect(MockSimpleWorker::getScheduledTasks())->isEmpty();
     for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createScheduledTask();
     }
@@ -81,7 +80,6 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   function testItCanGetBatchOfRunningTasks() {
-    expect(MockSimpleWorker::getRunningTasks())->isEmpty();
     for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createRunningTask();
     }
@@ -89,7 +87,6 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   function testItCanGetBatchOfCompletedTasks() {
-    expect(MockSimpleWorker::getCompletedTasks())->isEmpty();
     for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createCompletedTask();
     }
