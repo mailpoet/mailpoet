@@ -16,8 +16,7 @@ if(!defined('ABSPATH')) exit;
  */
 class Sending {
   const TASK_TYPE = 'sending';
-
-  private const RESULT_BATCH_SIZE = 5;
+  const RESULT_BATCH_SIZE = 5;
 
   private $task;
   private $queue;
