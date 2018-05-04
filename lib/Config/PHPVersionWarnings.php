@@ -21,9 +21,9 @@ class PHPVersionWarnings {
   function checkPHP53Version($php_version) {
     $error_string = null;
     if(version_compare($php_version, '5.5', '<')) {
-      $error_string = 'Your website is running on PHP %s. MailPoet will require version 7 soon. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]';
+      $error_string = __('Your website is running on PHP %s. MailPoet will require version 7 soon. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]', 'mailpoet');
       $error_string = sprintf($error_string, $php_version);
-      $error = Helpers::replaceLinkTags(__($error_string, 'mailpoet'), 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
+      $error = Helpers::replaceLinkTags($error_string, 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
       return $this->displayWPNotice($error, false);
     }
   }
@@ -31,16 +31,16 @@ class PHPVersionWarnings {
   function checkPHP55Version($php_version) {
     $error_string = null;
     if(version_compare($php_version, '5.6', '<')) {
-      $error_string = 'Your website is running on PHP %s. MailPoet will require version 7 by the end of the year. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]';
+      $error_string = __('Your website is running on PHP %s. MailPoet will require version 7 by the end of the year. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]', 'mailpoet');
       $error_string = sprintf($error_string, $php_version);
-      $error = Helpers::replaceLinkTags(__($error_string, 'mailpoet'), 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
+      $error = Helpers::replaceLinkTags($error_string, 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
       return $this->displayWPNotice($error, true);
     }
   }
 
-  private function displayWPNotice($message, $dismisable = false) {
+  private function displayWPNotice($message, $dismissible = false) {
     $class = 'notice notice-error notice-php-warning mailpoet_notice_server';
-    if($dismisable) $class .= ' is-dismissible';
+    if($dismissible) $class .= ' is-dismissible';
 
     if(!get_option('dismissed-php-version-outdated-notice', false)) {
       return sprintf('<div class="%1$s" data-notice="php-version-outdated"><p>%2$s</p></div>', $class, $message);
