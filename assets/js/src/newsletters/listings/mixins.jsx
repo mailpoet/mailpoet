@@ -92,6 +92,7 @@ const QueueMixin = {
         );
     } else {
       const resumeSendingClick = _.partial(this.resumeSending, newsletter);
+      const pauseSendingClick = _.partial(this.pauseSending, newsletter);
       label = (
         <span>
           { newsletter.queue.count_processed } / { newsletter.queue.count_total }
@@ -110,7 +111,7 @@ const QueueMixin = {
             style={{ display: (newsletter.queue.status === null)
                   ? 'inline-block' : 'none' }}
             href="javascript:;"
-            onClick={resumeSendingClick}
+            onClick={pauseSendingClick}
           >{MailPoet.I18n.t('pause')}</a>
         </span>
         );
