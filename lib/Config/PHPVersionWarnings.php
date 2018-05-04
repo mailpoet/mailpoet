@@ -6,6 +6,8 @@ use MailPoet\Util\Helpers;
 
 class PHPVersionWarnings {
 
+  const DISMISS_NOTICE_TIMEOUT_SECONDS = 2592000; // 30 days
+
   function init($php_version, $is_enabled) {
     add_action('wp_ajax_dismissed_notice_handler', array(
       $this,
@@ -42,13 +44,13 @@ class PHPVersionWarnings {
     $class = 'notice notice-error notice-php-warning mailpoet_notice_server';
     if($dismissible) $class .= ' is-dismissible';
 
-    if(!get_option('dismissed-php-version-outdated-notice', false)) {
+    if(!get_transient('dismissed-php-version-outdated-notice')) {
       return sprintf('<div class="%1$s" data-notice="php-version-outdated"><p>%2$s</p></div>', $class, $message);
     }
   }
 
   function ajaxDismissNoticeHandler() {
-    update_option('dismissed-php-version-outdated-notice', true);
+    set_transient('dismissed-php-version-outdated-notice', true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
   }
 
 }
