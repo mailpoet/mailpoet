@@ -24,7 +24,7 @@ class WordPress {
   static function checkExecutionRequirements() {
     // migration
     $migration_disabled = Setting::getValue('cron_trigger.method') === 'none';
-    $migration_due_tasks = MigrationWorker::getAllDueTasks();
+    $migration_due_tasks = MigrationWorker::getDueTasks();
     $migration_completed_tasks = MigrationWorker::getCompletedTasks();
     $migration_future_tasks = MigrationWorker::getFutureTasks();
     // sending queue
@@ -35,14 +35,14 @@ class WordPress {
     // sending service
     $mp_sending_enabled = Bridge::isMPSendingServiceEnabled();
     // bounce sync
-    $bounce_due_tasks = BounceWorker::getAllDueTasks();
+    $bounce_due_tasks = BounceWorker::getDueTasks();
     $bounce_future_tasks = BounceWorker::getFutureTasks();
     // sending service key check
-    $msskeycheck_due_tasks = SendingServiceKeyCheckWorker::getAllDueTasks();
+    $msskeycheck_due_tasks = SendingServiceKeyCheckWorker::getDueTasks();
     $msskeycheck_future_tasks = SendingServiceKeyCheckWorker::getFutureTasks();
     // premium key check
     $premium_key_specified = Bridge::isPremiumKeySpecified();
-    $premium_keycheck_due_tasks = PremiumKeyCheckWorker::getAllDueTasks();
+    $premium_keycheck_due_tasks = PremiumKeyCheckWorker::getDueTasks();
     $premium_keycheck_future_tasks = PremiumKeyCheckWorker::getFutureTasks();
     // check requirements for each worker
     $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);

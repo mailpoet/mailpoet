@@ -66,14 +66,35 @@ class SimpleWorkerTest extends \MailPoetTest {
     expect(MockSimpleWorker::getScheduledTasks())->notEmpty();
   }
 
+  function testItCanGetABatchOfScheduledTasks() {
+    for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
+      $this->createScheduledTask();
+    }
+    expect(count(MockSimpleWorker::getScheduledTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
+  }
+
   function testItCanGetRunningTasks() {
     expect(MockSimpleWorker::getRunningTasks())->isEmpty();
     $this->createRunningTask();
     expect(MockSimpleWorker::getRunningTasks())->notEmpty();
   }
 
-  function testItCanGetAllDueTasks() {
-    expect(MockSimpleWorker::getAllDueTasks())->isEmpty();
+  function testItCanGetBatchOfRunningTasks() {
+    for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
+      $this->createRunningTask();
+    }
+    expect(count(MockSimpleWorker::getRunningTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
+  }
+
+  function testItCanGetBatchOfCompletedTasks() {
+    for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
+      $this->createCompletedTask();
+    }
+    expect(count(MockSimpleWorker::getCompletedTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
+  }
+
+  function testItCanGetDueTasks() {
+    expect(MockSimpleWorker::getDueTasks())->isEmpty();
 
     // scheduled for now
     $this->createScheduledTask();
@@ -91,7 +112,7 @@ class SimpleWorkerTest extends \MailPoetTest {
     $task->status = ScheduledTask::STATUS_COMPLETED;
     $task->save();
 
-    expect(count(MockSimpleWorker::getAllDueTasks()))->equals(2);
+    expect(count(MockSimpleWorker::getDueTasks()))->equals(2);
   }
 
   function testItCanGetFutureTasks() {
@@ -188,6 +209,15 @@ class SimpleWorkerTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = MockSimpleWorker::TASK_TYPE;
     $task->status = null;
+    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->save();
+    return $task;
+  }
+
+  private function createCompletedTask() {
+    $task = ScheduledTask::create();
+    $task->type = MockSimpleWorker::TASK_TYPE;
+    $task->status = ScheduledTask::STATUS_COMPLETED;
     $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $task->save();
     return $task;

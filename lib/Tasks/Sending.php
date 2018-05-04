@@ -16,6 +16,7 @@ if(!defined('ABSPATH')) exit;
  */
 class Sending {
   const TASK_TYPE = 'sending';
+  const RESULT_BATCH_SIZE = 5;
 
   private $task;
   private $queue;
@@ -221,10 +222,11 @@ class Sending {
     return in_array($prop, $this->common_fields);
   }
 
-  static function getScheduledQueues() {
+  static function getScheduledQueues($amount = self::RESULT_BATCH_SIZE) {
     $tasks = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->where('type', 'sending')
+      ->limit($amount)
       ->findMany();
     $result = array();
     foreach($tasks as $task) {
@@ -233,12 +235,13 @@ class Sending {
     return array_filter($result);
   }
 
-  static function getRunningQueues() {
+  static function getRunningQueues($amount = self::RESULT_BATCH_SIZE) {
     $tasks = ScheduledTask::orderByAsc('priority')
       ->orderByAsc('created_at')
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->where('type', 'sending')
+      ->limit($amount)
       ->findMany();
     $result = array();
     foreach($tasks as $task) {

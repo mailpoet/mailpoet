@@ -21,6 +21,7 @@ class SendingQueue {
   public $newsletter_task;
   public $timer;
   const BATCH_SIZE = 20;
+  const TASK_BATCH_SIZE = 5;
 
   function __construct($timer = false, $mailer_task = false, $newsletter_task = false) {
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
@@ -195,6 +196,6 @@ class SendingQueue {
   }
 
   static function getRunningQueues() {
-    return SendingTask::getRunningQueues();
+    return SendingTask::getRunningQueues(self::TASK_BATCH_SIZE);
   }
 }

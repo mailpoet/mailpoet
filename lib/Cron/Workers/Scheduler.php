@@ -18,6 +18,7 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 class Scheduler {
   public $timer;
   const UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT = 5;
+  const TASK_BATCH_SIZE = 5;
 
   function __construct($timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -177,6 +178,6 @@ class Scheduler {
   }
 
   static function getScheduledQueues() {
-    return SendingTask::getScheduledQueues();
+    return SendingTask::getScheduledQueues(self::TASK_BATCH_SIZE);
   }
 }
