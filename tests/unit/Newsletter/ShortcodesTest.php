@@ -83,14 +83,14 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItCanProcessDateShortcodes() {
     $date = new \DateTime(current_time('mysql'));
-    expect(Date::process('d'))->equals(date_i18n('d', current_time('timestamp')));
-    expect(Date::process('dordinal'))->equals(date_i18n('dS', current_time('timestamp')));
-    expect(Date::process('dtext'))->equals(date_i18n('l', current_time('timestamp')));
-    expect(Date::process('m'))->equals(date_i18n('m', current_time('timestamp')));
-    expect(Date::process('mtext'))->equals(date_i18n('F', current_time('timestamp')));
-    expect(Date::process('y'))->equals(date_i18n('Y', current_time('timestamp')));
+    expect(Date::process('[date:d]', 'd'))->equals(date_i18n('d', current_time('timestamp')));
+    expect(Date::process('[date:dordinal]', 'dordinal'))->equals(date_i18n('dS', current_time('timestamp')));
+    expect(Date::process('[date:dordinal]', 'dtext'))->equals(date_i18n('l', current_time('timestamp')));
+    expect(Date::process('[date:m]', 'm'))->equals(date_i18n('m', current_time('timestamp')));
+    expect(Date::process('[date:mtext]', 'mtext'))->equals(date_i18n('F', current_time('timestamp')));
+    expect(Date::process('[date:y]', 'y'))->equals(date_i18n('Y', current_time('timestamp')));
     // allow custom date formats (http://php.net/manual/en/function.date.php)
-    expect(Date::process('custom', 'format', 'U F'))->equals(date_i18n('U F', current_time('timestamp')));
+    expect(Date::process('[date:custom|format:U F]', 'custom', 'format', 'U F'))->equals(date_i18n('U F', current_time('timestamp')));
   }
 
   function testItCanProcessNewsletterShortcodes() {
@@ -152,13 +152,13 @@ class ShortcodesTest extends \MailPoetTest {
     );
     $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
     expect($result[0])->equals($this->subscriber->first_name);
-    // when subscriber is not empty and not an object, false is returned
+    // when subscriber is not empty and not an object, shortcode is returned
     $shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $subscriber = array()
     );
     $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
-    expect($result[0])->false();
+    expect($result[0])->equals('[subscriber:firstname | default:test]');
   }
 
   function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEmpty() {

@@ -6,6 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Date {
   static function process(
+    $shortcode,
     $action,
     $action_argument = false,
     $action_argument_value = false

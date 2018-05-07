@@ -10,6 +10,7 @@ class Link {
   const CATEGORY_NAME = 'link';
 
   static function process(
+    $shortcode,
     $action,
     $action_argument,
     $action_argument_value,

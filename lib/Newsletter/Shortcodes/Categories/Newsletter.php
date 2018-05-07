@@ -8,7 +8,9 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . "wp-includes/pluggable.php");
 
 class Newsletter {
-  static function process($action,
+  static function process(
+    $shortcode,
+    $action,
     $action_argument,
     $action_argument_value,
     $newsletter,

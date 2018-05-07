@@ -78,6 +78,7 @@ class Shortcodes {
             $custom_shortcode;
         }
         return $shortcode_class::process(
+          $shortcode,
           $shortcode_action,
           $shortcode_argument,
           $shortcode_argument_value,

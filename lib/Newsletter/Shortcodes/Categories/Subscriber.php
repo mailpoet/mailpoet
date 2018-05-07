@@ -9,6 +9,7 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Subscriber {
   static function process(
+    $shortcode,
     $action,
     $action_argument,
     $action_argument_value,
