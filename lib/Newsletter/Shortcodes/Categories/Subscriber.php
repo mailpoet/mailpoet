@@ -16,7 +16,7 @@ class Subscriber {
     $newsletter,
     $subscriber
   ) {
-    if($subscriber !== false && !is_object($subscriber)) return false;
+    if($subscriber !== false && !is_object($subscriber)) return $shortcode;
     $default_value = ($action_argument === 'default') ?
       $action_argument_value :
       '';
