@@ -29,4 +29,18 @@ class StatisticsNewsletters extends Model {
       $values
     );
   }
+
+  static function getAllForSubsciber(Subscriber $subscriber) {
+    return static::table_alias('statistics')
+      ->select('statistics.newsletter_id', 'newsletter_id')
+      ->select('newsletter_rendered_subject')
+      ->select('sent_at')
+      ->join(
+        SendingQueue::$_table,
+        array('statistics.queue_id', '=', 'queue.id'),
+        'queue'
+      )
+      ->where('statistics.subscriber_id', $subscriber->id())
+      ->orderByAsc('newsletter_id');
+  }
 }
