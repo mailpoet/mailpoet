@@ -16,6 +16,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Router;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -222,6 +223,34 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
     $updated_newsletter = Newsletter::findOne($newsletter->id);
     expect($updated_newsletter->status)->notEquals(Newsletter::STATUS_SENT);
+  }
+
+  function testItDoesNotRenderSubscriberShortcodeInSubjectWhenPreprocessingNewsletter() {
+    $newsletter = $this->newsletter;
+    $newsletter->subject = 'Newsletter for [subscriber:firstname] [date:dordinal]';
+    $queue = $this->queue;
+    $newsletter = $this->newsletter_task->preProcessNewsletter($newsletter, $queue);
+    $queue = SendingTask::getByNewsletterId($newsletter->id);
+    expect($queue->newsletter_rendered_subject)
+      ->contains(date_i18n('dS', Functions::currentTime('timestamp')));
+  }
+
+
+  function testItUsesRenderedNewsletterBodyAndSubjectFromQueueObjectWhenPreparingNewsletterForSending() {
+    $queue = $this->queue;
+    $queue->newsletter_rendered_body = array(
+      'html' => 'queue HTML body',
+      'text' => 'queue TEXT body'
+    );
+    $queue->newsletter_rendered_subject = 'queue subject';
+    $result = $this->newsletter_task->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $queue
+    );
+    expect($result['subject'])->equals('queue subject');
+    expect($result['body']['html'])->equals('queue HTML body');
+    expect($result['body']['text'])->equals('queue TEXT body');
   }
 
   function testItRendersShortcodesAndReplacesSubscriberDataInLinks() {
