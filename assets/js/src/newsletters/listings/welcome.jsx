@@ -156,7 +156,7 @@ const NewsletterListWelcome = React.createClass({
     });
   },
   renderStatus: function renderStatus(newsletter) {
-    const totalSent = (!parseInt(newsletter.total_sent, 10) === 0) ?
+    const totalSent = (parseInt(newsletter.total_sent, 10)) ?
       MailPoet.I18n.t('sentToXSubscribers')
         .replace('%$1d', newsletter.total_sent.toLocaleString()) :
       MailPoet.I18n.t('notSentYet');
