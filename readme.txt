@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.7.0
+Stable tag: 3.7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -116,11 +116,19 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 == Changelog ==
 
+= 3.7.1 - 2018-05-08 =
+* Added: export of subscriber information (email, personal data and subscription lists) to WordPress 4.9.6 and newer versions in compliance with GDPR requirements;
+* Added: notice for those who use legacy PHP versions (<5.6) - MailPoet recommends upgrading to PHP 7.0 or newer!
+* Improved: sending resource usage has been optimized for large sites. Thanks, Jose;
+* Improved: it is now easier to navigate away from the welcome/changelog page;
+* Fixed: functionality to pause and resume sending is restored;
+* Fixed: proper sent count is now displayed for welcome notifications. Merci Sébastien!
+
 = 3.7.0 - 2018-04-25 =
-* Fixed: Subscriber search functionality fixed.
+* Fixed: subscriber search functionality fixed.
 
 = 3.6.7 - 2018-04-24 =
-* Fixed: Duplicates in the database will not stop scheduled newsletters anymore.
+* Fixed: duplicates in the database will not stop scheduled newsletters anymore.
 
 = 3.6.6 - 2018-04-17 =
 * Fixed: missing database records no longer break the sending process. Thanks, Catalin;
