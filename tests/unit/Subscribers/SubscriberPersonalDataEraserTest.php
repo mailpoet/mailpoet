@@ -13,6 +13,9 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
 
   function _before() {
     $this->eraser = new SubscriberPersonalDataEraser();
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }
 
   function testExportWorksWhenSubscriberNotFound() {
@@ -26,7 +29,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
 
   function testItDeletesCustomFields() {
     $subscriber = Subscriber::createOrUpdate(array(
-      'email' => 'email.that@has.custom.fields',
+      'email' => 'eraser.test.email.that@has.custom.fields',
     ));
     $custom_field1 = CustomField::createOrUpdate(array(
       'name' => 'Custom field1',
@@ -39,7 +42,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     $subscriber->setCustomField($custom_field1->id(), 'Value');
     $subscriber->setCustomField($custom_field2->id(), 'Value');
 
-    $this->eraser->erase('email.that@has.custom.fields');
+    $this->eraser->erase('eraser.test.email.that@has.custom.fields');
 
     $subscriber_custom_fields = SubscriberCustomField::where('subscriber_id', $subscriber->id())->findMany();
     expect($subscriber_custom_fields)->count(2);
