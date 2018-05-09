@@ -24,4 +24,24 @@ class StatisticsClicks extends Model {
     }
     return $statistics->save();
   }
+
+  static function getAllForSubsciber(Subscriber $subscriber) {
+    return static::table_alias('clicks')
+      ->select('clicks.id', 'id')
+      ->select('newsletter_rendered_subject')
+      ->select('clicks.created_at', 'created_at')
+      ->select('url')
+      ->join(
+       SendingQueue::$_table,
+       array('clicks.queue_id', '=', 'queue.id'),
+       'queue'
+      )
+      ->join(
+        NewsletterLink::$_table,
+        array('clicks.link_id', '=', 'link.id'),
+        'link'
+      )
+      ->where('clicks.subscriber_id', $subscriber->id())
+      ->orderByAsc('url');
+  }
 }
