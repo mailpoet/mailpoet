@@ -131,6 +131,7 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupImages();
       $this->setupPersonalDataExporters();
+      $this->setupPersonalDataErasers();
 
       $this->setupChangelog();
       $this->setupCronTrigger();
@@ -270,6 +271,11 @@ class Initializer {
   function setupPersonalDataExporters() {
     $exporters = new PersonalDataExporters();
     $exporters->init();
+  }
+
+  function setupPersonalDataErasers() {
+    $erasers = new PersonalDataErasers();
+    $erasers->init();
   }
 
   function setupPHPVersionWarnings() {
