@@ -131,6 +131,7 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupImages();
       $this->setupPersonalDataExporters();
+      $this->setupPrivacyPolicy();
 
       $this->setupChangelog();
       $this->setupCronTrigger();
@@ -265,6 +266,11 @@ class Initializer {
   function setupHooks() {
     $hooks = new Hooks();
     $hooks->init();
+  }
+
+  function setupPrivacyPolicy() {
+    $privacy_policy = new PrivacyPolicy();
+    $privacy_policy->init();
   }
 
   function setupPersonalDataExporters() {
