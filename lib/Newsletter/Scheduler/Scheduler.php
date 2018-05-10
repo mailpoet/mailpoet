@@ -108,6 +108,14 @@ class Scheduler {
   }
 
   static function createPostNotificationQueue($newsletter) {
+    $existing_notification_history = Newsletter::where('parent_id', $newsletter->id)
+      ->where('type', Newsletter::TYPE_NOTIFICATION_HISTORY)
+      ->where('status', Newsletter::STATUS_SENDING)
+      ->findOne();
+    if($existing_notification_history) {
+      return;
+    }
+
     $next_run_date = self::getNextRunDate($newsletter->schedule);
     if(!$next_run_date) return;
     // do not schedule duplicate queues for the same time

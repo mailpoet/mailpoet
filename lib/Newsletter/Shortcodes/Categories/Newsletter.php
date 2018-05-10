@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Newsletter as NewsletterModel;
+use MailPoet\WP\Posts as WPPosts;
 
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . "wp-includes/pluggable.php");
@@ -45,7 +46,7 @@ class Newsletter {
   private static function getLatestWPPost($post_ids) {
     $posts = new \WP_Query(
       array(
-        'post_type' => get_post_types(),
+        'post_type' => WPPosts::getTypes(),
         'post__in' => $post_ids,
         'posts_per_page' => 1,
         'ignore_sticky_posts' => true,
