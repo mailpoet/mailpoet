@@ -16,6 +16,7 @@ use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Subscribers\Source;
 
 class SubscribersTest extends \MailPoetTest {
   function _before() {
@@ -29,7 +30,8 @@ class SubscribersTest extends \MailPoetTest {
       'email' => 'john@mailpoet.com',
       'first_name' => 'John',
       'last_name' => 'Doe',
-      'status' => Subscriber::STATUS_UNCONFIRMED
+      'status' => Subscriber::STATUS_UNCONFIRMED,
+      'source' => Source::API,
     ));
     $this->subscriber_2 = Subscriber::createOrUpdate(array(
       'email' => 'jane@mailpoet.com',
@@ -39,7 +41,8 @@ class SubscribersTest extends \MailPoetTest {
       'segments' => array(
         $this->segment_1->id,
         $this->segment_2->id
-      )
+      ),
+      'source' => Source::API,
     ));
 
     $this->form = Form::createOrUpdate(array(
@@ -125,6 +128,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])
       ->equals('Your email address is invalid!');
+    expect($subscriber->source)->equals('administrator');
   }
 
   function testItCanSaveAnExistingSubscriber() {
@@ -140,8 +144,8 @@ class SubscribersTest extends \MailPoetTest {
       Subscriber::findOne($this->subscriber_2->id)->asArray()
     );
     expect($response->data['first_name'])->equals('Super Jane');
+    expect($response->data['source'])->equals('api');
   }
-
 
   function testItCanRemoveListsFromAnExistingSubscriber() {
     $router = new Subscribers();
