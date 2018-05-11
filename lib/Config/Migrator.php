@@ -171,6 +171,7 @@ class Migrator {
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
       'unconfirmed_data longtext,',
+      'source ENUM("form", "imported", "administrator", "api", "wordpress_user", "unknown") DEFAULT "unknown",',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'KEY wp_user_id (wp_user_id),',
