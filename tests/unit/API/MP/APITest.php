@@ -294,6 +294,7 @@ class APITest extends \MailPoetTest {
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
     expect($result['cf_' . $custom_field->id])->equals('test');
+    expect($result['source'])->equals('api');
   }
 
   function testItSubscribesToSegmentsWhenAddingSubscriber() {
