@@ -82,15 +82,21 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   function testItCanProcessDateShortcodes() {
-    $date = new \DateTime(current_time('mysql'));
-    expect(Date::process('[date:d]', 'd'))->equals(date_i18n('d', current_time('timestamp')));
-    expect(Date::process('[date:dordinal]', 'dordinal'))->equals(date_i18n('dS', current_time('timestamp')));
-    expect(Date::process('[date:dordinal]', 'dtext'))->equals(date_i18n('l', current_time('timestamp')));
-    expect(Date::process('[date:m]', 'm'))->equals(date_i18n('m', current_time('timestamp')));
-    expect(Date::process('[date:mtext]', 'mtext'))->equals(date_i18n('F', current_time('timestamp')));
-    expect(Date::process('[date:y]', 'y'))->equals(date_i18n('Y', current_time('timestamp')));
+    $shortcode_details = array('action' => 'd');
+    expect(Date::process($shortcode_details))->equals(date_i18n('d', current_time('timestamp')));
+    $shortcode_details = array('action' => 'dordinal');
+    expect(Date::process($shortcode_details))->equals(date_i18n('dS', current_time('timestamp')));
+    $shortcode_details = array('action' => 'dtext');
+    expect(Date::process($shortcode_details))->equals(date_i18n('l', current_time('timestamp')));
+    $shortcode_details = array('action' => 'm');
+    expect(Date::process($shortcode_details))->equals(date_i18n('m', current_time('timestamp')));
+    $shortcode_details = array('action' => 'mtext');
+    expect(Date::process($shortcode_details))->equals(date_i18n('F', current_time('timestamp')));
+    $shortcode_details = array('action' => 'y');
+    expect(Date::process($shortcode_details))->equals(date_i18n('Y', current_time('timestamp')));
     // allow custom date formats (http://php.net/manual/en/function.date.php)
-    expect(Date::process('[date:custom|format:U F]', 'custom', 'format', 'U F'))->equals(date_i18n('U F', current_time('timestamp')));
+    $shortcode_details = array('action' => 'custom', 'action_argument' => 'format', 'action_argument_value' => 'U F');
+    expect(Date::process($shortcode_details))->equals(date_i18n('U F', current_time('timestamp')));
   }
 
   function testItCanProcessNewsletterShortcodes() {

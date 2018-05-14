@@ -9,18 +9,15 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Subscriber {
   static function process(
-    $shortcode,
-    $action,
-    $action_argument,
-    $action_argument_value,
+    $shortcode_details,
     $newsletter,
     $subscriber
   ) {
-    if($subscriber !== false && !is_object($subscriber)) return $shortcode;
-    $default_value = ($action_argument === 'default') ?
-      $action_argument_value :
+    if($subscriber !== false && !is_object($subscriber)) return $shortcode_details['shortcode'];
+    $default_value = ($shortcode_details['action_argument'] === 'default') ?
+      $shortcode_details['action_argument_value'] :
       '';
-    switch($action) {
+    switch($shortcode_details['action']) {
       case 'firstname':
         return (!empty($subscriber->first_name)) ? $subscriber->first_name : $default_value;
       case 'lastname':
@@ -37,7 +34,7 @@ class Subscriber {
         return SubscriberModel::filter('subscribed')
           ->count();
       default:
-        if(preg_match('/cf_(\d+)/', $action, $custom_field) &&
+        if(preg_match('/cf_(\d+)/', $shortcode_details['action'], $custom_field) &&
           !empty($subscriber->id)
         ) {
           $custom_field = SubscriberCustomField
