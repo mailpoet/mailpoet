@@ -12,9 +12,10 @@ class NewslettersExporter {
   const LIMIT = 100;
 
   function export($email, $page = 1) {
+    $data = $this->exportSubscriber(Subscriber::findOne(trim($email)), $page);
     return array(
-      'data' => $this->exportSubscriber(Subscriber::findOne(trim($email)), $page),
-      'done' => true,
+      'data' => $data,
+      'done' => count($data) < self::LIMIT,
     );
   }
 
