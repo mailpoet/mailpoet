@@ -40,16 +40,31 @@ class NewslettersExporter {
   private function exportNewsletter($statistics_row, $newsletters, $subscriber) {
     $newsletter_data = array();
     $newsletter_data[] = array(
-      'name' => __('Email subject'),
+      'name' => __('Email subject', 'mailpoet'),
       'value' => $statistics_row['newsletter_rendered_subject'],
     );
     $newsletter_data[] = array(
-      'name' => __('Sent at'),
+      'name' => __('Sent at', 'mailpoet'),
       'value' => $statistics_row['sent_at'],
     );
+    if(isset($statistics_row['opened_at'])) {
+      $newsletter_data[] = array(
+        'name' => __('Opened', 'mailpoet'),
+        'value' => 'Yes',
+      );
+      $newsletter_data[] = array(
+        'name' => __('Opened at', 'mailpoet'),
+        'value' => $statistics_row['opened_at'],
+      );
+    } else {
+      $newsletter_data[] = array(
+        'name' => __('Opened', 'mailpoet'),
+        'value' => __('No', 'mailpoet'),
+      );
+    }
     if(isset($newsletters[$statistics_row['newsletter_id']])) {
       $newsletter_data[] = array(
-        'name' => __('Email preview'),
+        'name' => __('Email preview', 'mailpoet'),
         'value' => Url::getViewInBrowserUrl(
           '',
           $newsletters[$statistics_row['newsletter_id']],
@@ -61,7 +76,7 @@ class NewslettersExporter {
     }
     return array(
       'group_id' => 'mailpoet-newsletters',
-      'group_label' => __('MailPoet Emails Sent'),
+      'group_label' => __('MailPoet Emails Sent', 'mailpoet'),
       'item_id' => 'newsletter-' . $statistics_row['newsletter_id'],
       'data' => $newsletter_data,
     );

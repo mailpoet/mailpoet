@@ -9,11 +9,11 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   function _before() {
     $this->phpVersionWarning = new PHPVersionWarnings();
-    update_option('dismissed-php-version-outdated-notice', false);
+    delete_transient('dismissed-php-version-outdated-notice');
   }
 
   function _after() {
-    update_option('dismissed-php-version-outdated-notice', false);
+    delete_transient('dismissed-php-version-outdated-notice');
   }
 
   function testItPrintsWarningFor53() {
