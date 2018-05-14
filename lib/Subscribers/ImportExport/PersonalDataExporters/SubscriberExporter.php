@@ -18,7 +18,7 @@ class SubscriberExporter {
     if(!$subscriber) return array();
     return array(array(
       'group_id' => 'mailpoet-subscriber',
-      'group_label' => __('MailPoet Subscriber Data'),
+      'group_label' => __('MailPoet Subscriber Data', 'mailpoet'),
       'item_id' => 'subscriber-' . $subscriber->id,
       'data' => $this->getSubscriberExportData($subscriber->withCustomFields()),
     ));
@@ -28,36 +28,36 @@ class SubscriberExporter {
     $custom_fields = $this->getCustomFields();
     $result = array(
       array(
-        'name' => __('First Name'),
+        'name' => __('First Name', 'mailpoet'),
         'value' => $subscriber->first_name,
       ),
       array(
-        'name' => __('Last Name'),
+        'name' => __('Last Name', 'mailpoet'),
         'value' => $subscriber->last_name,
       ),
       array(
-        'name' => __('Email'),
+        'name' => __('Email', 'mailpoet'),
         'value' => $subscriber->email,
       ),
       array(
-        'name' => __('Status'),
+        'name' => __('Status', 'mailpoet'),
         'value' => $subscriber->status,
       ),
     );
     if($subscriber->subscribed_ip) {
       $result[] = array(
-        'name' => __('Subscribed IP'),
+        'name' => __('Subscribed IP', 'mailpoet'),
         'value' => $subscriber->subscribed_ip,
       );
     }
     if($subscriber->confirmed_ip) {
       $result[] = array(
-        'name' => __('Confirmed IP'),
+        'name' => __('Confirmed IP', 'mailpoet'),
         'value' => $subscriber->confirmed_ip,
       );
     }
     $result[] = array(
-      'name' => __('Created at timestamp'),
+      'name' => __('Created at', 'mailpoet'),
       'value' => $subscriber->created_at,
     );
 

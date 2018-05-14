@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
+use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 
 class NewslettersExporterTest extends \MailPoetTest {
@@ -81,7 +82,51 @@ class NewslettersExporterTest extends \MailPoetTest {
       'queue_id' => $queue->id(),
     )));
     $result = $this->exporter->export('user1@with.newsletters');
-    expect($result['data'][0]['data'][2]['name'])->equals('Email preview');
-    expect($result['data'][0]['data'][2]['value'])->contains('mailpoet_router&endpoint=view_in_browser&action=view&data=');
+    expect($result['data'][0]['data'][3]['name'])->equals('Email preview');
+    expect($result['data'][0]['data'][3]['value'])->contains('mailpoet_router&endpoint=view_in_browser&action=view&data=');
+  }
+
+  function testExportOpens() {
+    $subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'user2@with.newsletters',
+    ));
+    $newsletter1 = Newsletter::createOrUpdate(array(
+      'subject' => 'Email Subject1',
+      'type' => Newsletter::TYPE_STANDARD
+    ));
+    $newsletter2 = Newsletter::createOrUpdate(array(
+      'subject' => 'Email Subject2',
+      'type' => Newsletter::TYPE_STANDARD
+    ));
+    $queue1 = SendingQueue::createOrUpdate(array(
+      'newsletter_rendered_subject' => 'Email Subject1',
+      'task_id' => 2,
+      'newsletter_id' => $newsletter1->id(),
+    ));
+    $queue2 = SendingQueue::createOrUpdate(array(
+      'newsletter_rendered_subject' => 'Email Subject1',
+      'task_id' => 2,
+      'newsletter_id' => $newsletter1->id(),
+    ));
+    StatisticsNewsletters::createMultiple(array(array(
+      'newsletter_id' => $newsletter1->id(),
+      'subscriber_id' => $subscriber->id(),
+      'queue_id' => $queue1->id(),
+    )));
+    StatisticsNewsletters::createMultiple(array(array(
+      'newsletter_id' => $newsletter2->id(),
+      'subscriber_id' => $subscriber->id(),
+      'queue_id' => $queue2->id(),
+    )));
+    StatisticsOpens::createOrUpdate(array(
+      'subscriber_id' => $subscriber->id(),
+      'newsletter_id' => $newsletter1->id(),
+      'queue_id' => $queue1->id(),
+      'created_at' => '2017-01-02 12:23:45',
+    ));
+    $result = $this->exporter->export('user2@with.newsletters');
+    expect($result['data'][0]['data'])->contains(array('name' => 'Opened', 'value' => 'Yes'));
+    expect($result['data'][0]['data'])->contains(array('name' => 'Opened at', 'value' => '2017-01-02 12:23:45'));
+    expect($result['data'][1]['data'])->contains(array('name' => 'Opened', 'value' => 'No'));
   }
 }

@@ -47,7 +47,7 @@ class SubscriberExporterTest extends \MailPoetTest {
       array('name' => 'Last Name', 'value' => 'Doe'),
       array('name' => 'Email', 'value' => 'email.that@has.no.custom.fields'),
       array('name' => 'Status', 'value' => 'unconfirmed'),
-      array('name' => 'Created at timestamp', 'value' => '2018-05-03 10:30:08'),
+      array('name' => 'Created at', 'value' => '2018-05-03 10:30:08'),
     );
     expect($result['data'][0]['data'])->equals($expected);
   }
