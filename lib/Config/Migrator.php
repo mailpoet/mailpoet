@@ -200,7 +200,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'custom_field_id int(11) unsigned NOT NULL,',
-      'value varchar(255) NOT NULL DEFAULT "",',
+      'value text NOT NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
