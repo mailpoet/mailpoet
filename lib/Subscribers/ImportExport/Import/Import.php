@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
+use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 
 class Import {
@@ -108,6 +109,7 @@ class Import {
         // add, if required, missing required fields to new subscribers
         $new_subscribers = $this->addMissingRequiredFields($new_subscribers);
         $new_subscribers = $this->setSubscriptionStatusToSubscribed($new_subscribers);
+        $new_subscribers = $this->setSource($new_subscribers);
         $created_subscribers =
           $this->createOrUpdateSubscribers(
             'create',
@@ -283,6 +285,17 @@ class Import {
     $subscribers_data['data']['status'] = array_map(function() {
       return Subscriber::STATUS_SUBSCRIBED;
     }, $subscribers_data['data']['status']);
+    return $subscribers_data;
+  }
+
+  function setSource($subscribers_data) {
+    $subscribers_count = count($subscribers_data['data'][key($subscribers_data['data'])]);
+    $subscribers_data['fields'][] = 'source';
+    $subscribers_data['data']['source'] = array_fill(
+      0,
+      $subscribers_count,
+      Source::IMPORTED
+    );
     return $subscribers_data;
   }
 

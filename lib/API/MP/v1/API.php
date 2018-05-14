@@ -6,6 +6,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Subscribers\Source;
 
 if(!defined('ABSPATH')) exit;
 
@@ -165,6 +166,7 @@ class API {
     // add subscriber
     $new_subscriber = Subscriber::create();
     $new_subscriber->hydrate($default_fields);
+    $new_subscriber = Source::setSource($new_subscriber, Source::API);
     $new_subscriber->save();
     if($new_subscriber->getErrors() !== false) {
       throw new \Exception(

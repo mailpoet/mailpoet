@@ -452,6 +452,8 @@ class ImportTest extends \MailPoetTest {
     expect($new_subscribers)->count(2);
     expect($new_subscribers[0]->status)->equals('subscribed');
     expect($new_subscribers[1]->status)->equals('subscribed');
+    expect($new_subscribers[0]->source)->equals('imported');
+    expect($new_subscribers[1]->source)->equals('imported');
   }
 
   function testItRunsImport() {

@@ -6,6 +6,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Subscribers\Source;
 
 if(!defined('ABSPATH')) exit;
 
@@ -50,12 +51,14 @@ class WP {
           'first_name' => $first_name,
           'last_name' => $last_name,
           'status' => Subscriber::STATUS_SUBSCRIBED,
+          'source' => Source::WORDPRESS_USER,
         );
 
         if($subscriber !== false) {
           $data['id'] = $subscriber->id();
           $data['deleted_at'] = null; // remove the user from the trash
           unset($data['status']); // don't override status for existing users
+          unset($data['source']); // don't override status for existing users
         }
 
         $subscriber = Subscriber::createOrUpdate($data);
@@ -137,12 +140,12 @@ class WP {
       ', $subscribers_table, $wpdb->users))->findArray();
 
     Subscriber::raw_execute(sprintf('
-      INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at)
-        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %2$s wu
+      INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at, source)
+        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP(), "%3$s" FROM %2$s wu
           LEFT JOIN %1$s mps ON wu.id = mps.wp_user_id
           WHERE mps.wp_user_id IS NULL AND wu.user_email != ""
       ON DUPLICATE KEY UPDATE wp_user_id = wu.id
-    ', $subscribers_table, $wpdb->users));
+    ', $subscribers_table, $wpdb->users, Source::WORDPRESS_USER));
 
     return $inserterd_user_ids;
   }

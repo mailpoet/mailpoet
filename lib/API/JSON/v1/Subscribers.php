@@ -14,6 +14,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
+use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\WP\Hooks;
 
@@ -189,6 +190,11 @@ class Subscribers extends APIEndpoint {
 
     if(!empty($errors)) {
       return $this->badRequest($errors);
+    }
+
+    if($subscriber->isNew()) {
+      $subscriber = Source::setSource($subscriber, Source::ADMINISTRATOR);
+      $subscriber->save();
     }
 
     if(!empty($data['segments'])) {
