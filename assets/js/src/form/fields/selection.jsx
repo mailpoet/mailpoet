@@ -234,7 +234,6 @@ const Selection = React.createClass({
           className="default"
           value={value}
           title={searchLabel}
-          selected={value === selectedValues}
         >
           { label }
         </option>
