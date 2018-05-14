@@ -2,6 +2,7 @@
 namespace MailPoet\Test\Newsletter\Scheduler;
 
 use Carbon\Carbon;
+use Mailpoet\Config\Hooks;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -10,6 +11,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Posts as WPPosts;
 
 class SchedulerTest extends \MailPoetTest {
   function testItSetsConstants() {
@@ -436,6 +438,71 @@ class SchedulerTest extends \MailPoetTest {
       ->equals('2017-01-01 13:01:00');
   }
 
+  function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
+    $hook = new Hooks;
+
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_NOTIFICATION);
+
+    $this->_createNewsletterOptions(
+      $newsletter->id,
+      Newsletter::TYPE_NOTIFICATION,
+      array(
+        'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
+        'schedule' => '* * * * *'
+      )
+    );
+
+    $this->_removePostNotificationHooks();
+    register_post_type('post', array('exclude_from_search' => true));
+    $hook->setupPostNotifications();
+
+    $post_data = array(
+      'post_title' => 'title',
+      'post_status' => 'publish',
+    );
+    wp_insert_post($post_data);
+
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    expect($queue)->equals(false);
+
+    $this->_removePostNotificationHooks();
+    register_post_type('post', array('exclude_from_search' => false));
+    $hook->setupPostNotifications();
+
+    wp_insert_post($post_data);
+
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    expect($queue)->notequals(false);
+  }
+
+  function testSchedulerWontRunIfUnsentNotificationHistoryExists() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_NOTIFICATION);
+
+    $this->_createNewsletterOptions(
+      $newsletter->id,
+      Newsletter::TYPE_NOTIFICATION,
+      array(
+        'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
+        'schedule' => '* * * * *'
+      )
+    );
+
+    $notification_history = Newsletter::create();
+    $notification_history->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $notification_history->status = Newsletter::STATUS_SENDING;
+    $notification_history->parent_id = $newsletter->id;
+    $notification_history->save();
+
+    $post_data = array(
+      'post_title' => 'title',
+      'post_status' => 'publish',
+    );
+    wp_insert_post($post_data);
+
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    expect($queue)->equals(false);
+  }
+
   function _createQueue(
     $newsletter_id,
     $scheduled_at = null,
@@ -476,6 +543,16 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter_option->value = $value;
       $newsletter_option->save();
       expect($newsletter_option->getErrors())->false();
+    }
+  }
+
+  function _removePostNotificationHooks() {
+    foreach(WPPosts::getTypes() as $post_type) {
+      remove_filter(
+        'publish_' . $post_type,
+        '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification',
+        10, 1
+      );
     }
   }
 

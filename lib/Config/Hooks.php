@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Models\Setting;
+use MailPoet\WP\Posts as WPPosts;
 
 class Hooks {
   function init() {
@@ -166,8 +167,7 @@ class Hooks {
   }
 
   function setupPostNotifications() {
-    $post_types = get_post_types();
-    foreach($post_types as $post_type) {
+    foreach(WPPosts::getTypes() as $post_type) {
       add_filter(
         'publish_' . $post_type,
         '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification',
