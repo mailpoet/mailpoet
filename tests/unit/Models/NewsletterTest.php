@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Models;
 
+use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -838,6 +839,38 @@ class NewsletterTest extends \MailPoetTest {
     expect($result[0]->id)->equals($newsletter_1->id);
     expect($result[1]->id)->equals($newsletter_2->id);
   }
+
+  function testPauseTaskWhenDisablePostNotification() {
+    $newsletter = Newsletter::createOrUpdate(array(
+      'type' => Newsletter::TYPE_NOTIFICATION
+    ));
+    $task = ScheduledTask::createOrUpdate(array('status' => ScheduledTask::STATUS_SCHEDULED));
+    SendingQueue::createOrUpdate(array(
+      'newsletter_id' => $newsletter->id(),
+      'task_id' => $task->id(),
+    ));
+    $newsletter->setStatus(Newsletter::STATUS_DRAFT);
+    $task_found = ScheduledTask::findOne($task->id());
+    expect($task_found->status)->equals(ScheduledTask::STATUS_PAUSED);
+  }
+
+  function testUnPauseTaskWhenEnablePostNotification() {
+    $newsletter = Newsletter::createOrUpdate(array(
+      'type' => Newsletter::TYPE_NOTIFICATION
+    ));
+    $task = ScheduledTask::createOrUpdate(array(
+      'status' => ScheduledTask::STATUS_PAUSED,
+      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
+    ));
+    SendingQueue::createOrUpdate(array(
+      'newsletter_id' => $newsletter->id(),
+      'task_id' => $task->id(),
+    ));
+    $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
+    $task_found = ScheduledTask::findOne($task->id());
+    expect($task_found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+  }
+
 
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);

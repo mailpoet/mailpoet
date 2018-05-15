@@ -145,6 +145,12 @@ class SendingTest extends \MailPoetTest {
     expect(SendingTask::getScheduledQueues($amount))->count($amount);
   }
 
+  function testItDoesNotGetPaused() {
+    $this->_after();
+    $this->createNewSendingTask(['status' => ScheduledTask::STATUS_PAUSED]);
+    expect(SendingTask::getScheduledQueues())->count(0);
+  }
+
   function testItGetsRunningQueues() {
     $this->sending->status = null;
     $this->sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
