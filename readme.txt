@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.7.1
+Stable tag: 3.7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,15 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.7.2 - 2018-05-15 =
+* Added: list of emails a subscriber viewed to GDPR data export;
+* Added: list of links a subscriber clicked to GDPR data export;
+* Added: a tool to forget subscriber's information for GDPR related data erasure;
+* Added: Privacy policy which can be used by WordPress's privacy tool in compliance with GDPR;
+* Improved: performance for sites using many post notification emails. Thanks Jose!
+* Fixed: Javascript warnings on segments page are removed.
+* Fixed: custom field values longer than 255 characters can be stored. Thanks Scott!
 
 = 3.7.1 - 2018-05-08 =
 * Added: export of subscriber information (email, personal data and subscription lists) to WordPress 4.9.6 and newer versions in compliance with GDPR requirements;
