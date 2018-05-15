@@ -1,5 +1,6 @@
 import React from 'react';
 import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadcrumb.jsx';
+import AutomaticEmailEvent from 'newsletters/types/automatic_emails/event.jsx';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
@@ -17,57 +18,15 @@ class AutomaticEmailEventsList extends React.Component {
   }
 
   displayEvents() {
-    const events = _.map(this.emailEvents, (event, index) => {
-      let action;
-
-      if (this.email.premium) {
-        action = (
-          <a
-            href="?page=mailpoet-premium"
-            target="_blank"
-          >
-            {MailPoet.I18n.t('premiumFeatureLink')}
-          </a>
-        );
-      } else {
-        const disabled = event.soon;
-
-        action = (
-          <a
-            className="button button-primary"
-            disabled={disabled}
-            onClick={!disabled ? this.eventsConfigurator.bind(null, event.slug) : null}
-          >
-            {event.actionButtonTitle || MailPoet.I18n.t('setUp')}
-          </a>
-        );
-      }
-
-      return (
-        <li key={index} data-type={event.slug}>
-          <div>
-            <div className="mailpoet_thumbnail">
-              {event.thumbnailImage ? <img src={event.thumbnailImage} alt="" /> : null}
-            </div>
-            <div className="mailpoet_description">
-              <div className="title_and_badge">
-                <h3>{event.title} {event.soon ? `(${MailPoet.I18n.t('soon').toLowerCase()})` : ''}</h3>
-                {event.badge ? (
-                  <span className={`mailpoet_badge mailpoet_badge_${event.badge.style}`}>
-                    {event.badge.text}
-                  </span>
-                  ) : ''
-                }
-              </div>
-              <p>{event.description}</p>
-            </div>
-            <div className="mailpoet_actions">
-              {action}
-            </div>
-          </div>
-        </li>
-      );
-    });
+    const events = _.map(this.emailEvents, (event, index) => (
+      <AutomaticEmailEvent
+        premium={this.email.premium}
+        event={event}
+        key={index}
+        eventsConfigurator={this.eventsConfigurator}
+      />
+      )
+    );
 
     return (
       <ul className="mailpoet_boxes woocommerce clearfix">
