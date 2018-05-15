@@ -827,6 +827,7 @@ class SubscriberTest extends \MailPoetTest {
       $subscriber_custom_field->subscriber_id = ($custom_field !== 5) ?
         $subscriber->id :
         100; // create one record with a nonexistent subscriber id
+      $subscriber_custom_field->value = 'somevalue';
       $subscriber_custom_field->save();
     }
     expect(SubscriberCustomField::findMany())->count(5);
