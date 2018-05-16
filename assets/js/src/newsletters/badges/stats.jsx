@@ -106,12 +106,13 @@ class StatsBadge extends React.Component {
 StatsBadge.propTypes = {
   stat: PropTypes.string.isRequired,
   rate: PropTypes.number.isRequired,
-  tooltipId: PropTypes.string.isRequired,
+  tooltipId: PropTypes.string,
   headline: PropTypes.string,
 };
 
 StatsBadge.defaultProps = {
   headline: '',
+  tooltipId: undefined,
 };
 
 export default StatsBadge;
