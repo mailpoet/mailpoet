@@ -130,7 +130,7 @@ const NewsletterTypes = React.createClass({
 
         <ul className="mailpoet_boxes clearfix">
           {types.map(type => (
-            <li key={type.slug} data-type={type.slug}>
+            <li key={type.slug} data-type={type.slug} className="mailpoet_newsletter_types">
               <div>
                 <div className="mailpoet_thumbnail">
                   {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
