@@ -131,7 +131,8 @@ class Migrator {
       'subscriber_id int(11) unsigned NOT NULL,',
       'processed int(1) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (task_id, subscriber_id)',
+      'PRIMARY KEY  (task_id, subscriber_id),',
+      'KEY subscriber_id (subscriber_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
