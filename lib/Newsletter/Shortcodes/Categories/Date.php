@@ -6,9 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Date {
   static function process(
-    $action,
-    $action_argument = false,
-    $action_argument_value = false
+    $shortcode_details
   ) {
     $action_mapping = array(
       'd' => 'd',
@@ -18,11 +16,11 @@ class Date {
       'mtext' => 'F',
       'y' => 'Y'
     );
-    if(!empty($action_mapping[$action])) {
-      return date_i18n($action_mapping[$action], WPFunctions::currentTime('timestamp'));
+    if(!empty($action_mapping[$shortcode_details['action']])) {
+      return date_i18n($action_mapping[$shortcode_details['action']], WPFunctions::currentTime('timestamp'));
     }
-    return ($action === 'custom' && $action_argument === 'format') ?
-      date_i18n($action_argument_value, WPFunctions::currentTime('timestamp')) :
+    return ($shortcode_details['action'] === 'custom' && $shortcode_details['action_argument'] === 'format') ?
+      date_i18n($shortcode_details['action_argument_value'], WPFunctions::currentTime('timestamp')) :
       false;
   }
 }

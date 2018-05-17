@@ -49,20 +49,21 @@ class Shortcodes {
     $processed_shortcodes = array_map(
       function($shortcode) use ($content, $_this) {
         $shortcode_details = $_this->match($shortcode);
-        $shortcode_category = !empty($shortcode_details['category']) ?
-          ucfirst($shortcode_details['category']) :
+        $shortcode_details['shortcode'] = $shortcode;
+        $shortcode_details['category'] = !empty($shortcode_details['category']) ?
+          $shortcode_details['category'] :
           false;
-        $shortcode_action = !empty($shortcode_details['action']) ?
+        $shortcode_details['action'] = !empty($shortcode_details['action']) ?
           $shortcode_details['action'] :
           false;
-        $shortcode_class =
-          Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . $shortcode_category;
-        $shortcode_argument = !empty($shortcode_details['argument']) ?
+        $shortcode_details['action_argument'] = !empty($shortcode_details['argument']) ?
           $shortcode_details['argument'] :
           false;
-        $shortcode_argument_value = !empty($shortcode_details['argument_value']) ?
+        $shortcode_details['action_argument_value'] = !empty($shortcode_details['argument_value']) ?
           $shortcode_details['argument_value'] :
           false;
+        $shortcode_class =
+          Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . ucfirst($shortcode_details['category']);
         if(!class_exists($shortcode_class)) {
           $custom_shortcode = apply_filters(
             'mailpoet_newsletter_shortcode',
@@ -78,9 +79,7 @@ class Shortcodes {
             $custom_shortcode;
         }
         return $shortcode_class::process(
-          $shortcode_action,
-          $shortcode_argument,
-          $shortcode_argument_value,
+          $shortcode_details,
           $_this->newsletter,
           $_this->subscriber,
           $_this->queue,

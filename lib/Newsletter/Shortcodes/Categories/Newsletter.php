@@ -9,15 +9,14 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . "wp-includes/pluggable.php");
 
 class Newsletter {
-  static function process($action,
-    $action_argument,
-    $action_argument_value,
+  static function process(
+    $shortcode_details,
     $newsletter,
     $subscriber,
     $queue,
     $content
   ) {
-    switch($action) {
+    switch($shortcode_details['action']) {
       case 'subject':
         return ($newsletter) ? $newsletter->subject : false;
 
