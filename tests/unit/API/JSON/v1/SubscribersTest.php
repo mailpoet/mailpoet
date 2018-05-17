@@ -492,7 +492,7 @@ class SubscribersTest extends \MailPoetTest {
     ));
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $subscriber = Subscriber::findOne($response->data['id']);
+    $subscriber = Subscriber::where('email', 'toto@mailpoet.com')->findOne();
     $subscriber_segments = $subscriber->segments()->findArray();
     expect($subscriber_segments)->count(2);
     expect($subscriber_segments[0]['id'])->equals($form['settings']['segments'][0]);
@@ -515,25 +515,6 @@ class SubscribersTest extends \MailPoetTest {
 
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please select a list.');
-  }
-
-  function testItCanFilterOutNonFormFieldsWhenSubscribing() {
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
-      $this->obfuscatedEmail => 'toto@mailpoet.com',
-      'form_id' => $this->form->id,
-      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id),
-      // exists in table and in the form
-      'first_name' => 'aaa',
-      // exists in table, but not in the form
-      'last_name' => 'bbb',
-      // doesn't exist
-      'bogus' => 'hahaha'
-    ));
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['first_name'])->equals('aaa');
-    expect($response->data['last_name'])->isEmpty();
-    expect(isset($response->data['bogus']))->false();
   }
 
   function testItCannotMassSubscribe() {
@@ -569,7 +550,7 @@ class SubscribersTest extends \MailPoetTest {
     ));
 
     // Try to resubscribe an existing subscriber that was updated just now
-    $subscriber = Subscriber::findOne($response->data['id']);
+    $subscriber = Subscriber::where('email', 'toto@mailpoet.com')->findOne();
     $subscriber->created_at = Carbon::yesterday();
     $subscriber->updated_at = Carbon::now();
     $subscriber->save();

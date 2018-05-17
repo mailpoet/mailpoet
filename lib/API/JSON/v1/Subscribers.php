@@ -170,7 +170,7 @@ class Subscribers extends APIEndpoint {
       }
 
       return $this->successResponse(
-        Subscriber::findOne($subscriber->id)->asArray(),
+        array(),
         $meta
       );
     }
