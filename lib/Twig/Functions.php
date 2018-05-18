@@ -3,6 +3,7 @@
 namespace MailPoet\Twig;
 
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 
@@ -67,6 +68,11 @@ class Functions extends \Twig_Extension {
       new \Twig_SimpleFunction(
         'mailpoet_has_valid_premium_key',
         array($this, 'hasValidPremiumKey'),
+        array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
+        'mailpoet_installed_last_two_weeks',
+        array($this, 'installedLastTwoWeeks'),
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
@@ -163,6 +169,15 @@ class Functions extends \Twig_Extension {
   function hasValidPremiumKey() {
     $checker = new ServicesChecker();
     return $checker->isPremiumKeyValid(false);
+  }
+
+  function installedLastTwoWeeks() {
+    $installed_at = strtotime(Setting::getValue('installed_at'));
+
+    if($installed_at!==false && (time()-(60*60*24*14)) < $installed_at) {
+      return true;
+    }
+    return false;
   }
 
   function isRtl() {
