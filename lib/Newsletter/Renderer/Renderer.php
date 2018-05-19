@@ -125,7 +125,10 @@ class Renderer {
 
   function renderTextVersion($template) {
     $template = (mb_detect_encoding($template, 'UTF-8', true)) ? $template : utf8_encode($template);
-    return @\Html2Text\Html2Text::convert($template);
+    $template = \Html2Text\Html2Text::convert($template);
+    // replace shortcodes that were URL-encoded
+    $template = str_replace(array('(%5B', '%5D)'), array('([', '])'), $template);
+    return $template;
   }
 
   function postProcessTemplate($template) {
