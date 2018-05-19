@@ -75,12 +75,12 @@ class SchedulerTest extends \MailPoetTest {
       ->equals('2016-04-20 16:00:00');
   }
 
-  function testItCreatesPostNotificationQueueRecord() {
+  function testItCreatesPostNotificationSendingTask() {
     $newsletter = $this->_createNewsletter();
     $newsletter->schedule = '* 5 * * *';
 
     // new queue record should be created
-    $queue = Scheduler::createPostNotificationQueue($newsletter);
+    $queue = Scheduler::createPostNotificationSendingTask($newsletter);
     expect(SendingQueue::findMany())->count(1);
     expect($queue->newsletter_id)->equals($newsletter->id);
     expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
@@ -88,11 +88,11 @@ class SchedulerTest extends \MailPoetTest {
     expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
-    Scheduler::createPostNotificationQueue($newsletter);
+    Scheduler::createPostNotificationSendingTask($newsletter);
     expect(SendingQueue::findMany())->count(1);
   }
 
-  function testItDoesNotCreateDuplicateWelcomeNotificationQueueRecords() {
+  function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
     $newsletter = (object)array(
       'id' => 1,
       'afterTimeNumber' => 2,
@@ -105,15 +105,15 @@ class SchedulerTest extends \MailPoetTest {
     $existing_queue->save();
 
     // queue is not scheduled
-    Scheduler::createWelcomeNotificationQueue($newsletter, $existing_subscriber);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $existing_subscriber);
     expect(SendingQueue::findMany())->count(1);
 
     // queue is not scheduled
-    Scheduler::createWelcomeNotificationQueue($newsletter, 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, 1);
     expect(SendingQueue::findMany())->count(2);
   }
 
-  function testItCreatesWelcomeNotificationQueueRecord() {
+  function testItCreatesWelcomeNotificationSendingTask() {
     $newsletter = (object)array(
       'id' => 1,
       'afterTimeNumber' => 2
@@ -121,7 +121,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // queue is scheduled delivery in 2 hours
     $newsletter->afterTimeType = 'hours';
-    Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
@@ -133,7 +133,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // queue is scheduled for delivery in 2 days
     $newsletter->afterTimeType = 'days';
-    Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
@@ -145,7 +145,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // queue is scheduled for delivery in 2 weeks
     $newsletter->afterTimeType = 'weeks';
-    Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
@@ -157,7 +157,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // queue is scheduled for immediate delivery
     $newsletter->afterTimeType = null;
-    Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
@@ -454,7 +454,7 @@ class SchedulerTest extends \MailPoetTest {
       ->equals('2017-01-01 13:01:00');
   }
 
-  function testItCreatesAutomaticEmailQueueRecordWithSubscriberAndMeta() {
+  function testItCreatesAutomaticEmailSendingTaskWithSubscriberAndMeta() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -471,7 +471,7 @@ class SchedulerTest extends \MailPoetTest {
     $subscriber->save();
     $meta = array('some' => 'value');
 
-    Scheduler::createAutomaticEmailQueue($newsletter, $subscriber->id, $meta);
+    Scheduler::createAutomaticEmailSendingTask($newsletter, $subscriber->id, $meta);
     // new queue record should be created with meta data
     $queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
     expect($queue->getMeta())->equals($meta);
@@ -489,7 +489,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($subscribers[0]->id)->equals($subscriber->id);
   }
 
-  function testItCreatesAutomaticEmailQueueRecord() {
+  function testItCreatesAutomaticEmailSendingTask() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -502,7 +502,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
 
-    Scheduler::createAutomaticEmailQueue($newsletter, $subscriber = null, $meta = null);
+    Scheduler::createAutomaticEmailSendingTask($newsletter, $subscriber = null, $meta = null);
     // new queue record should be created without meta
     $queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
     expect($queue->getMeta())->isEmpty();
