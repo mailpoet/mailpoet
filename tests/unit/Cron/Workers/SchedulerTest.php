@@ -573,22 +573,49 @@ class SchedulerTest extends \MailPoetTest {
 
   function testItProcessesScheduledAutomaticEmailWhenSendingToUser() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC, Newsletter::STATUS_SCHEDULED);
+    $subscriber = $this->_createSubscriber();
     $task = SendingTask::create();
     $task->newsletter_id = $newsletter->id;
     $task->status = SendingQueue::STATUS_SCHEDULED;
     $task->scheduled_at = Carbon::now()->subDay(1)->toDateTimeString();
+    $task->setSubscribers(array($subscriber->id));
     $task->save();
 
     // scheduled task should exist
-    $task = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
     expect($task->newsletter_id)->equals($newsletter->id);
+    expect($task->getSubscribers())->equals(array($subscriber->id));
 
     // task should have its status set to null (i.e., sending)
     $scheduler = new Scheduler();
     $scheduler->process();
-    $task = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->null();
+  }
+
+  function testItDeletesScheduledAutomaticEmailWhenUserDoesNotExist() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC, Newsletter::STATUS_SCHEDULED);
+    $subscriber = $this->_createSubscriber();
+    $task = SendingTask::create();
+    $task->newsletter_id = $newsletter->id;
+    $task->status = SendingQueue::STATUS_SCHEDULED;
+    $task->scheduled_at = Carbon::now()->subDay(1)->toDateTimeString();
+    $task->setSubscribers(array($subscriber->id));
+    $task->save();
+    $subscriber->delete();
+
+    // scheduled task should exist
+    $task = SendingTask::getByNewsletterId($newsletter->id);
+    expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect($task->newsletter_id)->equals($newsletter->id);
+    expect($task->getSubscribers())->equals(array($subscriber->id));
+
+    // task should be deleted
+    $scheduler = new Scheduler();
+    $scheduler->process();
+    $task = SendingTask::getByNewsletterId($newsletter->id);
+    expect($task)->false();
   }
 
   function testItProcessesScheduledAutomaticEmailWhenSendingToSegment() {
@@ -608,14 +635,14 @@ class SchedulerTest extends \MailPoetTest {
     $task->save();
 
     // scheduled task should exist
-    $task = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
     expect($task->newsletter_id)->equals($newsletter->id);
 
     // task should have its status set to null (i.e., sending)
     $scheduler = new Scheduler();
     $scheduler->process();
-    $task = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->null();
     // task should have 1 subscriber added from segment
     $subscribers = $task->subscribers()->findMany();

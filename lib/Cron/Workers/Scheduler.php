@@ -111,6 +111,15 @@ class Scheduler {
         $queue->delete();
         return false;
       }
+    } else {
+      $subscribers = $queue->getSubscribers();
+      $subscriber = (!empty($subscribers) && is_array($subscribers)) ?
+        Subscriber::findOne($subscribers[0]) :
+        false;
+      if(!$subscriber) {
+        $queue->delete();
+        return false;
+      }
     }
 
     $queue->status = null;
