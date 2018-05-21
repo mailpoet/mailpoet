@@ -73,6 +73,11 @@ class Initializer {
       'initialize'
     ));
 
+    add_action('admin_init', array(
+      $this,
+      'setupPrivacyPolicy'
+    ));
+
     add_action('wp_loaded', array(
       $this,
       'postInitialize'
@@ -131,7 +136,6 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupImages();
       $this->setupPersonalDataExporters();
-      $this->setupPrivacyPolicy();
       $this->setupPersonalDataErasers();
 
       $this->setupChangelog();
