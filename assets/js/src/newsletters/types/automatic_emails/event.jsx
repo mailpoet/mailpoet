@@ -58,8 +58,12 @@ class AutomaticEmailEvent extends React.PureComponent {
   }
 }
 
+AutomaticEmailEvent.defaultProps = {
+  premium: false,
+};
+
 AutomaticEmailEvent.propTypes = {
-  premium: PropTypes.bool.isRequired,
+  premium: PropTypes.bool,
   eventsConfigurator: PropTypes.func.isRequired,
   event: PropTypes.shape({
     slug: PropTypes.string.isRequired,
