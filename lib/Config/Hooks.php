@@ -106,17 +106,17 @@ class Hooks {
     add_action(
       'user_register',
       '\MailPoet\Segments\WP::synchronizeUser',
-      1
+      6
     );
     add_action(
       'added_existing_user',
       '\MailPoet\Segments\WP::synchronizeUser',
-      1
+      6
     );
     add_action(
       'profile_update',
       '\MailPoet\Segments\WP::synchronizeUser',
-      1, 2
+      6, 2
     );
     add_action(
       'delete_user',
