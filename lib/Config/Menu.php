@@ -584,6 +584,7 @@ class Menu {
     $data['automatic_emails'] = array(
       array(
         'slug' => 'woocommerce',
+        'beta' => true,
         'premium' => true,
         'title' => __('WooCommerce', 'mailpoet'),
         'description' => __('Automatically send an email when there is a new WooCommerce product, order and some other action takes place.', 'mailpoet'),

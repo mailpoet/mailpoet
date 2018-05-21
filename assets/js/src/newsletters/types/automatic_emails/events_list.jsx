@@ -42,7 +42,7 @@ class AutomaticEmailEventsList extends React.Component {
     return (
       <div>
         <h1>
-          {heading} ({MailPoet.I18n.t('beta').toLowerCase()})
+          {heading}
         </h1>
 
         <AutomaticEmailsBreadcrumb step="events" />
