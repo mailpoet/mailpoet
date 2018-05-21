@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Models;
 
+use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -888,7 +889,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($task_found->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
-  function testUnpausesTasksWhenPostNotificationIsEnabled() {
+  function testUnpausesTaskWhenPostNotificationIsEnabled() {
     $newsletter = Newsletter::createOrUpdate(array(
       'type' => Newsletter::TYPE_NOTIFICATION
     ));
