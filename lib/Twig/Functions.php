@@ -2,6 +2,7 @@
 
 namespace MailPoet\Twig;
 
+use Carbon\Carbon;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Models\Setting;
 
@@ -173,8 +174,8 @@ class Functions extends \Twig_Extension {
 
   function installedInLastTwoWeeks() {
     $max_number_of_weeks = 2;
-    $installed_at = Carbon::createFromTimeStamp(Settings::getValue('installed_at'));
-    return $installed_at->diffInWeeks(Carbon::now()) <= max_number_of_weeks;
+    $installed_at = Carbon::createFromFormat('Y-m-d H:i:s', Setting::getValue('installed_at'));
+    return $installed_at->diffInWeeks(Carbon::now()) <= $max_number_of_weeks;
   }
 
   function isRtl() {
