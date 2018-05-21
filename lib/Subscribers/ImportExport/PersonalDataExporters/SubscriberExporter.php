@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
+use MailPoet\Subscribers\Source;
 
 class SubscriberExporter {
 
@@ -70,6 +71,12 @@ class SubscriberExporter {
         );
       }
     }
+
+    $result[] = array(
+      'name' => __("Subscriber's subscription source", 'mailpoet'),
+      'value' => $this->formatSource($subscriber->source),
+    );
+
     return $result;
   }
 
@@ -80,6 +87,23 @@ class SubscriberExporter {
       $result['cf_' . $field->id] = $field->name;
     }
     return $result;
+  }
+
+  private function formatSource($source) {
+    switch ($source) {
+      case Source::WORDPRESS_USER:
+        return __('Subscriber information synchronized via WP user sync', 'mailpoet');
+      case Source::FORM:
+        return __('Subscription via a MailPoet subscription form', 'mailpoet');
+      case Source::API:
+        return __('Added by a 3rd party via MailPoet 3 API', 'mailpoet');
+      case Source::ADMINISTRATOR:
+        return __('Created by the administrator', 'mailpoet');
+      case Source::IMPORTED:
+        return __('Imported by the administrator', 'mailpoet');
+      default:
+        return __('Unknown', 'mailpoet');
+    }
   }
 
 }

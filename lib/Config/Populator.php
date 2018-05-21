@@ -6,9 +6,12 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\StatisticsForms;
+use MailPoet\Models\Subscriber;
 use MailPoet\Segments\WP;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\Pages;
+use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -65,6 +68,7 @@ class Populator {
     $this->createDefaultSegments();
     $this->createDefaultSettings();
     $this->createMailPoetPage();
+    $this->createSourceForSubscribers();
   }
 
   private function createMailPoetPage() {
@@ -331,6 +335,21 @@ class Populator {
         "DELETE t1 FROM $table t1, $table t2 WHERE t1.id < t2.id AND $conditions",
         $values
       )
+    );
+  }
+
+  private function createSourceForSubscribers() {
+    Subscriber::rawExecute(
+      ' UPDATE LOW_PRIORITY `' . Subscriber::$_table . '` subscriber ' .
+      ' JOIN `' . StatisticsForms::$_table . '` stats ON stats.subscriber_id=subscriber.id ' .
+      ' SET `source` = "' . Source::FORM . '"' .
+      ' WHERE `source` = "' . Source::UNKNOWN . '"'
+    );
+    Subscriber::rawExecute(
+      'UPDATE LOW_PRIORITY `' . Subscriber::$_table . '`' .
+      ' SET `source` = "' . Source::WORDPRESS_USER . '"' .
+      ' WHERE `source` = "' . Source::UNKNOWN . '"' .
+      ' AND `wp_user_id` IS NOT NULL'
     );
   }
 }
