@@ -71,8 +71,8 @@ class Functions extends \Twig_Extension {
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
-        'mailpoet_installed_last_two_weeks',
-        array($this, 'installedLastTwoWeeks'),
+        'mailpoet_installed_in_last_two_weeks',
+        array($this, 'installedInLastTwoWeeks'),
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
@@ -171,13 +171,10 @@ class Functions extends \Twig_Extension {
     return $checker->isPremiumKeyValid(false);
   }
 
-  function installedLastTwoWeeks() {
-    $installed_at = strtotime(Setting::getValue('installed_at'));
-
-    if($installed_at!==false && (time()-(60*60*24*14)) < $installed_at) {
-      return true;
-    }
-    return false;
+  function installedInLastTwoWeeks() {
+    $max_number_of_weeks = 2;
+    $installed_at = Carbon::createFromTimeStamp(Settings::getValue('installed_at'));
+    return $installed_at->diffInWeeks(Carbon::now()) <= max_number_of_weeks;
   }
 
   function isRtl() {
