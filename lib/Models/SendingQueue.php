@@ -141,6 +141,7 @@ class SendingQueue extends Model {
 
   static function getTasks() {
     return ScheduledTask::table_alias('tasks')
+    ->selectExpr('tasks.*')
     ->join(
       MP_SENDING_QUEUES_TABLE,
       'tasks.id = queues.task_id',
