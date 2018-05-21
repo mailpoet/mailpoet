@@ -325,6 +325,12 @@ class Newsletter extends Model {
       $this->set('status', $status);
       $this->save();
     }
+    if(($status === self::STATUS_DRAFT) && ($this->type === self::TYPE_NOTIFICATION)) {
+      ScheduledTask::pauseAllByNewsletter($this);
+    }
+    if(($status === self::STATUS_ACTIVE) && ($this->type === self::TYPE_NOTIFICATION)) {
+      ScheduledTask::setScheduledAllByNewsletter($this);
+    }
     return $this;
   }
 
