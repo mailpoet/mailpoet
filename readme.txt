@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 3.7.2
+Stable tag: 3.7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -115,6 +115,15 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.7.3 - 2018-05-22 =
+* Improved: updated dependency libraries to latest versions;
+* Improved: performance of scheduling new welcome emails on sites with many of new subscribers. Thanks Donald;
+* Fixed: subscriber import tool no longer complains about filenames with multiple periods;
+* Fixed: scheduled send tasks are properly rescheduled when updating their parent newsletter's options;
+* Fixed: paused post notification emails to not block sending of other emails;
+* Fixed: newsletter subject line with shortcodes does not break sending when using our sending service. Thanks, James;
+* Fixed: subscription forms to return less information about the subscriber.
 
 = 3.7.2 - 2018-05-15 =
 * Added: list of emails a subscriber viewed to GDPR data export;
