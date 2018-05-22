@@ -4,16 +4,117 @@ namespace MailPoet\Newsletter\Editor;
 use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Newsletter\Editor\MetaInformationManager;
 use MailPoet\Newsletter\Editor\StructureTransformer;
+use MailPoet\Newsletter\Editor\LayoutHelper;
 
 if(!defined('ABSPATH')) exit;
 
 class PostTransformer {
 
+  private $args;
+  private $imagePosition;
+
   function __construct($args) {
     $this->args = $args;
+    $this->imagePosition = 'left';
+  }
+
+  function getDivider() {
+    if (empty($this->args['withLayout'])) {
+      return $this->args['divider'];
+    }
+    return LayoutHelper::row(array(
+      LayoutHelper::col(array($this->args['divider']))
+    ));
   }
 
   function transform($post) {
+    if (empty($this->args['withLayout'])) {
+      return $this->getOldStructure($post);
+    }
+    return $this->getNewStructure($post);
+  }
+
+  private function getOldStructure($post) {
+    $content = $this->getContent($post);
+    $title = $this->getTitle($post);
+    $featured_image = $this->getFeaturedImage($post);
+
+    $image_position = $this->args['featuredImagePosition'];
+    
+    if($featured_image && $image_position === 'belowTitle') {
+      array_unshift($content, $title, $featured_image);
+    } else {
+      if($content[0]['type'] === 'text') {
+        $content[0]['text'] .= $title['text'];
+      } else {
+        array_unshift($content, $title);
+      }
+      if($featured_image) {
+        array_unshift($content, $featured_image);
+      }
+    }
+
+    return $content;
+  }
+
+  private function getNewStructure($post) {
+    $content = $this->getContent($post);
+    $title = $this->getTitle($post);
+    $featured_image = $this->getFeaturedImage($post);
+
+    $position = $this->args['featuredImagePosition'];
+    
+    if(!$featured_image || $position === 'none' || $this->args['displayType'] !== 'excerpt') {
+      array_unshift($content, $title);
+      
+      return array(
+        LayoutHelper::row(array(
+          LayoutHelper::col($content)
+        ))
+      );
+    }
+
+    if($position === 'aboveTitle' || $position === 'belowTitle') {
+      $position = 'centered';
+    }
+
+    if($position === 'centered') {
+      array_unshift($content, $title, $featured_image);
+      return array(
+        LayoutHelper::row(array(
+          LayoutHelper::col($content)
+        ))
+      );
+    }
+
+    if($position === 'alternate') {
+      $position = $this->nextImagePosition();
+    }
+
+    $content = ($position === 'left')
+      ? array(
+        LayoutHelper::col(array($featured_image)),
+        LayoutHelper::col($content)
+      )
+      : array(
+        LayoutHelper::col($content),
+        LayoutHelper::col(array($featured_image))
+      );
+
+    return array(
+      LayoutHelper::row(array(
+        LayoutHelper::col(array($title))
+      )),
+      LayoutHelper::row($content)
+    );
+  }
+
+  private function nextImagePosition() {
+    $this->imagePosition = ($this->imagePosition === 'left') ? 'right' : 'left';
+    return $this->imagePosition;
+  }
+
+  private function getContent($post) {
     $content_manager = new PostContentManager();
     $meta_manager = new MetaInformationManager();
 
@@ -22,137 +123,82 @@ class PostTransformer {
     $content = $content_manager->filterContent($content);
 
     $structure_transformer = new StructureTransformer();
-    $structure = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
+    $content = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
 
-    if($this->args['featuredImagePosition'] === 'aboveTitle') {
-      $structure = $this->appendPostTitle($post, $structure);
-      $structure = $this->appendFeaturedImage(
-        $post,
-        $this->args['displayType'],
-        filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN),
-        $structure
-      );
+    $read_more_btn = $this->getReadMoreButton($post);
+    $blocks_count = count($content);
+    if($read_more_btn['type'] === 'text' && $blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
+      $content[$blocks_count - 1]['text'] .= $read_more_btn['text'];
     } else {
-      if($this->args['featuredImagePosition'] === 'belowTitle') {
-        $structure = $this->appendFeaturedImage(
-          $post,
-          $this->args['displayType'],
-          filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN),
-          $structure
-        );
-      }
-      $structure = $this->appendPostTitle($post, $structure);
+      $content[] = $read_more_btn;
     }
-    $structure = $this->appendReadMore($post->ID, $structure);
-
-    return $structure;
+    return $content;
   }
 
-  private function appendFeaturedImage($post, $display_type, $image_full_width, $structure) {
-    if($display_type !== 'excerpt') {
-      // Append featured images only on excerpts
-      return $structure;
+  private function getFeaturedImage($post) {
+    $post_id = $post->ID;
+    $post_title = $post->post_title;
+    $image_full_width = (bool)filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN);
+
+    if(!has_post_thumbnail($post_id)) {
+      return false;
     }
 
-    $featured_image = $this->getFeaturedImage(
-      $post->ID,
-      $post->post_title,
-      (bool)$image_full_width
+    $thumbnail_id = get_post_thumbnail_id($post_id);
+
+    // get attachment data (src, width, height)
+    $image_info = wp_get_attachment_image_src(
+      $thumbnail_id,
+      'mailpoet_newsletter_max'
     );
 
-    if(is_array($featured_image)) {
-      return array_merge(array($featured_image), $structure);
+    // get alt text
+    $alt_text = trim(strip_tags(get_post_meta(
+      $thumbnail_id,
+      '_wp_attachment_image_alt',
+      true
+    )));
+    if(strlen($alt_text) === 0) {
+      // if the alt text is empty then use the post title
+      $alt_text = trim(strip_tags($post_title));
     }
 
-    return $structure;
-  }
-
-  private function getFeaturedImage($post_id, $post_title, $image_full_width) {
-    if(has_post_thumbnail($post_id)) {
-      $thumbnail_id = get_post_thumbnail_id($post_id);
-
-      // get attachment data (src, width, height)
-      $image_info = wp_get_attachment_image_src(
-        $thumbnail_id,
-        'mailpoet_newsletter_max'
-      );
-
-      // get alt text
-      $alt_text = trim(strip_tags(get_post_meta(
-        $thumbnail_id,
-        '_wp_attachment_image_alt',
-        true
-      )));
-      if(strlen($alt_text) === 0) {
-        // if the alt text is empty then use the post title
-        $alt_text = trim(strip_tags($post_title));
-      }
-
-      return array(
-        'type' => 'image',
-        'link' => get_permalink($post_id),
-        'src' => $image_info[0],
-        'alt' => $alt_text,
-        'fullWidth' => $image_full_width,
-        'width' => $image_info[1],
-        'height' => $image_info[2],
-        'styles' => array(
-          'block' => array(
-            'textAlign' => 'center',
-          ),
+    return array(
+      'type' => 'image',
+      'link' => get_permalink($post_id),
+      'src' => $image_info[0],
+      'alt' => $alt_text,
+      'fullWidth' => $image_full_width,
+      'width' => $image_info[1],
+      'height' => $image_info[2],
+      'styles' => array(
+        'block' => array(
+          'textAlign' => 'center',
         ),
-      );
-    }
+      ),
+    );
   }
 
-  private function appendPostTitle($post, $structure) {
-    $title = $this->getPostTitle($post);
-
-    // Append title always at the top of the post structure
-    // Reuse an existing text block if needed
-
-    if(count($structure) > 0 && $structure[0]['type'] === 'text') {
-      $structure[0]['text'] = $title . $structure[0]['text'];
-    } else {
-      array_unshift(
-        $structure,
-        array(
-          'type' => 'text',
-          'text' => $title,
-        )
-      );
-    }
-
-    return $structure;
-  }
-
-  private function appendReadMore($post_id, $structure) {
+  private function getReadMoreButton($post) {
     if($this->args['readMoreType'] === 'button') {
       $button = $this->args['readMoreButton'];
-      $button['url'] = get_permalink($post_id);
-      $structure[] = $button;
-    } else {
-      $total_blocks = count($structure);
-      $read_more_text = sprintf(
-        '<p><a href="%s">%s</a></p>',
-        get_permalink($post_id),
-        $this->args['readMoreText']
-      );
-
-      if($structure[$total_blocks - 1]['type'] === 'text') {
-        $structure[$total_blocks - 1]['text'] .= $read_more_text;
-      } else {
-        $structure[] = array(
-          'type' => 'text',
-          'text' => $read_more_text,
-        );
-      }
+      $button['url'] = get_permalink($post->ID);
+      return $button;
     }
 
-    return $structure;
+    $read_more_text = sprintf(
+      '<p><a href="%s">%s</a></p>',
+      get_permalink($post->ID),
+      $this->args['readMoreText']
+    );
+
+    return array(
+      'type' => 'text',
+      'text' => $read_more_text,
+    );
   }
 
-  private function getPostTitle($post) {
+  private function getTitle($post) {
     $title = $post->post_title;
 
     if(filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
@@ -169,6 +215,11 @@ class PostTransformer {
 
     $alignment = (in_array($this->args['titleAlignment'], array('left', 'right', 'center'))) ? $this->args['titleAlignment'] : 'left';
 
-    return '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
+    $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
+    return array(
+      'type' => 'text',
+      'text' => $title
+    );
   }
+
 }

@@ -583,6 +583,7 @@ define([
   });
 
   Module.PostsWidgetView = base.WidgetView.extend({
+    className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
     getTemplate: function () { return window.templates.postsInsertion; },
     behaviors: {
       DraggableBehavior: {
