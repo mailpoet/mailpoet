@@ -46,9 +46,6 @@ class Changelog {
         } else {
           $redirect_url = admin_url('admin.php?page=mailpoet-welcome');
         }
-      } else if($version !== Env::$version) {
-        // update
-        $redirect_url = admin_url('admin.php?page=mailpoet-update');
       }
     }
 
