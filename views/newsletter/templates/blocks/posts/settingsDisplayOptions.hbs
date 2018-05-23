@@ -95,14 +95,26 @@
         <div class="mailpoet_form_field_title"><%= __('Featured image position') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="belowTitle" {{#ifCond model.featuredImagePosition '==' 'belowTitle' }}CHECKED{{/ifCond}}/>
-                <%= __('Below title') %>
+                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="centered" {{#ifCond model.featuredImagePosition '==' 'centered' }}CHECKED{{/ifCond}}/>
+                <%= __('Centered') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="aboveTitle" {{#ifCond model.featuredImagePosition '==' 'aboveTitle' }}CHECKED{{/ifCond}}/>
-                <%= __('Above block') %>
+                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="left" {{#ifCond model.featuredImagePosition '==' 'left' }}CHECKED{{/ifCond}}/>
+                <%= __('Left') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="right" {{#ifCond model.featuredImagePosition '==' 'right' }}CHECKED{{/ifCond}}/>
+                <%= __('Right') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="alternate" {{#ifCond model.featuredImagePosition '==' 'alternate' }}CHECKED{{/ifCond}}/>
+                <%= __('Alternate') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">

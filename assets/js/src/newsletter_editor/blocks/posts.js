@@ -52,6 +52,7 @@ define([
     defaults: function () {
       return this._getDefaults({
         type: 'posts',
+        withLayout: true,
         amount: '10',
         offset: 0,
         contentType: 'post', // 'post'|'page'|'mailpoet_page'
@@ -64,7 +65,7 @@ define([
         titleAlignment: 'left', // 'left'|'center'|'right'
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
-        featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
+        featuredImagePosition: 'centered', // 'centered'|'right'|'left'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
         showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -190,7 +191,7 @@ define([
     getTemplate: function () { return window.templates.postsBlock; },
     modelEvents: {}, // Forcefully disable all events
     regions: _.extend({
-      postsRegion: '.mailpoet_posts_block_posts'
+      postsRegion: '.mailpoet_posts_container'
     }, base.BlockView.prototype.regions),
     onDragSubstituteBy: function () { return Module.PostsWidgetView; },
     initialize: function () {
