@@ -15,7 +15,6 @@ class PieceOfCake {
   function get() {
     return array(
       'name' => __("Piece of cake", 'mailpoet'),
-      'description' => __("Baked with plenty of images.", 'mailpoet'),
       'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

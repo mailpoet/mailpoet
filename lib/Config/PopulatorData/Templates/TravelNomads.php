@@ -15,7 +15,6 @@ class TravelNomads {
   function get() {
     return array(
       'name' => __("Travel Nomads", 'mailpoet'),
-      'description' => __("Ideal for sharing your travel adventures.", 'mailpoet'),
       'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

@@ -15,7 +15,6 @@ class WelcomeBlank1Column {
   function get() {
     return array(
       'name' => __("Welcome Email: Blank 1 Column", 'mailpoet'),
-      'description' => __("A blank Welcome Email template with a 1 column layout.", 'mailpoet'),
       'categories' => json_encode(array('welcome', 'blank')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

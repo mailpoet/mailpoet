@@ -15,7 +15,6 @@ class ChocolateStore {
   function get() {
     return array(
       'name' => __("Chocolate Store", 'mailpoet'),
-      'description' => __("A classy black store template.", 'mailpoet'),
       'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

@@ -70,8 +70,6 @@ class NewsletterTemplates extends React.Component {
           {
             name:
               MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
-            description:
-              MailPoet.I18n.t('mailpoetGuideTemplateDescription'),
             categories: '["welcome", "notification", "standard"]',
             readonly: '1',
           },

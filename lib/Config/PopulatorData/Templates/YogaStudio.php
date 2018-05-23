@@ -15,7 +15,6 @@ class YogaStudio {
   function get() {
     return array(
       'name' => __("Yoga Studio", 'mailpoet'),
-      'description' => __("Salute the sun and your subscribers.", 'mailpoet'),
       'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

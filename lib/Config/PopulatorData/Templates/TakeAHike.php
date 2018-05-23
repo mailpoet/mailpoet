@@ -15,7 +15,6 @@ class TakeAHike {
   function get() {
     return array(
       'name' => __("Take a Hike", 'mailpoet'),
-      'description' => __("Can you climb to the top?", 'mailpoet'),
       'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

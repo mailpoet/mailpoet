@@ -1,7 +1,8 @@
 $box-width = 425px
 $box-height = 150px
-$thumbnail-width = $box-height
-$thumbnail-height = $thumbnail-width
+$thumbnail-height = $box-height * 2
+$box-margin-big = 40px
+$box-margin-small = 20px
 $box-description-space-between-heading-and-paragraph = 5px
 $box-description-height = 110px
 $box-description-text-height = $box-description-height - $box-description-space-between-heading-and-paragraph
@@ -23,51 +24,127 @@ $box-description-font-size = $box-description-line-height
   border: 1px solid #dedede
   background-color: #fff
 
+.mailpoet_boxes .mailpoet_template_boxes
+  box-sizing: border-box
+  height: auto
+  margin: 0 0 $box-margin-big
+  padding: 0
+  width: 30.5%
+      
+  @media screen and (max-width 1178px)
+    width: 47%
+
+  @media screen and (max-width 520px)
+    width: 90%
+
+@media screen and (min-width 1179px)
+  .mailpoet_boxes .mailpoet_template_boxes:nth-child(3n-1)
+    margin: 0 $box-margin-big $box-margin-big $box-margin-big
+
+@media screen and (max-width 1178px)
+  .mailpoet_boxes .mailpoet_template_boxes:nth-child(2n-1)
+    margin: 0 $box-margin-big $box-margin-big 0
+
+@media screen and (max-width 782px)
+  .mailpoet_boxes .mailpoet_template_boxes:nth-child(2n-1)
+    margin: 0 $box-margin-small $box-margin-small 0
+
+@media screen and (max-width 520px)
+  .mailpoet_boxes .mailpoet_template_boxes:nth-child(1n)
+    margin: 0 0 $box-margin-small $box-margin-small
+
+.mailpoet_boxes .mailpoet_template_boxes .mailpoet_description
+  background: #fafafa
+  border-top: 1px solid #e1e1e1
+  padding: 12px 5%
+  width: 90%
+
+.mailpoet_boxes .mailpoet_template_boxes .mailpoet_description h3
+  font-size: 15px
+  font-weight: 600
+  line-height: 20px
+  margin: 0
+  white-space: nowrap
+  max-width: 100%
+
+.mailpoet_boxes .mailpoet_template_boxes .mailpoet_actions
+  background: #f5f5f5
+  border-top: 1px solid#d6d6d6
+  border-left: 1px solid #e8e8e8
+  padding: 8px 16px
+  bottom: 0px
+  right: 0px
+
+  @media screen and (max-width 782px)
+    padding: 6px 16px 2px
+
 .mailpoet_boxes .mailpoet_thumbnail
   background-color: #222
   background-size: 50% 50%
   background-repeat: no-repeat
   background-position: center
   color: #222
+  border: 0
+  width: 100%
+  height: $thumbnail-height
+  float: left
+  overflow: hidden
+  position: relative
+
+  img
+    min-width: $thumbnail-height
+    height: auto
+    width: 100%
+
+.mailpoet_boxes .mailpoet_newsletter_types .mailpoet_thumbnail
   border: 1px solid #ccc
-  width: $thumbnail-height
-  height: $thumbnail-width
+  width: $box-height
+  height: $box-height
   margin-right: 15px
   float: left
   overflow: hidden
   position: relative
 
   img
-    min-width: $thumbnail-width
-    height: auto
+    min-width: $box-height
     width: 110%
     position: relative
     top: 50%
     left: 50%
     transform: translate(-50%, -50%)
 
-  .mailpoet_overlay
-    position: absolute
-    top: 0
-    left: 0
-    right: 0
-    bottom: 0
-    background-color: rgba(255, 255, 255, 0.0)
-    opacity: 0
-    transition: all 250ms cubic-bezier(0.420, 0.000, 0.580, 1.000) /* ease-in-out */
+.mailpoet_overlay
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  background-color: rgba(255, 255, 255, 0.0)
+  opacity: 0
+  transition: all 250ms cubic-bezier(0.420, 0.000, 0.580, 1.000) /* ease-in-out */
 
-    &:hover
-      background-color: rgba(255, 255, 255, 0.7)
-      opacity: 1
+  &:hover
+    background-color: rgba(255, 255, 255, 0.7)
+    opacity: 1
 
-    &::after
-      content: " "
-      position: absolute
-      top: 0
-      left: 0
-      bottom: 0
-      right: 0
-      background: url(../img/preview_magnifying_glass.svg) no-repeat center center
+.mailpoet_overlay .mailpoet_more_details
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  /* opacity: 0; */
+  position: absolute;
+  top: 35%;
+  right: 20%;
+  left: 20%;
+  background: #23282d;
+  background: rgba(0,0,0,.7);
+  color: #fff;
+  font-size: 15px;
+  text-shadow: 0 1px 0 rgba(0,0,0,.6);
+  -webkit-font-smoothing: antialiased;
+  font-weight: 600;
+  padding: 15px 12px;
+  text-align: center;
+  border-radius: 3px;
+  transition: opacity .1s ease-in-out;
 
 .mailpoet_boxes .mailpoet_description
   float:left
@@ -96,18 +173,14 @@ $box-description-font-size = $box-description-line-height
   right: 15px
 
 .mailpoet_boxes .mailpoet_delete
-  display: none
-  position: absolute
-  top: 15px
-  right: 15px
-
-.mailpoet_boxes li:hover .mailpoet_delete
-  display: block
+  margin-right: 6px
 
 .mailpoet_boxes .mailpoet_delete a
-  color:#a00
+  color:inherit
+  text-decoration: none
+
 .mailpoet_boxes .mailpoet_delete a:hover
-  color:red
+  color:inherit
 
 // newsletters: types
 [data-type="notification"] .mailpoet_thumbnail
