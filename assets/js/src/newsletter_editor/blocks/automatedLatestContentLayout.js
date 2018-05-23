@@ -1,11 +1,6 @@
 /* eslint-disable func-names */
 /**
- * Automated latest content block.
- * Only query parameters can be modified by the user. Posts pulled by this
- * block will change as more posts get published.
- *
- * This block depends on blocks.button and blocks.divider for block model and
- * block settings view.
+ * Automated latest content block with image alignment.
  */
 define([
   'newsletter_editor/App',
@@ -33,19 +28,19 @@ define([
   var Module = {};
   var base = BaseBlock;
 
-  Module.ALCSupervisor = SuperModel.extend({
+  Module.ALCLayoutSupervisor = SuperModel.extend({
     initialize: function () {
       var DELAY_REFRESH_FOR_MS = 500;
       this.listenTo(
         App.getChannel(),
-        'automatedLatestContentRefresh',
+        'automatedLatestContentLayoutRefresh',
         _.debounce(this.refresh, DELAY_REFRESH_FOR_MS)
       );
     },
     refresh: function () {
       var blocks;
       var models = App.findModels(function (model) {
-        return model.get('type') === 'automatedLatestContent';
+        return model.get('type') === 'automatedLatestContentLayout';
       }) || [];
 
       if (models.length === 0) return;
@@ -69,12 +64,12 @@ define([
     }
   });
 
-  Module.AutomatedLatestContentBlockModel = base.BlockModel.extend({
+  Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
     stale: ['_container'],
     defaults: function () {
       return this._getDefaults({
-        type: 'automatedLatestContent',
-        withLayout: false,
+        type: 'automatedLatestContentLayout',
+        withLayout: true,
         amount: '5',
         contentType: 'post', // 'post'|'page'|'mailpoet_page'
         terms: [], // List of category and tag objects
@@ -84,7 +79,7 @@ define([
         titleAlignment: 'left', // 'left'|'center'|'right'
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
-        featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
+        featuredImagePosition: 'centered', // 'centered'|'left'|'right'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
         showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -99,7 +94,7 @@ define([
         showDivider: true, // true|false
         divider: {},
         _container: new (App.getBlockTypeModel('container'))()
-      }, App.getConfig().get('blockDefaults.automatedLatestContent'));
+      }, App.getConfig().get('blockDefaults.automatedLatestContentLayout'));
     },
     relations: function () {
       return {
@@ -125,11 +120,11 @@ define([
      */
     _handleChanges: function () {
       this._updateDefaults();
-      App.getChannel().trigger('automatedLatestContentRefresh');
+      App.getChannel().trigger('automatedLatestContentLayoutRefresh');
     }
   });
 
-  Module.AutomatedLatestContentBlockView = base.BlockView.extend({
+  Module.AutomatedLatestContentLayoutBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_automated_latest_content_block mailpoet_droppable_block',
     initialize: function () {
       function replaceButtonStylesHandler(data) {
@@ -137,7 +132,7 @@ define([
       }
       App.getChannel().on('replaceAllButtonStyles', replaceButtonStylesHandler.bind(this));
     },
-    getTemplate: function () { return window.templates.automatedLatestContentBlock; },
+    getTemplate: function () { return window.templates.automatedLatestContentLayoutBlock; },
     regions: {
       toolsRegion: '.mailpoet_tools',
       postsRegion: '.mailpoet_automated_latest_content_block_posts'
@@ -150,7 +145,7 @@ define([
     events: _.extend(base.BlockView.prototype.events, {
       'click .mailpoet_automated_latest_content_block_overlay': 'showSettings'
     }),
-    onDragSubstituteBy: function () { return Module.AutomatedLatestContentWidgetView; },
+    onDragSubstituteBy: function () { return Module.AutomatedLatestContentLayoutWidgetView; },
     onRender: function () {
       var ContainerView = App.getBlockTypeView('container');
       var renderOptions = {
@@ -158,19 +153,19 @@ define([
         disableDragAndDrop: true,
         emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay')
       };
-      this.toolsView = new Module.AutomatedLatestContentBlockToolsView({ model: this.model });
+      this.toolsView = new Module.AutomatedLatestContentLayoutBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_container'), renderOptions: renderOptions }));
     }
   });
 
-  Module.AutomatedLatestContentBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function () { return Module.AutomatedLatestContentBlockSettingsView; }
+  Module.AutomatedLatestContentLayoutBlockToolsView = base.BlockToolsView.extend({
+    getSettingsView: function () { return Module.AutomatedLatestContentLayoutBlockSettingsView; }
   });
 
   // Sidebar view container
-  Module.AutomatedLatestContentBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function () { return window.templates.automatedLatestContentBlockSettings; },
+  Module.AutomatedLatestContentLayoutBlockSettingsView = base.BlockSettingsView.extend({
+    getTemplate: function () { return window.templates.automatedLatestContentLayoutBlockSettings; },
     events: function () {
       return {
         'click .mailpoet_automated_latest_content_hide_display_options': 'toggleDisplayOptions',
@@ -366,13 +361,14 @@ define([
     }
   });
 
-  Module.AutomatedLatestContentWidgetView = base.WidgetView.extend({
-    getTemplate: function () { return window.templates.automatedLatestContentInsertion; },
+  Module.AutomatedLatestContentLayoutWidgetView = base.WidgetView.extend({
+    className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+    getTemplate: function () { return window.templates.automatedLatestContentLayoutInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,
         drop: function () {
-          return new Module.AutomatedLatestContentBlockModel({}, { parse: true });
+          return new Module.AutomatedLatestContentLayoutBlockModel({}, { parse: true });
         },
         onDrop: function (options) {
           options.droppedView.triggerMethod('showSettings');
@@ -382,16 +378,22 @@ define([
   });
 
   App.on('before:start', function (BeforeStartApp) {
-    BeforeStartApp.registerBlockType('automatedLatestContent', {
-      blockModel: Module.AutomatedLatestContentBlockModel,
-      blockView: Module.AutomatedLatestContentBlockView
+    BeforeStartApp.registerBlockType('automatedLatestContentLayout', {
+      blockModel: Module.AutomatedLatestContentLayoutBlockModel,
+      blockView: Module.AutomatedLatestContentLayoutBlockView
+    });
+
+    BeforeStartApp.registerWidget({
+      name: 'automatedLatestContentLayout',
+      widgetView: Module.AutomatedLatestContentLayoutWidgetView,
+      priority: 97
     });
   });
 
   App.on('start', function (StartApp) {
     var Application = StartApp;
-    Application._ALCSupervisor = new Module.ALCSupervisor();
-    Application._ALCSupervisor.refresh();
+    Application._ALCLayoutSupervisor = new Module.ALCLayoutSupervisor();
+    Application._ALCLayoutSupervisor.refresh();
   });
 
   return Module;

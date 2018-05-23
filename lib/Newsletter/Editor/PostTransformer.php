@@ -11,15 +11,17 @@ if(!defined('ABSPATH')) exit;
 class PostTransformer {
 
   private $args;
+  private $withLayout;
   private $imagePosition;
 
   function __construct($args) {
     $this->args = $args;
+    $this->withLayout = (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN);
     $this->imagePosition = 'left';
   }
 
   function getDivider() {
-    if (empty($this->args['withLayout'])) {
+    if(empty($this->withLayout)) {
       return $this->args['divider'];
     }
     return LayoutHelper::row(array(
@@ -28,13 +30,13 @@ class PostTransformer {
   }
 
   function transform($post) {
-    if (empty($this->args['withLayout'])) {
-      return $this->getOldStructure($post);
+    if(empty($this->withLayout)) {
+      return $this->getStructure($post);
     }
-    return $this->getNewStructure($post);
+    return $this->getStructureWithLayout($post);
   }
 
-  private function getOldStructure($post) {
+  private function getStructure($post) {
     $content = $this->getContent($post);
     $title = $this->getTitle($post);
     $featured_image = $this->getFeaturedImage($post);
@@ -45,7 +47,7 @@ class PostTransformer {
       array_unshift($content, $title, $featured_image);
     } else {
       if($content[0]['type'] === 'text') {
-        $content[0]['text'] .= $title['text'];
+        $content[0]['text'] = $title['text'] . $content[0]['text'];
       } else {
         array_unshift($content, $title);
       }
@@ -57,7 +59,7 @@ class PostTransformer {
     return $content;
   }
 
-  private function getNewStructure($post) {
+  private function getStructureWithLayout($post) {
     $content = $this->getContent($post);
     $title = $this->getTitle($post);
     $featured_image = $this->getFeaturedImage($post);
