@@ -6,6 +6,11 @@ class LayoutHelper {
     return array(
       'type' => 'container',
       'orientation' => 'horizontal',
+      'styles' => array(
+        'block' => array(
+          'backgroundColor' => 'transparent'
+        )
+      ),
       'blocks' => $blocks
     );
   }
@@ -14,6 +19,11 @@ class LayoutHelper {
     return array(
       'type' => 'container',
       'orientation' => 'vertical',
+      'styles' => array(
+        'block' => array(
+          'backgroundColor' => 'transparent'
+        )
+      ),
       'blocks' => $blocks
     );
   }
