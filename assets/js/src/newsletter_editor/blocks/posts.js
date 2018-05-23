@@ -64,7 +64,7 @@ define([
         titleAlignment: 'left', // 'left'|'center'|'right'
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
-        featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
+        featuredImagePosition: 'centered', // 'centered'|'right'|'left'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
         showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -583,6 +583,7 @@ define([
   });
 
   Module.PostsWidgetView = base.WidgetView.extend({
+    className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
     getTemplate: function () { return window.templates.postsInsertion; },
     behaviors: {
       DraggableBehavior: {
