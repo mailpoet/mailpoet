@@ -12,7 +12,7 @@ class PersonalDataErasers {
 
   function registerSubscriberEraser($erasers) {
     $erasers['mailpet-subscriber'] = array(
-      'eraser_friendly_name' => __('Mailpoet Subscribers', 'mailpoet'),
+      'eraser_friendly_name' => __('MailPoet Subscribers', 'mailpoet'),
       'callback' => array(new SubscriberPersonalDataEraser(), 'erase'),
     );
 
