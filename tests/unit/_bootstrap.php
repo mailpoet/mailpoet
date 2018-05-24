@@ -128,7 +128,7 @@ Fixtures::add(
     ),
     array (
       'type' => 'html',
-      'name' => 'Random text or HTML',
+      'name' => 'Custom text or HTML',
       'id' => 'html',
       'unique' => '0',
       'static' => '0',
