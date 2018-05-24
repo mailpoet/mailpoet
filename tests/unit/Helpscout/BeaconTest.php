@@ -106,6 +106,7 @@ class BeaconTest extends \MailPoetTest {
     expect($this->beacon_data['Default FROM address'])->equals(Setting::getValue('sender.address'));
     expect($this->beacon_data['Default Reply-To address'])->equals(Setting::getValue('reply_to.address'));
     expect($this->beacon_data['Bounce Email Address'])->equals(Setting::getValue('bounce.address'));
+    expect($this->beacon_data['Plugin installed at'])->equals(Setting::getValue('installed_at'));
   }
 
   function testItReturnsTotalNumberOfSubscribers() {
