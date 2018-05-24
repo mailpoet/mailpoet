@@ -37,7 +37,7 @@ class PostTransformer {
   }
 
   private function getStructure($post) {
-    $content = $this->getContent($post);
+    $content = $this->getContent($post, true);
     $title = $this->getTitle($post);
     $featured_image = $this->getFeaturedImage($post);
 
@@ -60,7 +60,7 @@ class PostTransformer {
   }
 
   private function getStructureWithLayout($post) {
-    $content = $this->getContent($post);
+    $content = $this->getContent($post, false);
     $title = $this->getTitle($post);
     $featured_image = $this->getFeaturedImage($post);
 
@@ -116,13 +116,13 @@ class PostTransformer {
     return $this->imagePosition;
   }
 
-  private function getContent($post) {
+  private function getContent($post, $with_post_class) {
     $content_manager = new PostContentManager();
     $meta_manager = new MetaInformationManager();
 
     $content = $content_manager->getContent($post, $this->args['displayType']);
     $content = $meta_manager->appendMetaInformation($content, $post, $this->args);
-    $content = $content_manager->filterContent($content);
+    $content = $content_manager->filterContent($content, $with_post_class);
 
     $structure_transformer = new StructureTransformer();
     $content = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
