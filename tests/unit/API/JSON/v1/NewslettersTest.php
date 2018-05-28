@@ -169,6 +169,32 @@ class NewslettersTest extends \MailPoetTest {
     expect($updated_newsletter->subject)->equals('My Updated Newsletter');
   }
 
+  function testItDoesNotRerenderPostNotificationsUponUpdate() {
+    $sending_queue = SendingTask::create();
+    $sending_queue->newsletter_id = $this->post_notification->id;
+    $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_queue->newsletter_rendered_body = null;
+    $sending_queue->newsletter_rendered_subject = null;
+    $sending_queue->save();
+    expect($sending_queue->getErrors())->false();
+
+    $router = new Newsletters();
+    $newsletter_data = array(
+      'id' => $this->post_notification->id,
+      'subject' => 'My Updated Newsletter',
+      'body' => Fixtures::get('newsletter_body_template'),
+    );
+
+    $response = $router->save($newsletter_data);
+    $updated_queue = SendingQueue::where('newsletter_id', $this->post_notification->id)
+      ->findOne()
+      ->asArray();
+
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($updated_queue['newsletter_rendered_body'])->null();
+    expect($updated_queue['newsletter_rendered_subject'])->null();
+  }
+
   function testItCanRerenderQueueUponSave() {
     $sending_queue = SendingTask::create();
     $sending_queue->newsletter_id = $this->newsletter->id;

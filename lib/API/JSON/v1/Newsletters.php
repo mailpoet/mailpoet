@@ -116,7 +116,7 @@ class Newsletters extends APIEndpoint {
     }
 
     $queue = $newsletter->getQueue();
-    if($queue) {
+    if($queue && !in_array($newsletter->type, array(Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_NOTIFICATION_HISTORY))) {
       // if newsletter was previously scheduled and is now unscheduled, set its status to DRAFT and delete associated queue record
       if($newsletter->status === Newsletter::STATUS_SCHEDULED && isset($options['isScheduled']) && empty($options['isScheduled'])) {
         $queue->delete();
