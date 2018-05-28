@@ -82,7 +82,6 @@ const NewsletterSend = React.createClass({
           data: {
             newsletter_id: response.data.id,
             name: response.data.subject,
-            description: response.data.preheader,
             thumbnail,
             body: JSON.stringify(response.data.body),
             categories: '["recent"]',
