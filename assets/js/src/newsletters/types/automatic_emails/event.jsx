@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 class AutomaticEmailEvent extends React.PureComponent {
   render() {
     const event = this.props.event;
+    const disabled = event.soon;
+
     let action;
 
     if (this.props.premium) {
@@ -17,9 +19,16 @@ class AutomaticEmailEvent extends React.PureComponent {
           {MailPoet.I18n.t('premiumFeatureLink')}
         </a>
       );
+    } if (event.actionButtonLink && event.actionButtonTitle) {
+      action = (
+        <a
+          href={event.actionButtonLink}
+          target="_blank"
+        >
+          {event.actionButtonTitle}
+        </a>
+      );
     } else {
-      const disabled = event.soon;
-
       action = (
         <a
           className="button button-primary"
