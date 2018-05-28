@@ -48,7 +48,7 @@ class Renderer {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
-    $content = $this->prepare($content);
+    $content = $this->preProcessALC($content);
     $rendered_body = $this->renderBody($content);
     $rendered_styles = $this->renderStyles($styles);
 
@@ -71,7 +71,7 @@ class Renderer {
       $rendered_newsletter;
   }
 
-  function prepare($content) {
+  function preProcessALC($content) {
     $blocks = array();
     $content_blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']

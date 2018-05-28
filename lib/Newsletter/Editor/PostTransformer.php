@@ -11,17 +11,17 @@ if(!defined('ABSPATH')) exit;
 class PostTransformer {
 
   private $args;
-  private $withLayout;
-  private $imagePosition;
+  private $with_layout;
+  private $image_position;
 
   function __construct($args) {
     $this->args = $args;
-    $this->withLayout = (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN);
-    $this->imagePosition = 'left';
+    $this->with_layout = (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN);
+    $this->image_position = 'left';
   }
 
   function getDivider() {
-    if(empty($this->withLayout)) {
+    if(empty($this->with_layout)) {
       return $this->args['divider'];
     }
     return LayoutHelper::row(array(
@@ -30,7 +30,7 @@ class PostTransformer {
   }
 
   function transform($post) {
-    if(empty($this->withLayout)) {
+    if(empty($this->with_layout)) {
       return $this->getStructure($post);
     }
     return $this->getStructureWithLayout($post);
@@ -112,8 +112,8 @@ class PostTransformer {
   }
 
   private function nextImagePosition() {
-    $this->imagePosition = ($this->imagePosition === 'left') ? 'right' : 'left';
-    return $this->imagePosition;
+    $this->image_position = ($this->image_position === 'left') ? 'right' : 'left';
+    return $this->image_position;
   }
 
   private function getContent($post, $with_post_class) {
