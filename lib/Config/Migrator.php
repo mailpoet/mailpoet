@@ -249,6 +249,7 @@ class Migrator {
       'newsletter_id int NULL DEFAULT 0,',
       'name varchar(250) NOT NULL,',
       'categories varchar(250) NOT NULL DEFAULT "[]",',
+      'description varchar(250) NOT NULL DEFAULT "",',
       'body LONGTEXT,',
       'thumbnail LONGTEXT,',
       'readonly TINYINT(1) DEFAULT 0,',
