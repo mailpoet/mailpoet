@@ -179,7 +179,7 @@ define([
       if (data.posts.length === 0) return;
 
       CommunicationComponent.getTransformedPosts(data).done(function (posts) {
-        collection.add(posts, { at: index });
+        collection.add(JSON.parse(JSON.stringify(posts)), { at: index });
       }).fail(function () {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
