@@ -213,7 +213,7 @@ class Initializer {
   }
 
   function setupImages() {
-    add_image_size('mailpoet_newsletter_max', 1320);
+    add_image_size('mailpoet_newsletter_max', Env::NEWSLETTER_CONTENT_WIDTH);
   }
 
   function setupChangelog() {

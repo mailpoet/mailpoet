@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Editor;
 use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Newsletter\Editor\MetaInformationManager;
 use MailPoet\Newsletter\Editor\StructureTransformer;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -68,14 +69,10 @@ class PostTransformer {
   }
 
   private function getFeaturedImage($post_id, $post_title, $image_full_width) {
+
     if(has_post_thumbnail($post_id)) {
       $thumbnail_id = get_post_thumbnail_id($post_id);
-
-      // get attachment data (src, width, height)
-      $image_info = wp_get_attachment_image_src(
-        $thumbnail_id,
-        'mailpoet_newsletter_max'
-      );
+      $image_info = WPFunctions::getImageInfo($thumbnail_id);
 
       // get alt text
       $alt_text = trim(strip_tags(get_post_meta(
