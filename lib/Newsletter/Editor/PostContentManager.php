@@ -51,6 +51,8 @@ class PostContentManager {
     $content = strip_tags($content, implode('', $tags_not_being_stripped));
     if($with_post_class) {
       $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS .'"', wpautop($content));
+    } else {
+      $content = wpautop($content);
     }
     $content = trim($content);
 
