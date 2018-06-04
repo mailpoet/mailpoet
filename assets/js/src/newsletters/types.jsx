@@ -123,7 +123,10 @@ const NewsletterTypes = React.createClass({
     ];
 
     const types = Hooks.applyFilters('mailpoet_newsletters_types', [...defaultTypes, ...this.getAutomaticEmails()], this);
-    const isNewUser = window.mailpoet_is_new_user;
+    let badgeClassName = 'mailpoet_badge mailpoet_badge_cta';
+    if (window.mailpoet_is_new_user === false) {
+      badgeClassName += ' mailpoet_badge_cta_grey';
+    }
 
     return (
       <div>
@@ -142,11 +145,10 @@ const NewsletterTypes = React.createClass({
                   <h3>{type.title}</h3>
                   <p>{type.description}</p>
                   { type.videoGuide && (
-                      <a className={isNewUser ? 'mailpoet_badge mailpoet_badge_cta' : 'mailpoet_badge mailpoet_badge_cta mailpoet_badge_cta_grey'} href={type.videoGuide} target="_blank">
-                        <span className="dashicons dashicons-format-video"></span>{MailPoet.I18n.t('seeVideoGuide')}
-                      </a>
-                    )
-                  }
+                    <a className={badgeClassName} href={type.videoGuide} target="_blank">
+                      <span className="dashicons dashicons-format-video" />{MailPoet.I18n.t('seeVideoGuide')}
+                    </a>
+                  ) }
                 </div>
 
                 <div className="mailpoet_actions">
