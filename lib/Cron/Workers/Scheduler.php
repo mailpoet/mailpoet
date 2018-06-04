@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers;
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersFinder;
@@ -29,6 +30,7 @@ class Scheduler {
   function process() {
     $scheduled_queues = self::getScheduledQueues();
     if(!count($scheduled_queues)) return false;
+    $this->updateTasks($scheduled_queues);
     foreach($scheduled_queues as $i => $queue) {
       $newsletter = Newsletter::filter('filterWithOptions')
         ->findOne($queue->newsletter_id);
@@ -175,6 +177,13 @@ class Scheduler {
     return ($notification_history->getErrors() === false) ?
       $notification_history :
       false;
+  }
+
+  private function updateTasks(array $scheduled_queues) {
+    $ids = array_map(function ($queue) {
+      return $queue->task_id;
+    }, $scheduled_queues);
+    ScheduledTask::touchAllByIds($ids);
   }
 
   static function getScheduledQueues() {
