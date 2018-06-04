@@ -438,6 +438,13 @@ class Menu {
       )
     );
 
+    $data['is_new_user'] = true;
+    if(!empty($data['settings']['installed_at'])) {
+      $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
+      $current_time =  Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
+    }
+
     $data = array_merge($data, Installer::getPremiumStatus());
 
     $this->displayPage('settings.html', $data);
@@ -541,6 +548,14 @@ class Menu {
     $data['items_per_page'] = $this->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
 
+    $data['is_new_user'] = true;
+    $installed_at = Setting::getValue('installed_at');
+    if(!is_null($installed_at)) {
+      $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));
+      $current_time =  Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
+    }
+
     $this->displayPage('forms.html', $data);
   }
 
@@ -579,6 +594,13 @@ class Menu {
 
     $data['automatic_emails'] = array();
 
+    $data['is_new_user'] = 'true';
+    if(!empty($data['settings']['installed_at'])) {
+      $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
+      $current_time =  Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30 ? 'true' : 'false';
+    }
+
     wp_enqueue_script('jquery-ui');
     wp_enqueue_script('jquery-ui-datepicker');
 
@@ -609,6 +631,15 @@ class Menu {
       'month_names' => Block\Date::getMonthNames(),
       'sub_menu' => 'mailpoet-subscribers'
     ));
+
+    $data['is_new_user'] = true;
+    $installed_at = Setting::getValue('installed_at');
+    if(!is_null($installed_at)) {
+      $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));
+      $current_time =  Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
+    }
+
     $this->displayPage('subscribers/importExport/import.html', $data);
   }
 

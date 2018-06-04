@@ -12,6 +12,10 @@
     </p>
   </div>
 
+  <a class="mailpoet_badge mailpoet_badge_cta <% if(is_new_user == false) %>mailpoet_badge_cta_grey<% endif %>" href="https://beta.docs.mailpoet.com/article/236-video-guide-setting-up-forms" target="_blank">
+      <span class="dashicons dashicons-format-video"></span><%= __('See video guide') %>
+  </a>
+
   <script type="text/javascript">
     var mailpoet_listing_per_page = <%= items_per_page %>;
     var mailpoet_segments = <%= json_encode(segments) %>;

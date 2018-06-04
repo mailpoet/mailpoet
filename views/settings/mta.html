@@ -145,7 +145,11 @@
 </ul>
 
 <p class="mailpoet_sending_methods_help help">
-  <%= __("Need help to pick? [link]Check out the comparison table of sending methods[/link].")
+  <%= __("Need help to pick?") %>
+  <a class="mailpoet_badge mailpoet_badge_cta <% if(is_new_user == false) %>mailpoet_badge_cta_grey<% endif %>" href="https://beta.docs.mailpoet.com/article/235-video-guide-sending-options" target="_blank">
+      <span class="dashicons dashicons-format-video"></span><%= __('See video guide') %>
+  </a>
+  <%= __("[link]or check out the comparison table of sending methods[/link].")
     |replaceLinkTags('http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods', {'target' : '_blank'})
     |raw
   %>
