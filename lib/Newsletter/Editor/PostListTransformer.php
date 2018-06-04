@@ -18,7 +18,7 @@ class PostListTransformer {
 
     foreach($posts as $index => $post) {
       if($use_divider && $index > 0) {
-        $results[] = $this->args['divider'];
+        $results[] = $this->transformer->getDivider();
       }
 
       $results = array_merge($results, $this->transformer->transform($post));

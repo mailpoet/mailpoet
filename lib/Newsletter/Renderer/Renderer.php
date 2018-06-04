@@ -48,6 +48,7 @@ class Renderer {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
+    $content = $this->preProcessALC($content);
     $rendered_body = $this->renderBody($content);
     $rendered_styles = $this->renderStyles($styles);
 
@@ -68,6 +69,26 @@ class Renderer {
     return ($type && !empty($rendered_newsletter[$type])) ?
       $rendered_newsletter[$type] :
       $rendered_newsletter;
+  }
+
+  function preProcessALC($content) {
+    $blocks = array();
+    $content_blocks = (array_key_exists('blocks', $content))
+      ? $content['blocks']
+      : array();
+    foreach($content_blocks as $block) {
+      if($block['type'] === 'automatedLatestContentLayout') {
+        $blocks = array_merge(
+          $blocks, 
+          $this->blocks_renderer->automatedLatestContentTransformedPosts($block)
+        );
+      } else {
+        $blocks[] = $block;
+      }
+    }
+
+    $content['blocks'] = $blocks;
+    return $content;
   }
 
   function renderBody($content) {

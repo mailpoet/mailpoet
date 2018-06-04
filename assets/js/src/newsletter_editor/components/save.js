@@ -255,7 +255,8 @@ define([
       }
 
       if ((App.getNewsletter().get('type') === 'notification') &&
-        contents.indexOf('"type":"automatedLatestContent"') < 0
+        contents.indexOf('"type":"automatedLatestContent"') < 0 &&
+        contents.indexOf('"type":"automatedLatestContentLayout"') < 0
        ) {
         this.showValidationError(MailPoet.I18n.t('automatedLatestContentMissing'));
         return;
