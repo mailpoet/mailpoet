@@ -53,7 +53,8 @@ class Beacon {
       'Default FROM address' => Setting::getValue('sender.address'),
       'Default Reply-To address' => Setting::getValue('reply_to.address'),
       'Bounce Email Address' => Setting::getValue('bounce.address'),
-      'Total number of subscribers' =>  Subscriber::getTotalSubscribers()
+      'Total number of subscribers' =>  Subscriber::getTotalSubscribers(),
+      'Plugin installed at' => Setting::getValue('installed_at')
     );
   }
 }

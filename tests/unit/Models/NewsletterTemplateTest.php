@@ -7,7 +7,6 @@ class NewsletterTemplateTest extends \MailPoetTest {
   function _before() {
     $this->data = array(
       'name' => 'Some template',
-      'description' => 'My nice template',
       'body' => '{}',
     );
 
@@ -37,12 +36,6 @@ class NewsletterTemplateTest extends \MailPoetTest {
     expect($template->name)->equals($this->data['name']);
   }
 
-  function testItHasDescription() {
-    $template = NewsletterTemplate::where('description', $this->data['description'])
-      ->findOne();
-    expect($template->description)->equals($this->data['description']);
-  }
-
   function testItHasBody() {
     $template = NewsletterTemplate::where('body', $this->data['body'])
       ->findOne();
@@ -53,7 +46,6 @@ class NewsletterTemplateTest extends \MailPoetTest {
     $created_template = NewsletterTemplate::createOrUpdate(
       array(
         'name' => 'Another template',
-        'description' => 'Another template description',
         'body' => '{content: {}, globalStyles: {}}',
       ));
     expect($created_template->id() > 0)->true();
@@ -81,7 +73,6 @@ class NewsletterTemplateTest extends \MailPoetTest {
     for($i = 0; $i < $total; $i++) {
       NewsletterTemplate::createOrUpdate(array(
         'name' => 'Testing template ' . $i,
-        'description' => 'template description',
         'body' => '{content: {}, globalStyles: {}}',
         'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES
       ));

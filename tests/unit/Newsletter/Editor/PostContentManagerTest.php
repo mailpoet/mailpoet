@@ -40,13 +40,16 @@ class PostContentManagerTest extends \MailPoetTest {
 
   function testFilterContentRetainsHeadings() {
     $html = '<h1>heading 1</h1>';
-    expect($this->post_content->filterContent($html))->equals($html);
+    expect($this->post_content->filterContent($html))
+      ->equals('<p class="' . PostContentManager::WP_POST_CLASS . '">heading 1</p>');
 
     $html = '<h2>heading 2</h2>';
-    expect($this->post_content->filterContent($html))->equals($html);
+    expect($this->post_content->filterContent($html))
+      ->equals('<p class="' . PostContentManager::WP_POST_CLASS . '">heading 2</p>');
 
     $html = '<h3>heading 3</h3>';
-    expect($this->post_content->filterContent($html))->equals($html);
+    expect($this->post_content->filterContent($html))
+      ->equals('<p class="' . PostContentManager::WP_POST_CLASS . '">heading 3</p>');
   }
 
   function testFilterContentRetainsTextStyling() {
@@ -64,12 +67,7 @@ class PostContentManagerTest extends \MailPoetTest {
     }
   }
 
-  function testFilterContentRetainsImagesAndLinks() {
-    $html = '<img src="#" alt="some alt" />';
-    expect($this->post_content->filterContent($html))->equals(
-      '<p class="' . PostContentManager::WP_POST_CLASS . '"><img src="#" alt="some alt" /></p>'
-    );
-
+  function testFilterContentRetainsLinks() {
     $html = '<a href="#" title="link title">some link</a>';
     expect($this->post_content->filterContent($html))->equals(
       '<p class="' . PostContentManager::WP_POST_CLASS . '">' . $html . '</p>'
@@ -88,6 +86,7 @@ class PostContentManagerTest extends \MailPoetTest {
       '<table></table>',
       '<tr></tr>',
       '<td></td>',
+      '<img src="#" alt="some alt" />',
     );
 
     foreach($undesirable_tags as $html) {

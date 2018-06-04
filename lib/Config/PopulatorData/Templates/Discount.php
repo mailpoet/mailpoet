@@ -15,7 +15,6 @@ class Discount {
   function get() {
     return array(
       'name' => __("Discount", 'mailpoet'),
-      'description' => __("A useful layout for a simple discount email.", 'mailpoet'),
       'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

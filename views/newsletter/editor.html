@@ -18,6 +18,18 @@
     'newsletter/templates/blocks/automatedLatestContent/settings.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_automated_latest_content_layout_block',
+    'newsletter/templates/blocks/automatedLatestContentLayout/block.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_automated_latest_content_layout_widget',
+    'newsletter/templates/blocks/automatedLatestContentLayout/widget.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_automated_latest_content_layout_settings',
+    'newsletter/templates/blocks/automatedLatestContentLayout/settings.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_button_block',
     'newsletter/templates/blocks/button/block.hbs'
   ) %>
@@ -333,7 +345,6 @@
     'helpTooltipDesignerPreheader': __("This optional text will appear in your subscribers' inboxes, beside the subject line. Write something enticing!"),
     'helpTooltipDesignerFullWidth': __("This option eliminates padding around the image. It only works if the image is larger than the column size."),
     'helpTooltipDesignerIdealWidth': __("Use images with widths of at least 1,000 pixels to ensure sharp display on high density screens, like mobile devices."),
-    'templateDescriptionMissing': __('Please add a template description'),
     'templateSaved': __('Template has been saved.'),
     'templateSaveFailed': __('Template has not been saved, please try again'),
     'categoriesAndTags': __('Categories & tags'),
@@ -520,6 +531,16 @@
       ),
       automatedLatestContentBlockSettings: Handlebars.compile(
         jQuery('#newsletter_editor_template_automated_latest_content_settings').html()
+      ),
+
+      automatedLatestContentLayoutBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_automated_latest_content_layout_block').html()
+      ),
+      automatedLatestContentLayoutInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_automated_latest_content_layout_widget').html()
+      ),
+      automatedLatestContentLayoutBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_automated_latest_content_layout_settings').html()
       ),
 
       postsBlock: Handlebars.compile(
@@ -963,6 +984,7 @@
       blockDefaults: {
         automatedLatestContent: {
           amount: '5',
+          withLayout: false,
           contentType: 'post', // 'post'|'page'|'mailpoet_page'
           inclusionType: 'include', // 'include'|'exclude'
           displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
@@ -1002,6 +1024,61 @@
           showDivider: true, // true|false
           divider: {
             context: 'automatedLatestContent.divider',
+            styles: {
+              block: {
+                backgroundColor: 'transparent',
+                padding: '13px',
+                borderStyle: 'solid',
+                borderWidth: '3px',
+                borderColor: '#aaaaaa',
+              },
+            },
+          },
+          backgroundColor: '#ffffff',
+          backgroundColorAlternate: '#eeeeee',
+        },
+        automatedLatestContentLayout: {
+          amount: '5',
+          withLayout: true,
+          contentType: 'post', // 'post'|'page'|'mailpoet_page'
+          inclusionType: 'include', // 'include'|'exclude'
+          displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
+          titleFormat: 'h1', // 'h1'|'h2'|'h3'|'ul'
+          titleAlignment: 'left', // 'left'|'center'|'right'
+          titleIsLink: false, // false|true
+          imageFullWidth: false, // true|false
+          featuredImagePosition: 'alternate', // 'centered'|'left'|'right'|'alternate'|'none',
+          showAuthor: 'no', // 'no'|'aboveText'|'belowText'
+          authorPrecededBy: '<%= __('Author:') | escape('js') %>',
+          showCategories: 'no', // 'no'|'aboveText'|'belowText'
+          categoriesPrecededBy: '<%= __('Categories:') | escape('js') %>',
+          readMoreType: 'button', // 'link'|'button'
+          readMoreText: '<%= __('Read more') | escape('js') %>',
+          readMoreButton: {
+            text: '<%= __('Read more') | escape('js') %>',
+            url: '[postLink]',
+            context: 'automatedLatestContentLayout.readMoreButton',
+            styles: {
+              block: {
+                backgroundColor: '#2ea1cd',
+                borderColor: '#0074a2',
+                borderWidth: '1px',
+                borderRadius: '5px',
+                borderStyle: 'solid',
+                width: '180px',
+                lineHeight: '40px',
+                fontColor: '#ffffff',
+                fontFamily: 'Verdana',
+                fontSize: '18px',
+                fontWeight: 'normal',
+                textAlign: 'center',
+              }
+            }
+          },
+          sortBy: 'newest', // 'newest'|'oldest',
+          showDivider: true, // true|false
+          divider: {
+            context: 'automatedLatestContentLayout.divider',
             styles: {
               block: {
                 backgroundColor: 'transparent',
@@ -1086,6 +1163,7 @@
         },
         posts: {
           amount: '10',
+          withLayout: true,
           contentType: 'post', // 'post'|'page'|'mailpoet_page'
           postStatus: 'publish', // 'draft'|'pending'|'private'|'publish'|'future'
           inclusionType: 'include', // 'include'|'exclude'
@@ -1094,7 +1172,7 @@
           titleAlignment: 'left', // 'left'|'center'|'right'
           titleIsLink: false, // false|true
           imageFullWidth: false, // true|false
-          featuredImagePosition: 'belowTitle', // 'belowTitle'|'aboveTitle'|'none',
+          featuredImagePosition: 'alternate', // 'centered'|'left'|'right'|'alternate'|'none',
           showAuthor: 'no', // 'no'|'aboveText'|'belowText'
           authorPrecededBy: '<%= __('Author:') | escape('js') %>',
           showCategories: 'no', // 'no'|'aboveText'|'belowText'

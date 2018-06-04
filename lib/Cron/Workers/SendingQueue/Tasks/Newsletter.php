@@ -122,7 +122,7 @@ class Newsletter {
     $rendered_newsletter = $queue->getNewsletterRenderedBody();
     $prepared_newsletter = Helpers::joinObject(
       array(
-        $newsletter->subject,
+        $queue->newsletter_rendered_subject,
         $rendered_newsletter['html'],
         $rendered_newsletter['text']
       )

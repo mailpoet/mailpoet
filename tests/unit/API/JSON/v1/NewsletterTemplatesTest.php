@@ -9,14 +9,12 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   function _before() {
     NewsletterTemplate::createOrUpdate(array(
       'name' => 'Template #1',
-      'description' => 'My First Template',
       'body' => '{"key1": "value1"}'
     ));
 
     NewsletterTemplate::createOrUpdate(array(
       'name' => 'Template #2',
       'newsletter_id' => 1,
-      'description' => 'My Second Template',
       'body' => '{"key2": "value2"}'
     ));
   }
@@ -57,7 +55,6 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   function testItCanSaveANewTemplate() {
     $template_data = array(
       'name' => 'Template #3',
-      'description' => 'My Third Template',
       'body' => '{"key3": "value3"}'
     );
 
@@ -73,7 +70,6 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $template_data = array(
       'newsletter_id' => 2,
       'name' => 'Template #3',
-      'description' => 'My Third Template',
       'body' => '{"key3": "value3"}'
     );
 
@@ -89,7 +85,6 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $template_data = array(
       'newsletter_id' => '1',
       'name' => 'Template #2',
-      'description' => 'My Updated Second Template',
       'body' => '{"key3": "value3"}'
     );
 
@@ -104,7 +99,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $normalize = function($array) {
       $result = array();
       foreach($array as $key => $value) {
-        if(in_array($key, ['newsletter_id', 'name', 'description', 'body'])) {
+        if(in_array($key, ['newsletter_id', 'name', 'body'])) {
           $result[$key] = $value;
         }
       }

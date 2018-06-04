@@ -52,6 +52,7 @@ define([
     defaults: function () {
       return this._getDefaults({
         type: 'posts',
+        withLayout: true,
         amount: '10',
         offset: 0,
         contentType: 'post', // 'post'|'page'|'mailpoet_page'
@@ -64,7 +65,7 @@ define([
         titleAlignment: 'left', // 'left'|'center'|'right'
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
-        featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
+        featuredImagePosition: 'centered', // 'centered'|'right'|'left'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
         showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -178,7 +179,7 @@ define([
       if (data.posts.length === 0) return;
 
       CommunicationComponent.getTransformedPosts(data).done(function (posts) {
-        collection.add(posts, { at: index });
+        collection.add(JSON.parse(JSON.stringify(posts)), { at: index });
       }).fail(function () {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
@@ -190,7 +191,7 @@ define([
     getTemplate: function () { return window.templates.postsBlock; },
     modelEvents: {}, // Forcefully disable all events
     regions: _.extend({
-      postsRegion: '.mailpoet_posts_block_posts'
+      postsRegion: '.mailpoet_posts_container'
     }, base.BlockView.prototype.regions),
     onDragSubstituteBy: function () { return Module.PostsWidgetView; },
     initialize: function () {
@@ -583,6 +584,7 @@ define([
   });
 
   Module.PostsWidgetView = base.WidgetView.extend({
+    className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
     getTemplate: function () { return window.templates.postsInsertion; },
     behaviors: {
       DraggableBehavior: {

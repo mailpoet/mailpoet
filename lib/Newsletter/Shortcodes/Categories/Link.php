@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Setting;
@@ -10,19 +11,17 @@ class Link {
   const CATEGORY_NAME = 'link';
 
   static function process(
-    $action,
-    $action_argument,
-    $action_argument_value,
+    $shortcode_details,
     $newsletter,
     $subscriber,
     $queue,
     $content,
     $wp_user_preview
   ) {
-    switch($action) {
+    switch($shortcode_details['action']) {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
-          $action,
+          $shortcode_details['action'],
           SubscriptionUrl::getUnsubscribeUrl($wp_user_preview ? false : $subscriber),
           $queue,
           $wp_user_preview
@@ -30,7 +29,7 @@ class Link {
 
       case 'subscription_manage_url':
         return self::processUrl(
-          $action,
+          $shortcode_details['action'],
           SubscriptionUrl::getManageUrl($wp_user_preview ? false : $subscriber),
           $queue,
           $wp_user_preview
@@ -44,10 +43,10 @@ class Link {
           $queue,
           $wp_user_preview
         );
-        return self::processUrl($action, $url, $queue, $wp_user_preview);
+        return self::processUrl($shortcode_details['action'], $url, $queue, $wp_user_preview);
 
       default:
-        $shortcode = self::getFullShortcode($action);
+        $shortcode = self::getFullShortcode($shortcode_details['action']);
         $url = apply_filters(
           'mailpoet_newsletter_shortcode_link',
           $shortcode,
@@ -57,14 +56,13 @@ class Link {
           $wp_user_preview
         );
         return ($url !== $shortcode) ?
-          self::processUrl($action, $url, $queue, $wp_user_preview) :
+          self::processUrl($shortcode_details['action'], $url, $queue, $wp_user_preview) :
           false;
     }
   }
 
   static function processUrl($action, $url, $queue, $wp_user_preview = false) {
-    if ($wp_user_preview)
-      return $url;
+    if($wp_user_preview) return $url;
     return ($queue !== false && (boolean)Setting::getValue('tracking.enabled')) ?
       self::getFullShortcode($action) :
       $url;

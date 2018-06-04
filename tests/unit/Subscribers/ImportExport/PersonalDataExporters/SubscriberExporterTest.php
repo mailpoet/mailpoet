@@ -48,8 +48,25 @@ class SubscriberExporterTest extends \MailPoetTest {
       array('name' => 'Email', 'value' => 'email.that@has.no.custom.fields'),
       array('name' => 'Status', 'value' => 'unconfirmed'),
       array('name' => 'Created at', 'value' => '2018-05-03 10:30:08'),
+      array('name' => "Subscriber's subscription source", 'value' => 'Unknown'),
     );
     expect($result['data'][0]['data'])->equals($expected);
+  }
+
+  function testExportSubscriberWithSource() {
+    Subscriber::createOrUpdate(array(
+      'email' => 'email.with@source.com',
+      'first_name' => 'John',
+      'last_name' => 'Doe',
+      'status' => 'unconfirmed',
+      'created_at' => '2018-05-03 10:30:08',
+      'source' => 'form',
+    ));
+    $result = $this->exporter->export('email.with@source.com');
+    expect($result['data'][0]['data'])->contains(array(
+      'name' => "Subscriber's subscription source",
+      'value' => 'Subscription via a MailPoet subscription form'
+    ));
   }
 
   function testExportSubscriberWithIPs() {
@@ -66,6 +83,7 @@ class SubscriberExporterTest extends \MailPoetTest {
     expect($result['data'][0]['data'])->contains(array('name' => 'Subscribed IP', 'value' => 'IP1'));
     expect($result['data'][0]['data'])->contains(array('name' => 'Confirmed IP', 'value' => 'IP2'));
   }
+
 
   function testExportSubscriberWithCustomField() {
     $subscriber = Subscriber::createOrUpdate(array(

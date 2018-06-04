@@ -91,7 +91,7 @@ define([
       });
 
       it('has featured image position', function () {
-        expect(model.get('featuredImagePosition')).to.match(/^(belowTitle|aboveTitle|none)$/);
+        expect(model.get('featuredImagePosition')).to.match(/^(centered|left|right|alternate|none)$/);
       });
 
       it('has an option to display author', function () {
@@ -293,7 +293,7 @@ define([
 
       it('renders', function () {
         expect(view.render).to.not.throw();
-        expect(view.$('.mailpoet_content')).to.have.length(1);
+        expect(view.$('.mailpoet_posts_container')).to.have.length(1);
       });
     });
 

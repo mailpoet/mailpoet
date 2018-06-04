@@ -15,7 +15,6 @@ class PostNotificationsBlank1Column {
   function get() {
     return array(
       'name' => __("Post Notifications: Blank 1 Column", 'mailpoet'),
-      'description' => __("A blank Post Notifications template with a 1 column layout.", 'mailpoet'),
       'categories' => json_encode(array('notification', 'blank')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -131,106 +130,76 @@ class PostNotificationsBlank1Column {
                         "borderColor" => "#aaaaaa"
                       )
                     )
+                  ),
+                  array(
+                    "type" => "spacer",
+                    "styles" => array(
+                      "block" => array(
+                        "backgroundColor" => "transparent",
+                        "height" => "40px"
+                      )
+                    )
                   )
                 )
               )
             )
           ),
           array(
-            "type" => "container",
-            "orientation" => "horizontal",
-            "styles" => array(
-              "block" => array(
-                "backgroundColor" => "transparent"
-              )
-            ),
-            "blocks" => array(
-              array(
-                "type" => "container",
-                "orientation" => "vertical",
-                "styles" => array(
-                  "block" => array(
-                    "backgroundColor" => "transparent"
-                  )
-                ),
-                "blocks" => array(
-                  array(
-                    "type" => "spacer",
-                    "styles" => array(
-                      "block" => array(
-                        "backgroundColor" => "transparent",
-                        "height" => "40px"
-                      )
-                    )
-                  ),
-                  array(
-                    "type" => "automatedLatestContent",
-                    "amount" => "3",
-                    "contentType" => "post",
-                    "terms" => array(),
-                    "inclusionType" => "include",
-                    "displayType" => "excerpt",
-                    "titleFormat" => "h3",
-                    "titleAlignment" => "left",
-                    "titleIsLink" => false,
-                    "imageFullWidth" => false,
-                    "featuredImagePosition" => "belowTitle",
-                    "showAuthor" => "no",
-                    "authorPrecededBy" => __("Author:", 'mailpoet'),
-                    "showCategories" => "no",
-                    "categoriesPrecededBy" => __("Categories:", 'mailpoet'),
-                    "readMoreType" => "button",
-                    "readMoreText" => "Read more",
-                    "readMoreButton" => array(
-                      "type" => "button",
-                      "text" => __("Read the post", 'mailpoet'),
-                      "url" => "[postLink]",
-                      "styles" => array(
-                        "block" => array(
-                          "backgroundColor" => "#2ea1cd",
-                          "borderColor" => "#0074a2",
-                          "borderWidth" => "1px",
-                          "borderRadius" => "5px",
-                          "borderStyle" => "solid",
-                          "width" => "160px",
-                          "lineHeight" => "30px",
-                          "fontColor" => "#ffffff",
-                          "fontFamily" => "Verdana",
-                          "fontSize" => "16px",
-                          "fontWeight" => "normal",
-                          "textAlign" => "center"
-                        )
-                      )
-                    ),
-                    "sortBy" => "newest",
-                    "showDivider" => true,
-                    "divider" => array(
-                      "type" => "divider",
-                      "styles" => array(
-                        "block" => array(
-                          "backgroundColor" => "transparent",
-                          "padding" => "13px",
-                          "borderStyle" => "solid",
-                          "borderWidth" => "3px",
-                          "borderColor" => "#aaaaaa"
-                        )
-                      )
-                    ),
-                    "backgroundColor" => "#ffffff",
-                    "backgroundColorAlternate" => "#eeeeee"
-                  ),
-                  array(
-                    "type" => "spacer",
-                    "styles" => array(
-                      "block" => array(
-                        "backgroundColor" => "transparent",
-                        "height" => "40px"
-                      )
-                    )
-                  )
+            "type" => "automatedLatestContentLayout",
+            "withLayout" => true,
+            "amount" => "3",
+            "contentType" => "post",
+            "terms" => array(),
+            "inclusionType" => "include",
+            "displayType" => "excerpt",
+            "titleFormat" => "h3",
+            "titleAlignment" => "left",
+            "titleIsLink" => false,
+            "imageFullWidth" => false,
+            "featuredImagePosition" => "alternate",
+            "showAuthor" => "no",
+            "authorPrecededBy" => __("Author:", 'mailpoet'),
+            "showCategories" => "no",
+            "categoriesPrecededBy" => __("Categories:", 'mailpoet'),
+            "readMoreType" => "button",
+            "readMoreText" => "Read more",
+            "readMoreButton" => array(
+              "type" => "button",
+              "text" => __("Read the post", 'mailpoet'),
+              "url" => "[postLink]",
+              "styles" => array(
+                "block" => array(
+                  "backgroundColor" => "#2ea1cd",
+                  "borderColor" => "#0074a2",
+                  "borderWidth" => "1px",
+                  "borderRadius" => "5px",
+                  "borderStyle" => "solid",
+                  "width" => "160px",
+                  "lineHeight" => "30px",
+                  "fontColor" => "#ffffff",
+                  "fontFamily" => "Verdana",
+                  "fontSize" => "16px",
+                  "fontWeight" => "normal",
+                  "textAlign" => "center"
                 )
               )
-            )
+            ),
+            "sortBy" => "newest",
+            "showDivider" => true,
+            "divider" => array(
+              "type" => "divider",
+              "styles" => array(
+                "block" => array(
+                  "backgroundColor" => "transparent",
+                  "padding" => "13px",
+                  "borderStyle" => "solid",
+                  "borderWidth" => "3px",
+                  "borderColor" => "#aaaaaa"
+                )
+              )
+            ),
+            "backgroundColor" => "#ffffff",
+            "backgroundColorAlternate" => "#eeeeee"
           ),
           array(
             "type" => "container",
@@ -250,6 +219,15 @@ class PostNotificationsBlank1Column {
                   )
                 ),
                 "blocks" => array(
+                  array(
+                    "type" => "spacer",
+                    "styles" => array(
+                      "block" => array(
+                        "backgroundColor" => "transparent",
+                        "height" => "40px"
+                      )
+                    )
+                  ),
                   array(
                     "type" => "divider",
                     "styles" => array(

@@ -163,7 +163,6 @@ define([
     },
     saveAsTemplate: function () {
       var templateName = this.$('.mailpoet_save_as_template_name').val();
-      var templateDescription = this.$('.mailpoet_save_as_template_description').val();
       var that = this;
 
       if (templateName === '') {
@@ -174,18 +173,9 @@ define([
             scroll: true
           }
         );
-      } else if (templateDescription === '') {
-        MailPoet.Notice.error(
-          MailPoet.I18n.t('templateDescriptionMissing'),
-          {
-            positionAfter: that.$el,
-            scroll: true
-          }
-        );
       } else {
         Module.saveTemplate({
-          name: templateName,
-          description: templateDescription
+          name: templateName
         }).then(function () {
           MailPoet.Notice.success(
             MailPoet.I18n.t('templateSaved'),
@@ -218,7 +208,6 @@ define([
     },
     exportTemplate: function () {
       var templateName = this.$('.mailpoet_export_template_name').val();
-      var templateDescription = this.$('.mailpoet_export_template_description').val();
       var that = this;
 
       if (templateName === '') {
@@ -229,18 +218,9 @@ define([
             scroll: true
           }
         );
-      } else if (templateDescription === '') {
-        MailPoet.Notice.error(
-          MailPoet.I18n.t('templateDescriptionMissing'),
-          {
-            positionAfter: that.$el,
-            scroll: true
-          }
-        );
       } else {
         Module.exportTemplate({
-          name: templateName,
-          description: templateDescription
+          name: templateName
         });
         this.hideExportTemplate();
       }
@@ -275,7 +255,8 @@ define([
       }
 
       if ((App.getNewsletter().get('type') === 'notification') &&
-        contents.indexOf('"type":"automatedLatestContent"') < 0
+        contents.indexOf('"type":"automatedLatestContent"') < 0 &&
+        contents.indexOf('"type":"automatedLatestContentLayout"') < 0
        ) {
         this.showValidationError(MailPoet.I18n.t('automatedLatestContentMissing'));
         return;

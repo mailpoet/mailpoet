@@ -272,6 +272,7 @@ var adminConfig = {
       'newsletter_editor/blocks/footer.js',
       'newsletter_editor/blocks/header.js',
       'newsletter_editor/blocks/automatedLatestContent.js',
+      'newsletter_editor/blocks/automatedLatestContentLayout.js',
       'newsletter_editor/blocks/posts.js',
       'newsletter_editor/blocks/social.js'
     ]
@@ -375,6 +376,7 @@ var testConfig = {
       'newsletter_editor/blocks/footer.js',
       'newsletter_editor/blocks/header.js',
       'newsletter_editor/blocks/automatedLatestContent.js',
+      'newsletter_editor/blocks/automatedLatestContentLayout.js',
       'newsletter_editor/blocks/posts.js',
       'newsletter_editor/blocks/social.js',
 

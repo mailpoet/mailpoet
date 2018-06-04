@@ -347,9 +347,9 @@ define(
            *  CSV file
            */
           uploadElement.change(function () {
-            var ext = this.value.match(/\.(.+)$/);
+            var ext = this.value.match(/[^.]+$/);
             MailPoet.Notice.hide();
-            if (ext === null || ext[1].toLowerCase() !== 'csv') {
+            if (ext === null || ext[0].toLowerCase() !== 'csv') {
               this.value = '';
               MailPoet.Notice.error(MailPoet.I18n.t('wrongFileFormat'));
             }

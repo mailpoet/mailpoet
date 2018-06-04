@@ -30,10 +30,33 @@ class ScheduledTask extends Model {
     return ($this->getErrors() === false && $this->id() > 0);
   }
 
+  static function pauseAllByNewsletter(Newsletter $newsletter) {
+    ScheduledTask::rawExecute(
+      'UPDATE `' . ScheduledTask::$_table . '` t ' .
+      'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
+      'SET t.`status` = "' . self::STATUS_PAUSED . '" ' .
+      'WHERE ' .
+      'q.`newsletter_id` = ' . $newsletter->id() .
+      ' AND t.`status` = "' . self::STATUS_SCHEDULED . '" '
+    );
+  }
+
   function resume() {
     $this->setExpr('status', 'NULL');
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
+  }
+
+  static function setScheduledAllByNewsletter(Newsletter $newsletter) {
+    ScheduledTask::rawExecute(
+      'UPDATE `' . ScheduledTask::$_table . '` t ' .
+      'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
+      'SET t.`status` = "' . self::STATUS_SCHEDULED . '" ' .
+      'WHERE ' .
+      'q.`newsletter_id` = ' . $newsletter->id() .
+      ' AND t.`status` = "' . self::STATUS_PAUSED . '" ' .
+      ' AND t.`scheduled_at` > NOW()'
+    );
   }
 
   function complete() {

@@ -95,10 +95,10 @@ class TemplateBox extends React.Component {
   }
 
   render() {
-    const { index, name, thumbnail, description, readonly } = this.props;
+    const { index, name, thumbnail, readonly } = this.props;
 
     const deleteLink = (
-      <div className="mailpoet_delete">
+      <div className="mailpoet_delete button button-secondary">
         <a href="javascript:;" onClick={this.onDelete}>{MailPoet.I18n.t('delete')}</a>
       </div>
     );
@@ -108,30 +108,25 @@ class TemplateBox extends React.Component {
       preview = (
         <a href="javascript:;" onClick={this.onPreview}>
           <img src={thumbnail} alt={MailPoet.I18n.t('templatePreview')} />
-          <div className="mailpoet_overlay" />
+          <div className="mailpoet_overlay">
+            <p className="mailpoet_more_details">{MailPoet.I18n.t('zoom')}</p>
+          </div>
         </a>
       );
     }
 
     return (
-      <li>
+      <li className="mailpoet_template_boxes">
         <div className="mailpoet_thumbnail">
           { preview }
         </div>
 
         <div className="mailpoet_description">
           <h3>{ name }</h3>
-          <p>{ description }</p>
         </div>
 
         <div className="mailpoet_actions">
-          <a
-            className="button button-secondary"
-            onClick={this.onPreview}
-            role="button"
-            tabIndex={0}
-          >{MailPoet.I18n.t('preview')}</a>
-            &nbsp;
+          { readonly === '1' ? false : deleteLink }
           <a
             className="button button-primary"
             data-automation-id={`select_template_${index}`}
@@ -140,7 +135,6 @@ class TemplateBox extends React.Component {
             tabIndex={0}
           > {MailPoet.I18n.t('select')} </a>
         </div>
-        { readonly === '1' ? false : deleteLink }
       </li>
     );
   }
@@ -151,7 +145,6 @@ TemplateBox.propTypes = {
   id: PropTypes.string.isRequired,
   newsletterId: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
   thumbnail: PropTypes.string.isRequired,
   readonly: PropTypes.string.isRequired,
   beforeDelete: PropTypes.func.isRequired,

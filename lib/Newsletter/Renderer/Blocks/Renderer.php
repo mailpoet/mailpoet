@@ -64,16 +64,20 @@ class Renderer {
     return $block_class::render($block, $column_count);
   }
 
-  function processAutomatedLatestContent($args, $column_count) {
+  function automatedLatestContentTransformedPosts($args) {
     $posts_to_exclude = $this->getPosts();
     $ALC_posts = $this->ALC->getPosts($args, $posts_to_exclude);
     foreach($ALC_posts as $post) {
       $posts_to_exclude[] = $post->ID;
     }
-    $transformed_posts = array(
-      'blocks' => $this->ALC->transformPosts($args, $ALC_posts)
-    );
     $this->setPosts($posts_to_exclude);
+    return $this->ALC->transformPosts($args, $ALC_posts);
+  }
+
+  function processAutomatedLatestContent($args, $column_count) {
+    $transformed_posts = array(
+      'blocks' => $this->automatedLatestContentTransformedPosts($args)
+    );
     $transformed_posts = StylesHelper::applyTextAlignment($transformed_posts);
     $rendered_posts = $this->render($transformed_posts, $column_count);
     return $rendered_posts;

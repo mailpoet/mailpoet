@@ -131,7 +131,8 @@ class Migrator {
       'subscriber_id int(11) unsigned NOT NULL,',
       'processed int(1) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (task_id, subscriber_id)',
+      'PRIMARY KEY  (task_id, subscriber_id),',
+      'KEY subscriber_id (subscriber_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -248,7 +249,7 @@ class Migrator {
       'newsletter_id int NULL DEFAULT 0,',
       'name varchar(250) NOT NULL,',
       'categories varchar(250) NOT NULL DEFAULT "[]",',
-      'description varchar(250) NOT NULL,',
+      'description varchar(255) NOT NULL DEFAULT "",',
       'body LONGTEXT,',
       'thumbnail LONGTEXT,',
       'readonly TINYINT(1) DEFAULT 0,',
