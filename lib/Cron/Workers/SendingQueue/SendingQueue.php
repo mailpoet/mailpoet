@@ -34,6 +34,7 @@ class SendingQueue {
     $this->enforceSendingAndExecutionLimits();
     foreach(self::getRunningQueues() as $queue) {
       if(!$queue instanceof SendingTask) continue;
+      ScheduledTaskModel::touchAllByIds(array($queue->task_id));
 
       $newsletter = $this->newsletter_task->getNewsletterFromQueue($queue);
       if(!$newsletter) {
