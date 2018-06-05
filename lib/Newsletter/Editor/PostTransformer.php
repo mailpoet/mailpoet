@@ -5,6 +5,7 @@ use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Newsletter\Editor\MetaInformationManager;
 use MailPoet\Newsletter\Editor\StructureTransformer;
 use MailPoet\Newsletter\Editor\LayoutHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -42,7 +43,7 @@ class PostTransformer {
     $featured_image = $this->getFeaturedImage($post);
 
     $image_position = $this->args['featuredImagePosition'];
-    
+
     if($featured_image && $image_position === 'belowTitle') {
       array_unshift($content, $title, $featured_image);
     } else {
@@ -65,10 +66,10 @@ class PostTransformer {
     $featured_image = $this->getFeaturedImage($post);
 
     $position = $this->args['featuredImagePosition'];
-    
+
     if(!$featured_image || $position === 'none' || $this->args['displayType'] !== 'excerpt') {
       array_unshift($content, $title);
-      
+
       return array(
         LayoutHelper::row(array(
           LayoutHelper::col($content)
@@ -147,12 +148,7 @@ class PostTransformer {
     }
 
     $thumbnail_id = get_post_thumbnail_id($post_id);
-
-    // get attachment data (src, width, height)
-    $image_info = wp_get_attachment_image_src(
-      $thumbnail_id,
-      'mailpoet_newsletter_max'
-    );
+    $image_info = WPFunctions::getImageInfo($thumbnail_id);
 
     // get alt text
     $alt_text = trim(strip_tags(get_post_meta(
