@@ -438,7 +438,7 @@ class Menu {
       )
     );
 
-    $data['is_new_user'] = $this->is_new_user();
+    $data['is_new_user'] = $this->isNewUser();
 
     $data = array_merge($data, Installer::getPremiumStatus());
 
@@ -543,7 +543,7 @@ class Menu {
     $data['items_per_page'] = $this->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
 
-    $data['is_new_user'] = $this->is_new_user();
+    $data['is_new_user'] = $this->isNewUser();
 
     $this->displayPage('forms.html', $data);
   }
@@ -583,7 +583,7 @@ class Menu {
 
     $data['automatic_emails'] = array();
 
-    $data['is_new_user'] = $this->is_new_user();
+    $data['is_new_user'] = $this->isNewUser();
 
     wp_enqueue_script('jquery-ui');
     wp_enqueue_script('jquery-ui-datepicker');
@@ -616,7 +616,7 @@ class Menu {
       'sub_menu' => 'mailpoet-subscribers'
     ));
 
-    $data['is_new_user'] = $this->is_new_user();
+    $data['is_new_user'] = $this->isNewUser();
 
     $this->displayPage('subscribers/importExport/import.html', $data);
   }
@@ -757,7 +757,7 @@ class Menu {
     }
   }
 
-  function is_new_user() {
+  function isNewUser() {
     $installed_at = Setting::getValue('installed_at');
     if(is_null($installed_at)) {
       return true;
