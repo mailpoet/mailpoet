@@ -22,7 +22,8 @@
       </tbody>
     </table>
 
-    <a class="mailpoet_badge mailpoet_badge_cta <% if(is_new_user == false) %>mailpoet_badge_cta_grey<% endif %>" href="https://beta.docs.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file" target="_blank">
+    <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
+    <a class="<%= badgeClassName %>" href="https://beta.docs.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file" target="_blank">
         <span class="dashicons dashicons-format-video"></span><%= __('See video guide') %>
     </a>
 

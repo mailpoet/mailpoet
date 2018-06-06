@@ -17,7 +17,8 @@
     var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
     var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
     var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
-    var mailpoet_is_new_user = <%= is_new_user %>;
+    <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
+    var mailpoet_is_new_user = <%= newUser %>;
   </script>
 <% endblock %>
 
