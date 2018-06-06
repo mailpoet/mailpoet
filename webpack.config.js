@@ -74,6 +74,10 @@ var baseConfig = {
         loader: 'expose-loader?_',
       },
       {
+        include: require.resolve('react-tooltip'),
+        loader: 'expose-loader?' + globalPrefix + '.ReactTooltip',
+      },
+      {
         include: require.resolve('history'),
         loader: 'expose-loader?' + globalPrefix + '.History',
       },
