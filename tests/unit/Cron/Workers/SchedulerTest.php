@@ -571,6 +571,20 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler->process();
   }
 
+  function testItUpdatesUpdateTime() {
+    $originalUpdated = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(5)->toDateTimeString();
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_WELCOME, Newsletter::STATUS_DRAFT);
+    $queue = $this->_createQueue($newsletter->id);
+    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->updated_at = $originalUpdated;
+    $queue->save();
+    $scheduler = new Scheduler();
+    $scheduler->timer = microtime(true);
+    $scheduler->process();
+    $newQueue = ScheduledTask::findOne($queue->task_id);
+    expect($newQueue->updated_at)->notEquals($originalUpdated);
+  }
+
   function _createNewsletterSegment($newsletter_id, $segment_id) {
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->newsletter_id = $newsletter_id;

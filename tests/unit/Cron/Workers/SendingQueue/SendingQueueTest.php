@@ -385,6 +385,26 @@ class SendingQueueTest extends \MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
+  function testItUpdatesUpdateTime() {
+    $originalUpdated = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(5)->toDateTimeString();
+
+    $this->queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $this->queue->updated_at = $originalUpdated;
+    $this->queue->save();
+
+    $this->newsletter->type = Newsletter::TYPE_WELCOME;
+    $this->newsletter_segment->delete();
+
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::makeEmpty(new MailerTask(), array(), $this)
+    );
+    $sending_queue_worker->process();
+
+    $newQueue = ScheduledTask::findOne($this->queue->task_id);
+    expect($newQueue->updated_at)->notEquals($originalUpdated);
+  }
+
   function testItCanProcessWelcomeNewsletters() {
     $this->newsletter->type = Newsletter::TYPE_WELCOME;
     $this->newsletter_segment->delete();

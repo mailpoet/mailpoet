@@ -227,6 +227,7 @@ class Sending {
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->where('type', 'sending')
       ->whereNotEqual('status', ScheduledTask::STATUS_PAUSED)
+      ->orderByAsc('updated_at')
       ->limit($amount)
       ->findMany();
     $result = array();
@@ -238,7 +239,7 @@ class Sending {
 
   static function getRunningQueues($amount = self::RESULT_BATCH_SIZE) {
     $tasks = ScheduledTask::orderByAsc('priority')
-      ->orderByAsc('created_at')
+      ->orderByAsc('updated_at')
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->where('type', 'sending')
