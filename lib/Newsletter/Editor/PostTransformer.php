@@ -44,7 +44,7 @@ class PostTransformer {
 
     $image_position = $this->args['featuredImagePosition'];
 
-    if($featured_image && $image_position === 'belowTitle') {
+    if($featured_image && $image_position === 'belowTitle' && $this->args['displayType'] === 'excerpt') {
       array_unshift($content, $title, $featured_image);
     } else {
       if($content[0]['type'] === 'text') {
@@ -52,7 +52,7 @@ class PostTransformer {
       } else {
         array_unshift($content, $title);
       }
-      if($featured_image) {
+      if($featured_image && $this->args['displayType'] === 'excerpt') {
         array_unshift($content, $featured_image);
       }
     }
