@@ -5,6 +5,8 @@ namespace MailPoet\Config;
 if(!defined('ABSPATH')) exit;
 
 class Env {
+  const NEWSLETTER_CONTENT_WIDTH = 1320;
+
   static $version;
   static $plugin_name;
   static $plugin_path;

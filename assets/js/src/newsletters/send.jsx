@@ -74,7 +74,7 @@ const NewsletterSend = React.createClass({
   },
   saveTemplate: function saveTemplate(response, done) {
     fromUrl(response.meta.preview_url)
-      .then(function saveTemplateAjax(thumbnail) {
+      .then((thumbnail) => {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletterTemplates',
@@ -88,6 +88,9 @@ const NewsletterSend = React.createClass({
           },
         }).then(done).fail((err) => {
           this.showError(err);
+          this.setState({ loading: false });
+          MailPoet.Modal.loading(false);
+          done();
         });
       })
       .catch((err) => {

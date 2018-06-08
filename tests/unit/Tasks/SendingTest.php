@@ -176,6 +176,44 @@ class SendingTest extends \MailPoetTest {
     expect(SendingTask::getRunningQueues($amount))->count($amount);
   }
 
+  function testItGetsBatchOfRunningQueuesSortedByUpdatedTime() {
+    $this->_after();
+
+    $sending1 = $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
+    $sending1->updated_at = '2017-05-04 14:00:00';
+    $sending1->save();
+    $sending2 = $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
+    $sending2->updated_at = '2017-05-04 16:00:00';
+    $sending2->save();
+    $sending3 = $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
+    $sending3->updated_at = '2017-05-04 15:00:00';
+    $sending3->save();
+
+    $queues = SendingTask::getScheduledQueues(3);
+    expect($queues[0]->task_id)->equals($sending1->id());
+    expect($queues[1]->task_id)->equals($sending3->id());
+    expect($queues[2]->task_id)->equals($sending2->id());
+  }
+
+  function testItGetsBatchOfScheduledQueuesSortedByUpdatedTime() {
+    $this->_after();
+
+    $sending1 = $this->createNewSendingTask(['status' => null]);
+    $sending1->updated_at = '2017-05-04 14:00:00';
+    $sending1->save();
+    $sending2 = $this->createNewSendingTask(['status' => null]);
+    $sending2->updated_at = '2017-05-04 16:00:00';
+    $sending2->save();
+    $sending3 = $this->createNewSendingTask(['status' => null]);
+    $sending3->updated_at = '2017-05-04 15:00:00';
+    $sending3->save();
+
+    $queues = SendingTask::getRunningQueues(3);
+    expect($queues[0]->task_id)->equals($sending1->id());
+    expect($queues[1]->task_id)->equals($sending3->id());
+    expect($queues[2]->task_id)->equals($sending2->id());
+  }
+
   function createNewNewsletter() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
