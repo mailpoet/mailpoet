@@ -17,7 +17,7 @@ class PostTransformer {
 
   function __construct($args) {
     $this->args = $args;
-    $this->with_layout = (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN);
+    $this->with_layout = isset($args['withLayout']) ? (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN) : false;
     $this->image_position = 'left';
   }
 
