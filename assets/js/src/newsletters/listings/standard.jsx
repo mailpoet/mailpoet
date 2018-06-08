@@ -215,7 +215,7 @@ const NewsletterListStandard = React.createClass({
     return (
       <div>
         <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')}
+          { MailPoet.I18n.t('pageTitle') }
           <Link
             className="page-title-action"
             to="/new"
@@ -224,7 +224,7 @@ const NewsletterListStandard = React.createClass({
             )}
             data-automation-id="new_email"
           >
-            {MailPoet.I18n.t('new')}
+            { MailPoet.I18n.t('new') }
           </Link>
         </h1>
 
