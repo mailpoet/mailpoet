@@ -6,6 +6,7 @@ import Hooks from 'wp-js-hooks';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
+import ListingHeading from 'newsletters/listings/heading.jsx';
 
 import {
   QueueMixin,
@@ -97,9 +98,7 @@ const NewsletterListNotificationHistory = React.createClass({
   render: function render() {
     return (
       <div>
-        <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new" data-automation-id="new_email">{MailPoet.I18n.t('new')}</Link>
-        </h1>
+        <ListingHeading />
 
         <ListingTabs tab="notification" />
 
