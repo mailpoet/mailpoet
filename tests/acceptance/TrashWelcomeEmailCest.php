@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Test\Acceptance;
+
 class TrashWelcomeEmailCest {
   function trashWelcomeEmail(\AcceptanceTester $I) {
     $I->wantTo('Trash existing welcome email');
