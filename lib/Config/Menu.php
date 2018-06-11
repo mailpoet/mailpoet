@@ -384,7 +384,7 @@ class Menu {
     $data['is_old_user'] = false;
     if(!empty($data['settings']['installed_at'])) {
       $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
-      $current_time =  Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
       $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
       $data['is_old_user'] = $current_time->diffInMonths($installed_at) >= 6;
       $data['stop_call_for_rating'] = isset($data['settings']['stop_call_for_rating']) ? $data['settings']['stop_call_for_rating'] : false;
@@ -437,6 +437,8 @@ class Menu {
         'smtp' => Hosts::getSMTPHosts()
       )
     );
+
+    $data['is_new_user'] = $this->isNewUser();
 
     $data = array_merge($data, Installer::getPremiumStatus());
 
@@ -541,6 +543,8 @@ class Menu {
     $data['items_per_page'] = $this->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
 
+    $data['is_new_user'] = $this->isNewUser();
+
     $this->displayPage('forms.html', $data);
   }
 
@@ -579,6 +583,8 @@ class Menu {
 
     $data['automatic_emails'] = array();
 
+    $data['is_new_user'] = $this->isNewUser();
+
     wp_enqueue_script('jquery-ui');
     wp_enqueue_script('jquery-ui-datepicker');
 
@@ -609,6 +615,9 @@ class Menu {
       'month_names' => Block\Date::getMonthNames(),
       'sub_menu' => 'mailpoet-subscribers'
     ));
+
+    $data['is_new_user'] = $this->isNewUser();
+
     $this->displayPage('subscribers/importExport/import.html', $data);
   }
 
@@ -746,5 +755,15 @@ class Menu {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();
     }
+  }
+
+  function isNewUser() {
+    $installed_at = Setting::getValue('installed_at');
+    if(is_null($installed_at)) {
+      return true;
+    }
+    $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    return $current_time->diffInDays($installed_at) <= 30;
   }
 }

@@ -145,8 +145,11 @@
 </ul>
 
 <p class="mailpoet_sending_methods_help help">
-  <%= __("Need help to pick? [link]Check out the comparison table of sending methods[/link].")
-    |replaceLinkTags('http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods', {'target' : '_blank'})
+  <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
+  <%= __('Need help to pick? [link1]%s See video guide[/link1] [link2]or check out the comparison table of sending methods[/link2].')
+    |format('<span class="dashicons dashicons-format-video"></span>')
+    |replaceLinkTags('https://beta.docs.mailpoet.com/article/235-video-guide-sending-options', {'class' : badgeClassName, 'target' : '_blank'}, 'link1')
+    |replaceLinkTags('http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods', {'target' : '_blank'}, 'link2')
     |raw
   %>
 </p>
