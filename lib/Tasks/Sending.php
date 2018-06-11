@@ -30,7 +30,8 @@ class Sending {
     'newsletter_rendered_body',
     'count_total',
     'count_processed',
-    'count_to_process'
+    'count_to_process',
+    'meta'
   );
 
   private $common_fields = array(

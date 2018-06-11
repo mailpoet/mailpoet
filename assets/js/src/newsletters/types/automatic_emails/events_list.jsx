@@ -42,7 +42,7 @@ class AutomaticEmailEventsList extends React.Component {
     return (
       <div>
         <h1>
-          {heading} ({MailPoet.I18n.t('beta').toLowerCase()})
+          {heading}
         </h1>
 
         <AutomaticEmailsBreadcrumb step="events" />
@@ -54,17 +54,18 @@ class AutomaticEmailEventsList extends React.Component {
 }
 
 AutomaticEmailEventsList.propTypes = {
-
   route: PropTypes.shape({
     data: PropTypes.shape({
-      email: PropTypes.string.isRequired,
+      email: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        slug: PropTypes.string.isRequired,
+        premium: PropTypes.bool,
+      }).isRequired,
     }).isRequired,
   }).isRequired,
-
   router: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-
 };
 
 module.exports = AutomaticEmailEventsList;

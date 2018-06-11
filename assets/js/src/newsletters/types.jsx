@@ -48,6 +48,8 @@ const NewsletterTypes = React.createClass({
     return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
       const email = automaticEmail;
       const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
+      email.title = (email.beta) ?
+        `${email.title} (${MailPoet.I18n.t('beta')})` : email.title;
       email.action = (() => (
         <div>
           <a

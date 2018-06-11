@@ -96,6 +96,22 @@ class SendingQueueTest extends \MailPoetTest {
     expect(json_decode($queue->newsletter_rendered_body, true))->equals($data);
   }
 
+  function testItJsonEncodesMetaWhenSaving() {
+    $queue = SendingQueue::create();
+    $meta = array(
+      'some' => 'value'
+    );
+    $queue->task_id = 0;
+    $queue->newsletter_id = 1;
+    $queue->meta = $meta;
+    $queue->save();
+
+    $queue = SendingQueue::findOne($queue->id);
+
+    expect(Helpers::isJson($queue->meta))->true();
+    expect(json_decode($queue->meta, true))->equals($meta);
+  }
+
   function testItReencodesSerializedObjectToJsonEncoded() {
     $queue = $this->queue;
     $newsletter_rendered_body = $this->rendered_body;

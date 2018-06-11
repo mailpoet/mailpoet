@@ -581,7 +581,57 @@ class Menu {
     $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
 
-    $data['automatic_emails'] = array();
+    $data['automatic_emails'] = array(
+      array(
+        'slug' => 'woocommerce',
+        'beta' => true,
+        'premium' => true,
+        'title' => __('WooCommerce', 'mailpoet'),
+        'description' => __('Automatically send an email when there is a new WooCommerce product, order and some other action takes place.', 'mailpoet'),
+        'events' => array(
+          array(
+            'slug' => 'woocommerce_abandoned_shopping_cart',
+            'title' => __('Abandoned Shopping Cart', 'mailpoet'),
+            'description' => __('Send an email to logged-in visitors who have items in their shopping carts but left your website without checking out. Can convert up to 5% of abandoned carts.', 'mailpoet'),
+            'soon' => true,
+            'badge' => array(
+              'text' => __('Must-have', 'mailpoet'),
+              'style' => 'red'
+            )
+          ),
+          array(
+            'slug' => 'woocommerce_big_spender',
+            'title' => __('Big Spender', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who have spent a certain amount to thank them, possibly with a coupon.', 'mailpoet'),
+            'soon' => true,
+            'badge' => array(
+              'text' => __('Smart to have', 'mailpoet'),
+              'style' => 'teal'
+            )
+          ),
+          array(
+            'slug' => 'woocommerce_first_purchase',
+            'title' => __('First Purchase', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet'),
+            'badge' => array(
+              'text' => __('Must-have', 'mailpoet'),
+              'style' => 'red'
+            )
+          ),
+          array(
+            'slug' => 'woocommerce_product_purchased_in_category',
+            'title' => __('Purchased In This Category', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who purchase a product from a specific category.', 'mailpoet'),
+            'soon' => true
+          ),
+          array(
+            'slug' => 'woocommerce_product_purchased',
+            'title' => __('Purchased This Product', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who purchase a specific product.', 'mailpoet'),
+          )
+        )
+      )
+    );
 
     $data['is_new_user'] = $this->isNewUser();
 

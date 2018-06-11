@@ -535,7 +535,7 @@ class Newsletter extends Model {
     $result = array();
 
     foreach($statisticsExprs as $name => $statisticsExpr) {
-      if($this->type !== self::TYPE_WELCOME) {
+      if(!in_array($this->type, array(self::TYPE_WELCOME, self::TYPE_AUTOMATIC))) {
         $row = $statisticsExpr->whereRaw('`queue_id` = ?', array($this->queue['id']))->findOne();
       } else {
         $row = $statisticsExpr
@@ -840,7 +840,6 @@ class Newsletter extends Model {
           NewsletterOptionField::$_table,
           array(
             'option_fields.newsletter_type', '=', self::$_table . '.type',
-            'option_fields.name', '=', 'group'
           ),
           'option_fields'
         )
@@ -975,5 +974,11 @@ class Newsletter extends Model {
   static function getByHash($hash) {
     return parent::where('hash', $hash)
       ->findOne();
+  }
+
+  function getMeta() {
+    if(!$this->meta) return;
+
+    return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 }

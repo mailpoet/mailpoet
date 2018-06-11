@@ -108,10 +108,11 @@ const Selection = React.createClass({
             };
           },
           processResults: function processResults(response) {
-            return {
-              results: response.data.map(item => (
-                { id: item.id || item.value, text: item.name || item.text }
-              )),
+            return { results: (!_.has(response, 'data')) ?
+              [] :
+              response.data.map(item =>
+                ({ id: item.id || item.value, text: item.name || item.text })
+              ),
             };
           },
         },
