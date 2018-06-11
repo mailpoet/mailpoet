@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersFinder;
