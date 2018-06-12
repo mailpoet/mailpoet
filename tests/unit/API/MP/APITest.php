@@ -2,13 +2,16 @@
 
 namespace MailPoet\Test\API\MP;
 
+use AspectMock\Test as Mock;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\API;
 use MailPoet\Models\CustomField;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Tasks\Sending;
 
 class APITest extends \MailPoetTest {
   const VERSION = 'v1';
@@ -298,6 +301,12 @@ class APITest extends \MailPoetTest {
   }
 
   function testItSubscribesToSegmentsWhenAddingSubscriber() {
+    $API = Stub::makeEmptyExcept(
+      new \MailPoet\API\MP\v1\API(),
+      'addSubscriber',
+      array(
+        '_sendConfirmationEmail' => Stub::once()
+      ), $this);
     $segment = Segment::createOrUpdate(
       array(
         'name' => 'Default',
@@ -308,7 +317,7 @@ class APITest extends \MailPoetTest {
       'email' => 'test@example.com'
     );
 
-    $result = API::MP(self::VERSION)->addSubscriber($subscriber, array($segment->id));
+    $result = $API->addSubscriber($subscriber, array($segment->id));
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
@@ -327,6 +336,30 @@ class APITest extends \MailPoetTest {
     );
     $segments = array(1);
     $API->addSubscriber($subscriber, $segments);
+  }
+
+  function testItThrowsIfWelcomeEmailFails() {
+    $task = ScheduledTask::create();
+    $task->type = 'sending';
+    $task->setError("Big Error");
+    $sendingStub = Sending::create($task, SendingQueue::create());
+    Mock::double('MailPoet\Newsletter\Scheduler\Scheduler', array(
+      'scheduleSubscriberWelcomeNotification' => array($sendingStub),
+    ));
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $API = new \MailPoet\API\MP\v1\API();
+    $subscriber = array(
+      'email' => 'test@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED
+    );
+    $segments = array($segment->id());
+    $this->setExpectedException('\Exception');
+    $API->addSubscriber($subscriber, $segments, array('schedule_welcome_email' => true, 'send_confirmation_email' => false));
   }
 
   function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberIfStatusIsNotSubscribed() {
@@ -371,6 +404,29 @@ class APITest extends \MailPoetTest {
     );
     $segments = array(1);
     $API->addSubscriber($subscriber, $segments);
+  }
+
+  function testItThrowsWhenConfirmationEmailFailsToSend() {
+    $API = Stub::makeEmptyExcept(
+      new \MailPoet\API\MP\v1\API(),
+      'addSubscriber',
+      array(
+        '_sendConfirmationEmail' => function($subscriber) {
+          $subscriber->setError('Big Error');
+          return false;
+        },
+      ), $this);
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $subscriber = array(
+      'email' => 'test@example.com'
+    );
+    $this->setExpectedException('\Exception', 'Subscriber added, but confirmation email failed to send: big error');
+    $API->addSubscriber($subscriber, array($segment->id), array('send_confirmation_email' => true));
   }
 
   function testItDoesNotSendConfirmationEmailAfterAddingSubscriberWhenOptionIsSet() {
@@ -562,6 +618,7 @@ class APITest extends \MailPoetTest {
   }
 
   function _after() {
+    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);

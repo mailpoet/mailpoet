@@ -250,7 +250,7 @@ class SchedulerTest extends \MailPoetTest {
     );
 
     // queue is created and scheduled for delivery one day later
-    Scheduler::scheduleSubscriberWelcomeNotification(
+    $result = Scheduler::scheduleSubscriberWelcomeNotification(
       $subscriber_id = 10,
       $segments = array(
         3,
@@ -263,6 +263,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne();
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addDay()->format('Y-m-d H:i'));
+    expect($result[0]->id())->equals($queue->id());
   }
 
   function itDoesNotScheduleAnythingWhenNewsletterDoesNotExist() {
