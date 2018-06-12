@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.7.5
+Stable tag: 3.7.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -117,6 +117,14 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.7.6 - 2018-06-12 =
+* Fixed: Woocommerce email template thumbnail overflowing over content.
+* Fixed: Newsletters created before 3.7.4 now follow featured image display rules implemented in latest release;
+* Fixed: form subscription success message is now displayed only upon form submission. Thanks, Mariener;
+* Fixed: it is now possible to delete smaller content rows;
+* Improved: welcome emails to unconfirmed subscribers not to block sending. Thanks, Donald!
+* Improved: layout for welcome and update pages.
 
 = 3.7.5 - 2018-06-05 =
 * Added: align images left or right of posts excerpts;
