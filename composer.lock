@@ -103,22 +103,23 @@
         },
         {
             "name": "j4mie/idiorm",
-            "version": "v1.5.3",
+            "version": "v1.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/j4mie/idiorm.git",
-                "reference": "f2f170c44af4761fef8ef34d6dbc237cd95df799"
+                "reference": "ee3022fcf71232309112714ca4a7760105002f99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/j4mie/idiorm/zipball/f2f170c44af4761fef8ef34d6dbc237cd95df799",
-                "reference": "f2f170c44af4761fef8ef34d6dbc237cd95df799",
+                "url": "https://api.github.com/repos/j4mie/idiorm/zipball/ee3022fcf71232309112714ca4a7760105002f99",
+                "reference": "ee3022fcf71232309112714ca4a7760105002f99",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.0"
             },
             "require-dev": {
+                "ext-pdo_sqlite": "*",
                 "phpunit/phpunit": "^4.8"
             },
             "type": "library",
@@ -160,7 +161,7 @@
                 "orm",
                 "query builder"
             ],
-            "time": "2017-03-21T01:31:25+00:00"
+            "time": "2018-05-30T23:57:49+00:00"
         },
         {
             "name": "j4mie/paris",
