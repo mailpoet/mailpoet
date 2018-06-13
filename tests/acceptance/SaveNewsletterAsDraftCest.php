@@ -2,7 +2,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class SaveNewsletterAsDraftCest {
-  function saveStandardNewsletterAsDraft(\AcceptancTester $I){
+  function saveStandardNewsletterAsDraft(\AcceptanceTester $I){
     $I->wantTo('Create standard newsletter and save as a draft');
 	
     $newsletter_title = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
