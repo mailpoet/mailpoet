@@ -26,7 +26,6 @@ class Manage {
       }
     }
 
-    // TODO: success/error messages (not present in MP2)
     Url::redirectBack();
   }
 }

@@ -19,7 +19,6 @@ class Renderer {
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
   function __construct($newsletter, $preview = false) {
-    // TODO: remove ternary condition, refactor to use model objects
     $this->newsletter = (is_object($newsletter)) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter, $this->preview);
