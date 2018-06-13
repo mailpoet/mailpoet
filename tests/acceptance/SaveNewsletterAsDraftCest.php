@@ -2,10 +2,10 @@
 namespace MailPoet\Test\Acceptance;
 
 class SaveNewsletterAsDraftCest {
-  function saveStandardNewsletterAsDraft(\AcceptancTester $I)
-    $I->wantTo('Create standard newsletter and save as a draft')
+  function saveStandardNewsletterAsDraft(\AcceptancTester $I){
+    $I->wantTo('Create standard newsletter and save as a draft');
 	
-	$newsletter_title = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
+    $newsletter_title = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
     
     $I->login();
     $I->amOnMailpoetPage('Emails');
@@ -35,3 +35,5 @@ class SaveNewsletterAsDraftCest {
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('Save as draft and close');
+  }
+}
