@@ -85,9 +85,6 @@ function createStandardNewsletter(\AcceptanceTester $I) {
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('Send');
-    //$newsletter_listing_element = '[data-automation-id="listing_item_' . basename($I->getCurrentUrl()) . '"]';
-    //$I->waitForElement($newsletter_listing_element);
-    //$I->see($newsletter_title, $newsletter_listing_element);
-    //$I->wait(20);
+
   }  
 }
