@@ -84,10 +84,9 @@ function createStandardNewsletter(\AcceptanceTester $I) {
     $search_field_element = 'input.select2-search__field';
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
-    $I->click('Next');
+    $I->click('Send');
     $I->waitForElement($newsletter_listing_element);
     $I->see($newsletter_title, $newsletter_listing_element);
-    $I->click('Next');	
     $I->wait(20);
   }  
 }
