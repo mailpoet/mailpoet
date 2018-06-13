@@ -50,12 +50,13 @@ var baseConfig = {
   ],
   module: {
     preLoaders: [
-      { test: /\.json$/, loader: "json-loader" },
+      { test: /\.json$/, loader: 'json-loader' },
     ],
     loaders: [
       {
         test: /\.jsx$/,
-        loader: 'babel-loader'
+        exclude: /node_modules/,
+        loader: 'babel-loader',
       },
       {
         test: /form_editor\.js$/,
