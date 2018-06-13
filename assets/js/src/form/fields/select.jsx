@@ -54,7 +54,7 @@ const FormFieldSelect = React.createClass({
           >
             { this.props.field.values[value] }
           </option>
-          )
+        )
       );
 
     return (

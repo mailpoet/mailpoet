@@ -64,43 +64,43 @@ function ( // eslint-disable-line func-names
             data: formData.data
           }).fail(function (response) { // eslint-disable-line func-names
             form.find('.mailpoet_validate_error').html(
-                response.errors.map(function (error) { // eslint-disable-line func-names
-                  return error.message;
-                }).join('<br />')
-              ).show();
+              response.errors.map(function (error) { // eslint-disable-line func-names
+                return error.message;
+              }).join('<br />')
+            ).show();
           }).done(function (response) { // eslint-disable-line func-names
             if (window.grecaptcha && formData.recaptcha) {
               window.grecaptcha.reset(formData.recaptcha);
             }
             return response;
           }).done(function (response) { // eslint-disable-line func-names
-              // successfully subscribed
+            // successfully subscribed
             if (
-                response.meta !== undefined
+              response.meta !== undefined
                 && response.meta.redirect_url !== undefined
-              ) {
-                // go to page
+            ) {
+              // go to page
               window.location.href = response.meta.redirect_url;
             } else {
-                // display success message
+              // display success message
               form.find('.mailpoet_validate_success').show();
             }
 
-              // reset form
+            // reset form
             form.trigger('reset');
-              // reset validation
+            // reset validation
             parsley.reset();
             // reset captcha
             if (window.grecaptcha && formData.recaptcha) {
               window.grecaptcha.reset(formData.recaptcha);
             }
 
-              // resize iframe
+            // resize iframe
             if (
-                window.frameElement !== null
+              window.frameElement !== null
                 && MailPoet !== undefined
                 && MailPoet.Iframe
-              ) {
+            ) {
               MailPoet.Iframe.autoSize(window.frameElement);
             }
           });

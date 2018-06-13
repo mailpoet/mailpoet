@@ -25,7 +25,7 @@ class AutomaticEmailEventsList extends React.Component {
         key={index}
         eventsConfigurator={this.eventsConfigurator}
       />
-      )
+    )
     );
 
     return (

@@ -426,7 +426,7 @@ define([
           position: 'before'
         };
       }
-        // Second half of the element
+      // Second half of the element
       return {
         index: index,
         position: 'after'

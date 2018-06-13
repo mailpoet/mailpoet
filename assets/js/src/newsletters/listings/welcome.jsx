@@ -210,8 +210,8 @@ const NewsletterListWelcome = React.createClass({
           );
         }
         sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
-            '%$1s', segment.name
-          );
+          '%$1s', segment.name
+        );
 
         break;
     }

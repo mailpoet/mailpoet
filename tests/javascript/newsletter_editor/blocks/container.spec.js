@@ -109,8 +109,8 @@ define([
           expect(model.get('blocks').at(0).get('blocks')).to.have.length(2);
           expect(
             model.get('blocks').at(0)
-                 .get('blocks').at(1)
-                 .get('someField')
+              .get('blocks').at(1)
+              .get('someField')
           ).to.equal('some text 2');
         });
       });

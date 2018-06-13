@@ -53,7 +53,7 @@ class AutomaticEmailEvent extends React.PureComponent {
                 <span className={`mailpoet_badge mailpoet_badge_${event.badge.style}`}>
                   {event.badge.text}
                 </span>
-                ) : ''
+              ) : ''
               }
             </div>
             <p>{event.description}</p>

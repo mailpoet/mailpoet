@@ -69,8 +69,8 @@ export const fromNewsletter = data =>
       action: 'showPreview',
       data: json,
     }).done(response => fromUrl(response.meta.preview_url)
-        .then(resolve)
-        .catch(reject)
+      .then(resolve)
+      .catch(reject)
     ).fail(response => reject(response.errors));
   });
 

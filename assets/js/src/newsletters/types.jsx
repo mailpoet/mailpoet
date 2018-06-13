@@ -155,7 +155,7 @@ const NewsletterTypes = React.createClass({
                 </div>
               </div>
             </li>
-            ), this)}
+          ), this)}
         </ul>
       </div>
     );

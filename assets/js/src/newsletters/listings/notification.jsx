@@ -216,34 +216,34 @@ const NewsletterListNotification = React.createClass({
     switch (newsletter.options.intervalType) {
       case 'daily':
         sendingFrequency = MailPoet.I18n.t('sendDaily').replace(
-            '%$1s', timeOfDayValues[newsletter.options.timeOfDay]
-          );
+          '%$1s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
         break;
 
       case 'weekly':
         sendingFrequency = MailPoet.I18n.t('sendWeekly').replace(
-            '%$1s', weekDayValues[newsletter.options.weekDay]
-          ).replace(
-            '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
-          );
+          '%$1s', weekDayValues[newsletter.options.weekDay]
+        ).replace(
+          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
         break;
 
       case 'monthly':
         sendingFrequency = MailPoet.I18n.t('sendMonthly').replace(
-            '%$1s', monthDayValues[newsletter.options.monthDay]
-          ).replace(
-            '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
-          );
+          '%$1s', monthDayValues[newsletter.options.monthDay]
+        ).replace(
+          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
         break;
 
       case 'nthWeekDay':
         sendingFrequency = MailPoet.I18n.t('sendNthWeekDay').replace(
-            '%$1s', nthWeekDayValues[newsletter.options.nthWeekDay]
-          ).replace(
-            '%$2s', weekDayValues[newsletter.options.weekDay]
-          ).replace(
-            '%$3s', timeOfDayValues[newsletter.options.timeOfDay]
-          );
+          '%$1s', nthWeekDayValues[newsletter.options.nthWeekDay]
+        ).replace(
+          '%$2s', weekDayValues[newsletter.options.weekDay]
+        ).replace(
+          '%$3s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
         break;
 
       case 'immediately':
