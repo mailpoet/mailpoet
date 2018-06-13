@@ -32,8 +32,7 @@
     "umpirsky/twig-gettext-extractor": "1.1.*",
     "kint-php/kint": "^2.2",
     "squizlabs/php_codesniffer": "^2.8.1",
-    "wimg/php-compatibility": "^7.1.2",
-    "simplyadmire/composer-plugins" : "@dev"
+    "wimg/php-compatibility": "^7.1.2"
   },
   "autoload": {
     "psr-4": {
