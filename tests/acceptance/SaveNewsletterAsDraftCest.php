@@ -35,5 +35,6 @@ class SaveNewsletterAsDraftCest {
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('Save as draft and close');
+    $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
   }
 }
