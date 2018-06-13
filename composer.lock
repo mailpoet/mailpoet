@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "da2fe33a4683f03def7d068eaf02ce58",
+    "content-hash": "967f2c8854bb35da46a27c6f14ccc40a",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -164,21 +164,24 @@
         },
         {
             "name": "j4mie/paris",
-            "version": "v1.5.4",
+            "version": "v1.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/j4mie/paris.git",
-                "reference": "6cd7a3d8ffb721068dd58e508a8121b92b4068b8"
+                "reference": "ec43a1f7f59d237c147495d29523da52e375f9e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/j4mie/paris/zipball/6cd7a3d8ffb721068dd58e508a8121b92b4068b8",
-                "reference": "6cd7a3d8ffb721068dd58e508a8121b92b4068b8",
+                "url": "https://api.github.com/repos/j4mie/paris/zipball/ec43a1f7f59d237c147495d29523da52e375f9e7",
+                "reference": "ec43a1f7f59d237c147495d29523da52e375f9e7",
                 "shasum": ""
             },
             "require": {
                 "j4mie/idiorm": "1.5.*",
                 "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
             },
             "type": "library",
             "autoload": {
@@ -220,7 +223,7 @@
                 "orm",
                 "paris"
             ],
-            "time": "2014-09-23T10:49:36+00:00"
+            "time": "2017-03-21T02:13:30+00:00"
         },
         {
             "name": "mtdowling/cron-expression",

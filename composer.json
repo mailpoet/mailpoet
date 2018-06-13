@@ -10,7 +10,7 @@
     "twig/twig": "1.*",
     "cerdic/css-tidy": "^1.5.5",
     "tburry/pquery": "^1.1.1",
-    "j4mie/paris": "1.5.4",
+    "j4mie/paris": "1.5.6",
     "swiftmailer/swiftmailer": "^5.4",
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
