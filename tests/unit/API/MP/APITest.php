@@ -3,7 +3,8 @@
 namespace MailPoet\Test\API\MP;
 
 use Codeception\Util\Fixtures;
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\API\API;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
@@ -180,7 +181,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'subscribeToLists',
       array(
-        '_scheduleWelcomeNotification' => Stub::once()
+        '_scheduleWelcomeNotification' => Expected::once()
       ), $this);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -199,7 +200,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'subscribeToLists',
       array(
-        '_scheduleWelcomeNotification' => Stub::never()
+        '_scheduleWelcomeNotification' => Expected::never()
       ), $this);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -319,7 +320,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
-        '_scheduleWelcomeNotification' => Stub::once()
+        '_scheduleWelcomeNotification' => Expected::once()
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com',
@@ -334,7 +335,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
-        '_scheduleWelcomeNotification' => Stub::never()
+        '_scheduleWelcomeNotification' => Expected::never()
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com'
@@ -348,7 +349,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
-        '_scheduleWelcomeNotification' => Stub::never()
+        '_scheduleWelcomeNotification' => Expected::never()
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com',
@@ -364,7 +365,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
-        '_sendConfirmationEmail' => Stub::once()
+        '_sendConfirmationEmail' => Expected::once()
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com'
@@ -378,7 +379,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
-        '_sendConfirmationEmail' => Stub::never()
+        '_sendConfirmationEmail' => Expected::never()
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com'

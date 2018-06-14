@@ -2,7 +2,8 @@
 namespace MailPoet\Test\Config;
 
 use AspectMock\Test as Mock;
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Capabilities;
@@ -19,7 +20,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $caps = Stub::makeEmptyExcept(
       $this->caps,
       'init',
-      array('setupMembersCapabilities' => Stub::once()),
+      array('setupMembersCapabilities' => Expected::once()),
       $this
     );
     $caps->init();

@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\Cron;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Daemon;
 use MailPoet\Models\Setting;
@@ -66,8 +67,8 @@ class DaemonTest extends \MailPoetTest {
 
   function testItCanExecuteWorkers() {
     $daemon = Stub::make(new Daemon(true), array(
-      'executeScheduleWorker' => Stub::exactly(1),
-      'executeQueueWorker' => Stub::exactly(1),
+      'executeScheduleWorker' => Expected::exactly(1),
+      'executeQueueWorker' => Expected::exactly(1),
       'pauseExecution' => null,
       'callSelf' => null
     ), $this);
@@ -102,7 +103,7 @@ class DaemonTest extends \MailPoetTest {
     $daemon = Stub::make(new Daemon(true), array(
       'executeScheduleWorker' => null,
       'executeQueueWorker' => null,
-      'pauseExecution' => Stub::exactly(1, function($pause_delay) {
+      'pauseExecution' => Expected::exactly(1, function($pause_delay) {
         expect($pause_delay)->lessThan(CronHelper::DAEMON_EXECUTION_LIMIT);
         expect($pause_delay)->greaterThan(CronHelper::DAEMON_EXECUTION_LIMIT - 1);
       }),
@@ -124,7 +125,7 @@ class DaemonTest extends \MailPoetTest {
       },
       'executeQueueWorker' => null,
       'pauseExecution' => null,
-      'terminateRequest' => Stub::exactly(1)
+      'terminateRequest' => Expected::exactly(1)
     ), $this);
     $data = array(
       'token' => 123
@@ -144,7 +145,7 @@ class DaemonTest extends \MailPoetTest {
       },
       'executeQueueWorker' => null,
       'pauseExecution' => null,
-      'terminateRequest' => Stub::exactly(1)
+      'terminateRequest' => Expected::exactly(1)
     ), $this);
     $data = array(
       'token' => 123
@@ -177,10 +178,10 @@ class DaemonTest extends \MailPoetTest {
     $daemon = Stub::make(new Daemon(true), array(
       'pauseExecution' => null,
       // workers should be executed
-      'executeScheduleWorker' => Stub::exactly(1),
-      'executeQueueWorker' => Stub::exactly(1),
+      'executeScheduleWorker' => Expected::exactly(1),
+      'executeQueueWorker' => Expected::exactly(1),
       // daemon should call itself
-      'callSelf' => Stub::exactly(1),
+      'callSelf' => Expected::exactly(1),
     ), $this);
     $data = array(
       'token' => 123
@@ -193,7 +194,7 @@ class DaemonTest extends \MailPoetTest {
 
   function testItRespondsToPingRequest() {
     $daemon = Stub::make(new Daemon(true), array(
-      'terminateRequest' => Stub::exactly(1, function($message) {
+      'terminateRequest' => Expected::exactly(1, function($message) {
         expect($message)->equals('pong');
       })
     ), $this);
