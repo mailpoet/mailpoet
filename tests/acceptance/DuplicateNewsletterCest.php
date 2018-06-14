@@ -39,8 +39,8 @@ class DuplicateNewsletterCest {
     $I->click('Save as draft and close');
     $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
 	
-	// step 5 - Dupe this newsletter
-	$I->click('Duplicate', '[data-automation-id="listing_item_1"]');
-    $I->waitForText('Copy of Testing Newsletter' '[data-automation-id="listing_item_2"]');
+    // step 5 - Dupe this newsletter
+    $I->click('Duplicate', '[data-automation-id="listing_item_1"]');
+    $I->waitForText('Copy of Testing Newsletter');
   }
 }
