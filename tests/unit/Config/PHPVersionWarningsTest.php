@@ -18,13 +18,13 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   function testItPrintsWarningFor53() {
     $warning = $this->phpVersionWarning->init('5.3.2', true);
-    expect($warning)->contains('Your website is running on PHP 5.3.2');
+    expect($warning)->contains('MailPoet requires PHP version 7 or newer.');
     expect($warning)->notContains('is-dismissible');
   }
 
   function testItPrintsWarningFor54() {
     $warning = $this->phpVersionWarning->init('5.4.1', true);
-    expect($warning)->contains('Your website is running on PHP 5.4.1');
+    expect($warning)->contains('MailPoet requires PHP version 7 or newer.');
     expect($warning)->notContains('is-dismissible');
   }
 
