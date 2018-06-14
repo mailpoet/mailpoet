@@ -19,8 +19,8 @@ class ListingGroups extends React.Component {
       }
 
       const classes = classNames(
-          { current: (group.name === this.props.group) }
-        );
+        { current: (group.name === this.props.group) }
+      );
 
       return (
         <li key={group.name}>

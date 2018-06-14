@@ -149,15 +149,15 @@ function beforeFormContent(subscriber) {
     return (
       <p className="description">
         { ReactStringReplace(
-            MailPoet.I18n.t('WPUserEditNotice'),
-            /\[link\](.*?)\[\/link\]/g,
-            (match, i) => (
-              <a
-                key={i}
-                href={`user-edit.php?user_id=${subscriber.wp_user_id}`}
-              >{ match }</a>
-            )
+          MailPoet.I18n.t('WPUserEditNotice'),
+          /\[link\](.*?)\[\/link\]/g,
+          (match, i) => (
+            <a
+              key={i}
+              href={`user-edit.php?user_id=${subscriber.wp_user_id}`}
+            >{ match }</a>
           )
+        )
         }
       </p>
     );

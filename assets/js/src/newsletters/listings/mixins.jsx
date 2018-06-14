@@ -69,14 +69,14 @@ const QueueMixin = {
       );
     }
     const progressClasses = classNames(
-        'mailpoet_progress',
-        { mailpoet_progress_complete: newsletter.queue.status === 'completed' }
-      );
+      'mailpoet_progress',
+      { mailpoet_progress_complete: newsletter.queue.status === 'completed' }
+    );
 
       // calculate percentage done
     let percentage = Math.round(
-        (newsletter.queue.count_processed * 100) / (newsletter.queue.count_total)
-      );
+      (newsletter.queue.count_processed * 100) / (newsletter.queue.count_total)
+    );
 
     let label;
 
@@ -84,12 +84,12 @@ const QueueMixin = {
       label = (
         <span>
           {
-              MailPoet.I18n.t('newsletterQueueCompleted')
+            MailPoet.I18n.t('newsletterQueueCompleted')
               .replace('%$1d', parseInt(newsletter.queue.count_processed, 10).toLocaleString())
               .replace('%$2d', parseInt(newsletter.queue.count_total, 10).toLocaleString())
-            }
+          }
         </span>
-        );
+      );
     } else {
       const resumeSendingClick = _.partial(this.resumeSending, newsletter);
       const pauseSendingClick = _.partial(this.pauseSending, newsletter);
@@ -101,7 +101,7 @@ const QueueMixin = {
             id={`resume_${newsletter.id}`}
             className="button"
             style={{ display: (newsletter.queue.status === 'paused')
-                ? 'inline-block' : 'none' }}
+              ? 'inline-block' : 'none' }}
             href="javascript:;"
             onClick={resumeSendingClick}
           >{MailPoet.I18n.t('resume')}</a>
@@ -109,12 +109,12 @@ const QueueMixin = {
             id={`pause_${newsletter.id}`}
             className="button mailpoet_pause"
             style={{ display: (newsletter.queue.status === null)
-                  ? 'inline-block' : 'none' }}
+              ? 'inline-block' : 'none' }}
             href="javascript:;"
             onClick={pauseSendingClick}
           >{MailPoet.I18n.t('pause')}</a>
         </span>
-        );
+      );
     }
 
     let progressBarWidth = 0;
@@ -258,7 +258,7 @@ const StatisticsMixin = {
           { tooEarlyForStats && (
             <div className="mailpoet_badge mailpoet_badge_green">
               {MailPoet.I18n.t('checkBackInHours')
-                  .replace('%$1d', showStatsTimeout - sentHoursAgo)}
+                .replace('%$1d', showStatsTimeout - sentHoursAgo)}
             </div>
           ) }
         </div>
@@ -406,7 +406,7 @@ const MailerMixin = {
     }
     if (state.meta.mta_log.error.error_code) {
       mailerErrorNotice += ` ${MailPoet.I18n.t('mailerErrorCode')
-          .replace('%$1s', state.meta.mta_log.error.error_code)}`;
+        .replace('%$1s', state.meta.mta_log.error.error_code)}`;
     }
     return (
       <div>

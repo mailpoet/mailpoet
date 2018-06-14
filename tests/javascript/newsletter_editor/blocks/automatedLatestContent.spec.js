@@ -15,7 +15,7 @@ define([
   ContainerBlock,
   AutomatedLatestContentInjector,
   Communication
-  ) {
+) {
   var EditorApplication = App;
   var CommunicationComponent = Communication;
 

@@ -39,8 +39,8 @@ define(
           // toggle SPF (hidden if the sending method is MailPoet)
           jQuery('#mailpoet_mta_spf')[
             (group === 'mailpoet')
-            ? 'hide'
-            : 'show'
+              ? 'hide'
+              : 'show'
           ]();
 
           // hide sending methods

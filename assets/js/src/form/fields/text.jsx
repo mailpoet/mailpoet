@@ -33,14 +33,14 @@ const FormFieldText = React.createClass({
         type="text"
         disabled={
           (this.props.field.disabled !== undefined)
-          ? this.props.field.disabled(this.props.item)
-          : false
+            ? this.props.field.disabled(this.props.item)
+            : false
         }
         className={className}
         size={
           (this.props.field.size !== 'auto' && this.props.field.size > 0)
-          ? this.props.field.size
-          : false
+            ? this.props.field.size
+            : false
         }
         name={name}
         id={id}

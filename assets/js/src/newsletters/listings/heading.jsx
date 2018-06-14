@@ -9,8 +9,8 @@ const ListingHeading = () => (
       className="page-title-action"
       to="/new"
       onClick={() => MailPoet.trackEvent(
-          'Emails > Add New',
-          { 'MailPoet Free version': window.mailpoet_version }
+        'Emails > Add New',
+        { 'MailPoet Free version': window.mailpoet_version }
       )}
       data-automation-id="new_email"
     >

@@ -70,15 +70,15 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function ajax(mp, jQuery, _
 
       // ajax request
       deferred = jQuery.post(
-          this.options.url,
-          params,
-          null,
-          'json'
-        ).then(function resultHandler(data) {
-          return data;
-        }, _.partial(requestFailed, MailPoet.I18n.t('ajaxFailedErrorMessage')));
+        this.options.url,
+        params,
+        null,
+        'json'
+      ).then(function resultHandler(data) {
+        return data;
+      }, _.partial(requestFailed, MailPoet.I18n.t('ajaxFailedErrorMessage')));
 
-        // clear options
+      // clear options
       this.options = {};
 
       return deferred;

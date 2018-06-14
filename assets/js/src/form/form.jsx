@@ -213,8 +213,8 @@ const Form = React.createClass({
           className={formClasses}
           onSubmit={
             (this.props.onSubmit !== undefined)
-            ? this.props.onSubmit
-            : this.handleSubmit
+              ? this.props.onSubmit
+              : this.handleSubmit
           }
         >
           { errors }
