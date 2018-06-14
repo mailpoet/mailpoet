@@ -79,7 +79,7 @@ class Renderer {
     foreach($content_blocks as $block) {
       if($block['type'] === 'automatedLatestContentLayout') {
         $blocks = array_merge(
-          $blocks, 
+          $blocks,
           $this->blocks_renderer->automatedLatestContentTransformedPosts($block)
         );
       } else {
