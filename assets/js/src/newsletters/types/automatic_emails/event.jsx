@@ -9,7 +9,6 @@ class AutomaticEmailEvent extends React.PureComponent {
     const disabled = event.soon;
 
     let action;
-
     if (this.props.premium) {
       action = (
         <a
@@ -19,7 +18,7 @@ class AutomaticEmailEvent extends React.PureComponent {
           {MailPoet.I18n.t('premiumFeatureLink')}
         </a>
       );
-    } if (event.actionButtonLink && event.actionButtonTitle) {
+    } else if (event.actionButtonLink && event.actionButtonTitle) {
       action = (
         <a
           href={event.actionButtonLink}
