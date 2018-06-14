@@ -145,6 +145,7 @@ class Initializer {
       $this->setupPages();
 
       $this->setupPHPVersionWarnings();
+      $this->setupDeactivationSurvey();
 
       do_action('mailpoet_initialized', MAILPOET_VERSION);
     } catch(\Exception $e) {
@@ -300,5 +301,10 @@ class Initializer {
       Menu::addErrorPage($this->access_control);
     }
     return WPNotice::displayError($exception);
+  }
+
+  function setupDeactivationSurvey() {
+    $survey = new DeactivationSurvey($this->renderer);
+    $survey->init();
   }
 }
