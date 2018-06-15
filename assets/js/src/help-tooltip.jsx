@@ -14,7 +14,7 @@ function Tooltip(props) {
     tooltip = (<span
       style={{
         pointerEvents: 'all',
-        maxWidth: '400',
+        maxWidth: '400px',
         display: 'inline-block',
       }}
     >
