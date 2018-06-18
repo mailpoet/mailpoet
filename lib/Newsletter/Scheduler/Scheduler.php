@@ -38,13 +38,15 @@ class Scheduler {
   static function scheduleSubscriberWelcomeNotification($subscriber_id, $segments) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
     if(empty($newsletters)) return false;
+    $result = array();
     foreach($newsletters as $newsletter) {
       if($newsletter->event === 'segment' &&
         in_array($newsletter->segment, $segments)
       ) {
-        self::createWelcomeNotificationSendingTask($newsletter, $subscriber_id);
+        $result[] = self::createWelcomeNotificationSendingTask($newsletter, $subscriber_id);
       }
     }
+    return $result;
   }
 
   static function scheduleAutomaticEmail($group, $event, $scheduling_condition = false, $subscriber_id = false, $meta = false) {
