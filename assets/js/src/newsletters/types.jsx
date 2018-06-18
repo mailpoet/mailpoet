@@ -48,8 +48,6 @@ const NewsletterTypes = React.createClass({
     return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
       const email = automaticEmail;
       const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
-      email.title = (email.beta) ?
-        `${email.title} (${MailPoet.I18n.t('beta')})` : email.title;
       email.action = (() => (
         <div>
           <a
@@ -141,7 +139,7 @@ const NewsletterTypes = React.createClass({
                   {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
                 </div>
                 <div className="mailpoet_description">
-                  <h3>{type.title}</h3>
+                  <h3>{type.title} {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}</h3>
                   <p>{type.description}</p>
                   { type.videoGuide && (
                     <a className={badgeClassName} href={type.videoGuide} target="_blank">
