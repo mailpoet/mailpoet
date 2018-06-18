@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\API\JSON\v1;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\Installer;
@@ -24,7 +25,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkMSSKey' => array('state' => Bridge::KEY_VALID),
-        'storeMSSKeyAndState' => Stub::once()
+        'storeMSSKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -37,7 +38,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkMSSKey' => array('state' => Bridge::KEY_INVALID),
-        'storeMSSKeyAndState' => Stub::once()
+        'storeMSSKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -54,7 +55,7 @@ class ServicesTest extends \MailPoetTest {
           'state' => Bridge::KEY_EXPIRING,
           'data' => array('expire_at' => $date->format('c'))
         ),
-        'storeMSSKeyAndState' => Stub::once()
+        'storeMSSKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -69,7 +70,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkMSSKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE),
-        'storeMSSKeyAndState' => Stub::once()
+        'storeMSSKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -87,7 +88,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkMSSKey' => null,
-        'storeMSSKeyAndState' => Stub::once()
+        'storeMSSKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -105,7 +106,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkMSSKey' => array('code' => 404),
-        'storeMSSKeyAndState' => Stub::once()
+        'storeMSSKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -121,7 +122,7 @@ class ServicesTest extends \MailPoetTest {
         'checkMSSKey' => function() {
           throw new \Exception('test');
         },
-        'storeMSSKeyAndState' => Stub::never()
+        'storeMSSKeyAndState' => Expected::never()
       ),
       $this
     );
@@ -141,7 +142,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkPremiumKey' => array('state' => Bridge::KEY_VALID),
-        'storePremiumKeyAndState' => Stub::once()
+        'storePremiumKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -157,7 +158,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkPremiumKey' => array('state' => Bridge::KEY_INVALID),
-        'storePremiumKeyAndState' => Stub::once()
+        'storePremiumKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -170,7 +171,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkPremiumKey' => array('state' => Bridge::KEY_ALREADY_USED),
-        'storePremiumKeyAndState' => Stub::once()
+        'storePremiumKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -187,7 +188,7 @@ class ServicesTest extends \MailPoetTest {
           'state' => Bridge::KEY_EXPIRING,
           'data' => array('expire_at' => $date->format('c'))
         ),
-        'storePremiumKeyAndState' => Stub::once()
+        'storePremiumKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -202,7 +203,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkPremiumKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE),
-        'storePremiumKeyAndState' => Stub::once()
+        'storePremiumKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -220,7 +221,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkPremiumKey' => null,
-        'storePremiumKeyAndState' => Stub::once()
+        'storePremiumKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -234,11 +235,11 @@ class ServicesTest extends \MailPoetTest {
   }
 
   function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringPremiumCheck() {
-    $this->services_endpoint->bridge = Stub::make(
+    $this->services_endpoint->bridge = \Codeception\Stub::make(
       new Bridge(),
       array(
         'checkPremiumKey' => array('code' => 404),
-        'storePremiumKeyAndState' => Stub::once()
+        'storePremiumKeyAndState' => Expected::once()
       ),
       $this
     );
@@ -254,7 +255,7 @@ class ServicesTest extends \MailPoetTest {
         'checkPremiumKey' => function() {
           throw new \Exception('test');
         },
-        'storePremiumKeyAndState' => Stub::never()
+        'storePremiumKeyAndState' => Expected::never()
       ),
       $this
     );

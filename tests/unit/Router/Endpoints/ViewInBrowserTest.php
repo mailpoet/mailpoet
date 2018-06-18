@@ -2,7 +2,8 @@
 
 namespace MailPoet\Test\Router\Endpoints;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
@@ -43,7 +44,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(2)
+      '_abort' => Expected::exactly(2)
     ), $this);
     // newsletter ID is required
     $data = $this->browser_preview_data;
@@ -57,7 +58,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   function testItAbortsWhenBrowserPreviewDataIsInvalid() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(3)
+      '_abort' => Expected::exactly(3)
     ), $this);
     // newsletter ID is invalid
     $data = $this->browser_preview_data;
@@ -200,7 +201,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   function testItReturnsViewActionResult() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_displayNewsletter' => Stub::exactly(1)
+      '_displayNewsletter' => Expected::exactly(1)
     ), $this);
     $view_in_browser->data = $view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     $view_in_browser->view();
