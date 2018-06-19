@@ -306,7 +306,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
-        '_sendConfirmationEmail' => Stub::once()
+        '_sendConfirmationEmail' => Expected::once()
       ), $this);
     $segment = Segment::createOrUpdate(
       array(
@@ -408,15 +408,14 @@ class APITest extends \MailPoetTest {
   }
 
   function testItThrowsWhenConfirmationEmailFailsToSend() {
-    $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
-      'addSubscriber',
-      array(
-        '_sendConfirmationEmail' => function($subscriber) {
+    $API = new \MailPoet\API\MP\v1\API();
+    Mock::double($API, array(
+        '_sendConfirmationEmail' => function ($subscriber) {
           $subscriber->setError('Big Error');
           return false;
-        },
-      ), $this);
+        }
+      )
+    );
     $segment = Segment::createOrUpdate(
       array(
         'name' => 'Default',

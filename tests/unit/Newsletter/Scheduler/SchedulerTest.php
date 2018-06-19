@@ -513,7 +513,7 @@ class SchedulerTest extends \MailPoetTest {
         'afterTimeNumber' => 2
       )
     );
-    $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -544,7 +544,7 @@ class SchedulerTest extends \MailPoetTest {
         'afterTimeNumber' => 2
       )
     );
-    $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -567,7 +567,7 @@ class SchedulerTest extends \MailPoetTest {
         'afterTimeNumber' => 2
       )
     );
-    $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
 
     Scheduler::createAutomaticEmailSendingTask($newsletter, $subscriber = null, $meta = null);
     // new scheduled task should be created

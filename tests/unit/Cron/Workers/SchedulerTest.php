@@ -77,7 +77,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_option_field =
       $this->_createNewsletterOptionField('intervalType', Newsletter::TYPE_WELCOME);
     $newsletter_option = $this->_createNewsletterOption($newsletter_option_field->id, $newsletter->id, 'immediately');
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -93,7 +93,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_option_field =
       $this->_createNewsletterOptionField('intervalType', Newsletter::TYPE_WELCOME);
     $newsletter_option = $this->_createNewsletterOption($newsletter_option_field->id, $newsletter->id, 'daily');
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -103,7 +103,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
     $newsletter_option->value = 'daily';
     $newsletter_option->save();
-    $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)->findOne($newsletter->id);
     expect($queue->scheduled_at)->null();
     $newsletter->schedule = '0 5 * * *'; // set it to daily at 5
     $scheduler->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
@@ -123,7 +123,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter_option_field->id,
       $newsletter->id, 'author'
     );
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -146,7 +146,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter_option_field->id,
       $newsletter->id, 'author'
     );
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -168,7 +168,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter_option_field->id,
       $newsletter->id, 'author'
     );
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -188,7 +188,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_option = $this->_createNewsletterOption(
       $newsletter_option_field->id, $newsletter->id,
       \MailPoet\Newsletter\Scheduler\Scheduler::WORDPRESS_ALL_ROLES);
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -292,7 +292,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $newsletter_option_field = $this->_createNewsletterOptionField('segment', Newsletter::TYPE_NOTIFICATION);
     $newsletter_option = $this->_createNewsletterOption($newsletter_option_field->id, $newsletter->id, $segment->id);
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -315,7 +315,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter_option_field->id, $newsletter->id,
       $segment->id
     );
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -342,7 +342,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter_option_field->id, $newsletter->id,
       $segment->id
     );
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -364,7 +364,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter_option_field->id, $newsletter->id,
       $segment->id
     );
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
@@ -426,7 +426,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter_option_field->id, $newsletter->id,
       $segment->id
     );
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
     $scheduler = new Scheduler();
     $finder = Mock::double('MailPoet\Segments\SubscribersFinder');

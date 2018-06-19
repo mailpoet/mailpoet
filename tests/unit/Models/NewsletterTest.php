@@ -273,7 +273,7 @@ class NewsletterTest extends \MailPoetTest {
   function testItCanHaveOptions() {
     $newsletter_options = array(
       'name' => 'Event',
-      'newsletter_type' => 'welcome',
+      'newsletter_type' => Newsletter::TYPE_WELCOME,
     );
     $option_field = NewsletterOptionField::create();
     $option_field->hydrate($newsletter_options);
@@ -283,7 +283,7 @@ class NewsletterTest extends \MailPoetTest {
     $association->option_field_id = $option_field->id;
     $association->value = 'list';
     $association->save();
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($this->newsletter->id);
     expect($newsletter->Event)->equals($association->value);
   }
@@ -871,7 +871,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter->getMeta())->isEmpty();
 
     // if meta option exists, it should be returned as an array
-    $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
     expect($newsletter->getMeta())->equals($meta);
   }
 

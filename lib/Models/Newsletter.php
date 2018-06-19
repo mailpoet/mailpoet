@@ -666,10 +666,13 @@ class Newsletter extends Model {
     return $orm;
   }
 
-  static function filterWithOptions($orm) {
+  static function filterWithOptions($orm, $type) {
     $orm = $orm->select(MP_NEWSLETTERS_TABLE.'.*');
     $optionFields = NewsletterOptionField::findArray();
     foreach($optionFields as $optionField) {
+      if($optionField['newsletter_type'] !== $type) {
+        continue;
+      }
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
         MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id=' . $optionField['id'] . ' THEN ' .
@@ -980,5 +983,13 @@ class Newsletter extends Model {
     if(!$this->meta) return;
 
     return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
+  }
+
+  static function findOneWithOptions($id) {
+    $newsletter = self::findOne($id);
+    if($newsletter === false) {
+      return false;
+    }
+    return self::filter('filterWithOptions', $newsletter->type)->findOne($id);
   }
 }

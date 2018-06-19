@@ -228,7 +228,7 @@ class Scheduler {
     return Newsletter::getPublished()
       ->filter('filterType', $type, $group)
       ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
-      ->filter('filterWithOptions')
+      ->filter('filterWithOptions', $type)
       ->findMany();
   }
 
