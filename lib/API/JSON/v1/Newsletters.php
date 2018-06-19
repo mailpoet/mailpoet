@@ -99,8 +99,7 @@ class Newsletters extends APIEndpoint {
         }
       }
       // reload newsletter with updated options
-      $newsletter = Newsletter::filter('filterWithOptions')
-        ->findOne($newsletter->id);
+      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->type)->findOne($newsletter->id);
       // if this is a post notification, process newsletter options and update its schedule
       if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         // generate the new schedule from options and get the new "next run" date
@@ -151,7 +150,7 @@ class Newsletters extends APIEndpoint {
     }
 
     $id = (isset($data['id'])) ? (int)$data['id'] : false;
-    $newsletter = Newsletter::filter('filterWithOptions')->findOne($id);
+    $newsletter = Newsletter::findOneWithOptions($id);
 
     if($newsletter === false) {
       return $this->errorResponse(array(
@@ -487,7 +486,7 @@ class Newsletters extends APIEndpoint {
         &&
         $data['type'] === Newsletter::TYPE_NOTIFICATION
       ) {
-        $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
+        $newsletter = Newsletter::filter('filterWithOptions', $data['type'])->findOne($newsletter->id);
         Scheduler::processPostNotificationSchedule($newsletter);
       }
 

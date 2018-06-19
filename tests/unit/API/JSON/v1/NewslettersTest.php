@@ -132,7 +132,7 @@ class NewslettersTest extends \MailPoetTest {
 
     $router = new Newsletters();
     $response = $router->save($valid_data);
-    $saved_newsletter = Newsletter::filter('filterWithOptions')
+    $saved_newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_STANDARD)
       ->findOne($response->data['id']);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals($saved_newsletter->asArray());
@@ -253,7 +253,7 @@ class NewslettersTest extends \MailPoetTest {
       )
     );
     $response = $router->save($newsletter_data);
-    $saved_newsletter = Newsletter::filter('filterWithOptions')
+    $saved_newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($response->data['id']);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals($saved_newsletter->asArray());
@@ -261,7 +261,7 @@ class NewslettersTest extends \MailPoetTest {
     // schedule should be recalculated when options change
     $newsletter_data['options']['intervalType'] = Scheduler::INTERVAL_IMMEDIATELY;
     $response = $router->save($newsletter_data);
-    $saved_newsletter = Newsletter::filter('filterWithOptions')
+    $saved_newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($response->data['id']);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($saved_newsletter->schedule)->equals('* * * * *');

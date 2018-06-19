@@ -25,8 +25,7 @@ class SendingQueue extends APIEndpoint {
     );
 
     // check that the newsletter exists
-    $newsletter = Newsletter::filter('filterWithOptions')
-      ->findOne($newsletter_id);
+    $newsletter = Newsletter::findOneWithOptions($newsletter_id);
 
     if($newsletter === false) {
       return $this->errorResponse(array(

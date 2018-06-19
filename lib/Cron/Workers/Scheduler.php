@@ -33,7 +33,7 @@ class Scheduler {
     if(!count($scheduled_queues)) return false;
     $this->updateTasks($scheduled_queues);
     foreach($scheduled_queues as $i => $queue) {
-      $newsletter = Newsletter::filter('filterWithOptions')->findOne($queue->newsletter_id);
+      $newsletter = Newsletter::findOneWithOptions($queue->newsletter_id);
       if(!$newsletter || $newsletter->deleted_at !== null) {
         $queue->delete();
       } elseif($newsletter->status !== Newsletter::STATUS_ACTIVE && $newsletter->status !== Newsletter::STATUS_SCHEDULED) {
