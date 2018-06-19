@@ -306,7 +306,7 @@ class APITest extends \MailPoetTest {
       new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
-        '_sendConfirmationEmail' => Stub::once()
+        '_sendConfirmationEmail' => Expected::once()
       ), $this);
     $segment = Segment::createOrUpdate(
       array(
