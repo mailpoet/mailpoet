@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.7.6
+Stable tag: 3.7.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -117,6 +117,19 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.7.7 - 2018-06-20 =
+* Changed: MailPoet 3 to no longer work with PHP version 5.3 or older. Please upgrade to PHP 7!
+* Added: exit user survey;
+* Added: retina display optimized images for MailPoet 3 WordPress plugin entry;
+* Fixed: welcome emails are not being sent;
+* Fixed: non-Premium users now see a proper call to action for WooCommerce automatic email events;
+* Fixed: errors when using Title Only and Display as List setting in ALC content block;
+* Fixed: API reports errors when confirmation emails aren't sent. Thanks, Team BrainstormForce;
+* Fixed: in some cases, button fonts in newsletter would display in preview incorrectly;
+* Fixed: using double quotes cause rendering issues;
+* Fixed: MailPoet translation string should not be available on translate.wordpress.org;
+* Fixed: word "beta" is duplicated on WooCommerce automatic email select screen;
 
 = 3.7.6 - 2018-06-12 =
 * Fixed: Woocommerce email template thumbnail overflowing over content.
