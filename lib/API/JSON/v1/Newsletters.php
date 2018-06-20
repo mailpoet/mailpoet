@@ -81,6 +81,10 @@ class Newsletters extends APIEndpoint {
       }
     }
 
+    if(isset($data['sender_address']) && isset($data['sender_name'])) {
+      Setting::saveDefaultSenderIfNeeded($data['sender_address'], $data['sender_name']);
+    }
+
     if(!empty($options)) {
       $option_fields = NewsletterOptionField::where(
         'newsletter_type',
