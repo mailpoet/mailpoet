@@ -40,6 +40,7 @@ class EditExistingNewsletterCest {
     $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
 	
     // step 5 - Edit this newsletter
+    $I->executeJS('jQuery(".row-actions").show()');
     $I->click('Edit', '[data-automation-id="listing_item_1"]');
     $I->waitForElement($title_element);
   }
