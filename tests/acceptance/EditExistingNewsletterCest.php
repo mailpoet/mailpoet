@@ -41,7 +41,7 @@ class EditExistingNewsletterCest {
 	
     // step 5 - Edit this newsletter
     //$I->executeJS('jQuery(".row-actions").show()');
-    $I->moveMouseOver(['css' => '.row-actions span.edit', '[data-automation-id="listing_item_1"]']);
+    $I->moveMouseOver(['css' => '.mailpoet_listing_table > tbody:nth-child(2) > tr:nth-child(2) > td:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2)', '[data-automation-id="listing_item_1"]']);
     $I->click('Edit', '[data-automation-id="listing_item_1"]');
     $I->waitForElement($title_element);
   }
