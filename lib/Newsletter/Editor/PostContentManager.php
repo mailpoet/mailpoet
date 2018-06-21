@@ -30,7 +30,7 @@ class PostContentManager {
     }
   }
 
-  function filterContent($content, $with_post_class = true) {
+  function filterContent($content, $display_type, $with_post_class = true) {
     $content = self::convertEmbeddedContent($content);
 
     // convert h4 h5 h6 to h3
@@ -48,6 +48,10 @@ class PostContentManager {
       '<p>', '<em>', '<span>', '<b>', '<strong>', '<i>',
       '<a>', '<ul>', '<ol>', '<li>', '<br>', '<blockquote>'
     );
+    if($display_type === 'full') {
+      $tags_not_being_stripped =  array_merge($tags_not_being_stripped, array('<img>', '<h1>', '<h2>', '<h3>'));
+    }
+
     $content = strip_tags($content, implode('', $tags_not_being_stripped));
     if($with_post_class) {
       $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS .'"', wpautop($content));
