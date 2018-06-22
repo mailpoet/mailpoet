@@ -6,7 +6,7 @@
     }
   ],
   "require": {
-    "php": ">=5.3.3",
+    "php": ">=5.4",
     "twig/twig": "1.*",
     "cerdic/css-tidy": "^1.5.5",
     "tburry/pquery": "^1.1.1",
