@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3568eadc55d255e9be1c63f0bf38cf7b",
+    "content-hash": "b3af53db5ffa008581492e9a33078474",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -8277,7 +8277,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.3.3"
+        "php": ">=5.4"
     },
     "platform-dev": [],
     "platform-overrides": {
