@@ -7,7 +7,7 @@ define('date',
     mp,
     jQuery,
     Moment
-) {
+  ) {
     'use strict';
 
     var MailPoet = mp;
@@ -22,21 +22,21 @@ define('date',
       init: function init(opts) {
         var options = opts || {};
 
-      // set UTC offset
+        // set UTC offset
         if (
-        options.offset === undefined
+          options.offset === undefined
         && window.mailpoet_date_offset !== undefined
-      ) {
+        ) {
           options.offset = window.mailpoet_date_offset;
         }
-      // set date format
+        // set date format
         if (
-        options.format === undefined
+          options.format === undefined
         && window.mailpoet_date_format !== undefined
-      ) {
+        ) {
           options.format = window.mailpoet_date_format;
         }
-      // merge options
+        // merge options
         this.options = jQuery.extend({}, this.defaults, options);
 
         return this;

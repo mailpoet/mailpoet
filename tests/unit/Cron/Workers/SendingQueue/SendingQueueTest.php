@@ -5,7 +5,8 @@ namespace MailPoet\Test\Cron\Workers\SendingQueue;
 use AspectMock\Test as Mock;
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
@@ -108,8 +109,8 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker(),
       array(
-        'processQueue' => Stub::never(),
-        'enforceSendingAndExecutionLimits' => Stub::exactly(1, function() {
+        'processQueue' => Expected::never(),
+        'enforceSendingAndExecutionLimits' => Expected::exactly(1, function() {
           throw new \Exception();
         })
       ), $this);
@@ -126,7 +127,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker(),
       array(
-        'enforceSendingAndExecutionLimits' => Stub::exactly(1)
+        'enforceSendingAndExecutionLimits' => Expected::exactly(1)
       ), $this);
     $sending_queue_worker->__construct(
       $timer = false,
@@ -159,7 +160,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker(),
       array(
-        'enforceSendingAndExecutionLimits' => Stub::never()
+        'enforceSendingAndExecutionLimits' => Expected::never()
       ), $this);
     $sending_queue_worker->__construct(
       $timer = false,
@@ -191,7 +192,7 @@ class SendingQueueTest extends \MailPoetTest {
           // this function returns a queue object
           return (object)array('status' => null);
         },
-        'enforceSendingAndExecutionLimits' => Stub::exactly(2)
+        'enforceSendingAndExecutionLimits' => Expected::exactly(2)
       ), $this);
     $sending_queue_worker->__construct();
     $sending_queue_worker->process();
@@ -220,7 +221,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) use ($directUnsubscribeURL) {
+          'send' => Expected::exactly(1, function($newsletter, $subscriber, $extra_params) use ($directUnsubscribeURL) {
             expect(isset($extra_params['unsubscribe_url']))->true();
             expect($extra_params['unsubscribe_url'])->equals($directUnsubscribeURL);
             return true;
@@ -240,7 +241,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) use ($trackedUnsubscribeURL) {
+          'send' => Expected::exactly(1, function($newsletter, $subscriber, $extra_params) use ($trackedUnsubscribeURL) {
             expect(isset($extra_params['unsubscribe_url']))->true();
             expect($extra_params['unsubscribe_url'])->equals($trackedUnsubscribeURL);
             return true;
@@ -258,7 +259,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) {
+          'send' => Expected::exactly(1, function($newsletter, $subscriber, $extra_params) {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
@@ -301,13 +302,13 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber) {
+          'send' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
             expect(!empty($newsletter[0]['body']['html']))->true();
             expect(!empty($newsletter[0]['body']['text']))->true();
             return true;
           }),
-          'getProcessingMethod' => Stub::exactly(1, function() {
+          'getProcessingMethod' => Expected::exactly(1, function() {
             return 'bulk';
           })
         ),
@@ -347,7 +348,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber) {
+          'send' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
@@ -385,6 +386,26 @@ class SendingQueueTest extends \MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
+  function testItUpdatesUpdateTime() {
+    $originalUpdated = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(5)->toDateTimeString();
+
+    $this->queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $this->queue->updated_at = $originalUpdated;
+    $this->queue->save();
+
+    $this->newsletter->type = Newsletter::TYPE_WELCOME;
+    $this->newsletter_segment->delete();
+
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::makeEmpty(new MailerTask(), array(), $this)
+    );
+    $sending_queue_worker->process();
+
+    $newQueue = ScheduledTask::findOne($this->queue->task_id);
+    expect($newQueue->updated_at)->notEquals($originalUpdated);
+  }
+
   function testItCanProcessWelcomeNewsletters() {
     $this->newsletter->type = Newsletter::TYPE_WELCOME;
     $this->newsletter_segment->delete();
@@ -394,7 +415,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber) {
+          'send' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
@@ -443,7 +464,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
       array(
-        'send' => Stub::exactly(1, function() {
+        'send' => Expected::exactly(1, function() {
           return true;
         })
       ),
@@ -594,7 +615,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::once()
+          'send' => Expected::once()
         ),
         $this
       )

@@ -165,7 +165,7 @@ const TimeSelect = React.createClass({
         >
           { timeOfDayItems[value] }
         </option>
-        )
+      )
     );
 
     return (

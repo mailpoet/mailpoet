@@ -2,13 +2,16 @@
 namespace MailPoet\Test\Newsletter\Scheduler;
 
 use Carbon\Carbon;
+use Codeception\Util\Fixtures;
 use Mailpoet\Config\Hooks;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Posts as WPPosts;
@@ -26,7 +29,7 @@ class SchedulerTest extends \MailPoetTest {
     expect(Scheduler::INTERVAL_NTHWEEKDAY)->notEmpty();
   }
 
-  function testItGetsActiveNewslettersFilteredByType() {
+  function testItGetsActiveNewslettersFilteredByTypeAndGroup() {
     $newsletter = $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);
 
     // no newsletters with type "notification" should be found
@@ -34,6 +37,19 @@ class SchedulerTest extends \MailPoetTest {
 
     // one newsletter with type "welcome" should be found
     expect(Scheduler::getNewsletters(Newsletter::TYPE_WELCOME))->count(1);
+
+    // one automatic email belonging to "test" group should be found
+    $newsletter = $this->_createNewsletter($type = Newsletter::TYPE_AUTOMATIC);
+    $this->_createNewsletterOptions(
+      $newsletter->id,
+      Newsletter::TYPE_AUTOMATIC,
+      array(
+        'group' => 'test'
+      )
+    );
+
+    expect(Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, 'group_does_not_exist'))->isEmpty();
+    expect(Scheduler::getNewsletters(Newsletter::TYPE_WELCOME, 'test'))->count(1);
   }
 
   function testItCanGetNextRunDate() {
@@ -59,12 +75,12 @@ class SchedulerTest extends \MailPoetTest {
       ->equals('2016-04-20 16:00:00');
   }
 
-  function testItCreatesPostNotificationQueueRecord() {
+  function testItCreatesPostNotificationSendingTask() {
     $newsletter = $this->_createNewsletter();
     $newsletter->schedule = '* 5 * * *';
 
     // new queue record should be created
-    $queue = Scheduler::createPostNotificationQueue($newsletter);
+    $queue = Scheduler::createPostNotificationSendingTask($newsletter);
     expect(SendingQueue::findMany())->count(1);
     expect($queue->newsletter_id)->equals($newsletter->id);
     expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
@@ -72,11 +88,11 @@ class SchedulerTest extends \MailPoetTest {
     expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
-    Scheduler::createPostNotificationQueue($newsletter);
+    Scheduler::createPostNotificationSendingTask($newsletter);
     expect(SendingQueue::findMany())->count(1);
   }
 
-  function testItDoesNotCreateDuplicateWelcomeNotificationQueueRecords() {
+  function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
     $newsletter = (object)array(
       'id' => 1,
       'afterTimeNumber' => 2,
@@ -89,15 +105,15 @@ class SchedulerTest extends \MailPoetTest {
     $existing_queue->save();
 
     // queue is not scheduled
-    Scheduler::createWelcomeNotificationQueue($newsletter, $existing_subscriber);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $existing_subscriber);
     expect(SendingQueue::findMany())->count(1);
 
     // queue is not scheduled
-    Scheduler::createWelcomeNotificationQueue($newsletter, 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, 1);
     expect(SendingQueue::findMany())->count(2);
   }
 
-  function testItCreatesWelcomeNotificationQueueRecord() {
+  function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInHours() {
     $newsletter = (object)array(
       'id' => 1,
       'afterTimeNumber' => 2
@@ -105,7 +121,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // queue is scheduled delivery in 2 hours
     $newsletter->afterTimeType = 'hours';
-    Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
@@ -114,10 +130,17 @@ class SchedulerTest extends \MailPoetTest {
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
     $this->_after();
+  }
+
+  function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInDays() {
+    $newsletter = (object)array(
+      'id' => 1,
+      'afterTimeNumber' => 2
+    );
 
     // queue is scheduled for delivery in 2 days
     $newsletter->afterTimeType = 'days';
-    Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
@@ -126,10 +149,17 @@ class SchedulerTest extends \MailPoetTest {
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addDays(2)->format('Y-m-d H:i'));
     $this->_after();
+  }
+
+  function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInWeeks() {
+    $newsletter = (object)array(
+      'id' => 1,
+      'afterTimeNumber' => 2
+    );
 
     // queue is scheduled for delivery in 2 weeks
     $newsletter->afterTimeType = 'weeks';
-    Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
@@ -138,13 +168,19 @@ class SchedulerTest extends \MailPoetTest {
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addWeeks(2)->format('Y-m-d H:i'));
     $this->_after();
+  }
+
+  function testItCreatesWelcomeNotificationSendingTaskScheduledToSendImmediately() {
+    $newsletter = (object)array(
+      'id' => 1,
+      'afterTimeNumber' => 2
+    );
 
     // queue is scheduled for immediate delivery
     $newsletter->afterTimeType = null;
-    Scheduler::createWelcomeNotificationQueue($newsletter, $subscriber_id = 1);
+    Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $queue = SendingQueue::findTaskByNewsletterId(1)
-      ->findOne();
+    $queue = SendingQueue::findTaskByNewsletterId(1)->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
@@ -214,7 +250,7 @@ class SchedulerTest extends \MailPoetTest {
     );
 
     // queue is created and scheduled for delivery one day later
-    Scheduler::scheduleSubscriberWelcomeNotification(
+    $result = Scheduler::scheduleSubscriberWelcomeNotification(
       $subscriber_id = 10,
       $segments = array(
         3,
@@ -227,6 +263,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne();
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addDay()->format('Y-m-d H:i'));
+    expect($result[0]->id())->equals($queue->id());
   }
 
   function itDoesNotScheduleAnythingWhenNewsletterDoesNotExist() {
@@ -345,10 +382,10 @@ class SchedulerTest extends \MailPoetTest {
       ->equals($current_time->addDay()->format('Y-m-d H:i'));
   }
 
-  function testItProcessesPostNotificationSchedule() {
+  function testItProcessesPostNotificationScheduledForDailyDelivery() {
     $newsletter_option_field = NewsletterOptionField::create();
     $newsletter_option_field->name = 'schedule';
-    $newsletter_option_field->newsletter_type = Newsletter::TYPE_WELCOME;
+    $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
     $newsletter_option_field->save();
 
     // daily notification is scheduled at 14:00
@@ -367,6 +404,13 @@ class SchedulerTest extends \MailPoetTest {
     $current_time = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
       ->equals('2017-01-01 14:00:00');
+  }
+
+  function testItProcessesPostNotificationScheduledForWeeklyDelivery() {
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->name = 'schedule';
+    $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
+    $newsletter_option_field->save();
 
     // weekly notification is scheduled every Tuesday at 14:00
     $newsletter = (object)array(
@@ -378,13 +422,19 @@ class SchedulerTest extends \MailPoetTest {
       'timeOfDay' => 50400 // 2 p.m.
     );
     Scheduler::processPostNotificationSchedule($newsletter);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
     $current_time = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
       ->equals('2017-01-03 14:00:00');
+  }
+
+  function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnSpecificDay() {
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->name = 'schedule';
+    $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
+    $newsletter_option_field->save();
 
     // monthly notification is scheduled every 20th day at 14:00
     $newsletter = (object)array(
@@ -393,7 +443,7 @@ class SchedulerTest extends \MailPoetTest {
       'monthDay' => 19, // 20th (count starts from 0)
       'nthWeekDay' => null,
       'weekDay' => null,
-      'timeOfDay' => 50400 // 2 p.m.
+      'timeOfDay' => 50400// 2 p.m.
     );
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
@@ -402,6 +452,13 @@ class SchedulerTest extends \MailPoetTest {
     $current_time = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
       ->equals('2017-01-19 14:00:00');
+  }
+
+  function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnLastWeekDay() {
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->name = 'schedule';
+    $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
+    $newsletter_option_field->save();
 
     // monthly notification is scheduled every last Saturday at 14:00
     $newsletter = (object)array(
@@ -410,7 +467,7 @@ class SchedulerTest extends \MailPoetTest {
       'monthDay' => null,
       'nthWeekDay' => 'L', // L = last
       'weekDay' => Carbon::SATURDAY,
-      'timeOfDay' => 50400 // 2 p.m.
+      'timeOfDay' => 50400// 2 p.m.
     );
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
@@ -419,6 +476,13 @@ class SchedulerTest extends \MailPoetTest {
     $current_time = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
     expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
       ->equals('2017-02-25 14:00:00');
+  }
+
+  function testItProcessesPostNotificationScheduledForImmediateDelivery() {
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->name = 'schedule';
+    $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
+    $newsletter_option_field->save();
 
     // notification is scheduled immediately (next minute)
     $newsletter = (object)array(
@@ -438,11 +502,174 @@ class SchedulerTest extends \MailPoetTest {
       ->equals('2017-01-01 13:01:00');
   }
 
+  function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
+    $this->_createNewsletterOptions(
+      $newsletter->id,
+      Newsletter::TYPE_AUTOMATIC,
+      array(
+        'sendTo' => 'user',
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => 2
+      )
+    );
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+
+    Scheduler::createAutomaticEmailSendingTask($newsletter, $subscriber->id, $meta = null);
+    // new scheduled task should be created
+    $task = SendingTask::getByNewsletterId($newsletter->id);
+    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    expect($task->id)->greaterOrEquals(1);
+    expect($task->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
+    expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect(Carbon::parse($task->scheduled_at)->format('Y-m-d H:i'))
+      ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
+    // task should have 1 associated user
+    $subscribers = $task->subscribers()->findMany();
+    expect($subscribers)->count(1);
+    expect($subscribers[0]->id)->equals($subscriber->id);
+  }
+
+  function testItAddsMetaToSendingQueueWhenCreatingAutomaticEmailSendingTask() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
+    $this->_createNewsletterOptions(
+      $newsletter->id,
+      Newsletter::TYPE_AUTOMATIC,
+      array(
+        'sendTo' => 'user',
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => 2
+      )
+    );
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $meta = array('some' => 'value');
+
+    Scheduler::createAutomaticEmailSendingTask($newsletter, $subscriber->id, $meta);
+    // new queue record should be created with meta data
+    $queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+    expect($queue->getMeta())->equals($meta);
+  }
+
+  function testItCreatesAutomaticEmailSendingTaskForSegment() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
+    $this->_createNewsletterOptions(
+      $newsletter->id,
+      Newsletter::TYPE_AUTOMATIC,
+      array(
+        'sendTo' => 'segment',
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => 2
+      )
+    );
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
+
+    Scheduler::createAutomaticEmailSendingTask($newsletter, $subscriber = null, $meta = null);
+    // new scheduled task should be created
+    $task = SendingTask::getByNewsletterId($newsletter->id);
+    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    expect($task->id)->greaterOrEquals(1);
+    expect($task->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
+    expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect(Carbon::parse($task->scheduled_at)->format('Y-m-d H:i'))
+      ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
+    // task should not have any subscribers
+    $subscribers = $task->subscribers()->findMany();
+    expect($subscribers)->count(0);
+  }
+
+  function testItDoesNotScheduleAutomaticEmailWhenGroupDoesNotMatch() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
+    $this->_createNewsletterOptions(
+      $newsletter->id,
+      Newsletter::TYPE_AUTOMATIC,
+      array(
+        'group' => 'some_group',
+        'event' => 'some_event',
+        'sendTo' => 'user',
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => 2
+      )
+    );
+
+    // email should not be scheduled when group is not matched
+    Scheduler::scheduleAutomaticEmail('group_does_not_exist', 'some_event');
+    expect(SendingQueue::findMany())->count(0);
+  }
+
+  function testItDoesNotScheduleAutomaticEmailWhenEventDoesNotMatch() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
+    $this->_createNewsletterOptions(
+      $newsletter->id,
+      Newsletter::TYPE_AUTOMATIC,
+      array(
+        'group' => 'some_group',
+        'event' => 'some_event',
+        'sendTo' => 'user',
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => 2
+      )
+    );
+
+    // email should not be scheduled when event is not matched
+    Scheduler::scheduleAutomaticEmail('some_group', 'event_does_not_exist');
+    expect(SendingQueue::findMany())->count(0);
+  }
+
+  function testItSchedulesAutomaticEmailWhenConditionMatches() {
+    $newsletter_1 = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
+    $this->_createNewsletterOptions(
+      $newsletter_1->id,
+      Newsletter::TYPE_AUTOMATIC,
+      array(
+        'group' => 'some_group',
+        'event' => 'some_event',
+        'sendTo' => 'user',
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => 2
+      )
+    );
+    $newsletter_2 = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
+    $this->_createNewsletterOptions(
+      $newsletter_2->id,
+      Newsletter::TYPE_AUTOMATIC,
+      array(
+        'group' => 'some_group',
+        'event' => 'some_event',
+        'sendTo' => 'segment',
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => 2
+      )
+    );
+    $condition = function($email) {
+      return $email->sendTo === 'segment';
+    };
+
+    // email should only be scheduled if it matches condition ("send to segment")
+    Scheduler::scheduleAutomaticEmail('some_group', 'some_event', $condition);
+    $result = SendingQueue::findMany();
+    expect($result)->count(1);
+    expect($result[0]->newsletter_id)->equals($newsletter_2->id);
+    // scheduled task should be created
+    $task = $result[0]->getTasks()->findOne();
+    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    expect($task->id)->greaterOrEquals(1);
+    expect($task->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
+    expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect(Carbon::parse($task->scheduled_at)->format('Y-m-d H:i'))
+      ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
+  }
+  
   function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
     $hook = new Hooks;
-
+    
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_NOTIFICATION);
-
+    
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_NOTIFICATION,
@@ -451,33 +678,33 @@ class SchedulerTest extends \MailPoetTest {
         'schedule' => '* * * * *'
       )
     );
-
+    
     $this->_removePostNotificationHooks();
     register_post_type('post', array('exclude_from_search' => true));
     $hook->setupPostNotifications();
-
+    
     $post_data = array(
       'post_title' => 'title',
       'post_status' => 'publish',
     );
     wp_insert_post($post_data);
-
+    
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
     expect($queue)->equals(false);
-
+    
     $this->_removePostNotificationHooks();
     register_post_type('post', array('exclude_from_search' => false));
     $hook->setupPostNotifications();
-
+    
     wp_insert_post($post_data);
-
+    
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
     expect($queue)->notequals(false);
   }
-
+  
   function testSchedulerWontRunIfUnsentNotificationHistoryExists() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_NOTIFICATION);
-
+    
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_NOTIFICATION,
@@ -486,22 +713,22 @@ class SchedulerTest extends \MailPoetTest {
         'schedule' => '* * * * *'
       )
     );
-
+    
     $notification_history = Newsletter::create();
     $notification_history->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     $notification_history->status = Newsletter::STATUS_SENDING;
     $notification_history->parent_id = $newsletter->id;
     $notification_history->save();
-
+    
     $post_data = array(
       'post_title' => 'title',
       'post_status' => 'publish',
     );
     wp_insert_post($post_data);
-
+    
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
     expect($queue)->equals(false);
-  }
+  }  
 
   function _createQueue(
     $newsletter_id,
@@ -531,11 +758,14 @@ class SchedulerTest extends \MailPoetTest {
 
   function _createNewsletterOptions($newsletter_id, $newsletter_type, $options) {
     foreach($options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::create();
-      $newsletter_option_field->name = $option;
-      $newsletter_option_field->newsletter_type = $newsletter_type;
-      $newsletter_option_field->save();
-      expect($newsletter_option_field->getErrors())->false();
+      $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
+      if(!$newsletter_option_field) {
+        $newsletter_option_field = NewsletterOptionField::create();
+        $newsletter_option_field->name = $option;
+        $newsletter_option_field->newsletter_type = $newsletter_type;
+        $newsletter_option_field->save();
+        expect($newsletter_option_field->getErrors())->false();
+      }
 
       $newsletter_option = NewsletterOption::create();
       $newsletter_option->option_field_id = $newsletter_option_field->id;
@@ -562,6 +792,8 @@ class SchedulerTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

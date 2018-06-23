@@ -596,7 +596,7 @@ WysijaForm = {
           WysijaForm.toolbar.left
           + window.$(WysijaForm.options.container).getDimensions().width
           + 15
-        , 10);
+          , 10);
     }
   },
   setToolbarPosition: function () {

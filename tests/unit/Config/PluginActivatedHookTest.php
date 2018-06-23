@@ -2,7 +2,8 @@
 
 namespace MailPoet\Config;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 
 class PluginActivatedHookTest extends \MailPoetTest {
 
@@ -11,7 +12,7 @@ class PluginActivatedHookTest extends \MailPoetTest {
     $deferred_admin_notices = Stub::makeEmpty(
       'MailPoet\Config\DeferredAdminNotices',
       array(
-        'addNetworkAdminNotice' => Stub::exactly(1, function () {
+        'addNetworkAdminNotice' => Expected::exactly(1, function () {
         }),
       ),
       $this
@@ -24,7 +25,7 @@ class PluginActivatedHookTest extends \MailPoetTest {
     $deferred_admin_notices = Stub::makeEmpty(
       'MailPoet\Config\DeferredAdminNotices',
       array(
-        'addNetworkAdminNotice' => Stub::never(),
+        'addNetworkAdminNotice' => Expected::never(),
       ),
       $this
     );
@@ -36,7 +37,7 @@ class PluginActivatedHookTest extends \MailPoetTest {
     $deferred_admin_notices = Stub::makeEmpty(
       'MailPoet\Config\DeferredAdminNotices',
       array(
-        'addNetworkAdminNotice' => Stub::never(),
+        'addNetworkAdminNotice' => Expected::never(),
       ),
       $this
     );

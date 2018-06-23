@@ -128,8 +128,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
-        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
-        .replace('%$2s', response.meta.segment)
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$2s', response.meta.segment)
       );
     },
   },
@@ -160,8 +160,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
-        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
-        .replace('%$2s', response.meta.segment)
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$2s', response.meta.segment)
       );
     },
   },
@@ -192,8 +192,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
-        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
-        .replace('%$2s', response.meta.segment)
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$2s', response.meta.segment)
       );
     },
   },
@@ -203,7 +203,7 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
-        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
       );
     },
   },
@@ -213,7 +213,7 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleConfirmationEmailsSent')
-        .replace('%$1d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
       );
     },
   },

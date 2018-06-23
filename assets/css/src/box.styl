@@ -30,7 +30,7 @@ $box-description-font-size = $box-description-line-height
   margin: 0 0 $box-margin-big
   padding: 0
   width: 30.5%
-      
+
   @media screen and (max-width 1178px)
     width: 47%
 
@@ -96,6 +96,7 @@ $box-description-font-size = $box-description-line-height
     height: auto
     width: 100%
 
+.woocommerce .mailpoet_thumbnail,
 .mailpoet_boxes .mailpoet_newsletter_types .mailpoet_thumbnail
   border: 1px solid #ccc
   width: $box-height
@@ -146,12 +147,16 @@ $box-description-font-size = $box-description-line-height
   border-radius: 3px;
   transition: opacity .1s ease-in-out;
 
+.mailpoet_boxes.woocommerce .mailpoet_description
+  h3
+    font-size: 17px
+    line-height: 1.2
+
 .mailpoet_boxes .mailpoet_description
   float:left
   width: 258px
   max-height: $box-description-height
   padding-bottom: 0
-  overflow: hidden
   word-wrap: break-word
   overflow-wrap: break-word
 

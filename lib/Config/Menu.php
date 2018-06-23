@@ -384,7 +384,7 @@ class Menu {
     $data['is_old_user'] = false;
     if(!empty($data['settings']['installed_at'])) {
       $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
-      $current_time =  Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
       $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
       $data['is_old_user'] = $current_time->diffInMonths($installed_at) >= 6;
       $data['stop_call_for_rating'] = isset($data['settings']['stop_call_for_rating']) ? $data['settings']['stop_call_for_rating'] : false;
@@ -437,6 +437,8 @@ class Menu {
         'smtp' => Hosts::getSMTPHosts()
       )
     );
+
+    $data['is_new_user'] = $this->isNewUser();
 
     $data = array_merge($data, Installer::getPremiumStatus());
 
@@ -541,6 +543,8 @@ class Menu {
     $data['items_per_page'] = $this->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
 
+    $data['is_new_user'] = $this->isNewUser();
+
     $this->displayPage('forms.html', $data);
   }
 
@@ -577,7 +581,59 @@ class Menu {
     $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
 
-    $data['automatic_emails'] = array();
+    $data['automatic_emails'] = array(
+      array(
+        'slug' => 'woocommerce',
+        'beta' => true,
+        'premium' => true,
+        'title' => __('WooCommerce', 'mailpoet'),
+        'description' => __('Automatically send an email when there is a new WooCommerce product, order and some other action takes place.', 'mailpoet'),
+        'events' => array(
+          array(
+            'slug' => 'woocommerce_abandoned_shopping_cart',
+            'title' => __('Abandoned Shopping Cart', 'mailpoet'),
+            'description' => __('Send an email to logged-in visitors who have items in their shopping carts but left your website without checking out. Can convert up to 5% of abandoned carts.', 'mailpoet'),
+            'soon' => true,
+            'badge' => array(
+              'text' => __('Must-have', 'mailpoet'),
+              'style' => 'red'
+            )
+          ),
+          array(
+            'slug' => 'woocommerce_big_spender',
+            'title' => __('Big Spender', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who have spent a certain amount to thank them, possibly with a coupon.', 'mailpoet'),
+            'soon' => true,
+            'badge' => array(
+              'text' => __('Smart to have', 'mailpoet'),
+              'style' => 'teal'
+            )
+          ),
+          array(
+            'slug' => 'woocommerce_first_purchase',
+            'title' => __('First Purchase', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet'),
+            'badge' => array(
+              'text' => __('Must-have', 'mailpoet'),
+              'style' => 'red'
+            )
+          ),
+          array(
+            'slug' => 'woocommerce_product_purchased_in_category',
+            'title' => __('Purchased In This Category', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who purchase a product from a specific category.', 'mailpoet'),
+            'soon' => true
+          ),
+          array(
+            'slug' => 'woocommerce_product_purchased',
+            'title' => __('Purchased This Product', 'mailpoet'),
+            'description' => __('Let MailPoet send an email to customers who purchase a specific product.', 'mailpoet'),
+          )
+        )
+      )
+    );
+
+    $data['is_new_user'] = $this->isNewUser();
 
     wp_enqueue_script('jquery-ui');
     wp_enqueue_script('jquery-ui-datepicker');
@@ -609,6 +665,9 @@ class Menu {
       'month_names' => Block\Date::getMonthNames(),
       'sub_menu' => 'mailpoet-subscribers'
     ));
+
+    $data['is_new_user'] = $this->isNewUser();
+
     $this->displayPage('subscribers/importExport/import.html', $data);
   }
 
@@ -746,5 +805,15 @@ class Menu {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();
     }
+  }
+
+  function isNewUser() {
+    $installed_at = Setting::getValue('installed_at');
+    if(is_null($installed_at)) {
+      return true;
+    }
+    $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    return $current_time->diffInDays($installed_at) <= 30;
   }
 }

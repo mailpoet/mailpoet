@@ -145,6 +145,7 @@ class Initializer {
       $this->setupPages();
 
       $this->setupPHPVersionWarnings();
+      $this->setupDeactivationSurvey();
 
       do_action('mailpoet_initialized', MAILPOET_VERSION);
     } catch(\Exception $e) {
@@ -213,7 +214,7 @@ class Initializer {
   }
 
   function setupImages() {
-    add_image_size('mailpoet_newsletter_max', 1320);
+    add_image_size('mailpoet_newsletter_max', Env::NEWSLETTER_CONTENT_WIDTH);
   }
 
   function setupChangelog() {
@@ -300,5 +301,10 @@ class Initializer {
       Menu::addErrorPage($this->access_control);
     }
     return WPNotice::displayError($exception);
+  }
+
+  function setupDeactivationSurvey() {
+    $survey = new DeactivationSurvey($this->renderer);
+    $survey->init();
   }
 }

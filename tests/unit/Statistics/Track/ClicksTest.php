@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\Statistics\Track;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
@@ -54,7 +55,7 @@ class ClicksTest extends \MailPoetTest {
   function testItAbortsWhenTrackDataIsEmptyOrMissingLink() {
     // abort function should be called twice:
     $clicks = Stub::make($this->clicks, array(
-      'abort' => Stub::exactly(2)
+      'abort' => Expected::exactly(2)
     ), $this);
     $data = $this->track_data;
     // 1. when tracking data does not exist
@@ -88,7 +89,7 @@ class ClicksTest extends \MailPoetTest {
 
   function testItRedirectsToUrlAfterTracking() {
     $clicks = Stub::make($this->clicks, array(
-      'redirectToUrl' => Stub::exactly(1)
+      'redirectToUrl' => Expected::exactly(1)
     ), $this);
     $clicks->track($this->track_data);
   }
@@ -116,7 +117,7 @@ class ClicksTest extends \MailPoetTest {
 
   function testItFailsToConvertsInvalidShortcodeToUrl() {
     $clicks = Stub::make($this->clicks, array(
-      'abort' => Stub::exactly(1)
+      'abort' => Expected::exactly(1)
     ), $this);
     // should call abort() method if shortcode action does not exist
     $link = $clicks->processUrl(

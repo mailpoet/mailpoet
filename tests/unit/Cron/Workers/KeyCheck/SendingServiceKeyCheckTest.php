@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
@@ -26,7 +27,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
       array(
         'checkMSSKey' => $response,
         'storeMSSKeyAndState' => null,
-        'updateSubscriberCount' => Stub::once()
+        'updateSubscriberCount' => Expected::once()
       ),
       $this
     );

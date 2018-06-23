@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\Config;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 
@@ -18,7 +19,7 @@ class InstallerTest extends \MailPoetTest {
     $installer = Stub::make(
       $this->installer,
       array(
-        'getPluginInformation' => Stub::once()
+        'getPluginInformation' => Expected::once()
       ),
       $this
     );

@@ -17,7 +17,7 @@ define([
   SuperModel,
   _,
   jQuery
-  ) {
+) {
   'use strict';
 
   var Module = {};

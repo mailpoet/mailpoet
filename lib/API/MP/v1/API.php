@@ -7,6 +7,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Subscribers\Source;
+use MailPoet\Tasks\Sending;
 
 if(!defined('ABSPATH')) exit;
 
@@ -186,7 +187,12 @@ class API {
 
       // send confirmation email
       if($send_confirmation_email && $new_subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
-        $this->_sendConfirmationEmail($new_subscriber);
+        $result = $this->_sendConfirmationEmail($new_subscriber);
+        if(!$result && $new_subscriber->getErrors()) {
+          throw new \Exception(
+            __(sprintf('Subscriber added, but confirmation email failed to send: %s', strtolower(implode(', ', $new_subscriber->getErrors()))), 'mailpoet')
+          );
+        }
       }
 
       // schedule welcome email(s)
@@ -242,6 +248,16 @@ class API {
   }
 
   protected function _scheduleWelcomeNotification(Subscriber $subscriber, array $segments) {
-    return Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $segments);
+    $result = Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $segments);
+    if(is_array($result)) {
+      foreach($result as $queue) {
+        if($queue instanceof Sending && $queue->getErrors()) {
+          throw new \Exception(
+            __(sprintf('Subscriber added, but welcome email failed to send: %s', strtolower(implode(', ', $queue->getErrors()))), 'mailpoet')
+          );
+        }
+      }
+    }
+    return $result;
   }
 }

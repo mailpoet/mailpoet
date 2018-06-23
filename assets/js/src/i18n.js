@@ -3,7 +3,7 @@ define('i18n',
     'mailpoet'
   ], function i18n(
     mp
-) {
+  ) {
     'use strict';
 
     var MailPoet = mp;

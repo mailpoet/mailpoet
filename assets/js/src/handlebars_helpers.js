@@ -101,11 +101,11 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
 
     lines = value.trim().split('\n');
 
-      // remove header & footer
+    // remove header & footer
     lines.shift();
     lines.pop();
 
-      // return concatenated lines
+    // return concatenated lines
     return lines.join('');
   });
 

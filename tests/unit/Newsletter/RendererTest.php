@@ -346,6 +346,18 @@ class RendererTest extends \MailPoetTest {
     )->equals(1);
   }
 
+  function testItUsesFullFontFamilyNameInElementStyles() {
+    $newsletter = $this->newsletter['body'];
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
+    $template['styles']['block']['fontFamily'] = 'Lucida';
+    $DOM = $this->DOM_parser->parseStr(Button::render($template, $columnCount = 1));
+    expect(
+      preg_match(
+        '/font-family: \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif/',
+        $DOM('a.mailpoet_button', 0)->attr('style'))
+    )->equals(1);
+  }
+
   function testItRendersSocialIcons() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][6];

@@ -74,7 +74,7 @@ const NewsletterSend = React.createClass({
   },
   saveTemplate: function saveTemplate(response, done) {
     fromUrl(response.meta.preview_url)
-      .then(function saveTemplateAjax(thumbnail) {
+      .then((thumbnail) => {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletterTemplates',
@@ -88,6 +88,9 @@ const NewsletterSend = React.createClass({
           },
         }).then(done).fail((err) => {
           this.showError(err);
+          this.setState({ loading: false });
+          MailPoet.Modal.loading(false);
+          done();
         });
       })
       .catch((err) => {
@@ -106,20 +109,20 @@ const NewsletterSend = React.createClass({
     return this.saveNewsletter(e).done(() => {
       this.setState({ loading: true });
     })
-    .done((response) => {
-      switch (response.data.type) {
-        case 'notification':
-        case 'welcome':
-          return this.activateNewsletter(response);
-        default:
-          return this.sendNewsletter(response);
-      }
-    })
-    .fail((err) => {
-      this.showError(err);
-      this.setState({ loading: false });
-      MailPoet.Modal.loading(false);
-    });
+      .done((response) => {
+        switch (response.data.type) {
+          case 'notification':
+          case 'welcome':
+            return this.activateNewsletter(response);
+          default:
+            return this.sendNewsletter(response);
+        }
+      })
+      .fail((err) => {
+        this.showError(err);
+        this.setState({ loading: false });
+        MailPoet.Modal.loading(false);
+      });
   },
   sendNewsletter: function sendNewsletter(newsletter) {
     return MailPoet.Ajax.post(
@@ -239,12 +242,12 @@ const NewsletterSend = React.createClass({
           }
         });
       })
-      .fail((err) => {
-        this.showError(err);
-      })
-      .always(() => {
-        this.setState({ loading: false });
-      });
+        .fail((err) => {
+          this.showError(err);
+        })
+        .always(() => {
+          this.setState({ loading: false });
+        });
     }
     return false;
   },
@@ -286,8 +289,8 @@ const NewsletterSend = React.createClass({
       'status', 'updated_at', 'type',
     ];
     const newsletterData = _.omit(
-        data,
-        IGNORED_NEWSLETTER_PROPERTIES
+      data,
+      IGNORED_NEWSLETTER_PROPERTIES
     );
 
     return MailPoet.Ajax.post({
@@ -360,7 +363,7 @@ const NewsletterSend = React.createClass({
                   onClick={this.handleResume}
                   value={MailPoet.I18n.t('resume')}
                 />
-              :
+                :
                 <input
                   className="button button-primary"
                   type="button"

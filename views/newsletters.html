@@ -17,6 +17,8 @@
     var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
     var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
     var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
+    <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
+    var mailpoet_is_new_user = <%= newUser %>;
   </script>
 <% endblock %>
 
@@ -122,6 +124,7 @@
 
     'draftNewsletterTitle': __('Subject'),
     'pickCampaignType': __('Select type of email'),
+    'seeVideoGuide': __('See video guide'),
     'regularNewsletterTypeTitle': __('Newsletter'),
     'regularNewsletterTypeDescription': __('Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.'),
     'create': __('Create'),
@@ -190,6 +193,8 @@
     'websiteTimeIs': __("Your website’s time is"),
     'noScheduledDateError': __('Please enter the scheduled date.'),
     'schedule': __('Schedule'),
+    'feedback': __('Feedback?'),
+    'tooltipTemplateTabs': __("Click [link]here[/link] to give your feedback on this feature. We’d love to hear from you."),
 
     'close': __('Close'),
     'today': __('Today'),

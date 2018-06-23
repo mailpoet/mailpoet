@@ -37,7 +37,6 @@ class Pages {
       'post_title' => __('MailPoet Page', 'mailpoet'),
       'post_name' => 'subscriptions'
     ));
-    flush_rewrite_rules();
 
     return ((int)$id > 0) ? (int)$id : false;
   }

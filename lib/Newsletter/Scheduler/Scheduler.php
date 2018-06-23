@@ -30,7 +30,7 @@ class Scheduler {
         ->where('post_id', $post_id)
         ->findOne();
       if($post === false) {
-        self::createPostNotificationQueue($newsletter);
+        self::createPostNotificationSendingTask($newsletter);
       }
     }
   }
@@ -38,12 +38,24 @@ class Scheduler {
   static function scheduleSubscriberWelcomeNotification($subscriber_id, $segments) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
     if(empty($newsletters)) return false;
+    $result = array();
     foreach($newsletters as $newsletter) {
       if($newsletter->event === 'segment' &&
         in_array($newsletter->segment, $segments)
       ) {
-        self::createWelcomeNotificationQueue($newsletter, $subscriber_id);
+        $result[] = self::createWelcomeNotificationSendingTask($newsletter, $subscriber_id);
       }
+    }
+    return $result;
+  }
+
+  static function scheduleAutomaticEmail($group, $event, $scheduling_condition = false, $subscriber_id = false, $meta = false) {
+    $newsletters = self::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
+    if(empty($newsletters)) return false;
+    foreach($newsletters as $newsletter) {
+      if($newsletter->event !== $event) continue;
+      if(is_callable($scheduling_condition) && !$scheduling_condition($newsletter)) continue;
+      self::createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta);
     }
   }
 
@@ -69,45 +81,49 @@ class Scheduler {
         if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
           in_array($newsletter->role, $wp_user['roles'])
         ) {
-          self::createWelcomeNotificationQueue($newsletter, $subscriber_id);
+          self::createWelcomeNotificationSendingTask($newsletter, $subscriber_id);
         }
       }
     }
   }
 
-  static function createWelcomeNotificationQueue($newsletter, $subscriber_id) {
+  static function createWelcomeNotificationSendingTask($newsletter, $subscriber_id) {
     $previously_scheduled_notification = SendingQueue::joinWithSubscribers()
       ->where('queues.newsletter_id', $newsletter->id)
       ->where('subscribers.subscriber_id', $subscriber_id)
       ->findOne();
     if(!empty($previously_scheduled_notification)) return;
-    $queue = SendingTask::create();
-    $queue->newsletter_id = $newsletter->id;
-    $queue->setSubscribers(array($subscriber_id));
-    $after_time_type = $newsletter->afterTimeType;
-    $after_time_number = $newsletter->afterTimeNumber;
-    $scheduled_at = null;
-    $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
-    switch($after_time_type) {
-      case 'hours':
-        $scheduled_at = $current_time->addHours($after_time_number);
-        break;
-      case 'days':
-        $scheduled_at = $current_time->addDays($after_time_number);
-        break;
-      case 'weeks':
-        $scheduled_at = $current_time->addWeeks($after_time_number);
-        break;
-      default:
-        $scheduled_at = $current_time;
-    }
-    $queue->status = SendingQueue::STATUS_SCHEDULED;
-    $queue->priority = SendingQueue::PRIORITY_HIGH;
-    $queue->scheduled_at = $scheduled_at;
-    return $queue->save();
+    $sending_task = SendingTask::create();
+    $sending_task->newsletter_id = $newsletter->id;
+    $sending_task->setSubscribers(array($subscriber_id));
+    $sending_task->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_task->priority = SendingQueue::PRIORITY_HIGH;
+    $sending_task->scheduled_at = self::getScheduledTimeWithDelay(
+      $newsletter->afterTimeType,
+      $newsletter->afterTimeNumber
+    );
+    return $sending_task->save();
   }
 
-  static function createPostNotificationQueue($newsletter) {
+  static function createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta) {
+    $sending_task = SendingTask::create();
+    $sending_task->newsletter_id = $newsletter->id;
+    if($newsletter->sendTo === 'user' && $subscriber_id) {
+      $sending_task->setSubscribers(array($subscriber_id));
+    }
+    if($meta) {
+      $sending_task->__set('meta', $meta);
+    }
+    $sending_task->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_task->priority = SendingQueue::PRIORITY_MEDIUM;
+    $sending_task->scheduled_at = self::getScheduledTimeWithDelay(
+      $newsletter->afterTimeType,
+      $newsletter->afterTimeNumber
+    );
+    return $sending_task->save();
+  }
+
+  static function createPostNotificationSendingTask($newsletter) {
     $existing_notification_history = Newsletter::where('parent_id', $newsletter->id)
       ->where('type', Newsletter::TYPE_NOTIFICATION_HISTORY)
       ->where('status', Newsletter::STATUS_SENDING)
@@ -115,7 +131,6 @@ class Scheduler {
     if($existing_notification_history) {
       return;
     }
-
     $next_run_date = self::getNextRunDate($newsletter->schedule);
     if(!$next_run_date) return;
     // do not schedule duplicate queues for the same time
@@ -123,12 +138,12 @@ class Scheduler {
       ->where('tasks.scheduled_at', $next_run_date)
       ->findOne();
     if($existing_queue) return;
-    $queue = SendingTask::create();
-    $queue->newsletter_id = $newsletter->id;
-    $queue->status = SendingQueue::STATUS_SCHEDULED;
-    $queue->scheduled_at = $next_run_date;
-    $queue->save();
-    return $queue;
+    $sending_task = SendingTask::create();
+    $sending_task->newsletter_id = $newsletter->id;
+    $sending_task->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_task->scheduled_at = $next_run_date;
+    $sending_task->save();
+    return $sending_task;
   }
 
   static function processPostNotificationSchedule($newsletter) {
@@ -195,11 +210,25 @@ class Scheduler {
     return $previous_run_date;
   }
 
-  static function getNewsletters($type) {
+  static function getScheduledTimeWithDelay($after_time_type, $after_time_number) {
+    $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    switch($after_time_type) {
+      case 'hours':
+        return $current_time->addHours($after_time_number);
+      case 'days':
+        return $current_time->addDays($after_time_number);
+      case 'weeks':
+        return $current_time->addWeeks($after_time_number);
+      default:
+        return $current_time;
+    }
+  }
+
+  static function getNewsletters($type, $group = false) {
     return Newsletter::getPublished()
-      ->filter('filterType', $type)
+      ->filter('filterType', $type, $group)
       ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
-      ->filter('filterWithOptions')
+      ->filter('filterWithOptions', $type)
       ->findMany();
   }
 

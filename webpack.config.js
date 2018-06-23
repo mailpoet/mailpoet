@@ -12,17 +12,17 @@ var manifestCache = {};
 var baseConfig = {
   cache: true,
   context: __dirname,
-  watch: {
+  watchOptions: {
     aggregateTimeout: 300,
     poll: true
   },
   output: {
-    path: './assets/js',
+    path: path.join(__dirname, 'assets/js'),
     filename: (PRODUCTION_ENV) ? '[name].[chunkhash:8].js' : '[name].js',
     chunkFilename: (PRODUCTION_ENV) ? '[name].[chunkhash:8].chunk.js' : '[name].chunk.js'
   },
   resolve: {
-    modulesDirectories: [
+    modules: [
       'node_modules',
       'assets/js/src',
     ],
@@ -49,13 +49,11 @@ var baseConfig = {
     ])
   ],
   module: {
-    preLoaders: [
-      { test: /\.json$/, loader: "json-loader" },
-    ],
-    loaders: [
+    rules: [
       {
         test: /\.jsx$/,
-        loader: 'babel-loader'
+        exclude: /node_modules/,
+        loader: 'babel-loader',
       },
       {
         test: /form_editor\.js$/,
@@ -74,6 +72,10 @@ var baseConfig = {
         loader: 'expose-loader?_',
       },
       {
+        include: require.resolve('react-tooltip'),
+        loader: 'expose-loader?' + globalPrefix + '.ReactTooltip',
+      },
+      {
         include: require.resolve('history'),
         loader: 'expose-loader?' + globalPrefix + '.History',
       },
@@ -87,7 +89,7 @@ var baseConfig = {
       },
       {
         include: require.resolve('react-router'),
-        loader: 'expose-loader?' + globalPrefix + '.ReactRouter',
+        use: 'expose-loader?' + globalPrefix + '.ReactRouter',
       },
       {
         include: require.resolve('react-string-replace'),
@@ -95,55 +97,94 @@ var baseConfig = {
       },
       {
         test: /wp-js-hooks/i,
-        loader: 'expose-loader?' + globalPrefix + '.Hooks!exports-loader?wp.hooks',
+        use: [
+          'expose-loader?' + globalPrefix + '.Hooks',
+          'exports-loader?wp.hooks',
+        ]
       },
       {
         test: /listing.jsx/i,
-        loader: 'expose-loader?' + globalPrefix + '.Listing!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.Listing',
+          'babel-loader'
+        ],
       },
       {
         test: /form.jsx/i,
-        loader: 'expose-loader?' + globalPrefix + '.Form!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.Form',
+          'babel-loader'
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/mixins.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.NewslettersListingsMixins!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.NewslettersListingsMixins',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/tabs.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.NewslettersListingsTabs!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.NewslettersListingsTabs',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/form/fields/selection.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.FormFieldSelection!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.FormFieldSelection',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/form/fields/text.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.FormFieldText!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.FormFieldText',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/scheduling/common.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.NewsletterSchedulingCommonOptions!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.NewsletterSchedulingCommonOptions',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.StatsBadge!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.StatsBadge',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/types/welcome/scheduling.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.NewsletterWelcomeNotificationScheduling!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.NewsletterWelcomeNotificationScheduling',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/breadcrumb.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.NewsletterCreationBreadcrumb!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.NewsletterCreationBreadcrumb',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/events_list.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.AutomaticEmailEventsList!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.AutomaticEmailEventsList',
+          'babel-loader',
+        ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/breadcrumb.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.AutomaticEmailsBreadcrumb!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.AutomaticEmailsBreadcrumb',
+          'babel-loader',
+        ]
       },
       {
         include: /Blob.js$/,
@@ -167,7 +208,10 @@ var baseConfig = {
       },
       {
         include: require.resolve('classnames'),
-        loader: 'expose-loader?' + globalPrefix + '.ClassNames!babel-loader',
+        use: [
+          'expose-loader?' + globalPrefix + '.ClassNames',
+          'babel-loader',
+        ]
       },
     ]
   }
@@ -200,7 +244,7 @@ var adminConfig = {
     admin_vendor: [
       'react',
       'react-dom',
-      'react-router',
+      require.resolve('react-router'),
       'react-string-replace',
       'listing/listing.jsx',
       'form/form.jsx',
@@ -402,11 +446,11 @@ var testConfig = {
     ],
   },
   output: {
-    path: './tests/javascript/testBundles',
+    path: path.join(__dirname, 'tests/javascript/testBundles'),
     filename: '[name].js',
   },
   resolve: {
-    modulesDirectories: [
+    modules: [
       'node_modules',
       'assets/js/src',
       'tests/javascript/newsletter_editor'

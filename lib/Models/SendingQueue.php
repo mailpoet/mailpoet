@@ -60,6 +60,12 @@ class SendingQueue extends Model {
         json_encode($this->encodeEmojisInBody($this->newsletter_rendered_body))
       );
     }
+    if(!Helpers::isJson($this->meta)) {
+      $this->set(
+        'meta',
+        json_encode($this->meta)
+      );
+    }
     parent::save();
     $this->newsletter_rendered_body = $this->getNewsletterRenderedBody();
     return $this;
@@ -84,6 +90,10 @@ class SendingQueue extends Model {
     return ($type && !empty($rendered_newsletter[$type])) ?
       $rendered_newsletter[$type] :
       $rendered_newsletter;
+  }
+
+  function getMeta() {
+    return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
   function encodeEmojisInBody($newsletter_rendered_body) {
@@ -126,6 +136,7 @@ class SendingQueue extends Model {
   function asArray() {
     $model = parent::asArray();
     $model['newsletter_rendered_body'] = $this->getNewsletterRenderedBody();
+    $model['meta'] = $this->getMeta();
     return $model;
   }
 

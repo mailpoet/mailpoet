@@ -74,4 +74,12 @@ class ScheduledTask extends Model {
     parent::save();
     return $this;
   }
+
+  static function touchAllByIds(array $ids) {
+    ScheduledTask::rawExecute(
+      'UPDATE `' . ScheduledTask::$_table . '`' .
+      'SET `updated_at` = NOW() ' .
+      'WHERE `id` IN (' . join(',', $ids) . ')'
+    );
+  }
 }

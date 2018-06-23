@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
+import ListingHeading from 'newsletters/listings/heading.jsx';
 
 import { MailerMixin } from 'newsletters/listings/mixins.jsx';
 
@@ -215,34 +216,34 @@ const NewsletterListNotification = React.createClass({
     switch (newsletter.options.intervalType) {
       case 'daily':
         sendingFrequency = MailPoet.I18n.t('sendDaily').replace(
-            '%$1s', timeOfDayValues[newsletter.options.timeOfDay]
-          );
+          '%$1s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
         break;
 
       case 'weekly':
         sendingFrequency = MailPoet.I18n.t('sendWeekly').replace(
-            '%$1s', weekDayValues[newsletter.options.weekDay]
-          ).replace(
-            '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
-          );
+          '%$1s', weekDayValues[newsletter.options.weekDay]
+        ).replace(
+          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
         break;
 
       case 'monthly':
         sendingFrequency = MailPoet.I18n.t('sendMonthly').replace(
-            '%$1s', monthDayValues[newsletter.options.monthDay]
-          ).replace(
-            '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
-          );
+          '%$1s', monthDayValues[newsletter.options.monthDay]
+        ).replace(
+          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
         break;
 
       case 'nthWeekDay':
         sendingFrequency = MailPoet.I18n.t('sendNthWeekDay').replace(
-            '%$1s', nthWeekDayValues[newsletter.options.nthWeekDay]
-          ).replace(
-            '%$2s', weekDayValues[newsletter.options.weekDay]
-          ).replace(
-            '%$3s', timeOfDayValues[newsletter.options.timeOfDay]
-          );
+          '%$1s', nthWeekDayValues[newsletter.options.nthWeekDay]
+        ).replace(
+          '%$2s', weekDayValues[newsletter.options.weekDay]
+        ).replace(
+          '%$3s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
         break;
 
       case 'immediately':
@@ -310,9 +311,7 @@ const NewsletterListNotification = React.createClass({
   render: function render() {
     return (
       <div>
-        <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new" data-automation-id="new_email">{MailPoet.I18n.t('new')}</Link>
-        </h1>
+        <ListingHeading />
 
         <ListingTabs tab="notification" />
 

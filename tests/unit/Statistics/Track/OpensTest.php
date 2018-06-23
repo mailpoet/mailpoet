@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\Statistics\Track;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
@@ -42,7 +43,7 @@ class OpensTest extends \MailPoetTest {
 
   function testItReturnsImageWhenTrackDataIsEmpty() {
     $opens = Stub::make($this->opens, array(
-      'returnResponse' => Stub::exactly(1)
+      'returnResponse' => Expected::exactly(1)
     ), $this);
     $opens->track(false);
     expect(StatisticsOpens::findMany())->isEmpty();
@@ -83,7 +84,7 @@ class OpensTest extends \MailPoetTest {
 
   function testItReturnsImageAfterTracking() {
     $opens = Stub::make($this->opens, array(
-      'returnResponse' => Stub::exactly(1)
+      'returnResponse' => Expected::exactly(1)
     ), $this);
     $opens->track($this->track_data);
   }

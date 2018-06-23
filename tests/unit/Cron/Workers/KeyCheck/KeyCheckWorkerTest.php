@@ -2,7 +2,8 @@
 namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Carbon\Carbon;
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
@@ -33,7 +34,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
         'checkKey' => function () {
           throw new \Exception;
         },
-        'reschedule' => Stub::once()
+        'reschedule' => Expected::once()
       ),
       $this
     );
@@ -47,7 +48,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       $this->worker,
       array(
         'checkKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE),
-        'reschedule' => Stub::once()
+        'reschedule' => Expected::once()
       ),
       $this
     );
