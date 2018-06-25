@@ -38,36 +38,37 @@ class PostTransformer {
   }
 
   private function getStructure($post) {
-    $content = $this->getContent($post, true);
+    $content = $this->getContent($post, true, $this->args['displayType']);
     $title = $this->getTitle($post);
     $featured_image = $this->getFeaturedImage($post);
+    $featured_image_position = $this->args['featuredImagePosition'];
 
-    $image_position = $this->args['featuredImagePosition'];
-
-    if($featured_image && $image_position === 'belowTitle' && $this->args['displayType'] === 'excerpt') {
+    if($featured_image && $featured_image_position === 'belowTitle' && $this->args['displayType'] === 'excerpt') {
       array_unshift($content, $title, $featured_image);
+      return $content;
+    }
+
+    if($content[0]['type'] === 'text') {
+      $content[0]['text'] = $title['text'] . $content[0]['text'];
     } else {
-      if($content[0]['type'] === 'text') {
-        $content[0]['text'] = $title['text'] . $content[0]['text'];
-      } else {
-        array_unshift($content, $title);
-      }
-      if($featured_image && $this->args['displayType'] === 'excerpt') {
-        array_unshift($content, $featured_image);
-      }
+      array_unshift($content, $title);
+    }
+
+    if($featured_image && $this->args['displayType'] === 'excerpt') {
+      array_unshift($content, $featured_image);
     }
 
     return $content;
   }
 
   private function getStructureWithLayout($post) {
-    $content = $this->getContent($post, false);
+    $content = $this->getContent($post, false, $this->args['displayType']);
     $title = $this->getTitle($post);
     $featured_image = $this->getFeaturedImage($post);
 
-    $position = $this->args['featuredImagePosition'];
+    $featured_image_position = $this->args['featuredImagePosition'];
 
-    if(!$featured_image || $position === 'none' || $this->args['displayType'] !== 'excerpt') {
+    if(!$featured_image || $featured_image_position === 'none' || $this->args['displayType'] !== 'excerpt') {
       array_unshift($content, $title);
 
       return array(
@@ -77,11 +78,11 @@ class PostTransformer {
       );
     }
 
-    if($position === 'aboveTitle' || $position === 'belowTitle') {
-      $position = 'centered';
+    if($featured_image_position === 'aboveTitle' || $featured_image_position === 'belowTitle') {
+      $featured_image_position = 'centered';
     }
 
-    if($position === 'centered') {
+    if($featured_image_position === 'centered') {
       array_unshift($content, $title, $featured_image);
       return array(
         LayoutHelper::row(array(
@@ -90,11 +91,11 @@ class PostTransformer {
       );
     }
 
-    if($position === 'alternate') {
-      $position = $this->nextImagePosition();
+    if($featured_image_position === 'alternate') {
+      $featured_image_position = $this->nextImagePosition();
     }
 
-    $content = ($position === 'left')
+    $content = ($featured_image_position === 'left')
       ? array(
         LayoutHelper::col(array($featured_image)),
         LayoutHelper::col($content)
@@ -117,13 +118,13 @@ class PostTransformer {
     return $this->image_position;
   }
 
-  private function getContent($post, $with_post_class) {
+  private function getContent($post, $with_post_class, $display_type) {
     $content_manager = new PostContentManager();
     $meta_manager = new MetaInformationManager();
 
     $content = $content_manager->getContent($post, $this->args['displayType']);
     $content = $meta_manager->appendMetaInformation($content, $post, $this->args);
-    $content = $content_manager->filterContent($content, $with_post_class);
+    $content = $content_manager->filterContent($content, $display_type, $with_post_class);
 
     $structure_transformer = new StructureTransformer();
     $content = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
