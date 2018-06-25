@@ -306,7 +306,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'queue_id int(11) unsigned NOT NULL,',
-      'url varchar(255) NOT NULL,',
+      'url varchar(2083) NOT NULL,',
       'hash varchar(20) NOT NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
