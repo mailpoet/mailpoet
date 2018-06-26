@@ -43,7 +43,7 @@ class DeleteExistingNewsletterCest {
     $I->moveMouseOver(['xpath' => '//*[text()="'.$newsletter_title.'"]//ancestor::tr']);
     $I->makeScreenshot('after_mouse_over');
     $I->click('Move to trash', ['xpath' => '//*[text()="'.$newsletter_title.'"]//ancestor::tr']);
-    $I->dontSee($newsletter_title, 10);
+    $I->dontSee($newsletter_title);
 
   }
 }
