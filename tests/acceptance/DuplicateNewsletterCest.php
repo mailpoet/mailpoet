@@ -43,7 +43,7 @@ class DuplicateNewsletterCest {
     // step 5 - Dupe this newsletter
     $I->moveMouseOver(['css' => '.mailpoet_listing_table',$newsletter_title]);
     $I->makeScreenshot('after_mouse_over');
-    $I->click('Duplicate',$newsletter_title);
+    $I->click('Duplicate');
     $I->waitForText('Copy', 20);
   }
 }
