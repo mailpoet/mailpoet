@@ -6,7 +6,7 @@ class DuplicateNewsletterCest {
   function dupeExistingNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Duplicate a standard newsletter');
 
-    $newsletter_title = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
+    $newsletter_title = 'Duplicate Newsletter ' . \MailPoet\Util\Security::generateRandomString();
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
@@ -41,10 +41,9 @@ class DuplicateNewsletterCest {
     $I->wait(5);
 	
     // step 5 - Dupe this newsletter
-    $I->moveMouseOver(['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
+    $I->moveMouseOver(['css' => '.mailpoet_listing_table',$newsletter_title]);
     $I->makeScreenshot('after_mouse_over');
-    $I->click('Duplicate', ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
-    $I->makeScreenshot('whereisstupidwordcopy');
+    $I->click('Duplicate', ['css' => '.mailpoet_listing_table', 5, $newsletter_title]);
     $I->waitForText('Copy', 20);
   }
 }
