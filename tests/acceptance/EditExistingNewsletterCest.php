@@ -39,7 +39,7 @@ class EditExistingNewsletterCest {
     $I->click('Save as draft and close');
     $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
 	
-    // step 5 - Edit this newsletter
+    // step 5 - Edit this newsletter!
     $I->moveMouseOver(['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
     $I->makeScreenshot('after_mouse_over');
     $I->click('Edit', ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
