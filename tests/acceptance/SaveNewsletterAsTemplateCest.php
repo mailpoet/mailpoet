@@ -30,10 +30,10 @@ class SaveNewsletterAsTemplateCest {
     $I->fillField($title_element, $newsletter_title);
     $I->click(['css' => 'a.button-primary.mailpoet_save_show_options']);
     $I->selectOption( '.mailpoet_save_option', 'Save as template');
-    $I->fillField(input[name="template_name"], 'Template Test ' .$rand);
-    $I->fillField(input[name="template_description"], 'This is a description.');
+    $I->fillField('template_name', 'Template Test ' .$rand);
+    $I->fillField('template_description', 'This is a description.');
     $I->wait(5);
-    $I->click(input[name="save_as_template"];
+    $I->click('save_as_template');
     $I->waitForText('Template has been saved.', '.mailpoet_notice');
   }
 }
