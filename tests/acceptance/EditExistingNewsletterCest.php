@@ -40,9 +40,9 @@ class EditExistingNewsletterCest {
     $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
 	
     // step 5 - Edit this newsletter
-    //$I->executeJS('jQuery(".row-actions").show()');
-    $I->moveMouseOver(['css' => '.mailpoet_listing_table > tbody:nth-child(2) > tr:nth-child(2) > td:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2)', '[data-automation-id="listing_item_1"]']);
-    $I->click('Edit' , \Codeception\Util\Locator::elementAt('//table/tr', -1));
+    $I->moveMouseOver(['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
+    $I->makeScreenshot('after_mouse_over');
+    $I->click('Edit', ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
     $I->waitForElement($title_element);
   }
 }
