@@ -40,11 +40,10 @@ class DeleteExistingNewsletterCest {
     $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
 	
     // step 5 - Trashenate this newsletter
-    $I->moveMouseOver(['css' => '.mailpoet_listing_table',$newsletter_title]);
+    $I->moveMouseOver(['xpath' => '//*[text()="'.$newsletter_title.'"]//ancestor::tr']);
     $I->makeScreenshot('after_mouse_over');
-    $I->click('Move to trash' ,['css' => '.mailpoet_listing_table',$newsletter_title]);
-    $I->wait(15);
-    $I->dontSeeElement($newsletter_title);
+    $I->click('Move to trash', ['xpath' => '//*[text()="'.$newsletter_title.'"]//ancestor::tr']);
+    $I->waitForElementNotVisible($newsletter_title, 10);
 
   }
 }
