@@ -30,7 +30,7 @@ class SaveNewsletterAsTemplateCest {
     $I->fillField($title_element, $newsletter_title);
     $I->click(['css' => '.button-primary.mailpoet_save_show_options']);
     $I->click( 'Save as template', '.mailpoet_save_option');
-    $I->fillField('template_name', 'Template Test ' .$rand);
+    $I->fillField('template_name', 'Template Test ' . \MailPoet\Util\Security::generateRandomString());
     $I->fillField('template_description', 'This is a description.');
     $I->wait(5);
     $I->click('save_as_template');
