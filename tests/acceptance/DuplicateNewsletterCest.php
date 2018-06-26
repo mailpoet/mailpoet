@@ -41,8 +41,9 @@ class DuplicateNewsletterCest {
     $I->wait(5);
 	
     // step 5 - Dupe this newsletter
-    $I->click('Duplicate', '[data-automation-id="listing_item_1"]');
-    $I->wait(5);
+    $I->moveMouseOver(['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
+    $I->makeScreenshot('after_mouse_over');
+    $I->click('Duplicate', ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
     $I->waitForText('Copy of Testing Newsletter');
   }
 }
