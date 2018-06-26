@@ -44,6 +44,7 @@ class DuplicateNewsletterCest {
     $I->moveMouseOver(['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
     $I->makeScreenshot('after_mouse_over');
     $I->click('Duplicate', ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
+    $I->makeScreenshot('whereisstupidwordcopy');
     $I->waitForText('Copy', 20, ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
   }
 }
