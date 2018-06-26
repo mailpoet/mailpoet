@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.7.7
+Stable tag: 3.7.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -117,6 +117,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.7.8 - 2018-06-26 =
+* Added: support for long URLs in newsletter links;
+* Fixed: controls in editor display correctly;
+* Fixed: full post ALC content now displays post images;
 
 = 3.7.7 - 2018-06-20 =
 * Changed: MailPoet 3 to no longer work with PHP version 5.3 or older. Please upgrade to PHP 7!
