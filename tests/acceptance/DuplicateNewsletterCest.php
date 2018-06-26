@@ -37,7 +37,7 @@ class DuplicateNewsletterCest {
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('Save as draft and close');
-    $I->waitForText('Duplicate Newsletter', 5, '[data-automation-id="listing_item_2"]');
+    $I->waitForText('Duplicate Newsletter', 5, '[data-automation-id="listing_item_4"]');
     $I->wait(5);
 	
     // step 5 - Dupe this newsletter
