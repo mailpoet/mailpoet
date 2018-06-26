@@ -19,7 +19,11 @@ class CronHelper {
 
   static function createDaemon($token) {
     $daemon = array(
-      'token' => $token
+      'token' => $token,
+      'run_accessed_at' => null,
+      'run_started_at' => null,
+      'run_completed_at' => null,
+      'last_error' => null,
     );
     self::saveDaemon($daemon);
     return $daemon;
@@ -54,7 +58,7 @@ class CronHelper {
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
     $result = self::queryCronUrl($url);
-    if (is_wp_error($result)) return $result->get_error_message();
+    if(is_wp_error($result)) return $result->get_error_message();
     $response = WPFunctions::wpRemoteRetrieveBody($result);
     $response = substr(trim($response), -strlen(Daemon::PING_SUCCESS_RESPONSE)) === Daemon::PING_SUCCESS_RESPONSE ?
       Daemon::PING_SUCCESS_RESPONSE :
@@ -70,6 +74,12 @@ class CronHelper {
       CronDaemonEndpoint::ACTION_RUN,
       $data
     );
+    $daemon = self::getDaemon();
+    if(!$daemon) {
+      throw new \LogicException('Daemon does not exist.');
+    }
+    $daemon['run_accessed_at'] = time();
+    self::saveDaemon($daemon);
     $result = self::queryCronUrl($url);
     return WPFunctions::wpRemoteRetrieveBody($result);
   }
