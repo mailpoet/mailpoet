@@ -34,7 +34,7 @@ class SaveNewsletterAsTemplateCest {
     $I->fillField('template_description', 'This is a description.');
     $I->wait(5);
     $I->click('save_as_template');
-    $I->waitForText('Template has been saved.', '.mailpoet_notice');
+    $I->waitForText('Template has been saved.', 20, '.mailpoet_notice');
   }
 }
 
