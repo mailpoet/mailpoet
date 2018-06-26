@@ -42,7 +42,7 @@ class DeleteExistingNewsletterCest {
     // step 5 - Trashenate this newsletter
     $I->moveMouseOver(['css' => '.mailpoet_listing_table',$newsletter_title]);
     $I->makeScreenshot('after_mouse_over');
-    $I->click('Move to trash', ['css' => '.mailpoet_listing_table',$newsletter_title]);
+    $I->click('Move to trash', ['css' => '.mailpoet_listing_table', 5, $newsletter_title]);
     $I->wait(15);
     $I->dontSeeElement($newsletter_title);
 
