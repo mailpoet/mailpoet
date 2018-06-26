@@ -6,7 +6,7 @@ class DeleteExistingNewsletterCest {
   function deleteExistingNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Delete a standard newsletter');
 
-    $newsletter_title = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
+    $newsletter_title = 'Delete Test ' . \MailPoet\Util\Security::generateRandomString();
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
@@ -40,10 +40,11 @@ class DeleteExistingNewsletterCest {
     $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
 	
     // step 5 - Trashenate this newsletter
-    $I->moveMouseOver(['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
+    $I->moveMouseOver(['css' => '.mailpoet_listing_table',$newsletter_title]);
     $I->makeScreenshot('after_mouse_over');
-    $I->click('Move to trash', ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
-    $I->dontSeeElement($title_element);
+    $I->click('Move to trash', ['css' => '.mailpoet_listing_table',$newsletter_title]);
+    $I->wait(15);
+    $I->dontSeeElement($newsletter_title);
 
   }
 }
