@@ -41,9 +41,8 @@ class DuplicateNewsletterCest {
     $I->wait(5);
 	
     // step 5 - Dupe this newsletter
-    $I->moveMouseOver(['css' => '.mailpoet_listing_table',$newsletter_title]);
+    $I->moveMouseOver(['xpath' => '//*[text()="'.$newsletter_title.'"]//ancestor::tr']);
     $I->makeScreenshot('after_mouse_over');
-    $I->click('Duplicate');
-    $I->waitForText('Copy', 20);
+    $I->click('Duplicate', ['xpath' => '//*[text()="'.$newsletter_title.'"]//ancestor::tr']);
   }
 }
