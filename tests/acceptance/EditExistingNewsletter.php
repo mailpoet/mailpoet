@@ -39,8 +39,8 @@ class EditExistingNewsletterCest {
     $I->click('Save as draft and close');
     $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
 	
-	// step 5 - Edit this newsletter
-	$I->click('Edit', '[data-automation-id="listing_item_1"]');
-	$I->waitForElement($title_element);
+    // step 5 - Edit this newsletter
+    $I->click('Edit', '[data-automation-id="listing_item_1"]');
+    $I->waitForElement($title_element);
   }
 }
