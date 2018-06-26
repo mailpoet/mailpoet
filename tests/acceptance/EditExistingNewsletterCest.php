@@ -43,6 +43,6 @@ class EditExistingNewsletterCest {
     $I->moveMouseOver(['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
     $I->makeScreenshot('after_mouse_over');
     $I->click('Edit', ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
-    $I->waitForElement($title_element);
+    $I->seeInCurrentUrl('page=mailpoet-newsletter-editor');
   }
 }
