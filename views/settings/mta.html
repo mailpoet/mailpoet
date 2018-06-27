@@ -87,6 +87,14 @@
           <li class="mailpoet_success_item"><%= __('Configuration is dead-simple: simply enter a key to activate the sending service.') %></li>
         </ul>
 
+        <p class="mailpoet_sending_methods_help help">
+          <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
+          <%= __('[link]%s See video guide[/link]')
+          |format('<span class="dashicons dashicons-format-video"></span>')
+          |replaceLinkTags('https://beta.docs.mailpoet.com/article/235-video-guide-sending-options', {'class' : badgeClassName, 'target' : '_blank'}, 'link')
+          |raw
+          %>
+        </p>
       </div>
     </div>
     <div class="mailpoet_status">
@@ -134,16 +142,6 @@
     </div>
   </li>
 </ul>
-
-<p class="mailpoet_sending_methods_help help">
-  <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
-  <%= __('Need help to pick? [link1]%s See video guide[/link1] [link2]or check out the comparison table of sending methods[/link2].')
-    |format('<span class="dashicons dashicons-format-video"></span>')
-    |replaceLinkTags('https://beta.docs.mailpoet.com/article/235-video-guide-sending-options', {'class' : badgeClassName, 'target' : '_blank'}, 'link1')
-    |replaceLinkTags('http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods', {'target' : '_blank'}, 'link2')
-    |raw
-  %>
-</p>
 
 <div id="mailpoet_sending_method_setup">
 
