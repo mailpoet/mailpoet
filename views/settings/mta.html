@@ -601,69 +601,69 @@
       </tr>
       </tbody>
     </table>
+
+    <table class="form-table">
+      <tbody>
+        <!-- SPF -->
+        <tr id="mailpoet_mta_spf">
+          <th scope="row">
+            <label>
+              <%= __('SPF Signature (Highly recommended!)') %>
+            </label>
+            <p class="description">
+              <%= __("This improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
+            </p>
+          </th>
+          <td>
+            <p>
+              <%= __("SPF is set up in your DNS. Read your host's support documentation for more information.") %>
+            </p>
+          </td>
+        </tr>
+        <!-- test method -->
+        <tr>
+          <th scope="row">
+            <label for="mailpoet_mta_test_email">
+              <%= __('Test the sending method') %>
+            </label>
+          </th>
+          <td>
+            <p>
+              <input
+                type="text"
+                id="mailpoet_mta_test_email"
+                class="regular-text"
+                value="<%= current_user.user_email %>"
+              />
+              <a
+                id="mailpoet_mta_test"
+                class="button-secondary"
+              ><%= __('Send a test email') %></a>
+
+              <span id="tooltip-test"></span>
+            </p>
+          </td>
+        </tr>
+        <!-- activate or cancel -->
+        <tr>
+          <th scope="row">
+            <p>
+              <a
+                href="javascript:;"
+                class="mailpoet_mta_setup_save button button-primary"
+              ><%= __('Activate') %></a>
+              &nbsp;
+              <a
+                href="javascript:;"
+                class="mailpoet_mta_setup_cancel"
+              ><%= __('or Cancel') %></a>
+            </p>
+          </th>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-
-  <table class="form-table">
-    <tbody>
-      <!-- SPF -->
-      <tr id="mailpoet_mta_spf">
-        <th scope="row">
-          <label>
-            <%= __('SPF Signature (Highly recommended!)') %>
-          </label>
-          <p class="description">
-            <%= __("This improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
-          </p>
-        </th>
-        <td>
-          <p>
-            <%= __("SPF is set up in your DNS. Read your host's support documentation for more information.") %>
-          </p>
-        </td>
-      </tr>
-      <!-- test method -->
-      <tr>
-        <th scope="row">
-          <label for="mailpoet_mta_test_email">
-            <%= __('Test the sending method') %>
-          </label>
-        </th>
-        <td>
-          <p>
-            <input
-              type="text"
-              id="mailpoet_mta_test_email"
-              class="regular-text"
-              value="<%= current_user.user_email %>"
-            />
-            <a
-              id="mailpoet_mta_test"
-              class="button-secondary"
-            ><%= __('Send a test email') %></a>
-
-            <span id="tooltip-test"></span>
-          </p>
-        </td>
-      </tr>
-      <!-- activate or cancel -->
-      <tr>
-        <th scope="row">
-          <p>
-            <a
-              href="javascript:;"
-              class="mailpoet_mta_setup_save button button-primary"
-            ><%= __('Activate') %></a>
-            &nbsp;
-            <a
-              href="javascript:;"
-              class="mailpoet_mta_setup_cancel"
-            ><%= __('or Cancel') %></a>
-          </p>
-        </th>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
 </div>
 
 <script type="text/javascript">
