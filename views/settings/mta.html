@@ -758,9 +758,9 @@
       });
 
       // save configuration of a sending method
-      $('.mailpoet_sending_service_activate').on('click', function() {
+      $('.mailpoet_sending_service_activate').on('click', function(e, navigateToTab) {
         $('#mta_group').val('mailpoet');
-        saveSendingMethodConfiguration('mailpoet');
+        saveSendingMethodConfiguration('mailpoet', navigateToTab);
       });
       $('.mailpoet_mta_setup_save').on('click', function() {
         $('#mailpoet_smtp_method').trigger("change");
@@ -777,8 +777,7 @@
         $('#other_frequency_emails').trigger("change");
       <% endif %>
 
-      function saveSendingMethodConfiguration(group) {
-
+      function saveSendingMethodConfiguration(group, navigateToTab) {
         // set sending method
         if(group === undefined) {
           MailPoet.Notice.error(
@@ -792,10 +791,16 @@
           setSignupConfirmation(group);
 
           // back to selection of sending methods
-          MailPoet.Router.navigate('mta', { trigger: true });
+          if (navigateToTab === undefined || navigateToTab === true) {
+            MailPoet.Router.navigate('mta', { trigger: true });
+          }
 
           // save settings
           $('.mailpoet_settings_submit > input').trigger('click');
+
+          if (group === 'mailpoet') {
+            updateMSSActivationUI()
+          }
         }
       }
 
