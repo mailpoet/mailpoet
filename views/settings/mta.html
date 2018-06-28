@@ -1,4 +1,5 @@
 <% set intervals = [1, 2, 5, 10, 15, 30] %>
+<% set mss_key_valid = settings.mta.mailpoet_api_key_state.state != "valid" %>
 <% set default_frequency = {
   'website': {
     'emails': 25,
@@ -96,21 +97,27 @@
       </div>
     </div>
     <div class="mailpoet_status">
-      <span><%= __('Activated') %></span>
-
-      <div class="mailpoet_actions">
-        <button
-          type="button"
-          class="mailpoet_sending_service_activate button-secondary"
-        <% if(settings.mta_group == 'mailpoet' or not(mss_key_valid)) %> disabled="disabled"<% endif %>
-        ><%= __('Activate') %></button>
+      <div class="mailpoet_activated <% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden <% endif %>">
+        <span><%= __('Activated') %></span>
       </div>
-    </div>
-
+      <div class="mailpoet_actions">
+        <div class="mailpoet_invalid_key <% if(not mss_key_valid) %> mailpoet_hidden <% endif %>">
+          <button type="button" class="button-primary"><%= __('Get a free key') %></button>
+          or
+          <%=
+            __("[link]enter your key[/link]")
+            |replaceLinkTags('#premium')
+            |raw
+          %>
+        </div>
+        <div class="mailpoet_valid_key <% if(mss_key_valid or settings.mta_group == 'mailpoet') %> mailpoet_hidden <% endif %>">
+          <button type="button" class="mailpoet_sending_service_activate button-primary"><%= __('Activate') %></button>
+        </div>
+      </div>
   </li>
   <li
     data-group="other"
-    <% if(settings.mta_group == 'smtp' or settings.mta_group == 'website') %>class="mailpoet_active"<% endif %>
+    <% if(settings.mta_group != 'mailpoet') %>class="mailpoet_active"<% endif %>
   >
     <div class="mailpoet_sending_method_description">
       <h3><%= __('Other') %></h3>
@@ -132,9 +139,12 @@
     <div class="mailpoet_status">
       <span><%= __('Activated') %></span>
       <div class="mailpoet_actions">
-        <a
-          class="button-secondary"
-          href="#mta/other"><%= __('Configure') %></a>
+        <% if(settings.mta_group == 'mailpoet') %>
+          <a class="button-primary mailpoet_other_sending_method_action" href="#mta/other"><%= __('Activate') %></a>
+        <% else %>
+          <a class="button-secondary mailpoet_other_sending_method_action" href="#mta/other"><%= __('Configure') %></a>
+        <% endif %>
+        </div>
       </div>
     </div>
   </li>
@@ -1066,7 +1076,6 @@
 
       // format daily emails number according to locale
       options.daily_emails = options.daily_emails.toLocaleString();
-
       $(options.output).html(
         sending_frequency_template(options)
       );
@@ -1114,11 +1123,18 @@
   function updateMSSActivationUI() {
     var $ = jQuery;
     var group = $('.mailpoet_sending_methods .mailpoet_active').data('group');
-    var key_valid = !$('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
-    var activation_possible = group !== 'mailpoet' && key_valid;
-    $('.mailpoet_sending_service_activate').prop('disabled', !activation_possible);
-    $('.mailpoet_mss_activate_notice').toggle(activation_possible);
-  }
+    var key_valid = $('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
+
+    if (group !== 'mailpoet') {
+      $('.mailpoet_actions .mailpoet_invalid_key').toggleClass('mailpoet_hidden', !key_valid);
+      $('.mailpoet_actions .mailpoet_valid_key').toggleClass('mailpoet_hidden', key_valid);
+      $('.mailpoet_other_sending_method_action').removeClass('button-primary').addClass('button-secondary').text('<%= __('Configure') %>');
+    } else {
+      $('.mailpoet_actions .mailpoet_valid_key').addClass('mailpoet_hidden');
+      $('.mailpoet_activated').removeClass('mailpoet_hidden');
+      $('.mailpoet_other_sending_method_action').removeClass('button-secondary').addClass('button-primary').text('<%= __('Activate') %>');
+    }
+  };
 </script>
 
 <%= partial(

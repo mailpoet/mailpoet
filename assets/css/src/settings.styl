@@ -39,15 +39,18 @@
     .mailpoet_status
       display flex
       flex-direction row
-      justify-content space-between
+      justify-content flex-end
       align-items center
       background-color #dcdcdc
       color #fff
       text-overflow ellipsis
-      padding 15px
+      min-height 2em
+      padding 1em
       span
         visibility hidden
         font-weight bold
+      div
+        margin-left 1em
     .mailpoet_active
       border 2px solid #088b00
       .mailpoet_status
@@ -56,6 +59,8 @@
           visibility visible
       #mailpoet_mta_activate
         visibility hidden
+    .mailpoet_actions
+      color initial
 
   .tooltip.dashicons.dashicons-editor-help
     line-height: 1.4
