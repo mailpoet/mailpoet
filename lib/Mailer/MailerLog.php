@@ -75,16 +75,43 @@ class MailerLog {
     return self::resetMailerLog();
   }
 
+  /**
+   * Process error, doesn't increase retry_attempt so it will not block sending
+   *
+   * @param string $operation
+   * @param string $error_message
+   * @param int $retry_interval
+   *
+   * @throws \Exception
+   */
+  static function processNonBlockingError($operation, $error_message, $retry_interval = self::RETRY_INTERVAL) {
+    $mailer_log = self::getMailerLog();
+    $mailer_log['retry_at'] = time() + $retry_interval;
+    $mailer_log = self::setError($mailer_log, $operation, $error_message);
+    self::updateMailerLog($mailer_log);
+    self::enforceExecutionRequirements();
+  }
+
+  /**
+   * Process error, increase retry_attempt and block sending if it goes above RETRY_INTERVAL
+   *
+   * @param string $operation
+   * @param string $error_message
+   * @param string $error_code
+   * @param bool $pause_sending
+   *
+   * @throws \Exception
+   */
   static function processError($operation, $error_message, $error_code = null, $pause_sending = false) {
     $mailer_log = self::getMailerLog();
-    (int)$mailer_log['retry_attempt']++;
+    $mailer_log['retry_attempt']++;
     $mailer_log['retry_at'] = time() + self::RETRY_INTERVAL;
     $mailer_log = self::setError($mailer_log, $operation, $error_message, $error_code);
     self::updateMailerLog($mailer_log);
     if($pause_sending) {
       self::pauseSending($mailer_log);
     }
-    return self::enforceExecutionRequirements();
+    self::enforceExecutionRequirements();
   }
 
   static function setError($mailer_log, $operation, $error_message, $error_code = null) {
