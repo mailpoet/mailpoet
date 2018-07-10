@@ -194,6 +194,42 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][0]['blocks'])->equals(array($this->title_mock, $this->content_mock[0]));
   }
 
+  function testShouldAddClassToParagraphsInFullPostsWithLayout() {
+    $args = array (
+      'withLayout' => true,
+      'displayType' => 'full',
+      'featuredImagePosition' => 'right',
+    );
+
+    $post = [];
+    $expected_with_post_class = true;
+
+    $transformer = new PostTransformer($args);
+    $mock_get_content = Mock::double($transformer, ['getContent' => $this->content_mock]);
+    Mock::double($transformer, ['getFeaturedImage' => null]);
+    Mock::double($transformer, ['getTitle' => 'Title']);
+    $transformer->transform($post);
+    $mock_get_content->verifyInvokedOnce('getContent', [$post, $expected_with_post_class, 'full']);
+  }
+
+  function testShouldNotAddClassToParagraphsInExcerptWithLayout() {
+    $args = array (
+      'withLayout' => true,
+      'displayType' => 'excerpt',
+      'featuredImagePosition' => 'right',
+    );
+
+    $post = [];
+    $expected_with_post_class = false;
+
+    $transformer = new PostTransformer($args);
+    $mock_get_content = Mock::double($transformer, ['getContent' => $this->content_mock]);
+    Mock::double($transformer, ['getFeaturedImage' => null]);
+    Mock::double($transformer, ['getTitle' => 'Title']);
+    $transformer->transform($post);
+    $mock_get_content->verifyInvokedOnce('getContent', [$post, $expected_with_post_class, 'excerpt']);
+  }
+
   /**
    * @return PostTransformer
    */
@@ -203,5 +239,9 @@ class PostContentTransformerTest extends \MailPoetTest {
     Mock::double($transformer, array('getFeaturedImage' => $image));
     Mock::double($transformer, array('getTitle' => $title));
     return $transformer;
+  }
+
+  function _after() {
+    Mock::clean();
   }
 }

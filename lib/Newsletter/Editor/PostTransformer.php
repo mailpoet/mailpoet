@@ -62,7 +62,8 @@ class PostTransformer {
   }
 
   private function getStructureWithLayout($post) {
-    $content = $this->getContent($post, false, $this->args['displayType']);
+    $with_post_class = $this->args['displayType'] === 'full';
+    $content = $this->getContent($post, $with_post_class, $this->args['displayType']);
     $title = $this->getTitle($post);
     $featured_image = $this->getFeaturedImage($post);
 
