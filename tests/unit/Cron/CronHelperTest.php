@@ -125,6 +125,77 @@ class CronHelperTest extends \MailPoetTest {
     }
   }
 
+  function testItDetectsNotAccessibleDaemon() {
+    $time = time();
+    $run_start_values = [null, $time - 20];
+    foreach($run_start_values as $run_start) {
+      $daemon = [
+        'token' => 'some_token',
+        'updated_at' => 12345678,
+        'run_accessed_at' => $time - 10,
+        'run_started_at' => $run_start,
+        'run_completed_at' => null,
+        'last_error' => null,
+      ];
+      Setting::setValue(
+        CronHelper::DAEMON_SETTING,
+        $daemon
+      );
+      expect(CronHelper::isDaemonAccessible())->false();
+    }
+  }
+
+  function testItDetectsAccessibleDaemon() {
+    $time = time();
+    $daemon = [
+      'token' => 'some_token',
+      'updated_at' => 12345678,
+      'run_accessed_at' => $time - 5,
+      'run_started_at' => $time - 4,
+      'run_completed_at' => null,
+      'last_error' => null,
+    ];
+    Setting::setValue(
+      CronHelper::DAEMON_SETTING,
+      $daemon
+    );
+    expect(CronHelper::isDaemonAccessible())->true();
+  }
+
+  function testItDetectsUnknownStateOfTheDaemon() {
+    $time = time();
+    $test_inputs = [
+      [
+        'run_access' => null,
+        'run_start' => null,
+      ],
+      [
+        'run_access' => $time - 4,
+        'run_start' => null,
+      ],
+      [
+        'run_access' => $time - 4,
+        'run_start' => $time - 10,
+      ],
+      null,
+    ];
+    foreach($test_inputs as $test_input) {
+      $daemon = [
+        'token' => 'some_token',
+        'updated_at' => 12345678,
+        'run_accessed_at' => $test_input['run_access'],
+        'run_started_at' => $test_input['run_start'],
+        'run_completed_at' => null,
+        'last_error' => null,
+      ];
+      Setting::setValue(
+        CronHelper::DAEMON_SETTING,
+        $daemon
+      );
+      expect(CronHelper::isDaemonAccessible())->null();
+    }
+  }
+
   function testItCreatesRandomToken() {
     // random token is a string of 5 characters
     $token1 = CronHelper::createToken();

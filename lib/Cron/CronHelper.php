@@ -84,6 +84,26 @@ class CronHelper {
     return WPFunctions::wpRemoteRetrieveBody($result);
   }
 
+  /**
+   * @return boolean|null
+   */
+  static function isDaemonAccessible() {
+    $daemon = self::getDaemon();
+    if(!$daemon || $daemon['run_accessed_at'] === null) {
+      return null;
+    }
+    if($daemon['run_accessed_at'] <= (int)$daemon['run_started_at']) {
+      return true;
+    }
+    if(
+      $daemon['run_accessed_at'] + self::DAEMON_REQUEST_TIMEOUT < time() &&
+      $daemon['run_accessed_at'] > (int)$daemon['run_started_at']
+    ) {
+        return false;
+    }
+    return null;
+  }
+
   static function queryCronUrl($url) {
     $args = WPHooks::applyFilters(
       'mailpoet_cron_request_args',
