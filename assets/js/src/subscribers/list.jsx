@@ -83,7 +83,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onNoItemsFound: (group) => {
-    if (group === 'bounced' && !window.mailpoet_premium_active) {
+    if (group === 'bounced' && !window.mailpoet_premium_active && !window.mss_active) {
       return (
         <div>
           <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
