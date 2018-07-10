@@ -88,7 +88,10 @@ class NewslettersExporterTest extends \MailPoetTest {
 
   function testExportOpens() {
     $subscriber = Subscriber::createOrUpdate(array(
-      'email' => 'user2@with.newsletters',
+      'email' => 'user21@with.newsletters',
+    ));
+    $subscriber2 = Subscriber::createOrUpdate(array(
+      'email' => 'user22@with.newsletters',
     ));
     $newsletter1 = Newsletter::createOrUpdate(array(
       'subject' => 'Email Subject1',
@@ -112,7 +115,12 @@ class NewslettersExporterTest extends \MailPoetTest {
       'newsletter_id' => $newsletter1->id(),
       'subscriber_id' => $subscriber->id(),
       'queue_id' => $queue1->id(),
+    ), array(
+        'newsletter_id' => $newsletter1->id(),
+        'subscriber_id' => $subscriber2->id(),
+        'queue_id' => $queue1->id(),
     )));
+
     StatisticsNewsletters::createMultiple(array(array(
       'newsletter_id' => $newsletter2->id(),
       'subscriber_id' => $subscriber->id(),
@@ -124,7 +132,14 @@ class NewslettersExporterTest extends \MailPoetTest {
       'queue_id' => $queue1->id(),
       'created_at' => '2017-01-02 12:23:45',
     ));
-    $result = $this->exporter->export('user2@with.newsletters');
+    StatisticsOpens::createOrUpdate(array(
+      'subscriber_id' => $subscriber2->id(),
+      'newsletter_id' => $newsletter1->id(),
+      'queue_id' => $queue1->id(),
+      'created_at' => '2017-01-02 21:23:45',
+    ));
+    $result = $this->exporter->export('user21@with.newsletters');
+    expect(count($result['data']))->equals(2);
     expect($result['data'][0]['data'])->contains(array('name' => 'Opened', 'value' => 'Yes'));
     expect($result['data'][0]['data'])->contains(array('name' => 'Opened at', 'value' => '2017-01-02 12:23:45'));
     expect($result['data'][1]['data'])->contains(array('name' => 'Opened', 'value' => 'No'));

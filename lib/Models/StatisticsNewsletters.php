@@ -43,7 +43,7 @@ class StatisticsNewsletters extends Model {
       )
       ->leftOuterJoin(
         StatisticsOpens::$_table,
-        array('statistics.newsletter_id', '=', 'opens.newsletter_id'),
+        'statistics.newsletter_id = opens.newsletter_id AND statistics.subscriber_id = opens.subscriber_id',
         'opens'
       )
       ->where('statistics.subscriber_id', $subscriber->id())
