@@ -65,18 +65,14 @@
         <%= __('MailPoet Sending Service') %>
       </h3>
 
-      <p
-        class="mailpoet_description<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>"
-        id="mailpoet_sending_method_active_text"
-      >
-        <strong><%= __("You're now sending with MailPoet!") %></strong>
-      </p>
+      <div class="mailpoet_description">
+        <p class="<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>" id="mailpoet_sending_method_active_text">
+          <strong><%= __("You're now sending with MailPoet!") %></strong>
+        </p>
 
-      <div
-        class="mailpoet_description<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>"
-        id="mailpoet_sending_method_inactive_text"
-      >
-        <strong><%= __("Solve all of your sending problems!") %></strong>
+        <p class="<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>" id="mailpoet_sending_method_inactive_text">
+          <strong><%= __("Solve all of your sending problems!") %></strong>
+        </p>
 
         <ul class="sending-method-benefits mailpoet_success">
           <li class="mailpoet_success_item"><%= __('Reach the inbox, not the spam box.') %></li>
