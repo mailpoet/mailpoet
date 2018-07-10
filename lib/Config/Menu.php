@@ -523,6 +523,7 @@ class Menu {
     $data['month_names'] = Block\Date::getMonthNames();
 
     $data['premium_plugin_active'] = License::getLicense();
+    $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
 
     $this->displayPage('subscribers/subscribers.html', $data);
   }
