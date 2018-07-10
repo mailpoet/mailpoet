@@ -95,7 +95,9 @@ const QueueMixin = {
       const pauseSendingClick = _.partial(this.pauseSending, newsletter);
       label = (
         <span>
-          { newsletter.queue.count_processed } / { newsletter.queue.count_total }
+          { parseInt(newsletter.queue.count_processed, 10).toLocaleString() }
+          /
+          { parseInt(newsletter.queue.count_total, 10).toLocaleString() }
             &nbsp;&nbsp;
           <a
             id={`resume_${newsletter.id}`}
