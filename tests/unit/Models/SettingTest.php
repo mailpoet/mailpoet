@@ -147,6 +147,26 @@ class SettingTest extends \MailPoetTest {
     expect(Setting::getValue('test.key'))->null();
   }
 
+  function testSaveDefaultSenderIfNeededNotSaveEmptyValue() {
+    Setting::saveDefaultSenderIfNeeded('', null);
+    expect(Setting::getValue('sender'))->null();
+  }
+
+  function testSaveDefaultSenderIfNeededDoesntOverride() {
+    Setting::setValue('sender', array('name' => 'sender1', 'address' => 'sender1address'));
+    Setting::saveDefaultSenderIfNeeded('sender2address', 'sender1');
+    $settings = Setting::getValue('sender');
+    expect($settings['name'])->equals('sender1');
+    expect($settings['address'])->equals('sender1address');
+  }
+
+  function testSaveDefaultSenderIfNeeded() {
+    Setting::saveDefaultSenderIfNeeded('senderAddress', 'sender');
+    $settings = Setting::getValue('sender');
+    expect($settings['name'])->equals('sender');
+    expect($settings['address'])->equals('senderAddress');
+  }
+
   function _after() {
     Setting::deleteMany();
   }
