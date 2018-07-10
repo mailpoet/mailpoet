@@ -3,6 +3,10 @@
     {
       "type": "vcs",
       "url": "https://github.com/mailpoet/html2text"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/mailpoet/swiftmailer"
     }
   ],
   "require": {
@@ -11,7 +15,7 @@
     "cerdic/css-tidy": "^1.5.5",
     "tburry/pquery": "^1.1.1",
     "j4mie/paris": "1.5.6",
-    "swiftmailer/swiftmailer": "^5.4",
+    "swiftmailer/swiftmailer": "dev-tls",
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
     "soundasleep/html2text": "dev-master",
