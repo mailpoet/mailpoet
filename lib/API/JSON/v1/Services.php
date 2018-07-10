@@ -66,8 +66,13 @@ class Services extends APIEndpoint {
         break;
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
+        $errorMessage = __('Error validating MailPoet Sending Service key, please try again later (%s).', 'mailpoet');
+        // If site runs on localhost
+        if( 1 === preg_match("/^(http|https)\:\/\/(localhost|127\.0\.0\.1)/", site_url()) ) {
+          $errorMessage .= ' ' . __("Note that it doesn't work on localhost.", 'mailpoet');
+        }
         $error = sprintf(
-          __('Error validating MailPoet Sending Service key, please try again later (%s)', 'mailpoet'),
+          $errorMessage,
           $this->getErrorDescriptionByCode($code)
         );
         break;
