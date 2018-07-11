@@ -153,7 +153,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('./tasks/transifex_init.sh');
   }
 
-  function testUnit($opts=['file' => null, 'xml' => false, 'multisite' => false]) {
+  function testUnit(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
     $this->loadEnv();
 
     $command = 'vendor/bin/codecept run unit -c codeception.unit.yml';
@@ -168,6 +168,10 @@ class RoboFile extends \Robo\Tasks {
 
     if($opts['xml']) {
       $command .= ' --xml';
+    }
+
+    if($opts['debug']) {
+      $command .= ' --debug';
     }
 
     return $this->_exec($command);
