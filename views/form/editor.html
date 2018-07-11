@@ -3,13 +3,14 @@
 <% block title %>
 <h1 class="title">
   <%= __('Form') %>
-  <a class="page-title-action" href="?page=mailpoet-forms#/"><%= __('Back') %></a>
+  <a class="page-title-action" href="?page=mailpoet-forms#/" data-automation-id="mailpoet_form_go_back"><%= __('Back') %></a>
 </h1>
   <h2>
     <input
       type="text"
       placeholder="<%= __('Click here to change the name') %>"
       id="mailpoet_form_name"
+      data-automation-id="mailpoet_form_name_input"
       value="<%= form.name %>"
     />
   </h2>
@@ -26,7 +27,12 @@
       </div>
 
       <p class="submit">
-        <a id="mailpoet_form_save" href="javascript:;" class="button button-primary" ><%= __('Save') %></a>
+        <a
+          id="mailpoet_form_save"
+          href="javascript:;"
+          class="button button-primary"
+          data-automation-id="save_form"
+        ><%= __('Save') %></a>
       </p>
     </div>
 

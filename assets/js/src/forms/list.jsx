@@ -186,6 +186,7 @@ const FormList = React.createClass({
             className="page-title-action"
             href="javascript:;"
             onClick={this.createForm}
+            data-automation-id="create_new_form"
           >{MailPoet.I18n.t('new')}</a>
         </h1>
 
