@@ -249,7 +249,7 @@ const ListingItems = React.createClass({
                 ? MailPoet.I18n.t('selectAllLabel')
                 : MailPoet.I18n.t('selectedAllLabel').replace(
                   '%d',
-                  this.props.count
+                  this.props.count.toLocaleString()
                 )
             }
               &nbsp;
