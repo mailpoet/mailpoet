@@ -1,5 +1,5 @@
 <% set intervals = [1, 2, 5, 10, 15, 30] %>
-<% set mss_key_valid = settings.mta.mailpoet_api_key_state.state != "valid" %>
+<% set mss_key_valid = settings.mta.mailpoet_api_key_state.state == "valid" %>
 <% set default_frequency = {
   'website': {
     'emails': 25,
@@ -58,7 +58,7 @@
 <ul class="mailpoet_sending_methods">
   <li
     data-group="mailpoet"
-    <% if(settings.mta_group == 'mailpoet') %>class="mailpoet_active"<% endif %>
+    class="<% if(settings.mta_group == 'mailpoet') %> mailpoet_active <% endif %> <% if(not mss_key_valid) %> mailpoet_invalid_key <% endif %>"
   >
     <div class="mailpoet_sending_method_description">
       <h3>
@@ -66,13 +66,13 @@
       </h3>
 
       <div class="mailpoet_description">
-        <p class="<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>" id="mailpoet_sending_method_active_text">
+        <span class="<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>" id="mailpoet_sending_method_active_text">
           <strong><%= __("You're now sending with MailPoet!") %></strong>
-        </p>
+        </span>
 
-        <p class="<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>" id="mailpoet_sending_method_inactive_text">
+        <span class="<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>" id="mailpoet_sending_method_inactive_text">
           <strong><%= __("Solve all of your sending problems!") %></strong>
-        </p>
+        </span>
 
         <ul class="sending-method-benefits mailpoet_success">
           <li class="mailpoet_success_item"><%= __('Reach the inbox, not the spam box.') %></li>
@@ -92,12 +92,12 @@
         </p>
       </div>
     </div>
-    <div class="mailpoet_status">
-      <div class="mailpoet_activated <% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden <% endif %>">
+    <div class="mailpoet_status <% if(settings.mta_group != 'mailpoet' or not mss_key_valid) %> mailpoet_invalid_key <% endif %>">
+      <div class="mailpoet_activated <% if(settings.mta_group != 'mailpoet' or not mss_key_valid) %> mailpoet_hidden <% endif %>">
         <span><%= __('Activated') %></span>
       </div>
       <div class="mailpoet_actions">
-        <div class="mailpoet_invalid_key <% if(not mss_key_valid) %> mailpoet_hidden <% endif %>">
+        <div class="mailpoet_invalid_key <% if(mss_key_valid) %> mailpoet_hidden <% endif %>">
           <a class="button-primary" href="https://www.mailpoet.com/free-plan/" rel="noopener noreferrer" target="_blank"><%= __('Get a free key') %></a>
           or
           <%=
@@ -1131,8 +1131,10 @@
       $('.mailpoet_other_sending_method_action').removeClass('button-primary').addClass('button-secondary').text('<%= __('Configure') %>');
     } else {
       $('.mailpoet_actions .mailpoet_valid_key').addClass('mailpoet_hidden');
-      $('.mailpoet_activated').removeClass('mailpoet_hidden');
+      $('.mailpoet_activated').toggleClass('mailpoet_hidden', key_valid);
       $('.mailpoet_other_sending_method_action').removeClass('button-secondary').addClass('button-primary').text('<%= __('Activate') %>');
+      $('.mailpoet_invalid_key').toggleClass('mailpoet_hidden', !key_valid);
+      $('.mailpoet_sending_methods li[data-group="'+group+'"], .mailpoet_sending_methods li[data-group="'+group+'"] > .mailpoet_status').toggleClass('mailpoet_invalid_key', key_valid)
     }
   };
 </script>
