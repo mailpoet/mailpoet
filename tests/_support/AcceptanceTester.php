@@ -55,4 +55,10 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->waitForText($page, 5);
   }
 
+  public function clickItemRowActionByItemName($item_name, $link) {
+    $I = $this;
+    $I->moveMouseOver(['xpath' => '//*[text()="' . $item_name . '"]//ancestor::tr']);
+    $I->click($link, ['xpath' => '//*[text()="' . $item_name . '"]//ancestor::tr']);
+  }
+
 }
