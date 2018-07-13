@@ -56,7 +56,10 @@ class Analytics {
     return $public_id;
   }
 
-  /** @return boolean */
+  /**
+   * Returns true if a the public_id was added and update new_public_id to false
+   * @return boolean
+   */
   function isPublicIdNew() {
     $new_public_id = Setting::getValue('new_public_id');
     if($new_public_id === 'true') {
