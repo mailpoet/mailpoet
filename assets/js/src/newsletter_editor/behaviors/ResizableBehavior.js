@@ -54,17 +54,17 @@ define([
           bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector
         }
       })
-      .on('resizestart', function () { // eslint-disable-line func-names
-        that.isBeingResized = true;
-        that.$el.addClass('mailpoet_resize_active');
-      }).on('resizemove', function (event) { // eslint-disable-line func-names
-        var onResize = that.options.onResize.bind(that);
-        return onResize(event);
-      })
-      .on('resizeend', function () { // eslint-disable-line func-names
-        that.isBeingResized = null;
-        that.$el.removeClass('mailpoet_resize_active');
-      });
+        .on('resizestart', function () { // eslint-disable-line func-names
+          that.isBeingResized = true;
+          that.$el.addClass('mailpoet_resize_active');
+        }).on('resizemove', function (event) { // eslint-disable-line func-names
+          var onResize = that.options.onResize.bind(that);
+          return onResize(event);
+        })
+        .on('resizeend', function () { // eslint-disable-line func-names
+          that.isBeingResized = null;
+          that.$el.removeClass('mailpoet_resize_active');
+        });
     },
     showResizeHandle: function () { // eslint-disable-line func-names
       if (typeof this.options.resizeHandleSelector === 'string') {

@@ -74,6 +74,11 @@ class ViewInBrowser {
       $data->queue = false;
     }
 
+    // reset queue when automatic email is being previewed
+    if($data->newsletter->type === Newsletter::TYPE_AUTOMATIC && !empty($data->preview)) {
+      $data->queue = false;
+    }
+
     // allow users with permission to manage emails to preview any newsletter
     if(!empty($data->preview) && $this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)
     ) return $data;

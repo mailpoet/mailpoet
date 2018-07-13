@@ -90,6 +90,7 @@ const NewsletterTypes = React.createClass({
         slug: 'welcome',
         title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
         description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
+        videoGuide: 'https://beta.docs.mailpoet.com/article/254-video-guide-to-welcome-emails',
         action: (function action() {
           return (
             <div>
@@ -104,6 +105,7 @@ const NewsletterTypes = React.createClass({
         slug: 'notification',
         title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
         description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
+        videoGuide: 'https://beta.docs.mailpoet.com/article/210-video-guide-to-post-notifications',
         action: (function action() {
           return (
             <a
@@ -121,6 +123,7 @@ const NewsletterTypes = React.createClass({
     ];
 
     const types = Hooks.applyFilters('mailpoet_newsletters_types', [...defaultTypes, ...this.getAutomaticEmails()], this);
+    const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
 
     return (
       <div>
@@ -136,8 +139,13 @@ const NewsletterTypes = React.createClass({
                   {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
                 </div>
                 <div className="mailpoet_description">
-                  <h3>{type.title}</h3>
+                  <h3>{type.title} {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}</h3>
                   <p>{type.description}</p>
+                  { type.videoGuide && (
+                    <a className={badgeClassName} href={type.videoGuide} target="_blank">
+                      <span className="dashicons dashicons-format-video" />{MailPoet.I18n.t('seeVideoGuide')}
+                    </a>
+                  ) }
                 </div>
 
                 <div className="mailpoet_actions">
@@ -145,7 +153,7 @@ const NewsletterTypes = React.createClass({
                 </div>
               </div>
             </li>
-            ), this)}
+          ), this)}
         </ul>
       </div>
     );

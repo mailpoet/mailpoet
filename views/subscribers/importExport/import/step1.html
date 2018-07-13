@@ -22,6 +22,11 @@
       </tbody>
     </table>
 
+    <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
+    <a class="<%= badgeClassName %>" href="https://beta.docs.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file" target="_blank">
+        <span class="dashicons dashicons-format-video"></span><%= __('See video guide') %>
+    </a>
+
     <!-- Paste -->
     <div id="method_paste" class="mailpoet_hidden">
       <table class="mailpoet_subscribers form-table">

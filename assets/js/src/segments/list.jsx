@@ -118,14 +118,14 @@ const itemActions = [
       },
     }).done((response) => {
       MailPoet.Notice.success(
-          MailPoet.I18n.t('listDuplicated').replace('%$1s', response.data.name)
-        );
+        MailPoet.I18n.t('listDuplicated').replace('%$1s', response.data.name)
+      );
       refresh();
     }).fail((response) => {
       MailPoet.Notice.error(
-          response.errors.map(error => error.message),
-          { scroll: true }
-        );
+        response.errors.map(error => error.message),
+        { scroll: true }
+      );
     }),
     display: function display(segment) {
       return (segment.type !== 'wp_users');

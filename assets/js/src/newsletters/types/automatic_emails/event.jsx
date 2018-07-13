@@ -6,8 +6,9 @@ import PropTypes from 'prop-types';
 class AutomaticEmailEvent extends React.PureComponent {
   render() {
     const event = this.props.event;
-    let action;
+    const disabled = event.soon;
 
+    let action;
     if (this.props.premium) {
       action = (
         <a
@@ -17,9 +18,16 @@ class AutomaticEmailEvent extends React.PureComponent {
           {MailPoet.I18n.t('premiumFeatureLink')}
         </a>
       );
+    } else if (event.actionButtonLink && event.actionButtonTitle) {
+      action = (
+        <a
+          href={event.actionButtonLink}
+          target="_blank"
+        >
+          {event.actionButtonTitle}
+        </a>
+      );
     } else {
-      const disabled = event.soon;
-
       action = (
         <a
           className="button button-primary"
@@ -39,12 +47,12 @@ class AutomaticEmailEvent extends React.PureComponent {
           </div>
           <div className="mailpoet_description">
             <div className="title_and_badge">
-              <h3>{event.title} {event.soon ? `(${MailPoet.I18n.t('soon').toLowerCase()})` : ''}</h3>
+              <h3>{event.title} {event.soon ? `(${MailPoet.I18n.t('soon')})` : ''}</h3>
               {event.badge ? (
                 <span className={`mailpoet_badge mailpoet_badge_${event.badge.style}`}>
                   {event.badge.text}
                 </span>
-                ) : ''
+              ) : ''
               }
             </div>
             <p>{event.description}</p>
@@ -58,8 +66,12 @@ class AutomaticEmailEvent extends React.PureComponent {
   }
 }
 
+AutomaticEmailEvent.defaultProps = {
+  premium: false,
+};
+
 AutomaticEmailEvent.propTypes = {
-  premium: PropTypes.bool.isRequired,
+  premium: PropTypes.bool,
   eventsConfigurator: PropTypes.func.isRequired,
   event: PropTypes.shape({
     slug: PropTypes.string.isRequired,

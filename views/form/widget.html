@@ -4,7 +4,7 @@
   <% if(title) %>
     <%= before_title | raw %><%= title | raw %><%= after_title | raw %>
   <% endif %>
-  
+
   <div id="<%= form_id %>" class="mailpoet_form mailpoet_form_<%= form_type %>">
     <%= styles | raw %>
     <form
@@ -22,12 +22,12 @@
 
       <%= html | raw %>
       <div class="mailpoet_message">
-        <p
-          class="mailpoet_validate_success"
+        <p class="mailpoet_validate_success"
           <% if not(success) %>
           style="display:none;"
           <% endif %>
-        ><%= form.settings.success_message %></p>
+        ><%= form.settings.success_message %>
+        </p>
         <p class="mailpoet_validate_error"
           <% if not(error) %>
           style="display:none;"

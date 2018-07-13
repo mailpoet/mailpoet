@@ -66,70 +66,70 @@ const ListingItem = React.createClass({
     if (customActions.length > 0) {
       let isFirst = true;
       itemActions = customActions
-      .filter(action => action.display === undefined || action.display(this.props.item))
-      .map((action, index) => {
-        let customAction = null;
+        .filter(action => action.display === undefined || action.display(this.props.item))
+        .map((action, index) => {
+          let customAction = null;
 
-        if (action.name === 'trash') {
-          customAction = (
-            <span key={`action-${action.name}`} className="trash">
-              {(!isFirst) ? ' | ' : ''}
-              <a
-                href="javascript:;"
-                onClick={() => this.handleTrashItem(this.props.item.id)}
+          if (action.name === 'trash') {
+            customAction = (
+              <span key={`action-${action.name}`} className="trash">
+                {(!isFirst) ? ' | ' : ''}
+                <a
+                  href="javascript:;"
+                  onClick={() => this.handleTrashItem(this.props.item.id)}
+                >
+                  {MailPoet.I18n.t('moveToTrash')}
+                </a>
+              </span>
+            );
+          } else if (action.refresh) {
+            customAction = (
+              <span
+                onClick={this.props.onRefreshItems}
+                key={`action-${action.name}`}
+                className={action.name}
+                role="button"
+                tabIndex={index}
               >
-                {MailPoet.I18n.t('moveToTrash')}
-              </a>
-            </span>
-          );
-        } else if (action.refresh) {
-          customAction = (
-            <span
-              onClick={this.props.onRefreshItems}
-              key={`action-${action.name}`}
-              className={action.name}
-              role="button"
-              tabIndex={index}
-            >
-              {(!isFirst) ? ' | ' : ''}
-              { action.link(this.props.item) }
-            </span>
-          );
-        } else if (action.link) {
-          customAction = (
-            <span
-              key={`action-${action.name}`}
-              className={action.name}
-            >
-              {(!isFirst) ? ' | ' : ''}
-              { action.link(this.props.item) }
-            </span>
-          );
-        } else {
-          customAction = (
-            <span
-              key={`action-${action.name}`}
-              className={action.name}
-            >
-              {(!isFirst) ? ' | ' : ''}
-              <a
-                href="javascript:;"
-                onClick={
-                  (action.onClick !== undefined)
-                  ? () => action.onClick(this.props.item, this.props.onRefreshItems)
-                  : false
-                }
-              >{ action.label }</a>
-            </span>
-          );
-        }
+                {(!isFirst) ? ' | ' : ''}
+                { action.link(this.props.item) }
+              </span>
+            );
+          } else if (action.link) {
+            customAction = (
+              <span
+                key={`action-${action.name}`}
+                className={action.name}
+              >
+                {(!isFirst) ? ' | ' : ''}
+                { action.link(this.props.item) }
+              </span>
+            );
+          } else {
+            customAction = (
+              <span
+                key={`action-${action.name}`}
+                className={action.name}
+              >
+                {(!isFirst) ? ' | ' : ''}
+                <a
+                  href="javascript:;"
+                  onClick={
+                    (action.onClick !== undefined)
+                      ? () => action.onClick(this.props.item, this.props.onRefreshItems)
+                      : false
+                  }
+                >{ action.label }</a>
+              </span>
+            );
+          }
 
-        if (customAction !== null && isFirst === true) {
-          isFirst = false;
-        }
+          if (customAction !== null && isFirst === true) {
+            isFirst = false;
+          }
 
-        return customAction;
-      });
+          return customAction;
+        });
     } else {
       itemActions = (
         <span className="edit">
@@ -228,39 +228,39 @@ const ListingItems = React.createClass({
       );
     }
     const selectAllClasses = classNames(
-        'mailpoet_select_all',
+      'mailpoet_select_all',
       { mailpoet_hidden: (
-            this.props.selection === false
+        this.props.selection === false
             || (this.props.count <= this.props.limit)
-          ),
+      ),
       }
-      );
+    );
 
     return (
       <tbody>
         <tr className={selectAllClasses}>
           <td colSpan={
-                this.props.columns.length
+            this.props.columns.length
                 + (this.props.is_selectable ? 1 : 0)
-              }
+          }
           >
             {
-                (this.props.selection !== 'all')
+              (this.props.selection !== 'all')
                 ? MailPoet.I18n.t('selectAllLabel')
                 : MailPoet.I18n.t('selectedAllLabel').replace(
                   '%d',
-                  this.props.count
+                  this.props.count.toLocaleString()
                 )
-              }
+            }
               &nbsp;
             <a
               onClick={this.props.onSelectAll}
               href="javascript:;"
             >{
-                  (this.props.selection !== 'all')
+                (this.props.selection !== 'all')
                   ? MailPoet.I18n.t('selectAllLink')
                   : MailPoet.I18n.t('clearSelection')
-                }</a>
+              }</a>
           </td>
         </tr>
 
@@ -326,7 +326,7 @@ const Listing = React.createClass({
   },
   initWithParams: function initWithParams(params) {
     const state = this.getInitialState();
-     // check for url params
+    // check for url params
     if (params.splat) {
       params.splat.split('/').forEach((param) => {
         const [key, value] = this.getParam(param);
@@ -380,15 +380,15 @@ const Listing = React.createClass({
     if (this.props.location) {
       const params = Object.keys(this.state)
         .filter(key => (
-            [
-              'group',
-              'filter',
-              'search',
-              'page',
-              'sort_by',
-              'sort_order',
-            ].indexOf(key) !== -1
-          ))
+          [
+            'group',
+            'filter',
+            'search',
+            'page',
+            'sort_by',
+            'sort_order',
+          ].indexOf(key) !== -1
+        ))
         .map((key) => {
           let value = this.state[key];
           if (value === Object(value)) {

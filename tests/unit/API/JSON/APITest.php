@@ -2,7 +2,8 @@
 
 namespace MailPoet\Test\API\JSON;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\API;
 use MailPoet\API\JSON\API as JSONAPI;
@@ -197,7 +198,7 @@ class APITest extends \MailPoetTest {
     $access_control = Stub::make(
       new AccessControl(),
       array(
-        'validatePermission' => Stub::once(function($cap) {
+        'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
         })
@@ -209,7 +210,7 @@ class APITest extends \MailPoetTest {
     $access_control = Stub::make(
       new AccessControl(),
       array(
-        'validatePermission' => Stub::once(function($cap) {
+        'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
         })
@@ -230,7 +231,7 @@ class APITest extends \MailPoetTest {
     $access_control = Stub::make(
       new AccessControl(),
       array(
-        'validatePermission' => Stub::once(function($cap) {
+        'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
         })
@@ -242,7 +243,7 @@ class APITest extends \MailPoetTest {
     $access_control = Stub::make(
       new AccessControl(),
       array(
-        'validatePermission' => Stub::once(function($cap) {
+        'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
         })

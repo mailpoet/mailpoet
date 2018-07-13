@@ -19,12 +19,12 @@ const ListingFilters = React.createClass({
   getAvailableFilters: function getAvailableFilters() {
     const filters = this.props.filters;
     return Object.keys(filters).filter(filter => !(
-        filters[filter].length === 0
+      filters[filter].length === 0
         || (
           filters[filter].length === 1
           && !filters[filter][0].value
         )
-      ));
+    ));
   },
   componentDidUpdate: function componentDidUpdate() {
     const selectedFilters = this.props.filter;
@@ -36,7 +36,7 @@ const ListingFilters = React.createClass({
             .trigger('change');
         }
       }
-      );
+    );
   },
   render: function render() {
     const filters = this.props.filters;
@@ -52,9 +52,9 @@ const ListingFilters = React.createClass({
               value={option.value}
               key={`filter-option-${option.value}`}
             >{ option.label }</option>
-              )) }
+          )) }
         </select>
-        ));
+      ));
 
     let button;
 

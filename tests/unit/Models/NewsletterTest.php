@@ -273,7 +273,7 @@ class NewsletterTest extends \MailPoetTest {
   function testItCanHaveOptions() {
     $newsletter_options = array(
       'name' => 'Event',
-      'newsletter_type' => 'welcome',
+      'newsletter_type' => Newsletter::TYPE_WELCOME,
     );
     $option_field = NewsletterOptionField::create();
     $option_field->hydrate($newsletter_options);
@@ -283,7 +283,7 @@ class NewsletterTest extends \MailPoetTest {
     $association->option_field_id = $option_field->id;
     $association->value = 'list';
     $association->save();
-    $newsletter = Newsletter::filter('filterWithOptions')
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($this->newsletter->id);
     expect($newsletter->Event)->equals($association->value);
   }
@@ -840,37 +840,77 @@ class NewsletterTest extends \MailPoetTest {
     expect($result[1]->id)->equals($newsletter_2->id);
   }
 
-  function testPauseTaskWhenDisablePostNotification() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'type' => Newsletter::TYPE_NOTIFICATION
-    ));
-    $task = ScheduledTask::createOrUpdate(array('status' => ScheduledTask::STATUS_SCHEDULED));
-    SendingQueue::createOrUpdate(array(
-      'newsletter_id' => $newsletter->id(),
-      'task_id' => $task->id(),
-    ));
-    $newsletter->setStatus(Newsletter::STATUS_DRAFT);
-    $task_found = ScheduledTask::findOne($task->id());
-    expect($task_found->status)->equals(ScheduledTask::STATUS_PAUSED);
+  function testItGetsAndDecodesNewsletterOptionMetaField() {
+    $newsletter = Newsletter::createOrUpdate(
+      array(
+        'subject' => 'Test Option Meta Field',
+        'preheader' => 'Pre Header',
+        'type' => Newsletter::TYPE_AUTOMATIC
+      )
+    );
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->hydrate(
+      array(
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'name' => 'meta'
+      )
+    );
+    $newsletter_option_field->save();
+    $newsletter_option = NewsletterOption::create();
+    $meta = array('some' => 'value');
+    $newsletter_option->hydrate(
+      array(
+        'newsletter_id' => $newsletter->id,
+        'option_field_id' => $newsletter_option_field->id,
+        'value' => json_encode($meta)
+      )
+    );
+    $newsletter_option->save();
+
+    // by default meta option does not exist on newsletter object
+    expect($newsletter->getMeta())->isEmpty();
+
+    // if meta option exists, it should be returned as an array
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
+    expect($newsletter->getMeta())->equals($meta);
   }
 
-  function testUnPauseTaskWhenEnablePostNotification() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'type' => Newsletter::TYPE_NOTIFICATION
-    ));
-    $task = ScheduledTask::createOrUpdate(array(
-      'status' => ScheduledTask::STATUS_PAUSED,
-      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
-    ));
-    SendingQueue::createOrUpdate(array(
-      'newsletter_id' => $newsletter->id(),
-      'task_id' => $task->id(),
-    ));
-    $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
-    $task_found = ScheduledTask::findOne($task->id());
-    expect($task_found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+  function testPausesTaskWhenNewsletterWithActivationIsDisabled() {
+    $newsletters_with_activation = [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_WELCOME, Newsletter::TYPE_AUTOMATIC];
+    foreach($newsletters_with_activation as $type) {
+      $newsletter = Newsletter::createOrUpdate(array(
+        'type' => $type
+      ));
+      $task = ScheduledTask::createOrUpdate(array('status' => ScheduledTask::STATUS_SCHEDULED));
+      SendingQueue::createOrUpdate(array(
+        'newsletter_id' => $newsletter->id(),
+        'task_id' => $task->id(),
+      ));
+      $newsletter->setStatus(Newsletter::STATUS_DRAFT);
+      $task_found = ScheduledTask::findOne($task->id());
+      expect($task_found->status)->equals(ScheduledTask::STATUS_PAUSED);
+    }
   }
 
+  function testUnpausesTaskWhenNewsletterWithActivationIsEnabled() {
+    $newsletters_with_activation = [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_WELCOME, Newsletter::TYPE_AUTOMATIC];
+    foreach($newsletters_with_activation as $type) {
+      $newsletter = Newsletter::createOrUpdate(array(
+        'type' => $type
+      ));
+      $task = ScheduledTask::createOrUpdate(array(
+        'status' => ScheduledTask::STATUS_PAUSED,
+        'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
+      ));
+      SendingQueue::createOrUpdate(array(
+        'newsletter_id' => $newsletter->id(),
+        'task_id' => $task->id(),
+      ));
+      $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
+      $task_found = ScheduledTask::findOne($task->id());
+      expect($task_found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+    }
+  }
 
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);

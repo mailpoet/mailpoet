@@ -215,8 +215,8 @@ define([
               var deferred = jQuery.Deferred();
               deferred.resolve({
                 data: [
-                    { post_title: 'title 1' },
-                    { post_title: 'post title 2' }
+                  { post_title: 'title 1' },
+                  { post_title: 'post title 2' }
                 ]
               });
               return deferred;
@@ -286,8 +286,8 @@ define([
               var deferred = jQuery.Deferred();
               deferred.resolve({
                 data: [
-                    { type: 'text', text: 'something' },
-                    { type: 'text', text: 'something else' }
+                  { type: 'text', text: 'something' },
+                  { type: 'text', text: 'something else' }
                 ]
               });
               return deferred;

@@ -3,7 +3,8 @@
 namespace MailPoet\Analytics;
 
 use Carbon\Carbon;
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Models\Setting;
 
 class AnalyticsTest extends \MailPoetTest {
@@ -38,7 +39,7 @@ class AnalyticsTest extends \MailPoetTest {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
       array(
-        'getData' => Stub::never(),
+        'getData' => Expected::never(),
       ),
       $this
     );
@@ -52,7 +53,7 @@ class AnalyticsTest extends \MailPoetTest {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
       array(
-        'getData' => Stub::never(),
+        'getData' => Expected::never(),
       ),
       $this
     );
@@ -68,7 +69,7 @@ class AnalyticsTest extends \MailPoetTest {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
       array(
-        'getData' => Stub::once(function() use ($data){
+        'getData' => Expected::once(function() use ($data){
           return $data;
         }),
       ),
@@ -87,7 +88,7 @@ class AnalyticsTest extends \MailPoetTest {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
       array(
-        'getData' => Stub::once(function() use ($data){
+        'getData' => Expected::once(function() use ($data){
           return $data;
         }),
       ),

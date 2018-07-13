@@ -227,12 +227,12 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  function testAcceptance() {
-    return $this->_exec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run codeception --steps --debug -vvv');
+  function testAcceptance($opts=['file' => null]) {
+    return $this->_exec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run codeception --steps --debug -vvv -f '.($opts['file'] ? $opts['file'] : ''));
   }
 
-  function testAcceptanceMultisite() {
-    return $this->_exec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run -e MULTISITE=1 codeception --steps --debug -vvv');
+  function testAcceptanceMultisite($opts=['file' => null]) {
+    return $this->_exec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run -e MULTISITE=1 codeception --steps --debug -vvv -f '.($opts['file'] ? $opts['file'] : ''));
   }
 
   function deleteDocker() {
@@ -273,7 +273,7 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec(
         './vendor/bin/phpcs '.
         '--standard=./tasks/code_sniffer/MailPoet '.
-        '--runtime-set testVersion 5.3-7.0 '.
+        '--runtime-set testVersion 5.4-7.2 '.
         '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
         './lib/Util/pQuery/*,./lib/Config/PopulatorData/Templates/* '.
         'lib/ '.
@@ -282,7 +282,7 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec(
         './vendor/bin/phpcs '.
         '--standard=./tasks/code_sniffer/MailPoet '.
-        '--runtime-set testVersion 5.4-7.0 '.
+        '--runtime-set testVersion 5.4-7.2 '.
         '--ignore=./tests/unit/_bootstrap.php '.
         'tests/unit/ '.
         $severityFlag

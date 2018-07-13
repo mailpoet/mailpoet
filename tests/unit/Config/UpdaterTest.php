@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\Config;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Config\Updater;
 
 class UpdaterTest extends \MailPoetTest {
@@ -21,7 +22,7 @@ class UpdaterTest extends \MailPoetTest {
     $updater = Stub::make(
       $this->updater,
       array(
-        'checkForUpdate' => Stub::once()
+        'checkForUpdate' => Expected::once()
       ),
       $this
     );

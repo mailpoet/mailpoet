@@ -29,7 +29,7 @@ const FormFieldCheckbox = React.createClass({
             { this.props.field.values[value] }
           </label>
         </p>
-        )
+      )
     );
 
     return (

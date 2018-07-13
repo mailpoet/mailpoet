@@ -15,16 +15,15 @@ class PHPVersionWarnings {
     ));
     $error = null;
     if (!$is_enabled) return $error;
-    if (is_null($error)) $error = $this->checkPHP53Version($php_version);
+    if (is_null($error)) $error = $this->checkPHP54Version($php_version);
     if (is_null($error)) $error = $this->checkPHP55Version($php_version);
     return $error;
   }
 
-  function checkPHP53Version($php_version) {
+  function checkPHP54Version($php_version) {
     $error_string = null;
     if(version_compare($php_version, '5.5', '<')) {
-      $error_string = __('Your website is running on PHP %s. MailPoet will require version 7 soon. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]', 'mailpoet');
-      $error_string = sprintf($error_string, $php_version);
+      $error_string = __('MailPoet requires PHP version 7 or newer. Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet');
       $error = Helpers::replaceLinkTags($error_string, 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
       return $this->displayWPNotice($error, false);
     }

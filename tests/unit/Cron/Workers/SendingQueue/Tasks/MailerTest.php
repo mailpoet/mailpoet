@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Mailer\Mailer;
@@ -109,7 +110,7 @@ class MailerTest extends \MailPoetTest {
       (object)array(
         'mailer_instance' => Stub::make(
           $php_mail_class,
-          array('send' => Stub::exactly(1, function() {
+          array('send' => Expected::exactly(1, function() {
               return true;
           })),
           $this

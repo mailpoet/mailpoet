@@ -13,11 +13,16 @@ class TitleListTransformer {
     $results = array_map(array($this, 'getPostTitle'), $posts);
 
     return array(
-      array(
+      $this->wrap(array(
         'type' => 'text',
         'text' => '<ul>' . implode('', $results) . '</ul>',
-      ),
-    );
+      )));
+  }
+
+  private function wrap($block) {
+    return LayoutHelper::row(array(
+      LayoutHelper::col(array($block))
+    ));
   }
 
   private function getPostTitle($post) {

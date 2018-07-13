@@ -2,7 +2,8 @@
 
 namespace MailPoet\Test\Router;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
 use MailPoet\Router\Router;
 
@@ -103,7 +104,7 @@ class RouterTest extends \MailPoetTest {
     $access_control = Stub::make(
       new AccessControl(),
       array(
-        'validatePermission' => Stub::once(function($cap) {
+        'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
         })
@@ -115,7 +116,7 @@ class RouterTest extends \MailPoetTest {
     $access_control = Stub::make(
       new AccessControl(),
       array(
-        'validatePermission' => Stub::once(function($cap) {
+        'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
         })
@@ -138,7 +139,7 @@ class RouterTest extends \MailPoetTest {
     $access_control = Stub::make(
       new AccessControl(),
       array(
-        'validatePermission' => Stub::once(function($cap) {
+        'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
         })
@@ -150,7 +151,7 @@ class RouterTest extends \MailPoetTest {
     $access_control = Stub::make(
       new AccessControl(),
       array(
-        'validatePermission' => Stub::once(function($cap) {
+        'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
         })

@@ -2,7 +2,8 @@
 namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;
-use Codeception\Util\Stub;
+use Codeception\Stub;
+use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Models\ScheduledTask;
@@ -141,7 +142,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   function testItCanInitBeforeProcessing() {
     $worker = Stub::make(
       $this->worker,
-      array('init' => Stub::once()),
+      array('init' => Expected::once()),
       $this
     );
     $worker->process();

@@ -14,6 +14,11 @@ class AutomaticEmailEventsList extends React.Component {
   }
 
   eventsConfigurator(eventSlug) {
+    MailPoet.trackEvent('Emails > Automatic Type selected', {
+      'MailPoet Free version': window.mailpoet_version,
+      'MailPoet Premium version': window.mailpoet_premium_version,
+      'Email type': eventSlug,
+    });
     this.props.router.push(`new/${this.email.slug}/${eventSlug}/conditions`);
   }
 
@@ -25,7 +30,7 @@ class AutomaticEmailEventsList extends React.Component {
         key={index}
         eventsConfigurator={this.eventsConfigurator}
       />
-      )
+    )
     );
 
     return (
@@ -42,7 +47,7 @@ class AutomaticEmailEventsList extends React.Component {
     return (
       <div>
         <h1>
-          {heading} ({MailPoet.I18n.t('beta').toLowerCase()})
+          {heading}
         </h1>
 
         <AutomaticEmailsBreadcrumb step="events" />
@@ -54,17 +59,18 @@ class AutomaticEmailEventsList extends React.Component {
 }
 
 AutomaticEmailEventsList.propTypes = {
-
   route: PropTypes.shape({
     data: PropTypes.shape({
-      email: PropTypes.string.isRequired,
+      email: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        slug: PropTypes.string.isRequired,
+        premium: PropTypes.bool,
+      }).isRequired,
     }).isRequired,
   }).isRequired,
-
   router: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-
 };
 
 module.exports = AutomaticEmailEventsList;

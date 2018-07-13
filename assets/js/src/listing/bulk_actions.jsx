@@ -96,7 +96,7 @@ const ListingBulkActions = React.createClass({
               value={action.name}
               key={`action-${action.name}`}
             >{ action.label }</option>
-            )) }
+          )) }
         </select>
         <input
           onClick={this.handleApplyAction}

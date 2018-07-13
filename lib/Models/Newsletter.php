@@ -325,10 +325,13 @@ class Newsletter extends Model {
       $this->set('status', $status);
       $this->save();
     }
-    if(($status === self::STATUS_DRAFT) && ($this->type === self::TYPE_NOTIFICATION)) {
+
+    $types_with_activation = [self::TYPE_NOTIFICATION, self::TYPE_WELCOME, self::TYPE_AUTOMATIC];
+
+    if(($status === self::STATUS_DRAFT) && in_array($this->type, $types_with_activation)) {
       ScheduledTask::pauseAllByNewsletter($this);
     }
-    if(($status === self::STATUS_ACTIVE) && ($this->type === self::TYPE_NOTIFICATION)) {
+    if(($status === self::STATUS_ACTIVE) && in_array($this->type, $types_with_activation)) {
       ScheduledTask::setScheduledAllByNewsletter($this);
     }
     return $this;
@@ -535,7 +538,7 @@ class Newsletter extends Model {
     $result = array();
 
     foreach($statisticsExprs as $name => $statisticsExpr) {
-      if($this->type !== self::TYPE_WELCOME) {
+      if(!in_array($this->type, array(self::TYPE_WELCOME, self::TYPE_AUTOMATIC))) {
         $row = $statisticsExpr->whereRaw('`queue_id` = ?', array($this->queue['id']))->findOne();
       } else {
         $row = $statisticsExpr
@@ -666,10 +669,13 @@ class Newsletter extends Model {
     return $orm;
   }
 
-  static function filterWithOptions($orm) {
+  static function filterWithOptions($orm, $type) {
     $orm = $orm->select(MP_NEWSLETTERS_TABLE.'.*');
     $optionFields = NewsletterOptionField::findArray();
     foreach($optionFields as $optionField) {
+      if($optionField['newsletter_type'] !== $type) {
+        continue;
+      }
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
         MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id=' . $optionField['id'] . ' THEN ' .
@@ -840,7 +846,6 @@ class Newsletter extends Model {
           NewsletterOptionField::$_table,
           array(
             'option_fields.newsletter_type', '=', self::$_table . '.type',
-            'option_fields.name', '=', 'group'
           ),
           'option_fields'
         )
@@ -975,5 +980,19 @@ class Newsletter extends Model {
   static function getByHash($hash) {
     return parent::where('hash', $hash)
       ->findOne();
+  }
+
+  function getMeta() {
+    if(!$this->meta) return;
+
+    return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
+  }
+
+  static function findOneWithOptions($id) {
+    $newsletter = self::findOne($id);
+    if($newsletter === false) {
+      return false;
+    }
+    return self::filter('filterWithOptions', $newsletter->type)->findOne($id);
   }
 }
