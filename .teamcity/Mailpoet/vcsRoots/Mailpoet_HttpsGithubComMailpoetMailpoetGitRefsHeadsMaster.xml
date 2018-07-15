@@ -6,6 +6,7 @@
   <param name="authMethod" value="PASSWORD" />
   <param name="branch" value="refs/heads/master" />
   <param name="ignoreKnownHosts" value="true" />
+  <param name="reportTagRevisions" value="true" />
   <param name="secure:password" value="credentialsJSON:ef7aaac2-c986-4d9e-927e-cf45faf4cc94" />
   <param name="submoduleCheckout" value="CHECKOUT" />
   <param name="teamcity:branchSpec" value="https://github.com/mailpoet/mailpoet.git#refs/heads/*" />
