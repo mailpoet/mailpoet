@@ -6,6 +6,7 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\Installer;
+use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
 class ServicesTest extends \MailPoetTest {
@@ -262,5 +263,33 @@ class ServicesTest extends \MailPoetTest {
     $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('test');
+  }
+
+  function testItRespondsContainsPublicIdForMSS() {
+    $this->services_endpoint->bridge = Stub::make(
+      new Bridge(),
+      array(
+        'checkMSSKey' => array('state' => Bridge::KEY_VALID),
+        'storeMSSKeyAndState' => Expected::once()
+      ),
+      $this
+    );
+    $response = $this->services_endpoint->checkMSSKey($this->data);
+    expect($response->data['public_id'])->notEmpty();
+    expect($response->data['public_id'])->equals(Setting::getValue('public_id'););
+  }
+
+  function testItRespondsContainsPublicIdForPremium() {
+    $this->services_endpoint->bridge = Stub::make(
+      new Bridge(),
+      array(
+        'checkPremiumKey' => array('state' => Bridge::KEY_VALID),
+        'storeMSSKeyAndState' => Expected::once()
+      ),
+      $this
+    );
+    $response = $this->services_endpoint->checkMSSKey($this->data);
+    expect($response->data['public_id'])->notEmpty();
+    expect($response->data['public_id'])->equals(Setting::getValue('public_id'););
   }
 }
