@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vcs-root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="4fb046fb-e640-4e96-8457-a28574d0f292" type="jetbrains.git" xsi:noNamespaceSchemaLocation="http://www.jetbrains.com/teamcity/schemas/2017.2/project-config.xsd">
+  <name>https://github.com/mailpoet/mailpoet.git#refs/heads/master</name>
+  <param name="agentCleanFilesPolicy" value="ALL_UNTRACKED" />
+  <param name="agentCleanPolicy" value="ON_BRANCH_CHANGE" />
+  <param name="authMethod" value="PASSWORD" />
+  <param name="branch" value="refs/heads/master" />
+  <param name="ignoreKnownHosts" value="true" />
+  <param name="secure:password" value="credentialsJSON:ef7aaac2-c986-4d9e-927e-cf45faf4cc94" />
+  <param name="submoduleCheckout" value="CHECKOUT" />
+  <param name="teamcity:branchSpec" value="https://github.com/mailpoet/mailpoet.git#refs/heads/*" />
+  <param name="url" value="https://github.com/mailpoet/mailpoet.git" />
+  <param name="useAlternates" value="true" />
+  <param name="username" value="mashull@yahoo.com" />
+  <param name="usernameStyle" value="USERID" />
+</vcs-root>
+
