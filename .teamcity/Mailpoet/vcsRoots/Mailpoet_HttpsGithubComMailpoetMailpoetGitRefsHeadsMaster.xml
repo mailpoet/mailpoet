@@ -9,7 +9,7 @@
   <param name="reportTagRevisions" value="true" />
   <param name="secure:password" value="credentialsJSON:ef7aaac2-c986-4d9e-927e-cf45faf4cc94" />
   <param name="submoduleCheckout" value="CHECKOUT" />
-  <param name="teamcity:branchSpec" value="https://github.com/mailpoet/mailpoet.git#refs/heads/*" />
+  <param name="teamcity:branchSpec" value="+:refs/heads/*" />
   <param name="url" value="https://github.com/mailpoet/mailpoet.git" />
   <param name="useAlternates" value="true" />
   <param name="username" value="mashull@yahoo.com" />
