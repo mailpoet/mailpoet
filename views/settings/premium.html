@@ -74,19 +74,6 @@
             href="<%= premium_activate_url | default('#') %>"
           ><%= __('Activate Premium.') %></a>
         </div>
-        <div
-          class="mailpoet_mss_activate_notice mailpoet_spaced_block"
-          <% if mss_active or not(mss_key_valid) %>
-            style="display: none;"
-          <% endif %>
-        >
-          <span>
-            <%= __("Don't forget to activate the MailPoet Sending Service in the [link]Send with...[/link] tab above.")
-              |replaceLinkTags('#mta')
-              |raw
-            %>
-          </span>
-        </div>
       </td>
     </tr>
   </tbody>
@@ -186,7 +173,8 @@
           $('.mailpoet_notice_server').hide();
           $('.mailpoet_mss_key_valid').text(response.data.message);
           $('.mailpoet_mss_key_valid').removeClass('mailpoet_hidden');
-          updateMSSActivationUI();
+          $('#mta_group').val('mailpoet');
+          $('.mailpoet_sending_service_activate').trigger('click', false);
         }).fail(function(response) {
           if (response.errors.length > 0) {
             $('.mailpoet_mss_key_invalid').text(
