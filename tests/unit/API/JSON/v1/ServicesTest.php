@@ -276,7 +276,7 @@ class ServicesTest extends \MailPoetTest {
     );
     $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->data['public_id'])->notEmpty();
-    expect($response->data['public_id'])->equals(Setting::getValue('public_id'););
+    expect($response->data['public_id'])->equals(Setting::getValue('public_id'));
   }
 
   function testItRespondsContainsPublicIdForPremium() {
@@ -290,6 +290,6 @@ class ServicesTest extends \MailPoetTest {
     );
     $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->data['public_id'])->notEmpty();
-    expect($response->data['public_id'])->equals(Setting::getValue('public_id'););
+    expect($response->data['public_id'])->equals(Setting::getValue('public_id'));
   }
 }
