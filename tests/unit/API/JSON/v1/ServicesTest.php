@@ -6,7 +6,6 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\Installer;
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
 class ServicesTest extends \MailPoetTest {
@@ -275,8 +274,8 @@ class ServicesTest extends \MailPoetTest {
       $this
     );
     $response = $this->services_endpoint->checkMSSKey($this->data);
+    expect(isset($response->data['public_id']))->true();
     expect($response->data['public_id'])->notEmpty();
-    expect($response->data['public_id'])->equals(Setting::getValue('public_id'));
   }
 
   function testItRespondsContainsPublicIdForPremium() {
@@ -288,8 +287,8 @@ class ServicesTest extends \MailPoetTest {
       ),
       $this
     );
-    $response = $this->services_endpoint->checkMSSKey($this->data);
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
+    expect(isset($response->data['public_id']))->true();
     expect($response->data['public_id'])->notEmpty();
-    expect($response->data['public_id'])->equals(Setting::getValue('public_id'));
   }
 }
