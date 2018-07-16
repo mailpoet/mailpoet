@@ -107,25 +107,26 @@ class AnalyticsTest extends \MailPoetTest {
     $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
 
     $analytics->setPublicId($fakePublicId);
-    expect($analytics->getValue('public_id'))->equals($fakePublicId);
+    expect(Setting::getValue('public_id'))->equals($fakePublicId);
   }
 
   function testIsPublicIdNew() {
     $analytics = new Analytics(new Reporter());
     $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
 
-    $analytics->setValue('new_public_id', 'false');
+    Setting::setValue('public_id', 'old-fake-public-id');
+    Setting::setValue('new_public_id', 'false');
     $analytics->setPublicId($fakePublicId);
     // When we update public_id it's marked as new
-    expect($analytics->getValue('new_public_id'))->equals('true');
+    expect(Setting::getValue('new_public_id'))->equals('true');
     expect($analytics->isPublicIdNew())->true();
-    expect($analytics->getValue('new_public_id'))->equals('false');
+    expect(Setting::getValue('new_public_id'))->equals('false');
 
     $analytics->setPublicId($fakePublicId);
     // We tried to update public_id with the same value, so it's not marked as new
-    expect($analytics->getValue('new_public_id'))->equals('false');
+    expect(Setting::getValue('new_public_id'))->equals('false');
     expect($analytics->isPublicIdNew())->false();
-    expect($analytics->getValue('new_public_id'))->equals('false');
+    expect(Setting::getValue('new_public_id'))->equals('false');
   }
 
 }
