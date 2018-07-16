@@ -51,6 +51,7 @@ class Daemon {
     }
     $daemon = $this->daemon;
     $daemon['token'] = $this->token;
+    $daemon['run_started_at'] = time();
     CronHelper::saveDaemon($daemon);
     try {
       $this->executeMigrationWorker();
@@ -60,8 +61,12 @@ class Daemon {
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
     } catch(\Exception $e) {
-      // continue processing, no need to handle errors
+      $daemon['last_error'] = $e->getMessage();
+      CronHelper::saveDaemon($daemon);
     }
+    // Log successful execution
+    $daemon['run_completed_at'] = time();
+    CronHelper::saveDaemon($daemon);
     // if workers took less time to execute than the daemon execution limit,
     // pause daemon execution to ensure that daemon runs only once every X seconds
     $elapsed_time = microtime(true) - $this->timer;

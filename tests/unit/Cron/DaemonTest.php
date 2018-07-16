@@ -80,10 +80,10 @@ class DaemonTest extends \MailPoetTest {
     $daemon->run();
   }
 
-  function testItContinuesExecutionWhenWorkersThrowException() {
+  function testItStoresErrorMessageAndContinuesExecutionWhenWorkersThrowException() {
     $daemon = Stub::make(new Daemon(true), array(
       'executeScheduleWorker' => function() {
-        throw new \Exception();
+        throw new \Exception('Message');
       },
       'executeQueueWorker' => function() {
         throw new \Exception();
@@ -97,6 +97,8 @@ class DaemonTest extends \MailPoetTest {
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
     $daemon->__construct($data);
     $daemon->run();
+    $updated_daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
+    expect($updated_daemon['last_error'])->greaterOrEquals('Message');
   }
 
   function testItCanPauseExecution() {
@@ -170,6 +172,29 @@ class DaemonTest extends \MailPoetTest {
     $daemon->run();
     $updated_daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['token'])->equals($daemon->token);
+  }
+
+  function testItUpdatesTimestampsDuringExecution() {
+    $daemon = Stub::make(new Daemon(true), array(
+      'executeScheduleWorker' => function() {
+        sleep(2);
+      },
+      'executeQueueWorker' => null,
+      'pauseExecution' => null,
+      'callSelf' => null
+    ), $this);
+    $data = array(
+      'token' => 123,
+    );
+    $now = time();
+    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $daemon->__construct($data);
+    $daemon->run();
+    $updated_daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
+    expect($updated_daemon['run_started_at'])->greaterOrEquals($now);
+    expect($updated_daemon['run_started_at'])->lessThan($now + 2);
+    expect($updated_daemon['run_completed_at'])->greaterOrEquals($now + 2);
+    expect($updated_daemon['run_completed_at'])->lessThan($now + 4);
   }
 
   function testItCanRun() {

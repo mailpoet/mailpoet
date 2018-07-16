@@ -5,7 +5,10 @@ import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 
-import { MailerMixin } from 'newsletters/listings/mixins.jsx';
+import {
+  MailerMixin,
+  CronMixin,
+} from 'newsletters/listings/mixins.jsx';
 
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
@@ -155,7 +158,7 @@ const newsletterActions = [
 ];
 
 const NewsletterListNotification = React.createClass({
-  mixins: [MailerMixin],
+  mixins: [MailerMixin, CronMixin],
   updateStatus: function updateStatus(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -330,7 +333,7 @@ const NewsletterListNotification = React.createClass({
           auto_refresh
           sort_by="updated_at"
           sort_order="desc"
-          afterGetItems={this.checkMailerStatus}
+          afterGetItems={(state) => { this.checkMailerStatus(state); this.checkCronStatus(state); }}
         />
       </div>
     );

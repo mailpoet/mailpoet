@@ -12,6 +12,7 @@ import {
   QueueMixin,
   StatisticsMixin,
   MailerMixin,
+  CronMixin,
 } from 'newsletters/listings/mixins.jsx';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
@@ -57,7 +58,7 @@ Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', St
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletterActions);
 
 const NewsletterListNotificationHistory = React.createClass({
-  mixins: [QueueMixin, StatisticsMixin, MailerMixin],
+  mixins: [QueueMixin, StatisticsMixin, MailerMixin, CronMixin],
   renderItem: function renderItem(newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
@@ -120,7 +121,7 @@ const NewsletterListNotificationHistory = React.createClass({
           auto_refresh
           sort_by="sent_at"
           sort_order="desc"
-          afterGetItems={this.checkMailerStatus}
+          afterGetItems={(state) => { this.checkMailerStatus(state); this.checkCronStatus(state); }}
         />
       </div>
     );
