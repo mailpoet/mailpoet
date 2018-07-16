@@ -52,7 +52,6 @@ jQuery.fn.spectrum = global.spectrum;
 jQuery.fn.stick_in_parent = function () { return this; };
 
 // Add global stubs for convenience
-// TODO: Extract those to a separate file
 global.stubChannel = function (EditorApplication, returnObject) {
   var App = EditorApplication;
   App.getChannel = sinon.stub().returns(_.defaults(returnObject || {}, {
