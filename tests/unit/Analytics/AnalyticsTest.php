@@ -106,8 +106,14 @@ class AnalyticsTest extends \MailPoetTest {
     $analytics = new Analytics(new Reporter());
     $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
 
+    Setting::setValue('public_id', 'old-fake-public-id');
+    Setting::setValue(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
+
     $analytics->setPublicId($fakePublicId);
+
     expect(Setting::getValue('public_id'))->equals($fakePublicId);
+    expect(Setting::getValue('new_public_id'))->equals('true');
+    expect(Setting::getValue(Analytics::SETTINGS_LAST_SENT_KEY, null))->null();
   }
 
   function testIsPublicIdNew() {
@@ -116,6 +122,7 @@ class AnalyticsTest extends \MailPoetTest {
 
     Setting::setValue('public_id', 'old-fake-public-id');
     Setting::setValue('new_public_id', 'false');
+
     $analytics->setPublicId($fakePublicId);
     // When we update public_id it's marked as new
     expect(Setting::getValue('new_public_id'))->equals('true');

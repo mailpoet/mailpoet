@@ -39,6 +39,8 @@ class Analytics {
     if($current_public_id !== $new_public_id) {
       Setting::setValue('public_id', $new_public_id);
       Setting::setValue('new_public_id', 'true');
+      // Force user data to be resent
+      Setting::deleteValue(Analytics::SETTINGS_LAST_SENT_KEY);
     }
   }
 
