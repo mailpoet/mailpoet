@@ -124,7 +124,11 @@ define([
       this.$('.mailpoet_field_image_width_input').val(width);
     },
     onImageSelect: function (image) {
-      this.model.set(image);
+      if (image.src === null) {
+        this.model.set({ src: '' });
+      } else {
+        this.model.set(image);
+      }
       // Rerender settings view due to changes from outside of settings view
       this.render();
     }

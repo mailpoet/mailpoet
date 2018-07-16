@@ -30,6 +30,15 @@ define([
       var src = jQuery(event.target).val();
       var image = new Image();
 
+      if (!src && this.options.onSelect) {
+        this.view[this.options.onSelect]({
+          src: null,
+          width: null,
+          height: null
+        });
+        return;
+      }
+
       image.onload = function () {
         if (this.options.onSelect) {
           this.view[this.options.onSelect]({
