@@ -59,6 +59,7 @@ class RendererTest extends \MailPoetTest {
     $DOM = $this->DOM_parser->parseStr(
       $this->column_renderer->render(
         $column_styles,
+        null,
         count($column_content),
         $column_content)
     );
@@ -81,6 +82,7 @@ class RendererTest extends \MailPoetTest {
     $DOM = $this->DOM_parser->parseStr(
       $this->column_renderer->render(
         $column_styles,
+        null,
         count($column_content),
         $column_content)
     );
@@ -104,6 +106,7 @@ class RendererTest extends \MailPoetTest {
     $DOM = $this->DOM_parser->parseStr(
       $this->column_renderer->render(
         $column_styles,
+        null,
         count($column_content),
         $column_content)
     );
@@ -111,6 +114,82 @@ class RendererTest extends \MailPoetTest {
       $rendered_column_content[] = trim($column->text());
     };
     expect($rendered_column_content)->equals($column_content);
+  }
+
+  function testItRendersScaledColumnBackgroundImage() {
+    $column_content = ['one'];
+    $column_styles = ['block' => ['backgroundColor' => "#999999"]];
+    $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'scale', 'width' => '1000px', 'height' => '500px'];
+    $DOM = $this->DOM_parser->parseStr(
+      $this->column_renderer->render(
+        $column_styles,
+        $column_image,
+        count($column_content),
+        $column_content)
+    );
+    $column_css = $DOM('td.mailpoet_content')[0]->attr('style');
+    expect($column_css)->contains('background: #999999 url(https://example.com/image.jpg) no-repeat center/cover;');
+    expect($column_css)->contains('background-color: #999999;');
+    expect($column_css)->contains('background-image: url(https://example.com/image.jpg);');
+    expect($column_css)->contains('background-repeat: no-repeat;');
+    expect($column_css)->contains('background-position: center;');
+    expect($column_css)->contains('background-size: cover;');
+  }
+
+  function testItRendersFitColumnBackgroundImage() {
+    $column_content = ['one'];
+    $column_styles = ['block' => ['backgroundColor' => "#999999"]];
+    $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'fit', 'width' => '1000px', 'height' => '500px'];
+    $DOM = $this->DOM_parser->parseStr(
+      $this->column_renderer->render(
+        $column_styles,
+        $column_image,
+        count($column_content),
+        $column_content)
+    );
+    $column_css = $DOM('td.mailpoet_content')[0]->attr('style');
+    expect($column_css)->contains('background: #999999 url(https://example.com/image.jpg) no-repeat center/contain;');
+    expect($column_css)->contains('background-color: #999999;');
+    expect($column_css)->contains('background-image: url(https://example.com/image.jpg);');
+    expect($column_css)->contains('background-repeat: no-repeat;');
+    expect($column_css)->contains('background-position: center;');
+    expect($column_css)->contains('background-size: contain;');
+  }
+
+  function testItRendersTiledColumnBackgroundImage() {
+    $column_content = ['one'];
+    $column_styles = ['block' => ['backgroundColor' => "#999999"]];
+    $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'tile', 'width' => '1000px', 'height' => '500px'];
+    $DOM = $this->DOM_parser->parseStr(
+      $this->column_renderer->render(
+        $column_styles,
+        $column_image,
+        count($column_content),
+        $column_content)
+    );
+    $column_css = $DOM('td.mailpoet_content')[0]->attr('style');
+    expect($column_css)->contains('background: #999999 url(https://example.com/image.jpg) repeat center/contain;');
+    expect($column_css)->contains('background-color: #999999;');
+    expect($column_css)->contains('background-image: url(https://example.com/image.jpg);');
+    expect($column_css)->contains('background-repeat: repeat;');
+    expect($column_css)->contains('background-position: center;');
+    expect($column_css)->contains('background-size: contain;');
+  }
+
+  function testItRendersFallbackColumnBackgroundColorForBackgroundImage() {
+    $column_content = ['one'];
+    $column_styles = ['block' => ['backgroundColor' => 'transparent']];
+    $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'tile', 'width' => '1000px', 'height' => '500px'];
+    $DOM = $this->DOM_parser->parseStr(
+      $this->column_renderer->render(
+        $column_styles,
+        $column_image,
+        count($column_content),
+        $column_content)
+    );
+    $column_css = $DOM('td.mailpoet_content')[0]->attr('style');
+    expect($column_css)->contains('background: #ffffff url(https://example.com/image.jpg) repeat center/contain;');
+    expect($column_css)->contains('background-color: #ffffff;');
   }
 
   function testItRendersHeader() {
