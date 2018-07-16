@@ -3,6 +3,9 @@
 namespace MailPoet\Test\DataFactories;
 
 use Carbon\Carbon;
+use MailPoet\Config\Database;
+
+require_once __DIR__ . '/../../lib/Config/Database.php';
 
 class Form {
 
@@ -29,6 +32,10 @@ class Form {
   }
 
   public function create() {
+    if(!defined('MP_FORMS_TABLE')) {
+      $database = new Database();
+      $database->defineTables();
+    }
     \MailPoet\Models\Form::createOrUpdate($this->data);
   }
 
