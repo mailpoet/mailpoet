@@ -31,7 +31,8 @@ class EditExistingNewsletterCest {
     $I->click('Next');
 
     // step 4 - Choose list and save
-    $I->waitForText('Final Step: Last Details');
+    $send_form_element = '[data-automation-id="newsletter_send_form"]';
+    $I->waitForElement($send_form_element);
     $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
     $search_field_element = 'input.select2-search__field';
     $I->fillField($search_field_element, 'WordPress Users');
