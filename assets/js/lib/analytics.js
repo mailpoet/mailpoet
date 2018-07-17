@@ -15,17 +15,16 @@ if (mailpoet_analytics_enabled) {
 
   mixpanel.register({'Platform': 'Plugin'});
 
-  console.log(window.mailpoet_analytics_public_id);
   if(typeof window.mailpoet_analytics_public_id === 'string' && window.mailpoet_analytics_public_id.length > 0) {
     if(window.mailpoet_analytics_new_public_id === true) {
       mixpanel.alias(window.mailpoet_analytics_public_id);
     } else {
       mixpanel.identify(window.mailpoet_analytics_public_id);
     }
+  }
 
-    if (mailpoet_analytics_data != null) {
-      mixpanel.people.set(mailpoet_analytics_data);
-    }
+  if (mailpoet_analytics_data != null) {
+    mixpanel.people.set(mailpoet_analytics_data);
   }
 
 }
