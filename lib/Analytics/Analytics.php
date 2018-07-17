@@ -46,7 +46,7 @@ class Analytics {
 
   /** @return string */
   function getPublicId() {
-    $public_id = Setting::getValue('public_id');
+    $public_id = Setting::getValue('public_id', '');
     // if we didn't get the user public_id from the shop yet : we create one based on mixpanel distinct_id
     if(empty($public_id) && !empty($_COOKIE['mixpanel_distinct_id'])) {
       // the public id has to be diffent that mixpanel_distinct_id in order to be used on different browser
