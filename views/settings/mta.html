@@ -106,7 +106,7 @@
             |raw
           %>
         </div>
-        <div class="mailpoet_valid_key <% if(mss_key_valid or settings.mta_group == 'mailpoet') %> mailpoet_hidden <% endif %>">
+        <div class="mailpoet_valid_key <% if(not mss_key_valid or settings.mta_group == 'mailpoet') %> mailpoet_hidden <% endif %>">
           <button type="button" class="mailpoet_sending_service_activate button-primary"><%= __('Activate') %></button>
         </div>
       </div>
