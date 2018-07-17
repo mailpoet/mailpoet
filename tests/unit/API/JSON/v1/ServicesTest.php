@@ -6,6 +6,7 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\Installer;
+use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
 class ServicesTest extends \MailPoetTest {
@@ -264,31 +265,83 @@ class ServicesTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('test');
   }
 
-  function testItRespondsContainsPublicIdForMSS() {
+  function testItRespondsWithPublicIdForMSS() {
+    $fake_public_id = 'a-fake-public_id';
+    Setting::deleteValue('public_id');
+    Setting::deleteValue('new_public_id');
+
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkMSSKey' => array('state' => Bridge::KEY_VALID),
+        'checkMSSKey' => array(
+          'state' => Bridge::KEY_VALID,
+          'data' => array( 'public_id' => $fake_public_id )
+        ),
         'storeMSSKeyAndState' => Expected::once()
       ),
       $this
     );
     $response = $this->services_endpoint->checkMSSKey($this->data);
-    expect(isset($response->data['public_id']))->true();
-    expect($response->data['public_id'])->notEmpty();
+
+    expect(Setting::getValue('public_id'))->equals($fake_public_id);
+    expect(Setting::getValue('new_public_id'))->equals('true');
   }
 
-  function testItRespondsContainsPublicIdForPremium() {
+  function testItRespondsWithoutPublicIdForMSS() {
+    Setting::deleteValue('public_id');
+    Setting::deleteValue('new_public_id');
+
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkPremiumKey' => array('state' => Bridge::KEY_VALID),
+        'checkMSSKey' => array( 'state' => Bridge::KEY_VALID ),
         'storeMSSKeyAndState' => Expected::once()
       ),
       $this
     );
+    $response = $this->services_endpoint->checkMSSKey($this->data);
+
+    expect(Setting::getValue('public_id', null))->null();
+    expect(Setting::getValue('new_public_id', null))->null();
+  }
+
+  function testItRespondsWithPublicIdForPremium() {
+    $fake_public_id = 'another-fake-public_id';
+    Setting::deleteValue('public_id');
+    Setting::deleteValue('new_public_id');
+
+    $this->services_endpoint->bridge = Stub::make(
+      new Bridge(),
+      array(
+        'checkPremiumKey' => array(
+          'state' => Bridge::KEY_VALID,
+          'data' => array( 'public_id' => $fake_public_id )
+        ),
+        'storePremiumKeyAndState' => Expected::once()
+      ),
+      $this
+    );
     $response = $this->services_endpoint->checkPremiumKey($this->data);
-    expect(isset($response->data['public_id']))->true();
-    expect($response->data['public_id'])->notEmpty();
+
+    expect(Setting::getValue('public_id'))->equals($fake_public_id);
+    expect(Setting::getValue('new_public_id'))->equals('true');
+  }
+
+  function testItRespondsWithoutPublicIdForPremium() {
+    Setting::deleteValue('public_id');
+    Setting::deleteValue('new_public_id');
+
+    $this->services_endpoint->bridge = Stub::make(
+      new Bridge(),
+      array(
+        'checkPremiumKey' => array('state' => Bridge::KEY_VALID),
+        'storePremiumKeyAndState' => Expected::once()
+      ),
+      $this
+    );
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
+
+    expect(Setting::getValue('public_id', null))->null();
+    expect(Setting::getValue('new_public_id', null))->null();
   }
 }
