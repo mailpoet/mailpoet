@@ -1,6 +1,7 @@
 === MailPoet - emails and newsletters in WordPress ===
 Contributors: mailpoet, wysija, kgjerstad
-Tags: newsletter, newsletter subscribers, email, welcome email, post notification
+Tags: newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, mailing list
+
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
