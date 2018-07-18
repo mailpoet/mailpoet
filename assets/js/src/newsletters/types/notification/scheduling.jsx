@@ -134,6 +134,7 @@ const NotificationScheduling = React.createClass({
           field={intervalField}
           item={this.getCurrentValue()}
           onValueChange={this.handleIntervalChange}
+          automationId="newsletter_interval_type"
         />
 
         {nthWeekDaySelection}

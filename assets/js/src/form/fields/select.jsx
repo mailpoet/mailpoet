@@ -63,6 +63,7 @@ const FormFieldSelect = React.createClass({
         id={`field_${this.props.field.name}`}
         value={this.props.item[this.props.field.name] || ''}
         onChange={this.props.onValueChange}
+        data-automation-id={this.props.automationId}
         {...this.props.field.validation}
       >
         {placeholder}
