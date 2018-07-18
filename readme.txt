@@ -1,6 +1,6 @@
-=== MailPoet Newsletters (New) ===
-Contributors: mailpoet, wysija
-Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
+=== MailPoet - emails and newsletters in WordPress ===
+Contributors: mailpoet, wysija, kgjerstad
+Tags: newsletter, newsletter subscribers, email, welcome email, post notification
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
@@ -8,48 +8,77 @@ Stable tag: 3.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Create and send beautiful emails and newsletters from WordPress.
+Send beautiful newsletters directly from WordPress. Add a signup form, manage your subscribers, automate your emails including WooCommerce & more.
 
 == Description ==
 
-The new MailPoet is here! With our new free sending plan, send unlimited emails to up to 2,000 subscribers. All without ever leaving WordPress.
 
-= What's inside? =
+With MailPoet, your website visitors can sign up as newsletter subscribers and build your mailing list, all without leaving your WordPress admin.
 
-* New designer with responsive templates
-* Send your emails with MailPoet’s Sending Service (optional)
-* Improved user experience
-* Easy configuration
-* Solid reliability
+Our newsletter builder integrates perfectly with WordPress so any website owner can create beautiful emails from scratch or by using our responsive templates that display flawlessly across all devices.
+
+Schedule your newsletters, send them right away or set it up to send new blog post notifications automatically in just a few clicks.
+
+MailPoet is trusted by 300,000 WordPress websites since 2011.
+
+= All features =
+
+* Create and add a newsletter subscription form to your website
+* Manage your subscribers and subscriber lists in WordPress
+* Build and send newsletters with WordPress
+* Create automatic emails to send new post notification
+* Send automated signup welcome emails (Premium)
+* Increase your sales with our emails for WooCommerce (Premium)
+* Insightful stats on your audience engagement (Premium)
+
+= Why choose MailPoet =
+
+* Easy to use WordPress newsletter builder
+* Beautiful responsive templates
+* No configuration needed: works out of the box
+* We offer a free sending plan for those with 2,000 subscribers or less
 * GDPR compliant
-* Weekly releases
 
-= See it in action. =
+= See it in action =
+
 [Test the demo](http://demo.mailpoet.com/) or [see the 2 min. video](https://vimeo.com/223581490)
 [vimeo https://vimeo.com/223581490]
 
 = Before you install =
 
-Take note:
+Please note:
 
 * Not optimized for right-to-left (RTL) languages yet
-* Multisite works, but is not officially supported
+* Multisite not officially supported
 * Review [our minimum requirements](http://beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3)
 
-= What about the Premium? =
+= WooCommerce emails (Premium) =
 
-MailPoet is fully featured in its free version and works up until you have "2000" subscribers.
+Increase your sales and stay in touch with your customers with our emails for WooCommerce !
+
+With our WooCommerce emails, you can :
+
+* Welcome your new customers when they make their first purchase
+* Upsell by sending emails to customers who purchased a specific product or a specific product category
+* Convert more customers by reaching those who abandoned their cart (soon)
+* Reward and engage your customers who have spent a certain amount on your shop (soon)
+
+= Premium in details =
+
+MailPoet is fully featured in its free version and works up until you have 2,000 subscribers.
 
 The Premium version adds the following features:
 
-* for each newsletter, see which subscribers opened it and which links they clicked
-* ability to send Welcome Emails automatically; i.e. "Welcome to my Newsletter” autoresponders or multi-email courses
-* removes the small MailPoet logo in the footer of your emails
-* same day support (Monday to Friday)
-* send to over "2000" subscribers with your own sending method
-* see the [short video summary on the Premium](http://beta.docs.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
+* For each newsletter, see which subscribers opened it and which links got the most clicks
+* Ability to send Welcome Emails automatically; i.e. “Welcome to my Newsletter” autoresponders or multi-email courses
+* All WooCommerce emails features
+* Removes the small MailPoet logo in the footer of your emails
+* Same day support (Monday to Friday)
+* Send to over 2,000 subscribers with your own sending method (host, SendGrid, Amazon SES)
 
-Plus: if you sign up to one of our sending plans, you’ll get all of these fancy features for free. Visit the Premium page inside the plugin for more info.
+See the [short video summary on the Premium](http://beta.docs.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
+
+Visit the Premium page inside the plugin for more info.
 
 = Translations =
 
