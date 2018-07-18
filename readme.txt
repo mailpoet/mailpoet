@@ -13,21 +13,20 @@ Send beautiful newsletters directly from WordPress. Add a signup form, manage yo
 
 == Description ==
 
-
 With MailPoet, your website visitors can sign up as newsletter subscribers and build your mailing list, all without leaving your WordPress admin.
 
 Our newsletter builder integrates perfectly with WordPress so any website owner can create beautiful emails from scratch or by using our responsive templates that display flawlessly across all devices.
 
 Schedule your newsletters, send them right away or set it up to send new blog post notifications automatically in just a few clicks.
 
-MailPoet is trusted by 300,000 WordPress websites since 2011.
+Trusted by 300,000 WordPress websites since 2011.
 
 = All features =
 
 * Create and add a newsletter subscription form to your website
 * Manage your subscribers and subscriber lists in WordPress
 * Build and send newsletters with WordPress
-* Create automatic emails to send new post notification
+* Create automatic emails to send new post notifications
 * Send automated signup welcome emails (Premium)
 * Increase your sales with our emails for WooCommerce (Premium)
 * Insightful stats on your audience engagement (Premium)
@@ -64,9 +63,9 @@ With our WooCommerce emails, you can :
 * Convert more customers by reaching those who abandoned their cart (soon)
 * Reward and engage your customers who have spent a certain amount on your shop (soon)
 
-= Premium in details =
+= Premium details =
 
-MailPoet is fully featured in its free version and works up until you have 2,000 subscribers.
+MailPoet's free version is fully featured, and comes with access to a free sending plan for up to 2,000 subscribers.
 
 The Premium version adds the following features:
 
