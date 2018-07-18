@@ -61,4 +61,16 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->click($link, ['xpath' => '//*[text()="' . $item_name . '"]//ancestor::tr']);
   }
 
+  /**
+   * Select a value from select2 input field.
+   *
+   * @param string $value
+   * @param string $element
+   */
+  public function selectOptionInSelect2($value, $element = 'input.select2-search__field') {
+    $I = $this;
+    $I->fillField($element, $value);
+    $I->pressKey($element, \WebDriverKeys::ENTER);
+  }
+
 }
