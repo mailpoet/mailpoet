@@ -75,7 +75,7 @@ class Daemon {
     }
     // after each execution, re-read daemon data in case it changed
     $daemon = CronHelper::getDaemon();
-    if(!$daemon || $daemon['token'] !== $this->token) {
+    if($this->shouldTerminateExecution($daemon)) {
       return $this->terminateRequest();
     }
     return $this->callSelf();
@@ -127,5 +127,14 @@ class Daemon {
 
   function terminateRequest($message = false) {
     die($message);
+  }
+
+  /**
+   * @return boolean
+   */
+  private function shouldTerminateExecution(array $daemon = null) {
+    return !$daemon ||
+      $daemon['token'] !== $this->token ||
+      (isset($daemon['status']) && $daemon['status'] !== CronHelper::DAEMON_STATUS_ACTIVE);
   }
 }

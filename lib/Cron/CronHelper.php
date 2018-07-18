@@ -16,15 +16,18 @@ class CronHelper {
   const DAEMON_EXECUTION_TIMEOUT = 35; // seconds
   const DAEMON_REQUEST_TIMEOUT = 5; // seconds
   const DAEMON_SETTING = 'cron_daemon';
+  const DAEMON_STATUS_ACTIVE = 'active';
+  const DAEMON_STATUS_INACTIVE = 'inactive';
 
   static function createDaemon($token) {
-    $daemon = array(
+    $daemon = [
       'token' => $token,
+      'status' => self::DAEMON_STATUS_ACTIVE,
       'run_accessed_at' => null,
       'run_started_at' => null,
       'run_completed_at' => null,
       'last_error' => null,
-    );
+    ];
     self::saveDaemon($daemon);
     return $daemon;
   }
@@ -45,8 +48,12 @@ class CronHelper {
     );
   }
 
-  static function deleteDaemon() {
-    return Setting::deleteValue(self::DAEMON_SETTING);
+  static function deactivateDaemon($daemon) {
+    $daemon['status'] = self::DAEMON_STATUS_INACTIVE;
+    return Setting::setValue(
+      self::DAEMON_SETTING,
+      $daemon
+    );
   }
 
   static function createToken() {
@@ -89,7 +96,7 @@ class CronHelper {
    */
   static function isDaemonAccessible() {
     $daemon = self::getDaemon();
-    if(!$daemon || $daemon['run_accessed_at'] === null) {
+    if(!$daemon || !isset($daemon['run_accessed_at']) || $daemon['run_accessed_at'] === null) {
       return null;
     }
     if($daemon['run_accessed_at'] <= (int)$daemon['run_started_at']) {

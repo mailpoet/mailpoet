@@ -50,6 +50,16 @@ class SupervisorTest extends \MailPoetTest {
     $daemon = $supervisor->checkDaemon();
     expect(is_int($daemon['updated_at']))->true();
     expect($daemon['updated_at'])->notEquals($supervisor->daemon['updated_at']);
+    expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
+  }
+
+  function testRestartsDaemonWhenItIsInactive() {
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    $supervisor = new Supervisor();
+    $supervisor->daemon['updated_at'] = time();
+    $supervisor->daemon['status'] = CronHelper::DAEMON_STATUS_INACTIVE;
+    $daemon = $supervisor->checkDaemon();
+    expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }
 
   function _after() {
