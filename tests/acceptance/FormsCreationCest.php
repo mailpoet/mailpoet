@@ -36,6 +36,4 @@ class FormsCreationCest {
     $I->waitForText('Please select a list.');
   }
 
-
-
 }
