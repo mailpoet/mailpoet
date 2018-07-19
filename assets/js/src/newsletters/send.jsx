@@ -349,6 +349,7 @@ const NewsletterSend = React.createClass({
         <Form
           id="mailpoet_newsletter"
           fields={fields}
+          automationId="newsletter_send_form"
           item={this.state.item}
           loading={this.state.loading}
           onChange={this.handleFormChange}

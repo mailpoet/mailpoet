@@ -28,13 +28,16 @@ modules:
             adminPath: /wp-admin
             log_js_errors: true
         WPLoader:
-            loadOnly: true
+            loadOnly: false
             wpRootFolder: /wp-core
             dbName: wordpress
             dbHost: mysql
             dbUser: wordpress
             dbPassword: wordpress
             domain: wordpress
+            tablePrefix: 'mp_'
+            plugins: ['mailpoet/mailpoet.php']
+            activatePlugins: ['mailpoet/mailpoet.php']
         WPDb:
             dsn: 'mysql:host=mysql;dbname=wordpress'
             user: wordpress

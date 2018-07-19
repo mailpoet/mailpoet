@@ -216,6 +216,7 @@ const Form = React.createClass({
               ? this.props.onSubmit
               : this.handleSubmit
           }
+          data-automation-id={this.props.automationId}
         >
           { errors }
 

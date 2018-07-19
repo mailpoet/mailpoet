@@ -1,11 +1,13 @@
-version: '2'
+version: '2.1'
 
 services:
   codeception:
     build: .
     depends_on:
-      - mailhog
-      - wordpress
+      mailhog:
+        condition: service_started
+      wordpress:
+        condition: service_healthy
     volumes:
       - ./:/project
       - wp-core:/wp-core
@@ -22,8 +24,10 @@ services:
     build: ./tests/wordpressDockerfile
     image: wordpress:latest
     depends_on:
-      - mysql
-      - chrome
+      mysql:
+        condition: service_healthy
+      chrome:
+        condition: service_started
     volumes:
       - wp-core:/var/www/html
       - ./:/var/www/html/wp-content/plugins/mailpoet
@@ -35,13 +39,23 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+
   mysql:
     image: mysql:5.6
     environment:
-       MYSQL_ROOT_PASSWORD: wordpress
-       MYSQL_DATABASE: wordpress
-       MYSQL_USER: wordpress
-       MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    healthcheck:
+      test: mysql --user=wordpress --password=wordpress -e 'SELECT 1'
+      timeout: 20s
+      retries: 10
 
   chrome:
     environment:

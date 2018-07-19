@@ -33,7 +33,11 @@ class CronHelperTest extends \MailPoetTest {
     expect($daemon)->equals(
       array(
         'token' => $token,
-        'updated_at' => $time
+        'updated_at' => $time,
+        'run_accessed_at' => null,
+        'run_started_at' => null,
+        'run_completed_at' => null,
+        'last_error' => null,
       )
     );
   }
@@ -46,7 +50,11 @@ class CronHelperTest extends \MailPoetTest {
     expect($daemon)->equals(
       array(
         'token' => $token,
-        'updated_at' => $time
+        'updated_at' => $time,
+        'run_accessed_at' => null,
+        'run_started_at' => null,
+        'run_completed_at' => null,
+        'last_error' => null,
       )
     );
   }
@@ -54,7 +62,11 @@ class CronHelperTest extends \MailPoetTest {
   function testItLoadsDaemon() {
     $daemon = array(
       'token' => 'some_token',
-      'updated_at' => '12345678'
+      'updated_at' => '12345678',
+      'run_accessed_at' => null,
+      'run_started_at' => null,
+      'run_completed_at' => null,
+      'last_error' => null,
     );
     Setting::setValue(
       CronHelper::DAEMON_SETTING,
@@ -67,7 +79,11 @@ class CronHelperTest extends \MailPoetTest {
     // when saving daemon, 'updated_at' value should change
     $daemon = array(
       'token' => 'some_token',
-      'updated_at' => '12345678'
+      'updated_at' => '12345678',
+      'run_accessed_at' => null,
+      'run_started_at' => null,
+      'run_completed_at' => null,
+      'last_error' => null,
     );
     Setting::setValue(
       CronHelper::DAEMON_SETTING,
@@ -77,6 +93,107 @@ class CronHelperTest extends \MailPoetTest {
     CronHelper::saveDaemon($daemon);
     $daemon['updated_at'] = $time;
     expect(CronHelper::getDaemon())->equals($daemon);
+  }
+
+  function testItUpdatesDaemonAccessedAt() {
+    $daemon = [
+      'token' => 'some_token',
+      'updated_at' => 12345678,
+      'run_accessed_at' => null,
+      'run_started_at' => null,
+      'run_completed_at' => null,
+      'last_error' => null,
+    ];
+    Setting::setValue(
+      CronHelper::DAEMON_SETTING,
+      $daemon
+    );
+    $time = time();
+    Mock::double('MailPoet\Cron\CronHelper', ['queryCronUrl' => []]);
+    CronHelper::accessDaemon('some_token');
+    $updated_daemon = CronHelper::getDaemon();
+    expect($updated_daemon['run_accessed_at'])->greaterOrEquals($time);
+    expect($updated_daemon['run_accessed_at'])->lessThan($time + 2);
+  }
+
+  function testItThrowsAnExceptionIfAccessingNonExistingDaemon() {
+    try {
+      CronHelper::accessDaemon('some_token');
+      $this->fail('An exception should have been thrown.');
+    } catch (\LogicException $e) {
+      expect($e->getMessage())->equals('Daemon does not exist.');
+    }
+  }
+
+  function testItDetectsNotAccessibleDaemon() {
+    $time = time();
+    $run_start_values = [null, $time - 20];
+    foreach($run_start_values as $run_start) {
+      $daemon = [
+        'token' => 'some_token',
+        'updated_at' => 12345678,
+        'run_accessed_at' => $time - 10,
+        'run_started_at' => $run_start,
+        'run_completed_at' => null,
+        'last_error' => null,
+      ];
+      Setting::setValue(
+        CronHelper::DAEMON_SETTING,
+        $daemon
+      );
+      expect(CronHelper::isDaemonAccessible())->false();
+    }
+  }
+
+  function testItDetectsAccessibleDaemon() {
+    $time = time();
+    $daemon = [
+      'token' => 'some_token',
+      'updated_at' => 12345678,
+      'run_accessed_at' => $time - 5,
+      'run_started_at' => $time - 4,
+      'run_completed_at' => null,
+      'last_error' => null,
+    ];
+    Setting::setValue(
+      CronHelper::DAEMON_SETTING,
+      $daemon
+    );
+    expect(CronHelper::isDaemonAccessible())->true();
+  }
+
+  function testItDetectsUnknownStateOfTheDaemon() {
+    $time = time();
+    $test_inputs = [
+      [
+        'run_access' => null,
+        'run_start' => null,
+      ],
+      [
+        'run_access' => $time - 4,
+        'run_start' => null,
+      ],
+      [
+        'run_access' => $time - 4,
+        'run_start' => $time - 10,
+      ],
+      null,
+    ];
+    foreach($test_inputs as $test_input) {
+      $daemon = [
+        'token' => 'some_token',
+        'updated_at' => 12345678,
+        'run_accessed_at' => $test_input['run_access'],
+        'run_started_at' => $test_input['run_start'],
+        'run_completed_at' => null,
+        'last_error' => null,
+      ];
+      Setting::setValue(
+        CronHelper::DAEMON_SETTING,
+        $daemon
+      );
+      expect(CronHelper::isDaemonAccessible())->null();
+    }
   }
 
   function testItCreatesRandomToken() {

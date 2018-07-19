@@ -29,6 +29,7 @@ class ListingGroups extends React.Component {
             href="javascript:;"
             className={classes}
             onClick={() => this.handleSelect(group.name)}
+            data-automation-id={`filters_${group.label.replace(' ', '_').toLowerCase()}`}
           >
             {group.label}
             <span className="count">({ parseInt(group.count, 10).toLocaleString() })</span>

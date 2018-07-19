@@ -1,4 +1,5 @@
 <% set intervals = [1, 2, 5, 10, 15, 30] %>
+<% set mss_key_valid = settings.mta.mailpoet_api_key_state.state == "valid" %>
 <% set default_frequency = {
   'website': {
     'emails': 25,
@@ -57,102 +58,92 @@
 <ul class="mailpoet_sending_methods">
   <li
     data-group="mailpoet"
-    <% if(settings.mta_group == 'mailpoet') %>class="mailpoet_active"<% endif %>
+    class="<% if(settings.mta_group == 'mailpoet') %> mailpoet_active <% endif %> <% if(not mss_key_valid) %> mailpoet_invalid_key <% endif %>"
   >
     <div class="mailpoet_sending_method_description">
       <h3>
         <%= __('MailPoet Sending Service') %>
       </h3>
 
-      <p
-        class="mailpoet_description<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>"
-        id="mailpoet_sending_method_active_text"
-      >
-        <strong><%= __("You're now sending with MailPoet!") %></strong>
-        <br />
-        <%= __("Great, you're all set up. Your emails will now be sent quickly and reliably!") %>
-      </p>
+      <div class="mailpoet_description">
+        <span class="<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>" id="mailpoet_sending_method_active_text">
+          <strong><%= __("You're now sending with MailPoet!") %></strong>
+        </span>
 
-      <div
-        class="mailpoet_description<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>"
-        id="mailpoet_sending_method_inactive_text"
-      >
-        <strong><%= __("Solve all of your sending problems!") %></strong>
+        <span class="<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>" id="mailpoet_sending_method_inactive_text">
+          <strong><%= __("Solve all of your sending problems!") %></strong>
+        </span>
 
         <ul class="sending-method-benefits mailpoet_success">
-          <li class="mailpoet_success_item"><%= __('Reach the inbox, not the spam box.') %>
-          <li class="mailpoet_success_item"><%= __('Super fast: send up to 50,000 emails per hour.') %>
-          <li class="mailpoet_success_item"><%= __('All emails are signed with SPF & DKIM.') %>
-          <li class="mailpoet_success_item"><%= __('Automatically remove invalid and bounced addresses (bounce handling) to keep your lists clean.') %>
-          <li class="mailpoet_success_item"><%= __('Configuration is dead-simple: simply enter a key to activate the sending service.') %>
-          <li class="mailpoet_success_item"><strong><%= __('Plus:')%></strong> <%= __('get the Premium features for free.') %>
-        </li>
+          <li class="mailpoet_success_item"><%= __('Reach the inbox, not the spam box.') %></li>
+          <li class="mailpoet_success_item"><%= __('Easy configuration: enter a key to activate the sending service.') %></li>
+          <li class="mailpoet_success_item"><%= __('Super fast: send up to 50,000 emails per hour.') %></li>
+          <li class="mailpoet_success_item"><%= __('All emails are signed with SPF & DKIM.') %></li>
+          <li class="mailpoet_success_item"><%= __('Automatically remove invalid and bounced addresses (bounce handling) to keep your lists clean.') %></li>
         </ul>
-        <a
-          href="<%= admin_url('admin.php?page=mailpoet-premium') %>"
-          class="button button-primary"
-          target="_blank"
-        ><%= __('Find out more about our monthly plans') %></a>
 
-        <a href="https://www.mailpoet.com/free-plan/" class="button button-primary sending-free-plan-button" target="_blank">
-          <strong><%= __('new!') %></strong> <%= __('Try it for free (for up to 2,000 subscribers)') %>
-        </a>
+        <p class="mailpoet_sending_methods_help">
+          <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
+          <%= __('[link]%s See video guide[/link]')
+          |format('<span class="dashicons dashicons-format-video"></span>')
+          |replaceLinkTags('https://beta.docs.mailpoet.com/article/235-video-guide-sending-options', {'class' : badgeClassName, 'target' : '_blank'}, 'link')
+          |raw
+          %>
+        </p>
       </div>
     </div>
-    <div class="mailpoet_status">
-      <span><%= __('Activated') %></span>
-
+    <div class="mailpoet_status <% if(settings.mta_group != 'mailpoet' or not mss_key_valid) %> mailpoet_invalid_key <% endif %>">
+      <div class="mailpoet_activated <% if(settings.mta_group != 'mailpoet' or not mss_key_valid) %> mailpoet_hidden <% endif %>">
+        <span><%= __('Activated') %></span>
+      </div>
       <div class="mailpoet_actions">
-        <button
-          type="button"
-          class="mailpoet_sending_service_activate button-secondary"
-        <% if(settings.mta_group == 'mailpoet' or not(mss_key_valid)) %> disabled="disabled"<% endif %>
-        ><%= __('Activate') %></button>
+        <div class="mailpoet_invalid_key <% if(mss_key_valid) %> mailpoet_hidden <% endif %>">
+          <a class="button-primary" href="https://www.mailpoet.com/free-plan/" rel="noopener noreferrer" target="_blank"><%= __('Get a free key') %></a>
+          or
+          <%=
+            __("[link]enter your key[/link]")
+            |replaceLinkTags('#premium')
+            |raw
+          %>
+        </div>
+        <div class="mailpoet_valid_key <% if(not mss_key_valid or settings.mta_group == 'mailpoet') %> mailpoet_hidden <% endif %>">
+          <button type="button" class="mailpoet_sending_service_activate button-primary"><%= __('Activate') %></button>
+        </div>
       </div>
-    </div>
-
   </li>
   <li
     data-group="other"
-    <% if(settings.mta_group == 'smtp' or settings.mta_group == 'website') %>class="mailpoet_active"<% endif %>
+    <% if(settings.mta_group != 'mailpoet') %>class="mailpoet_active"<% endif %>
   >
     <div class="mailpoet_sending_method_description">
       <h3><%= __('Other') %></h3>
       <div class="mailpoet_description">
         <strong><%= __('Send emails via your host (not recommended!) or via a third-party sender.') %></strong>
         <ul class="sending-method-benefits mailpoet_error">
-          <li class="mailpoet_error_item"><%= __("Unless you're a pro, you’ll probably end up in spam.") %>
-          <li class="mailpoet_error_item"><%= __("Sending speed is limited by your host and/or your third-party (with a 2,000 per hour maximum).") %>
-          <li class="mailpoet_error_item"><%= __("Manual configuration of SPF and DKIM required.") %>
+          <li class="mailpoet_error_item"><%= __("Unless you're a pro, you’ll probably end up in spam.") %></li>
+          <li class="mailpoet_error_item"><%= __("Sending speed is limited by your host and/or your third-party (with a 2,000 per hour maximum).") %></li>
+          <li class="mailpoet_error_item"><%= __("Manual configuration of SPF and DKIM required.") %></li>
           <li class="mailpoet_error_item"><%=
             __("Bounce handling is available, but only with an extra [link]add-on[/link].")
             |replaceLinkTags('https://wordpress.org/plugins/bounce-handler-mailpoet/', {'target' : '_blank'})
             |raw
           %>
-          <li class="mailpoet_error_item"><%= __("You’ll need a separate plugin to send your WordPress site emails (optional).") %>
+          </li>
         </ul>
       </div>
     </div>
     <div class="mailpoet_status">
       <span><%= __('Activated') %></span>
       <div class="mailpoet_actions">
-        <a
-          class="button-secondary"
-          href="#mta/other"><%= __('Configure') %></a>
+        <% if(settings.mta_group == 'mailpoet') %>
+          <a class="button-primary mailpoet_other_sending_method_action" href="#mta/other"><%= __('Activate') %></a>
+        <% else %>
+          <a class="button-secondary mailpoet_other_sending_method_action" href="#mta/other"><%= __('Configure') %></a>
+        <% endif %>
       </div>
     </div>
   </li>
 </ul>
-
-<p class="mailpoet_sending_methods_help help">
-  <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
-  <%= __('Need help to pick? [link1]%s See video guide[/link1] [link2]or check out the comparison table of sending methods[/link2].')
-    |format('<span class="dashicons dashicons-format-video"></span>')
-    |replaceLinkTags('https://beta.docs.mailpoet.com/article/235-video-guide-sending-options', {'class' : badgeClassName, 'target' : '_blank'}, 'link1')
-    |replaceLinkTags('http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods', {'target' : '_blank'}, 'link2')
-    |raw
-  %>
-</p>
 
 <div id="mailpoet_sending_method_setup">
 
@@ -605,69 +596,69 @@
       </tr>
       </tbody>
     </table>
+
+    <table class="form-table">
+      <tbody>
+        <!-- SPF -->
+        <tr id="mailpoet_mta_spf">
+          <th scope="row">
+            <label>
+              <%= __('SPF Signature (Highly recommended!)') %>
+            </label>
+            <p class="description">
+              <%= __("This improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
+            </p>
+          </th>
+          <td>
+            <p>
+              <%= __("SPF is set up in your DNS. Read your host's support documentation for more information.") %>
+            </p>
+          </td>
+        </tr>
+        <!-- test method -->
+        <tr>
+          <th scope="row">
+            <label for="mailpoet_mta_test_email">
+              <%= __('Test the sending method') %>
+            </label>
+          </th>
+          <td>
+            <p>
+              <input
+                type="text"
+                id="mailpoet_mta_test_email"
+                class="regular-text"
+                value="<%= current_user.user_email %>"
+              />
+              <a
+                id="mailpoet_mta_test"
+                class="button-secondary"
+              ><%= __('Send a test email') %></a>
+
+              <span id="tooltip-test"></span>
+            </p>
+          </td>
+        </tr>
+        <!-- activate or cancel -->
+        <tr>
+          <th scope="row">
+            <p>
+              <a
+                href="javascript:;"
+                class="mailpoet_mta_setup_save button button-primary"
+              ><%= __('Activate') %></a>
+              &nbsp;
+              <a
+                href="javascript:;"
+                class="mailpoet_mta_setup_cancel"
+              ><%= __('or Cancel') %></a>
+            </p>
+          </th>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-
-  <table class="form-table">
-    <tbody>
-      <!-- SPF -->
-      <tr id="mailpoet_mta_spf">
-        <th scope="row">
-          <label>
-            <%= __('SPF Signature (Highly recommended!)') %>
-          </label>
-          <p class="description">
-            <%= __("This improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
-          </p>
-        </th>
-        <td>
-          <p>
-            <%= __("SPF is set up in your DNS. Read your host's support documentation for more information.") %>
-          </p>
-        </td>
-      </tr>
-      <!-- test method -->
-      <tr>
-        <th scope="row">
-          <label for="mailpoet_mta_test_email">
-            <%= __('Test the sending method') %>
-          </label>
-        </th>
-        <td>
-          <p>
-            <input
-              type="text"
-              id="mailpoet_mta_test_email"
-              class="regular-text"
-              value="<%= current_user.user_email %>"
-            />
-            <a
-              id="mailpoet_mta_test"
-              class="button-secondary"
-            ><%= __('Send a test email') %></a>
-
-            <span id="tooltip-test"></span>
-          </p>
-        </td>
-      </tr>
-      <!-- activate or cancel -->
-      <tr>
-        <th scope="row">
-          <p>
-            <a
-              href="javascript:;"
-              class="mailpoet_mta_setup_save button button-primary"
-            ><%= __('Activate') %></a>
-            &nbsp;
-            <a
-              href="javascript:;"
-              class="mailpoet_mta_setup_cancel"
-            ><%= __('or Cancel') %></a>
-          </p>
-        </th>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
 </div>
 
 <script type="text/javascript">
@@ -762,9 +753,9 @@
       });
 
       // save configuration of a sending method
-      $('.mailpoet_sending_service_activate').on('click', function() {
+      $('.mailpoet_sending_service_activate').on('click', function(e, navigateToTab) {
         $('#mta_group').val('mailpoet');
-        saveSendingMethodConfiguration('mailpoet');
+        saveSendingMethodConfiguration('mailpoet', navigateToTab);
       });
       $('.mailpoet_mta_setup_save').on('click', function() {
         $('#mailpoet_smtp_method').trigger("change");
@@ -781,8 +772,7 @@
         $('#other_frequency_emails').trigger("change");
       <% endif %>
 
-      function saveSendingMethodConfiguration(group) {
-
+      function saveSendingMethodConfiguration(group, navigateToTab) {
         // set sending method
         if(group === undefined) {
           MailPoet.Notice.error(
@@ -796,10 +786,16 @@
           setSignupConfirmation(group);
 
           // back to selection of sending methods
-          MailPoet.Router.navigate('mta', { trigger: true });
+          if (navigateToTab === undefined || navigateToTab === true) {
+            MailPoet.Router.navigate('mta', { trigger: true });
+          }
 
           // save settings
           $('.mailpoet_settings_submit > input').trigger('click');
+
+          if (group === 'mailpoet') {
+            updateMSSActivationUI()
+          }
         }
       }
 
@@ -1080,7 +1076,6 @@
 
       // format daily emails number according to locale
       options.daily_emails = options.daily_emails.toLocaleString();
-
       $(options.output).html(
         sending_frequency_template(options)
       );
@@ -1128,11 +1123,20 @@
   function updateMSSActivationUI() {
     var $ = jQuery;
     var group = $('.mailpoet_sending_methods .mailpoet_active').data('group');
-    var key_valid = !$('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
-    var activation_possible = group !== 'mailpoet' && key_valid;
-    $('.mailpoet_sending_service_activate').prop('disabled', !activation_possible);
-    $('.mailpoet_mss_activate_notice').toggle(activation_possible);
-  }
+    var key_valid = $('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
+
+    if (group !== 'mailpoet') {
+      $('.mailpoet_actions .mailpoet_invalid_key').toggleClass('mailpoet_hidden', !key_valid);
+      $('.mailpoet_actions .mailpoet_valid_key').toggleClass('mailpoet_hidden', key_valid);
+      $('.mailpoet_other_sending_method_action').removeClass('button-primary').addClass('button-secondary').text('<%= __('Configure') %>');
+    } else {
+      $('.mailpoet_actions .mailpoet_valid_key').addClass('mailpoet_hidden');
+      $('.mailpoet_activated').toggleClass('mailpoet_hidden', key_valid);
+      $('.mailpoet_other_sending_method_action').removeClass('button-secondary').addClass('button-primary').text('<%= __('Activate') %>');
+      $('.mailpoet_invalid_key').toggleClass('mailpoet_hidden', !key_valid);
+      $('.mailpoet_sending_methods li[data-group="'+group+'"], .mailpoet_sending_methods li[data-group="'+group+'"] > .mailpoet_status').toggleClass('mailpoet_invalid_key', key_valid)
+    }
+  };
 </script>
 
 <%= partial(

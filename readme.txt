@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.7.8
+Stable tag: 3.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -117,6 +117,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.8 - 2018-07-17 =
+* Fixed: proper spacing between paragraphs in full post is now respected;
+* Fixed: deleting users who have opened one newsletter correctly records data for GDPR;
+* Fixed: sending tasks are paused when welcome email is deactivated. Thanks, Seng;
+* Fixed: can send when default sender is not set;
+* Updated: API validation message updated to reflect incompatibilities with localhost.
 
 = 3.7.8 - 2018-06-26 =
 * Added: support for long URLs in newsletter links;
