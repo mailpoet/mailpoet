@@ -221,7 +221,8 @@ EOL;
     function createSubscriptionForm() {
         MailPoet.Ajax.post({
           endpoint: 'forms',
-          action: 'create'
+          action: 'create',
+          api_version: window.mailpoet_api_version
         }).done(function(response) {
           if(response.data && response.data.id) {
             window.location =
