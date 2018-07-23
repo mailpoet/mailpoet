@@ -4,6 +4,7 @@ namespace MailPoet\Test\Mailer\Methods;
 use Codeception\Util\Stub;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\Methods\MailPoet;
+use MailPoet\Services\Bridge\API;
 
 class MailPoetAPITest extends \MailPoetTest {
   function _before() {
@@ -149,4 +150,95 @@ class MailPoetAPITest extends \MailPoetTest {
     );
     expect($result['response'])->true();
   }
+
+  function testFormatConnectionError() {
+    $this->mailer->api = Stub::makeEmpty(
+      'MailPoet\Services\Bridge\API',
+      array('sendMessages' => [
+        'status' => API::SENDING_STATUS_CONNECTION_ERROR,
+        'message' => 'connection error',
+      ]),
+      $this
+    );
+    $result = $this->mailer->send($this->newsletter, $this->subscriber);
+    expect($result)->equals([
+      'response' => false,
+      'operation' => 'connect',
+      'error_message' => 'connection error',
+    ]);
+  }
+
+  function testFormatErrorNotArray() {
+    $this->mailer->api = Stub::makeEmpty(
+      'MailPoet\Services\Bridge\API',
+      array('sendMessages' => [
+        'code' => API::RESPONSE_CODE_NOT_ARRAY,
+        'status' => API::SENDING_STATUS_SEND_ERROR,
+        'message' => 'error not array',
+      ]),
+      $this
+    );
+    $result = $this->mailer->send($this->newsletter, $this->subscriber);
+    expect($result)->equals([
+      'response' => false,
+      'operation' => 'send',
+      'error_message' => 'JSON input is not an array',
+    ]);
+  }
+
+  function testFormatErrorTooBig() {
+    $this->mailer->api = Stub::makeEmpty(
+      'MailPoet\Services\Bridge\API',
+      array('sendMessages' => [
+        'code' => API::RESPONSE_CODE_PAYLOAD_TOO_BIG,
+        'status' => API::SENDING_STATUS_SEND_ERROR,
+        'message' => 'error too big',
+      ]),
+      $this
+    );
+    $result = $this->mailer->send($this->newsletter, $this->subscriber);
+    expect($result)->equals([
+      'response' => false,
+      'operation' => 'send',
+      'error_message' => 'error too big',
+    ]);
+  }
+
+  function testFormatPayloadError() {
+    $this->mailer->api = Stub::makeEmpty(
+      'MailPoet\Services\Bridge\API',
+      array('sendMessages' => [
+        'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
+        'status' => API::SENDING_STATUS_SEND_ERROR,
+        'message' => 'Api Error',
+      ]),
+      $this
+    );
+    $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);
+    expect($result)->equals([
+      'response' => false,
+      'operation' => 'send',
+      'error_message' => 'Error while sending newsletters. Api Error',
+    ]);
+  }
+
+  function testFormatPayloadErrorWithErrorMessage() {
+    $this->mailer->api = Stub::makeEmpty(
+      'MailPoet\Services\Bridge\API',
+      array('sendMessages' => [
+        'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
+        'status' => API::SENDING_STATUS_SEND_ERROR,
+        'message' => '[{"index":0,"errors":{"subject":"subject is missing"}},{"index":1,"errors":{"subject":"subject is missing"}}]'
+      ]),
+      $this
+    );
+    $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);
+    expect($result)->equals([
+      'response' => false,
+      'operation' => 'send',
+      'error_message' => 'Error while sending: (a@example.com: subject is missing), (c d <b@example.com>: subject is missing)',
+    ]);
+  }
+
+
 }

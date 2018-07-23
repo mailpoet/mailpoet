@@ -164,10 +164,11 @@ class SendingQueue {
     );
     // log error message and schedule retry/pause sending
     if($send_result['response'] === false) {
-      MailerLog::processError(
-        $send_result['operation'],
-        $send_result['error_message']
-      );
+      if(isset($send_result['retry_interval'])) {
+        MailerLog::processNonBlockingError($send_result['operation'], $send_result['error_message'], $send_result['retry_interval']);
+      } else {
+        MailerLog::processError($send_result['operation'], $send_result['error_message']);
+      }
     }
     // update processed/to process list
     if(!$queue->updateProcessedSubscribers($prepared_subscribers_ids)) {
