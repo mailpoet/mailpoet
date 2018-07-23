@@ -34,6 +34,43 @@ class Analytics {
     return !empty($analytics_settings['enabled']) === true;
   }
 
+  static function setPublicId($new_public_id) {
+    $current_public_id = Setting::getValue('public_id');
+    if($current_public_id !== $new_public_id) {
+      Setting::setValue('public_id', $new_public_id);
+      Setting::setValue('new_public_id', 'true');
+      // Force user data to be resent
+      Setting::deleteValue(Analytics::SETTINGS_LAST_SENT_KEY);
+    }
+  }
+
+  /** @return string */
+  function getPublicId() {
+    $public_id = Setting::getValue('public_id', '');
+    // if we didn't get the user public_id from the shop yet : we create one based on mixpanel distinct_id
+    if(empty($public_id) && !empty($_COOKIE['mixpanel_distinct_id'])) {
+      // the public id has to be diffent that mixpanel_distinct_id in order to be used on different browser
+      $mixpanel_distinct_id = md5($_COOKIE['mixpanel_distinct_id']);
+      Setting::setValue('public_id', $mixpanel_distinct_id);
+      Setting::setValue('new_public_id', 'true');
+      return $mixpanel_distinct_id;
+    }
+    return $public_id;
+  }
+
+  /**
+   * Returns true if a the public_id was added and update new_public_id to false
+   * @return boolean
+   */
+  function isPublicIdNew() {
+    $new_public_id = Setting::getValue('new_public_id');
+    if($new_public_id === 'true') {
+      Setting::setValue('new_public_id', 'false');
+      return true;
+    }
+    return false;
+  }
+
   private function shouldSend() {
     if(!$this->isEnabled()) {
       return false;

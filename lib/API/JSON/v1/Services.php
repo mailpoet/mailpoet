@@ -2,10 +2,12 @@
 
 namespace MailPoet\API\JSON\v1;
 
+use MailPoet\Analytics\Analytics;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Installer;
+use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\WP\DateTime;
 
@@ -51,6 +53,10 @@ class Services extends APIEndpoint {
         __('Your MailPoet Sending Service key expires on %s!', 'mailpoet'),
         $this->date_time->formatDate(strtotime($result['data']['expire_at']))
       );
+    }
+
+    if(!empty($result['data']['public_id'])) {
+      Analytics::setPublicId($result['data']['public_id']);
     }
 
     if($success_message) {
@@ -109,6 +115,10 @@ class Services extends APIEndpoint {
         __('Your Premium key expires on %s.', 'mailpoet'),
         $this->date_time->formatDate(strtotime($result['data']['expire_at']))
       );
+    }
+
+    if(!empty($result['data']['public_id'])) {
+      Analytics::setPublicId($result['data']['public_id']);
     }
 
     if($success_message) {

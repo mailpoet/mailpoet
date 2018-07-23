@@ -102,4 +102,38 @@ class AnalyticsTest extends \MailPoetTest {
     expect($analytics->generateAnalytics())->equals($data);
   }
 
+  function testSetPublicId() {
+    $analytics = new Analytics(new Reporter());
+    $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
+
+    Setting::setValue('public_id', 'old-fake-public-id');
+    Setting::setValue(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
+
+    $analytics->setPublicId($fakePublicId);
+
+    expect(Setting::getValue('public_id'))->equals($fakePublicId);
+    expect(Setting::getValue('new_public_id'))->equals('true');
+    expect(Setting::getValue(Analytics::SETTINGS_LAST_SENT_KEY, null))->null();
+  }
+
+  function testIsPublicIdNew() {
+    $analytics = new Analytics(new Reporter());
+    $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
+
+    Setting::setValue('public_id', 'old-fake-public-id');
+    Setting::setValue('new_public_id', 'false');
+
+    $analytics->setPublicId($fakePublicId);
+    // When we update public_id it's marked as new
+    expect(Setting::getValue('new_public_id'))->equals('true');
+    expect($analytics->isPublicIdNew())->true();
+    expect(Setting::getValue('new_public_id'))->equals('false');
+
+    $analytics->setPublicId($fakePublicId);
+    // We tried to update public_id with the same value, so it's not marked as new
+    expect(Setting::getValue('new_public_id'))->equals('false');
+    expect($analytics->isPublicIdNew())->false();
+    expect(Setting::getValue('new_public_id'))->equals('false');
+  }
+
 }

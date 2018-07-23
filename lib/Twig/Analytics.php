@@ -21,6 +21,16 @@ class Analytics extends \Twig_Extension {
         array($analytics, 'isEnabled'),
         array('is_safe' => array('all'))
       ),
+      new \Twig_SimpleFunction(
+        'get_analytics_public_id',
+        array($analytics, 'getPublicId'),
+        array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
+        'is_analytics_public_id_new',
+        array($analytics, 'isPublicIdNew'),
+        array('is_safe' => array('all'))
+      )
     );
   }
 }

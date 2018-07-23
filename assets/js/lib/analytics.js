@@ -6,10 +6,25 @@ window.mixpanelTrackingId = "8cce373b255e5a76fb22d57b85db0c92";
 
 if (mailpoet_analytics_enabled) {
 
-  mixpanel.init(window.mixpanelTrackingId);
+  mixpanel.init(window.mixpanelTrackingId, {
+    loaded: function(mixpanel) {
+      // used in lib/Analytics/Analytics.php
+      document.cookie = "mixpanel_distinct_id=" + mixpanel.get_distinct_id();
+    }
+  });
+
+  mixpanel.register({'Platform': 'Plugin'});
+
+  if(typeof window.mailpoet_analytics_public_id === 'string' && window.mailpoet_analytics_public_id.length > 0) {
+    if(window.mailpoet_analytics_new_public_id === true) {
+      mixpanel.alias(window.mailpoet_analytics_public_id);
+    } else {
+      mixpanel.identify(window.mailpoet_analytics_public_id);
+    }
+  }
 
   if (mailpoet_analytics_data != null) {
-    mixpanel.track('MailPoet 3', mailpoet_analytics_data);
+    mixpanel.people.set(mailpoet_analytics_data);
   }
 
 }
