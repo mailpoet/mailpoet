@@ -13,7 +13,7 @@ function renderStatusTableRow(title, value) {
 const CronStatus = (props) => {
   const status = props.status_data;
   const activeStatusMapping = {
-    active: MailPoet.I18n.t('cronRunning'),
+    active: MailPoet.I18n.t('running'),
     inactive: MailPoet.I18n.t('cronWaiting'),
   };
   return (
@@ -41,7 +41,7 @@ const CronStatus = (props) => {
             MailPoet.I18n.t('lastRunCompleted'),
             status.run_completed_at ? MailPoet.Date.full(status.run_completed_at * 1000) : MailPoet.I18n.t('unknown'))
           }
-          {renderStatusTableRow(MailPoet.I18n.t('lastSeenError'), status.last_error || '-')}
+          {renderStatusTableRow(MailPoet.I18n.t('lastSeenError'), status.last_error || MailPoet.I18n.t('none'))}
         </tbody>
       </table>
     </div>

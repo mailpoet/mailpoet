@@ -9,8 +9,10 @@ use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Listing;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
@@ -20,6 +22,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
+use MailPoet\Tasks\State;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\DateTime;
@@ -447,6 +450,7 @@ class Menu {
 
 
   function help() {
+    $tasks_state = new State();
     $system_info_data = Beacon::getData();
     $system_status_data = [
       'cron' => [
@@ -459,8 +463,10 @@ class Menu {
           false
       ],
       'cronStatus' => CronHelper::getDaemon(),
+      'queueStatus' => MailerLog::getMailerLog(),
     ];
     $system_status_data['cronStatus']['accessible'] = CronHelper::isDaemonAccessible();
+    $system_status_data['queueStatus']['tasksStatusCounts'] = $tasks_state->getCountsPerStatus();
     $this->displayPage(
       'help.html',
       array(
