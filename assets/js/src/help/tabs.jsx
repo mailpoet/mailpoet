@@ -5,6 +5,11 @@ import MailPoet from 'mailpoet';
 
 const tabs = [
   {
+    name: 'knowledgeBase',
+    label: MailPoet.I18n.t('tabKnowledgeBaseTitle'),
+    link: '/knowledgeBase',
+  },
+  {
     name: 'systemStatus',
     label: MailPoet.I18n.t('tabSystemStatusTitle'),
     link: '/systemStatus',
@@ -13,11 +18,6 @@ const tabs = [
     name: 'systemInfo',
     label: MailPoet.I18n.t('tabSystemInfoTitle'),
     link: '/systemInfo',
-  },
-  {
-    name: 'knowledgeBase',
-    label: MailPoet.I18n.t('tabKnowledgeBaseTitle'),
-    link: '/knowledgeBase',
   },
 ];
 
@@ -45,6 +45,6 @@ function Tabs(props) {
 }
 
 Tabs.propTypes = { tab: React.PropTypes.string };
-Tabs.defaultProps = { tab: 'systemStatus' };
+Tabs.defaultProps = { tab: 'knowledgeBase' };
 
 module.exports = Tabs;
