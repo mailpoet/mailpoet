@@ -102,8 +102,10 @@ class Renderer {
         $content_block,
         $column_count
       );
+      $content_block_image = isset($content_block['image'])?$content_block['image']:null;
       return $_this->columns_renderer->render(
         $content_block['styles'],
+        $content_block_image,
         $column_count,
         $column_data
       );

@@ -29,6 +29,10 @@ define([
           expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
         });
 
+        it('has a image display style', function () {
+          expect(model.get('image.display')).to.equal('scale');
+        });
+
         it('has a collection of blocks', function () {
           expect(model.get('blocks')).to.be.instanceof(Backbone.Collection);
         });
@@ -42,6 +46,10 @@ define([
                   block: {
                     backgroundColor: '#123456'
                   }
+                },
+                image: {
+                  src: null,
+                  display: 'scale'
                 }
               }
             }
@@ -49,6 +57,7 @@ define([
           innerModel = new (ContainerBlock.ContainerBlockModel)();
 
           expect(innerModel.get('styles.block.backgroundColor')).to.equal('#123456');
+          expect(innerModel.get('image.display')).to.equal('scale');
         });
 
         it('do not update blockDefaults.container when changed', function () {
@@ -130,7 +139,22 @@ define([
 
       describe('once rendered', function () {
         describe('on root level', function () {
-          var model = new (ContainerBlock.ContainerBlockModel)();
+          var imageSrc = 'http://example.org/someNewImage.png';
+          var model = new (ContainerBlock.ContainerBlockModel)({
+            type: 'container',
+            orientation: 'vertical',
+            image: {
+              src: imageSrc,
+              display: 'scale',
+              width: 123,
+              height: 456
+            },
+            styles: {
+              block: {
+                backgroundColor: 'transparent'
+              }
+            }
+          });
           var view;
 
           beforeEach(function () {
@@ -158,6 +182,15 @@ define([
 
           it('has a duplication tool', function () {
             expect(view.$('.mailpoet_duplicate_block')).to.have.length(1);
+          });
+
+          it('has a background image set', function () {
+            var style = view.$('style').text();
+            expect(style).contains('.mailpoet_editor_view_' + view.cid);
+            expect(style).contains('background-color: #ffffff !important;');
+            expect(style).contains('background-image: url(http://example.org/someNewImage.png);');
+            expect(style).contains('background-position: center;');
+            expect(style).contains('background-size: cover;');
           });
         });
 
@@ -211,16 +244,35 @@ define([
       describe('once rendered', function () {
         var model;
         var view;
+        var newSrc = 'http://example.org/someNewImage.png';
         beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
           model = new (ContainerBlock.ContainerBlockModel)();
           view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
+          view.render();
         });
 
         it('updates the model when background color changes', function () {
           view.$('.mailpoet_field_container_background_color').val('#123456').change();
           expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
+        });
+
+        it('updates the model background image display type changes', function () {
+          view.$('.mailpoet_field_display_type:nth(2)').attr('checked', true).change();
+          expect(model.get('image.display')).to.equal('tile');
+        });
+
+        it('updates the model when background image src changes', function () {
+          global.stubImage(123, 456);
+          view.$('.mailpoet_field_image_address').val(newSrc).trigger('input');
+          expect(model.get('image.src')).to.equal(newSrc);
+        });
+
+        it('updates the model when background image src is deleted', function () {
+          global.stubImage(123, 456);
+          view.$('.mailpoet_field_image_address').val('').trigger('input');
+          expect(model.get('image.src')).to.equal(null);
         });
 
         it.skip('closes the sidepanel after "Done" is clicked', function () {

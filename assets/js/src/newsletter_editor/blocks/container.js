@@ -40,6 +40,10 @@ define([
       return this._getDefaults({
         type: 'container',
         orientation: 'vertical',
+        image: {
+          src: null,
+          display: 'scale'
+        },
         styles: {
           block: {
             backgroundColor: 'transparent'
@@ -239,15 +243,18 @@ define([
   });
 
   Module.ContainerBlockSettingsView = base.BlockSettingsView.extend({
+    behaviors: _.extend({}, base.BlockSettingsView.prototype.behaviors, {
+      MediaManagerBehavior: {
+        onSelect: 'onImageSelect'
+      }
+    }),
     getTemplate: function () { return window.templates.containerBlockSettings; },
     events: function () {
       return {
         'change .mailpoet_field_container_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
-        'click .mailpoet_done_editing': 'close'
+        'click .mailpoet_done_editing': 'close',
+        'change .mailpoet_field_display_type': 'changeDisplayType'
       };
-    },
-    regions: {
-      columnsSettingsRegion: '.mailpoet_container_columns_settings'
     },
     initialize: function () {
       base.BlockSettingsView.prototype.initialize.apply(this, arguments);
@@ -256,8 +263,14 @@ define([
         collection: this.model.get('blocks')
       });
     },
-    onRender: function () {
-      this.showChildView('columnsSettingsRegion', this._columnsSettingsView);
+    changeDisplayType: function (event) {
+      this.model.get('image').set('display', event.target.value);
+      this.model.trigger('change');
+    },
+    onImageSelect: function (image) {
+      this.model.set('image.src', image.src);
+      this.model.trigger('change');
+      this.render();
     }
   });
 

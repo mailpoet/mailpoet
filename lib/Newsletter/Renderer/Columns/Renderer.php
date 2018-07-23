@@ -2,14 +2,14 @@
 namespace MailPoet\Newsletter\Renderer\Columns;
 
 class Renderer {
-  function render($column_styles, $columns_count, $columns_data) {
+  function render($column_styles, $column_image, $columns_count, $columns_data) {
     $styles = $column_styles['block'];
     $width = ColumnsHelper::columnWidth($columns_count);
     $class = ColumnsHelper::columnClass($columns_count);
     $alignment = ColumnsHelper::columnAlignment($columns_count);
     $template = ($columns_count === 1) ?
-      $this->getOneColumnTemplate($styles, $class) :
-      $this->getMultipleColumnsTemplate($styles, $width, $alignment, $class);
+      $this->getOneColumnTemplate($styles, $column_image, $class) :
+      $this->getMultipleColumnsTemplate($styles, $column_image, $width, $alignment, $class);
     $result = array_map(function($content) use ($template) {
       return $template['content_start'] . $content . $template['content_end'];
     }, $columns_data);
@@ -20,16 +20,16 @@ class Renderer {
     return $result;
   }
 
-  function getOneColumnTemplate($styles, $class) {
-    $background_color = $this->getBackgroundColor($styles);
+  function getOneColumnTemplate($styles, $image, $class) {
+    $background_css = $this->getBackgroundCss($styles, $image);
     $template['content_start'] = '
       <tr>
-        <td class="mailpoet_content" align="center" style="border-collapse:collapse">
+        <td class="mailpoet_content" align="center" style="border-collapse:collapse;' . $background_css . '">
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
             <tbody>
               <tr>
                 <td style="padding-left:0;padding-right:0">
-                  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="mailpoet_' . $class . '" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;' . $background_color . '">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="mailpoet_' . $class . '" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;">
                     <tbody>';
     $template['content_end'] = '
                     </tbody>
@@ -43,11 +43,11 @@ class Renderer {
     return $template;
   }
 
-  function getMultipleColumnsTemplate($styles, $width, $alignment, $class) {
-    $background_color = $this->getBackgroundColor($styles);
+  function getMultipleColumnsTemplate($styles, $image, $width, $alignment, $class) {
+    $background_css = $this->getBackgroundCss($styles, $image);
     $template['container_start'] = '
       <tr>
-        <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;' . $background_color . '">
+        <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;' . $background_css . '">
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
             <tbody>
               <tr>
@@ -78,11 +78,21 @@ class Renderer {
     return $template;
   }
 
-  function getBackgroundColor($styles) {
-    if(!isset($styles['backgroundColor'])) return false;
-    $background_color = $styles['backgroundColor'];
-    return ($background_color !== 'transparent') ?
-      sprintf('background-color:%s!important;" bgcolor="%s', $background_color, $background_color) :
-      false;
+  private function getBackgroundCss($styles, $image) {
+    if($image !== null && $image['src'] !== null) {
+      $background_color = isset($styles['backgroundColor']) && $styles['backgroundColor'] !== 'transparent' ? $styles['backgroundColor'] : '#ffffff';
+      $repeat = $image['display'] === 'tile' ? 'repeat' : 'no-repeat';
+      $size = $image['display'] === 'scale' ? 'cover' : 'contain';
+      return sprintf(
+        'background: %s url(%s) %s center/%s;background-color: %s;background-image: url(%s);background-repeat: %s;background-position: center;background-size: %s;',
+        $background_color, $image['src'], $repeat, $size, $background_color, $image['src'], $repeat, $size
+      );
+    } else {
+      if(!isset($styles['backgroundColor'])) return false;
+      $background_color = $styles['backgroundColor'];
+      return ($background_color !== 'transparent') ?
+        sprintf('background-color:%s!important;" bgcolor="%s', $background_color, $background_color) :
+        false;
+    }
   }
 }
