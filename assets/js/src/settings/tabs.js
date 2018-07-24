@@ -16,9 +16,13 @@ define(
 
     MailPoet.Router = new (Backbone.Router.extend({
       routes: {
-        '': 'sendingMethodGroup', // the default tab is currently mta, needs its own method
+        '': 'defaultRoute',
         'mta(/:group)': 'sendingMethodGroup',
         '(:tab)': 'tabs'
+      },
+      defaultRoute: function () {
+        // display basics tab as default
+        this.tabs('basics');
       },
       sendingMethodGroup: function (group) { // eslint-disable-line func-names
         // display mta tab
@@ -51,10 +55,7 @@ define(
           jQuery('#mailpoet_sending_method_setup').fadeIn();
         }
       },
-      tabs: function (tabStr) { // eslint-disable-line func-names
-        // set default tab
-        var tab = tabStr || 'mta';
-
+      tabs: function (tab) { // eslint-disable-line func-names
         // reset all active tabs
         jQuery('.nav-tab-wrapper a').removeClass('nav-tab-active');
 
