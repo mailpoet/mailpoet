@@ -94,7 +94,7 @@
           // sync mss key with premium key
           $('#mailpoet_api_key').val(mailpoet_premium_key);
           if (mailpoet_premium_key.length > 0) {
-            $('#mailpoet_premium_key_verify').trigger('click');
+            $('#mailpoet_premium_key_verify').trigger('click', false);
           }
           saveSettings();
           return false;

@@ -20,7 +20,7 @@ define(
         'mta(/:group)': 'sendingMethodGroup',
         '(:tab)': 'tabs'
       },
-      defaultRoute: function () {
+      defaultRoute: function () { // eslint-disable-line func-names
         // display basics tab as default
         this.tabs('basics');
       },
