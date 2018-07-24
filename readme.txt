@@ -5,7 +5,7 @@ Tags: newsletter, newsletter subscribers, email, welcome email, post notificatio
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.8
+Stable tag: 3.8.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -146,6 +146,16 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.8.1 - 2018-07-24 =
+* Added: images can be used as backgrounds for column layout blocks;
+* Added: notification if cron ping does not work correctly during first sending attempt;
+* Added: new, prettier email type icon;
+* Added: TLS 1.2 support to Swiftmailer to prevent SMTP sending issues;
+* Added: updated error messages coming from the sending service;
+* Added: clarified sending tab to encourage using our free sending service;
+* Fixed: "Create New Form" link in subscription widget now creates a new form again;
+* Fixed: removed call to action for MSS service for users already using MSS.
 
 = 3.8 - 2018-07-17 =
 * Fixed: proper spacing between paragraphs in full post is now respected;
