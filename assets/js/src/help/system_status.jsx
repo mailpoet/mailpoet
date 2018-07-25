@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactStringReplace from 'react-string-replace';
+import CronStatus from './cron_status.jsx';
 import Tabs from './tabs.jsx';
 
 function renderStatusMessage(status, error, link) {
@@ -65,6 +66,7 @@ function SystemStatus() {
       </div>
       {renderCronSection(systemStatusData)}
       {renderMSSSection(systemStatusData)}
+      <CronStatus status_data={systemStatusData.cronStatus} />
     </div>
   );
 }

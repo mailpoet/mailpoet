@@ -21,11 +21,11 @@ if (container) {
   ReactDOM.render((
     <Router history={history}>
       <Route path="/" component={App}>
-        <IndexRedirect to="systemStatus" />
+        <IndexRedirect to="knowledgeBase" />
         {/* Pages */}
+        <Route path="knowledgeBase(/)**" params={{ tab: 'knowledgeBase' }} component={KnowledgeBase} />
         <Route path="systemStatus(/)**" params={{ tab: 'systemStatus' }} component={SystemStatus} />
         <Route path="systemInfo(/)**" params={{ tab: 'systemInfo' }} component={SystemInfo} />
-        <Route path="knowledgeBase(/)**" params={{ tab: 'knowledgeBase' }} component={KnowledgeBase} />
       </Route>
     </Router>
   ), container);

@@ -448,17 +448,19 @@ class Menu {
 
   function help() {
     $system_info_data = Beacon::getData();
-    $system_status_data = array(
-      'cron' => array(
+    $system_status_data = [
+      'cron' => [
         'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
         'isReachable' => CronHelper::pingDaemon(true)
-      ),
-      'mss' => array(
+      ],
+      'mss' => [
         'enabled' => (Bridge::isMPSendingServiceEnabled()) ?
-          array('isReachable' => Bridge::pingBridge()) :
+          ['isReachable' => Bridge::pingBridge()] :
           false
-      )
-    );
+      ],
+      'cronStatus' => CronHelper::getDaemon(),
+    ];
+    $system_status_data['cronStatus']['accessible'] = CronHelper::isDaemonAccessible();
     $this->displayPage(
       'help.html',
       array(

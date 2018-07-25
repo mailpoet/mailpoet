@@ -18,7 +18,7 @@ class WordPress {
   static function run() {
     return (self::checkExecutionRequirements()) ?
       MailPoet::run() :
-      self::cleanup();
+      self::stop();
   }
 
   static function checkExecutionRequirements() {
@@ -60,10 +60,10 @@ class WordPress {
     );
   }
 
-  static function cleanup() {
+  static function stop() {
     $cron_daemon = CronHelper::getDaemon();
     if($cron_daemon) {
-      CronHelper::deleteDaemon();
+      CronHelper::deactivateDaemon($cron_daemon);
     }
   }
 }

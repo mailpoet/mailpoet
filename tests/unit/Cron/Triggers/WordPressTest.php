@@ -77,11 +77,11 @@ class WordPressTest extends \MailPoetTest {
     expect(WordPress::checkExecutionRequirements())->false();
   }
 
-  function testItCanDeleteRunningDaemon() {
-    Setting::setValue(CronHelper::DAEMON_SETTING, true);
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING))->notNull();
-    WordPress::cleanup();
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING))->null();
+  function testItCanDeactivateRunningDaemon() {
+    Setting::setValue(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
+    expect(Setting::getValue(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
+    WordPress::stop();
+    expect(Setting::getValue(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
   function testItRunsWhenExecutionRequirementsAreMet() {
@@ -93,11 +93,11 @@ class WordPressTest extends \MailPoetTest {
     expect(Setting::getValue(CronHelper::DAEMON_SETTING))->notNull();
   }
 
-  function testItDeletesCronDaemonWhenExecutionRequirementsAreNotMet() {
-    Setting::setValue(CronHelper::DAEMON_SETTING, true);
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING))->notNull();
+  function testItDeactivatesCronDaemonWhenExecutionRequirementsAreNotMet() {
+    Setting::setValue(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
+    expect(Setting::getValue(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
     WordPress::run();
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING))->null();
+    expect(Setting::getValue(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
   function _addMTAConfigAndLog($sent, $status = null) {

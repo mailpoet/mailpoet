@@ -157,6 +157,22 @@ class DaemonTest extends \MailPoetTest {
     $daemon->run();
   }
 
+  function testItTerminatesExecutionWhenDaemonIsDeactivated() {
+    $daemon = Stub::make(new Daemon(true), [
+      'executeScheduleWorker' => null,
+      'executeQueueWorker' => null,
+      'pauseExecution' => null,
+      'terminateRequest' => Expected::exactly(1)
+    ], $this);
+    $data = [
+      'token' => 123,
+      'status' => CronHelper::DAEMON_STATUS_INACTIVE,
+    ];
+    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $daemon->__construct($data);
+    $daemon->run();
+  }
+
   function testItUpdatesDaemonTokenDuringExecution() {
     $daemon = Stub::make(new Daemon(true), array(
       'executeScheduleWorker' => null,
