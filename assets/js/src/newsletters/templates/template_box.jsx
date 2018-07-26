@@ -116,7 +116,7 @@ class TemplateBox extends React.Component {
     }
 
     return (
-      <li className="mailpoet_template_boxes">
+      <li className="mailpoet_template_boxes" data-automation-id="select_template_box">
         <div className="mailpoet_thumbnail">
           { preview }
         </div>

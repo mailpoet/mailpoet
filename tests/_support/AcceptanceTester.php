@@ -77,4 +77,14 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->pressKey($element, \WebDriverKeys::ENTER);
   }
 
+  /**
+   * Navigate to the editor for a newsletter.
+   *
+   * @param int $id
+   */
+  public function amEditingNewsletter($id) {
+    $I = $this;
+    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $id);
+    $I->waitForElement('[data-automation-id="newsletter_title"]');
+  }
 }
