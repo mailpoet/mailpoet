@@ -4,16 +4,20 @@
 
 .mailpoet_save_wrapper
   float: right
+  position: relative
   margin-right: 20px
 
 .mailpoet_save_options
   border-radius(3px)
 
-  float: left
+  position: absolute
+  right: 0
+  z-index: 1000
   overflow: hidden
   margin: 5px 0 0 0
   clear: both
   vertical-align: top
+  white-space: nowrap
 
   background: $white-color
   border: 1px solid $content-border-color
@@ -51,6 +55,9 @@
 .mailpoet_export_template_container
   border-radius(3px)
   display: inline-block
+  position: absolute
+  right: 0
+  z-index: 1000
   clear: both
 
   margin-top: 5px
