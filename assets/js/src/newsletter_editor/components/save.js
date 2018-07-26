@@ -324,8 +324,11 @@ define([
   });
 
   App.on('start', function (BeforeStartApp) {
-    var saveView = new Module.SaveView();
-    BeforeStartApp._appView.showChildView('bottomRegion', saveView);
+    var topSaveView = new Module.SaveView();
+    BeforeStartApp._appView.showChildView('topRegion', topSaveView);
+
+    var bottomSaveView = new Module.SaveView();
+    BeforeStartApp._appView.showChildView('bottomRegion', bottomSaveView);
   });
 
   return Module;
