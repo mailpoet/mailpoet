@@ -124,10 +124,10 @@ define([
       'click .mailpoet_save_show_options': 'toggleSaveOptions',
       'click .mailpoet_save_next': 'next',
       /* Save as template */
-      'click .mailpoet_save_template': 'toggleSaveAsTemplate',
+      'click .mailpoet_save_template': 'showSaveAsTemplate',
       'click .mailpoet_save_as_template': 'saveAsTemplate',
       /* Export template */
-      'click .mailpoet_save_export': 'toggleExportTemplate',
+      'click .mailpoet_save_export': 'showExportTemplate',
       'click .mailpoet_export_template': 'exportTemplate'
     },
 
@@ -146,7 +146,7 @@ define([
       this.validateNewsletter(App.toJSON());
     },
     save: function () {
-      this.hideOptionContents();
+      this.hideSaveOptions();
       App.getChannel().request('save');
     },
     beforeSave: function () {
@@ -159,17 +159,27 @@ define([
       this.$('.mailpoet_editor_last_saved').removeClass('mailpoet_hidden');
       this.$('.mailpoet_autosaved_at').text('');
     },
-    toggleSaveOptions: function () {
-      this.$('.mailpoet_save_options').toggleClass('mailpoet_hidden');
-      this.$('.mailpoet_save_show_options').toggleClass('mailpoet_save_show_options_active');
+    showSaveOptions: function () {
+      this.$('.mailpoet_save_show_options').addClass('mailpoet_save_show_options_active');
+      this.$('.mailpoet_save_options').removeClass('mailpoet_hidden');
+      this.hideSaveAsTemplate();
+      this.hideExportTemplate();
     },
-    toggleSaveAsTemplate: function () {
-      this.$('.mailpoet_save_as_template_container').toggleClass('mailpoet_hidden');
-      this.toggleSaveOptions();
+    hideSaveOptions: function () {
+      this.$('.mailpoet_save_show_options').removeClass('mailpoet_save_show_options_active');
+      this.$('.mailpoet_save_options').addClass('mailpoet_hidden');
+      this.hideSaveAsTemplate();
+      this.hideExportTemplate();
+    },
+    toggleSaveOptions: function () {
+      if (this.$('.mailpoet_save_show_options').hasClass('mailpoet_save_show_options_active')) {
+        this.hideSaveOptions();
+      } else {
+        this.showSaveOptions();
+      }
     },
     showSaveAsTemplate: function () {
       this.$('.mailpoet_save_as_template_container').removeClass('mailpoet_hidden');
-      this.toggleSaveOptions();
     },
     hideSaveAsTemplate: function () {
       this.$('.mailpoet_save_as_template_container').addClass('mailpoet_hidden');
@@ -209,12 +219,11 @@ define([
             }
           );
         });
-        this.hideOptionContents();
+        this.hideSaveOptions();
       }
     },
-    toggleExportTemplate: function () {
-      this.$('.mailpoet_export_template_container').toggleClass('mailpoet_hidden');
-      this.toggleSaveOptions();
+    showExportTemplate: function () {
+      this.$('.mailpoet_export_template_container').removeClass('mailpoet_hidden');
     },
     hideExportTemplate: function () {
       this.$('.mailpoet_export_template_container').addClass('mailpoet_hidden');
@@ -238,13 +247,8 @@ define([
         this.hideExportTemplate();
       }
     },
-    hideOptionContents: function () {
-      this.hideSaveAsTemplate();
-      this.hideExportTemplate();
-      this.$('.mailpoet_save_options').addClass('mailpoet_hidden');
-    },
     next: function () {
-      this.hideOptionContents();
+      this.hideSaveOptions();
       if (!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
         Module._cancelAutosave();
         Module.save().done(function () {
