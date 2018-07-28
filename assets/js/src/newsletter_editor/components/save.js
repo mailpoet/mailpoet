@@ -114,6 +114,11 @@ define([
 
   Module.SaveView = Marionette.View.extend({
     getTemplate: function () { return window.templates.save; },
+    templateContext: function () {
+      return {
+        wrapperClass: this.wrapperClass
+      };
+    },
     events: {
       'click .mailpoet_save_button': 'save',
       'click .mailpoet_save_show_options': 'toggleSaveOptions',
@@ -125,9 +130,17 @@ define([
       'click .mailpoet_save_export': 'toggleExportTemplate',
       'click .mailpoet_export_template': 'exportTemplate'
     },
+
     initialize: function () {
+      this.setDropdownDirectionDown();
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
       App.getChannel().on('afterEditorSave', this.afterSave, this);
+    },
+    setDropdownDirectionDown: function () {
+      this.wrapperClass = 'mailpoet_save_dropdown_down';
+    },
+    setDropdownDirectionUp: function () {
+      this.wrapperClass = 'mailpoet_save_dropdown_up';
     },
     onRender: function () {
       this.validateNewsletter(App.toJSON());
@@ -325,9 +338,10 @@ define([
 
   App.on('start', function (BeforeStartApp) {
     var topSaveView = new Module.SaveView();
-    BeforeStartApp._appView.showChildView('topRegion', topSaveView);
-
     var bottomSaveView = new Module.SaveView();
+    bottomSaveView.setDropdownDirectionUp();
+
+    BeforeStartApp._appView.showChildView('topRegion', topSaveView);
     BeforeStartApp._appView.showChildView('bottomRegion', bottomSaveView);
   });
 

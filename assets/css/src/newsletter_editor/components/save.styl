@@ -13,7 +13,7 @@
   right: 0
   z-index: 1000
   overflow: hidden
-  margin: 5px 0 0 0
+  margin: 5px 0
   clear: both
   vertical-align: top
   white-space: nowrap
@@ -40,15 +40,8 @@
 .mailpoet_save_show_options
   padding: 6px 3px 4px
 
-  &.mailpoet_save_show_options_active
-    .mailpoet_save_show_options_icon::before
-      content: '\f142'
-
 .mailpoet_save_show_options_icon
   vertical-align: middle
-
-  &::before
-    content: '\f140'
 
 .mailpoet_save_as_template_container,
 .mailpoet_export_template_container
@@ -59,7 +52,7 @@
   z-index: 1000
   clear: both
 
-  margin-top: 5px
+  margin: 5px 0
   padding: 0 10px
   background-color: $white-color
   border: 1px solid $structure-border-color
@@ -77,3 +70,35 @@
 
 .mailpoet_save_error
   color: $error-text-color
+
+.mailpoet_save_dropdown_down
+  .mailpoet_save_options,
+  .mailpoet_save_as_template_container,
+  .mailpoet_export_template_container
+    top: 100%
+    bottom: auto
+
+  .mailpoet_save_show_options
+    &.mailpoet_save_show_options_active
+      .mailpoet_save_show_options_icon::before
+        content: '\f142'
+
+  .mailpoet_save_show_options_icon
+    &::before
+      content: '\f140'
+
+.mailpoet_save_dropdown_up
+  .mailpoet_save_options,
+  .mailpoet_save_as_template_container,
+  .mailpoet_export_template_container
+    top: auto
+    bottom: 100%
+
+  .mailpoet_save_show_options
+    &.mailpoet_save_show_options_active
+      .mailpoet_save_show_options_icon::before
+        content: '\f140'
+
+  .mailpoet_save_show_options_icon
+    &::before
+      content: '\f142'
