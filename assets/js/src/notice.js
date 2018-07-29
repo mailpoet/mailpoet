@@ -172,8 +172,8 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disab
       }
 
       if (this.options.hideClose === false) {
-        this.element.append('<a href="javascript:;" class="mailpoet_notice_close"><span class="dashicons dashicons-dismiss"></span></a>');
-        this.element.find('.mailpoet_notice_close').on('click', function () { // eslint-disable-line func-names
+        this.element.append('<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>');
+        this.element.find('.notice-dismiss').on('click', function () { // eslint-disable-line func-names
           jQuery(this).trigger('close');
         });
       }
