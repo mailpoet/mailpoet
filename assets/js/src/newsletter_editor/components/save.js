@@ -34,6 +34,7 @@ define([
   // Save editor contents to server
   Module.save = function () {
     var json = App.toJSON();
+    var editorTop = $('#mailpoet_editor_top');
 
     // Stringify to enable transmission of primitive non-string value types
     if (!_.isUndefined(json.body)) {
@@ -52,12 +53,19 @@ define([
           MailPoet.Notice.error(
             MailPoet.I18n.t('templateSaveFailed'),
             {
+              positionAfter: editorTop,
               scroll: true
             }
           );
         } else {
           $(response.error).each(function (i, error) {
-            MailPoet.Notice.error(error, { scroll: true });
+            MailPoet.Notice.error(
+              error,
+              {
+                positionAfter: editorTop,
+                scroll: true
+              }
+            );
           });
         }
       }
@@ -186,13 +194,13 @@ define([
     },
     saveAsTemplate: function () {
       var templateName = this.$('.mailpoet_save_as_template_name').val();
-      var that = this;
+      var editorTop = $('#mailpoet_editor_top');
 
       if (templateName === '') {
         MailPoet.Notice.error(
           MailPoet.I18n.t('templateNameMissing'),
           {
-            positionAfter: that.$el,
+            positionAfter: editorTop,
             scroll: true
           }
         );
@@ -203,7 +211,7 @@ define([
           MailPoet.Notice.success(
             MailPoet.I18n.t('templateSaved'),
             {
-              positionAfter: that.$el,
+              positionAfter: editorTop,
               scroll: true
             }
           );
@@ -214,7 +222,7 @@ define([
           MailPoet.Notice.error(
             MailPoet.I18n.t('templateSaveFailed'),
             {
-              positionAfter: that.$el,
+              positionAfter: editorTop,
               scroll: true
             }
           );
@@ -230,13 +238,13 @@ define([
     },
     exportTemplate: function () {
       var templateName = this.$('.mailpoet_export_template_name').val();
-      var that = this;
+      var editorTop = $('#mailpoet_editor_top');
 
       if (templateName === '') {
         MailPoet.Notice.error(
           MailPoet.I18n.t('templateNameMissing'),
           {
-            positionAfter: that.$el,
+            positionAfter: editorTop,
             scroll: true
           }
         );
