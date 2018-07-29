@@ -6,6 +6,7 @@ const ListingHeading = () => (
   <h1 className="title">
     {MailPoet.I18n.t('pageTitle')}
     <Link
+      id="mailpoet-new-email"
       className="page-title-action"
       to="/new"
       onClick={() => MailPoet.trackEvent(
