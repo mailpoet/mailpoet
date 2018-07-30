@@ -1,6 +1,8 @@
 import MailPoet from 'mailpoet';
 import React from 'react';
 import KeyValueTable from 'common/key_value_table.jsx';
+import TasksList from './tasks_list/tasks_list.jsx';
+import TasksListDataRow from './tasks_list/tasks_list_data_row.jsx';
 
 const QueueStatus = (props) => {
   const status = props.status_data;
@@ -40,6 +42,15 @@ const QueueStatus = (props) => {
           value: status.tasksStatusCounts.scheduled,
         }]}
       </KeyValueTable>
+
+      <h4>{MailPoet.I18n.t('scheduledTasks')}</h4>
+      <TasksList show_scheduled_at tasks={status.latestTasks.filter(task => (task.status === 'scheduled'))} />
+
+      <h4>{MailPoet.I18n.t('runningTasks')}</h4>
+      <TasksList tasks={status.latestTasks.filter(task => (task.status === null))} />
+
+      <h4>{MailPoet.I18n.t('completedTasks')}</h4>
+      <TasksList tasks={status.latestTasks.filter(task => (task.status === 'completed'))} />
     </div>
   );
 };
@@ -57,6 +68,7 @@ QueueStatus.propTypes = {
       paused: React.PropTypes.number.isRequired,
       scheduled: React.PropTypes.number.isRequired,
     }).isRequired,
+    latestTasks: React.PropTypes.arrayOf(TasksListDataRow.propTypes.task).isRequired,
   }).isRequired,
 };
 
