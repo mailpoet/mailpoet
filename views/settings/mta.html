@@ -1123,19 +1123,23 @@
   function updateMSSActivationUI() {
     var $ = jQuery;
     var group = $('.mailpoet_sending_methods .mailpoet_active').data('group');
-    var key_valid = $('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
+    var key_valid = !$('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
 
     if (group !== 'mailpoet') {
-      $('.mailpoet_actions .mailpoet_invalid_key').toggleClass('mailpoet_hidden', !key_valid);
-      $('.mailpoet_actions .mailpoet_valid_key').toggleClass('mailpoet_hidden', key_valid);
+      $('.mailpoet_actions .mailpoet_invalid_key').toggleClass('mailpoet_hidden', key_valid);
+      $('.mailpoet_actions .mailpoet_valid_key').toggleClass('mailpoet_hidden', !key_valid);
       $('.mailpoet_other_sending_method_action').removeClass('button-primary').addClass('button-secondary').text('<%= __('Configure') %>');
     } else {
       $('.mailpoet_actions .mailpoet_valid_key').addClass('mailpoet_hidden');
-      $('.mailpoet_activated').toggleClass('mailpoet_hidden', key_valid);
+      $('.mailpoet_activated').toggleClass('mailpoet_hidden', !key_valid);
       $('.mailpoet_other_sending_method_action').removeClass('button-secondary').addClass('button-primary').text('<%= __('Activate') %>');
-      $('.mailpoet_invalid_key').toggleClass('mailpoet_hidden', !key_valid);
-      $('.mailpoet_sending_methods li[data-group="'+group+'"], .mailpoet_sending_methods li[data-group="'+group+'"] > .mailpoet_status').toggleClass('mailpoet_invalid_key', key_valid)
+      $('.mailpoet_invalid_key').toggleClass('mailpoet_hidden', key_valid);
+      $('.mailpoet_sending_methods li[data-group="'+group+'"], .mailpoet_sending_methods li[data-group="'+group+'"] > .mailpoet_status').toggleClass('mailpoet_invalid_key', !key_valid)
     }
+
+    if (key_valid) {
+        $('.mailpoet_mss_activate_notice').toggle(group !== 'mailpoet');
+      }
   };
 </script>
 
