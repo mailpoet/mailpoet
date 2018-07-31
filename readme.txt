@@ -4,7 +4,7 @@ Tags: newsletter, newsletter subscribers, email, welcome email, post notificatio
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.8.1
+Stable tag: 3.8.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -145,6 +145,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.8.2 - 2018-07-31 =
+* Added: more useful sending status information in Help page.
 
 = 3.8.1 - 2018-07-24 =
 * Added: images can be used as backgrounds for column layout blocks;
