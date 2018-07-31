@@ -25,6 +25,7 @@ class Daemon {
   }
 
   function ping() {
+    $this->addCacheHeaders();
     $this->terminateRequest(self::PING_SUCCESS_RESPONSE);
   }
 
@@ -33,6 +34,7 @@ class Daemon {
     if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
+    $this->addCacheHeaders();
     if(!$this->request_data) {
       $error = __('Invalid or missing request data.', 'mailpoet');
     } else {
@@ -134,5 +136,17 @@ class Daemon {
     return !$daemon ||
       $daemon['token'] !== $this->token ||
       (isset($daemon['status']) && $daemon['status'] !== CronHelper::DAEMON_STATUS_ACTIVE);
+  }
+
+  private function addCacheHeaders() {
+    if(headers_sent()) {
+      return;
+    }
+    // Common Cache Control header. Should be respected by cache proxies and CDNs.
+    header('Cache-Control: no-cache');
+    // Mark as blacklisted for SG Optimizer for sites hosted on SiteGround.
+    header('X-Cache-Enabled: False');
+    // Set caching header for LiteSpeed server.
+    header('X-LiteSpeed-Cache-Control: no-cache');
   }
 }
