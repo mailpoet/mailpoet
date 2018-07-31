@@ -40,6 +40,22 @@ class CronHelper {
     return Setting::getValue(self::DAEMON_SETTING);
   }
 
+  static function saveDaemonLastError($error) {
+    $daemon = self::getDaemon();
+    if($daemon) {
+      $daemon['last_error'] = $error;
+      self::saveDaemon($daemon);
+    }
+  }
+
+  static function saveDaemonRunCompleted($run_completed_at) {
+    $daemon = self::getDaemon();
+    if($daemon) {
+      $daemon['run_completed_at'] = $run_completed_at;
+      self::saveDaemon($daemon);
+    }
+  }
+
   static function saveDaemon($daemon) {
     $daemon['updated_at'] = time();
     return Setting::setValue(

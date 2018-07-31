@@ -137,7 +137,7 @@ class DaemonTest extends \MailPoetTest {
     $daemon->run();
   }
 
-  function testItTerminatesExecutionWhenDaemonTokenChanges() {
+  function testItTerminatesExecutionWhenDaemonTokenChangesAndKeepsChangedToken() {
     $daemon = Stub::make(new Daemon(true), array(
       'executeScheduleWorker' => function() {
         Setting::setValue(
@@ -155,6 +155,8 @@ class DaemonTest extends \MailPoetTest {
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
     $daemon->__construct($data);
     $daemon->run();
+    $data_after_run = Setting::getValue(CronHelper::DAEMON_SETTING);
+    expect($data_after_run['token'], 567);
   }
 
   function testItTerminatesExecutionWhenDaemonIsDeactivated() {
