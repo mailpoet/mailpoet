@@ -278,19 +278,6 @@ class Menu {
       )
     );
 
-    // Welcome page
-    add_submenu_page(
-      true,
-      $this->setPageTitle(__('Welcome', 'mailpoet')),
-      __('Welcome', 'mailpoet'),
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'mailpoet-welcome',
-      array(
-        $this,
-        'welcome'
-      )
-    );
-
     // Update page
     add_submenu_page(
       true,
@@ -321,33 +308,6 @@ class Menu {
   function disableWPEmojis() {
     remove_action('admin_print_scripts', 'print_emoji_detection_script');
     remove_action('admin_print_styles', 'print_emoji_styles');
-  }
-
-  function welcome() {
-    if((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
-
-    global $wp;
-    $current_url = home_url(add_query_arg($wp->query_string, $wp->request));
-    $redirect_url =
-      (!empty($_GET['mailpoet_redirect']))
-        ? urldecode($_GET['mailpoet_redirect'])
-        : wp_get_referer();
-
-    if(
-      $redirect_url === $current_url
-      or
-      strpos($redirect_url, 'mailpoet') === false
-    ) {
-      $redirect_url = admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG);
-    }
-
-    $data = array(
-      'settings' => Setting::getAll(),
-      'current_user' => wp_get_current_user(),
-      'redirect_url' => $redirect_url,
-      'sub_menu' => self::MAIN_PAGE_SLUG
-    );
-    $this->displayPage('welcome.html', $data);
   }
 
   function migration() {
