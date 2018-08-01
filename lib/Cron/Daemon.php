@@ -61,12 +61,10 @@ class Daemon {
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
     } catch(\Exception $e) {
-      $daemon['last_error'] = $e->getMessage();
-      CronHelper::saveDaemon($daemon);
+      CronHelper::saveDaemonLastError($e->getMessage());
     }
     // Log successful execution
-    $daemon['run_completed_at'] = time();
-    CronHelper::saveDaemon($daemon);
+    CronHelper::saveDaemonRunCompleted(time());
     // if workers took less time to execute than the daemon execution limit,
     // pause daemon execution to ensure that daemon runs only once every X seconds
     $elapsed_time = microtime(true) - $this->timer;
