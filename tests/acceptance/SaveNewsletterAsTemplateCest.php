@@ -2,6 +2,10 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Test\DataFactories\Newsletter;
+
+require_once __DIR__ . '/../DataFactories/Newsletter.php';
+
 class SaveNewsletterAsTemplateCest {
   function saveStandardNewsletterAsTemplate(\AcceptanceTester $I) {
     $I->wantTo('Create standard newsletter and save as a template');
@@ -10,33 +14,36 @@ class SaveNewsletterAsTemplateCest {
     $template_name = 'Magical Unicorn Test Template';
     $template_description = 'This is a description';
 
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id=\'new_email\']');
-
-    // step 1 - select notification type
-    $I->seeInCurrentUrl('#/new');
-    $I->click('[data-automation-id=\'create_standard\']');
-
-    // step 2 - select template
-    $standard_template = '[data-automation-id=\'select_template_0\']';
-    $I->waitForElement($standard_template);
-    $I->see('Newsletters', ['css' => 'a.current']);
-    $I->seeInCurrentUrl('#/template');
-    $I->click($standard_template);
-
-    // step 3 - design newsletter (update subject)
-    $title_element = '[data-automation-id=\'newsletter_title\']';
-    $I->waitForElement($title_element, 30);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
-    $I->fillField($title_element, $newsletter_title);
+    // step 1 - Prepare post notification data
+    $newsletterFactory = new Newsletter();
+    $newsletter = $newsletterFactory->withSubject($newsletter_title)
+      ->withType('standard')
+      ->create();
     
-    //step 4 - save as a template
-    $I->click(['css'=>'.dashicons.mailpoet_save_show_options_icon']);
+    // step 2 - Go to editor
+    $I->login();
+    $I->amEditingNewsletter($newsletter->id);
+    
+    //step 3 - save as a template
+    $I->click('[data-automation-id="newsletter_save_options_toggle"]');
     $I->click('[data-automation-id="newsletter_save_as_template_option"]');
     $I->fillField(['name' => 'template_name'], $template_name);
     $I->fillField(['name' => 'template_description'], $template_description);
     $I->click('[data-automation-id="newsletter_save_as_template_button"]');
-    $I->waitForText('Template has been saved', 30);
+    $I->waitForText('Template has been saved', 20);
+    
+    //step 4 - confirm template can be used
+    $I->amOnMailpoetPage('Emails');
+    $I->click('[data-automation-id="new_email"]');
+    $I->seeInCurrentUrl('#/new');
+    $I->click('[data-automation-id=\'create_standard\']');
+    $I->waitForText('Newsletters');
+    $I->seeInCurrentUrl('#/template');
+    
+    $I->waitForElement('[data-automation-id="select_template_0"]');
+    $I->see('Magical Unicorn Test Template');
+    $I->click(['xpath' => '//*[text()="' . $template_name . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
+    $I->waitForElement('[data-automation-id="newsletter_title"]');
+    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     }
 }
