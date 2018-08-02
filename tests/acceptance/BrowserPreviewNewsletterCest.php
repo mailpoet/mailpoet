@@ -20,7 +20,7 @@ class BrowserPreviewNewsletterCest {
     $I->login();
     $I->amEditingNewsletter($newsletter->id);
     $I->click(['css' => '.mailpoet_region.mailpoet_preview_region']);
-    $I->click('View in browser');
+    $I->click('input[name="preview"]');
     $I->waitForText('Newsletter Preview');
     }
     
