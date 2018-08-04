@@ -4,19 +4,19 @@ import MailPoet from 'mailpoet';
 const introSteps = [
   {
     element: document.querySelector('#toplevel_page_mailpoet-newsletters > ul > li > a[href*=mailpoet-segments]').parentNode,
-    intro: 'Create your lists here. Subscribers can be added to one or many of lists.',
+    intro: MailPoet.I18n.t('introLists'),
   },
   {
     element: document.querySelector('#toplevel_page_mailpoet-newsletters > ul > li > a[href*=mailpoet-forms]').parentNode,
-    intro: 'Create a form and add it to your website so your visitors can subscribe to your list.',
+    intro: MailPoet.I18n.t('introForms'),
   },
   {
     element: '.mailpoet-chat',
-    intro: 'You have a question? Start a chat or send a message to get an answer from our support team.',
+    intro: MailPoet.I18n.t('introChat'),
   },
   {
     element: '#mailpoet-new-email',
-    intro: 'We suggest you begin by creating a newsletter, a welcome email or a post notification. Enjoy!',
+    intro: MailPoet.I18n.t('introEmails'),
   },
 ];
 
@@ -24,10 +24,10 @@ function Intro() {
   const intro = introJs();
   intro.setOptions({
     steps: introSteps,
-    nextLabel: 'Next' + ' &rarr;',
-    prevLabel: '&larr; ' + 'Back',
-    skipLabel: 'Skip',
-    doneLabel: 'Done',
+    nextLabel: `${MailPoet.I18n.t('introNext')} →`,
+    prevLabel: `← ${MailPoet.I18n.t('introBack')}`,
+    skipLabel: MailPoet.I18n.t('introSkip'),
+    doneLabel: MailPoet.I18n.t('introDone'),
     positionPrecedence: ['right', 'left', 'bottom', 'top'],
     buttonClass: 'button',
     hidePrev: true,
