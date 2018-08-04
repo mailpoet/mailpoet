@@ -1,6 +1,13 @@
 .mailpoet-intro-active #adminmenuback
   z-index: auto;
 
+// fix for intro.js bug (https://github.com/heelhook/chardin.js/issues/26) causing
+// target element appear under helper layer when parent has 'position: fixed' - this
+// happens when sticky WP menu is fixed, it could cause it to scroll away, but since
+// intro is shown when page is empty (= shorter than menu), it should never happen
+#adminmenuwrap.introjs-fixParent
+  position: absolute
+
 #adminmenu li.introjs-showElement
   background: inherit
 
