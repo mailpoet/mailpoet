@@ -1,0 +1,18 @@
+.mailpoet-intro-active #adminmenuback
+  z-index: auto;
+
+#adminmenu li.introjs-showElement
+  background: inherit
+
+.introjs-helperLayer
+  border: none
+  border-radius: 3px
+  background-color: rgba(255, 255, 255, .7)
+
+.introjs-tooltip
+  min-width: 240px
+
+  // fix for wrong bottom-up tooltip vertical align, bottom-up tooltips
+  // have (negative) 'top' set in intro.js, no other way to select them
+  &[style*="top:"]
+    margin-top: -8px

@@ -29,6 +29,18 @@ function Intro() {
     skipLabel: 'Skip',
     doneLabel: 'Done',
     positionPrecedence: ['right', 'left', 'bottom', 'top'],
+    helperElementPadding: 12,
+    scrollToElement: false,
+    showStepNumbers: false,
+    tooltipPosition: 'auto',
+  });
+
+  intro.onafterchange(() => {
+    document.body.classList.add('mailpoet-intro-active');
+  });
+
+  intro.onexit(() => {
+    document.body.classList.remove('mailpoet-intro-active');
   });
 
   intro.start();
