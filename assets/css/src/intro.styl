@@ -16,3 +16,42 @@
   // have (negative) 'top' set in intro.js, no other way to select them
   &[style*="top:"]
     margin-top: -8px
+
+.introjs-tooltip .button
+  margin-top: 15px
+  position: relative
+
+  &:hover, &:focus
+    z-index: 1
+
+  // fix for focused button not having 2px bottom border (as non-focused do)
+  &:focus
+    height: 100%
+    margin-bottom: -1px
+
+    &:after
+      content: ''
+      position: absolute
+      bottom: 0
+      left: 0
+      right: 0
+      height: 1px
+      background: #5b9dd9
+
+  &.introjs-hidden
+    display: none
+
+  &.introjs-skipbutton
+    float: left
+
+  &.introjs-donebutton
+    float: right
+
+  &.introjs-prevbutton
+    border-top-right-radius: 0
+    border-bottom-right-radius: 0
+
+  &:not(.introjs-hidden) + .introjs-nextbutton, &.introjs-donebutton
+    border-top-left-radius: 0
+    border-bottom-left-radius: 0
+    margin-left: -1px
