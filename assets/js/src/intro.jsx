@@ -38,8 +38,16 @@ function Intro() {
     tooltipPosition: 'auto',
   });
 
-  intro.onafterchange(() => {
+  intro.onafterchange((targetElement) => {
     document.body.classList.add('mailpoet-intro-active');
+
+    // fix for intro.js positioning bug on 'position: fixed' elements
+    if (getComputedStyle(targetElement).getPropertyValue('position') === 'fixed') {
+      const helperLayer = document.querySelector('.introjs-helperLayer');
+      const referenceLayer = document.querySelector('.introjs-tooltipReferenceLayer');
+      referenceLayer.style.top = `${parseInt(referenceLayer.style.top, 10) - pageYOffset}px`;
+      helperLayer.style.top = `${parseInt(helperLayer.style.top, 10) - pageYOffset}px`;
+    }
   });
 
   intro.onexit(() => {
