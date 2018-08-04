@@ -305,6 +305,7 @@
 <% endblock %>
 
 <% block after_javascript %>
+<% if settings.show_intro %>
 <script>
   if (typeof olark !== 'undefined') {
     olark('api.box.onShow', function() {
@@ -318,4 +319,5 @@
     });
   }
 </script>
+<% endif %>
 <% endblock %>

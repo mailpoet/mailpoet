@@ -54,6 +54,18 @@ function Intro() {
     document.body.classList.remove('mailpoet-intro-active');
   });
 
+  intro.onskip(() => {
+    // this is called also when "Done" button used
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'settings',
+      action: 'set',
+      data: {
+        show_intro: 0,
+      },
+    });
+  });
+
   intro.start();
 }
 
