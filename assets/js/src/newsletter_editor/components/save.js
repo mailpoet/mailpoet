@@ -34,6 +34,7 @@ define([
   // Save editor contents to server
   Module.save = function () {
     var json = App.toJSON();
+    var editorTop = $('#mailpoet_editor_top');
 
     // Stringify to enable transmission of primitive non-string value types
     if (!_.isUndefined(json.body)) {
@@ -52,12 +53,19 @@ define([
           MailPoet.Notice.error(
             MailPoet.I18n.t('templateSaveFailed'),
             {
+              positionAfter: editorTop,
               scroll: true
             }
           );
         } else {
           $(response.error).each(function (i, error) {
-            MailPoet.Notice.error(error, { scroll: true });
+            MailPoet.Notice.error(
+              error,
+              {
+                positionAfter: editorTop,
+                scroll: true
+              }
+            );
           });
         }
       }
@@ -114,26 +122,39 @@ define([
 
   Module.SaveView = Marionette.View.extend({
     getTemplate: function () { return window.templates.save; },
+    templateContext: function () {
+      return {
+        wrapperClass: this.wrapperClass
+      };
+    },
     events: {
       'click .mailpoet_save_button': 'save',
       'click .mailpoet_save_show_options': 'toggleSaveOptions',
       'click .mailpoet_save_next': 'next',
       /* Save as template */
-      'click .mailpoet_save_template': 'toggleSaveAsTemplate',
+      'click .mailpoet_save_template': 'showSaveAsTemplate',
       'click .mailpoet_save_as_template': 'saveAsTemplate',
       /* Export template */
-      'click .mailpoet_save_export': 'toggleExportTemplate',
+      'click .mailpoet_save_export': 'showExportTemplate',
       'click .mailpoet_export_template': 'exportTemplate'
     },
+
     initialize: function () {
+      this.setDropdownDirectionDown();
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
       App.getChannel().on('afterEditorSave', this.afterSave, this);
+    },
+    setDropdownDirectionDown: function () {
+      this.wrapperClass = 'mailpoet_save_dropdown_down';
+    },
+    setDropdownDirectionUp: function () {
+      this.wrapperClass = 'mailpoet_save_dropdown_up';
     },
     onRender: function () {
       this.validateNewsletter(App.toJSON());
     },
     save: function () {
-      this.hideOptionContents();
+      this.hideSaveOptions();
       App.getChannel().request('save');
     },
     beforeSave: function () {
@@ -146,30 +167,40 @@ define([
       this.$('.mailpoet_editor_last_saved').removeClass('mailpoet_hidden');
       this.$('.mailpoet_autosaved_at').text('');
     },
-    toggleSaveOptions: function () {
-      this.$('.mailpoet_save_options').toggleClass('mailpoet_hidden');
-      this.$('.mailpoet_save_show_options').toggleClass('mailpoet_save_show_options_active');
+    showSaveOptions: function () {
+      this.$('.mailpoet_save_show_options').addClass('mailpoet_save_show_options_active');
+      this.$('.mailpoet_save_options').removeClass('mailpoet_hidden');
+      this.hideSaveAsTemplate();
+      this.hideExportTemplate();
     },
-    toggleSaveAsTemplate: function () {
-      this.$('.mailpoet_save_as_template_container').toggleClass('mailpoet_hidden');
-      this.toggleSaveOptions();
+    hideSaveOptions: function () {
+      this.$('.mailpoet_save_show_options').removeClass('mailpoet_save_show_options_active');
+      this.$('.mailpoet_save_options').addClass('mailpoet_hidden');
+      this.hideSaveAsTemplate();
+      this.hideExportTemplate();
+    },
+    toggleSaveOptions: function () {
+      if (this.$('.mailpoet_save_show_options').hasClass('mailpoet_save_show_options_active')) {
+        this.hideSaveOptions();
+      } else {
+        this.showSaveOptions();
+      }
     },
     showSaveAsTemplate: function () {
       this.$('.mailpoet_save_as_template_container').removeClass('mailpoet_hidden');
-      this.toggleSaveOptions();
     },
     hideSaveAsTemplate: function () {
       this.$('.mailpoet_save_as_template_container').addClass('mailpoet_hidden');
     },
     saveAsTemplate: function () {
       var templateName = this.$('.mailpoet_save_as_template_name').val();
-      var that = this;
+      var editorTop = $('#mailpoet_editor_top');
 
       if (templateName === '') {
         MailPoet.Notice.error(
           MailPoet.I18n.t('templateNameMissing'),
           {
-            positionAfter: that.$el,
+            positionAfter: editorTop,
             scroll: true
           }
         );
@@ -180,7 +211,7 @@ define([
           MailPoet.Notice.success(
             MailPoet.I18n.t('templateSaved'),
             {
-              positionAfter: that.$el,
+              positionAfter: editorTop,
               scroll: true
             }
           );
@@ -191,30 +222,29 @@ define([
           MailPoet.Notice.error(
             MailPoet.I18n.t('templateSaveFailed'),
             {
-              positionAfter: that.$el,
+              positionAfter: editorTop,
               scroll: true
             }
           );
         });
-        this.hideOptionContents();
+        this.hideSaveOptions();
       }
     },
-    toggleExportTemplate: function () {
-      this.$('.mailpoet_export_template_container').toggleClass('mailpoet_hidden');
-      this.toggleSaveOptions();
+    showExportTemplate: function () {
+      this.$('.mailpoet_export_template_container').removeClass('mailpoet_hidden');
     },
     hideExportTemplate: function () {
       this.$('.mailpoet_export_template_container').addClass('mailpoet_hidden');
     },
     exportTemplate: function () {
       var templateName = this.$('.mailpoet_export_template_name').val();
-      var that = this;
+      var editorTop = $('#mailpoet_editor_top');
 
       if (templateName === '') {
         MailPoet.Notice.error(
           MailPoet.I18n.t('templateNameMissing'),
           {
-            positionAfter: that.$el,
+            positionAfter: editorTop,
             scroll: true
           }
         );
@@ -225,13 +255,8 @@ define([
         this.hideExportTemplate();
       }
     },
-    hideOptionContents: function () {
-      this.hideSaveAsTemplate();
-      this.hideExportTemplate();
-      this.$('.mailpoet_save_options').addClass('mailpoet_hidden');
-    },
     next: function () {
-      this.hideOptionContents();
+      this.hideSaveOptions();
       if (!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
         Module._cancelAutosave();
         Module.save().done(function () {
@@ -324,8 +349,12 @@ define([
   });
 
   App.on('start', function (BeforeStartApp) {
-    var saveView = new Module.SaveView();
-    BeforeStartApp._appView.showChildView('bottomRegion', saveView);
+    var topSaveView = new Module.SaveView();
+    var bottomSaveView = new Module.SaveView();
+    bottomSaveView.setDropdownDirectionUp();
+
+    BeforeStartApp._appView.showChildView('topRegion', topSaveView);
+    BeforeStartApp._appView.showChildView('bottomRegion', bottomSaveView);
   });
 
   return Module;

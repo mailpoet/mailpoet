@@ -12,7 +12,8 @@ define([
       contentRegion: '#mailpoet_editor_content',
       sidebarRegion: '#mailpoet_editor_sidebar',
       bottomRegion: '#mailpoet_editor_bottom',
-      headingRegion: '#mailpoet_editor_heading'
+      headingRegion: '#mailpoet_editor_heading',
+      topRegion: '#mailpoet_editor_top'
     }
   });
 

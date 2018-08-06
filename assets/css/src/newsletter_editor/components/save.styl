@@ -1,15 +1,23 @@
 #mailpoet_editor_bottom
-  margin-top: 39px
-  margin-left: 29px
+  margin: 10px 0 70px
+
+.mailpoet_save_wrapper
+  float: right
+  position: relative
+  margin-right: 20px
+  margin-bottom: 10px
 
 .mailpoet_save_options
   border-radius(3px)
 
-  float: left
+  position: absolute
+  right: 0
+  z-index: 1000
   overflow: hidden
-  margin: 5px 0 0 0
+  margin: 5px 0
   clear: both
   vertical-align: top
+  white-space: nowrap
 
   background: $white-color
   border: 1px solid $content-border-color
@@ -33,23 +41,19 @@
 .mailpoet_save_show_options
   padding: 6px 3px 4px
 
-  &.mailpoet_save_show_options_active
-    .mailpoet_save_show_options_icon::before
-      content: '\f142'
-
 .mailpoet_save_show_options_icon
   vertical-align: middle
-
-  &::before
-    content: '\f140'
 
 .mailpoet_save_as_template_container,
 .mailpoet_export_template_container
   border-radius(3px)
   display: inline-block
+  position: absolute
+  right: 0
+  z-index: 1000
   clear: both
 
-  margin-top: 5px
+  margin: 5px 0
   padding: 0 10px
   background-color: $white-color
   border: 1px solid $structure-border-color
@@ -61,7 +65,41 @@
 .mailpoet_editor_last_saved
   color: $primary-inactive-color
   font-size: 0.9em
-  display: inline
+  position: absolute
+  right: 0
+  margin-top: 10px
 
 .mailpoet_save_error
   color: $error-text-color
+
+.mailpoet_save_dropdown_down
+  .mailpoet_save_options,
+  .mailpoet_save_as_template_container,
+  .mailpoet_export_template_container
+    top: 100%
+    bottom: auto
+
+  .mailpoet_save_show_options
+    &.mailpoet_save_show_options_active
+      .mailpoet_save_show_options_icon::before
+        content: '\f142'
+
+  .mailpoet_save_show_options_icon
+    &::before
+      content: '\f140'
+
+.mailpoet_save_dropdown_up
+  .mailpoet_save_options,
+  .mailpoet_save_as_template_container,
+  .mailpoet_export_template_container
+    top: auto
+    bottom: 100%
+
+  .mailpoet_save_show_options
+    &.mailpoet_save_show_options_active
+      .mailpoet_save_show_options_icon::before
+        content: '\f140'
+
+  .mailpoet_save_show_options_icon
+    &::before
+      content: '\f142'
