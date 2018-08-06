@@ -12,7 +12,6 @@ use MailPoet\Listing;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
@@ -22,6 +21,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
+use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\State;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
@@ -467,6 +467,7 @@ class Menu {
     ];
     $system_status_data['cronStatus']['accessible'] = CronHelper::isDaemonAccessible();
     $system_status_data['queueStatus']['tasksStatusCounts'] = $tasks_state->getCountsPerStatus();
+    $system_status_data['queueStatus']['latestTasks'] = $tasks_state->getLatestTasks(Sending::TASK_TYPE);
     $this->displayPage(
       'help.html',
       array(
