@@ -16,38 +16,33 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     delete_transient('dismissed-php-version-outdated-notice');
   }
 
-  function testItPrintsWarningFor53() {
-    $warning = $this->phpVersionWarning->init('5.3.2', true);
-    expect($warning)->contains('MailPoet requires PHP version 7 or newer.');
-    expect($warning)->notContains('is-dismissible');
-  }
-
-  function testItPrintsWarningFor54() {
-    $warning = $this->phpVersionWarning->init('5.4.1', true);
-    expect($warning)->contains('MailPoet requires PHP version 7 or newer.');
-    expect($warning)->notContains('is-dismissible');
-  }
-
   function testItPrintsWarningFor55() {
     $warning = $this->phpVersionWarning->init('5.5.3', true);
     expect($warning)->contains('Your website is running on PHP 5.5.3');
-    expect($warning)->contains('is-dismissible');
+    expect($warning)->contains('MailPoet will require version 7');
   }
 
-  function testItPrintsNoWarningFor56() {
+
+  function testItPrintsWarningFor56() {
     $warning = $this->phpVersionWarning->init('5.6.3', true);
+    expect($warning)->contains('Your website is running on PHP 5.6');
+    expect($warning)->contains('MailPoet will require version 7');
+  }
+
+  function testItPrintsNoWarningFor70() {
+    $warning = $this->phpVersionWarning->init('7.0', true);
     expect($warning)->null();
   }
 
   function testItPrintsNoWarningWhenDisabled() {
-    $warning = $this->phpVersionWarning->init('5.3.2', false);
+    $warning = $this->phpVersionWarning->init('5.5.3', false);
     expect($warning)->null();
   }
 
   function testItPrintsNoWarningWhenDismised() {
-    $this->phpVersionWarning->init('5.3.2', true);
+    $this->phpVersionWarning->init('5.5.3', true);
     do_action('wp_ajax_dismissed_notice_handler');
-    $warning = $this->phpVersionWarning->init('5.3.2', true);
+    $warning = $this->phpVersionWarning->init('5.5.3', true);
     expect($warning)->null();
   }
 
