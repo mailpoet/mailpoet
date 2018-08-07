@@ -104,6 +104,7 @@
             <input
               type="radio"
               name="tracking[enabled]"
+              data-automation-id="tracking-enabled-radio"
               value="1"
               <% if(settings.tracking.enabled) %>
               checked="checked"
@@ -115,6 +116,7 @@
             <input
               type="radio"
               name="tracking[enabled]"
+              data-automation-id="tracking-disabled-radio"
               value=""
               <% if not(settings.tracking.enabled) %>
               checked="checked"
@@ -220,7 +222,7 @@
             />
           </p>
           <div id="settings_re_captcha_tokens_error" class="mailpoet_error_item mailpoet_error">
-            <%= __('Please fill the reCAPTCHA keys.') %> 
+            <%= __('Please fill the reCAPTCHA keys.') %>
           </div>
         </div>
       </td>

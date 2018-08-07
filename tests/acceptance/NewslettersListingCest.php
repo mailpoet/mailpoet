@@ -25,14 +25,22 @@ class NewslettersListingCest {
     $I->login();
 
     // column is hidden when tracking is not enabled
-    $I->cli('db query "UPDATE mp_mailpoet_settings SET value = null WHERE name = \'tracking\'" --allow-root');
+    $I->amOnMailpoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->click('[data-automation-id="tracking-disabled-radio"]');
+    $I->click('[data-automation-id="settings-submit-button"]');
+
     $I->amOnMailpoetPage('Emails');
     $I->waitForText('Subject', 5);
     $I->dontSee('Opened, Clicked');
 
     // column is visible when tracking is enabled
-    $I->cli('db query "UPDATE mp_mailpoet_settings SET value = \'a:1:{s:7:\"enabled\";s:1:\"1\";}\' WHERE name = \'tracking\'" --allow-root');
-    $I->reloadPage();
+    $I->amOnMailpoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->click('[data-automation-id="tracking-enabled-radio"]');
+    $I->click('[data-automation-id="settings-submit-button"]');
+
+    $I->amOnMailpoetPage('Emails');
     $I->waitForText('Subject', 5);
     $I->see('Opened, Clicked');
   }
