@@ -4,7 +4,7 @@ Tags: newsletter, newsletter subscribers, email, welcome email, post notificatio
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.8.3
+Stable tag: 3.8.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -145,6 +145,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.8.4 - 2018-08-07 =
+* Added: activation prompt for Mailpoet Sending Service when API key is verified;
+* Added: next scheduled tasks now display in sending queue status;
+* Added: new additional save button to the top of editor page;
 
 = 3.8.3 - 2018-08-01 =
 * Fixed: resolved potential duplicate sending issue.
