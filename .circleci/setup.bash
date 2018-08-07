@@ -21,6 +21,11 @@ function setup {
 	./composer.phar install
 	./do install
 
+	until mysql -h 127.0.0.1 -u root -e "select 1"; do
+        >&2 echo "Mysql is starting up ... will try again momentarily"
+        sleep 1
+    done
+
 	# Set up WordPress
 	mysql -h 127.0.0.1 -u root -e "create database wordpress"
 	wp core download $wp_cli_wordpress_path $wp_cli_allow_root
