@@ -44,7 +44,7 @@ class Changelog {
           // Migration from MP2
           $redirect_url = admin_url('admin.php?page=mailpoet-migration');
         } else {
-          $redirect_url = admin_url('admin.php?page=mailpoet-welcome');
+          $redirect_url = admin_url('admin.php?page=mailpoet-welcome-wizard');
         }
       }
     }
