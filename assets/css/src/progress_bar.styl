@@ -28,3 +28,36 @@
   .mailpoet_progress_bar
     background-color: hsla(191, 78%, 80%, 1)
     background-image: linear-gradient(top,  hsla(191, 78%, 80%, 1), hsla(191, 76%, 67%, 1))
+
+.mailpoet_stepped_progress_bar
+  margin: auto
+  width: 400px
+  &:before
+    position: relative
+    top: 9px
+    content: ""
+    display: block
+    height: 2px
+    width: 100%
+    border-radius: 2px
+    background-color: #d8d8d8
+    margin: auto
+
+.mailpoet_stepped_progress_bar_step
+  display: inline-block
+  &:before
+    position: relative
+    content: ""
+    display: block
+    height: 14px
+    width: 14px
+    border-radius: 14px
+    background-color: #d8d8d8
+    margin: auto
+  &.active
+    &:before
+      background-color: #979797
+
+@media screen and (max-width 520px)
+  .mailpoet_stepped_progress_bar
+    width: 360px
