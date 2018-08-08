@@ -1,0 +1,118 @@
+.mailpoet_welcome_wizard_centered_column
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+
+.mailpoet_welcome_wizard_header img
+  margin-bottom: 20px
+
+.mailpoet_welcome_wizard_steps
+  padding-top: 20px
+  width: 100%
+
+.mailpoet_welcome_wizard_step_content
+  margin-top: 40px
+  max-width: 620px
+  min-height: 35%vh;
+  h1
+    font-weight: 400
+    padding-bottom: 10px
+    text-align: center
+  p
+    font-weight: normal
+    font-size: 15px
+    line-height: 22px
+    color: #595c65
+    text-align: center
+    margin: 10px 0;
+
+#mailpoet_sender_form
+  margin-top: 30px
+  width: 330px
+  label
+    display: inline-block
+    font-size: 15px
+    margin-bottom: 20px
+  input[type="text"]
+    margin-top: 10px
+    font-size: 15px
+    width: 328px
+    height: 30px
+  input[type="submit"]
+    margin: 50px 0 25px 0
+  a
+    font-size: 12px
+    color: #595c65
+
+.mailpoet_sender_form_loading
+  opacity: .5
+
+.mailpoet_welcome_wizard_help_info_block
+  padding-left: 180px
+  position: relative
+  margin-bottom: 10px
+  p
+    text-align: left
+
+.mailpoet_welcome_wizard_support_button
+  background: #32a8d9 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAA3lBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ymXGKAAAASXRSTlMAAQIFBwoPEBIUFRscHR8jKCkqLC0/Q0RGSEpNUFFXYHFzeXp9gIKFjKCjpamwvL7Aw8bIy8zN0NLT1dja3ODk5ujq7PT19/3+6Nyy9QAAAklJREFUeAGl1/1W4jwQBvAHBapi0erLK7XsKmLxAyp+SBEVAUXluf8b2ibHnqUk0LT7+3+anJlpMoGe1Wh3B9MZOZsOuu2GBWN2q//NhO9+y4YJtzenxrznIs1xyJXCY6xTDfhj3Gl6jm1ZtuM1O2P+CKpY6eST0sh3kOD4I0qfJ9ArXVG6cwtQFNw7SlclaGzdU3ipY4X6C4X7LSh2n2VN/CJWKvqygs+7yroydlLDWrWJjF5auyT3PKwgRWUod17CIpmrhzJSlR9k1hI1kuuWYaAs116oWFXUd1KBkcpE1LuKWCDyXIOhmsh5gB/HjPgw5jMS93koeqMIY0XRLSEkl5E6Mqgz4kLoiX5G7PKLy74usUT0eQ8Rex5/RviPOodIcknObQAtkqNCtuDCiGQLQF+mOtu2ZcL7gCWq5uCvTWvZJhSO6AwLDZJjZDYm2UCbZAeZdUi20SXZRGZNkl0MSHrIzCM5wFTmKzOH5BQzkjbWlkpXMZvkDIxYgNIkKb1iMfJPwXm3vc2ImjC1w3SNdkDyPW+pXJJPeZvklGSQtz2vSV7k/THeSDaUX9LMPiM7usNALY7ijGSYdgwdQqvwSvJcPQCNgo8Y2VOPXqNt35C81R36m2pPaRf28l03eCQ53Mh30ZXkwrmu2Ph3VC9382BlrMgXrA405sHqKGUerA5x5sHq+GgebDy4/v/IBZlG5qMbJpgP6/tnr0z6MHkmbB+4p9dvXPbxO+sDZehZsYxPI956G/keZQzP95BGfQ7y/Sm4+LUDrT+vKBtiP2phEAAAAABJRU5ErkJggg==') center center no-repeat
+  background-size: 30px
+  display: inline-block
+  height: 54px
+  width: 54px
+  border-radius: 28px
+  position: absolute
+  top: 10px
+  left: 70px
+  box-shadow: 2px 2px 8px #666;
+  transform: scale(0.8)
+
+.mailpoet_welcome_wizard_video_badge
+  cursor: default
+  position: absolute
+  top: 20px
+  left: 30px
+  line-height: 1.5em
+  padding-bottom: 0
+  .dashicons
+    line-height: 1em
+  &:hover
+    background: $video-guide-badge-color
+
+.mailpoet_welcome_wizard_mail_icon
+  background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABrCAYAAADw4IlaAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABT9JREFUeNrsnTFSGz0YhhWSgpJJkS4z9tBS4JbKOUHwDfAJYp8AcwLDCSBdOpwT4IoWCoo0jJ1JlybcIPmEvw0LwyTG1iftrp5nRjGh+PktHmv16t3YzgEA5Mqrp9/Y297pysMnGftMDwRmIuPk8vZm+qyAIt9AHsbMExjTFwnPHgko8vkV75y5gUj0RMLJRukbrHwQk/HfFVD3fRfMCUSmU6yALeYCErCFgJCUDaYAEBAQEAABAQEBYvImwc+8k3F0eXtzzPRXC61iD2VsNVlA/+TG8mQ/yuNQRLzmV59cvF15OJWxm9MluCvjSp78CAWSibclw1diVynkq8oe8FAmYaZ1IMSTr6viDXLbAz5HS8aFTMqZXpbvUMRu1dPLbSXu91x1BZz6IKGBIiQHMmZ6axjYhIyZgXzeg6F6EecSLKuU37t1VvmhS4SUc5ksvyK20CaIeC0/n25xC1TohOvvcu6seqqx1h5Qfuhcxgf5smewGhJSwsg30lUv9B577hY3lfoxTxpC/J2t8tCWcWawGvqQcqVHBfCCkOHDnVuc64XmWFe9SWVCiAaHvjzpz7rJDXn53NXV0D/xI0LKf0PGoVG6vdaQGGzbFfwYxv/PyWhrSAnNQEUkpDwv375ebkPLV7RXnZDymQgYIaS0NKSc66sd8R5CxrlByJjq5dZkL256EO1rNg0pQ4OQcv9q16OF3I9WrgxCxv2Wyv/+1gkZSQUsiXisIWUS+D9d9MoXuYUU/3x9ODM6WvFhsl38211LolVxPjj4yO4WRzahX1Fdl8mRjXF/638vfsXrxwp60btgje4djfKhaXSvbNzfHulebxrzOSXpgvXVNSwd2YR8JfuQ0qhe2bi/nbqEt8UlvRtGQ0rH0Sv/S74DZ9jfashIdk9mJW7Jp1f+59HKqatYf9s4AVXColfuu8x7ZcP+1s/r2v1tIwUsiXh/BOAy7JW1v/Uhw6q/bYfob2sfQpYMKdn0ynXrbxu9Aj4Rcap7Q8teuZtYPqv+1jmj/jYbAYvV0LhXvkjRK2vI8N2tVX/btupvsxKwJGJjeuVSf2txtGLe32YpYEnEY10NLXvllpF4lv3txEXqb7MWUCWcG/fKs5BHNtrfjpxtf9urY+tT6/eGqUOvXOpvLY5WkvS3IXnjak6pV/6qlzaLXvnFRzbG/e217vVq/7YmjXl3LP2nAFa98sC9oFeO0N92mvKeOo17e7aUvXIu/S0CLhdSrHvlwRP5Ri6T/hYBlxfRH0lY9cpj7ZUPcutvCSEvDymWvfKpUcgY1jndsgI+E1KcXa8cksr3twi4xmpoGFLWZepq0t8i4PoiWvbKq4SMWvW3CBhORKteeVlq2d8SQsJK6Fednh4yj12cz82b66o3zX3++ZyQBxEte+VHIcPVvL9lBTQMKc6uV25Mf8sKaC9iyF65cf0tAsYTceTWO7JpZH/LJTh+SPmgd7gseydzcbQyYQZZAUOJeOaW65Ub39+yAqYNKUWv/Mkt7nzZ0hXPX6ZPSLcIGCWkuOpVeVyCARAQEBAAAQEBARAQEBAAAQEBARAQEBAAAQEBARAQEBAQEAABAQEBEBAQEAABAQEBEBAQEAABAQEBEBAQEAABAQEBEBAQEAABoX6s+g6p3b3tnd9MH7ACAgICICAgIAACQi0FnDMVkFJAPsURUnD3qvhqb3tn5uJ8WjjA/VX38vamXd4DDpkTiEjf//G6+NuPXz+/vX/77rt8uc/cgLV8xaeJvi5/VyS8Fgn9x9Vv6uV4k7mCUPs9GV9k9PhEUagMfwQYAFppkb3J5HUdAAAAAElFTkSuQmCC') center center no-repeat
+  background-size: 40px 27px
+  display: inline-block
+  width: 40px
+  height: 27px
+  position: absolute
+  top: 50px
+  left: 75px
+
+@media screen and (max-width 520px)
+  .mailpoet_welcome_wizard_help_info_block
+    padding-left: 150px
+  .mailpoet_welcome_wizard_support_button
+    left: 40px
+  .mailpoet_welcome_wizard_video_badge
+    left: 10px
+  .mailpoet_welcome_wizard_mail_icon
+    left: 50px
+
+.mailpoet_welcome_wizard_step_controls
+  margin-top: 50px
+  .button
+    margin:0 10px
+
+.mailpoet_welcome_wizard_woo_screenshot
+  margin-top: 30px
+  width: 400px
+
+@media screen and (max-width 520px)
+  .mailpoet_welcome_wizard_woo_screenshot
+    width: 340px
+
+.welcome_wizard_video
+  position: absolute
+  top: -1000px

@@ -277,6 +277,7 @@ var adminConfig = {
       'settings/reinstall_from_scratch.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
+      'welcome_wizard/wizard.jsx'
     ],
     form_editor: [
       'form_editor/form_editor.js',
