@@ -278,6 +278,19 @@ class Menu {
       )
     );
 
+    // Welcome wizard page
+    add_submenu_page(
+      true,
+      $this->setPageTitle(__('Welcome Wizard', 'mailpoet')),
+      __('Welcome Wizard', 'mailpoet'),
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      'mailpoet-welcome-wizard',
+      array(
+        $this,
+        'welcomeWizard'
+      )
+    );
+
     // Update page
     add_submenu_page(
       true,
@@ -318,6 +331,17 @@ class Menu {
       'progress_url' => $mp2_migrator->progressbar->url,
     );
     $this->displayPage('mp2migration.html', $data);
+  }
+
+  function welcomeWizard() {
+    if((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+    $data = [
+      'is_mp2_migration_complete' => (bool)Setting::getValue('mailpoet_migration_complete'),
+      'is_woocommerce_active' => class_exists('WooCommerce'),
+      'finish_wizard_url' => admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG),
+      'sender' => Setting::getValue('sender')
+    ];
+    $this->displayPage('welcome_wizard.html', $data);
   }
 
   function update() {
