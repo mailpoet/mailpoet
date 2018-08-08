@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Models\Setting;
 use MailPoet\Util\Url;
+use MailPoet\Wp\Hooks as WPHooks;
 
 class Changelog {
   function init() {
@@ -44,7 +45,8 @@ class Changelog {
           // Migration from MP2
           $redirect_url = admin_url('admin.php?page=mailpoet-migration');
         } else {
-          $redirect_url = admin_url('admin.php?page=mailpoet-welcome-wizard');
+          $skip_wizard = WPHooks::applyFilters('mailpoet_skip_welcome_wizard', false);
+          $redirect_url = $skip_wizard ? null : admin_url('admin.php?page=mailpoet-welcome-wizard');
         }
       }
     }
