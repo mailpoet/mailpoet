@@ -21,6 +21,11 @@ const introSteps = [
 ];
 
 function Intro() {
+  // don't show on small screens
+  if (innerWidth <= 960) {
+    return;
+  }
+
   const intro = introJs();
   intro.setOptions({
     steps: introSteps,
