@@ -4,7 +4,7 @@ Tags: newsletter, newsletter subscribers, email, welcome email, post notificatio
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.8.4
+Stable tag: 3.8.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -145,6 +145,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.8.5 - 2018-08-14 =
+* Changed: End of support for PHP 5.3 and 5.4. Please upgrade to PHP 7.0 or newer!
+* Added: improved compatibility with sites cached by server
+* Added: setup wizard for new users;
+* Fixed: plugin activation for new installs to not crash with white screen;
+* Fixed: slow sending on sites with a lot of sent newsletters.
 
 = 3.8.4 - 2018-08-07 =
 * Added: activation prompt for Mailpoet Sending Service when API key is verified;
