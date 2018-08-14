@@ -16,6 +16,12 @@ const renderBreadcrumb = (newsletterType) => {
   ReactDOM.render(breadcrumb, breadcrumbContainer);
 };
 
+function displayTutorial() {
+  MailPoet.Modal.popup({
+    template: '<video style="height:640px;" src=' + window.config.dragDemoUrl + ' controls autoplay></video>',
+  });
+}
+
 const initializeEditor = (config) => {
   const editorContainer = document.getElementById('mailpoet_editor');
   const getUrlParam = param => (location.search.split(`${param}=`)[1] || '').split('&')[0];
@@ -33,6 +39,7 @@ const initializeEditor = (config) => {
     },
   })
     .always(() => MailPoet.Modal.loading(false))
+    .always(() => displayTutorial())
     .done((response) => {
       const newsletter = response.data;
 
