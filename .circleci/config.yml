@@ -157,6 +157,9 @@ jobs:
       - run:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: "Prepare example.com for testing"
+          command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
       - restore_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
       - restore_cache:
@@ -188,6 +191,9 @@ jobs:
       - run:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: "Prepare example.com for testing"
+          command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
       - restore_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
       - restore_cache:
