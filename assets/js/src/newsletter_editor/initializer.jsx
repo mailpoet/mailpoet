@@ -18,6 +18,7 @@ const renderBreadcrumb = (newsletterType) => {
 
 function displayTutorial() {
   MailPoet.Modal.popup({
+    title: MailPoet.I18n.t('tutorialVideoTitle'),
     template: '<video style="height:640px;" src=' + window.config.dragDemoUrl + ' controls autoplay></video>',
   });
 }
