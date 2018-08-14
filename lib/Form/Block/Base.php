@@ -20,7 +20,6 @@ abstract class Base {
       $rules['required'] = true;
       $rules['mincheck'] = 1;
       $rules['group'] = $block['id'];
-      $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
       $rules['required-message'] = __('Please select a list', 'mailpoet');
     }
 
