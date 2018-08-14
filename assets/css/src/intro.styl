@@ -24,6 +24,10 @@
   &[style*="top:"]
     margin-top: -8px
 
+.introjs-tooltip .introjs-tooltipbuttons
+  display: flex
+  justify-content: flex-end
+
 .introjs-tooltip .button
   margin-top: 15px
   position: relative
@@ -48,11 +52,14 @@
   &.introjs-hidden
     display: none
 
-  &.introjs-skipbutton
-    float: left
+  &.introjs-skipbutton:not(.introjs-donebutton)
+    margin-right: auto
+
+    & + .button
+      margin-left: 10px
 
   &.introjs-donebutton
-    float: right
+    order: 1
 
   &.introjs-prevbutton
     border-top-right-radius: 0
