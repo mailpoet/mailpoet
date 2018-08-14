@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\WP\Notice;
+
 class DeactivationSurvey {
 
   /** @var Renderer */
@@ -32,20 +34,30 @@ class DeactivationSurvey {
     if(!$this->shouldShow()) {
       return;
     }
-    echo $this->renderer->render('deactivationSurvey/js.html');
+    $this->render('deactivationSurvey/js.html');
+
   }
 
   public function css() {
     if(!$this->shouldShow()) {
       return;
     }
-    echo $this->renderer->render('deactivationSurvey/css.html');
+    $this->render('deactivationSurvey/css.html');
   }
 
   public function modal() {
     if(!$this->shouldShow()) {
       return;
     }
-    echo $this->renderer->render('deactivationSurvey/index.html');
+    $this->render('deactivationSurvey/index.html');
   }
+
+  private function render($template) {
+    try {
+      echo $this->renderer->render($template);
+    } catch (\Exception $e) {
+      // if the website fails to render we have other places to catch and display the error
+    }
+  }
+
 }
