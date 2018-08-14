@@ -1297,6 +1297,7 @@
         ) %>',
       },
       dragDemoUrl: '<%= image_url("newsletter_editor/editor-drag-demo.mp4") %>',
+      currentUserId: '<%= current_wp_user.wp_user_id %>',
     };
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
   </script>
