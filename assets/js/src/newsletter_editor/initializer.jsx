@@ -3,6 +3,7 @@ import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import moment from 'moment';
 
 const renderBreadcrumb = (newsletterType) => {
   const breadcrumbContainer = document.getElementById('mailpoet_editor_breadcrumb');
@@ -19,6 +20,9 @@ const renderBreadcrumb = (newsletterType) => {
 function displayTutorial() {
   const key = `user_seen_editor_tutorial${window.config.currentUserId}`;
   if (window.config.dragDemoUrlSettings) {
+    return;
+  }
+  if (moment(window.config.installedAt).isBefore(moment().subtract(7, 'days'))) {
     return;
   }
   MailPoet.Modal.popup({
