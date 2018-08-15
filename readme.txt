@@ -8,7 +8,7 @@ Stable tag: 3.8.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Send beautiful newsletters directly from WordPress. Add a signup form, manage your subscribers, automate your emails including WooCommerce & more.
+Send beautiful newsletters from WordPress. Collect & manage subscribers, automate your emails including WooCommerce, blog post notification & more.
 
 == Description ==
 
@@ -53,7 +53,7 @@ Please note:
 
 = WooCommerce emails (Premium) =
 
-Increase your sales and stay in touch with your customers with our emails for WooCommerce !
+Increase your sales and stay in touch with your customers with our emails for WooCommerce!
 
 With our WooCommerce emails, you can :
 
@@ -78,6 +78,19 @@ The Premium version adds the following features:
 See the [short video summary on the Premium](http://beta.docs.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
 
 Visit the Premium page inside the plugin for more info.
+
+= MailPoet Sending Service =
+Sending emails and newsletter with your host is not a good idea. You might face sending speed limitations and see your emails ending up in the spam box.
+
+To help your sending go without a hitch, we’ve created an advanced email delivery infrastructure built for WordPress. Our technology allows you to:
+
+* Reach Inboxes, not Spam Boxes
+* Send your emails super fast (up to 50,000 emails per hour)
+* Get all your emails automatically signed with SPF & DKIM
+
+The MailPoet Sending Service is very easy to setup, you just have to enter a key in your WordPress admin and you’re all set!
+
+[Signup now](https://account.mailpoet.com/?utm_source=wordpress&utm_medium=readme&utm_campaign=mss), it’s free for your first 2,000 readers (pay as you go afterwards).
 
 = Translations =
 
