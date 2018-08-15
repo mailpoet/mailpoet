@@ -11,7 +11,7 @@ const introSteps = [
     intro: MailPoet.I18n.t('introForms'),
   },
   {
-    element: '.mailpoet-chat',
+    element: '#hs-beacon:not(.hs-beacon-hidden) iframe, .olark-launch-button',
     intro: MailPoet.I18n.t('introChat'),
   },
   {
@@ -20,7 +20,13 @@ const introSteps = [
   },
 ];
 
+let introActive = false;
+
 function Intro() {
+  if (introActive) {
+    return;
+  }
+
   // don't show on small screens
   if (innerWidth <= 960) {
     return;
@@ -43,9 +49,14 @@ function Intro() {
     tooltipPosition: 'auto',
   });
 
-  intro.onafterchange((targetElement) => {
-    document.body.classList.add('mailpoet-intro-active');
+  intro.onbeforechange(() => {
+    // evaluate step selector again since DOM might have changed (HelpScout -> Olark)
+    const step = intro._currentStep; // eslint-disable-line no-underscore-dangle
+    const element = introSteps[step].element;
+    intro._introItems[step].element = typeof element === 'string' ? document.querySelector(element) : element; // eslint-disable-line no-underscore-dangle
+  });
 
+  intro.onafterchange((targetElement) => {
     // fix for intro.js positioning bug on 'position: fixed' elements
     if (getComputedStyle(targetElement).getPropertyValue('position') === 'fixed') {
       const helperLayer = document.querySelector('.introjs-helperLayer');
@@ -56,6 +67,7 @@ function Intro() {
   });
 
   intro.onexit(() => {
+    introActive = false;
     document.body.classList.remove('mailpoet-intro-active');
   });
 
@@ -72,6 +84,8 @@ function Intro() {
   });
 
   intro.start();
+  introActive = true;
+  document.body.classList.add('mailpoet-intro-active');
 }
 
 MailPoet.showIntro = Intro;

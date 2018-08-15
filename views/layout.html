@@ -113,7 +113,9 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 
   <script type="text/javascript">
     olark('api.box.onShow', function() {
-        jQuery('#hs-beacon').hide();
+      jQuery('#hs-beacon')
+        .addClass('hs-beacon-hidden')
+        .hide();
     });
   </script>
 <% endif %>

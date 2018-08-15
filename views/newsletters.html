@@ -307,17 +307,9 @@
 <% block after_javascript %>
 <% if settings.show_intro %>
 <script>
-  if (typeof olark !== 'undefined') {
-    olark('api.box.onShow', function() {
-      document.querySelector('.olark-launch-button').classList.add('mailpoet-chat');
-      MailPoet.showIntro();
-    });
-  } else {
-    HS.beacon.ready(function () {
-      document.querySelector('#hs-beacon iframe').classList.add('mailpoet-chat');
-      MailPoet.showIntro();
-    });
-  }
+  HS.beacon.ready(function () {
+    MailPoet.showIntro();
+  });
 </script>
 <% endif %>
 <% endblock %>
