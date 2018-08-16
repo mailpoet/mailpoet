@@ -3,6 +3,7 @@ import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import moment from 'moment';
 
 const renderBreadcrumb = (newsletterType) => {
   const breadcrumbContainer = document.getElementById('mailpoet_editor_breadcrumb');
@@ -15,6 +16,28 @@ const renderBreadcrumb = (newsletterType) => {
 
   ReactDOM.render(breadcrumb, breadcrumbContainer);
 };
+
+function displayTutorial() {
+  const key = `user_seen_editor_tutorial${window.config.currentUserId}`;
+  if (window.config.dragDemoUrlSettings) {
+    return;
+  }
+  if (moment(window.config.installedAt).isBefore(moment().subtract(7, 'days'))) {
+    return;
+  }
+  MailPoet.Modal.popup({
+    title: MailPoet.I18n.t('tutorialVideoTitle'),
+    template: `<video style="height:640px;" src="${window.config.dragDemoUrl}" controls autoplay></video>`,
+    onCancel: () => {
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'settings',
+        action: 'set',
+        data: { [key]: 1 },
+      });
+    },
+  });
+}
 
 const initializeEditor = (config) => {
   const editorContainer = document.getElementById('mailpoet_editor');
@@ -33,6 +56,7 @@ const initializeEditor = (config) => {
     },
   })
     .always(() => MailPoet.Modal.loading(false))
+    .always(() => displayTutorial())
     .done((response) => {
       const newsletter = response.data;
 

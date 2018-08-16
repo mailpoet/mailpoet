@@ -358,6 +358,7 @@
     'selectColor': _x('Select', 'select color'),
     'cancelColorSelection': _x('Cancel', 'cancel color selection'),
     'newsletterIsPaused': __('Email sending has been paused.'),
+    'tutorialVideoTitle': __('Before you start, this how you drag and drop in MailPoet'),
 
     'selectType': __('Select type'),
     'events': __('Events'),
@@ -1295,6 +1296,10 @@
           "newsletter_editor/image-missing.svg"
         ) %>',
       },
+      dragDemoUrl: '<%= image_url("newsletter_editor/editor-drag-demo.mp4") %>',
+      currentUserId: '<%= current_wp_user.wp_user_id %>',
+      dragDemoUrlSettings: '<%= settings["user_seen_editor_tutorial" ~ current_wp_user.wp_user_id] %>',
+      installedAt: '<%= settings["installed_at"] %>',
     };
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
   </script>
