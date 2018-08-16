@@ -273,7 +273,7 @@ class CronHelperTest extends \MailPoetTest {
       return $request_args;
     };
     $wp_remote_get_args = array();
-    WPHelper::interceptFunction('wp_remote_get', function() use (&$wp_remote_get_args) {
+    WPHelper::interceptFunction('wp_remote_post', function() use (&$wp_remote_get_args) {
       $wp_remote_get_args = func_get_args();
     });
     WPHooks::addFilter('mailpoet_cron_request_args', $filter);

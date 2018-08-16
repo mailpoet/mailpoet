@@ -137,7 +137,7 @@ class CronHelper {
         'user-agent' => 'MailPoet Cron'
       )
     );
-    return WPFunctions::wpRemoteGet($url, $args);
+    return WPFunctions::wpRemotePost($url, $args);
   }
 
   static function getCronUrl($action, $data = false) {
