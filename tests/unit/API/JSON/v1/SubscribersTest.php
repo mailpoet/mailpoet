@@ -6,6 +6,7 @@ use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -478,6 +479,21 @@ class SubscribersTest extends \MailPoetTest {
     Setting::setValue('re_captcha', array());
   }
 
+  function testItCannotSubscribeWithoutMandatoryCustomField() {
+    CustomField::createOrUpdate([
+      'name' => 'custom field',
+      'type' => 'text',
+      'params' => ['required' => '1']
+    ]);
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'form_id' => $this->form->id,
+      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
   function testItCanSubscribeWithoutSegmentsIfTheyAreSelectedByAdmin() {
     $form = $this->form->asArray();
     $form['settings']['segments_selected_by'] = 'admin';
@@ -642,5 +658,6 @@ class SubscribersTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberIP::$_table);
+    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
   }
 }
