@@ -224,12 +224,15 @@ class Sending {
   }
 
   static function getScheduledQueues($amount = self::RESULT_BATCH_SIZE) {
-    $tasks = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->whereNull('deleted_at')
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
-      ->where('type', 'sending')
-      ->whereNotEqual('status', ScheduledTask::STATUS_PAUSED)
-      ->orderByAsc('updated_at')
+    $tasks = ScheduledTask::table_alias('tasks')
+      ->select('tasks.*')
+      ->join(SendingQueue::$_table, 'tasks.id = queues.task_id', 'queues')
+      ->whereNull('tasks.deleted_at')
+      ->where('tasks.status', ScheduledTask::STATUS_SCHEDULED)
+      ->whereLte('tasks.scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
+      ->where('tasks.type', 'sending')
+      ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
+      ->orderByAsc('tasks.updated_at')
       ->limit($amount)
       ->findMany();
     $result = array();
