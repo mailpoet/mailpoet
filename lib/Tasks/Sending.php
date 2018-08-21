@@ -225,6 +225,7 @@ class Sending {
 
   static function getScheduledQueues($amount = self::RESULT_BATCH_SIZE) {
     $tasks = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)
+      ->whereNull('deleted_at')
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
       ->where('type', 'sending')
       ->whereNotEqual('status', ScheduledTask::STATUS_PAUSED)
