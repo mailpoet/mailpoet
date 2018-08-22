@@ -130,7 +130,7 @@ define(
           MailPoet.Modal.loading(false);
         }).done(function done(response) {
           var resultMessage = MailPoet.I18n.t('exportMessage')
-            .replace('%1$s', '<strong>' + parseInt(response.data.totalExported, 133).toLocaleString() + '</strong>')
+            .replace('%1$s', '<strong>' + parseInt(response.data.totalExported, 10).toLocaleString() + '</strong>')
             .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
             .replace('[/link]', '</a>');
           jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
