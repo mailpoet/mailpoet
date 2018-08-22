@@ -6,6 +6,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Tasks\Sending;
 
@@ -163,6 +164,9 @@ class API {
     list($default_fields, $custom_fields) = Subscriber::extractCustomFieldsFromFromObject($subscriber);
     // if some required default fields are missing, set their values
     $default_fields = Subscriber::setRequiredFieldsDefaultValues($default_fields);
+
+    $validator = new RequiredCustomFieldValidator();
+    $validator->validate($custom_fields);
 
     // add subscriber
     $new_subscriber = Subscriber::create();

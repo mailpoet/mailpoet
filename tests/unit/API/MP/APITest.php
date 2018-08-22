@@ -301,6 +301,21 @@ class APITest extends \MailPoetTest {
     expect($result['source'])->equals('api');
   }
 
+  function testItChecksForMandatoryCustomFields() {
+    CustomField::createOrUpdate([
+      'name' => 'custom field',
+      'type' => 'text',
+      'params' => ['required' => '1']
+    ]);
+
+    $subscriber = array(
+      'email' => 'test@example.com',
+    );
+
+    $this->setExpectedException('Exception');
+    API::MP(self::VERSION)->addSubscriber($subscriber);
+  }
+
   function testItSubscribesToSegmentsWhenAddingSubscriber() {
     $API = Stub::makeEmptyExcept(
       new \MailPoet\API\MP\v1\API(),

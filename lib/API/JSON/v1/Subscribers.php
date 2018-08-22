@@ -14,6 +14,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
+use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\WP\Hooks;
@@ -104,7 +105,7 @@ class Subscribers extends APIEndpoint {
         'body' => array(
           'secret' => $recaptcha['secret_token'],
           'response' => $res
-        ) 
+        )
       ));
       if(is_wp_error($res)) {
         return $this->badRequest(array(
@@ -120,6 +121,13 @@ class Subscribers extends APIEndpoint {
     }
 
     $data = $this->deobfuscateFormPayload($data);
+
+    try {
+      $validator = new RequiredCustomFieldValidator();
+      $validator->validate($data);
+    } catch (\Exception $e) {
+      return $this->badRequest([APIError::BAD_REQUEST => $e->getMessage()]);
+    }
 
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
