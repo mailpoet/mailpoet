@@ -87,7 +87,7 @@ define(
               jQuery(selectElement).select2('close');
             }
           })
-          .on('change', function onCHange() {
+          .on('change', function onChange() {
             if ((window.exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
           ||
           (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
@@ -99,8 +99,11 @@ define(
           });
       };
 
-      renderSegmentsAndFields(subscriberFieldsContainerElement, window.subscriberFieldsSelect2);
+      window.segments.forEach(function createSegmentOption(item) {
+        segmentsContainerElement.append(jQuery('<option></option>').attr('value', item.id).text(item.name));
+      });
       renderSegmentsAndFields(segmentsContainerElement, window.segments);
+      renderSegmentsAndFields(subscriberFieldsContainerElement, window.subscriberFieldsSelect2);
 
       subscriberFieldsContainerElement.val([
         'email',
