@@ -177,7 +177,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
     },
 
     gotoWelcomePage: function () {
-      window.location.href = 'admin.php?page=mailpoet-welcome';
+      window.location.href = 'admin.php?page=mailpoet-welcome-wizard';
       return false;
     }
 
