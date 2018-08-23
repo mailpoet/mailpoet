@@ -65,7 +65,7 @@ class Bounce extends SimpleWorker {
         ->whereIn('id', $subscribers_to_process_ids)
         ->whereNull('deleted_at')
         ->findArray();
-      $subscriber_emails = Helpers::arrayColumn($subscriber_emails, 'email');
+      $subscriber_emails = array_column($subscriber_emails, 'email');
 
       $this->processEmails($subscriber_emails);
 

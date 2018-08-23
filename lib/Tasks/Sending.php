@@ -143,7 +143,7 @@ class Sending {
       $subscribers->where('processed', $status);
     }
     $subscribers = $subscribers->findArray();
-    return Helpers::arrayColumn($subscribers, 'subscriber_id');
+    return array_column($subscribers, 'subscriber_id');
   }
 
   public function setSubscribers(array $subscriber_ids) {

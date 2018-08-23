@@ -194,7 +194,7 @@ class Import {
 
   function transformSubscribersData($subscribers, $columns) {
     foreach($columns as $column => $data) {
-      $transformed_subscribers[$column] = Helpers::arrayColumn($subscribers, $data['index']);
+      $transformed_subscribers[$column] = array_column($subscribers, $data['index']);
     }
     return $transformed_subscribers;
   }
@@ -223,7 +223,7 @@ class Import {
       );
     }
     // extract WP users ids into a simple indexed array: [wp_user_id_1, wp_user_id_2, ...]
-    $wp_users = array_filter(Helpers::arrayColumn($temp_existing_subscribers, 'wp_user_id'));
+    $wp_users = array_filter(array_column($temp_existing_subscribers, 'wp_user_id'));
     // create a new two-dimensional associative array with existing subscribers ($existing_subscribers)
     // and reduce $subscribers_data to only new subscribers by removing existing subscribers
     $subscribers_emails = array_flip($subscribers_data['email']);
@@ -353,7 +353,7 @@ class Import {
       );
     }
     if(empty($created_or_updated_subscribers)) return null;
-    $created_or_updated_subscribers_ids = Helpers::arrayColumn($created_or_updated_subscribers, 'id');
+    $created_or_updated_subscribers_ids = array_column($created_or_updated_subscribers, 'id');
     if($subscribers_custom_fields) {
       $this->createOrUpdateCustomFields(
         $action,

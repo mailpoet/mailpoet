@@ -31,12 +31,12 @@ class Export {
     }
 
     $this->default_subscribers_getter = new DefaultSubscribersGetter(
-      $data['segments'], 
+      $data['segments'],
       self::SUBSCRIBER_BATCH_SIZE
     );
 
     $this->dynamic_subscribers_getter = new DynamicSubscribersGetter(
-      $data['segments'], 
+      $data['segments'],
       self::SUBSCRIBER_BATCH_SIZE
     );
 
@@ -192,7 +192,7 @@ class Export {
   }
 
   function getSubscriberCustomFields() {
-    return Helpers::arrayColumn(
+    return array_column(
       CustomField::findArray(),
       'name',
       'id'

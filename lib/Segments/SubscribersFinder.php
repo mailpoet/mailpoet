@@ -83,7 +83,7 @@ class SubscribersFinder {
   }
 
   private function addSubscribersToTaskFromStaticSegments(ScheduledTask $task, array $segments) {
-    $segment_ids = Helpers::arrayColumn($segments, 'id');
+    $segment_ids = array_column($segments, 'id');
     Subscriber::rawExecute(
       'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
        (task_id, subscriber_id, processed)
@@ -125,7 +125,7 @@ class SubscribersFinder {
   }
 
   private function addSubscribersToTaskByIds(ScheduledTask $task, array $subscribers) {
-    $subscribers = Helpers::arrayColumn($subscribers, 'id');
+    $subscribers = array_column($subscribers, 'id');
     Subscriber::rawExecute(
       'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
        (task_id, subscriber_id, processed)

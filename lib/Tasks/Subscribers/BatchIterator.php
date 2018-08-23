@@ -31,7 +31,7 @@ class BatchIterator implements \Iterator, \Countable {
       ->orderByAsc('subscriber_id')
       ->limit($this->batch_size)
       ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+    $subscribers = array_column($subscribers, 'subscriber_id');
     $this->batch_last_id = end($subscribers);
     return $subscribers;
   }
