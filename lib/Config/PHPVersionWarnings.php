@@ -15,7 +15,7 @@ class PHPVersionWarnings {
       'ajaxDismissNoticeHandler'
     ));
 
-    if ($is_enabled && $this->isOutdatedPHPVersion($php_version)) {
+    if($is_enabled && $this->isOutdatedPHPVersion($php_version)) {
       return $this->displayError($php_version);
     }
   }
