@@ -45,7 +45,6 @@ const WelcomeWizardHelpInfoStep = props => (
       <iframe
         id="mailpoet_form_iframe"
         width="100%"
-        height="100%"
         scrolling="no"
         frameBorder="0"
         title="Apply to course"
