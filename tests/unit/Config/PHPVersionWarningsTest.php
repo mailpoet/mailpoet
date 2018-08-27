@@ -33,7 +33,7 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   function testItPrintsWarningFor55() {
     $mock = Mock::double('MailPoet\WP\Notice', [
-      'displayError' => function($message, $classes, $transient) {
+      'displayError' => function($message, $classes, $data_notice_name) {
         return $message;
       }
     ]);
@@ -46,7 +46,7 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   function testItPrintsWarningFor56() {
     $mock = Mock::double('MailPoet\WP\Notice', [
-      'displayError' => function($message, $classes, $transient) {
+      'displayError' => function($message, $classes, $data_notice_name) {
         return $message;
       }
     ]);

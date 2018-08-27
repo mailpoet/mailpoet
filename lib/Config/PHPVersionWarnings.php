@@ -28,10 +28,10 @@ class PHPVersionWarnings {
     $error_string = __('Your website is running on PHP %s. MailPoet will require version 7 by the end of the year. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]', 'mailpoet');
     $error_string = sprintf($error_string, $php_version);
     $error = Helpers::replaceLinkTags($error_string, 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
-    $classes = 'notice-php-warning is-dismissible';
-    $transient = 'php-version-outdated';
+    $extra_classes = 'notice-php-warning is-dismissible';
+    $data_notice_name = 'php-version-outdated';
 
-    return WPNotice::displayError($error, $classes, $transient);
+    return WPNotice::displayError($error, $extra_classes, $data_notice_name);
   }
 
   function ajaxDismissNoticeHandler() {
