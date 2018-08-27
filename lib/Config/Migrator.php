@@ -435,10 +435,12 @@ class Migrator {
 
   function log() {
     $attributes = [
+      'id BIGINT unsigned NOT NULL AUTO_INCREMENT,',
       'name VARCHAR(255),',
       'level INTEGER,',
       'message LONGTEXT,',
-      'time TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+      'PRIMARY KEY (id),',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
