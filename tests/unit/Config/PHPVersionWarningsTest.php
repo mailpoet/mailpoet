@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config;
 
+use AspectMock\Test as Mock;
+
 class PHPVersionWarningsTest extends \MailPoetTest {
 
   /** @var PHPVersionWarnings */
@@ -14,17 +16,42 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   function _after() {
     delete_transient('dismissed-php-version-outdated-notice');
+    Mock::clean();
+  }
+
+  function testPHP55IsOutdated() {
+    expect($this->phpVersionWarning->isOutdatedPHPVersion('5.5.3'))->true();
+  }
+
+  function testPHP56IsOutdated() {
+    expect($this->phpVersionWarning->isOutdatedPHPVersion('5.5.3'))->true();
+  }
+
+  function testPHP72IsNotOutdated() {
+    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.2'))->false();
   }
 
   function testItPrintsWarningFor55() {
+    $mock = Mock::double('MailPoet\WP\Notice', [
+      'displayError' => function($message, $classes, $data_notice_name) {
+        return $message;
+      }
+    ]);
     $warning = $this->phpVersionWarning->init('5.5.3', true);
+    $mock->verifyInvoked('displayError');
     expect($warning)->contains('Your website is running on PHP 5.5.3');
     expect($warning)->contains('MailPoet will require version 7');
   }
 
 
   function testItPrintsWarningFor56() {
+    $mock = Mock::double('MailPoet\WP\Notice', [
+      'displayError' => function($message, $classes, $data_notice_name) {
+        return $message;
+      }
+    ]);
     $warning = $this->phpVersionWarning->init('5.6.3', true);
+    $mock->verifyInvoked('displayError');
     expect($warning)->contains('Your website is running on PHP 5.6');
     expect($warning)->contains('MailPoet will require version 7');
   }

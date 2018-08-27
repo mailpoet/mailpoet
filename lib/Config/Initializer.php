@@ -291,8 +291,7 @@ class Initializer {
 
   function setupPHPVersionWarnings() {
     $php_version_warnings = new PHPVersionWarnings();
-    $warnings = $php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
-    if(is_string($warnings)) echo $warnings;
+    $php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
   }
 
   function handleFailedInitialization($exception) {
