@@ -8,7 +8,7 @@ Stable tag: 3.8.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Send beautiful newsletters from WordPress. Collect & manage subscribers, automate your emails including WooCommerce, blog post notification & more.
+Send beautiful newsletters from WordPress. Collect subscribers with signup forms, automate your emails for WooCommerce, blog post notifications & more
 
 == Description ==
 
