@@ -13,7 +13,7 @@ class Migrator {
   function __construct() {
     $this->prefix = Env::$db_prefix;
     $this->charset_collate = Env::$db_charset_collate;
-    $this->models = array(
+    $this->models = [
       'segments',
       'settings',
       'custom_fields',
@@ -37,8 +37,9 @@ class Migrator {
       'statistics_opens',
       'statistics_unsubscribes',
       'statistics_forms',
-      'mapping_to_external_entities'
-    );
+      'mapping_to_external_entities',
+      'log',
+    ];
   }
 
   function up() {
@@ -429,6 +430,16 @@ class Migrator {
       'PRIMARY KEY (old_id, type),',
       'KEY new_id (new_id)'
     );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function log() {
+    $attributes = [
+      'name VARCHAR(255),',
+      'level INTEGER,',
+      'message LONGTEXT,',
+      'time TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
