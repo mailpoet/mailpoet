@@ -460,7 +460,7 @@ class Newsletter extends Model {
 
   function withDeletedSegments() {
     if(!empty($this->segments)) {
-      $segment_ids = Helpers::arrayColumn($this->segments, 'id');
+      $segment_ids = array_column($this->segments, 'id');
       $links = $this->segmentRelations()
         ->whereNotIn('segment_id', $segment_ids)->findArray();
       $deleted_segments = array();
@@ -501,7 +501,7 @@ class Newsletter extends Model {
     if(empty($options)) {
       $this->options = array();
     } else {
-      $this->options = Helpers::arrayColumn($options, 'value', 'name');
+      $this->options = array_column($options, 'value', 'name');
     }
     return $this;
   }

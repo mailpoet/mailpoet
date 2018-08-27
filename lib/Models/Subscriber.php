@@ -532,7 +532,7 @@ class Subscriber extends Model {
     $custom_fields = CustomField::select('id')->findArray();
     if(empty($custom_fields)) return $this;
 
-    $custom_field_ids = Helpers::arrayColumn($custom_fields, 'id');
+    $custom_field_ids = array_column($custom_fields, 'id');
     $relations = SubscriberCustomField::select('custom_field_id')
       ->select('value')
       ->whereIn('custom_field_id', $custom_field_ids)
@@ -845,7 +845,7 @@ class Subscriber extends Model {
       '(' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
       array_merge(
         Helpers::flattenArray($sql('values')),
-        Helpers::arrayColumn($subscribers, $email_position)
+        array_column($subscribers, $email_position)
       )
     );
   }

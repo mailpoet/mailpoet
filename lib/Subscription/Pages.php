@@ -80,7 +80,7 @@ class Pages {
       if($subsciber_segments) {
         Scheduler::scheduleSubscriberWelcomeNotification(
           $this->subscriber->id,
-          Helpers::arrayColumn($subsciber_segments, 'id')
+          array_column($subsciber_segments, 'id')
         );
       }
 

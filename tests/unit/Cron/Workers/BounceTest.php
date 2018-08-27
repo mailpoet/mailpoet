@@ -86,7 +86,7 @@ class BounceTest extends \MailPoetTest {
 
   function testItSetsSubscriberStatusAsBounced() {
     $emails = Subscriber::select('email')->findArray();
-    $emails = Helpers::arrayColumn($emails, 'email');
+    $emails = array_column($emails, 'email');
 
     $this->worker->processEmails($emails);
 

@@ -47,11 +47,17 @@ $destroy = function($model) {
 };
 array_map($destroy, $models);
 
+$cacheDir = '/tmp';
+if(is_dir(getenv('WP_TEST_CACHE_PATH'))) {
+  $cacheDir = getenv('WP_TEST_CACHE_PATH');
+}
+
 $console->writeln('Initializing AspectMock library...');
 $kernel = \AspectMock\Kernel::getInstance();
 $kernel->init(
   array(
     'debug' => true,
+    'cacheDir' => $cacheDir,
     'includePaths' => [__DIR__ . '/../lib']
   )
 );

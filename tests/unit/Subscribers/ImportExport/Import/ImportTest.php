@@ -289,7 +289,7 @@ class ImportTest extends \MailPoetTest {
       'create',
       $subscribers_data
     );
-    $db_subscribers = Helpers::arrayColumn(
+    $db_subscribers = array_column(
       Subscriber::select('id')
         ->findArray(),
       'id'
@@ -354,7 +354,7 @@ class ImportTest extends \MailPoetTest {
       $subscribers_data,
       $this->subscribers_fields
     );
-    $db_subscribers = Helpers::arrayColumn(
+    $db_subscribers = array_column(
       Subscriber::select('id')
         ->findArray(),
       'id'
@@ -467,7 +467,7 @@ class ImportTest extends \MailPoetTest {
     $this->import->updated_at = date('Y-m-d H:i:s', $timestamp + 1);
     $result = $this->import->process();
     expect($result['created'])->equals(1);
-    $db_subscribers = Helpers::arrayColumn(
+    $db_subscribers = array_column(
       Subscriber::select('id')->findArray(),
       'id'
     );
