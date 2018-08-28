@@ -439,8 +439,8 @@ class Migrator {
       'name VARCHAR(255),',
       'level INTEGER,',
       'message LONGTEXT,',
-      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-      'PRIMARY KEY (id),',
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }

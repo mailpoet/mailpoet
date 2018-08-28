@@ -20,7 +20,7 @@ class LogHandler extends AbstractProcessingHandler {
   const DAYS_TO_KEEP_LOGS = 30;
 
   protected function write(array $record) {
-    $model = Log::create();
+    $model = $this->createNewLogModel();
     $model->hydrate([
       'name' => $record['channel'],
       'level' => $record['level'],
@@ -29,9 +29,17 @@ class LogHandler extends AbstractProcessingHandler {
     ]);
     $model->save();
 
-    if(rand(0, 100) <= self::LOG_PURGE_PROBABILITY) {
+    if($this->getRandom() <= self::LOG_PURGE_PROBABILITY) {
       $this->purgeOldLogs();
     }
+  }
+
+  private function createNewLogModel() {
+    return Log::create();
+  }
+
+  private function getRandom() {
+    return rand(0, 100);
   }
 
   private function purgeOldLogs() {

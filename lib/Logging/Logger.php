@@ -7,6 +7,21 @@ use MailPoet\Dependencies\Monolog\Processor\MemoryUsageProcessor;
 use MailPoet\Dependencies\Monolog\Processor\WebProcessor;
 use MailPoet\Models\Setting;
 
+/**
+ * Usage:
+ * $logger = Logger::getLogger('logger name');
+ * $logger->addDebug('This is a debug message');
+ * $logger->addInfo('This is an info');
+ * $logger->addWarning('This is a warning');
+ * $logger->addError('This is an error message');
+ *
+ * By default only errors are saved but can be changed in settings to save everything or nothing
+ *
+ * Name is anything which will be found in the log table.
+ *   We can use it for separating different messages like: 'cron', 'rendering', 'export', ...
+ *
+ * If WP_DEBUG is true additional information will be added to every log message.
+ */
 class Logger {
 
   /** @var \MailPoet\Dependencies\Monolog\Logger[] */
@@ -14,15 +29,15 @@ class Logger {
 
   /**
    * @param string $name
-   * @param bool $forceCreate
+   * @param bool $attach_processors
    *
    * @return \MailPoet\Dependencies\Monolog\Logger
    */
-  public static function getLogger($name = 'MailPoet', $forceCreate = false) {
-    if(!isset(self::$instance[$name]) || $forceCreate) {
+  public static function getLogger($name = 'MailPoet', $attach_processors = WP_DEBUG) {
+    if(!isset(self::$instance[$name])) {
       self::$instance[$name] = new \MailPoet\Dependencies\Monolog\Logger($name);
 
-      if(WP_DEBUG) {
+      if($attach_processors) {
         // Adds the line/file/class/method from which the log call originated
         self::$instance[$name]->pushProcessor(new IntrospectionProcessor());
         // Adds the current request URI, request method and client IP to a log record
