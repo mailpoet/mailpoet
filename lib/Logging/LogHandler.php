@@ -12,12 +12,12 @@ class LogHandler extends AbstractProcessingHandler {
    * Percentage value, what is the probability of running purge routine
    * @var int
    */
-  CONST LOG_PURGE_PROBABILITY = 5;
+  const LOG_PURGE_PROBABILITY = 5;
 
   /**
    * Logs older than this many days will be deleted
    */
-  CONST DAYS_TO_KEEP_LOGS = 30;
+  const DAYS_TO_KEEP_LOGS = 30;
 
   protected function write(array $record) {
     $model = Log::create();

@@ -244,5 +244,34 @@
         </p>
       </td>
     </tr>
+    <!-- logging -->
+    <tr>
+      <th scope="row">
+        <label><%= __('Logging') %></label>
+        <p class="description">
+          <%= __('Enables logging for diagnostics of plugin behavior.') %>
+      <td>
+        <select
+          name="logging"
+        >
+          <option
+            value="everything"
+            <% if settings.logging == "everything" %>
+              selected
+            <% endif %>
+          ><%= _x('Everything', 'In settings: "Logging: Everything"') %>
+          <option
+            value="errors"
+            <% if settings.logging != "nothing" and settings.logging != "everything" %>
+              selected
+            <% endif %>
+          ><%= _x('Errors only', 'In settings: "Logging: Errors only"') %>
+          <option
+            value="nothing"
+            <% if settings.logging == "nothing" %>
+              selected
+            <% endif %>
+          ><%= _x('Nothing', 'In settings: "Logging: Nothing"') %>
+        </select>
   </tbody>
 </table>

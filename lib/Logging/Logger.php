@@ -5,6 +5,7 @@ namespace MailPoet\Logging;
 use MailPoet\Dependencies\Monolog\Processor\IntrospectionProcessor;
 use MailPoet\Dependencies\Monolog\Processor\MemoryUsageProcessor;
 use MailPoet\Dependencies\Monolog\Processor\WebProcessor;
+use MailPoet\Models\Setting;
 
 class Logger {
 
@@ -30,9 +31,21 @@ class Logger {
         self::$instance[$name]->pushProcessor(new MemoryUsageProcessor());
       }
 
-      self::$instance[$name]->pushHandler(new LogHandler());
+      self::$instance[$name]->pushHandler(new LogHandler(self::getDefaultLogLevel()));
     }
     return self::$instance[$name];
+  }
+
+  private static function getDefaultLogLevel() {
+    $settings = Setting::getValue('logging', 'errors');
+    switch ($settings) {
+      case 'everything':
+        return \MailPoet\Dependencies\Monolog\Logger::DEBUG;
+      case 'nothing':
+        return \MailPoet\Dependencies\Monolog\Logger::EMERGENCY;
+      default:
+        return \MailPoet\Dependencies\Monolog\Logger::ERROR;
+    }
   }
 
 }
