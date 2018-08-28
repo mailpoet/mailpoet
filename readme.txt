@@ -4,7 +4,7 @@ Tags: newsletter, newsletter subscribers, email, welcome email, post notificatio
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 3.8.6
+Stable tag: 3.9.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -158,6 +158,17 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.9.0 - 2018-08-28 =
+Improved: email processing in sending queues is now more resilient to invalid data. Thanks Tara!
+Fixed: replaced WooCommerce image in welcome wizard;
+Fixed: swapped video in welcome wizard with an updated one;
+Fixed: welcome wizard button displays properly for all users;
+Fixed: permission error when bypassing data import after new install or reset;
+Fixed: added indexes to some foreign keys which were missing;
+Fixed: error displaying number of exported users;
+Fixed: export search function restored;
+Fixed: prevent third party APIs from adding data incorrectly via MailPoets API.
 
 = 3.8.6 - 2018-08-21 =
 * Improved: compatibility with caching plugins
