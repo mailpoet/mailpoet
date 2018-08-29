@@ -153,7 +153,7 @@ class SendingQueue {
   }
 
   function sendNewsletters(
-    $queue, $prepared_subscribers_ids, $prepared_newsletters,
+    SendingTask $sending_task, $prepared_subscribers_ids, $prepared_newsletters,
     $prepared_subscribers, $statistics, $extra_params = array()
   ) {
     // send newsletter
@@ -171,10 +171,10 @@ class SendingQueue {
       }
     }
     // update processed/to process list
-    if(!$queue->updateProcessedSubscribers($prepared_subscribers_ids)) {
+    if(!$sending_task->updateProcessedSubscribers($prepared_subscribers_ids)) {
       MailerLog::processError(
         'processed_list_update',
-        sprintf('QUEUE-%d-PROCESSED-LIST-UPDATE', $queue->id),
+        sprintf('QUEUE-%d-PROCESSED-LIST-UPDATE', $sending_task->id),
         null,
         true
       );
@@ -184,10 +184,10 @@ class SendingQueue {
     // update the sent count
     $this->mailer_task->updateSentCount();
     // enforce execution limits if queue is still being processed
-    if($queue->status !== ScheduledTaskModel::STATUS_COMPLETED) {
+    if($sending_task->status !== ScheduledTaskModel::STATUS_COMPLETED) {
       $this->enforceSendingAndExecutionLimits();
     }
-    return $queue;
+    return $sending_task;
   }
 
   function enforceSendingAndExecutionLimits() {

@@ -573,10 +573,10 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
-    $queue = Mock::double(new \stdClass(), array(
+    $sending_task = Mock::double(SendingTask::create(), array(
       'updateProcessedSubscribers' => false
     ));
-    $queue->id = 100;
+    $sending_task->id = 100;
     $sending_queue_worker = Stub::make(new SendingQueueWorker());
     $sending_queue_worker->__construct(
       $timer = false,
@@ -589,7 +589,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     try {
       $sending_queue_worker->sendNewsletters(
-        $queue,
+        $sending_task->getObject(),
         $prepared_subscribers = array(),
         $prepared_newsletters = false,
         $prepared_subscribers = false,
