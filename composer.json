@@ -48,8 +48,8 @@
     }
   },
   "scripts": {
-    "post-update-cmd": "\"vendor/bin/mozart\" compose; rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility",
-    "post-install-cmd": "\"vendor/bin/mozart\" compose; rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility"
+    "post-update-cmd": "\"vendor/bin/mozart\" compose; rm -rf vendor/monolog; rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility",
+    "post-install-cmd": "\"vendor/bin/mozart\" compose; rm -rf vendor/monolog; rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility"
   },
   "extra": {
     "mozart": {
