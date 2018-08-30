@@ -65,6 +65,15 @@ class Newsletters extends APIEndpoint {
       unset($data['options']);
     }
 
+    if(!empty($data['template_id'])) {
+      $template = NewsletterTemplate::whereEqual('id', $data['template_id'])->findOne();
+      if(!empty($template)) {
+        $template = $template->asArray();
+        $data['body'] = $template['body'];
+      }
+      unset($data['template_id']);
+    }
+
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
 

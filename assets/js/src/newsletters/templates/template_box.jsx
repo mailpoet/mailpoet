@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import { confirmAlert } from 'react-confirm-alert';
 import PropTypes from 'prop-types';
@@ -60,11 +59,6 @@ class TemplateBox extends React.Component {
 
   onSelect() {
     const { newsletterId, name, beforeSelect, afterSelect } = this.props;
-    let body = this.props.body;
-
-    if (!_.isUndefined(body)) {
-      body = JSON.stringify(body);
-    }
 
     beforeSelect();
 
@@ -79,7 +73,7 @@ class TemplateBox extends React.Component {
       action: 'save',
       data: {
         id: newsletterId,
-        body,
+        template_id: this.props.id,
       },
     }).done((response) => {
       afterSelect(true, response.data.id);
@@ -151,7 +145,6 @@ TemplateBox.propTypes = {
   afterDelete: PropTypes.func.isRequired,
   beforeSelect: PropTypes.func.isRequired,
   afterSelect: PropTypes.func.isRequired,
-  body: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
 export default TemplateBox;
