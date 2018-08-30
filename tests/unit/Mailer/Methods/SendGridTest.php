@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
+use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\SendGrid;
 
 class SendGridTest extends \MailPoetTest {
@@ -24,7 +25,8 @@ class SendGridTest extends \MailPoetTest {
     $this->mailer = new SendGrid(
       $this->settings['api_key'],
       $this->sender,
-      $this->reply_to
+      $this->reply_to,
+      new SendGridMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(

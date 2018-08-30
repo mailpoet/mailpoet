@@ -1,7 +1,9 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\AmazonSES;
+use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 
 class AmazonSESTest extends \MailPoetTest {
   function _before() {
@@ -34,7 +36,8 @@ class AmazonSESTest extends \MailPoetTest {
       $this->settings['secret_key'],
       $this->sender,
       $this->reply_to,
-      $this->return_path
+      $this->return_path,
+      new AmazonSESMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -69,7 +72,8 @@ class AmazonSESTest extends \MailPoetTest {
       $this->settings['secret_key'],
       $this->sender,
       $this->reply_to,
-      $return_path = false
+      $return_path = false,
+      new AmazonSESMapper()
     );
     expect($mailer->return_path)->equals($this->sender['from_email']);
   }
@@ -82,7 +86,8 @@ class AmazonSESTest extends \MailPoetTest {
         $this->settings['secret_key'],
         $this->sender,
         $this->reply_to,
-        $this->return_path
+        $this->return_path,
+        new AmazonSESMapper()
       );
       $this->fail('Unsupported region exception was not thrown');
     } catch(\Exception $e) {
@@ -223,7 +228,8 @@ class AmazonSESTest extends \MailPoetTest {
       $invalid_subscriber
     );
     expect($result['response'])->false();
-    expect($result['error_message'])->contains('does not comply with RFC 2822');
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getMessage())->contains('does not comply with RFC 2822');
   }
 
   function testItCanSend() {

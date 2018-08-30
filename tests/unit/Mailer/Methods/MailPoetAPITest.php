@@ -3,6 +3,8 @@ namespace MailPoet\Test\Mailer\Methods;
 
 use Codeception\Util\Stub;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Services\Bridge\API;
 
@@ -27,7 +29,8 @@ class MailPoetAPITest extends \MailPoetTest {
     $this->mailer = new MailPoet(
       $this->settings['api_key'],
       $this->sender,
-      $this->reply_to
+      $this->reply_to,
+      new MailPoetMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -161,11 +164,9 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
-    expect($result)->equals([
-      'response' => false,
-      'operation' => 'connect',
-      'error_message' => 'connection error',
-    ]);
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getOperation())->equals(MailerError::OPERATION_CONNECT);
   }
 
   function testFormatErrorNotArray() {
@@ -179,11 +180,9 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
-    expect($result)->equals([
-      'response' => false,
-      'operation' => 'send',
-      'error_message' => 'JSON input is not an array',
-    ]);
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
 
   function testFormatErrorTooBig() {
@@ -197,11 +196,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
-    expect($result)->equals([
-      'response' => false,
-      'operation' => 'send',
-      'error_message' => 'error too big',
-    ]);
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
   }
 
   function testFormatPayloadError() {
@@ -215,11 +211,9 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);
-    expect($result)->equals([
-      'response' => false,
-      'operation' => 'send',
-      'error_message' => 'Error while sending newsletters. Api Error',
-    ]);
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
 
   function testFormatPayloadErrorWithErrorMessage() {
@@ -233,12 +227,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);
-    expect($result)->equals([
-      'response' => false,
-      'operation' => 'send',
-      'error_message' => 'Error while sending: (a@example.com: subject is missing), (c d <b@example.com>: subject is missing)',
-    ]);
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
-
-
 }

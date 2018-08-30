@@ -5,6 +5,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
@@ -164,10 +165,12 @@ class SendingQueue {
     );
     // log error message and schedule retry/pause sending
     if($send_result['response'] === false) {
-      if(isset($send_result['retry_interval'])) {
-        MailerLog::processNonBlockingError($send_result['operation'], $send_result['error_message'], $send_result['retry_interval']);
+      $error = $send_result['error'];
+      assert($error instanceof MailerError);
+      if($error->getRetryInterval() !== null) {
+        MailerLog::processNonBlockingError($error->getOperation(), $error->getMessage(), $error->getRetryInterval());
       } else {
-        MailerLog::processError($send_result['operation'], $send_result['error_message']);
+        MailerLog::processError($error->getOperation(), $error->getMessage());
       }
     }
     // update processed/to process list

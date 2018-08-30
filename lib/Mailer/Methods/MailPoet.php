@@ -3,31 +3,32 @@ namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 
 if(!defined('ABSPATH')) exit;
 
 class MailPoet {
-
-  const TEMPORARY_UNAVAILABLE_RETRY_INTERVAL = 300; // seconds
-
   public $api;
   public $sender;
   public $reply_to;
   public $services_checker;
 
-  function __construct($api_key, $sender, $reply_to) {
+  /** @var MailPoetMapper */
+  private $error_mapper;
+
+  function __construct($api_key, $sender, $reply_to, MailPoetMapper $error_mapper) {
     $this->api = new API($api_key);
     $this->sender = $sender;
     $this->reply_to = $reply_to;
-    $this->services_checker = new ServicesChecker(false);
+    $this->services_checker = new ServicesChecker();
+    $this->error_mapper = $error_mapper;
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
     if($this->services_checker->isMailPoetAPIKeyValid() === false) {
-      $response = __('MailPoet API key is invalid!', 'mailpoet');
-      return Mailer::formatMailerSendErrorResult($response);
+      return Mailer::formatMailerErrorResult($this->error_mapper->getInvalidApiKeyError());
     }
 
     $message_body = $this->getBody($newsletter, $subscriber, $extra_params);
@@ -35,9 +36,11 @@ class MailPoet {
 
     switch($result['status']) {
       case API::SENDING_STATUS_CONNECTION_ERROR:
-        return Mailer::formatMailerConnectionErrorResult($result['message']);
+        $error = $this->error_mapper->getConnectionError($result['message']);
+        return Mailer::formatMailerErrorResult($error);
       case API::SENDING_STATUS_SEND_ERROR:
-        return $this->processSendError($result, $subscriber);
+        $error = $this->processSendError($result, $subscriber);
+        return Mailer::formatMailerErrorResult($error);
       case API::SENDING_STATUS_OK:
       default:
         return Mailer::formatMailerSendSuccessResult();
@@ -45,27 +48,10 @@ class MailPoet {
   }
 
   function processSendError($result, $subscriber) {
-    if(!empty($result['code'])) {
-      switch($result['code']) {
-        case API::RESPONSE_CODE_NOT_ARRAY:
-          return Mailer::formatMailerSendErrorResult(__('JSON input is not an array', 'mailpoet'));
-        case API::RESPONSE_CODE_PAYLOAD_TOO_BIG:
-          return Mailer::formatMailerSendErrorResult($result['message']);
-        case API::RESPONSE_CODE_PAYLOAD_ERROR:
-          $error = $this->parseErrorResponse($result['message'], $subscriber);
-          return Mailer::formatMailerSendErrorResult($error);
-        case API::RESPONSE_CODE_TEMPORARY_UNAVAILABLE:
-          $error = Mailer::formatMailerSendErrorResult(__('Email service is temporarily not available, please try again in a few minutes.', 'mailpoet'));
-          $error['retry_interval'] = self::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL;
-          return $error;
-        case API::RESPONSE_CODE_KEY_INVALID:
-          Bridge::invalidateKey();
-          break;
-        default:
-          return Mailer::formatMailerSendErrorResult($result['message']);
-      }
+    if(!empty($result['code']) && $result['code'] ===  API::RESPONSE_CODE_KEY_INVALID) {
+      Bridge::invalidateKey();
     }
-    return Mailer::formatMailerSendErrorResult($result['message']);
+    return $this->error_mapper->getErrorForResult($result, $subscriber);
   }
 
   function processSubscriber($subscriber) {
@@ -127,38 +113,5 @@ class MailPoet {
       );
     }
     return $body;
-  }
-
-  private function parseErrorResponse($result, $subscriber) {
-    $result_parsed = json_decode($result, true);
-    $errors = [];
-    if(is_array($result_parsed)) {
-      foreach($result_parsed as $result_error) {
-        $errors[] = $this->processSingleSubscriberError($result_error, $subscriber);
-      }
-    }
-    if(!empty($errors)) {
-      return __('Error while sending: ', 'mailpoet') . join(', ', $errors);
-    } else {
-      return __('Error while sending newsletters. ', 'mailpoet') . $result;
-    }
-  }
-
-  private function processSingleSubscriberError($result_error, $subscriber) {
-    $error = '';
-    if(is_array($result_error)) {
-      $subscriber_errors = [];
-      if(isset($result_error['errors']) && is_array($result_error['errors'])) {
-        array_walk_recursive($result_error['errors'], function($item) use (&$subscriber_errors) {
-          $subscriber_errors[] = $item;
-        });
-      }
-      $error .= join(', ', $subscriber_errors);
-      
-      if(isset($result_error['index']) && isset($subscriber[$result_error['index']])) {
-        $error = '(' . $subscriber[$result_error['index']] . ': ' . $error . ')';
-      }
-    }
-    return $error;
   }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
+use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\PHPMail;
 
 class PHPMailTest extends \MailPoetTest {
@@ -19,7 +20,8 @@ class PHPMailTest extends \MailPoetTest {
     $this->mailer = new PHPMail(
       $this->sender,
       $this->reply_to,
-      $this->return_path
+      $this->return_path,
+      new PHPMailMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -44,7 +46,8 @@ class PHPMailTest extends \MailPoetTest {
     $mailer = new PHPMail(
       $this->sender,
       $this->reply_to,
-      $return_path = false
+      $return_path = false,
+      new PHPMailMapper()
     );
     expect($mailer->return_path)->equals($this->sender['from_email']);
   }
