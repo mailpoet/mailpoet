@@ -22,7 +22,8 @@
     "sabberworm/php-css-parser": "^8.1",
     "symfony/polyfill-php72": "^1.8",
     "symfony/polyfill-mbstring": "1.8.0",
-    "sensiolabs/security-checker": "^4.1"
+    "sensiolabs/security-checker": "^4.1",
+    "monolog/monolog": "^1.23"
   },
   "require-dev": {
     "codeception/aspect-mock": "2.0.1",
@@ -37,7 +38,8 @@
     "umpirsky/twig-gettext-extractor": "1.1.*",
     "kint-php/kint": "^2.2",
     "squizlabs/php_codesniffer": "^2.8.1",
-    "wimg/php-compatibility": "^7.1.2"
+    "wimg/php-compatibility": "^7.1.2",
+    "coenjacobs/mozart": "^0.2.2"
   },
   "autoload": {
     "psr-4": {
@@ -46,8 +48,19 @@
     }
   },
   "scripts": {
-    "post-update-cmd": "rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility",
-    "post-install-cmd": "rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility"
+    "post-update-cmd": "\"vendor/bin/mozart\" compose; rm -rf vendor/monolog; rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility",
+    "post-install-cmd": "\"vendor/bin/mozart\" compose; rm -rf vendor/monolog; rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility"
+  },
+  "extra": {
+    "mozart": {
+      "dep_namespace": "MailPoet\\Dependencies\\",
+      "dep_directory": "/lib/Dependencies/",
+      "classmap_directory": "/classes/dependencies/",
+      "classmap_prefix": "MP_",
+      "packages": [
+        "monolog/monolog"
+      ]
+    }
   },
   "config": {
     "platform": {
