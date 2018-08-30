@@ -47,7 +47,11 @@ class Changelog {
         } else {
           $skip_wizard = WPHooks::applyFilters('mailpoet_skip_welcome_wizard', false);
           $redirect_url = $skip_wizard ? null : admin_url('admin.php?page=mailpoet-welcome-wizard');
-          Setting::setValue('show_intro', true);
+
+          // ensure there was no MP2 migration (migration resets $version so it must be checked)
+          if(Setting::getValue('mailpoet_migration_started') === null) {
+            Setting::setValue('show_intro', true);
+          }
         }
       }
     }
