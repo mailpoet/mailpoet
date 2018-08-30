@@ -49,7 +49,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $router = new NewsletterTemplates();
     $response = $router->getAll();
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals($templates);
+    expect($response->data)->count(count($templates));
   }
 
   function testItCanSaveANewTemplate() {
