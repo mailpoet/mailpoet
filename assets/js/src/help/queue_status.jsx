@@ -29,7 +29,7 @@ const QueueStatus = (props) => {
             value: status.retry_at ? MailPoet.Date.full(status.retry_at * 1000) : MailPoet.I18n.t('none'),
           }, {
             key: MailPoet.I18n.t('error'),
-            value: status.error || MailPoet.I18n.t('none'),
+            value: status.error ? status.error.error_message : MailPoet.I18n.t('none'),
           }, {
             key: MailPoet.I18n.t('totalCompletedTasks'),
             value: status.tasksStatusCounts.completed,
@@ -64,6 +64,10 @@ QueueStatus.propTypes = {
     sent: React.PropTypes.number,
     retry_attempt: React.PropTypes.number,
     retry_at: React.PropTypes.number,
+    error: React.PropTypes.shape({
+      operation: React.PropTypes.string,
+      error_message: React.PropTypes.string,
+    }),
     tasksStatusCounts: React.PropTypes.shape({
       completed: React.PropTypes.number.isRequired,
       running: React.PropTypes.number.isRequired,
@@ -81,6 +85,7 @@ QueueStatus.defaultProps = {
     sent: null,
     retry_attempt: null,
     retry_at: null,
+    error: null,
   },
 };
 
