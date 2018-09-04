@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija, kgjerstad
 Tags: newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, mailing list
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 3.9.0
+Stable tag: 3.9.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -161,6 +161,14 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.9.1 - 2018-09-04 =
+Improved: instructions for migrating from MP2 to MP3 clarified;
+Improved: minor style adjustments for migration tool;
+Improved: minor fixes to onboarding intro guide;
+Improved: template page loading times decreased;
+Fixed: resolved javascript warnings on help page status;
+Fixed: subscriber status remains persistent after migration from MP2 to MP3 without sign-up confirmation enabled;
 
 = 3.9.0 - 2018-08-28 =
 Improved: email processing in sending queues is now more resilient to invalid data. Thanks Tara!
