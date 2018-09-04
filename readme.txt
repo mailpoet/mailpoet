@@ -3,7 +3,6 @@ Contributors: mailpoet, wysija, kgjerstad
 Tags: newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, mailing list
 Requires at least: 4.7
 Tested up to: 4.9
-Requires PHP: 5.6
 Stable tag: 3.9.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -119,6 +118,10 @@ We welcome experienced translators to translate directly on [our Transifex proje
 Have a question for us? Reach us at security@ our domain.
 
 == Installation ==
+
+= Minimum requirements =
+PHP version 5.6 or greater (PHP 7 or greater is recommended)
+Visit our [Minimum and Recommended Requirements](https://beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3) for a detailed list of server requirements.
 
 There are 3 ways to install this plugin:
 

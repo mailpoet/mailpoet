@@ -64,7 +64,7 @@ function mailpoet_php_version_notice() {
   $notice = str_replace(
     '[link]',
     '<a href="//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_version" target="_blank">',
-    __('MailPoet requires PHP version 7 or newer. Please read our [link]‌instructions[/link] on how to upgrade your site.', 'mailpoet')
+    __('MailPoet requires PHP version 5.6 or newer (version 7 recommended). Please read our [link]‌instructions[/link] on how to upgrade your site.', 'mailpoet')
   );
   $notice = str_replace('[/link]', '</a>', $notice);
   printf('<div class="error"><p>%1$s</p></div>', $notice);
