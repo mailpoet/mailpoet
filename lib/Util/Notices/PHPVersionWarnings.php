@@ -8,12 +8,9 @@ use MailPoet\WP\Notice as WPNotice;
 class PHPVersionWarnings {
 
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 2592000; // 30 days
+  const OPTION_NAME = 'dismissed-php-version-outdated-notice';
 
   function init($php_version, $is_enabled) {
-    add_action('wp_ajax_dismissed_notice_handler', array(
-      $this,
-      'ajaxDismissNoticeHandler'
-    ));
 
     if($is_enabled && $this->isOutdatedPHPVersion($php_version)) {
       return $this->displayError($php_version);
@@ -21,7 +18,7 @@ class PHPVersionWarnings {
   }
 
   function isOutdatedPHPVersion($php_version) {
-    return version_compare($php_version, '5.6', '<') && !get_transient('dismissed-php-version-outdated-notice');
+    return version_compare($php_version, '5.6', '<') && !get_transient(self::OPTION_NAME);
   }
 
   function displayError($php_version) {
@@ -29,14 +26,12 @@ class PHPVersionWarnings {
     $error_string = sprintf($error_string, $php_version);
     $error = Helpers::replaceLinkTags($error_string, 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
-    $data_notice_name = 'php-version-outdated';
 
-    return WPNotice::displayError($error, $extra_classes, $data_notice_name);
+    return WPNotice::displayError($error, $extra_classes, self::OPTION_NAME);
   }
 
   function ajaxDismissNoticeHandler() {
-    if($_POST['type'] !== 'php-version-outdated') return;
-    set_transient('dismissed-php-version-outdated-notice', true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
+    set_transient(self::OPTION_NAME, true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
   }
 
 }
