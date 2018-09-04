@@ -163,23 +163,23 @@ Stop by our [support site](https://www.mailpoet.com/support).
 == Changelog ==
 
 = 3.9.1 - 2018-09-04 =
-Improved: instructions for migrating from MP2 to MP3 clarified;
-Improved: minor style adjustments for migration tool;
-Improved: minor fixes to onboarding intro guide;
-Improved: template page loading times decreased;
-Fixed: resolved javascript warnings on help page status;
-Fixed: subscriber status remains persistent after migration from MP2 to MP3 without sign-up confirmation enabled;
+* Improved: instructions for migrating from MP2 to MP3 clarified;
+* Improved: minor style adjustments for migration tool;
+* Improved: minor fixes to onboarding intro guide;
+* Improved: template page loading times decreased;
+* Fixed: resolved javascript warnings on help page status;
+* Fixed: subscriber status remains persistent after migration from MP2 to MP3 without sign-up confirmation enabled;
 
 = 3.9.0 - 2018-08-28 =
-Improved: email processing in sending queues is now more resilient to invalid data. Thanks Tara!
-Fixed: replaced WooCommerce image in welcome wizard;
-Fixed: swapped video in welcome wizard with an updated one;
-Fixed: welcome wizard button displays properly for all users;
-Fixed: permission error when bypassing data import after new install or reset;
-Fixed: added indexes to some foreign keys which were missing;
-Fixed: error displaying number of exported users;
-Fixed: export search function restored;
-Fixed: prevent third party APIs from adding data incorrectly via MailPoets API.
+* Improved: email processing in sending queues is now more resilient to invalid data. Thanks Tara!
+* Fixed: replaced WooCommerce image in welcome wizard;
+* Fixed: swapped video in welcome wizard with an updated one;
+* Fixed: welcome wizard button displays properly for all users;
+* Fixed: permission error when bypassing data import after new install or reset;
+* Fixed: added indexes to some foreign keys which were missing;
+* Fixed: error displaying number of exported users;
+* Fixed: export search function restored;
+* Fixed: prevent third party APIs from adding data incorrectly via MailPoets API.
 
 = 3.8.6 - 2018-08-21 =
 * Improved: compatibility with caching plugins
