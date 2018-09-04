@@ -40,8 +40,3 @@ class PHPVersionWarnings {
   }
 
 }
-\MailPoet\WP\Notice::displaySuccess(Helpers::replaceLinkTags(
-  __('Congrats! You’re progressing well so far. Complete your upgrade thanks to this [link]checklist[/link].', 'mailpoet'),
-  'https://beta.docs.mailpoet.com/article/199-checklist-after-migrating-to-mailpoet3',
-  array('target' => '_blank')
-), 'is-dismissible');
