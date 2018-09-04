@@ -12,32 +12,35 @@ const CronStatus = (props) => {
   return (
     <div>
       <h2>{MailPoet.I18n.t('systemStatusCronStatusTitle')}</h2>
-      <KeyValueTable max_width={'400px'}>{[
-        {
-          key: MailPoet.I18n.t('accessible'),
-          value: <PrintBoolean>{status.accessible}</PrintBoolean>,
-        },
-        {
-          key: MailPoet.I18n.t('status'),
-          value: activeStatusMapping[status.status] ? activeStatusMapping[status.status] : MailPoet.I18n.t('unknown'),
-        },
-        {
-          key: MailPoet.I18n.t('lastUpdated'),
-          value: status.updated_at ? MailPoet.Date.full(status.updated_at * 1000) : MailPoet.I18n.t('unknown'),
-        },
-        {
-          key: MailPoet.I18n.t('lastRunStarted'),
-          value: status.run_accessed_at ? MailPoet.Date.full(status.run_started_at * 1000) : MailPoet.I18n.t('unknown'),
-        },
-        {
-          key: MailPoet.I18n.t('lastRunCompleted'),
-          value: status.run_completed_at ? MailPoet.Date.full(status.run_completed_at * 1000) : MailPoet.I18n.t('unknown'),
-        },
-        {
-          key: MailPoet.I18n.t('lastSeenError'),
-          value: status.last_error || MailPoet.I18n.t('none'),
-        }]}
-      </KeyValueTable>
+      <KeyValueTable
+        max_width={'400px'}
+        rows={[
+          {
+            key: MailPoet.I18n.t('accessible'),
+            value: <PrintBoolean>{status.accessible}</PrintBoolean>,
+          },
+          {
+            key: MailPoet.I18n.t('status'),
+            value: activeStatusMapping[status.status] ? activeStatusMapping[status.status] : MailPoet.I18n.t('unknown'),
+          },
+          {
+            key: MailPoet.I18n.t('lastUpdated'),
+            value: status.updated_at ? MailPoet.Date.full(status.updated_at * 1000) : MailPoet.I18n.t('unknown'),
+          },
+          {
+            key: MailPoet.I18n.t('lastRunStarted'),
+            value: status.run_accessed_at ? MailPoet.Date.full(status.run_started_at * 1000) : MailPoet.I18n.t('unknown'),
+          },
+          {
+            key: MailPoet.I18n.t('lastRunCompleted'),
+            value: status.run_completed_at ? MailPoet.Date.full(status.run_completed_at * 1000) : MailPoet.I18n.t('unknown'),
+          },
+          {
+            key: MailPoet.I18n.t('lastSeenError'),
+            value: status.last_error || MailPoet.I18n.t('none'),
+          },
+        ]}
+      />
     </div>
   );
 };
