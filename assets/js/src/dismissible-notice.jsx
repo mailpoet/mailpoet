@@ -1,8 +1,8 @@
 import jQuery from 'jquery';
 
 jQuery(($) => {
-  $(document).on('click', '.notice-php-warning .notice-dismiss', function xyz() {
-    const type = $(this).closest('.notice-php-warning').data('notice');
+  $(document).on('click', '.mailpoet-dismissible-notice .notice-dismiss', function dismiss() {
+    const type = $(this).closest('.mailpoet-dismissible-notice').data('notice');
     $.ajax(window.ajaxurl,
       {
         type: 'POST',

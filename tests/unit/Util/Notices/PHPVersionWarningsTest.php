@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Config;
+namespace MailPoet\Util\Notices;
 
 use AspectMock\Test as Mock;
 
