@@ -188,11 +188,6 @@ class MP2MigratorTest extends \MailPoetTest {
     expect($custom_field_params['label'])->equals($name);
   }
 
-  /**
-   * Test the importSubscribers function
-   *
-   * @global object $wpdb
-   */
   public function testImportSubscribers() {
     global $wpdb;
 
@@ -215,6 +210,92 @@ class MP2MigratorTest extends \MailPoetTest {
       'confirmed_ip' => $confirmed_ip,
       'status' => '1',
     ));
+    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+      'user_id' => $id + 1,
+      'wpuser_id' => $wp_id,
+      'email' => '1' . $email,
+      'firstname' => $firstname,
+      'lastname' => $lastname,
+      'ip' => $ip,
+      'confirmed_ip' => $confirmed_ip,
+      'status' => '0',
+    ));
+    $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
+    $table = MP_SUBSCRIBERS_TABLE;
+    $subscribers = $wpdb->get_results("SELECT * FROM $table WHERE email LIKE '%$email' ORDER BY id");
+    expect($subscribers[0]->status)->equals('subscribed');
+    expect($subscribers[1]->status)->equals('unconfirmed');
+  }
+
+  public function testImportSubscribersWithDblOptinDisabled() {
+    global $wpdb;
+
+    $this->initImport();
+    $values = ['confirm_dbleoptin' => '0'];
+    $encoded_option = base64_encode(serialize($values));
+    update_option('wysija', $encoded_option);
+
+    $id = 999;
+    $wp_id = 1;
+    $email = 'test@test.com';
+    $firstname = 'Test firstname';
+    $lastname = 'Test lastname';
+    $ip = '127.0.0.1';
+    $confirmed_ip = $ip;
+    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+      'user_id' => $id,
+      'wpuser_id' => $wp_id,
+      'email' => $email,
+      'firstname' => $firstname,
+      'lastname' => $lastname,
+      'ip' => $ip,
+      'confirmed_ip' => $confirmed_ip,
+      'status' => '1',
+    ));
+    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+      'user_id' => $id + 1,
+      'wpuser_id' => $wp_id,
+      'email' => '1' . $email,
+      'firstname' => $firstname,
+      'lastname' => $lastname,
+      'ip' => $ip,
+      'confirmed_ip' => $confirmed_ip,
+      'status' => '0',
+    ));
+    $this->invokeMethod($this->MP2Migrator, 'loadDoubleOptinSettings');
+    $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
+    $table = MP_SUBSCRIBERS_TABLE;
+    $subscribers = $wpdb->get_results("SELECT * FROM $table WHERE email LIKE '%$email' ORDER BY id");
+    expect($subscribers[0]->status)->equals('subscribed');
+    expect($subscribers[1]->status)->equals('subscribed');
+  }
+
+  /**
+   * Test the importSubscribers function
+   *
+   * @global object $wpdb
+   */
+  public function testSubscribersStatus() {
+    global $wpdb;
+
+    $this->initImport();
+    $id = 999;
+    $wp_id = 1;
+    $email = 'test@test.com';
+    $firstname = 'Test firstname';
+    $lastname = 'Test lastname';
+    $ip = '127.0.0.1';
+    $confirmed_ip = $ip;
+    $wpdb->insert($wpdb->prefix . 'wysija_user', [
+      'user_id' => $id,
+      'wpuser_id' => $wp_id,
+      'email' => $email,
+      'firstname' => $firstname,
+      'lastname' => $lastname,
+      'ip' => $ip,
+      'confirmed_ip' => $confirmed_ip,
+      'status' => '1',
+    ]);
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
     $table = MP_SUBSCRIBERS_TABLE;
     $subscriber = $wpdb->get_row("SELECT * FROM $table WHERE email='$email'");

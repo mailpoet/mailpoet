@@ -23,6 +23,7 @@ class MP2Migrator {
   public $progressbar;
   private $segments_mapping = array(); // Mapping between old and new segment IDs
   private $wp_users_segment;
+  private $double_optin_enabled = true;
 
   public function __construct() {
     $this->defineMP2Tables();
@@ -157,6 +158,8 @@ class MP2Migrator {
       $this->displayDataToMigrate();
     }
 
+    $this->loadDoubleOptinSettings();
+
     $this->importSegments();
     $this->importCustomFields();
     $this->importSubscribers();
@@ -204,6 +207,14 @@ class MP2Migrator {
     Setting::setValue('last_imported_user_id', 0);
     Setting::setValue('last_imported_list_id', 0);
     Setting::setValue('last_imported_form_id', 0);
+  }
+
+  private function loadDoubleOptinSettings() {
+    $encoded_option = get_option('wysija');
+    $values = unserialize(base64_decode($encoded_option));
+    if(isset($values['confirm_dbleoptin']) && $values['confirm_dbleoptin'] === '0') {
+      $this->double_optin_enabled = false;
+    }
   }
 
   /**
@@ -615,6 +626,8 @@ class MP2Migrator {
    * @return string MP3 user status
    */
   private function mapUserStatus($mp2_user_status) {
+
+
     switch($mp2_user_status) {
       case 1:
         $status = 'subscribed';
@@ -624,7 +637,12 @@ class MP2Migrator {
         break;
       case 0:
       default:
-        $status = 'unconfirmed';
+        //if MP2 double-optin is disabled, we change "unconfirmed" status in MP2 to "confirmed" status in MP3.
+        if(!$this->double_optin_enabled) {
+          $status = 'subscribed';
+        } else {
+          $status = 'unconfirmed';
+        }
     }
     return $status;
   }
