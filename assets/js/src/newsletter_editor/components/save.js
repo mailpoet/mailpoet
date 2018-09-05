@@ -265,20 +265,24 @@ define([
       }
     },
     validateNewsletter: function (jsonObject) {
+      var body = '';
       var contents;
       if (!App._contentContainer.isValid()) {
         this.showValidationError(App._contentContainer.validationError);
         return;
       }
 
-      contents = JSON.stringify(jsonObject);
+      if (jsonObject && jsonObject.body && jsonObject.body.content) {
+        body = JSON.stringify(jsonObject.body.content);
+      }
       if (App.getConfig().get('validation.validateUnsubscribeLinkPresent') &&
-          contents.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
-          contents.indexOf('[link:subscription_unsubscribe]') < 0) {
+        body.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
+        body.indexOf('[link:subscription_unsubscribe]') < 0) {
         this.showValidationError(MailPoet.I18n.t('unsubscribeLinkMissing'));
         return;
       }
 
+      contents = JSON.stringify(jsonObject);
       if ((App.getNewsletter().get('type') === 'notification') &&
         contents.indexOf('"type":"automatedLatestContent"') < 0 &&
         contents.indexOf('"type":"automatedLatestContentLayout"') < 0
