@@ -114,6 +114,28 @@ let newsletterActions = [
     },
   },
   {
+    name: 'duplicate',
+    label: MailPoet.I18n.t('duplicate'),
+    onClick: (newsletter, refresh) => MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'duplicate',
+      data: {
+        id: newsletter.id,
+      },
+    }).done((response) => {
+      MailPoet.Notice.success((MailPoet.I18n.t('newsletterDuplicated')).replace('%$1s', response.data.subject));
+      refresh();
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(error => error.message),
+          { scroll: true }
+        );
+      }
+    }),
+  },
+  {
     name: 'edit',
     link: function link(newsletter) {
       return (

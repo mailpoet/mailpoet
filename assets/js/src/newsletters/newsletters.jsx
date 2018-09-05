@@ -10,6 +10,7 @@ import NewsletterTemplates from 'newsletters/templates.jsx';
 import NewsletterSend from 'newsletters/send.jsx';
 import NewsletterTypeStandard from 'newsletters/types/standard.jsx';
 import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx';
+import NewsletterTypeWelcome from 'newsletters/types/welcome/welcome.jsx';
 import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
 import NewsletterListStandard from 'newsletters/listings/standard.jsx';
 import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
@@ -72,6 +73,10 @@ if (container) {
     {
       path: 'new/notification',
       component: NewsletterTypeNotification,
+    },
+    {
+      path: 'new/welcome',
+      component: NewsletterTypeWelcome,
     },
     /* Template selection */
     {
