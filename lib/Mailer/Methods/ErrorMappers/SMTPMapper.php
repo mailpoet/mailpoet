@@ -3,6 +3,7 @@ namespace MailPoet\Mailer\Methods\ErrorMappers;
 
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\SubscriberError;
 
 class SMTPMapper {
   use ConnectionErrorMapperTrait;
@@ -23,9 +24,11 @@ class SMTPMapper {
     } else {
       $message = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SMTP);
     }
+
+    $subscriber_errors = [];
     if(empty($extra_params['test_email'])) {
-      $message .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+      $subscriber_errors[] = new SubscriberError($subscriber, null);
     }
-    return new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, $message);
+    return new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, $message, null, $subscriber_errors);
   }
 }

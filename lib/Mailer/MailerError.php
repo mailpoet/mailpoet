@@ -20,17 +20,22 @@ class MailerError {
   /** @var int|null */
   private $retry_interval;
 
+  /** @var array */
+  private $subscribers_errors = [];
+
   /**
    * @param string $operation
    * @param string $level
    * @param null|string $message
    * @param int|null $retry_interval
+   * @param array $subscribers_errors
    */
-  function __construct($operation, $level, $message = null, $retry_interval = null) {
+  function __construct($operation, $level, $message = null, $retry_interval = null, array $subscribers_errors = []) {
     $this->operation = $operation;
     $this->level = $level;
     $this->message = $message;
     $this->retry_interval = $retry_interval;
+    $this->subscribers_errors = $subscribers_errors;
   }
 
   /**
@@ -59,5 +64,35 @@ class MailerError {
    */
   function getRetryInterval() {
     return $this->retry_interval;
+  }
+
+  /**
+   * @return array
+   */
+  function getSubscriberErrors() {
+    return $this->subscribers_errors;
+  }
+
+  function getMessageWithFailedSubscribers() {
+    $message = $this->message ?: '';
+    if(!$this->subscribers_errors) {
+      return $message;
+    }
+
+    $message .= $this->message ? ' ' : '';
+
+    if(count($this->subscribers_errors) === 1) {
+      $message .=  __('Unprocessed subscriber:', 'mailpoet') . ' ';
+    } else {
+      $message .=  __('Unprocessed subscribers:', 'mailpoet') . ' ';
+    }
+
+    $message .= implode(
+      ', ',
+      array_map(function (SubscriberError $subscriber_error) {
+        return "($subscriber_error)";
+      }, $this->subscribers_errors)
+    );
+    return $message;
   }
 }

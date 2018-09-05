@@ -62,7 +62,7 @@ class MailPoetMapperTest extends \MailPoetTest {
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->equals('Error while sending newsletters. Api Error');
+    expect($error->getMessage())->equals('Error while sending. Api Error');
   }
 
   function testGetPayloadErrorWithErrorMessage() {
@@ -75,6 +75,24 @@ class MailPoetMapperTest extends \MailPoetTest {
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->equals('Error while sending: (a@example.com: subject is missing), (c d <b@example.com>: subject is missing)');
+    $subscriber_errors = $error->getSubscriberErrors();
+    expect(count($subscriber_errors))->equals(2);
+    expect($subscriber_errors[0]->getEmail())->equals('a@example.com');
+    expect($subscriber_errors[0]->getMessage())->equals('subject is missing');
+    expect($subscriber_errors[1]->getEmail())->equals('c d <b@example.com>');
+    expect($subscriber_errors[1]->getMessage())->equals('subject is missing');
+  }
+
+  function testGetPayloadErrorForMalformedMSSResponse() {
+    $api_result = [
+      'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
+      'status' => API::SENDING_STATUS_SEND_ERROR,
+      'message' => '[{"errors":{"subject":"subject is missing"}},{"errors":{"subject":"subject is missing"}}]'
+    ];
+    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->equals('Error while sending. Invalid MSS response format.');
   }
 }

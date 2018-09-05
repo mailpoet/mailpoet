@@ -168,9 +168,9 @@ class SendingQueue {
       $error = $send_result['error'];
       assert($error instanceof MailerError);
       if($error->getRetryInterval() !== null) {
-        MailerLog::processNonBlockingError($error->getOperation(), $error->getMessage(), $error->getRetryInterval());
+        MailerLog::processNonBlockingError($error->getOperation(), $error->getMessageWithFailedSubscribers(), $error->getRetryInterval());
       } else {
-        MailerLog::processError($error->getOperation(), $error->getMessage());
+        MailerLog::processError($error->getOperation(), $error->getMessageWithFailedSubscribers());
       }
     }
     // update processed/to process list

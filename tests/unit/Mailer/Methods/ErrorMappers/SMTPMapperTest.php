@@ -35,12 +35,14 @@ class SMTPMapperTest extends \MailPoetTest {
       . '<< 250 Reset OK' . PHP_EOL;
     $error = $this->mapper->getErrorFromLog($log, 'test@example.com', []);
     expect($error->getMessage())
-      ->equals('Expected response code 250/251/252 but got code "550", with message "550 No such recipient here" (code: 550) Unprocessed subscriber: test@example.com');
+      ->equals('Expected response code 250/251/252 but got code "550", with message "550 No such recipient here" (code: 550)');
+    expect($error->getSubscriberErrors()[0]->getEmail('moi@mrcasual.com'));
   }
 
   function testItReturnsGenericMessageWhenLogMessageDoesNotExist() {
     $error = $this->mapper->getErrorFromLog(null, 'test@example.com');
     expect($error->getMessage())
-      ->equals(Mailer::METHOD_SMTP . ' has returned an unknown error. Unprocessed subscriber: test@example.com');
+      ->equals(Mailer::METHOD_SMTP . ' has returned an unknown error.');
+    expect($error->getSubscriberErrors()[0]->getEmail('moi@mrcasual.com'));
   }
 }

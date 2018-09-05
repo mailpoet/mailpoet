@@ -53,7 +53,7 @@ class Newsletter {
     return $newsletter;
   }
 
-  function preProcessNewsletter($newsletter, $queue) {
+  function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, $queue) {
     // return the newsletter if it was previously rendered
     if(!is_null($queue->getNewsletterRenderedBody())) {
       return (!$queue->validate()) ?
