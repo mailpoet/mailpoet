@@ -45,6 +45,9 @@ class RendererTest extends \MailPoetTest {
     expect(count($DOM('.mailpoet_cols-one')))->equals(2);
     expect(count($DOM('.mailpoet_cols-two')))->equals(2);
     expect(count($DOM('.mailpoet_cols-three')))->equals(3);
+
+    // nested vertical container should be rendered
+    expect(count($DOM('.nested-vertical-container')))->equals(1);
   }
 
   function testItRendersOneColumn() {

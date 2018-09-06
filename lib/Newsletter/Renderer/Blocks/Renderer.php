@@ -40,7 +40,12 @@ class Renderer {
       $rendered_block_element = $_this->createElementFromBlockType($block, $column_count);
       if(isset($block['blocks'])) {
         $rendered_block_element = $_this->render($block, $column_count);
+        // nested vertical column container is rendered as an array
+        if(is_array($rendered_block_element)) {
+          $rendered_block_element = implode('', $rendered_block_element);
+        }
       }
+
       // vertical orientation denotes column container
       if($block['type'] === 'container' && $block['orientation'] === 'vertical') {
         $column_content[] = $rendered_block_element;
