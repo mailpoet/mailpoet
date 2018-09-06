@@ -211,6 +211,21 @@
               {
                 "type": "text",
                 "text": "<p>Test trailing line breaks removal</p>\n<h3>Test line breaks <br/> in headings <a href=\"http://www.example.org\">haha</a></h3><br /><br><br/>"
+              },
+              {
+                "type": "container",
+                "orientation": "vertical",
+                "styles": {
+                  "block": {
+                    "backgroundColor": "transparent"
+                  }
+                },
+                "blocks": [
+                  {
+                    "type": "text",
+                    "text": "<p class='nested-vertical-container'>Nested vertical container content</p>"
+                  }
+                ]
               }
             ]
           }
