@@ -28,11 +28,11 @@ class ScheduleNewsletterCest {
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->checkOption('isScheduled');
-	$I->click('select[name=time]');
-	$I->selectOption('form select[name=time]', '6:00');
-	$I->click('Schedule');
-	$I->wait(30);
-	$I->seeInCurrentUrl('mailpoet-newsletters');
+    $I->click('select[name=time]');
+    $I->selectOption('form select[name=time]', '6:00');
+    $I->click('Schedule');
+    $I->wait(30);
+    $I->seeInCurrentUrl('mailpoet-newsletters');
 	
   }
 }
