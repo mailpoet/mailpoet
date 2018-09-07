@@ -67,6 +67,7 @@ const NewsletterTypes = React.createClass({
   render: function render() {
     const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');
     const createNotificationNewsletter = _.partial(this.setupNewsletter, 'notification');
+    const createWelcomeNewsletter = _.partial(this.setupNewsletter, 'welcome');
     const defaultTypes = [
       {
         slug: 'standard',
@@ -93,11 +94,22 @@ const NewsletterTypes = React.createClass({
         videoGuide: 'https://beta.docs.mailpoet.com/article/254-video-guide-to-welcome-emails',
         action: (function action() {
           return (
-            <div>
-              <a href="?page=mailpoet-premium" target="_blank">
-                {MailPoet.I18n.t('premiumFeatureLink')}
-              </a>
-            </div>
+            <a
+              className="button button-primary"
+              onClick={createWelcomeNewsletter}
+              data-automation-id="create_welcome"
+              onKeyDown={(event) => {
+                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                ) {
+                  event.preventDefault();
+                  createWelcomeNewsletter();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+            >
+              {MailPoet.I18n.t('setUp')}
+            </a>
           );
         }()),
       },

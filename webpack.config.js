@@ -166,13 +166,6 @@ var baseConfig = {
         ]
       },
       {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/welcome/scheduling.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.NewsletterWelcomeNotificationScheduling',
-          'babel-loader',
-        ]
-      },
-      {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/breadcrumb.jsx'),
         use: [
           'expose-loader?' + globalPrefix + '.NewsletterCreationBreadcrumb',
