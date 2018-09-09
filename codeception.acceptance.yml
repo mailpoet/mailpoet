@@ -20,7 +20,7 @@ modules:
             url: 'http://wordpress'
             browser: chrome
             port: 4444
-            window_size: '2048x1440'
+            window_size: '1024x2048'
             restart: true
             wait: 0
             adminUsername: admin
