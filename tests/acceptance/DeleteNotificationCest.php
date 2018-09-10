@@ -33,7 +33,7 @@ class DeleteNotificationCest {
     $I->wantTo('Restore a newsletter from trash');
     $newsletter_name = 'Restore from Trash Test Post Notification';
     $factory = new Newsletter();
-    $newsletter = $factory>withSubject($newsletter_name)
+    $newsletter = $factory->withSubject($newsletter_name)
       ->withType('notification')
       ->withPostNoticationOptions()
       ->withDeleted()
