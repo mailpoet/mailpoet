@@ -11,8 +11,8 @@ class EditFormCest {
   function editForm(\AcceptanceTester $I) {
     
     //Step one - create form from factory
-    $form_name = 'Edit Form Test';
-    $form_edited_name = 'Edited Form Test';
+    $form_name = 'Testing Form Edit';
+    $form_edited_name = 'Testing Form Edited';
     $form = new Form();
     $form->withName($form_name)->create();
     
