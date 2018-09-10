@@ -12,8 +12,9 @@ class Localizer {
 
   function loadGlobalText() {
     $language_path = sprintf(
-      '%s/%s.mo',
+      '%s/%s-%s.mo',
       Env::$languages_path,
+      Env::$plugin_name,
       $this->locale()
     );
     load_textdomain(Env::$plugin_name, $language_path);
