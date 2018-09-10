@@ -21,15 +21,18 @@ class EditFormCest {
     $I->login();
     $I->amOnMailpoetPage('Forms');
     $I->waitForText($form_name);
-    $I->clickItemRowActionByItemName($newsletter_title, 'Edit');
+    $I->clickItemRowActionByItemName($form_name, 'Edit');
     $title_element = '[data-automation-id="mailpoet_form_name_input"]';
     $I->waitForElement($title_element);
     $I->seeInCurrentUrl('mailpoet-form-editor');
     $I->fillField($title_element, $form_edited_name);
-    $I->click('Save');
+    $search_field_element = 'input.select2-search__field';
+    $I->fillField($search_field_element, 'My First List');
+    $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
+    $I->click('[data-automation-id="save_form"]');
     
     //Step three - assertions
-    $I->waitForText('Saved! Add this form to a widget.');
+    $I->waitForText('Saved! The changes are now active in your widget.');
     $I->amOnMailpoetPage('Forms');
     $I->waitForText($form_edited_name);
     }
