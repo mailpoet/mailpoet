@@ -50,6 +50,14 @@ class Populator {
       'Faith',
       'NewsDay',
       'YogaStudio',
+      'FashionStore',
+      'Charity',
+      'Drone',
+      'Hotels',
+      'Music',
+      'Retro',
+      'Coffee',
+      'RetroComputingMagazine',
     );
   }
 

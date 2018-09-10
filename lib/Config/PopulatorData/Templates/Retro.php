@@ -2,24 +2,28 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
-class NewsDay {
+class Retro {
 
   private $template_image_url;
   private $social_icon_url;
 
   function __construct($assets_url) {
-     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/news_day';
+    $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/retro';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
   function get() {
     return array(
-      'name' => __("News Day", 'mailpoet'),
+      'name' => __("Retro", 'mailpoet'),
       'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
     );
+  }
+
+  private function getThumbnail() {
+    return $this->template_image_url . '/retro.jpg';
   }
 
   private function getBody() {
@@ -55,7 +59,7 @@ class NewsDay {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => '#ffffff',
+                          'backgroundColor' => '#f8f8f8',
                         ),
                     ),
                   'blocks' =>
@@ -80,25 +84,13 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => '#f2f2f2',
-                                          'height' => '20px',
-                                        ),
-                                    ),
-                                ),
-                              1 =>
-                                array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/News-Outlet-Title-2.jpg',
-                                  'alt' => 'News-Outlet-Title-2',
+                                  'src' => $this->template_image_url . '/1980s-Header.jpg',
+                                  'alt' => '1980s-Header',
                                   'fullWidth' => true,
                                   'width' => '1280px',
-                                  'height' => '700px',
+                                  'height' => '740px',
                                   'styles' =>
                                     array (
                                       'block' =>
@@ -155,7 +147,40 @@ class NewsDay {
                                       'block' =>
                                         array (
                                           'backgroundColor' => 'transparent',
-                                          'height' => '25px',
+                                          'height' => '30px',
+                                        ),
+                                    ),
+                                ),
+                              1 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<h2 style="text-align: left;"><strong>Welcome back !</strong></h2>
+<p style="text-align: left;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
+                                ),
+                              2 =>
+                                array (
+                                  'type' => 'divider',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'padding' => '13px',
+                                          'borderStyle' => 'solid',
+                                          'borderWidth' => '2px',
+                                          'borderColor' => '#f36543',
+                                        ),
+                                    ),
+                                ),
+                              3 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '20px',
                                         ),
                                     ),
                                 ),
@@ -201,23 +226,13 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'text',
-                                  'text' => '<h1 style="text-align: left;"><span style="color: #2ca5d2;"><strong>Top Story</strong></span></h1>',
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h2 style="text-align: left;" data-post-id="1991"><strong>Plasma jet engines that could take you from the ground to space</strong></h2>',
-                                ),
-                              2 =>
-                                array (
                                   'type' => 'image',
-                                  'link' => 'http://mailpoet.info/plasma-jet-engines-that-could-take-you-from-the-ground-to-space/',
-                                  'src' => $this->template_image_url . '/plasma-stingray111-800x533.jpg',
-                                  'alt' => 'Plasma jet engines that could take you from the ground to space',
+                                  'link' => '',
+                                  'src' => $this->template_image_url . '/1980s-Download-1.jpg',
+                                  'alt' => '1980s-Download-1',
                                   'fullWidth' => false,
-                                  'width' => '413.28125px',
-                                  'height' => 440,
+                                  'width' => '364px',
+                                  'height' => '291px',
                                   'styles' =>
                                     array (
                                       'block' =>
@@ -226,52 +241,53 @@ class NewsDay {
                                         ),
                                     ),
                                 ),
-                              3 =>
+                            ),
+                        ),
+                      1 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<p class="mailpoet_wp_post">FORGET fuel-powered jet engines. We’re on the verge of having aircraft that can fly from the ground up to the edge of space using air and electricity alone. Traditional jet engines create thrust by mixing compressed air with fuel and igniting it. The burning mixture expands rapidly and is blasted out of the back of the engine, pushing it forwards. &hellip;</p><p><a href="http://mailpoet.info/plasma-jet-engines-that-could-take-you-from-the-ground-to-space/">Read More</a></p>',
+                                  'text' => '<h3><strong>Free Retro-Futuristic Font</strong></h3>
+<p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In elementum nunc vel est congue, a venenatis nunc aliquet. Curabitur luctus, nulla et dignissim elementum, ipsum eros fermentum nulla, non cursus eros mi eu velit.</span></p>',
                                 ),
-                              4 =>
+                              1 =>
                                 array (
-                                  'type' => 'divider',
+                                  'type' => 'button',
+                                  'text' => 'Download Here',
+                                  'url' => '',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
+                                          'backgroundColor' => '#f36543',
+                                          'borderColor' => '#f36543',
                                           'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
-                                        ),
-                                    ),
-                                ),
-                              5 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
-                                        ),
-                                    ),
-                                ),
-                              6 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3><span style="color: #2ca5d2;"><strong>Popular Posts Today</strong></span></h3>',
-                                ),
-                              7 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
+                                          'borderRadius' => '40px',
+                                          'borderStyle' => 'solid',
+                                          'width' => '150px',
+                                          'lineHeight' => '40px',
+                                          'fontColor' => '#ffffff',
+                                          'fontFamily' => 'Arial',
+                                          'fontSize' => '14px',
+                                          'fontWeight' => 'bold',
+                                          'textAlign' => 'left',
                                         ),
                                     ),
                                 ),
@@ -317,125 +333,15 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1997"><strong>Cutting through the smog: What to do to fight air pollution</strong></h3>
-                      <p class="mailpoet_wp_post">Tackling our air problems starts with traffic control, but individual action to reduce energy use and intensive farming would also help clean our air.</p>
-                      <p><a href="http://mailpoet.info/cutting-through-the-smog-what-to-do-to-fight-air-pollution/">Read More</a></p>',
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'divider',
+                                  'type' => 'spacer',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
                                           'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
-                                          'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
+                                          'height' => '20px',
                                         ),
                                     ),
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1994"><strong>Ladybird&rsquo;s transparent shell reveals how it&nbsp;moves</strong></h3>
-                      <p class="mailpoet_wp_post">They certainly know how to fold. A see-through artificial wing case has been used to watch for the first time as ladybirds put away their wings after flight.</p>
-                      <p><a href="http://mailpoet.info/ladybirds-transparent-shell-reveals-how-it-folds-its-wings/">Read More</a></p>',
-                                ),
-                              3 =>
-                                array (
-                                  'type' => 'divider',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
-                                          'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
-                                        ),
-                                    ),
-                                ),
-                              4 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1938"><strong>Brazil&rsquo;s history-making Hurricane</strong></h3>
-                      <p class="mailpoet_wp_post">Jairzinho has just made history. In claiming the fourth goal of an unforgettable 1970 FIFA World Cup Mexico&trade; Final against Italy, he has maintained his record of scoring in every one of Brazil&rsquo;s matches en route to the Trophy.</p>
-                      <p><a href="http://mailpoet.info/brazils-history-making-hurricane/">Read More</a></p>',
-                                ),
-                            ),
-                        ),
-                      1 =>
-                        array (
-                          'type' => 'container',
-                          'orientation' => 'vertical',
-                          'image' =>
-                            array (
-                              'src' => NULL,
-                              'display' => 'scale',
-                            ),
-                          'styles' =>
-                            array (
-                              'block' =>
-                                array (
-                                  'backgroundColor' => 'transparent',
-                                ),
-                            ),
-                          'blocks' =>
-                            array (
-                              0 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1935"><strong>Iceland&rsquo;s dentist-coach defying convention and expectations</strong></h3>
-                      <p class="mailpoet_wp_post">As Iceland&rsquo;s key matches loom, with kick-off just a couple of hours away, you will find their national coach in the pub. This may seem unusual...</p>
-                      <p><a href="http://mailpoet.info/icelands-dentist-coach-defying-convention-and-expectations/">Read More</a></p>',
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'divider',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
-                                          'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
-                                        ),
-                                    ),
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1932"><strong>Impact and legacy of 2018 FIFA World Cup Russia</strong></h3>
-                      <p class="mailpoet_wp_post">Organising a FIFA World Cup&trade; in a sustainable manner is a major challenge. The scale of the event inevitably has an impact on the Host Country.&nbsp;</p>
-                      <p><a href="http://mailpoet.info/impact-and-legacy-of-2018-fifa-world-cup-russia-facts-and-figures/">Read More</a></p>',
-                                ),
-                              3 =>
-                                array (
-                                  'type' => 'divider',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
-                                          'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
-                                        ),
-                                    ),
-                                ),
-                              4 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1929"><strong>Lineker&rsquo;s life-changing treble</strong></h3>
-                      <p class="mailpoet_wp_post">Given that he won the Golden Boot in his first and came within a whisker of the Final in his second, one might expect Gary Lineker to have a tough time picking his FIFA World Cup&trade; highlight. Yet the man who scored ten times...</p>
-                      <p><a href="http://mailpoet.info/linekers-life-changing-treble/">Read More</a></p>',
                                 ),
                             ),
                         ),
@@ -479,37 +385,68 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'spacer',
+                                  'type' => 'image',
+                                  'link' => '',
+                                  'src' => $this->template_image_url . '/1980s-Download-2.jpg',
+                                  'alt' => '1980s-Download-2',
+                                  'fullWidth' => false,
+                                  'width' => '364px',
+                                  'height' => '291px',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '40px',
+                                          'textAlign' => 'center',
                                         ),
                                     ),
+                                ),
+                            ),
+                        ),
+                      1 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<h3><span style="font-weight: 600;">New UI Kit now available</span></h3>
+<p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In elementum nunc vel est congue, a venenatis nunc aliquet. Curabitur luctus, nulla et dignissim elementum, ipsum eros fermentum nulla, non cursus eros mi eu velit.</span></p>',
                                 ),
                               1 =>
                                 array (
-                                  'type' => 'spacer',
+                                  'type' => 'button',
+                                  'text' => 'Download Here',
+                                  'url' => '',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => '#f2f2f2',
-                                          'height' => '40px',
-                                        ),
-                                    ),
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
+                                          'backgroundColor' => '#f36543',
+                                          'borderColor' => '#f36543',
+                                          'borderWidth' => '1px',
+                                          'borderRadius' => '40px',
+                                          'borderStyle' => 'solid',
+                                          'width' => '150px',
+                                          'lineHeight' => '40px',
+                                          'fontColor' => '#ffffff',
+                                          'fontFamily' => 'Arial',
+                                          'fontSize' => '14px',
+                                          'fontWeight' => 'bold',
+                                          'textAlign' => 'left',
                                         ),
                                     ),
                                 ),
@@ -554,122 +491,6 @@ class NewsDay {
                           'blocks' =>
                             array (
                               0 =>
-                                array (
-                                  'type' => 'footer',
-                                  'text' => '<p><strong>NewsDay</strong></p>
-                      <p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br /><br /></p>
-                      <p></p>',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                        ),
-                                      'text' =>
-                                        array (
-                                          'fontColor' => '#222222',
-                                          'fontFamily' => 'Arial',
-                                          'fontSize' => '12px',
-                                          'textAlign' => 'left',
-                                        ),
-                                      'link' =>
-                                        array (
-                                          'fontColor' => '#6cb7d4',
-                                          'textDecoration' => 'underline',
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                      1 =>
-                        array (
-                          'type' => 'container',
-                          'orientation' => 'vertical',
-                          'image' =>
-                            array (
-                              'src' => NULL,
-                              'display' => 'scale',
-                            ),
-                          'styles' =>
-                            array (
-                              'block' =>
-                                array (
-                                  'backgroundColor' => 'transparent',
-                                ),
-                            ),
-                          'blocks' =>
-                            array (
-                              0 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
-                                        ),
-                                    ),
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'social',
-                                  'iconSet' => 'circles',
-                                  'icons' =>
-                                    array (
-                                      0 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'facebook',
-                                          'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Facebook.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Facebook',
-                                        ),
-                                      1 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'twitter',
-                                          'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Twitter.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Twitter',
-                                        ),
-                                      2 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'youtube',
-                                          'link' => 'http://www.youtube.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Youtube.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Youtube',
-                                        ),
-                                      3 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'instagram',
-                                          'link' => 'http://instagram.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Instagram.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Instagram',
-                                        ),
-                                      4 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'linkedin',
-                                          'link' => 'http://www.linkedin.com',
-                                          'image' => $this->social_icon_url . '/03-circles/LinkedIn.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'LinkedIn',
-                                        ),
-                                    ),
-                                ),
-                              2 =>
                                 array (
                                   'type' => 'spacer',
                                   'styles' =>
@@ -723,13 +544,427 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
+                                  'type' => 'image',
+                                  'link' => '',
+                                  'src' => $this->template_image_url . '/1980s-Download-3.jpg',
+                                  'alt' => '1980s-Download-3',
+                                  'fullWidth' => false,
+                                  'width' => '364px',
+                                  'height' => '291px',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'textAlign' => 'center',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                      1 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<h3><strong>Free&nbsp;Retro Patterns</strong></h3>
+<p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In elementum nunc vel est congue, a venenatis nunc aliquet. Curabitur luctus, nulla et dignissim elementum, ipsum eros fermentum nulla, non cursus eros mi eu velit.</span></p>',
+                                ),
+                              1 =>
+                                array (
+                                  'type' => 'button',
+                                  'text' => 'Download Here',
+                                  'url' => '',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => '#f36543',
+                                          'borderColor' => '#f36543',
+                                          'borderWidth' => '1px',
+                                          'borderRadius' => '40px',
+                                          'borderStyle' => 'solid',
+                                          'width' => '150px',
+                                          'lineHeight' => '40px',
+                                          'fontColor' => '#ffffff',
+                                          'fontFamily' => 'Arial',
+                                          'fontSize' => '14px',
+                                          'fontWeight' => 'bold',
+                                          'textAlign' => 'left',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              7 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => 'transparent',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
                                   'type' => 'spacer',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => '#f2f2f2',
+                                          'backgroundColor' => '#12233c',
                                           'height' => '40px',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              8 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => $this->template_image_url . '/1980s-Footer.jpg',
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => 'transparent',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '140px',
+                                        ),
+                                    ),
+                                ),
+                              1 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<h1 style="text-align: center;"><span style="color: #ffffff;">Retro Downloads</span></h1>
+<h1 style="text-align: center;"><span style="color: #ffffff;">To Your Inbox</span></h1>
+<h1 style="text-align: center;"><span style="color: #ffffff;">Every Week</span></h1>',
+                                ),
+                              2 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '120px',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              9 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => 'transparent',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => '#12233c',
+                                          'height' => '20px',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              10 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => '#12223b',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'footer',
+                                  'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage your subscription</a><br />Add your postal address here!</p>',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                        ),
+                                      'text' =>
+                                        array (
+                                          'fontColor' => '#ffffff',
+                                          'fontFamily' => 'Arial',
+                                          'fontSize' => '12px',
+                                          'textAlign' => 'left',
+                                        ),
+                                      'link' =>
+                                        array (
+                                          'fontColor' => '#f36543',
+                                          'textDecoration' => 'underline',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                      1 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'social',
+                                  'iconSet' => 'full-symbol-grey',
+                                  'icons' =>
+                                    array (
+                                      0 =>
+                                        array (
+                                          'type' => 'socialIcon',
+                                          'iconType' => 'facebook',
+                                          'link' => 'http://www.facebook.com',
+                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
+                                          'height' => '32px',
+                                          'width' => '32px',
+                                          'text' => 'Facebook',
+                                        ),
+                                      1 =>
+                                        array (
+                                          'type' => 'socialIcon',
+                                          'iconType' => 'twitter',
+                                          'link' => 'http://www.twitter.com',
+                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
+                                          'height' => '32px',
+                                          'width' => '32px',
+                                          'text' => 'Twitter',
+                                        ),
+                                      2 =>
+                                        array (
+                                          'type' => 'socialIcon',
+                                          'iconType' => 'youtube',
+                                          'link' => 'http://www.youtube.com',
+                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Youtube.png',
+                                          'height' => '32px',
+                                          'width' => '32px',
+                                          'text' => 'Youtube',
+                                        ),
+                                      3 =>
+                                        array (
+                                          'type' => 'socialIcon',
+                                          'iconType' => 'email',
+                                          'link' => '',
+                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png',
+                                          'height' => '32px',
+                                          'width' => '32px',
+                                          'text' => 'Email',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              11 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => '#12233c',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '20px',
                                         ),
                                     ),
                                 ),
@@ -745,12 +980,12 @@ class NewsDay {
             array (
               'fontColor' => '#000000',
               'fontFamily' => 'Arial',
-              'fontSize' => '13px',
+              'fontSize' => '14px',
             ),
           'h1' =>
             array (
               'fontColor' => '#111111',
-              'fontFamily' => 'Arial',
+              'fontFamily' => 'Verdana',
               'fontSize' => '30px',
             ),
           'h2' =>
@@ -763,11 +998,11 @@ class NewsDay {
             array (
               'fontColor' => '#333333',
               'fontFamily' => 'Arial',
-              'fontSize' => '22px',
+              'fontSize' => '18px',
             ),
           'link' =>
             array (
-              'fontColor' => '#2ca5d2',
+              'fontColor' => '#008282',
               'textDecoration' => 'underline',
             ),
           'wrapper' =>
@@ -776,7 +1011,7 @@ class NewsDay {
             ),
           'body' =>
             array (
-              'backgroundColor' => '#f2f2f2',
+              'backgroundColor' => '#12233c',
             ),
         ),
       'blockDefaults' =>
@@ -932,7 +1167,7 @@ class NewsDay {
             array (
               'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => $this->template_image_url . '/1980s-Footer-1.jpg',
                   'display' => 'scale',
                 ),
               'styles' =>
@@ -940,6 +1175,31 @@ class NewsDay {
                   'block' =>
                     array (
                       'backgroundColor' => 'transparent',
+                    ),
+                ),
+              'type' => 'container',
+              'orientation' => 'horizontal',
+              'blocks' =>
+                array (
+                  0 =>
+                    array (
+                      'type' => 'container',
+                      'orientation' => 'vertical',
+                      'image' =>
+                        array (
+                          'src' => NULL,
+                          'display' => 'scale',
+                        ),
+                      'styles' =>
+                        array (
+                          'block' =>
+                            array (
+                              'backgroundColor' => 'transparent',
+                            ),
+                        ),
+                      'blocks' =>
+                        array (
+                        ),
                     ),
                 ),
             ),
@@ -952,10 +1212,11 @@ class NewsDay {
                       'backgroundColor' => 'transparent',
                       'padding' => '13px',
                       'borderStyle' => 'solid',
-                      'borderWidth' => '3px',
-                      'borderColor' => '#aaaaaa',
+                      'borderWidth' => '2px',
+                      'borderColor' => '#f36543',
                     ),
                 ),
+              'type' => 'divider',
             ),
           'footer' =>
             array (
@@ -1077,9 +1338,10 @@ class NewsDay {
                   'block' =>
                     array (
                       'backgroundColor' => 'transparent',
-                      'height' => '40px',
+                      'height' => '140px',
                     ),
                 ),
+              'type' => 'spacer',
             ),
           'header' =>
             array (
@@ -1108,8 +1370,5 @@ class NewsDay {
     );
   }
 
-  private function getThumbnail() {
-    return $this->template_image_url . '/news-day.jpg';
-  }
 
 }

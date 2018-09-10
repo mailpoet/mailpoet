@@ -2,24 +2,28 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
-class NewsDay {
+class Drone {
 
   private $template_image_url;
   private $social_icon_url;
 
   function __construct($assets_url) {
-     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/news_day';
+    $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/drone';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
   function get() {
     return array(
-      'name' => __("News Day", 'mailpoet'),
+      'name' => __("Drone", 'mailpoet'),
       'categories' => json_encode(array('standard', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
     );
+  }
+
+  private function getThumbnail() {
+    return $this->template_image_url . '/drone.jpg';
   }
 
   private function getBody() {
@@ -55,76 +59,7 @@ class NewsDay {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => '#ffffff',
-                        ),
-                    ),
-                  'blocks' =>
-                    array (
-                      0 =>
-                        array (
-                          'type' => 'container',
-                          'orientation' => 'vertical',
-                          'image' =>
-                            array (
-                              'src' => NULL,
-                              'display' => 'scale',
-                            ),
-                          'styles' =>
-                            array (
-                              'block' =>
-                                array (
-                                  'backgroundColor' => 'transparent',
-                                ),
-                            ),
-                          'blocks' =>
-                            array (
-                              0 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => '#f2f2f2',
-                                          'height' => '20px',
-                                        ),
-                                    ),
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'image',
-                                  'link' => '',
-                                  'src' => $this->template_image_url . '/News-Outlet-Title-2.jpg',
-                                  'alt' => 'News-Outlet-Title-2',
-                                  'fullWidth' => true,
-                                  'width' => '1280px',
-                                  'height' => '700px',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'textAlign' => 'center',
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-              1 =>
-                array (
-                  'type' => 'container',
-                  'orientation' => 'horizontal',
-                  'image' =>
-                    array (
-                      'src' => NULL,
-                      'display' => 'scale',
-                    ),
-                  'styles' =>
-                    array (
-                      'block' =>
-                        array (
-                          'backgroundColor' => '#ffffff',
+                          'backgroundColor' => '#242424',
                         ),
                     ),
                   'blocks' =>
@@ -155,7 +90,104 @@ class NewsDay {
                                       'block' =>
                                         array (
                                           'backgroundColor' => 'transparent',
-                                          'height' => '25px',
+                                          'height' => '20px',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              1 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => '#070707',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'image',
+                                  'link' => '',
+                                  'src' => $this->template_image_url . '/Drone-Logo.png',
+                                  'alt' => 'Drone-Logo',
+                                  'fullWidth' => false,
+                                  'width' => '138px',
+                                  'height' => '228px',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'textAlign' => 'center',
+                                        ),
+                                    ),
+                                ),
+                              1 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '20px',
+                                        ),
+                                    ),
+                                ),
+                              2 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<h1 style="text-align: center;"><strong><span style="color: #ffffff;">TAKE TO THE SKIES</span></strong></h1>',
+                                ),
+                              3 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<h3 style="text-align: center;"><span style="color: #f0f0f0;">The Frontier 7S is the world&rsquo;s first</span></h3>
+<h3 style="text-align: center;"><span style="color: #f0f0f0;">mind-controlled aerial drone</span></h3>',
+                                ),
+                              4 =>
+                                array (
+                                  'type' => 'image',
+                                  'link' => '',
+                                  'src' => $this->template_image_url . '/Drone-Header.jpg',
+                                  'alt' => 'Drone-Header',
+                                  'fullWidth' => false,
+                                  'width' => '470px',
+                                  'height' => '462px',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'textAlign' => 'center',
                                         ),
                                     ),
                                 ),
@@ -201,69 +233,23 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'text',
-                                  'text' => '<h1 style="text-align: left;"><span style="color: #2ca5d2;"><strong>Top Story</strong></span></h1>',
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h2 style="text-align: left;" data-post-id="1991"><strong>Plasma jet engines that could take you from the ground to space</strong></h2>',
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'image',
-                                  'link' => 'http://mailpoet.info/plasma-jet-engines-that-could-take-you-from-the-ground-to-space/',
-                                  'src' => $this->template_image_url . '/plasma-stingray111-800x533.jpg',
-                                  'alt' => 'Plasma jet engines that could take you from the ground to space',
-                                  'fullWidth' => false,
-                                  'width' => '413.28125px',
-                                  'height' => 440,
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'textAlign' => 'center',
-                                        ),
-                                    ),
-                                ),
-                              3 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<p class="mailpoet_wp_post">FORGET fuel-powered jet engines. We’re on the verge of having aircraft that can fly from the ground up to the edge of space using air and electricity alone. Traditional jet engines create thrust by mixing compressed air with fuel and igniting it. The burning mixture expands rapidly and is blasted out of the back of the engine, pushing it forwards. &hellip;</p><p><a href="http://mailpoet.info/plasma-jet-engines-that-could-take-you-from-the-ground-to-space/">Read More</a></p>',
-                                ),
-                              4 =>
-                                array (
-                                  'type' => 'divider',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
-                                          'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
-                                        ),
-                                    ),
-                                ),
-                              5 =>
-                                array (
                                   'type' => 'spacer',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
                                           'backgroundColor' => 'transparent',
-                                          'height' => '20px',
+                                          'height' => '39px',
                                         ),
                                     ),
                                 ),
-                              6 =>
+                              1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3><span style="color: #2ca5d2;"><strong>Popular Posts Today</strong></span></h3>',
+                                  'text' => '<h2 style="text-align: center;"><strong>Fly with your mind</strong></h2>
+<p style="text-align: center;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra diam semper, vulputate eros quis, sagittis ipsum. Vivamus ullamcorper sapien at sapien maximus, nec venenatis sapien tincidunt. Duis viverra imperdiet magna, a facilisis diam scelerisque at. Nunc at quam ligula. Nullam ut magna velit.</p>',
                                 ),
-                              7 =>
+                              2 =>
                                 array (
                                   'type' => 'spacer',
                                   'styles' =>
@@ -317,54 +303,20 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1997"><strong>Cutting through the smog: What to do to fight air pollution</strong></h3>
-                      <p class="mailpoet_wp_post">Tackling our air problems starts with traffic control, but individual action to reduce energy use and intensive farming would also help clean our air.</p>
-                      <p><a href="http://mailpoet.info/cutting-through-the-smog-what-to-do-to-fight-air-pollution/">Read More</a></p>',
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'divider',
+                                  'type' => 'image',
+                                  'link' => '',
+                                  'src' => $this->template_image_url . '/Drone-Image-1.jpg',
+                                  'alt' => 'Drone-Image-1',
+                                  'fullWidth' => true,
+                                  'width' => '400px',
+                                  'height' => '400px',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
-                                          'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
+                                          'textAlign' => 'center',
                                         ),
                                     ),
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1994"><strong>Ladybird&rsquo;s transparent shell reveals how it&nbsp;moves</strong></h3>
-                      <p class="mailpoet_wp_post">They certainly know how to fold. A see-through artificial wing case has been used to watch for the first time as ladybirds put away their wings after flight.</p>
-                      <p><a href="http://mailpoet.info/ladybirds-transparent-shell-reveals-how-it-folds-its-wings/">Read More</a></p>',
-                                ),
-                              3 =>
-                                array (
-                                  'type' => 'divider',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
-                                          'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
-                                        ),
-                                    ),
-                                ),
-                              4 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1938"><strong>Brazil&rsquo;s history-making Hurricane</strong></h3>
-                      <p class="mailpoet_wp_post">Jairzinho has just made history. In claiming the fourth goal of an unforgettable 1970 FIFA World Cup Mexico&trade; Final against Italy, he has maintained his record of scoring in every one of Brazil&rsquo;s matches en route to the Trophy.</p>
-                      <p><a href="http://mailpoet.info/brazils-history-making-hurricane/">Read More</a></p>',
                                 ),
                             ),
                         ),
@@ -388,54 +340,45 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1935"><strong>Iceland&rsquo;s dentist-coach defying convention and expectations</strong></h3>
-                      <p class="mailpoet_wp_post">As Iceland&rsquo;s key matches loom, with kick-off just a couple of hours away, you will find their national coach in the pub. This may seem unusual...</p>
-                      <p><a href="http://mailpoet.info/icelands-dentist-coach-defying-convention-and-expectations/">Read More</a></p>',
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '55px',
+                                        ),
+                                    ),
                                 ),
                               1 =>
                                 array (
-                                  'type' => 'divider',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
-                                          'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
-                                        ),
-                                    ),
+                                  'type' => 'text',
+                                  'text' => '<h2><strong>Ready to travel to you</strong></h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra diam semper, vulputate eros quis, sagittis ipsum. Vivamus ullamcorper sapien at sapien maximus, nec venenatis sapien tincidunt.</p>',
                                 ),
                               2 =>
                                 array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1932"><strong>Impact and legacy of 2018 FIFA World Cup Russia</strong></h3>
-                      <p class="mailpoet_wp_post">Organising a FIFA World Cup&trade; in a sustainable manner is a major challenge. The scale of the event inevitably has an impact on the Host Country.&nbsp;</p>
-                      <p><a href="http://mailpoet.info/impact-and-legacy-of-2018-fifa-world-cup-russia-facts-and-figures/">Read More</a></p>',
-                                ),
-                              3 =>
-                                array (
-                                  'type' => 'divider',
+                                  'type' => 'button',
+                                  'text' => 'Find Out More',
+                                  'url' => '',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => 'transparent',
-                                          'padding' => '13px',
-                                          'borderStyle' => 'solid',
+                                          'backgroundColor' => '#000000',
+                                          'borderColor' => '#000000',
                                           'borderWidth' => '1px',
-                                          'borderColor' => '#aaaaaa',
+                                          'borderRadius' => '10px',
+                                          'borderStyle' => 'solid',
+                                          'width' => '180px',
+                                          'lineHeight' => '40px',
+                                          'fontColor' => '#ffffff',
+                                          'fontFamily' => 'Arial',
+                                          'fontSize' => '18px',
+                                          'fontWeight' => 'bold',
+                                          'textAlign' => 'left',
                                         ),
                                     ),
-                                ),
-                              4 =>
-                                array (
-                                  'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1929"><strong>Lineker&rsquo;s life-changing treble</strong></h3>
-                      <p class="mailpoet_wp_post">Given that he won the Golden Boot in his first and came within a whisker of the Final in his second, one might expect Gary Lineker to have a tough time picking his FIFA World Cup&trade; highlight. Yet the man who scored ten times...</p>
-                      <p><a href="http://mailpoet.info/linekers-life-changing-treble/">Read More</a></p>',
                                 ),
                             ),
                         ),
@@ -485,31 +428,7 @@ class NewsDay {
                                       'block' =>
                                         array (
                                           'backgroundColor' => 'transparent',
-                                          'height' => '40px',
-                                        ),
-                                    ),
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => '#f2f2f2',
-                                          'height' => '40px',
-                                        ),
-                                    ),
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
+                                          'height' => '25px',
                                         ),
                                     ),
                                 ),
@@ -530,7 +449,7 @@ class NewsDay {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => 'transparent',
+                          'backgroundColor' => '#080808',
                         ),
                     ),
                   'blocks' =>
@@ -555,27 +474,216 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'footer',
-                                  'text' => '<p><strong>NewsDay</strong></p>
-                      <p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br /><br /></p>
-                      <p></p>',
+                                  'type' => 'spacer',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
                                           'backgroundColor' => 'transparent',
+                                          'height' => '40px',
                                         ),
-                                      'text' =>
+                                    ),
+                                ),
+                              1 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<h2 style="text-align: center;"><strong><span style="color: #ffffff;">Don\'t just take our word for it...</span></strong></h2>',
+                                ),
+                              2 =>
+                                array (
+                                  'type' => 'image',
+                                  'link' => '',
+                                  'src' => $this->template_image_url . '/Drone-Video.jpg',
+                                  'alt' => 'Drone-Video',
+                                  'fullWidth' => true,
+                                  'width' => '1280px',
+                                  'height' => '760px',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
                                         array (
-                                          'fontColor' => '#222222',
-                                          'fontFamily' => 'Arial',
-                                          'fontSize' => '12px',
-                                          'textAlign' => 'left',
+                                          'textAlign' => 'center',
                                         ),
-                                      'link' =>
+                                    ),
+                                ),
+                              3 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
                                         array (
-                                          'fontColor' => '#6cb7d4',
-                                          'textDecoration' => 'underline',
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '20px',
+                                        ),
+                                    ),
+                                ),
+                              4 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<p style="text-align: center;"><span style="color: #ffffff;">Check out our social media platforms and keep up-to-date with the latest news and events happening near you.</span></p>',
+                                ),
+                              5 =>
+                                array (
+                                  'type' => 'social',
+                                  'iconSet' => 'full-symbol-grey',
+                                  'icons' =>
+                                    array (
+                                      0 =>
+                                        array (
+                                          'type' => 'socialIcon',
+                                          'iconType' => 'facebook',
+                                          'link' => 'http://www.facebook.com',
+                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
+                                          'height' => '32px',
+                                          'width' => '32px',
+                                          'text' => 'Facebook',
+                                        ),
+                                      1 =>
+                                        array (
+                                          'type' => 'socialIcon',
+                                          'iconType' => 'twitter',
+                                          'link' => 'http://www.twitter.com',
+                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
+                                          'height' => '32px',
+                                          'width' => '32px',
+                                          'text' => 'Twitter',
+                                        ),
+                                      2 =>
+                                        array (
+                                          'type' => 'socialIcon',
+                                          'iconType' => 'instagram',
+                                          'link' => 'http://instagram.com',
+                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Instagram.png',
+                                          'height' => '32px',
+                                          'width' => '32px',
+                                          'text' => 'Instagram',
+                                        ),
+                                      3 =>
+                                        array (
+                                          'type' => 'socialIcon',
+                                          'iconType' => 'youtube',
+                                          'link' => 'http://www.youtube.com',
+                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Youtube.png',
+                                          'height' => '32px',
+                                          'width' => '32px',
+                                          'text' => 'Youtube',
+                                        ),
+                                    ),
+                                ),
+                              6 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '30px',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              6 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => '#242424',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '40px',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              7 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => '#242424',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'spacer',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '20px',
                                         ),
                                     ),
                                 ),
@@ -601,109 +709,24 @@ class NewsDay {
                             array (
                               0 =>
                                 array (
-                                  'type' => 'spacer',
+                                  'type' => 'image',
+                                  'link' => '',
+                                  'src' => $this->template_image_url . '/Drone-Logo-Light-1.png',
+                                  'alt' => 'Drone-Logo-Light',
+                                  'fullWidth' => false,
+                                  'width' => '120px',
+                                  'height' => '72px',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
-                                        ),
-                                    ),
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'social',
-                                  'iconSet' => 'circles',
-                                  'icons' =>
-                                    array (
-                                      0 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'facebook',
-                                          'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Facebook.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Facebook',
-                                        ),
-                                      1 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'twitter',
-                                          'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Twitter.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Twitter',
-                                        ),
-                                      2 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'youtube',
-                                          'link' => 'http://www.youtube.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Youtube.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Youtube',
-                                        ),
-                                      3 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'instagram',
-                                          'link' => 'http://instagram.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Instagram.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Instagram',
-                                        ),
-                                      4 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'linkedin',
-                                          'link' => 'http://www.linkedin.com',
-                                          'image' => $this->social_icon_url . '/03-circles/LinkedIn.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'LinkedIn',
-                                        ),
-                                    ),
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
+                                          'textAlign' => 'center',
                                         ),
                                     ),
                                 ),
                             ),
                         ),
-                    ),
-                ),
-              6 =>
-                array (
-                  'type' => 'container',
-                  'orientation' => 'horizontal',
-                  'image' =>
-                    array (
-                      'src' => NULL,
-                      'display' => 'scale',
-                    ),
-                  'styles' =>
-                    array (
-                      'block' =>
-                        array (
-                          'backgroundColor' => 'transparent',
-                        ),
-                    ),
-                  'blocks' =>
-                    array (
-                      0 =>
+                      2 =>
                         array (
                           'type' => 'container',
                           'orientation' => 'vertical',
@@ -728,8 +751,80 @@ class NewsDay {
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => '#f2f2f2',
-                                          'height' => '40px',
+                                          'backgroundColor' => 'transparent',
+                                          'height' => '20px',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              8 =>
+                array (
+                  'type' => 'container',
+                  'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => '#242424',
+                        ),
+                    ),
+                  'blocks' =>
+                    array (
+                      0 =>
+                        array (
+                          'type' => 'container',
+                          'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
+                          'styles' =>
+                            array (
+                              'block' =>
+                                array (
+                                  'backgroundColor' => 'transparent',
+                                ),
+                            ),
+                          'blocks' =>
+                            array (
+                              0 =>
+                                array (
+                                  'type' => 'text',
+                                  'text' => '<p style="text-align: center;"><span style="color: #aeaeae;">Address Line 1 </span></p>
+<p style="text-align: center;"><span style="color: #aeaeae;">Address Line 2 </span></p>
+<p style="text-align: center;"><span style="color: #aeaeae;">City </span></p>
+<p style="text-align: center;"><span style="color: #aeaeae;">Country</span></p>',
+                                ),
+                              1 =>
+                                array (
+                                  'type' => 'footer',
+                                  'text' => '<p><span style="color: #ffffff;"><a href="[link:subscription_unsubscribe_url]" style="color: #ffffff;">Unsubscribe</a> | <a href="[link:subscription_manage_url]" style="color: #ffffff;">Manage subscription</a></span></p>',
+                                  'styles' =>
+                                    array (
+                                      'block' =>
+                                        array (
+                                          'backgroundColor' => 'transparent',
+                                        ),
+                                      'text' =>
+                                        array (
+                                          'fontColor' => '#222222',
+                                          'fontFamily' => 'Arial',
+                                          'fontSize' => '12px',
+                                          'textAlign' => 'center',
+                                        ),
+                                      'link' =>
+                                        array (
+                                          'fontColor' => '#6cb7d4',
+                                          'textDecoration' => 'none',
                                         ),
                                     ),
                                 ),
@@ -745,13 +840,13 @@ class NewsDay {
             array (
               'fontColor' => '#000000',
               'fontFamily' => 'Arial',
-              'fontSize' => '13px',
+              'fontSize' => '14px',
             ),
           'h1' =>
             array (
               'fontColor' => '#111111',
-              'fontFamily' => 'Arial',
-              'fontSize' => '30px',
+              'fontFamily' => 'Lucida',
+              'fontSize' => '40px',
             ),
           'h2' =>
             array (
@@ -762,12 +857,12 @@ class NewsDay {
           'h3' =>
             array (
               'fontColor' => '#333333',
-              'fontFamily' => 'Arial',
-              'fontSize' => '22px',
+              'fontFamily' => 'Verdana',
+              'fontSize' => '16px',
             ),
           'link' =>
             array (
-              'fontColor' => '#2ca5d2',
+              'fontColor' => '#070707',
               'textDecoration' => 'underline',
             ),
           'wrapper' =>
@@ -776,7 +871,7 @@ class NewsDay {
             ),
           'body' =>
             array (
-              'backgroundColor' => '#f2f2f2',
+              'backgroundColor' => '#242424',
             ),
         ),
       'blockDefaults' =>
@@ -1077,9 +1172,10 @@ class NewsDay {
                   'block' =>
                     array (
                       'backgroundColor' => 'transparent',
-                      'height' => '40px',
+                      'height' => '39px',
                     ),
                 ),
+              'type' => 'spacer',
             ),
           'header' =>
             array (
@@ -1106,10 +1202,6 @@ class NewsDay {
             ),
         ),
     );
-  }
-
-  private function getThumbnail() {
-    return $this->template_image_url . '/news-day.jpg';
   }
 
 }
