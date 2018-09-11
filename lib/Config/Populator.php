@@ -63,6 +63,10 @@ class Populator {
       'Minimal',
       'Phone',
       'Sunglasses',
+      'ModularStyleStories',
+      'NotSoMedium',
+      'RssSimpleNews',
+      'WideStoryLayout',
     );
   }
 
