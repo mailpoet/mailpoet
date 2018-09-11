@@ -1,0 +1,36 @@
+<?php
+namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
+
+use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
+
+class SendGridMapperTest extends \MailPoetTest {
+
+  /** @var SendGridMapper*/
+  private $mapper;
+
+  /** @var array */
+  private $response = [];
+
+  function _before() {
+    $this->mapper = new SendGridMapper();
+    $this->response = [
+      'errors' => [
+        'Some message',
+      ]
+    ];
+  }
+
+  function testGetProperError() {
+    $error = $this->mapper->getErrorFromResponse($this->response, 'john@rambo.com', []);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->equals('Some message');
+    expect($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
+  }
+
+  function testGetSoftErrorForInvalidEmail() {
+    $this->response['errors'][0] = 'Invalid email address ,,@';
+    $error = $this->mapper->getErrorFromResponse($this->response, ',,@', []);
+    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
+  }
+}
