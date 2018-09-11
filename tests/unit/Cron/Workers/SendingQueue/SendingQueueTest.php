@@ -147,8 +147,8 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker->sendNewsletters(
       $this->queue,
       $prepared_subscribers = array(),
-      $prepared_newsletters = false,
-      $prepared_subscribers = false,
+      $prepared_newsletters = [],
+      $prepared_subscribers = [],
       $statistics[] = array(
         'newsletter_id' => 1,
         'subscriber_id' => 1,
@@ -608,7 +608,7 @@ class SendingQueueTest extends \MailPoetTest {
         $prepared_subscribers = [],
         $prepared_newsletters = [],
         $prepared_subscribers = [],
-        $statistics = false
+        $statistics = []
       );
       $this->fail('Paused sending exception was not thrown.');
     } catch(\Exception $e) {

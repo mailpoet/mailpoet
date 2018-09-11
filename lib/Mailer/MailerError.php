@@ -67,7 +67,7 @@ class MailerError {
   }
 
   /**
-   * @return array
+   * @return SubscriberError[]
    */
   function getSubscriberErrors() {
     return $this->subscribers_errors;

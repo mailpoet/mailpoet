@@ -53,6 +53,15 @@ class Subscribers {
     $this->checkCompleted();
   }
 
+  function saveSubscriberError($subcriber_id, $error_message) {
+    $this->getSubscribers()
+      ->where('subscriber_id', $subcriber_id)
+      ->findResultSet()
+      ->set('failed', ScheduledTaskSubscriber::FAIL_STATUS_FAILED)
+      ->set('error', $error_message)
+      ->save();
+  }
+
   private function checkCompleted($count = null) {
     if(!$count && !ScheduledTaskSubscriber::getUnprocessedCount($this->task->id)) {
       $this->task->complete();

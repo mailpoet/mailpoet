@@ -167,7 +167,13 @@ class SendingQueue {
       $prepared_subscriber,
       $extra_params
     );
-    return $this->processSendResult($sending_task, $send_result, [$prepared_subscriber_id], [$statistics]);
+    return $this->processSendResult(
+      $sending_task,
+      $send_result,
+      [$prepared_subscriber],
+      [$prepared_subscriber_id],
+      [$statistics]
+    );
   }
 
   function sendNewsletters(
@@ -180,19 +186,27 @@ class SendingQueue {
       $prepared_subscribers,
       $extra_params
     );
-    return $this->processSendResult($sending_task, $send_result, $prepared_subscribers_ids, $statistics);
+    return $this->processSendResult(
+      $sending_task,
+      $send_result,
+      $prepared_subscribers,
+      $prepared_subscribers_ids,
+      $statistics
+    );
   }
 
   private function processSendResult(
     SendingTask $sending_task,
     $send_result,
-    array $prepared_subscribers_ids, array $statistics
+    array $prepared_subscribers,
+    array $prepared_subscribers_ids,
+    array $statistics
   ) {
     // log error message and schedule retry/pause sending
     if($send_result['response'] === false) {
       $error = $send_result['error'];
       assert($error instanceof MailerError);
-      $this->error_handler->processError($error);
+      $this->error_handler->processError($error, $sending_task, $prepared_subscribers_ids, $prepared_subscribers);
     }
     // update processed/to process list
     if(!$sending_task->updateProcessedSubscribers($prepared_subscribers_ids)) {
