@@ -2,6 +2,7 @@
 namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 
 class SMTPMapperTest extends \MailPoetTest {
@@ -18,9 +19,17 @@ class SMTPMapperTest extends \MailPoetTest {
       . 'Log data:' . PHP_EOL
       . '++ Starting Swift_SmtpTransport' . PHP_EOL
       . '!! Connection could not be established with host localhost [Connection refused #111] (code: 0)';
-    $error = $this->mapper->getErrorFromException(new \Exception($message));
+    $error = $this->mapper->getErrorFromException(new \Exception($message), 'john@rambo.com');
     expect($error->getMessage())
       ->equals('Connection could not be established with host localhost [Connection refused #111]');
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
+  }
+
+  function testItCreatesSoftErrorForInvalidEmail() {
+    $message = 'Invalid email';
+    $error = $this->mapper->getErrorFromException(new \Swift_RfcComplianceException($message), 'john@rambo.com');
+    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 
   function testItCanProcessLogMessageWhenOneExists() {

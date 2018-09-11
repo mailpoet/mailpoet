@@ -8,10 +8,25 @@ use MailPoet\Mailer\SubscriberError;
 class SMTPMapper {
   use ConnectionErrorMapperTrait;
 
-  function getErrorFromException(\Exception $e) {
+  /**
+   * @see https://swiftmailer.symfony.com/docs/sending.html
+   * @return MailerError
+   */
+  function getErrorFromException(\Exception $e, $subscriber, $extra_params = []) {
     // remove redundant information appended by Swift logger to exception messages
     $message = explode(PHP_EOL, $e->getMessage());
-    return new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, $message[0]);
+
+    $level = MailerError::LEVEL_HARD;
+    if($e instanceof \Swift_RfcComplianceException) {
+      $level = MailerError::LEVEL_SOFT;
+    }
+
+    $subscriber_errors = [];
+    if(empty($extra_params['test_email'])) {
+      $subscriber_errors[] = new SubscriberError($subscriber, null);
+    }
+
+    return new MailerError(MailerError::OPERATION_SEND, $level, $message[0], null, $subscriber_errors);
   }
 
   function getErrorFromLog($log, $subscriber, $extra_params = []) {

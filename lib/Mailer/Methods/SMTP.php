@@ -49,7 +49,7 @@ class SMTP {
       $result = $this->mailer->send($message);
     } catch(\Exception $e) {
       return Mailer::formatMailerErrorResult(
-        $this->error_mapper->getErrorFromException($e)
+        $this->error_mapper->getErrorFromException($e, $subscriber, $extra_params)
       );
     }
     if($result === 1) {
