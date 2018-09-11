@@ -24,7 +24,11 @@ class SendingQueue {
   const BATCH_SIZE = 20;
   const TASK_BATCH_SIZE = 5;
 
-  function __construct($timer = false, $mailer_task = false, $newsletter_task = false) {
+  /** @var SendingErrorHandler */
+  private $error_handler;
+
+  function __construct(SendingErrorHandler $error_handler, $timer = false, $mailer_task = false, $newsletter_task = false) {
+    $this->error_handler = $error_handler;
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
     $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -167,11 +171,7 @@ class SendingQueue {
     if($send_result['response'] === false) {
       $error = $send_result['error'];
       assert($error instanceof MailerError);
-      if($error->getRetryInterval() !== null) {
-        MailerLog::processNonBlockingError($error->getOperation(), $error->getMessageWithFailedSubscribers(), $error->getRetryInterval());
-      } else {
-        MailerLog::processError($error->getOperation(), $error->getMessageWithFailedSubscribers());
-      }
+      $this->error_handler->processError($error);
     }
     // update processed/to process list
     if(!$sending_task->updateProcessedSubscribers($prepared_subscribers_ids)) {
