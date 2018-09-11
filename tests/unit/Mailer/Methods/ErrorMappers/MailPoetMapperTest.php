@@ -74,7 +74,7 @@ class MailPoetMapperTest extends \MailPoetTest {
     $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
-    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
     $subscriber_errors = $error->getSubscriberErrors();
     expect(count($subscriber_errors))->equals(2);
     expect($subscriber_errors[0]->getEmail())->equals('a@example.com');

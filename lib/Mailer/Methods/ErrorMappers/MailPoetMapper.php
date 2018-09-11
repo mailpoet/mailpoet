@@ -34,14 +34,15 @@ class MailPoetMapper {
       case API::RESPONSE_CODE_PAYLOAD_ERROR:
         $result_parsed = json_decode($result['message'], true);
         $message = __('Error while sending.', 'mailpoet');
-        if(is_array($result_parsed)) {
-          try {
-            $subscribers_errors = $this->getSubscribersErrors($result_parsed, $subscribers);
-          } catch (InvalidArgumentException $e) {
-            $message .= ' ' . $e->getMessage();
-          }
-        } else {
+        if(!is_array($result_parsed)) {
           $message .= ' ' . $result['message'];
+          break;
+        }
+        try {
+          $subscribers_errors = $this->getSubscribersErrors($result_parsed, $subscribers);
+          $level = MailerError::LEVEL_SOFT;
+        } catch (InvalidArgumentException $e) {
+          $message .= ' ' . $e->getMessage();
         }
         break;
       case API::RESPONSE_CODE_TEMPORARY_UNAVAILABLE:
