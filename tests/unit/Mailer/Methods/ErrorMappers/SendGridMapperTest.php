@@ -22,7 +22,7 @@ class SendGridMapperTest extends \MailPoetTest {
   }
 
   function testGetProperError() {
-    $error = $this->mapper->getErrorFromResponse($this->response, 'john@rambo.com', []);
+    $error = $this->mapper->getErrorFromResponse($this->response, 'john@rambo.com');
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
     expect($error->getMessage())->equals('Some message');
     expect($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
@@ -30,7 +30,7 @@ class SendGridMapperTest extends \MailPoetTest {
 
   function testGetSoftErrorForInvalidEmail() {
     $this->response['errors'][0] = 'Invalid email address ,,@';
-    $error = $this->mapper->getErrorFromResponse($this->response, ',,@', []);
+    $error = $this->mapper->getErrorFromResponse($this->response, ',,@');
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 }

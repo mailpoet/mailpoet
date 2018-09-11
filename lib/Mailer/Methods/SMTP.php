@@ -49,13 +49,13 @@ class SMTP {
       $result = $this->mailer->send($message);
     } catch(\Exception $e) {
       return Mailer::formatMailerErrorResult(
-        $this->error_mapper->getErrorFromException($e, $subscriber, $extra_params)
+        $this->error_mapper->getErrorFromException($e, $subscriber)
       );
     }
     if($result === 1) {
       return Mailer::formatMailerSendSuccessResult();
     } else {
-      $error = $this->error_mapper->getErrorFromLog($this->mailer_logger->dump(), $subscriber, $extra_params);
+      $error = $this->error_mapper->getErrorFromLog($this->mailer_logger->dump(), $subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
   }

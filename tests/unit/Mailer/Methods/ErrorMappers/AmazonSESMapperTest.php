@@ -27,7 +27,7 @@ class AmazonSESMapperTest extends \MailPoetTest {
 
   function testGetProperError() {
     $response = $this->buildXmlResponseFromArray($this->response_data, new SimpleXMLElement('<response/>'));
-    $error = $this->mapper->getErrorFromResponse($response, 'john@rambo.com', []);
+    $error = $this->mapper->getErrorFromResponse($response, 'john@rambo.com');
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
     expect($error->getMessage())->equals('Some message');
     expect($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
@@ -36,7 +36,7 @@ class AmazonSESMapperTest extends \MailPoetTest {
   function testGetSoftErrorForRejectedMessage() {
     $this->response_data['Error']['Code'] = 'MessageRejected';
     $response = $this->buildXmlResponseFromArray($this->response_data, new SimpleXMLElement('<response/>'));
-    $error = $this->mapper->getErrorFromResponse($response, 'john@rambo.com', []);
+    $error = $this->mapper->getErrorFromResponse($response, 'john@rambo.com');
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 

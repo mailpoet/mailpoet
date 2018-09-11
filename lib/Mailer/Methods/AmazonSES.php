@@ -79,7 +79,7 @@ class AmazonSES {
     }
     if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = simplexml_load_string(WPFunctions::wpRemoteRetrieveBody($result));
-      $error = $this->error_mapper->getErrorFromResponse($response, $subscriber, $extra_params);
+      $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
     return Mailer::formatMailerSendSuccessResult();

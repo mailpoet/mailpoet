@@ -35,7 +35,7 @@ class SendGrid {
     }
     if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = json_decode($result['body'], true);
-      $error = $this->error_mapper->getErrorFromResponse($response, $subscriber, $extra_params);
+      $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
     return Mailer::formatMailerSendSuccessResult();

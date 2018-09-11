@@ -21,7 +21,7 @@ class AmazonSESMapper {
    * @see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/api-error-codes.html
    * @return MailerError
    */
-  function getErrorFromResponse($response, $subscriber, $extra_params) {
+  function getErrorFromResponse($response, $subscriber) {
     $message = ($response) ?
       $response->Error->Message->__toString() :
       sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
@@ -30,11 +30,7 @@ class AmazonSESMapper {
     if($response && $response->Error->Code->__toString() === 'MessageRejected') {
       $level = MailerError::LEVEL_SOFT;
     }
-
-    $subscriber_errors = [];
-    if(empty($extra_params['test_email'])) {
-      $subscriber_errors[] = new SubscriberError($subscriber, null);
-    }
+    $subscriber_errors = [new SubscriberError($subscriber, null)];
     return new MailerError(MailerError::OPERATION_SEND, $level, $message, null, $subscriber_errors);
   }
 }

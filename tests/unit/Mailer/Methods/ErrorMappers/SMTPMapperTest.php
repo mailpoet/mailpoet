@@ -42,7 +42,7 @@ class SMTPMapperTest extends \MailPoetTest {
       . '" (code: 550)' . PHP_EOL
       . '>> RSET' . PHP_EOL
       . '<< 250 Reset OK' . PHP_EOL;
-    $error = $this->mapper->getErrorFromLog($log, 'test@example.com', []);
+    $error = $this->mapper->getErrorFromLog($log, 'test@example.com');
     expect($error->getMessage())
       ->equals('Expected response code 250/251/252 but got code "550", with message "550 No such recipient here" (code: 550)');
     expect($error->getSubscriberErrors()[0]->getEmail('moi@mrcasual.com'));
