@@ -58,6 +58,11 @@ class Populator {
       'Retro',
       'Coffee',
       'RetroComputingMagazine',
+      'RealEstate',
+      'GiftWelcome',
+      'Minimal',
+      'Phone',
+      'Sunglasses',
     );
   }
 
