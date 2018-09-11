@@ -33,7 +33,7 @@ class PHPMail {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extra_params);
       $result = $mailer->send();
     } catch(\Exception $e) {
-      return Mailer::formatMailerErrorResult($this->error_mapper->getErrorFromException($e));
+      return Mailer::formatMailerErrorResult($this->error_mapper->getErrorFromException($e, $subscriber, $extra_params));
     }
     if($result === true) {
       return Mailer::formatMailerSendSuccessResult();
