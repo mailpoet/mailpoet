@@ -129,12 +129,12 @@ class SendingQueue {
         'queue_id' => $queue->id
       );
       if($processing_method === 'individual') {
-        $queue = $this->sendNewsletters(
+        $queue = $this->sendNewsletter(
           $queue,
-          $prepared_subscribers_ids,
+          $prepared_subscribers_ids[0],
           $prepared_newsletters[0],
           $prepared_subscribers[0],
-          $statistics,
+          $statistics[0],
           array('unsubscribe_url' => $unsubscribe_urls[0])
         );
         $prepared_newsletters = array();
@@ -157,16 +157,37 @@ class SendingQueue {
     return $queue;
   }
 
+  function sendNewsletter(
+    SendingTask $sending_task, $prepared_subscriber_id, $prepared_newsletter,
+    $prepared_subscriber, $statistics, $extra_params = array()
+  ) {
+    // send newsletter
+    $send_result = $this->mailer_task->send(
+      $prepared_newsletter,
+      $prepared_subscriber,
+      $extra_params
+    );
+    return $this->processSendResult($sending_task, $send_result, [$prepared_subscriber_id], [$statistics]);
+  }
+
   function sendNewsletters(
     SendingTask $sending_task, $prepared_subscribers_ids, $prepared_newsletters,
     $prepared_subscribers, $statistics, $extra_params = array()
   ) {
-    // send newsletter
-    $send_result = $this->mailer_task->send(
+    // send newsletters
+    $send_result = $this->mailer_task->sendBulk(
       $prepared_newsletters,
       $prepared_subscribers,
       $extra_params
     );
+    return $this->processSendResult($sending_task, $send_result, $prepared_subscribers_ids, $statistics);
+  }
+
+  private function processSendResult(
+    SendingTask $sending_task,
+    $send_result,
+    array $prepared_subscribers_ids, array $statistics
+  ) {
     // log error message and schedule retry/pause sending
     if($send_result['response'] === false) {
       $error = $send_result['error'];

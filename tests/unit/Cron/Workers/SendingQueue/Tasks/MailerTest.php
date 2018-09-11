@@ -114,7 +114,10 @@ class MailerTest extends \MailPoetTest {
               return true;
           })),
           $this
-        )
+        ),
+        'mailer_config' => [
+          'method' => null,
+        ]
       )
     );
     // mailer instance should be properly configured

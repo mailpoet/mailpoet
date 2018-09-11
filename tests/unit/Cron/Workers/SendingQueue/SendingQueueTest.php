@@ -140,7 +140,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => null
+          'sendBulk' => null
         )
       )
     );
@@ -174,7 +174,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => null
+          'sendBulk' => null
         )
       )
     );
@@ -313,7 +313,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Expected::exactly(1, function($newsletter, $subscriber) {
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
             expect(!empty($newsletter[0]['body']['html']))->true();
             expect(!empty($newsletter[0]['body']['text']))->true();
@@ -598,16 +598,16 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => true
+          'sendBulk' => true
         )
       )
     );
     try {
       $sending_queue_worker->sendNewsletters(
         $sending_task->getObject(),
-        $prepared_subscribers = array(),
-        $prepared_newsletters = false,
-        $prepared_subscribers = false,
+        $prepared_subscribers = [],
+        $prepared_newsletters = [],
+        $prepared_subscribers = [],
         $statistics = false
       );
       $this->fail('Paused sending exception was not thrown.');
