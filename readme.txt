@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija, kgjerstad
 Tags: newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, mailing list
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 3.9.1
+Stable tag: 3.10
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -161,6 +161,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.10 - 2018-09-11 =
+* Changed: welcome emails to new subscribers are now free for everyone!
+* Fixed: newsletter footer warning to be displayed if unsubscribe link is missing.
 
 = 3.9.1 - 2018-09-04 =
 * Improved: instructions for migrating from MP2 to MP3 clarified;
