@@ -67,6 +67,11 @@ class Populator {
       'NotSoMedium',
       'RssSimpleNews',
       'WideStoryLayout',
+      'Avocado',
+      'DogFood',
+      'Fitness',
+      'KidsClothing',
+      'WineCity',
     );
   }
 
