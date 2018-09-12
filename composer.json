@@ -23,7 +23,9 @@
     "symfony/polyfill-php72": "^1.8",
     "symfony/polyfill-mbstring": "1.8.0",
     "sensiolabs/security-checker": "^4.1",
-    "monolog/monolog": "^1.23"
+    "monolog/monolog": "^1.23",
+    "symfony/dependency-injection": "3.3.18",
+    "psr/container": "^1.0"
   },
   "require-dev": {
     "codeception/aspect-mock": "2.0.1",
@@ -58,7 +60,8 @@
       "classmap_directory": "/classes/dependencies/",
       "classmap_prefix": "MP_",
       "packages": [
-        "monolog/monolog"
+        "monolog/monolog",
+        "symfony/dependency-injection"
       ]
     }
   },
