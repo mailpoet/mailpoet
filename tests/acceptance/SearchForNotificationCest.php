@@ -17,8 +17,6 @@ class SearchForNotificationCest {
       ->withType('notification')
       ->withPostNoticationOptions()
       ->create();
-    $newsletter_title = 'Search Test Notification';
-    $failure_condition_newsletter = 'Fake Newsletter Notification';
 
     // step 2 - Search
     $I->login();
@@ -31,7 +29,7 @@ class SearchForNotificationCest {
     $I->dontSee($newsletter_title); 
     $I->fillField('#search_input', $newsletter_title);
     $I->click('Search');
-    $I->waitForText($newsletter_title, 20);
+    $I->waitForElement('tr.no-items', 10);
   }
     
 }
