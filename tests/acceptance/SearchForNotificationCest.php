@@ -11,13 +11,14 @@ class SearchForNotificationCest {
     $I->wantTo('Successfully search for an existing notification');
     $newsletter_title = 'Search Test Notification';
     $failure_condition_newsletter = 'Not Actually Real';
-     // step 1 - Prepare newsletter data
+    // step 1 - Prepare newsletter data
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($newsletter_title)
       ->withType('notification')
       ->withPostNoticationOptions()
       ->create();
-
+    $newsletter_title = 'Search Test Notification';
+    $failure_condition_newsletter = 'Fake Newsletter Notification';
     // step 2 - Search
     $I->login();
     $I->amOnMailpoetPage('Emails');
