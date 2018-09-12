@@ -40,7 +40,7 @@ class Menu {
   private $access_control;
   private $subscribers_over_limit;
 
-  function __construct($renderer, $assets_url, AccessControl $access_control) {
+  function __construct(Renderer $renderer, $assets_url, AccessControl $access_control) {
     $this->renderer = $renderer;
     $this->assets_url = $assets_url;
     $this->access_control = $access_control;

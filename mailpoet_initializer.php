@@ -13,6 +13,7 @@ $container->setParameter('mailpoet.plugin_data', [
   'file' => $mailpoet_plugin['filename'],
   'version' => $mailpoet_plugin['version']
 ]);
+$container->compile();
 
 $initializer = $container->get('initializer');
 $initializer->init();

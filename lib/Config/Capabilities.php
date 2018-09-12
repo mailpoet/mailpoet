@@ -9,7 +9,7 @@ class Capabilities {
 
   private $renderer = null;
 
-  function __construct($renderer = null) {
+  function __construct(Renderer $renderer = null) {
     if($renderer !== null) {
       $this->renderer = $renderer;
     }

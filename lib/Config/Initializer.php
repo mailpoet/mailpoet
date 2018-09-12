@@ -7,9 +7,11 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
+use MailPoet\Settings\Pages;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
+use MailPoet\Util\Notices\PHPVersionWarnings;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -17,8 +19,6 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
-  private $access_control;
-  private $renderer;
   /** @var Container */
   private $container;
 
@@ -95,33 +95,23 @@ class Initializer {
   }
 
   function checkRequirements() {
-    $requirements = new RequirementsChecker();
-    return $requirements->checkAllRequirements();
+    return $this->container->get(RequirementsChecker::class)->checkAllRequirements();
   }
 
   function runActivator() {
-    $activator = new Activator();
-    return $activator->activate();
+    return $this->container->get(Activator::class)->activate();
   }
 
   function setupDB() {
-    $database = new Database();
-    $database->init();
+    $this->container->get(Database::class)->init();
   }
 
   function preInitialize() {
     try {
-      $this->setupRenderer();
       $this->setupWidget();
     } catch(\Exception $e) {
       $this->handleFailedInitialization($e);
     }
-  }
-
-  function setupRenderer() {
-    $caching = !WP_DEBUG;
-    $debugging = WP_DEBUG;
-    $this->renderer = new Renderer($caching, $debugging);
   }
 
   function setupWidget() {
@@ -130,8 +120,6 @@ class Initializer {
 
   function initialize() {
     try {
-      $this->setupAccessControl();
-
       $this->maybeDbUpdate();
       $this->setupInstaller();
       $this->setupUpdater();
@@ -173,10 +161,6 @@ class Initializer {
     }
   }
 
-  function setupAccessControl() {
-    $this->access_control = new AccessControl();
-  }
-
   function setupInstaller() {
     $installer = new Installer(
       Installer::PREMIUM_PLUGIN_SLUG
@@ -199,23 +183,19 @@ class Initializer {
   }
 
   function setupLocalizer() {
-    $localizer = new Localizer();
-    $localizer->init();
+    $this->container->get(Localizer::class)->init();
   }
 
   function setupCapabilities() {
-    $caps = new Capabilities($this->renderer);
-    $caps->init();
+    $this->container->get(Capabilities::class)->init();
   }
 
   function setupMenu() {
-    $menu = new Menu($this->renderer, Env::$assets_url, $this->access_control);
-    $menu->init();
+    $this->container->get(Menu::class)->init();
   }
 
   function setupShortcodes() {
-    $shortcodes = new Shortcodes();
-    $shortcodes->init();
+    $this->container->get(Shortcodes::class)->init();
   }
 
   function setupImages() {
@@ -223,21 +203,18 @@ class Initializer {
   }
 
   function setupChangelog() {
-    $changelog = new Changelog();
-    $changelog->init();
+    $this->container->get(Changelog::class)->init();
   }
 
   function setupCronTrigger() {
     // setup cron trigger only outside of cli environment
     if(php_sapi_name() !== 'cli') {
-      $cron_trigger = new CronTrigger();
-      $cron_trigger->init();
+      $this->container->get(CronTrigger::class)->init();
     }
   }
 
   function setupConflictResolver() {
-    $conflict_resolver = new ConflictResolver();
-    $conflict_resolver->init();
+    $this->container->get(ConflictResolver::class)->init();
   }
 
   function postInitialize() {
@@ -253,45 +230,37 @@ class Initializer {
   }
 
   function setupJSONAPI() {
-    $json_api = API\API::JSON($this->access_control);
-    $json_api->init();
+    $this->container->get(API\JSON\API::class)->init();
   }
 
   function setupRouter() {
-    $router = new Router\Router($this->access_control);
-    $router->init();
+    $this->container->get(Router\Router::class)->init();
   }
 
   function setupUserLocale() {
     if(get_user_locale() === get_locale()) return;
     unload_textdomain(Env::$plugin_name);
-    $localizer = new Localizer();
-    $localizer->init();
+    $this->container->get(Localizer::class)->init();
   }
 
   function setupPages() {
-    $pages = new \MailPoet\Settings\Pages();
-    $pages->init();
+    $this->container->get(Pages::class)->init();
   }
 
   function setupHooks() {
-    $hooks = new Hooks();
-    $hooks->init();
+    $this->container->get(Hooks::class)->init();
   }
 
   function setupPrivacyPolicy() {
-    $privacy_policy = new PrivacyPolicy();
-    $privacy_policy->init();
+    $this->container->get(PrivacyPolicy::class)->init();
   }
 
   function setupPersonalDataExporters() {
-    $exporters = new PersonalDataExporters();
-    $exporters->init();
+    $this->container->get(PersonalDataExporters::class)->init();
   }
 
   function setupPersonalDataErasers() {
-    $erasers = new PersonalDataErasers();
-    $erasers->init();
+    $this->container->get(PersonalDataErasers::class)->init();
   }
 
   function setupPermanentNotices() {
@@ -299,16 +268,20 @@ class Initializer {
     $notices->init();
   }
 
+  function setupPHPVersionWarnings() {
+    $php_version_warnings =$this->container->get(PHPVersionWarnings::class);
+    $php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
+  }
+
   function handleFailedInitialization($exception) {
     // check if we are able to add pages at this point
     if(function_exists('wp_get_current_user')) {
-      Menu::addErrorPage($this->access_control);
+      Menu::addErrorPage($this->container->get(AccessControl::class));
     }
     return WPNotice::displayError($exception);
   }
 
   function setupDeactivationSurvey() {
-    $survey = new DeactivationSurvey($this->renderer);
-    $survey->init();
+    $this->container->get(DeactivationSurvey::class)->init();
   }
 }
