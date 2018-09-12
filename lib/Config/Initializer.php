@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
 use MailPoet\Util\ConflictResolver;
@@ -18,13 +19,16 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 class Initializer {
   private $access_control;
   private $renderer;
+  /** @var Container */
+  private $container;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
-  function __construct($params = array(
+  function __construct(Container $container, $params = array(
     'file' => '',
     'version' => '1.0.0'
   )) {
+    $this->container = $container;
     Env::init($params['file'], $params['version']);
   }
 

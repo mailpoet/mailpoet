@@ -28,6 +28,7 @@ class ContainerFactory {
     // Services
     self::$container
       ->register('initializer', \MailPoet\Config\Initializer::class)
+      ->addArgument(self::$container)
       ->addArgument('%mailpoet.plugin_data%');
   }
 }
