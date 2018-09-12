@@ -11,8 +11,7 @@ class ConfirmNotificationAutosaveCest {
     $I->wantTo('Confirm Post Notification Autosave');
     $newsletter_title = 'Notification Autosave Test';
     // step 1 - Prepare post notification data
-    $newsletterFactory = new Newsletter();
-    $newsletter = $newsletterFactory->withSubject($newsletter_title)
+    $newsletter = $newsletter->withSubject($newsletter_title)
       ->withType('notification')
       ->withPostNoticationOptions()
       ->create();
