@@ -10,7 +10,7 @@ class ContainerFactory {
   private static $container;
 
   static function getContainer() {
-    if (!self::$container) {
+    if(!self::$container) {
       self::createContainer();
     }
     return self::$container;
@@ -18,5 +18,16 @@ class ContainerFactory {
 
   private static function createContainer() {
     self::$container = new ContainerBuilder();
+
+    // Parameters
+    self::$container->setParameter('mailpoet.plugin_data', [
+      'version' => '1.0.0',
+      'file' => ''
+    ]);
+
+    // Services
+    self::$container
+      ->register('initializer', \MailPoet\Config\Initializer::class)
+      ->addArgument('%mailpoet.plugin_data%');
   }
 }
