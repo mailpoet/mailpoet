@@ -18,7 +18,7 @@ class BrowserPreviewNewsletterCest {
     $I->amEditingNewsletter($newsletter->id);
     $I->click(['css' => '.mailpoet_region.mailpoet_preview_region']);
     $I->waitForElement('[data-automation-id="preview_newsletter_in_browser_button"]',5);
-    $I->click('[data-automation-id="preview_newsletter_in_browser_button"]');
+    $I->click("View in browser");
     $I->waitForText('Newsletter Preview',15);
   }
     
