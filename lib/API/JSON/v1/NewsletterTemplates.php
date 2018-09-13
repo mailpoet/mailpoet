@@ -31,8 +31,9 @@ class NewsletterTemplates extends APIEndpoint {
   function getAll() {
     $collection = NewsletterTemplate
       ::selectExpr('id, categories, thumbnail, name, description, readonly')
+      ->orderByAsc('readonly')
       ->orderByDesc('created_at')
-      ->orderByAsc('name')
+      ->orderByDesc('id')
       ->findMany();
     $templates = array_map(function($item) {
       return $item->asArray();
