@@ -18,8 +18,7 @@ class AfterMigrationNotice {
   }
 
   function init($should_display) {
-    $enabled = Setting::getValue(self::OPTION_NAME, false);
-    if($enabled && $should_display) {
+    if($should_display && Setting::getValue(self::OPTION_NAME, false)) {
       return $this->display();
     }
   }

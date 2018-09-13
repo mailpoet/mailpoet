@@ -32,7 +32,7 @@ class PermanentNotices {
     if(!isset($_POST['type'])) return;
     switch($_POST['type']) {
       case (PHPVersionWarnings::OPTION_NAME):
-        $this->php_version_warnings->ajaxDismissNoticeHandler();
+        $this->php_version_warnings->disable();
         break;
       case (AfterMigrationNotice::OPTION_NAME):
         $this->after_migration_notice->disable();
