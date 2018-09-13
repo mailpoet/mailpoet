@@ -40,20 +40,13 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     $warning = $this->phpVersionWarning->init('5.5.3', true);
     $mock->verifyInvoked('displayError');
     expect($warning)->contains('Your website is running on PHP 5.5.3');
-    expect($warning)->contains('MailPoet will require version 7');
+    expect($warning)->contains('MailPoet requires version 5.6');
   }
 
 
-  function testItPrintsWarningFor56() {
-    $mock = Mock::double('MailPoet\WP\Notice', [
-      'displayError' => function($message, $classes, $data_notice_name) {
-        return $message;
-      }
-    ]);
-    $warning = $this->phpVersionWarning->init('5.6.3', true);
-    $mock->verifyInvoked('displayError');
-    expect($warning)->contains('Your website is running on PHP 5.6');
-    expect($warning)->contains('MailPoet will require version 7');
+  function testItPrintsNoWarningFor56() {
+    $warning = $this->phpVersionWarning->init('5.6', true);
+    expect($warning)->null();
   }
 
   function testItPrintsNoWarningFor70() {
