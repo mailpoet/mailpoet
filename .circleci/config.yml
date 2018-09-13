@@ -219,6 +219,6 @@ workflows:
     jobs:
       - qa_js_security_php5
       - php7
-      - php7_multisite
       - acceptance_tests
+      - php7_multisite
       - acceptance_tests_multisite
