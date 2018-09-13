@@ -780,16 +780,6 @@ class WineCity {
                 ),
               'type' => 'button',
             ),
-          'container' =>
-            array (
-              'styles' =>
-                array (
-                  'block' =>
-                    array (
-                      'backgroundColor' => 'transparent',
-                    ),
-                ),
-            ),
           'divider' =>
             array (
               'styles' =>

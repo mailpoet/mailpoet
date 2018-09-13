@@ -1163,46 +1163,6 @@ class Retro {
                     ),
                 ),
             ),
-          'container' =>
-            array (
-              'image' =>
-                array (
-                  'src' => $this->template_image_url . '/1980s-Footer-1.jpg',
-                  'display' => 'scale',
-                ),
-              'styles' =>
-                array (
-                  'block' =>
-                    array (
-                      'backgroundColor' => 'transparent',
-                    ),
-                ),
-              'type' => 'container',
-              'orientation' => 'horizontal',
-              'blocks' =>
-                array (
-                  0 =>
-                    array (
-                      'type' => 'container',
-                      'orientation' => 'vertical',
-                      'image' =>
-                        array (
-                          'src' => NULL,
-                          'display' => 'scale',
-                        ),
-                      'styles' =>
-                        array (
-                          'block' =>
-                            array (
-                              'backgroundColor' => 'transparent',
-                            ),
-                        ),
-                      'blocks' =>
-                        array (
-                        ),
-                    ),
-                ),
-            ),
           'divider' =>
             array (
               'styles' =>

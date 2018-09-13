@@ -928,21 +928,6 @@ class NewsDay {
                     ),
                 ),
             ),
-          'container' =>
-            array (
-              'image' =>
-                array (
-                  'src' => NULL,
-                  'display' => 'scale',
-                ),
-              'styles' =>
-                array (
-                  'block' =>
-                    array (
-                      'backgroundColor' => 'transparent',
-                    ),
-                ),
-            ),
           'divider' =>
             array (
               'styles' =>

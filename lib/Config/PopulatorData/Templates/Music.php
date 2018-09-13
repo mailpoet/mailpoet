@@ -1316,46 +1316,6 @@ class Music {
                     ),
                 ),
             ),
-          'container' =>
-            array (
-              'image' =>
-                array (
-                  'src' => $this->template_image_url . '/music-header.jpg',
-                  'display' => 'scale',
-                ),
-              'styles' =>
-                array (
-                  'block' =>
-                    array (
-                      'backgroundColor' => 'transparent',
-                    ),
-                ),
-              'type' => 'container',
-              'orientation' => 'horizontal',
-              'blocks' =>
-                array (
-                  0 =>
-                    array (
-                      'type' => 'container',
-                      'orientation' => 'vertical',
-                      'image' =>
-                        array (
-                          'src' => NULL,
-                          'display' => 'scale',
-                        ),
-                      'styles' =>
-                        array (
-                          'block' =>
-                            array (
-                              'backgroundColor' => 'transparent',
-                            ),
-                        ),
-                      'blocks' =>
-                        array (
-                        ),
-                    ),
-                ),
-            ),
           'divider' =>
             array (
               'styles' =>

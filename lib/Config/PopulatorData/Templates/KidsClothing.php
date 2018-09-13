@@ -1516,9 +1516,6 @@ class KidsClothing {
               'text' => 'Button',
               'url' => '',
             ),
-          'container' =>
-            array (
-            ),
           'divider' =>
             array (
               'styles' =>
