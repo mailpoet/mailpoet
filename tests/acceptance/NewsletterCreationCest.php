@@ -48,7 +48,6 @@ class NewsletterCreationCest {
     $I->waitForElement($newsletter_listing_element);
     $I->see($newsletter_title, $newsletter_listing_element);
     $I->see("Send immediately if there's new content to WordPress Users.", $newsletter_listing_element);
-    $I->wait(20);
   }
 
   function createStandardNewsletter(\AcceptanceTester $I) {
