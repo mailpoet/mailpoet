@@ -70,6 +70,9 @@ rm -f $plugin_name/vendor/j4mie/idiorm/demo.php
 rm -f $plugin_name/vendor/cerdic/css-tidy/css_optimiser.php
 rm -f $plugin_name/assets/js/lib/tinymce/package.json
 
+# Remove 3rd party extensions which are copied in lib/Dependencies
+rm -rf $plugin_name/vendor/symfony/dependency-injection
+
 # Copy release files.
 echo '[BUILD] Copying release files'
 cp license.txt $plugin_name
