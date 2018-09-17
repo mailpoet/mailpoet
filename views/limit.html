@@ -3,22 +3,22 @@
 <% block content %>
 
 <div class="wrap mailpoet-about-wrap">
-  <h1><%= __("You've reached the %d subscribers limit!") | format(limit) %></h1>
+  <h1><%= __("You've reached the %s subscribers limit!") | format(number_format_i18n(limit)) %></h1>
 
   <p class="about-text">
-    <%= __("Our free version is limited to 2000 subscribers.") | format(limit) %>
+    <%= __("Our free version is limited to %s subscribers.") | format(number_format_i18n(limit)) %>
   </p>
 
   <img
-    src="http://i2.wp.com/www.mailpoet.com/wp-content/uploads/2015/05/sad-cat.gif?resize=500%2C212"
+    src="http://i2.wp.com/www.mailpoet.com/wp-content/uploads/2018/09/2000-limit-illustration.png?resize=1050%2C350"
     alt="sad-cat"
-    width="500"
-    height="212"
+    width="1050"
+    height="350"
   />
 
   <h3><%= __('Immediately, you can:') %></h3>
   <ul class="ul-disc">
-    <li><%= __('Delete unconfirmed subscribers to have less than %d subscribers.') | format(limit) %></li>
+    <li><%= __('Delete unconfirmed subscribers to have less than %s subscribers.') | format(number_format_i18n(limit)) %></li>
     <li><%= __('Install the Premium plugin if you have purchased it.') %></li>
     <li>
       <a
