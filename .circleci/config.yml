@@ -3,7 +3,7 @@ jobs:
   build_and_code_qa:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:5.6.30_20180417.1
+      - image: mailpoet/wordpress:7.1_20180417.1
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
