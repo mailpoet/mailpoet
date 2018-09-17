@@ -25,7 +25,7 @@ Trusted by 300,000 WordPress websites since 2011.
 * Manage your subscribers and subscriber lists in WordPress
 * Build and send newsletters with WordPress
 * Create automatic emails to send new post notifications
-* Send automated signup welcome emails (Premium)
+* Send automated signup welcome emails (**now in free**)
 * Increase your sales with our emails for WooCommerce (Premium)
 * Insightful stats on your audience engagement (Premium)
 
@@ -68,7 +68,6 @@ MailPoet's free version is fully featured, and comes with access to a free sendi
 The Premium version adds the following features:
 
 * For each newsletter, see which subscribers opened it and which links got the most clicks
-* Ability to send Welcome Emails automatically; i.e. “Welcome to my Newsletter” autoresponders or multi-email courses
 * All WooCommerce emails features
 * Removes the small MailPoet logo in the footer of your emails
 * Same day support (Monday to Friday)
