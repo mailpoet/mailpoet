@@ -231,19 +231,19 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  function testAcceptance($opts=['file' => null, 'keep-deps' => false]) {
+  function testAcceptance($opts=['file' => null, 'skip-deps' => false]) {
     return $this->_exec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
-      ($opts['keep-deps'] ? '-e KEEP_DEPS=1 ' : '') .
+      ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
       'codeception --steps --debug -vvv ' .
       '-f ' . ($opts['file'] ? $opts['file'] : '')
     );
   }
 
-  function testAcceptanceMultisite($opts=['file' => null, 'keep-deps' => false]) {
+  function testAcceptanceMultisite($opts=['file' => null, 'skip-deps' => false]) {
     return $this->_exec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
-      ($opts['keep-deps'] ? '-e KEEP_DEPS=1 ' : '') .
+      ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
       '-e MULTISITE=1 ' .
       'codeception --steps --debug -vvv' .
       '-f ' . ($opts['file'] ? $opts['file'] : '')

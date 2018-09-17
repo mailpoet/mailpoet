@@ -198,3 +198,8 @@ To run tests:
 ```sh
 $ ./do test:acceptance
 ```
+
+You can skip installation of composer dependencies using --skip-deps parameter.
+```sh
+$ ./do test:acceptance --skip-deps
+```
