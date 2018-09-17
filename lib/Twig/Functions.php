@@ -95,7 +95,12 @@ class Functions extends \Twig_Extension {
         'is_rtl',
         array($this, 'isRtl'),
         array('is_safe' => array('all'))
-      )
+      ),
+      new \Twig_SimpleFunction(
+        'number_format_i18n',
+        'number_format_i18n',
+        array('is_safe' => array('all'))
+      ),
     );
   }
 
