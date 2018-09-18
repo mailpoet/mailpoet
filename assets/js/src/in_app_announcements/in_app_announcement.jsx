@@ -1,26 +1,29 @@
 import React from 'react';
 import InAppAnnouncementDot from './in_app_announcement_dot.jsx';
 
-const InAppAnnouncement = (props) => {
-  if (props.newUser !== null &&
-    window.mailpoet_is_new_user !== props.newUser
-  ) {
-    return null;
-  }
+class InAppAnnouncement extends React.Component {
+  render() {
+    if (this.props.newUser !== null &&
+      window.mailpoet_is_new_user !== this.props.newUser
+    ) {
+      return null;
+    }
 
-  if (props.validUntil < (new Date().getTime() / 1000)) {
-    return null;
-  }
+    if (this.props.validUntil < (new Date().getTime() / 1000)) {
+      return null;
+    }
 
-  return (
-    <InAppAnnouncementDot
-      className={props.className}
-      width={props.width}
-      height={props.height}
-    >
-      {props.children}
-    </InAppAnnouncementDot>);
-};
+    return (
+      <InAppAnnouncementDot
+        className={this.props.className}
+        width={this.props.width}
+        height={this.props.height}
+      >
+        {this.props.children}
+      </InAppAnnouncementDot>
+    );
+  }
+}
 
 InAppAnnouncement.propTypes = {
   width: React.PropTypes.string,
