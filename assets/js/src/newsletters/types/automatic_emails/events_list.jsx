@@ -42,7 +42,7 @@ class AutomaticEmailEventsList extends React.Component {
 
   render() {
     const heading = MailPoet.I18n.t('selectAutomaticEmailsEventsHeading')
-      .replace('%1s', this.email.title);
+      .replace('%$1s', this.email.title);
 
     return (
       <div>

@@ -45,7 +45,7 @@ class NewsletterClicksExporter {
       'value' => $row['created_at'],
     );
     $newsletter_data[] = array(
-      'name' => __('Url', 'mailpoet'),
+      'name' => __('URL', 'mailpoet'),
       'value' => $row['url'],
     );
     return array(

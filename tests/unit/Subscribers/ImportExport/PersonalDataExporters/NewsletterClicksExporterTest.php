@@ -75,7 +75,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
     expect($result['data'][0])->hasKey('item_id');
     expect($result['data'][0])->hasKey('data');
     expect($result['data'][0]['data'])->contains(array('name' => 'Email subject', 'value' => 'Email Subject'));
-    expect($result['data'][0]['data'])->contains(array('name' => 'Url', 'value' => 'Link url'));
+    expect($result['data'][0]['data'])->contains(array('name' => 'URL', 'value' => 'Link url'));
     expect($result['data'][0]['data'])->contains(array('name' => 'Timestamp of the click event', 'value' => '2018-01-02 15:16:17'));
   }
 
