@@ -522,8 +522,6 @@ class Menu {
   }
 
   function segments() {
-    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
-
     $data = array();
     $data['items_per_page'] = $this->getLimitPerPage('segments');
     $this->displayPage('segments.html', $data);
