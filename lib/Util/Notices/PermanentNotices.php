@@ -25,7 +25,10 @@ class PermanentNotices {
 
 
     $this->php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
-    $this->after_migration_notice->init(Menu::isOnMailPoetAdminPage());
+    $this->after_migration_notice->init(
+      Menu::isOnMailPoetAdminPage()
+      && $_GET['page'] !== 'mailpoet-welcome-wizard'
+    );
   }
 
   function ajaxDismissNoticeHandler() {
