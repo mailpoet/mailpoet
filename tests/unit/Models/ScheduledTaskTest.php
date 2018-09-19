@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\ScheduledTaskSubscriber;
 
 class ScheduledTaskTest extends \MailPoetTest {
   function _before() {
@@ -86,7 +87,30 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($task2_found->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
+  function testItDeletesRelatedScheduledTaskSubscriber() {
+    $task_id = $this->task->id;
+    ScheduledTaskSubscriber::createOrUpdate([
+      'task_id' => $task_id,
+      'subscriber_id' => 1
+    ]);
+    ScheduledTaskSubscriber::createOrUpdate([
+      'task_id' => $task_id,
+      'subscriber_id' => 2
+    ]);
+    ScheduledTaskSubscriber::createOrUpdate([
+      'task_id' => $task_id,
+      'subscriber_id' => 3
+    ]);
+    $count = ScheduledTaskSubscriber::where('task_id', $task_id)->count();
+    expect($count)->equals(3);
+
+    $this->task->delete();
+    $count = ScheduledTaskSubscriber::where('task_id', $task_id)->count();
+    expect($count)->equals(0);
+  }
+
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
   }
 }

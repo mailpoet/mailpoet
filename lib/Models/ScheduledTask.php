@@ -76,6 +76,11 @@ class ScheduledTask extends Model {
     return $this;
   }
 
+  function delete() {
+    ScheduledTaskSubscriber::where('task_id', $this->id)->deleteMany();
+    return parent::delete();
+  }
+
   static function touchAllByIds(array $ids) {
     ScheduledTask::rawExecute(
       'UPDATE `' . ScheduledTask::$_table . '`' .
