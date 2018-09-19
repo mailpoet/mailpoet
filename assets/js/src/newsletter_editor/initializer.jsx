@@ -1,5 +1,6 @@
 import Hooks from 'wp-js-hooks';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
+import InAppAnnouncement from 'in_app_announcements/in_app_announcement.jsx';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -15,6 +16,25 @@ const renderBreadcrumb = (newsletterType) => {
   );
 
   ReactDOM.render(breadcrumb, breadcrumbContainer);
+};
+
+const renderAnnouncement = () => {
+  const container = document.getElementById('mailpoet_editor_announcement');
+  const heading = MailPoet.I18n.t('announcementBackgroundImagesHeading')
+    .replace('%username%', window.config.currentUserFirstName || window.config.currentUserUsername);
+  ReactDOM.render(
+    <InAppAnnouncement
+      validUntil={new Date('2018-10-06')}
+      height="700px"
+      showOnlyOnceSlug="background_image"
+    >
+      <div className="mailpoet_in_app_announcement_background_videos">
+        <h2>{heading}</h2>
+        <p>{MailPoet.I18n.t('announcementBackgroundImagesMessage')}</p>
+        <video src={window.config.backgroundImageDemoUrl} controls autoPlay><track kind="captions" /></video>
+      </div>
+    </InAppAnnouncement>,
+    container);
 };
 
 function displayTutorial() {
@@ -73,6 +93,7 @@ const initializeEditor = (config) => {
       });
 
       renderBreadcrumb(newsletter.type);
+      renderAnnouncement();
 
       if (newsletter.status === 'sending' && newsletter.queue && newsletter.queue.status === null) {
         MailPoet.Ajax.post({
