@@ -556,6 +556,19 @@ class Newsletter extends Model {
     return $result;
   }
 
+  function wasScheduledForSubscriber($subscriber_id) {
+    $count = (int)SendingQueue::rawQuery(
+      "SELECT COUNT(*) as count
+      FROM `" . SendingQueue::$_table . "`
+      JOIN `" . ScheduledTask::$_table . "` ON " . SendingQueue::$_table . ".task_id = " . ScheduledTask::$_table . ".id
+      JOIN `" . ScheduledTaskSubscriber::$_table . "` ON " . ScheduledTask::$_table . ".id = " . ScheduledTaskSubscriber::$_table . ".task_id
+      WHERE " . ScheduledTaskSubscriber::$_table . ".subscriber_id = " . $subscriber_id . "
+      AND " . SendingQueue::$_table . ".newsletter_id = " . $this->id
+    )->findOne()->count;
+
+    return $count > 0;
+  }
+
   static function getAnalytics() {
     $welcome_newsletters_count = Newsletter::getPublished()
       ->filter('filterType', self::TYPE_WELCOME)
