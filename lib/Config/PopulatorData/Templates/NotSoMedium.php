@@ -14,7 +14,7 @@ class NotSoMedium {
 
   function get() {
     return array(
-      'name' => __("One Full Post In An Email (think of a Medium article)", 'mailpoet'),
+      'name' => __("One Full Post In An Email", 'mailpoet'),
       'categories' => json_encode(array('notification', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

@@ -146,7 +146,7 @@ class Avocado {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: right;"><strong>Hass to be fresh</strong></p>',
+                                  'text' => '<p style="text-align: right;"><strong>Has to be fresh</strong></p>',
                                 ),
                             ),
                         ),

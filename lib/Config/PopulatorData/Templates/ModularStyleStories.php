@@ -14,7 +14,7 @@ class ModularStyleStories {
 
   function get() {
     return array(
-      'name' => __("Modular Style Stories (Big, Small, Smaller)", 'mailpoet'),
+      'name' => __("Modular Style Stories", 'mailpoet'),
       'categories' => json_encode(array('notification', 'sample')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
