@@ -1,24 +1,28 @@
 version: 2
 jobs:
-  qa_js_security_php5:
+  build_and_code_qa:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:5.6.30_20180417.1
-      - image: circleci/mysql:5.7
+      - image: mailpoet/wordpress:7.1_20180417.1
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
       - checkout
-      - run:
-          name: "Set up virtual host"
-          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - restore_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
       - restore_cache:
           key: npm-{{ checksum "package.json" }}
       - run:
           name: "Set up test environment"
-          command: source ./.circleci/setup.bash && setup php5
+          command: |
+            # Install NodeJS+NPM
+            curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+            sudo apt-get install nodejs build-essential
+            # install plugin dependencies
+            curl -sS https://getcomposer.org/installer | php
+            ./composer.phar install
+            ./do install
+            ./do compile:all --env production
       - save_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
           paths:
@@ -28,49 +32,66 @@ jobs:
           paths:
             - node_modules
       - run:
-          name: "QA Scripts"
-          command: ./do qa
-      - run:
-          name: "Preparing test results folder"
-          command: mkdir test-results
-      - run:
-          name: "JS tests"
-          command: |
-            mkdir test-results/mocha
-            ./do t:j test-results/mocha/junit.xml
-      - run:
           name: "Composer security check"
           command: |
             ./do s:composer
       - run:
-          name: "PHP Unit tests"
-          command: |
-            WP_TEST_PATH="/home/circleci/mailpoet/wordpress" ./do t:u --xml
-      - store_test_results:
-          path: test-results/mocha
-      - store_artifacts:
-          path: test-results/mocha
-          destination: mocha
-      - store_test_results:
-          path: tests/_output
-      - store_artifacts:
-          path: tests/_output
-          destination: codeception
-      - store_artifacts:
-          path: /tmp/fake-mailer/
-          destination: fake-mailer
+          name: "QA Scripts"
+          command: ./do qa
+      - persist_to_workspace:
+          root: /home/circleci/mailpoet
+          paths:
+            - .
+  php5_and_js:
+    working_directory: /home/circleci/mailpoet
+    docker:
+    - image: mailpoet/wordpress:5.6.30_20180417.1
+    - image: circleci/mysql:5.7
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    steps:
+    - attach_workspace:
+       at: /home/circleci/mailpoet
+    - run:
+        name: "Set up virtual host"
+        command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+    - run:
+        name: "Set up test environment"
+        command: source ./.circleci/setup.bash && setup php5
+    - run:
+        name: "Preparing test results folder"
+        command: mkdir test-results
+    - run:
+        name: "JS tests"
+        command: |
+          mkdir test-results/mocha
+          ./do t:j test-results/mocha/junit.xml
+    - run:
+        name: "PHP Unit tests"
+        command: |
+          WP_TEST_PATH="/home/circleci/mailpoet/wordpress" ./do t:u --xml
+    - store_test_results:
+        path: test-results/mocha
+    - store_artifacts:
+        path: test-results/mocha
+        destination: mocha
+    - store_test_results:
+        path: tests/_output
+    - store_artifacts:
+        path: tests/_output
+        destination: codeception
+    - store_artifacts:
+        path: /tmp/fake-mailer/
+        destination: fake-mailer
   acceptance_tests:
     working_directory: /home/circleci/mailpoet
     machine: true
     steps:
-      - checkout
+      - attach_workspace:
+          at: /home/circleci/mailpoet
       - run:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-      - restore_cache:
-          key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
-      - restore_cache:
-          key: npm-{{ checksum "package.json" }}
       - run:
           name: "Set up test environment"
           command: |
@@ -78,73 +99,38 @@ jobs:
               sudo apt-get install circleci-php-5.6.23
               sudo rm /usr/bin/php
               sudo ln -s /opt/circleci/php/5.6.23/bin/php /usr/bin/php
-              # Install NodeJS+NPM
-              curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-              sudo apt-get install nodejs build-essential
-              # install plugin dependencies
-              curl -sS https://getcomposer.org/installer | php
-              php composer.phar install
-              ./do install
-              ./do compile:all --env production
-      - save_cache:
-          key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
-      - save_cache:
-          key: npm-{{ checksum "package.json" }}
-          paths:
-            - node_modules
       - run:
           name: Run acceptance tests
           command: |
-              docker-compose run codeception --steps --debug -vvv --html --xml
+              docker-compose run -e SKIP_DEPS=1 codeception --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
       - store_test_results:
           path: tests/_output
   acceptance_tests_multisite:
-      working_directory: /home/circleci/mailpoet
-      machine: true
-      steps:
-        - checkout
-        - run:
-            name: "Set up virtual host"
-            command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-        - restore_cache:
-            key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
-        - restore_cache:
-            key: npm-{{ checksum "package.json" }}
-        - run:
-            name: "Set up test environment"
-            command: |
-                sudo apt-get update
-                sudo apt-get install circleci-php-5.6.23
-                sudo rm /usr/bin/php
-                sudo ln -s /opt/circleci/php/5.6.23/bin/php /usr/bin/php
-                # Install NodeJS+NPM
-                curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-                sudo apt-get install nodejs build-essential
-                # install plugin dependencies
-                curl -sS https://getcomposer.org/installer | php
-                php composer.phar install
-                ./do install
-                ./do compile:all --env production
-        - save_cache:
-            key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
-            paths:
-              - vendor
-        - save_cache:
-            key: npm-{{ checksum "package.json" }}
-            paths:
-              - node_modules
-        - run:
-            name: Run acceptance tests
-            command: |
-                docker-compose run -e MULTISITE=1 codeception --steps --debug -vvv --html --xml
-        - store_artifacts:
-            path: tests/_output
-        - store_test_results:
-            path: tests/_output
+    working_directory: /home/circleci/mailpoet
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Set up virtual host"
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: "Set up test environment"
+          command: |
+              sudo apt-get update
+              sudo apt-get install circleci-php-5.6.23
+              sudo rm /usr/bin/php
+              sudo ln -s /opt/circleci/php/5.6.23/bin/php /usr/bin/php
+      - run:
+          name: Run acceptance tests
+          command: |
+              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception --steps --debug -vvv --html --xml
+      - store_artifacts:
+          path: tests/_output
+      - store_test_results:
+          path: tests/_output
   php7:
     working_directory: /home/circleci/mailpoet
     docker:
@@ -153,17 +139,14 @@ jobs:
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
-      - checkout
+      - attach_workspace:
+         at: /home/circleci/mailpoet
       - run:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
           name: "Prepare example.com for testing"
           command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
-      - restore_cache:
-          key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
-      - restore_cache:
-          key: npm-{{ checksum "package.json" }}
       - run:
           name: "Set up test environment"
           command: source ./.circleci/setup.bash && setup php7
@@ -187,17 +170,14 @@ jobs:
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
-      - checkout
+      - attach_workspace:
+          at: /home/circleci/mailpoet
       - run:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
           name: "Prepare example.com for testing"
           command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
-      - restore_cache:
-          key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
-      - restore_cache:
-          key: npm-{{ checksum "package.json" }}
       - run:
           name: "Set up test environment"
           command: source ./.circleci/setup.bash && setup php7_multisite
@@ -217,8 +197,21 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - qa_js_security_php5
-      - php7
-      - acceptance_tests
-      - php7_multisite
-      - acceptance_tests_multisite
+      - build_and_code_qa
+      - php7:
+          requires:
+            - build_and_code_qa
+      - php5_and_js:
+          requires:
+            - build_and_code_qa
+      - acceptance_tests:
+          requires:
+            - build_and_code_qa
+      - php7_multisite:
+          requires:
+            - build_and_code_qa
+            - php7
+      - acceptance_tests_multisite:
+          requires:
+            - build_and_code_qa
+            - acceptance_tests

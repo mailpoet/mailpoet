@@ -31,7 +31,7 @@ class ScheduleNewsletterCest {
     $I->click('select[name=time]');
     $I->selectOption('form select[name=time]', '6:00');
     $I->click('Schedule');
-    $I->wait(30);
+    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]', 20);
     $I->seeInCurrentUrl('mailpoet-newsletters');
 	
   }

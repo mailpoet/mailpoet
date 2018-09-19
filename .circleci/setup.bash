@@ -16,11 +16,6 @@ function setup {
 	sudo a2enmod rewrite
 	sudo service apache2 restart
 
-	# install plugin dependencies
-	curl -sS https://getcomposer.org/installer | php
-	./composer.phar install
-	./do install
-
 	until mysql -h 127.0.0.1 -u root -e "select 1"; do
         >&2 echo "Mysql is starting up ... will try again momentarily"
         sleep 1
