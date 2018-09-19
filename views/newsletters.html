@@ -17,6 +17,8 @@
     var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
     var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
     var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
+    var mailpoet_in_app_announcements = mailpoet_settings.in_app_announcements;
+    var mailpoet_free_welcome_emails_image = '<%= image_url('in_app_announcements/hello-illustration-for-welcome-emails.png') %>';
     <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     var mailpoet_is_new_user = <%= newUser %>;
   </script>
@@ -297,6 +299,9 @@
     'introBack': _x('Back', 'A label on a button'),
     'introSkip': _x('Skip', 'A label on a button'),
     'introDone': _x('Done', 'A label on a button'),
+
+    'freeWelcomeEmailsHeading': __('Welcome Emails are now free for everyone'),
+    'freeWelcomeEmailsParagraph': __('Say “Hello!” automatically to all your new subscribers. They’ll appreciate the extra touch.'),
   }) %>
 <% endblock %>
 

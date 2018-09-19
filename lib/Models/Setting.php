@@ -53,7 +53,10 @@ class Setting extends Model {
       ),
       'analytics' => array(
         'enabled' => false,
-      )
+      ),
+      'in_app_announcements' => [
+        'displayed' => []
+      ],
     );
   }
 
