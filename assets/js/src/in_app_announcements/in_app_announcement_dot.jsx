@@ -14,21 +14,24 @@ const InAppAnnouncementDot = props => (
         width: props.width,
         height: props.height,
       });
+      if (props.onUserTrigger) props.onUserTrigger();
     }}
   />
 );
 
 InAppAnnouncementDot.propTypes = {
+  children: React.PropTypes.element.isRequired,
   width: React.PropTypes.string,
   height: React.PropTypes.string,
   className: React.PropTypes.string,
-  children: React.PropTypes.element.isRequired,
+  onUserTrigger: React.PropTypes.func,
 };
 
 InAppAnnouncementDot.defaultProps = {
   width: 'auto',
   height: 'auto',
   className: null,
+  onUserTrigger: null,
 };
 
 module.exports = InAppAnnouncementDot;
