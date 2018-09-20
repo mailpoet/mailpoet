@@ -20,7 +20,7 @@ class SubscriptionFormCest {
     $form = $form_factory->withName($form_name)->create();
     $I->wantTo('Subscribe using form widget');
 
-    $I->cli('widget add mailpoet_form sidebar-1 2 --form=2 --title="Subscribe to Our Newsletter" --allow-root');
+    $I->cli('widget add mailpoet_form sidebar-1 2 --form=' . $form->id . ' --title="Subscribe to Our Newsletter" --allow-root');
 
     $I->amOnPage('/');
     $I->fillField('[data-automation-id=\'form_email\']', $this->subscriber_email);
