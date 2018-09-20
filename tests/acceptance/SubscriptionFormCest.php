@@ -3,6 +3,9 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Form;
+
+require_once __DIR__ . '/../DataFactories/Form.php';
 
 class SubscriptionFormCest {
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;
@@ -12,9 +15,12 @@ class SubscriptionFormCest {
   }
 
   function subscriptionFormWidget(\AcceptanceTester $I) {
+    $form_name = 'Subscription Acceptance Test Form';
+    $form = new Form();
+    $form->withName($form_name)->create();
     $I->wantTo('Subscribe using form widget');
 
-    $I->cli('widget add mailpoet_form sidebar-1 2 --form=1 --title="Subscribe to Our Newsletter" --allow-root');
+    $I->cli('widget add mailpoet_form sidebar-1 2 --form=2 --title="Subscribe to Our Newsletter" --allow-root');
 
     $I->amOnPage('/');
     $I->fillField('[data-automation-id=\'form_email\']', $this->subscriber_email);
