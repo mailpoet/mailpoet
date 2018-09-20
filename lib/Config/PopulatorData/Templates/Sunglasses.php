@@ -82,42 +82,6 @@ class Sunglasses {
                                 ),
                               1 =>
                                 array (
-                                  'type' => 'header',
-                                  'text' => '<p><span style="color: #808080;">Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]" style="color: #808080;">Open this email in your web browser.</a></span></p>',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                        ),
-                                      'text' =>
-                                        array (
-                                          'fontColor' => '#222222',
-                                          'fontFamily' => 'Arial',
-                                          'fontSize' => '12px',
-                                          'textAlign' => 'center',
-                                        ),
-                                      'link' =>
-                                        array (
-                                          'fontColor' => '#6cb7d4',
-                                          'textDecoration' => 'underline',
-                                        ),
-                                    ),
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '30px',
-                                        ),
-                                    ),
-                                ),
-                              3 =>
-                                array (
                                   'type' => 'image',
                                   'link' => '',
                                   'src' => $this->template_image_url . '/Glasses-Logo.jpg',
@@ -133,7 +97,7 @@ class Sunglasses {
                                         ),
                                     ),
                                 ),
-                              4 =>
+                              2 =>
                                 array (
                                   'type' => 'divider',
                                   'styles' =>
@@ -148,7 +112,7 @@ class Sunglasses {
                                         ),
                                     ),
                                 ),
-                              5 =>
+                              3 =>
                                 array (
                                   'type' => 'spacer',
                                   'styles' =>
@@ -160,7 +124,7 @@ class Sunglasses {
                                         ),
                                     ),
                                 ),
-                              6 =>
+                              4 =>
                                 array (
                                   'type' => 'image',
                                   'link' => '',
@@ -177,7 +141,7 @@ class Sunglasses {
                                         ),
                                     ),
                                 ),
-                              7 =>
+                              5 =>
                                 array (
                                   'type' => 'spacer',
                                   'styles' =>
