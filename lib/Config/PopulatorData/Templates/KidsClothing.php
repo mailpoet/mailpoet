@@ -508,6 +508,15 @@ class KidsClothing {
                             ),
                           'blocks' =>
                             array (
+                              array(
+                                "type" => "spacer",
+                                "styles" => array(
+                                  "block" => array(
+                                    "backgroundColor" => "transparent",
+                                    "height" => "20px",
+                                  ),
+                                ),
+                              ),
                             ),
                         ),
                     ),
