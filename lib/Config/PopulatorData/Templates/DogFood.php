@@ -346,7 +346,7 @@ class DogFood {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Dog-Header.jpg',
+                                  'src' => $this->template_image_url . '/Dog-Header-1024x409.jpg',
                                   'alt' => 'Dog-Header',
                                   'fullWidth' => true,
                                   'width' => '1280px',
