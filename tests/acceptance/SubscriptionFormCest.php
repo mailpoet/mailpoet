@@ -16,8 +16,8 @@ class SubscriptionFormCest {
 
   function subscriptionFormWidget(\AcceptanceTester $I) {
     $form_name = 'Subscription Acceptance Test Form';
-    $form = new Form();
-    $form->withName($form_name)->create();
+    $form_factory = new Form();
+    $form = $form_factory->withName($form_name)->create();
     $I->wantTo('Subscribe using form widget');
 
     $I->cli('widget add mailpoet_form sidebar-1 2 --form=2 --title="Subscribe to Our Newsletter" --allow-root');
