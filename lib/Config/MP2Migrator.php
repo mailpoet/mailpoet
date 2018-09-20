@@ -10,6 +10,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Util\Notices\AfterMigrationNotice;
 use MailPoet\Util\ProgressBar;
 
 if(!defined('ABSPATH')) exit;
@@ -169,6 +170,8 @@ class MP2Migrator {
     if(!$this->importStopped()) {
       Setting::setValue('mailpoet_migration_complete', true);
       $this->log(mb_strtoupper(__('Import complete', 'mailpoet'), 'UTF-8'));
+      $after_migration_notice = new AfterMigrationNotice();
+      $after_migration_notice->enable();
     }
 
     $this->log(sprintf('=== ' . mb_strtoupper(__('End import', 'mailpoet'), 'UTF-8') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));

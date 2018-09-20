@@ -18,7 +18,7 @@ class ImportTest extends \MailPoetTest {
     $this->subscribers_custom_fields = array((string)$custom_field->id);
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
-    $this->data = array(
+    $this->test_data = array(
       'subscribers' => array(
         array(
           'Adam',
@@ -50,16 +50,16 @@ class ImportTest extends \MailPoetTest {
       'last_name',
       'email'
     );
-    $this->import = new Import($this->data);
+    $this->import = new Import($this->test_data);
     $this->subscribers_data = $this->import->transformSubscribersData(
-      $this->data['subscribers'],
-      $this->data['columns']
+      $this->test_data['subscribers'],
+      $this->test_data['columns']
     );
   }
 
   function testItConstructs() {
     expect(is_array($this->import->subscribers_data))->true();
-    expect($this->import->segments_ids)->equals($this->data['segments']);
+    expect($this->import->segments_ids)->equals($this->test_data['segments']);
     expect(is_array($this->import->subscribers_fields))->true();
     expect(is_array($this->import->subscribers_custom_fields))->true();
     expect($this->import->subscribers_count)->equals(2);
@@ -68,7 +68,7 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItChecksForRequiredDataFields() {
-    $data = $this->data;
+    $data = $this->test_data;
     // exception should be thrown when one or more fields do not exist
     unset($data['timestamp']);
     try {
@@ -78,11 +78,11 @@ class ImportTest extends \MailPoetTest {
       expect($e->getMessage())->equals('Missing or invalid import data.');
     }
     // exception should not be thrown when all fields exist
-    $this->import->validateImportData($this->data);
+    $this->import->validateImportData($this->test_data);
   }
 
   function testItValidatesColumnNames() {
-    $data = $this->data;
+    $data = $this->test_data;
     $data['columns']['test) values ((ExtractValue(1,CONCAT(0x5c, (SELECT version())))))%23'] = true;
     try {
       $this->import->validateImportData($data);
@@ -144,13 +144,13 @@ class ImportTest extends \MailPoetTest {
   function testItTransformsSubscribers() {
     $custom_field = $this->subscribers_custom_fields[0];
     expect($this->import->subscribers_data['first_name'][0])
-      ->equals($this->data['subscribers'][0][0]);
+      ->equals($this->test_data['subscribers'][0][0]);
     expect($this->import->subscribers_data['last_name'][0])
-      ->equals($this->data['subscribers'][0][1]);
+      ->equals($this->test_data['subscribers'][0][1]);
     expect($this->import->subscribers_data['email'][0])
-      ->equals($this->data['subscribers'][0][2]);
+      ->equals($this->test_data['subscribers'][0][2]);
     expect($this->import->subscribers_data[$custom_field][0])
-      ->equals($this->data['subscribers'][0][3]);
+      ->equals($this->test_data['subscribers'][0][3]);
   }
 
   function testItSplitsSubscribers() {
@@ -418,7 +418,7 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsPresent() {
-    $data = $this->data;
+    $data = $this->test_data;
     $data['columns']['status'] = array('index' => 4);
     $data['subscribers'][0][] = 'subscribed';
     $data['subscribers'][1][] = 'subscribed';
@@ -438,7 +438,7 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItImportsNewsSubscribersWithSubscribedStatus() {
-    $data = $this->data;
+    $data = $this->test_data;
     $data['columns']['status'] = array('index' => 4);
     $data['subscribers'][0][] = 'unsubscribed';
     $data['subscribers'][1][] = 'unsubscribed';
@@ -474,7 +474,7 @@ class ImportTest extends \MailPoetTest {
     // subscribers must be added to segments
     foreach($db_subscribers as $db_subscriber) {
       $subscriber_segment = SubscriberSegment::where('subscriber_id', $db_subscriber)
-        ->where('segment_id', $this->data['segments'][0])
+        ->where('segment_id', $this->test_data['segments'][0])
         ->findOne();
       expect($subscriber_segment)->notEmpty();
     }
