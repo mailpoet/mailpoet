@@ -456,55 +456,54 @@ const Listing = React.createClass({
     this.initWithParams(params);
   },
   getItems: function getItems() {
-    if (this.isComponentMounted) {
-      this.setState({ loading: true });
+    if (!this.isComponentMounted) return;
 
-      this.clearSelection();
+    this.setState({ loading: true });
+    this.clearSelection();
 
-      MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: this.props.endpoint,
-        action: 'listing',
-        data: {
-          params: this.getParams(),
-          offset: (this.state.page - 1) * this.state.limit,
-          limit: this.state.limit,
-          group: this.state.group,
-          filter: this.state.filter,
-          search: this.state.search,
-          sort_by: this.state.sort_by,
-          sort_order: this.state.sort_order,
-        },
-      }).always(() => {
-        this.setState({ loading: false });
-      }).done((response) => {
-        this.setState({
-          items: response.data || [],
-          filters: response.meta.filters || {},
-          groups: response.meta.groups || [],
-          count: response.meta.count || 0,
-          meta: _.omit(response.meta, ['filters', 'groups', 'count']),
-        }, () => {
-          // if viewing an empty trash
-          if (this.state.group === 'trash' && response.meta.count === 0) {
-            // redirect to default group
-            this.handleGroup('all');
-          }
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: this.props.endpoint,
+      action: 'listing',
+      data: {
+        params: this.getParams(),
+        offset: (this.state.page - 1) * this.state.limit,
+        limit: this.state.limit,
+        group: this.state.group,
+        filter: this.state.filter,
+        search: this.state.search,
+        sort_by: this.state.sort_by,
+        sort_order: this.state.sort_order,
+      },
+    }).always(() => {
+      this.setState({ loading: false });
+    }).done((response) => {
+      this.setState({
+        items: response.data || [],
+        filters: response.meta.filters || {},
+        groups: response.meta.groups || [],
+        count: response.meta.count || 0,
+        meta: _.omit(response.meta, ['filters', 'groups', 'count']),
+      }, () => {
+        // if viewing an empty trash
+        if (this.state.group === 'trash' && response.meta.count === 0) {
+          // redirect to default group
+          this.handleGroup('all');
+        }
 
-          // trigger afterGetItems callback if specified
-          if (this.props.afterGetItems !== undefined) {
-            this.props.afterGetItems(this.state);
-          }
-        });
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map(error => error.message),
-            { scroll: true }
-          );
+        // trigger afterGetItems callback if specified
+        if (this.props.afterGetItems !== undefined) {
+          this.props.afterGetItems(this.state);
         }
       });
-    }
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(error => error.message),
+          { scroll: true }
+        );
+      }
+    });
   },
   handleRestoreItem: function handleRestoreItem(id) {
     this.setState({
