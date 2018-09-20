@@ -30,7 +30,7 @@ class SubscriptionFormEditCest {
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('[data-automation-id="save_form"]');
     //Step three - assertions
-    $I->waitForText('Saved! The changes are now active in your widget.', 10);
+    $I->waitForText('Saved! Add this form to a widget.', 10);
     $I->amOnMailpoetPage('Forms');
     $I->waitForText($form_edited_name);
     }
