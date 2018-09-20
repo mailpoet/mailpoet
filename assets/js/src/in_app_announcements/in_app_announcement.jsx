@@ -30,7 +30,9 @@ class InAppAnnouncement extends React.Component {
       return null;
     }
 
-    if (this.props.validUntil < (new Date().getTime() / 1000)) {
+    if (this.props.validUntil !== null
+      && this.props.validUntil < new Date()
+    ) {
       return null;
     }
 
@@ -80,7 +82,7 @@ InAppAnnouncement.propTypes = {
   height: React.PropTypes.string,
   className: React.PropTypes.string,
   children: React.PropTypes.element.isRequired,
-  validUntil: React.PropTypes.number,
+  validUntil: React.PropTypes.instanceOf(Date),
   showToNewUser: (props, propName, componentName) => (
     validateBooleanWithWindowDependency(props, propName, componentName, 'mailpoet_is_new_user')
   ),

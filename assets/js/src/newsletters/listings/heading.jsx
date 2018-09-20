@@ -24,7 +24,7 @@ const ListingHeading = () => (
       showToPremiumUser={false}
       showOnlyOnceSlug="free_welcome_emails"
       height="650px"
-      validUntil={new Date('2018-10-31').getTime() / 1000}
+      validUntil={new Date('2018-10-31')}
     >
       <div className="mailpoet_in_app_announcement_free_welcome_emails">
         <h2>{MailPoet.I18n.t('freeWelcomeEmailsHeading')}</h2>
