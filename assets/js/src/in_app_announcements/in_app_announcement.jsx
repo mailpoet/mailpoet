@@ -20,15 +20,7 @@ class InAppAnnouncement extends React.Component {
       endpoint: 'settings',
       action: 'set',
       data: { in_app_announcements: settings },
-    }).then(() => (this.setState({ announcementsSettings: settings }))
-    ).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map(error => error.message),
-          { scroll: true }
-        );
-      }
-    });
+    }).always(() => (this.setState({ announcementsSettings: settings })));
   }
 
   render() {
