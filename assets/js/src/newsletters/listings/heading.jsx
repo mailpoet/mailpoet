@@ -20,8 +20,8 @@ const ListingHeading = () => (
     </Link>
     <InAppAnnoucement
       className="mailpoet_in_app_announcement_free_welcome_emails_dot"
-      newUser={false}
-      premiumUser={false}
+      showToNewUser={false}
+      showToPremiumUser={false}
       showOnlyOnceSlug="free_welcome_emails"
       height="650px"
       validUntil={new Date('2018-10-31').getTime() / 1000}

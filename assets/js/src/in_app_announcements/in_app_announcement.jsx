@@ -32,8 +32,8 @@ class InAppAnnouncement extends React.Component {
   }
 
   render() {
-    if (this.props.newUser !== null &&
-      window.mailpoet_is_new_user !== this.props.newUser
+    if (this.props.showToNewUser !== null &&
+      window.mailpoet_is_new_user !== this.props.showToNewUser
     ) {
       return null;
     }
@@ -42,8 +42,8 @@ class InAppAnnouncement extends React.Component {
       return null;
     }
 
-    if (this.props.premiumUser !== null &&
-      window.mailpoet_premium_active !== this.props.premiumUser
+    if (this.props.showToPremiumUser !== null &&
+      window.mailpoet_premium_active !== this.props.showToPremiumUser
     ) {
       return null;
     }
@@ -89,10 +89,10 @@ InAppAnnouncement.propTypes = {
   className: React.PropTypes.string,
   children: React.PropTypes.element.isRequired,
   validUntil: React.PropTypes.number,
-  newUser: (props, propName, componentName) => (
+  showToNewUser: (props, propName, componentName) => (
     validateBooleanWithWindowDependency(props, propName, componentName, 'mailpoet_is_new_user')
   ),
-  premiumUser: (props, propName, componentName) => (
+  showToPremiumUser: (props, propName, componentName) => (
     validateBooleanWithWindowDependency(props, propName, componentName, 'mailpoet_premium_active')
   ),
   showOnlyOnceSlug: (props, propName, componentName) => {
@@ -119,8 +119,8 @@ InAppAnnouncement.defaultProps = {
   height: '600px',
   className: null,
   validUntil: null,
-  newUser: null,
-  premiumUser: null,
+  showToNewUser: null,
+  showToPremiumUser: null,
   showOnlyOnceSlug: null,
 };
 
