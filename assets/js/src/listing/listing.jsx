@@ -476,8 +476,10 @@ const Listing = React.createClass({
         sort_order: this.state.sort_order,
       },
     }).always(() => {
+      if (!this.isComponentMounted) return;
       this.setState({ loading: false });
     }).done((response) => {
+      if (!this.isComponentMounted) return;
       this.setState({
         items: response.data || [],
         filters: response.meta.filters || {},
