@@ -637,7 +637,7 @@ class Menu {
     $data = array(
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => Setting::getAll(),
-      'current_wp_user' => Subscriber::getCurrentWPUser(),
+      'current_wp_user' => array_merge(Subscriber::getCurrentWPUser()->asArray(), wp_get_current_user()->to_array()),
       'sub_menu' => self::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled()
     );
