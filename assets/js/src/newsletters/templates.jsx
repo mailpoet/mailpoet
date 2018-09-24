@@ -25,6 +25,10 @@ const templatesCategories = [
     label: MailPoet.I18n.t('tabNotificationTitle'),
   },
   {
+    name: 'woocommerce',
+    label: MailPoet.I18n.t('tabWoocommerceTitle'),
+  },
+  {
     name: 'sample',
     label: MailPoet.I18n.t('sample'),
   },
@@ -70,7 +74,7 @@ class NewsletterTemplates extends React.Component {
           {
             name:
               MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
-            categories: '["welcome", "notification", "standard"]',
+            categories: '["welcome", "notification", "standard", "woocommerce"]',
             readonly: '1',
           },
         ];
