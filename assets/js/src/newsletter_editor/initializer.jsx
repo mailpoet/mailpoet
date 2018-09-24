@@ -1,10 +1,10 @@
 import Hooks from 'wp-js-hooks';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
-import InAppAnnouncement from 'in_app_announcements/in_app_announcement.jsx';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import moment from 'moment';
+import BackgroundImageAnnouncement from './background_image_announcement.jsx';
+import displayTutorial from './tutorial.jsx';
 
 const renderBreadcrumb = (newsletterType) => {
   const breadcrumbContainer = document.getElementById('mailpoet_editor_breadcrumb');
@@ -20,44 +20,8 @@ const renderBreadcrumb = (newsletterType) => {
 
 const renderAnnouncement = () => {
   const container = document.getElementById('mailpoet_editor_announcement');
-  const heading = MailPoet.I18n.t('announcementBackgroundImagesHeading')
-    .replace('%username%', window.config.currentUserFirstName || window.config.currentUserUsername);
-  ReactDOM.render(
-    <InAppAnnouncement
-      validUntil={new Date('2018-10-06')}
-      height="700px"
-      showOnlyOnceSlug="background_image"
-    >
-      <div className="mailpoet_in_app_announcement_background_videos">
-        <h2>{heading}</h2>
-        <p>{MailPoet.I18n.t('announcementBackgroundImagesMessage')}</p>
-        <video src={window.config.backgroundImageDemoUrl} controls autoPlay><track kind="captions" /></video>
-      </div>
-    </InAppAnnouncement>,
-    container);
+  ReactDOM.render(<BackgroundImageAnnouncement />, container);
 };
-
-function displayTutorial() {
-  const key = `user_seen_editor_tutorial${window.config.currentUserId}`;
-  if (window.config.dragDemoUrlSettings) {
-    return;
-  }
-  if (moment(window.config.installedAt).isBefore(moment().subtract(7, 'days'))) {
-    return;
-  }
-  MailPoet.Modal.popup({
-    title: MailPoet.I18n.t('tutorialVideoTitle'),
-    template: `<video style="height:640px;" src="${window.config.dragDemoUrl}" controls autoplay></video>`,
-    onCancel: () => {
-      MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'settings',
-        action: 'set',
-        data: { [key]: 1 },
-      });
-    },
-  });
-}
 
 const initializeEditor = (config) => {
   const editorContainer = document.getElementById('mailpoet_editor');
