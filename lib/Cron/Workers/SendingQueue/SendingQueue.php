@@ -5,6 +5,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
@@ -23,7 +24,11 @@ class SendingQueue {
   const BATCH_SIZE = 20;
   const TASK_BATCH_SIZE = 5;
 
-  function __construct($timer = false, $mailer_task = false, $newsletter_task = false) {
+  /** @var SendingErrorHandler */
+  private $error_handler;
+
+  function __construct(SendingErrorHandler $error_handler, $timer = false, $mailer_task = false, $newsletter_task = false) {
+    $this->error_handler = $error_handler;
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
     $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -124,12 +129,12 @@ class SendingQueue {
         'queue_id' => $queue->id
       );
       if($processing_method === 'individual') {
-        $queue = $this->sendNewsletters(
+        $queue = $this->sendNewsletter(
           $queue,
-          $prepared_subscribers_ids,
+          $prepared_subscribers_ids[0],
           $prepared_newsletters[0],
           $prepared_subscribers[0],
-          $statistics,
+          $statistics[0],
           array('unsubscribe_url' => $unsubscribe_urls[0])
         );
         $prepared_newsletters = array();
@@ -152,29 +157,64 @@ class SendingQueue {
     return $queue;
   }
 
-  function sendNewsletters(
-    $queue, $prepared_subscribers_ids, $prepared_newsletters,
-    $prepared_subscribers, $statistics, $extra_params = array()
+  function sendNewsletter(
+    SendingTask $sending_task, $prepared_subscriber_id, $prepared_newsletter,
+    $prepared_subscriber, $statistics, $extra_params = array()
   ) {
     // send newsletter
     $send_result = $this->mailer_task->send(
+      $prepared_newsletter,
+      $prepared_subscriber,
+      $extra_params
+    );
+    return $this->processSendResult(
+      $sending_task,
+      $send_result,
+      [$prepared_subscriber],
+      [$prepared_subscriber_id],
+      [$statistics]
+    );
+  }
+
+  function sendNewsletters(
+    SendingTask $sending_task, $prepared_subscribers_ids, $prepared_newsletters,
+    $prepared_subscribers, $statistics, $extra_params = array()
+  ) {
+    // send newsletters
+    $send_result = $this->mailer_task->sendBulk(
       $prepared_newsletters,
       $prepared_subscribers,
       $extra_params
     );
+    return $this->processSendResult(
+      $sending_task,
+      $send_result,
+      $prepared_subscribers,
+      $prepared_subscribers_ids,
+      $statistics
+    );
+  }
+
+  private function processSendResult(
+    SendingTask $sending_task,
+    $send_result,
+    array $prepared_subscribers,
+    array $prepared_subscribers_ids,
+    array $statistics
+  ) {
     // log error message and schedule retry/pause sending
     if($send_result['response'] === false) {
-      if(isset($send_result['retry_interval'])) {
-        MailerLog::processNonBlockingError($send_result['operation'], $send_result['error_message'], $send_result['retry_interval']);
-      } else {
-        MailerLog::processError($send_result['operation'], $send_result['error_message']);
-      }
+      $error = $send_result['error'];
+      assert($error instanceof MailerError);
+      // Always switch error level to hard until we implement UI for individual subscriber errors
+      $error->switchLevelToHard();
+      $this->error_handler->processError($error, $sending_task, $prepared_subscribers_ids, $prepared_subscribers);
     }
     // update processed/to process list
-    if(!$queue->updateProcessedSubscribers($prepared_subscribers_ids)) {
+    if(!$sending_task->updateProcessedSubscribers($prepared_subscribers_ids)) {
       MailerLog::processError(
         'processed_list_update',
-        sprintf('QUEUE-%d-PROCESSED-LIST-UPDATE', $queue->id),
+        sprintf('QUEUE-%d-PROCESSED-LIST-UPDATE', $sending_task->id),
         null,
         true
       );
@@ -184,10 +224,10 @@ class SendingQueue {
     // update the sent count
     $this->mailer_task->updateSentCount();
     // enforce execution limits if queue is still being processed
-    if($queue->status !== ScheduledTaskModel::STATUS_COMPLETED) {
+    if($sending_task->status !== ScheduledTaskModel::STATUS_COMPLETED) {
       $this->enforceSendingAndExecutionLimits();
     }
-    return $queue;
+    return $sending_task;
   }
 
   function enforceSendingAndExecutionLimits() {

@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 
 if(!defined('ABSPATH')) exit;
 
@@ -14,13 +15,17 @@ class PHPMail {
   public $return_path;
   public $mailer;
 
-  function __construct($sender, $reply_to, $return_path) {
+  /** @var PHPMailMapper  */
+  private $error_mapper;
+
+  function __construct($sender, $reply_to, $return_path, PHPMailMapper $error_mapper) {
     $this->sender = $sender;
     $this->reply_to = $reply_to;
     $this->return_path = ($return_path) ?
       $return_path :
       $this->sender['from_email'];
     $this->mailer = $this->buildMailer();
+    $this->error_mapper = $error_mapper;
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
@@ -28,16 +33,13 @@ class PHPMail {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extra_params);
       $result = $mailer->send();
     } catch(\Exception $e) {
-      return Mailer::formatMailerSendErrorResult($e->getMessage());
+      return Mailer::formatMailerErrorResult($this->error_mapper->getErrorFromException($e, $subscriber));
     }
     if($result === true) {
       return Mailer::formatMailerSendSuccessResult();
     } else {
-      $result = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_PHPMAIL);
-      if(empty($extra_params['test_email'])) {
-        $result .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
-      }
-      return Mailer::formatMailerSendErrorResult($result);
+      $error = $this->error_mapper->getErrorForSubscriber($subscriber);
+      return Mailer::formatMailerErrorResult($error);
     }
   }
 

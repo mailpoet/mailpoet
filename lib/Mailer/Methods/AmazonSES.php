@@ -2,6 +2,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
@@ -28,7 +29,18 @@ class AmazonSES {
     'EU (Ireland)' => 'eu-west-1'
   );
 
-  function __construct($region, $access_key, $secret_key, $sender, $reply_to, $return_path) {
+  /** @var AmazonSESMapper */
+  private $error_mapper;
+
+  function __construct(
+    $region,
+    $access_key,
+    $secret_key,
+    $sender,
+    $reply_to,
+    $return_path,
+    AmazonSESMapper $error_mapper
+  ) {
     $this->aws_access_key = $access_key;
     $this->aws_secret_key = $secret_key;
     $this->aws_region = (in_array($region, $this->available_regions)) ? $region : false;
@@ -48,6 +60,7 @@ class AmazonSES {
       $this->sender['from_email'];
     $this->date = gmdate('Ymd\THis\Z');
     $this->date_without_time = gmdate('Ymd');
+    $this->error_mapper = $error_mapper;
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
@@ -57,20 +70,17 @@ class AmazonSES {
         $this->request($newsletter, $subscriber, $extra_params)
       );
     } catch(\Exception $e) {
-      return Mailer::formatMailerSendErrorResult($e->getMessage());
+      $error = $this->error_mapper->getErrorFromException($e, $subscriber);
+      return Mailer::formatMailerErrorResult($error);
     }
     if(is_wp_error($result)) {
-      return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
+      $error = $this->error_mapper->getConnectionError($result->get_error_message());
+      return Mailer::formatMailerErrorResult($error);
     }
     if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = simplexml_load_string(WPFunctions::wpRemoteRetrieveBody($result));
-      $response = ($response) ?
-        $response->Error->Message->__toString() :
-        sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
-      if(empty($extra_params['test_email'])) {
-        $response .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
-      }
-      return Mailer::formatMailerSendErrorResult($response);
+      $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
+      return Mailer::formatMailerErrorResult($error);
     }
     return Mailer::formatMailerSendSuccessResult();
   }

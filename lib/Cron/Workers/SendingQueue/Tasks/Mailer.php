@@ -54,10 +54,24 @@ class Mailer {
     return $this->mailer->formatSubscriberNameAndEmailAddress($subscriber);
   }
 
-  function send($prepared_newsletters, $prepared_subscribers, $extra_params = array()) {
+  function sendBulk($prepared_newsletters, $prepared_subscribers, $extra_params = array()) {
+    if($this->getProcessingMethod() === 'individual') {
+      throw new \LogicException('Trying to send a batch with individual processing method');
+    }
     return $this->mailer->mailer_instance->send(
       $prepared_newsletters,
       $prepared_subscribers,
+      $extra_params
+    );
+  }
+
+  function send($prepared_newsletter, $prepared_subscriber, $extra_params = array()) {
+    if($this->getProcessingMethod() === 'bulk') {
+      throw new \LogicException('Trying to send an individual email with a bulk processing method');
+    }
+    return $this->mailer->mailer_instance->send(
+      $prepared_newsletter,
+      $prepared_subscriber,
       $extra_params
     );
   }

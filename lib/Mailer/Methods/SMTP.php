@@ -2,6 +2,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
@@ -19,9 +20,12 @@ class SMTP {
   public $mailer;
   const SMTP_CONNECTION_TIMEOUT = 15; // seconds
 
+  /** @var SMTPMapper */
+  private $error_mapper;
+
   function __construct(
     $host, $port, $authentication, $login = null, $password = null, $encryption,
-    $sender, $reply_to, $return_path) {
+    $sender, $reply_to, $return_path, SMTPMapper $error_mapper) {
     $this->host = $host;
     $this->port = $port;
     $this->authentication = $authentication;
@@ -36,6 +40,7 @@ class SMTP {
     $this->mailer = $this->buildMailer();
     $this->mailer_logger = new \Swift_Plugins_Loggers_ArrayLogger();
     $this->mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($this->mailer_logger));
+    $this->error_mapper = $error_mapper;
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
@@ -43,13 +48,16 @@ class SMTP {
       $message = $this->createMessage($newsletter, $subscriber, $extra_params);
       $result = $this->mailer->send($message);
     } catch(\Exception $e) {
-      return Mailer::formatMailerSendErrorResult(
-        $this->processExceptionMessage($e->getMessage())
+      return Mailer::formatMailerErrorResult(
+        $this->error_mapper->getErrorFromException($e, $subscriber)
       );
     }
-    return ($result === 1) ?
-      Mailer::formatMailerSendSuccessResult() :
-      Mailer::formatMailerSendErrorResult($this->processLogMessage($subscriber, $extra_params));
+    if($result === 1) {
+      return Mailer::formatMailerSendSuccessResult();
+    } else {
+      $error = $this->error_mapper->getErrorFromLog($this->mailer_logger->dump(), $subscriber);
+      return Mailer::formatMailerErrorResult($error);
+    }
   }
 
   function buildMailer() {
@@ -106,28 +114,5 @@ class SMTP {
       $subscriber_data['email'] =>
         (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
     );
-  }
-
-  function processLogMessage($subscriber, $extra_params = array(), $log = false) {
-    $log = ($log) ? $log : $this->mailer_logger->dump();
-    // extract error message from log
-    preg_match('/!! (.*?)>>/ism', $log, $message);
-    if(!empty($message[1])) {
-      $message = $message[1];
-      // remove line breaks from the message due to how logger's dump() method works
-      $message = preg_replace('/\r|\n/', '', $message);
-    } else {
-      $message = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SMTP);
-    }
-    if(empty($extra_params['test_email'])) {
-      $message .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
-    }
-    return $message;
-  }
-
-  function processExceptionMessage($message) {
-    // remove redundant information appended by Swift logger to exception messages
-    $message = explode(PHP_EOL, $message);
-    return $message[0];
   }
 }

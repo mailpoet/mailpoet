@@ -131,6 +131,8 @@ class Migrator {
       'task_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'processed int(1) NOT NULL,',
+      'failed int(1) NOT NULL,',
+      'error text NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (task_id, subscriber_id),',
       'KEY subscriber_id (subscriber_id)'

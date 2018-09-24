@@ -1,6 +1,11 @@
 <?php
 namespace MailPoet\Mailer;
 
+use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
+use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
+use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
+use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
+use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
@@ -42,28 +47,32 @@ class Mailer {
           $this->mailer_config['secret_key'],
           $this->sender,
           $this->reply_to,
-          $this->return_path
+          $this->return_path,
+          new AmazonSESMapper()
         );
         break;
       case self::METHOD_MAILPOET:
         $mailer_instance = new $this->mailer_config['class'](
           $this->mailer_config['mailpoet_api_key'],
           $this->sender,
-          $this->reply_to
+          $this->reply_to,
+          new MailPoetMapper()
         );
         break;
       case self::METHOD_SENDGRID:
         $mailer_instance = new $this->mailer_config['class'](
           $this->mailer_config['api_key'],
           $this->sender,
-          $this->reply_to
+          $this->reply_to,
+          new SendGridMapper()
         );
         break;
       case self::METHOD_PHPMAIL:
         $mailer_instance = new $this->mailer_config['class'](
           $this->sender,
           $this->reply_to,
-          $this->return_path
+          $this->return_path,
+          new PHPMailMapper()
         );
         break;
       case self::METHOD_SMTP:
@@ -76,7 +85,8 @@ class Mailer {
           $this->mailer_config['encryption'],
           $this->sender,
           $this->reply_to,
-          $this->return_path
+          $this->return_path,
+          new SMTPMapper()
         );
         break;
       default:
@@ -166,25 +176,16 @@ class Mailer {
     return sprintf('=?utf-8?B?%s?=', base64_encode($name));
   }
 
-  static function formatMailerConnectionErrorResult($error_message) {
-    return array(
+  static function formatMailerErrorResult(MailerError $error) {
+    return [
       'response' => false,
-      'operation' => 'connect',
-      'error_message' => $error_message
-    );
-  }
-
-  static function formatMailerSendErrorResult($error_message) {
-    return array(
-      'response' => false,
-      'operation' => 'send',
-      'error_message' => $error_message
-    );
+      'error' => $error,
+    ];
   }
 
   static function formatMailerSendSuccessResult() {
-    return array(
+    return [
       'response' => true
-    );
+    ];
   }
 }

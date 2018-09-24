@@ -166,6 +166,11 @@ class Sending {
     return $this->updateCount()->getErrors() === false;
   }
 
+  public function saveSubscriberError($subcriber_id, $error_message) {
+    $this->task_subscribers->saveSubscriberError($subcriber_id, $error_message);
+    return $this->updateCount()->getErrors() === false;
+  }
+
   function updateCount() {
     $this->queue->count_processed = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
     $this->queue->count_to_process = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);

@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
@@ -13,10 +14,14 @@ class SendGrid {
   public $sender;
   public $reply_to;
 
-  function __construct($api_key, $sender, $reply_to) {
+  /** @var SendGridMapper */
+  private $error_mapper;
+
+  function __construct($api_key, $sender, $reply_to, SendGridMapper $error_mapper) {
     $this->api_key = $api_key;
     $this->sender = $sender;
     $this->reply_to = $reply_to;
+    $this->error_mapper = $error_mapper;
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
@@ -25,17 +30,13 @@ class SendGrid {
       $this->request($newsletter, $subscriber, $extra_params)
     );
     if(is_wp_error($result)) {
-      return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
+      $error = $this->error_mapper->getConnectionError($result->get_error_message());
+      return Mailer::formatMailerErrorResult($error);
     }
     if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = json_decode($result['body'], true);
-      $response = (!empty($response['errors'][0])) ?
-        $response['errors'][0] :
-        sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SENDGRID);
-      if(empty($extra_params['test_email'])) {
-        $response .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
-      }
-      return Mailer::formatMailerSendErrorResult($response);
+      $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
+      return Mailer::formatMailerErrorResult($error);
     }
     return Mailer::formatMailerSendSuccessResult();
   }

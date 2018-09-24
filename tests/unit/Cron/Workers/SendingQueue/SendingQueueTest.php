@@ -8,6 +8,7 @@ use Codeception\Util\Fixtures;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Populator;
+use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
@@ -32,6 +33,9 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Hooks;
 
 class SendingQueueTest extends \MailPoetTest {
+  /** @var SendingErrorHandler */
+  private $sending_error_handler;
+
   function _before() {
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
@@ -71,7 +75,8 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter_link->url = '[link:subscription_unsubscribe_url]';
     $this->newsletter_link->hash = 'abcde';
     $this->newsletter_link->save();
-    $this->sending_queue_worker = new SendingQueueWorker();
+    $this->sending_error_handler = new SendingErrorHandler();
+    $this->sending_queue_worker = new SendingQueueWorker($this->sending_error_handler);
   }
 
   private function getDirectUnsubscribeURL() {
@@ -101,20 +106,20 @@ class SendingQueueTest extends \MailPoetTest {
 
     // constructor accepts timer argument
     $timer = microtime(true) - 5;
-    $sending_queue_worker = new SendingQueueWorker($timer);
+    $sending_queue_worker = new SendingQueueWorker($this->sending_error_handler, $timer);
     expect($sending_queue_worker->timer)->equals($timer);
   }
 
   function testItEnforcesExecutionLimitsBeforeQueueProcessing() {
     $sending_queue_worker = Stub::make(
-      new SendingQueueWorker(),
+      new SendingQueueWorker($this->sending_error_handler),
       array(
         'processQueue' => Expected::never(),
         'enforceSendingAndExecutionLimits' => Expected::exactly(1, function() {
           throw new \Exception();
         })
       ), $this);
-    $sending_queue_worker->__construct();
+    $sending_queue_worker->__construct($this->sending_error_handler);
     try {
       $sending_queue_worker->process();
       self::fail('Execution limits function was not called.');
@@ -125,24 +130,25 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItEnforcesExecutionLimitsAfterSendingWhenQueueStatusIsNotSetToComplete() {
     $sending_queue_worker = Stub::make(
-      new SendingQueueWorker(),
+      new SendingQueueWorker($this->sending_error_handler),
       array(
         'enforceSendingAndExecutionLimits' => Expected::exactly(1)
       ), $this);
     $sending_queue_worker->__construct(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
         array(
-          'send' => null
+          'sendBulk' => null
         )
       )
     );
     $sending_queue_worker->sendNewsletters(
       $this->queue,
       $prepared_subscribers = array(),
-      $prepared_newsletters = false,
-      $prepared_subscribers = false,
+      $prepared_newsletters = [],
+      $prepared_subscribers = [],
       $statistics[] = array(
         'newsletter_id' => 1,
         'subscriber_id' => 1,
@@ -158,16 +164,17 @@ class SendingQueueTest extends \MailPoetTest {
     $queue = $this->queue;
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $sending_queue_worker = Stub::make(
-      new SendingQueueWorker(),
+      new SendingQueueWorker($this->sending_error_handler),
       array(
         'enforceSendingAndExecutionLimits' => Expected::never()
       ), $this);
     $sending_queue_worker->__construct(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
         array(
-          'send' => null
+          'sendBulk' => null
         )
       )
     );
@@ -186,7 +193,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItEnforcesExecutionLimitsAfterQueueProcessing() {
     $sending_queue_worker = Stub::make(
-      new SendingQueueWorker(),
+      new SendingQueueWorker($this->sending_error_handler),
       array(
         'processQueue' => function() {
           // this function returns a queue object
@@ -194,7 +201,7 @@ class SendingQueueTest extends \MailPoetTest {
         },
         'enforceSendingAndExecutionLimits' => Expected::exactly(2)
       ), $this);
-    $sending_queue_worker->__construct();
+    $sending_queue_worker->__construct($this->sending_error_handler);
     $sending_queue_worker->process();
   }
 
@@ -217,6 +224,7 @@ class SendingQueueTest extends \MailPoetTest {
     Setting::setValue('tracking.enabled', false);
     $directUnsubscribeURL = $this->getDirectUnsubscribeURL();
     $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
@@ -237,6 +245,7 @@ class SendingQueueTest extends \MailPoetTest {
     Setting::setValue('tracking.enabled', true);
     $trackedUnsubscribeURL = $this->getTrackedUnsubscribeURL();
     $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
@@ -255,6 +264,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItCanProcessSubscribersOneByOne() {
     $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
@@ -298,11 +308,12 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItCanProcessSubscribersInBulk() {
     $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Expected::exactly(1, function($newsletter, $subscriber) {
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
             expect(!empty($newsletter[0]['body']['html']))->true();
             expect(!empty($newsletter[0]['body']['text']))->true();
@@ -344,6 +355,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItProcessesStandardNewsletters() {
     $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
@@ -397,6 +409,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter_segment->delete();
 
     $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
       $timer = false,
       Stub::makeEmpty(new MailerTask(), array(), $this)
     );
@@ -411,6 +424,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter_segment->delete();
 
     $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
@@ -573,27 +587,28 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
-    $queue = Mock::double(new \stdClass(), array(
+    $sending_task = Mock::double(SendingTask::create(), array(
       'updateProcessedSubscribers' => false
     ));
-    $queue->id = 100;
-    $sending_queue_worker = Stub::make(new SendingQueueWorker());
+    $sending_task->id = 100;
+    $sending_queue_worker = Stub::make(new SendingQueueWorker($this->sending_error_handler));
     $sending_queue_worker->__construct(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
         array(
-          'send' => true
+          'sendBulk' => true
         )
       )
     );
     try {
       $sending_queue_worker->sendNewsletters(
-        $queue,
-        $prepared_subscribers = array(),
-        $prepared_newsletters = false,
-        $prepared_subscribers = false,
-        $statistics = false
+        $sending_task->getObject(),
+        $prepared_subscribers = [],
+        $prepared_newsletters = [],
+        $prepared_subscribers = [],
+        $statistics = []
       );
       $this->fail('Paused sending exception was not thrown.');
     } catch(\Exception $e) {
@@ -611,6 +626,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItDoesNotUpdateNewsletterHashDuringSending() {
     $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
       $timer = false,
       Stub::make(
         new MailerTask(),
@@ -634,7 +650,7 @@ class SendingQueueTest extends \MailPoetTest {
       return $custom_batch_size_value;
     };
     Hooks::addFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
-    $sending_queue_worker = new SendingQueueWorker();
+    $sending_queue_worker = new SendingQueueWorker($this->sending_error_handler);
     expect($sending_queue_worker->batch_size)->equals($custom_batch_size_value);
     Hooks::removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
   }

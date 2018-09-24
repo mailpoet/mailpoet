@@ -7,6 +7,9 @@ class ScheduledTaskSubscriber extends Model {
   const STATUS_UNPROCESSED = 0;
   const STATUS_PROCESSED = 1;
 
+  const FAIL_STATUS_OK = 0;
+  const FAIL_STATUS_FAILED = 1;
+
   public static $_table = MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE;
   public static $_id_column = array('task_id', 'subscriber_id');
 
@@ -19,6 +22,7 @@ class ScheduledTaskSubscriber extends Model {
       return;
     }
     $data['processed'] = !empty($data['processed']) ? self::STATUS_PROCESSED : self::STATUS_UNPROCESSED;
+    $data['failed'] = !empty($data['failed']) ? self::FAIL_STATUS_FAILED : self::FAIL_STATUS_OK;
     return parent::_createOrUpdate($data, array(
       'subscriber_id' => $data['subscriber_id'],
       'task_id' => $data['task_id']
