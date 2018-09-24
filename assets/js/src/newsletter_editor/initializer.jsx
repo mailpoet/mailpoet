@@ -20,7 +20,12 @@ const renderBreadcrumb = (newsletterType) => {
 
 const renderAnnouncement = () => {
   const container = document.getElementById('mailpoet_editor_announcement');
-  ReactDOM.render(<BackgroundImageAnnouncement />, container);
+  ReactDOM.render(
+    <BackgroundImageAnnouncement
+      username={window.config.currentUserFirstName || window.config.currentUserUsername}
+      videoUrl={window.config.backgroundImageDemoUrl}
+    />, container
+  );
 };
 
 const initializeEditor = (config) => {
