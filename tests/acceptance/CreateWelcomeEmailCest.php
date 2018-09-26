@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class CreateWelcomeEmailCest {
-  function createwelcomeNewsletter(\AcceptanceTester $I) {
+  function createWelcomeNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Create and configure welcome newsletter');
     $newsletter_title = 'Create Welcome Email';
     $I->login();
@@ -25,7 +25,6 @@ class CreateWelcomeEmailCest {
     $I->fillField($title_element, $newsletter_title);
     $I->click('Next');
     $I->waitForText('Send this Welcome Email when', 30);
-    ///$I->waitForElement('[data-automation-id="newsletter_send_form"]', 20);
     $I->click('Activate');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]', 20);
     $I->seeInCurrentUrl('mailpoet-newsletters');
