@@ -37,7 +37,7 @@ class ReceiveStandardEmailCest {
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('Send');
-    $I->waitForElement('.mailpoet_progress_label', 120);
+    $I->waitForElement('.mailpoet_progress_label', 180);
     //confirm newsletter is received
     $I->amOnUrl('http://mailhog:8025');
     $I->click(Locator::contains('span.subject', $newsletter_title));
