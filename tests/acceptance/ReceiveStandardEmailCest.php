@@ -14,8 +14,7 @@ class ReceiveStandardEmailCest {
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
     $I->wantTo('Receive a standard newsletter as a subscriber');
 
-    //create a wp user with wp role subscriber
-    $I->cli('wp user create standard-recipient test-standard@example.com --role=subscriber --allow-root');
+
     //Create a newsletter with template
     $I->login();
     $I->amOnMailpoetPage('Emails');
@@ -37,7 +36,7 @@ class ReceiveStandardEmailCest {
     $I->fillField($search_field_element, 'WordPress Users');
     $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
     $I->click('Send');
-    $I->waitForElement('.mailpoet_progress_label', 180);
+    $I->waitForElement('.mailpoet_progress_label', 240);
     //confirm newsletter is received
     $I->amOnUrl('http://mailhog:8025');
     $I->click(Locator::contains('span.subject', $newsletter_title));
