@@ -559,6 +559,7 @@ class Menu {
     $data['segments'] = $segments;
     $data['settings'] = Setting::getAll();
     $data['current_wp_user'] = wp_get_current_user()->to_array();
+    $data['site_url'] = site_url();
     $data['roles'] = $wp_roles->get_names();
     $data['roles']['mailpoet_all'] = __('In any WordPress role', 'mailpoet');
 

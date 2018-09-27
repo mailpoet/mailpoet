@@ -272,7 +272,8 @@ var adminConfig = {
       'settings/reinstall_from_scratch.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
-      'welcome_wizard/wizard.jsx'
+      'welcome_wizard/wizard.jsx',
+      'nps_poll.jsx'
     ],
     form_editor: [
       'form_editor/form_editor.js',
