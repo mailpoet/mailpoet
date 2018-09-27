@@ -166,6 +166,16 @@
         toggleReCaptchaSettings();
         $('#settings_re_captcha_tokens_error').hide();
 
+        function toggleLinuxCronSettings() {
+          if ($('input[name="cron_trigger[method]"]:checked').val() === '<%= cron_trigger.linux_cron %>') {
+            $('#settings_linux_cron').show();
+          } else {
+            $('#settings_linux_cron').hide();
+          }
+        }
+        $('input[name="cron_trigger[method]"]').on('click', toggleLinuxCronSettings);
+        toggleLinuxCronSettings();
+
         // page preview
         $('.mailpoet_page_preview').on('click', function() {
           var selection = $(this).siblings('.mailpoet_page_selection');
