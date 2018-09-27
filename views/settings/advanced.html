@@ -82,7 +82,7 @@
           <p>
             <%= __("To use this option please add this command to your crontab:") %><br>
             <input
-               value="php <%= linux_cron_path %>/mailpoet-cron.php"
+               value="php <%= linux_cron_path %>/mailpoet-cron.php <%= ABSPATH %>"
                class="large-text"
                readonly
             />

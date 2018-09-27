@@ -19,6 +19,7 @@ class CronTriggerTest extends \MailPoetTest {
       array(
         'mailpoet' => 'MailPoet',
         'wordpress' => 'WordPress',
+        'linux_cron' => 'Linux Cron',
         'none' => 'Disabled'
       )
     );
