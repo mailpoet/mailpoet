@@ -5,7 +5,7 @@
 
   <script type="text/javascript">
     var mailpoet_listing_per_page = <%= items_per_page %>;
-    var display_nps_poll = true;
+    var display_nps_poll = location.hash === '#/standard';
     var mailpoet_listing_per_page = <%= items_per_page %>;
     var mailpoet_segments = <%= json_encode(segments) %>;
     var mailpoet_settings = <%= json_encode(settings) %>;
