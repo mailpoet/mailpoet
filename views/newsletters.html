@@ -318,4 +318,15 @@
   });
 </script>
 <% endif %>
+<script>
+  satismeter({
+    writeKey: '6L479eVPXk7pBn6S',
+    userId: '<%= current_wp_user.ID %>',
+    traits: {
+      name: '<%= current_wp_user.user_nicename %>',
+      email: '<%= current_wp_user.user_email %>',
+      createdAt: '<%= settings["installed_at"] %>'
+    }
+  });
+</script>
 <% endblock %>
