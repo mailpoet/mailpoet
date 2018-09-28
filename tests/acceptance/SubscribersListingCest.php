@@ -8,8 +8,8 @@ class SubscribersListingCest {
 
     $I->login();
     $I->amOnMailpoetPage('Subscribers');
-
-    $I->waitForText('wp@example.com', 5, '[data-automation-id="listing_item_1"]');
-    $I->see('subscriber@example.com', '[data-automation-id="listing_item_2"]');
+    $I->fillField('#search_input', 'wp@example.com');
+    $I->click('Search');
+    $I->waitForText('wp@example.com', 10);
   }
 }
