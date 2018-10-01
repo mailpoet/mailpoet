@@ -480,6 +480,7 @@ module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], 
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
+      new webpack.NamedModulesPlugin(),
       new webpackMD5HashPlugin(),
       new webpackManifestPlugin({
         cache: manifestCache
