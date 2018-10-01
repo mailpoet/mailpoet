@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee3adaf81b26c53100664c4a94d13e9f",
+    "content-hash": "f89bc8ca9d3968210bb9597b7eabb22b",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -1653,16 +1653,16 @@
         },
         {
             "name": "coenjacobs/mozart",
-            "version": "0.2.2",
+            "version": "dev-dependency-tree",
             "source": {
                 "type": "git",
-                "url": "https://github.com/coenjacobs/mozart.git",
-                "reference": "f9218cc4643ba15d775bb8018a2c1b716a2951a6"
+                "url": "https://github.com/costasovo/mozart.git",
+                "reference": "35a82a50fee53d5270b2544c18d1ff7467e0407a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coenjacobs/mozart/zipball/f9218cc4643ba15d775bb8018a2c1b716a2951a6",
-                "reference": "f9218cc4643ba15d775bb8018a2c1b716a2951a6",
+                "url": "https://api.github.com/repos/costasovo/mozart/zipball/35a82a50fee53d5270b2544c18d1ff7467e0407a",
+                "reference": "35a82a50fee53d5270b2544c18d1ff7467e0407a",
                 "shasum": ""
             },
             "require": {
@@ -1684,7 +1684,6 @@
                     "CoenJacobs\\Mozart\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1694,7 +1693,10 @@
                     "email": "coenjacobs@gmail.com"
                 }
             ],
-            "time": "2018-06-25T14:11:53+00:00"
+            "support": {
+                "source": "https://github.com/costasovo/mozart/tree/dependency-tree"
+            },
+            "time": "2018-09-28T12:41:41+00:00"
         },
         {
             "name": "composer/composer",
@@ -8573,7 +8575,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "swiftmailer/swiftmailer": 20,
-        "soundasleep/html2text": 20
+        "soundasleep/html2text": 20,
+        "coenjacobs/mozart": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
