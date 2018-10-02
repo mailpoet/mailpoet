@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class NewslettersListingCest {
+
   function newslettersListing(\AcceptanceTester $I) {
     $I->wantTo('Open newsletters listings page');
 
@@ -44,4 +45,5 @@ class NewslettersListingCest {
     $I->waitForText('Subject', 5);
     $I->see('Opened, Clicked');
   }
+
 }

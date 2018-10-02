@@ -299,7 +299,7 @@ class RoboFile extends \Robo\Tasks {
         '--standard=./tasks/code_sniffer/MailPoet '.
         '--runtime-set testVersion 5.5-7.2 '.
         '--ignore=./tests/unit/_bootstrap.php '.
-        'tests/unit/ '.
+        'tests/unit/ tests/acceptance tests/DataFactories '.
         $severityFlag
       )
       ->run();

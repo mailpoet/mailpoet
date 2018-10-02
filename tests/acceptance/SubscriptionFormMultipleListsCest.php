@@ -53,4 +53,5 @@ class SubscriptionFormMultipleListsCest {
     $I->waitForText($subscriber_email);
     $I->see('Subscribed', Locator::contains('tr', $subscriber_email));
   }
+
 }

@@ -55,9 +55,11 @@ class Newsletter {
   }
 
   /**
+   * @param array $options
+   *
    * @return Newsletter
    */
-  public function withPostNoticationOptions(array $options = [
+  public function withPostNotificationOptions(array $options = [
     8 => 'daily', # intervalType
     9 => '0', # timeOfDay
     10 => '1', # intervalType
@@ -69,10 +71,11 @@ class Newsletter {
   }
 
   /**
+   * @param array $options
+   *
    * @return Newsletter
    */
-  public function withOptions(array $options)
-  {
+  public function withOptions(array $options) {
     $this->options = array_merge($this->options, $options);
     return $this;
   }
@@ -90,7 +93,7 @@ class Newsletter {
    */
   public function create() {
     $newsletter = \MailPoet\Models\Newsletter::createOrUpdate($this->data);
-    foreach ($this->options as $option_id => $option_value) {
+    foreach($this->options as $option_id => $option_value) {
       \MailPoet\Models\NewsletterOption::createOrUpdate(
         [
           'newsletter_id' => $newsletter->id,

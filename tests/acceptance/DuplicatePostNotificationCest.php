@@ -7,6 +7,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 
 class DuplicatePostNotificationCest {
+
   function duplicatePostNotification(\AcceptanceTester $I) {
     $I->wantTo('Duplicate post notification email');
 
@@ -14,9 +15,9 @@ class DuplicatePostNotificationCest {
     $newsletter_title = 'Post Notification Duplicate Test';
     $newsletter_factory = new Newsletter();
     $newsletter_factory->withSubject($newsletter_title)
-      ->withType('notification')
-      ->withPostNoticationOptions()
-      ->create();
+        ->withType('notification')
+        ->withPostNotificationOptions()
+        ->create();
 
     // step 2 - Open list of post notifications
     $I->login();
@@ -32,4 +33,5 @@ class DuplicatePostNotificationCest {
     $I->clickItemRowActionByItemName('Copy of ' . $newsletter_title, 'Edit');
     $I->waitForElement('[data-automation-id="newsletter_title"]');
   }
+
 }

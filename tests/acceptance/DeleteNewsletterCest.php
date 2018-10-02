@@ -7,6 +7,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 
 class DeleteNewsletterCest {
+
   function moveNewsletterToTrash(\AcceptanceTester $I) {
     $newsletter_name = 'Trash Newsletter';
     $newsletter = new Newsletter();
@@ -20,6 +21,7 @@ class DeleteNewsletterCest {
     $I->click('[data-automation-id="filters_trash"]');
     $I->waitForText($newsletter_name);
   }
+
   function restoreFormFromTrash(\AcceptanceTester $I) {
     $newsletter_name = 'Restore Trashed Newsletter';
     $newsletter = new Newsletter();
@@ -34,6 +36,7 @@ class DeleteNewsletterCest {
     $I->click('[data-automation-id="filters_all"]');
     $I->waitForText($newsletter_name);
   }
+
   function deleteFormPermanently(\AcceptanceTester $I) {
     $newsletter_name = 'Goodbye Forever Newsletter';
     $newsletter = new Newsletter();

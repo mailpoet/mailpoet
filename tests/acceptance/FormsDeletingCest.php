@@ -66,5 +66,4 @@ class FormsDeletingCest {
     $I->waitForElementNotVisible($form_name);
   }
 
-
 }

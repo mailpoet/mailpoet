@@ -13,9 +13,7 @@ class FormsCreationCest {
     $I->click('[data-automation-id="create_new_form"]');
     $I->waitForElement('[data-automation-id="mailpoet_form_name_input"]');
     $I->fillField('[data-automation-id="mailpoet_form_name_input"]', 'My new form');
-    $search_field_element = 'input.select2-search__field';
-    $I->fillField($search_field_element, 'My First List');
-    $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
+    $I->selectOptionInSelect2('My First List');
     $I->click('[data-automation-id="save_form"]');
     $I->click('[data-automation-id="mailpoet_form_go_back"]');
 
