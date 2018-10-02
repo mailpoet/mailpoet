@@ -142,7 +142,7 @@ const DateText = React.createClass({
     return (
       <input
         type="text"
-        size="10"
+        size="30"
         name={this.getFieldName()}
         value={this.getDisplayDate(this.props.value)}
         readOnly
