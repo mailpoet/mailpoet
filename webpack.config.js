@@ -18,8 +18,8 @@ var baseConfig = {
   },
   output: {
     path: path.join(__dirname, 'assets/js'),
-    filename: (PRODUCTION_ENV) ? '[name].[chunkhash:8].js' : '[name].js',
-    chunkFilename: (PRODUCTION_ENV) ? '[name].[chunkhash:8].chunk.js' : '[name].chunk.js'
+    filename: (PRODUCTION_ENV) ? '[name].[hash:8].js' : '[name].js',
+    chunkFilename: (PRODUCTION_ENV) ? '[name].[hash:8].chunk.js' : '[name].chunk.js'
   },
   resolve: {
     modules: [
@@ -480,7 +480,6 @@ module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], 
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
-      new webpack.NamedModulesPlugin(),
       new webpackMD5HashPlugin(),
       new webpackManifestPlugin({
         cache: manifestCache
