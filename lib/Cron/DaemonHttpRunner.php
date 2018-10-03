@@ -11,7 +11,7 @@ use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCh
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
-class Daemon {
+class DaemonHttpRunner {
   public $daemon;
   public $request_data;
   public $timer;

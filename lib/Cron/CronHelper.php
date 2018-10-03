@@ -83,12 +83,12 @@ class CronHelper {
     $result = self::queryCronUrl($url);
     if(is_wp_error($result)) return $result->get_error_message();
     $response = WPFunctions::wpRemoteRetrieveBody($result);
-    $response = substr(trim($response), -strlen(Daemon::PING_SUCCESS_RESPONSE)) === Daemon::PING_SUCCESS_RESPONSE ?
-      Daemon::PING_SUCCESS_RESPONSE :
+    $response = substr(trim($response), -strlen(DaemonHttpRunner::PING_SUCCESS_RESPONSE)) === DaemonHttpRunner::PING_SUCCESS_RESPONSE ?
+      DaemonHttpRunner::PING_SUCCESS_RESPONSE :
       $response;
     return (!$validate_response) ?
       $response :
-      $response === Daemon::PING_SUCCESS_RESPONSE;
+      $response === DaemonHttpRunner::PING_SUCCESS_RESPONSE;
   }
 
   static function accessDaemon($token) {
