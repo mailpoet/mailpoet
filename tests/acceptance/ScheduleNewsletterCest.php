@@ -6,6 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 
 class ScheduleNewsletterCest {
+
   function scheduleStandardNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Schedule a newsletter');
     $newsletter_title = 'Schedule Test Newsletter';
@@ -15,12 +16,12 @@ class ScheduleNewsletterCest {
     $newsletter = $newsletterFactory->withSubject($newsletter_title)
       ->withType('standard')
       ->create();
-    
+
     // step 2 - Go to editor
     $I->login();
     $I->amEditingNewsletter($newsletter->id);
     $I->click('Next');
-    
+
     // step 4 - Choose list and schedule
     $I->waitForElement('[data-automation-id="newsletter_send_form"]');
     $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
@@ -33,6 +34,7 @@ class ScheduleNewsletterCest {
     $I->click('Schedule');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]', 20);
     $I->seeInCurrentUrl('mailpoet-newsletters');
-	
+
   }
+
 }

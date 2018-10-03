@@ -7,6 +7,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 
 class EditExistingPostNotificationEmailCest {
+
   function editSubjectAndSchedule(\AcceptanceTester $I) {
     $I->wantTo('Edit existing post notification email');
 
@@ -17,7 +18,7 @@ class EditExistingPostNotificationEmailCest {
     $form = new Newsletter();
     $newsletter = $form->withSubject($newsletter_title)
       ->withType('notification')
-      ->withPostNoticationOptions()
+      ->withPostNotificationOptions()
       ->create();
 
     // step 2 - Open list of post notifications
@@ -41,10 +42,11 @@ class EditExistingPostNotificationEmailCest {
     $I->waitForElement('input.select2-search__field');
     $I->seeInCurrentUrl('#/send');
     $I->selectOption('[data-automation-id="newsletter_interval_type"]', 'Weekly on...');
-    $I->selectOptionInSelect2( 'WordPress Users');
+    $I->selectOptionInSelect2('WordPress Users');
     $newsletter_listing_element = '[data-automation-id="listing_item_' . basename($I->getCurrentUrl()) . '"]';
     $I->click('Activate');
     $I->waitForElement($newsletter_listing_element);
     $I->see($newsletter_edited_title, $newsletter_listing_element);
   }
+
 }

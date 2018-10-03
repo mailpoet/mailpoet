@@ -7,15 +7,16 @@ use MailPoet\Test\DataFactories\Newsletter;
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 
 class SearchForNotificationCest {
+
   function searchForStandardNotification(\AcceptanceTester $I) {
     $I->wantTo('Successfully search for an existing notification');
     $newsletter_title = 'Search Test Notification';
     $failure_condition_newsletter = 'Not Actually Real';
     // step 1 - Prepare newsletter data
     $newsletterFactory = new Newsletter();
-    $newsletter = $newsletterFactory->withSubject($newsletter_title)
+    $newsletterFactory->withSubject($newsletter_title)
       ->withType('notification')
-      ->withPostNoticationOptions()
+      ->withPostNotificationOptions()
       ->create();
     // step 2 - Search
     $I->login();
@@ -30,5 +31,5 @@ class SearchForNotificationCest {
     $I->click('Search');
     $I->waitForText($newsletter_title, 10);
   }
-    
+
 }

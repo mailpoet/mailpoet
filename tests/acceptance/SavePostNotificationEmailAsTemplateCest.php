@@ -7,6 +7,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 
 class SavePostNotificationEmailAsTemplateCest {
+
   function saveAsTemplate(\AcceptanceTester $I) {
     $I->wantTo('Save post notification email as template');
 
@@ -17,9 +18,9 @@ class SavePostNotificationEmailAsTemplateCest {
     // step 1 - Prepare post notification data
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($newsletter_title)
-      ->withType('notification')
-      ->withPostNoticationOptions()
-      ->create();
+        ->withType('notification')
+        ->withPostNotificationOptions()
+        ->create();
 
     // step 2 - Go to editor
     $I->login();
@@ -51,4 +52,5 @@ class SavePostNotificationEmailAsTemplateCest {
     $I->waitForElement('[data-automation-id="newsletter_title"]');
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
   }
+
 }
