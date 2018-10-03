@@ -28,5 +28,10 @@ class CreateWelcomeEmailCest {
     $I->click('Activate');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]', 20);
     $I->seeInCurrentUrl('mailpoet-newsletters');
+    $I->click('Welcome Emails');
+    $I->seeInCurrentUrl('mailpoet-newsletters#/welcome');
+    $I->fillField('#search_input', $newsletter_title);
+    $I->click('Search');
+    $I->waitForText($newsletter_title, 10);
   }
 }
