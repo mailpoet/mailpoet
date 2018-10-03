@@ -4,7 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 require_once __DIR__ . '/../_data/MailPoetImportList.csv';
 
-class importExportSubscribersCest {
+class subscriberManageImportExportCest {
   function __construct() {
     $this->search_field_element = 'input.select2-search__field';
   }
@@ -13,29 +13,61 @@ class importExportSubscribersCest {
     $I->wantTo('Import a subscriber list from CSV');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
+    //click import
     $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[2]']);
     $I->waitForText('Back to Subscribers', 10);
+    //select upload file as import method, import CSV
     $I->click(['css'=>'#select_method > label:nth-of-type(2)']);
     $I->attachFile(['css'=>'#file_local'], 'MailPoetImportList.csv');
     $I->click(['xpath'=>'//*[@id="method_file"]/div/table/tbody/tr[2]/th/a']);
+    //click is to trigger dropdown to display selections
     $I->click($this->search_field_element);
+    //choose My First List
     $I->click(['xpath'=>'//*[@id="select2-mailpoet_segments_select-results"]/li[2]']);
+    //click next step
     $I->click(['xpath'=>'//*[@id="step2_process"]']);
     $I->waitForText('Import again', 10);
+    //confirm subscribers from import list were added
     $I->amOnMailPoetPage ('Subscribers');
     $I->seeInCurrentUrl('mailpoet-subscribers#');
     $I->fillField('#search_input', 'aaa@example.com');
     $I->click('Search');
     $I->waitForText('aaa@example.com', 10);
+    $I->fillField('#search_input', 'bbb@example.com');
+    $I->click('Search');
+    $I->waitForText('bbb@example.com', 10);
+    $I->fillField('#search_input', 'ccc@example.com');
+    $I->click('Search');
+    $I->waitForText('ccc@example.com', 10);
+    $I->fillField('#search_input', 'ddd@example.com');
+    $I->click('Search');
+    $I->waitForText('ddd@example.com', 10);
+    $I->fillField('#search_input', 'eee@example.com');
+    $I->click('Search');
+    $I->waitForText('eee@example.com', 10);
+    $I->fillField('#search_input', 'fff@example.com');
+    $I->click('Search');
+    $I->waitForText('fff@example.com', 10);
+    $I->fillField('#search_input', 'ggg@example.com');
+    $I->click('Search');
+    $I->waitForText('ggg@example.com', 10);
+    $I->fillField('#search_input', 'hhh@example.com');
+    $I->click('Search');
+    $I->waitForText('hhh@example.com', 10);
+    $I->fillField('#search_input', 'iii@example.com');
+    $I->click('Search');
+    $I->waitForText('iii@example.com', 10);
   }
 
   function exportSubscribers(\AcceptanceTester $I){
     $I->wantTo('Export a subscriber list to CSV');
     $I->login();
-    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-export');
+    $I->amOnMailPoetPage('Subscribers');
+    $I->click(['xpath'=>'//*[@id="mailpoet_export_button"]']);
     $I->fillField($this->search_field_element, 'WordPress Users');
     $I->pressKey($this->search_field_element, \WebDriverKeys::ENTER);
     $I->click(['xpath'=>'//*[@id="mailpoet_subscribers_export"]/div[2]/table/tbody/tr[4]/th/a']);
-    $I->waitForText('subscribers were exported');
+    $I->waitForText('10 subscribers were exported');
+
   }
 }
