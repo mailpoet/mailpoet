@@ -3,25 +3,23 @@
 namespace MailPoet\Test\Acceptance;
 
 class SubscriberManagementCest {
-  function __construct() {
-    $this->search_field_element = 'input.select2-search__field';
-  }
-  Private function generateWPUsersList(\AcceptanceTester $I){
+
+  private function generateWPUsersList(\AcceptanceTester $I){
     $I->wantTo('Create some subscribers');
     $I->cli('user import-csv --path /wp-core/wp-content/plugins/mailpoet/tests/_data/users.csv --allow-root');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
   }
 
-  Private function generateSingleSubscriber(\AcceptanceTester $I, $username, $new_subscriber_email, $subscriber_first_name, $subscriber_last_name){
+  private function generateSingleSubscriber(\AcceptanceTester $I, $username, $new_subscriber_email, $subscriber_first_name, $subscriber_last_name){
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
-    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/new');
+    $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[1]']);
+    $I->seeInCurrentUrl('/wp-admin/admin.php?page=mailpoet-subscribers#/new');
     $I->fillField(['name' => 'email'], $new_subscriber_email);
     $I->fillField(['name' => 'first_name'], $subscriber_first_name);
     $I->fillField(['name' => 'last_name'], $subscriber_last_name);
-    $I->fillField($this->search_field_element, 'My First List');
-    $I->pressKey($this->search_field_element, \WebDriverKeys::ENTER);
+    $I->selectOptionInSelect2('My First List');
     $I->click('Save');
     $I->amOnMailPoetPage ('Subscribers');
     $I->fillField('#search_input', $new_subscriber_email);
@@ -29,7 +27,7 @@ class SubscriberManagementCest {
     $I->waitForText($new_subscriber_email, 10);
   }
 
-  Private function generateMultipleLists(\AcceptanceTester $I){
+  private function generateMultipleLists(\AcceptanceTester $I){
     $I->login();
     $I->amOnMailPoetPage('Lists');
     $I->click(['css'=> '.page-title-action']);
@@ -80,8 +78,7 @@ class SubscriberManagementCest {
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 30);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
-    $I->fillField($this->search_field_element, 'Cooking');
-    $I->pressKey($this->search_field_element, \WebDriverKeys::ENTER);
+    $I->selectOptionInSelect2('Cooking');
     $I->click('Save');
   }
 
@@ -92,8 +89,7 @@ class SubscriberManagementCest {
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
-    $I->fillField($this->search_field_element, 'Cooking');
-    $I->pressKey($this->search_field_element, \WebDriverKeys::ENTER);
+    $I->selectOptionInSelect2('Cooking');
     $I->click('.select2-selection__choice__remove');
     $I->click('Save');
     $I->waitForText('Subscriber was updated', 10);
