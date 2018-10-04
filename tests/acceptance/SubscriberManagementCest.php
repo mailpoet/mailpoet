@@ -4,14 +4,14 @@ namespace MailPoet\Test\Acceptance;
 
 class SubscriberManagementCest {
 
-  private function generateWPUsersList(\AcceptanceTester $I){
+  private function generateWPUsersList(\AcceptanceTester $I) {
     $I->wantTo('Create some subscribers');
     $I->cli('user import-csv --path /wp-core/wp-content/plugins/mailpoet/tests/_data/users.csv --allow-root');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
   }
 
-  private function generateSingleSubscriber(\AcceptanceTester $I, $username, $new_subscriber_email, $subscriber_first_name, $subscriber_last_name){
+  private function generateSingleSubscriber(\AcceptanceTester $I, $username, $new_subscriber_email, $subscriber_first_name, $subscriber_last_name) {
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
     $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[1]']);
@@ -27,7 +27,7 @@ class SubscriberManagementCest {
     $I->waitForText($new_subscriber_email, 10);
   }
 
-  private function generateMultipleLists(\AcceptanceTester $I){
+  private function generateMultipleLists(\AcceptanceTester $I) {
     $I->login();
     $I->amOnMailPoetPage('Lists');
     $I->click(['css'=> '.page-title-action']);
@@ -44,7 +44,7 @@ class SubscriberManagementCest {
     $I->waitForText('Camping', 20);
   }
 
-  function viewSubscriberList(\AcceptanceTester $I){
+  function viewSubscriberList(\AcceptanceTester $I) {
     $I->wantTo('View list of subscribers');
     $this->generateWPUsersList($I);
     $I->fillField('#search_input', 'Alec Saunders');
@@ -52,12 +52,12 @@ class SubscriberManagementCest {
     $I->waitForText('Alec Saunders', 10);
   }
 
-  function addGlobalSubscriber(\AcceptanceTester $I){
+  function addGlobalSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Add a user to global subscribers list');
     $this->generateSingleSubscriber($I, 'newglobal', 'newglobaluser99@fakemail.fake', 'New', 'GlobalUser');
   }
 
-  function deleteGlobalSubscriber(\AcceptanceTester $I){
+  function deleteGlobalSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Delete a user from global subscribers list');
     $new_subscriber_email = 'deleteglobaluser99@fakemail.fake';
     $this->generateSingleSubscriber($I, 'deleteglobal', 'deleteglobaluser99@fakemail.fake', 'Delete', 'ThisGlobalUser');
@@ -70,7 +70,7 @@ class SubscriberManagementCest {
     $I->waitForText($new_subscriber_email);
   }
 
-  function addSubscriberToList(\AcceptanceTester $I){
+  function addSubscriberToList(\AcceptanceTester $I) {
     $I->wantTo('Add a subsciber to a list');
     $new_subscriber_email = 'addtolistuser99@fakemail.fake';
     $this->generateMultipleLists($I);
@@ -82,7 +82,7 @@ class SubscriberManagementCest {
     $I->click('Save');
   }
 
-  function deleteSubscriberFromList(\AcceptanceTester $I){
+  function deleteSubscriberFromList(\AcceptanceTester $I) {
     $I->wantTo('Delete a subscriber from a list');
     $new_subscriber_email = 'deletefromlistuser99@fakemail.fake';
     $this->generateSingleSubscriber($I, 'deletefromlist', 'deletefromlistuser99@fakemail.fake', 'Delete', 'FromAList');
@@ -95,7 +95,7 @@ class SubscriberManagementCest {
     $I->waitForText('Subscriber was updated', 10);
   }
 
-  function editSubscriber(\AcceptanceTester $I){
+  function editSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Edit a subscriber');
     $new_subscriber_email = 'editglobaluser99@fakemail.fake';
     $this->generateSingleSubscriber($I, 'editglobal', 'editglobaluser99@fakemail.fake', 'Edit', 'ThisGlobalUser');

@@ -6,7 +6,7 @@ use Codeception\Util\Locator;
 
 class ReceiveStandardEmailCest {
 
-  function receiveStandardEmail(\AcceptanceTester $I){
+  function receiveStandardEmail(\AcceptanceTester $I) {
     $newsletter_title = 'Receive Test';
     $search_field_element = 'input.select2-search__field';
     $standard_template = '[data-automation-id=\'select_template_0\']';
