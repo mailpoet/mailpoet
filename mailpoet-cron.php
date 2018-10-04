@@ -30,5 +30,10 @@ if(version_compare(phpversion(), '5.5.0', '<')) {
   exit(1);
 }
 
-$trigger = new \MailPoet\Cron\Triggers\MailPoet();
-$trigger->run();
+if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+  set_time_limit(0);
+}
+
+$data = \MailPoet\Cron\CronHelper::createDaemon(null);
+$trigger = new \MailPoet\Cron\Daemon();
+$trigger->run($data);

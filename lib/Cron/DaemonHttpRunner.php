@@ -1,28 +1,29 @@
 <?php
 namespace MailPoet\Cron;
-use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
-use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
-use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
-use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
-use MailPoet\Cron\Workers\Bounce as BounceWorker;
-use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
-use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class DaemonHttpRunner {
-  public $daemon;
+  public $settings_daemon_data;
   public $request_data;
   public $timer;
+  public $token;
+
+  /** @var Daemon */
+  private $daemon;
 
   const PING_SUCCESS_RESPONSE = 'pong';
 
-  function __construct($request_data = false) {
+  function __construct($request_data = false, $daemon = null) {
     $this->request_data = $request_data;
-    $this->daemon = CronHelper::getDaemon();
+    $this->settings_daemon_data = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
     $this->timer = microtime(true);
+    $this->daemon = $daemon;
+    if(!$daemon) {
+      $this->daemon = new Daemon($this->settings_daemon_data);
+    }
   }
 
   function ping() {
@@ -39,11 +40,11 @@ class DaemonHttpRunner {
     if(!$this->request_data) {
       $error = __('Invalid or missing request data.', 'mailpoet');
     } else {
-      if(!$this->daemon) {
+      if(!$this->settings_daemon_data) {
         $error = __('Daemon does not exist.', 'mailpoet');
       } else {
         if(!isset($this->request_data['token']) ||
-          $this->request_data['token'] !== $this->daemon['token']
+          $this->request_data['token'] !== $this->settings_daemon_data['token']
         ) {
           $error = 'Invalid or missing token.';
         }
@@ -52,22 +53,8 @@ class DaemonHttpRunner {
     if(!empty($error)) {
       return $this->abortWithError($error);
     }
-    $daemon = $this->daemon;
-    $daemon['token'] = $this->token;
-    $daemon['run_started_at'] = time();
-    CronHelper::saveDaemon($daemon);
-    try {
-      $this->executeMigrationWorker();
-      $this->executeScheduleWorker();
-      $this->executeQueueWorker();
-      $this->executeSendingServiceKeyCheckWorker();
-      $this->executePremiumKeyCheckWorker();
-      $this->executeBounceWorker();
-    } catch(\Exception $e) {
-      CronHelper::saveDaemonLastError($e->getMessage());
-    }
-    // Log successful execution
-    CronHelper::saveDaemonRunCompleted(time());
+    $this->settings_daemon_data['token'] = $this->token;
+    $this->daemon->run($this->settings_daemon_data);
     // if workers took less time to execute than the daemon execution limit,
     // pause daemon execution to ensure that daemon runs only once every X seconds
     $elapsed_time = microtime(true) - $this->timer;
@@ -75,8 +62,8 @@ class DaemonHttpRunner {
       $this->pauseExecution(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
     }
     // after each execution, re-read daemon data in case it changed
-    $daemon = CronHelper::getDaemon();
-    if($this->shouldTerminateExecution($daemon)) {
+    $settings_daemon_data = CronHelper::getDaemon();
+    if($this->shouldTerminateExecution($settings_daemon_data)) {
       return $this->terminateRequest();
     }
     return $this->callSelf();
@@ -86,39 +73,9 @@ class DaemonHttpRunner {
     return sleep($pause_time);
   }
 
-  function executeScheduleWorker() {
-    $scheduler = new SchedulerWorker($this->timer);
-    return $scheduler->process();
-  }
-
-  function executeQueueWorker() {
-    $queue = new SendingQueueWorker(new SendingErrorHandler(), $this->timer);
-    return $queue->process();
-  }
-
-  function executeSendingServiceKeyCheckWorker() {
-    $worker = new SendingServiceKeyCheckWorker($this->timer);
-    return $worker->process();
-  }
-
-  function executePremiumKeyCheckWorker() {
-    $worker = new PremiumKeyCheckWorker($this->timer);
-    return $worker->process();
-  }
-
-  function executeBounceWorker() {
-    $bounce = new BounceWorker($this->timer);
-    return $bounce->process();
-  }
-
-  function executeMigrationWorker() {
-    $migration = new MigrationWorker($this->timer);
-    return $migration->process();
-  }
-
   function callSelf() {
     CronHelper::accessDaemon($this->token);
-    return $this->terminateRequest();
+    $this->terminateRequest();
   }
 
   function abortWithError($message) {
@@ -131,12 +88,14 @@ class DaemonHttpRunner {
   }
 
   /**
+   * @param array|null $settings_daemon_data
+   *
    * @return boolean
    */
-  private function shouldTerminateExecution(array $daemon = null) {
-    return !$daemon ||
-      $daemon['token'] !== $this->token ||
-      (isset($daemon['status']) && $daemon['status'] !== CronHelper::DAEMON_STATUS_ACTIVE);
+  private function shouldTerminateExecution(array $settings_daemon_data = null) {
+    return !$settings_daemon_data ||
+       $settings_daemon_data['token'] !== $this->token ||
+       (isset($settings_daemon_data['status']) && $settings_daemon_data['status'] !== CronHelper::DAEMON_STATUS_ACTIVE);
   }
 
   private function addCacheHeaders() {
