@@ -4,12 +4,12 @@ namespace MailPoet\Test\Acceptance;
 
 require_once __DIR__ . '/../_data/MailPoetImportList.csv';
 
-class subscriberManageImportExportCest {
+class SubscriberManageImportExportCest {
   function __construct() {
     $this->search_field_element = 'input.select2-search__field';
   }
 
-  function importUsersToSubscribersViaCSV(\AcceptanceTester $I){
+  function importUsersToSubscribersViaCSV(\AcceptanceTester $I) {
     $I->wantTo('Import a subscriber list from CSV');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
@@ -59,7 +59,7 @@ class subscriberManageImportExportCest {
     $I->waitForText('iii@example.com', 10);
   }
 
-  function exportSubscribers(\AcceptanceTester $I){
+  function exportSubscribers(\AcceptanceTester $I) {
     $I->wantTo('Export a subscriber list to CSV');
     $I->login();
     $I->amOnMailPoetPage('Subscribers');

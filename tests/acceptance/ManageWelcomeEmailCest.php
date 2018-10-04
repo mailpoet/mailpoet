@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class ManageWelcomeEmailCest {
-  function __construct(){
+  function __construct() {
     $this->welcome_template = '[data-automation-id=\'select_template_0\']';
     $this->title_element = '[data-automation-id=\'newsletter_title\']';
   }
@@ -39,7 +39,7 @@ class ManageWelcomeEmailCest {
     $this->createWelcomeEmailWithTitle($I, $newsletter_title);
     $I->waitForText($newsletter_title, 20);
   }
-  function editWelcomeEmail(\AcceptanceTester $I){
+  function editWelcomeEmail(\AcceptanceTester $I) {
     $I->wantTo('Edit a welcome newsletter');
     $newsletter_title = 'Edit Welcome Email Test';
     $I->login();
@@ -58,7 +58,7 @@ class ManageWelcomeEmailCest {
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText('Edit Test Welcome Edited', 20);
   }
-  function deleteWelcomeEmail(\AcceptanceTester $I){
+  function deleteWelcomeEmail(\AcceptanceTester $I) {
     $I->wantTo('Delete a welcome email');
     $newsletter_title = 'Delete Welcome Email Test';
     $I->login();
@@ -73,7 +73,7 @@ class ManageWelcomeEmailCest {
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText($newsletter_title, 15);
   }
-  function duplicateWelcomeEmail (\AcceptanceTester $I){
+  function duplicateWelcomeEmail (\AcceptanceTester $I) {
     $I->wantTo('Duplicate a welcome email');
     $newsletter_title = 'Duplicate Welcome Email Test';
     $I->login();
@@ -82,7 +82,7 @@ class ManageWelcomeEmailCest {
     $I->clickItemRowActionByItemName($newsletter_title, 'Duplicate');
     $I->waitForText('Copy of ' . $newsletter_title, 10);
   }
-  function searchForWelcomeEmail (\AcceptanceTester $I){
+  function searchForWelcomeEmail (\AcceptanceTester $I) {
     $I->wantTo('Search for a welcome email');
     $newsletter_title = "Welcome Email Search Test";
     $failure_condition_newsletter = 'Totes Fake';
@@ -97,7 +97,7 @@ class ManageWelcomeEmailCest {
     $I->click('Search');
     $I->waitForText($newsletter_title, 10);
   }
-  function saveWelcomeEmailAsTemplate (\AcceptanceTester $I){
+  function saveWelcomeEmailAsTemplate (\AcceptanceTester $I) {
     $I->wantTo('Save welcome email as a template');
     $newsletter_title = 'Save Welcome Email As Template Test';
     $template_title = 'Welcome Template Test Title';
