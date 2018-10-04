@@ -6,13 +6,7 @@ class SettingsPageBasicsCest {
   function allowSubscribeOnRegistrationPage(\AcceptanceTester $I) {
     $I->wantTo('Allow users to subscribe to lists on site registration page');
     $I->login();
-    if (is_multisite()) {
-      // go to settings page and enable registration
-      $I->amOnPage('/wp-admin/network/settings.php');
-      $I->selectOption('form input[name=registration]', 'User accounts may be registered');
-      $I->click('Save Changes', '#submit.button.button-primary');
-      }
-    //Go to settings if single site or after MU registration is enabled
+    //Go to settings
     $I->amOnMailPoetPage('Settings');
     $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->checkOption('#settings[subscribe_on_register]');
