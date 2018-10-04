@@ -51,7 +51,7 @@ class SettingsPageBasicsCest {
     //Activation Key Tab
     $I->click(['xpath'=>'//*[@id="mailpoet_settings_tabs"]/a[5]']);
     $I->waitForText('Activation Key', 10);
-    }
+  }
 
   function editDefaultSenderInformation(\AcceptanceTester $I) {
     $I->wantTo('Confirm default sender information can be edited');
@@ -65,7 +65,7 @@ class SettingsPageBasicsCest {
     //save settings
     $I->click(['xpath'=>'//*[@id="mailpoet_settings_form"]/p/input']);
     $I->waitForText('Settings saved', 10);
-    }
+  }
 
   function allowSubscribeInComments(\AcceptanceTester $I) {
     $I->wantTo('Allow users to subscribe to lists in site comments');
