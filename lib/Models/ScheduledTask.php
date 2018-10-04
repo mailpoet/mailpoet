@@ -77,8 +77,15 @@ class ScheduledTask extends Model {
   }
 
   function delete() {
-    ScheduledTaskSubscriber::where('task_id', $this->id)->deleteMany();
-    return parent::delete();
+    try {
+      \ORM::get_db()->beginTransaction();
+      ScheduledTaskSubscriber::where('task_id', $this->id)->deleteMany();
+      parent::delete();
+      \ORM::get_db()->commit();
+    } catch(\Exception $error) {
+      \ORM::get_db()->rollBack();
+      throw $error;
+    }
   }
 
   static function touchAllByIds(array $ids) {
