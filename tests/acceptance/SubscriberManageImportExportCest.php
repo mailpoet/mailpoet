@@ -58,16 +58,4 @@ class subscriberManageImportExportCest {
     $I->click('Search');
     $I->waitForText('iii@example.com', 10);
   }
-
-  function exportSubscribers(\AcceptanceTester $I){
-    $I->wantTo('Export a subscriber list to CSV');
-    $I->login();
-    $I->amOnMailPoetPage('Subscribers');
-    $I->click(['xpath'=>'//*[@id="mailpoet_export_button"]']);
-    $I->fillField($this->search_field_element, 'WordPress Users');
-    $I->pressKey($this->search_field_element, \WebDriverKeys::ENTER);
-    $I->click(['xpath'=>'//*[@id="mailpoet_subscribers_export"]/div[2]/table/tbody/tr[4]/th/a']);
-    $I->waitForText('10 subscribers were exported');
-
-  }
 }
