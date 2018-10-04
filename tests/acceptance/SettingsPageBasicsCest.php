@@ -20,13 +20,9 @@ class SettingsPageBasicsCest {
     $I->logout();
     $I->amOnPage('/wp-login.php?action=register');
     $I->waitForElement(['css'=>'.registration-form-mailpoet'], 10);
+    $I->deleteSessionSnapshot('logout');
     //log back in manually, login helper tries to load snapshot, doesn't work after logout in test above
-    $I->amOnPage('/wp-login.php');
-    $I->fillField(['name' => 'log'], 'admin');
-    $I->fillField(['name' => 'pwd'], 'password');
-    $I->click('Log In');
-    $I->saveSessionSnapshot('login');
-    $I->waitForText('MailPoet', 10);
+    $I->login();
     $I->amOnMailPoetPage('Settings');
     $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->uncheckOption('#settings[subscribe_on_register]');
