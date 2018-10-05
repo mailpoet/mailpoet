@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Scheduler;
 
 use Carbon\Carbon;
+use MailPoet\Logging\Logger;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -23,6 +24,10 @@ class Scheduler {
   const INTERVAL_NTHWEEKDAY = 'nthWeekDay';
 
   static function schedulePostNotification($post_id) {
+    Logger::getLogger('post-notifications')->addInfo(
+      'schedule post notification hook',
+      ['post_id' => $post_id]
+    );
     $newsletters = self::getNewsletters(Newsletter::TYPE_NOTIFICATION);
     if(!count($newsletters)) return false;
     foreach($newsletters as $newsletter) {
@@ -143,6 +148,10 @@ class Scheduler {
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
     $sending_task->scheduled_at = $next_run_date;
     $sending_task->save();
+    Logger::getLogger('post-notifications')->addInfo(
+      'schedule post notification',
+      ['sending_task' => $sending_task->id(), 'scheduled_at' => $next_run_date]
+    );
     return $sending_task;
   }
 

@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter;
 
+use MailPoet\Logging\Logger;
 use MailPoet\Newsletter\Editor\Transformer;
 
 if(!defined('ABSPATH')) exit;
@@ -29,6 +30,10 @@ class AutomatedLatestContent {
   }
 
   function getPosts($args, $posts_to_exclude = array()) {
+    Logger::getLogger('post-notifications')->addInfo(
+      'loading automated latest content',
+      ['args' => $args, 'posts_to_exclude' => $posts_to_exclude, 'newsletter_id' => $this->newsletter_id, 'newer_than_timestamp' => $this->newer_than_timestamp]
+    );
     $posts_per_page = (!empty($args['amount']) && (int)$args['amount'] > 0)
       ? (int)$args['amount']
       : self::DEFAULT_POSTS_PER_PAGE;
@@ -70,7 +75,14 @@ class AutomatedLatestContent {
     }
 
     $this->_attachSentPostsFilter();
+
+    Logger::getLogger('post-notifications')->addInfo(
+      'getting automated latest content',
+      ['parameters' => $parameters]
+    );
     $posts = get_posts($parameters);
+    $this->logPosts($posts);
+
     $this->_detachSentPostsFilter();
     return $posts;
   }
@@ -125,5 +137,19 @@ class AutomatedLatestContent {
     if($this->newsletter_id > 0) {
       remove_action('posts_where', array($this, 'filterOutSentPosts'));
     }
+  }
+
+  private function logPosts(array $posts) {
+    $posts_to_log = [];
+    foreach($posts as $post) {
+      $posts_to_log[] = [
+        'id' => $post->ID,
+        'post_date' => $post->post_date,
+      ];
+    }
+    Logger::getLogger('post-notifications')->addInfo(
+      'automated latest content loaded posts',
+      ['posts' => $posts_to_log]
+    );
   }
 }

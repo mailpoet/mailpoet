@@ -5,6 +5,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
+use MailPoet\Logging\Logger;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
@@ -48,6 +49,10 @@ class SendingQueue {
       // pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->preProcessNewsletter($newsletter, $queue);
       if(!$newsletter) {
+        Logger::getLogger('newsletters')->addInfo(
+          'delete task in sending queue',
+          ['newsletter_id' => $newsletter->id(), 'task_id' => $queue->task_id]
+        );
         $queue->delete();
         continue;
       }
