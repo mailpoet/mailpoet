@@ -7,6 +7,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 class SubscribersTest extends \MailPoetTest {
+
   function testChecksIfSubscribersWithinLimitWhenPremiumLicenseDoesNotExist() {
     // if premium unlocker plugin is enabled, skip this check
     if(defined('MAILPOET_PREMIUM_LICENSE')) return;
@@ -34,4 +35,5 @@ class SubscribersTest extends \MailPoetTest {
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
+
 }

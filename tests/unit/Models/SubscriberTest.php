@@ -17,14 +17,18 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 
 class SubscriberTest extends \MailPoetTest {
+
+  /** @var array */
+  private $test_data;
+
   function _before() {
-    $this->data = array(
+    $this->test_data = array(
       'first_name' => 'John',
       'last_name' => 'Mailer',
       'email' => 'john@mailpoet.com'
     );
     $this->subscriber = Subscriber::create();
-    $this->subscriber->hydrate($this->data);
+    $this->subscriber->hydrate($this->test_data);
     $this->saved = $this->subscriber->save();
   }
 
@@ -35,26 +39,26 @@ class SubscriberTest extends \MailPoetTest {
 
   function testItHasFirstName() {
     $subscriber =
-      Subscriber::where('email', $this->data['email'])
+      Subscriber::where('email', $this->test_data['email'])
         ->findOne();
     expect($subscriber->first_name)
-      ->equals($this->data['first_name']);
+      ->equals($this->test_data['first_name']);
   }
 
   function testItHasLastName() {
     $subscriber =
-      Subscriber::where('email', $this->data['email'])
+      Subscriber::where('email', $this->test_data['email'])
         ->findOne();
     expect($subscriber->last_name)
-      ->equals($this->data['last_name']);
+      ->equals($this->test_data['last_name']);
   }
 
   function testItHasEmail() {
     $subscriber =
-      Subscriber::where('email', $this->data['email'])
+      Subscriber::where('email', $this->test_data['email'])
         ->findOne();
     expect($subscriber->email)
-      ->equals($this->data['email']);
+      ->equals($this->test_data['email']);
   }
 
   function testItShouldSetErrors() {
@@ -92,26 +96,26 @@ class SubscriberTest extends \MailPoetTest {
 
   function emailMustBeUnique() {
     $conflict_subscriber = Subscriber::create();
-    $conflict_subscriber->hydrate($this->data);
+    $conflict_subscriber->hydrate($this->test_data);
     $saved = $conflict_subscriber->save();
     expect($saved)->notEquals(true);
   }
 
   function testItHasStatusDefaultStatusOfUnconfirmed() {
     $subscriber =
-      Subscriber::where('email', $this->data['email'])
+      Subscriber::where('email', $this->test_data['email'])
         ->findOne();
     expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
   function testItCanChangeStatus() {
-    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $subscriber = Subscriber::where('email', $this->test_data['email'])->findOne();
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
 
     expect($subscriber->id() > 0)->true();
     expect($subscriber->getErrors())->false();
-    $subscriber_updated = Subscriber::where('email', $this->data['email'])
+    $subscriber_updated = Subscriber::where('email', $this->test_data['email'])
       ->findOne();
     expect($subscriber_updated->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
@@ -119,13 +123,13 @@ class SubscriberTest extends \MailPoetTest {
   function testItHasSearchFilter() {
     $subscriber = Subscriber::filter('search', 'john')
       ->findOne();
-    expect($subscriber->first_name)->equals($this->data['first_name']);
+    expect($subscriber->first_name)->equals($this->test_data['first_name']);
     $subscriber = Subscriber::filter('search', 'mailer')
       ->findOne();
-    expect($subscriber->last_name)->equals($this->data['last_name']);
+    expect($subscriber->last_name)->equals($this->test_data['last_name']);
     $subscriber = Subscriber::filter('search', 'mailpoet')
       ->findOne();
-    expect($subscriber->email)->equals($this->data['email']);
+    expect($subscriber->email)->equals($this->test_data['email']);
   }
 
   function testItHasGroupFilter() {
@@ -425,15 +429,15 @@ class SubscriberTest extends \MailPoetTest {
     $segment2->save();
 
     $subscriber = Subscriber::subscribe(
-      $this->data,
+      $this->test_data,
       array($segment->id(), $segment2->id())
     );
 
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(2);
-    expect($subscriber->email)->equals($this->data['email']);
-    expect($subscriber->first_name)->equals($this->data['first_name']);
-    expect($subscriber->last_name)->equals($this->data['last_name']);
+    expect($subscriber->email)->equals($this->test_data['email']);
+    expect($subscriber->first_name)->equals($this->test_data['first_name']);
+    expect($subscriber->last_name)->equals($this->test_data['last_name']);
     // signup confirmation is enabled by default
     expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     expect($subscriber->deleted_at)->equals(null);
@@ -477,7 +481,7 @@ class SubscriberTest extends \MailPoetTest {
     $signup_confirmation_enabled = (bool)Setting::setValue(
       'signup_confirmation.enabled', false
     );
-    $subscriber = Subscriber::subscribe($this->data, array($segment->id()));
+    $subscriber = Subscriber::subscribe($this->test_data, array($segment->id()));
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(1);
     $scheduled_notification = SendingQueue::findTaskByNewsletterId($newsletter->id)
@@ -524,7 +528,7 @@ class SubscriberTest extends \MailPoetTest {
     $signup_confirmation_enabled = (bool)Setting::setValue(
       'signup_confirmation.enabled', true
     );
-    $subscriber = Subscriber::subscribe($this->data, array($segment->id()));
+    $subscriber = Subscriber::subscribe($this->test_data, array($segment->id()));
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(1);
     $scheduled_notification = SendingQueue::findTaskByNewsletterId($newsletter->id)
@@ -687,7 +691,7 @@ class SubscriberTest extends \MailPoetTest {
 
   function testItCanBeUpdatedByEmail() {
     $subscriber_updated = Subscriber::createOrUpdate(array(
-      'email' => $this->data['email'],
+      'email' => $this->test_data['email'],
       'first_name' => 'JoJo',
       'last_name' => 'DoDo'
     ));
@@ -695,7 +699,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($this->subscriber->id())->equals($subscriber_updated->id());
 
     $subscriber = Subscriber::findOne($this->subscriber->id());
-    expect($subscriber->email)->equals($this->data['email']);
+    expect($subscriber->email)->equals($this->test_data['email']);
     expect($subscriber->first_name)->equals('JoJo');
     expect($subscriber->last_name)->equals('DoDo');
   }
@@ -877,20 +881,20 @@ class SubscriberTest extends \MailPoetTest {
   }
 
   function testItGeneratesSubscriberToken() {
-    $token = Subscriber::generateToken($this->data['email']);
+    $token = Subscriber::generateToken($this->test_data['email']);
     expect(strlen($token))->equals(Subscriber::SUBSCRIBER_TOKEN_LENGTH);
   }
 
   function testItVerifiesSubscriberToken() {
-    $token = Subscriber::generateToken($this->data['email']);
-    expect(Subscriber::verifyToken($this->data['email'], $token))->true();
+    $token = Subscriber::generateToken($this->test_data['email']);
+    expect(Subscriber::verifyToken($this->test_data['email'], $token))->true();
     expect(Subscriber::verifyToken('fake@email.com', $token))->false();
   }
 
   function testItVerifiesTokensOfDifferentLengths() {
-    $token = md5(AUTH_KEY . $this->data['email']);
+    $token = md5(AUTH_KEY . $this->test_data['email']);
     expect(strlen($token))->notEquals(Subscriber::SUBSCRIBER_TOKEN_LENGTH);
-    expect(Subscriber::verifyToken($this->data['email'], $token))->true();
+    expect(Subscriber::verifyToken($this->test_data['email'], $token))->true();
   }
 
   function testItBulkDeletesSubscribers() {
@@ -1079,15 +1083,15 @@ class SubscriberTest extends \MailPoetTest {
   }
 
   function testItDoesNotSetDefaultValuesForExistingSubscribers() {
-    $existing_subscriber_data = $this->data;
+    $existing_subscriber_data = $this->test_data;
     $result = Subscriber::createOrUpdate(
       array(
         'email' => $existing_subscriber_data['email']
       )
     );
     expect($result->getErrors())->false();
-    expect($result->first_name)->equals($this->data['first_name']);
-    expect($result->last_name)->equals($this->data['last_name']);
+    expect($result->first_name)->equals($this->test_data['first_name']);
+    expect($result->last_name)->equals($this->test_data['last_name']);
   }
 
   function testItExtractsCustomFieldsFromObject() {

@@ -419,6 +419,8 @@ class Menu {
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),
+      'linux_cron_path' => dirname(dirname(__DIR__)),
+      'ABSPATH' => ABSPATH,
       'hosts' => array(
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts()

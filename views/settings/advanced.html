@@ -65,6 +65,35 @@
                  %>
           </label>
         </p>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="cron_trigger[method]"
+              value="<%= cron_trigger.linux_cron %>"
+            <% if (settings.cron_trigger.method == cron_trigger.linux_cron) %>
+            checked="checked"
+            <% endif %>
+            /><%= __("Server side cron (Linux cron)")
+            %>
+          </label>
+        </p>
+        <div id="settings_linux_cron">
+          <p>
+            <%= __("To use this option please add this command to your crontab:") %><br>
+            <input
+               value="php <%= linux_cron_path %>/mailpoet-cron.php <%= ABSPATH %>"
+               class="large-text"
+               readonly
+            />
+          <p>
+            <%= __("With the frequency of running it every minute:") %><br>
+            <input
+               value="*/1 * * * *"
+               class="large-text"
+               readonly
+            />
+        </div>
       </td>
     </tr>
     <!-- roles and capabilities -->

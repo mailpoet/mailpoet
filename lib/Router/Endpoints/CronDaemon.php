@@ -4,7 +4,7 @@ namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Daemon;
+use MailPoet\Cron\DaemonHttpRunner;
 
 if(!defined('ABSPATH')) exit;
 
@@ -28,7 +28,7 @@ class CronDaemon {
   }
 
   function run() {
-    $queue = new Daemon($this->data);
+    $queue = new DaemonHttpRunner($this->data);
     $queue->run();
   }
 
@@ -37,7 +37,7 @@ class CronDaemon {
   }
 
   function pingResponse() {
-    $queue = new Daemon();
+    $queue = new DaemonHttpRunner();
     $queue->ping();
   }
 }
