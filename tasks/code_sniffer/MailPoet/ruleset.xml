@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="MailPoet">
+  <config name="installed_paths" value="vendor/squizlabs/php_codesniffer,vendor/phpcompatibility/php-compatibility"/>
   <description>MailPoet specific rule set</description>
 
   <!-- Control structures must have at least one statement in the body -->
@@ -118,7 +119,7 @@
   <rule ref="Squiz.Scope.StaticThisUsage"/>
 
   <!-- Remove space between if/for/while and opening parenthesis -->
-  <rule ref="MailPoet.ControlStructures.ControlSignature"/>
+  <rule ref="MailPoet.ControlStructures.ControlSignature" />
 
   <!-- Run against the PHPCompatibility ruleset -->
   <rule ref="PHPCompatibility" />

@@ -209,7 +209,7 @@ EOL;
         <?php
         foreach($forms as $form) {
           $is_selected = ($selected_form === (int)$form['id']) ? 'selected="selected"' : '';
-        ?>
+          ?>
         <option value="<?php echo (int)$form['id']; ?>" <?php echo $is_selected; ?>><?php echo esc_html($form['name']); ?></option>
         <?php }  ?>
       </select>
