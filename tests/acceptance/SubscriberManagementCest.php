@@ -2,7 +2,21 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Subscriber;
+
+require_once __DIR__ . '/../DataFactories/Segment.php';
+require_once __DIR__ . '/../DataFactories/Subscriber.php';
+
 class SubscriberManagementCest {
+
+  /** @var \MailPoet\Models\Segment */
+  private $segment;
+
+  public function _before() {
+    $segment_factory = new Segment();
+    $this->segment = $segment_factory->withName('Subscriber Management Test List')->create();
+  }
 
   private function generateWPUsersList(\AcceptanceTester $I) {
     $I->wantTo('Create some subscribers');
@@ -11,37 +25,20 @@ class SubscriberManagementCest {
     $I->amOnMailPoetPage ('Subscribers');
   }
 
-  private function generateSingleSubscriber(\AcceptanceTester $I, $username, $new_subscriber_email, $subscriber_first_name, $subscriber_last_name) {
-    $I->login();
-    $I->amOnMailPoetPage ('Subscribers');
-    $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[1]']);
-    $I->seeInCurrentUrl('/wp-admin/admin.php?page=mailpoet-subscribers#/new');
-    $I->fillField(['name' => 'email'], $new_subscriber_email);
-    $I->fillField(['name' => 'first_name'], $subscriber_first_name);
-    $I->fillField(['name' => 'last_name'], $subscriber_last_name);
-    $I->selectOptionInSelect2('My First List');
-    $I->click('Save');
-    $I->amOnMailPoetPage ('Subscribers');
-    $I->fillField('#search_input', $new_subscriber_email);
-    $I->click('Search');
-    $I->waitForText($new_subscriber_email, 10);
+  private function generateSingleSubscriber($new_subscriber_email, $subscriber_first_name, $subscriber_last_name) {
+    $subscriber_factory = new Subscriber();
+    return $subscriber_factory
+      ->withEmail($new_subscriber_email)
+      ->withFirstName($subscriber_first_name)
+      ->withLastName($subscriber_last_name)
+      ->create();
   }
 
-  private function generateMultipleLists(\AcceptanceTester $I) {
-    $I->login();
-    $I->amOnMailPoetPage('Lists');
-    $I->click(['css'=> '.page-title-action']);
-    $I->waitForText('Description', 10);
-    $I->fillField(['name' => 'name'], "Cooking");
-    $I->click('Save');
-    $I->amOnMailpoetPage('Lists');
-    $I->waitForText('Cooking', 20);
-    $I->click(['css'=> '.page-title-action']);
-    $I->waitForText('Description', 10);
-    $I->fillField(['name' => 'name'], "Camping");
-    $I->click('Save');
-    $I->amOnMailpoetPage('Lists');
-    $I->waitForText('Camping', 20);
+  private function generateMultipleLists() {
+    $segment_factory1 = new Segment();
+    $segment_factory1->withName('Cooking')->create();
+    $segment_factory2 = new Segment();
+    $segment_factory2->withName('Camping')->create();
   }
 
   function viewSubscriberList(\AcceptanceTester $I) {
@@ -54,13 +51,27 @@ class SubscriberManagementCest {
 
   function addGlobalSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Add a user to global subscribers list');
-    $this->generateSingleSubscriber($I, 'newglobal', 'newglobaluser99@fakemail.fake', 'New', 'GlobalUser');
+    $I->login();
+    $I->amOnMailPoetPage ('Subscribers');
+    $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[1]']);
+    $I->seeInCurrentUrl('/wp-admin/admin.php?page=mailpoet-subscribers#/new');
+    $I->fillField(['name' => 'email'], 'newglobaluser99@fakemail.fake');
+    $I->fillField(['name' => 'first_name'], 'New');
+    $I->fillField(['name' => 'last_name'], 'GlobalUser');
+    $I->selectOptionInSelect2($this->segment->get('name'));
+    $I->click('Save');
+    $I->amOnMailPoetPage ('Subscribers');
+    $I->fillField('#search_input', 'newglobaluser99@fakemail.fake');
+    $I->click('Search');
+    $I->waitForText('newglobaluser99@fakemail.fake', 10);
   }
 
   function deleteGlobalSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Delete a user from global subscribers list');
     $new_subscriber_email = 'deleteglobaluser99@fakemail.fake';
-    $this->generateSingleSubscriber($I, 'deleteglobal', 'deleteglobaluser99@fakemail.fake', 'Delete', 'ThisGlobalUser');
+    $this->generateSingleSubscriber('deleteglobaluser99@fakemail.fake', 'Delete', 'ThisGlobalUser');
+    $I->login();
+    $I->amOnMailPoetPage ('Subscribers');
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Move to trash');
     $I->waitForElement('[data-automation-id="filters_trash"]');
     $I->click('[data-automation-id="filters_trash"]');
@@ -73,8 +84,10 @@ class SubscriberManagementCest {
   function addSubscriberToList(\AcceptanceTester $I) {
     $I->wantTo('Add a subsciber to a list');
     $new_subscriber_email = 'addtolistuser99@fakemail.fake';
-    $this->generateMultipleLists($I);
-    $this->generateSingleSubscriber($I, 'addtolist', 'addtolistuser99@fakemail.fake', 'Add', 'ToAList');
+    $this->generateMultipleLists();
+    $this->generateSingleSubscriber('addtolistuser99@fakemail.fake', 'Add', 'ToAList');
+    $I->login();
+    $I->amOnMailPoetPage ('Subscribers');
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 30);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
@@ -85,7 +98,9 @@ class SubscriberManagementCest {
   function deleteSubscriberFromList(\AcceptanceTester $I) {
     $I->wantTo('Delete a subscriber from a list');
     $new_subscriber_email = 'deletefromlistuser99@fakemail.fake';
-    $this->generateSingleSubscriber($I, 'deletefromlist', 'deletefromlistuser99@fakemail.fake', 'Delete', 'FromAList');
+    $this->generateSingleSubscriber('deletefromlistuser99@fakemail.fake', 'Delete', 'FromAList');
+    $I->login();
+    $I->amOnMailPoetPage ('Subscribers');
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
@@ -98,7 +113,9 @@ class SubscriberManagementCest {
   function editSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Edit a subscriber');
     $new_subscriber_email = 'editglobaluser99@fakemail.fake';
-    $this->generateSingleSubscriber($I, 'editglobal', 'editglobaluser99@fakemail.fake', 'Edit', 'ThisGlobalUser');
+    $this->generateSingleSubscriber('editglobaluser99@fakemail.fake', 'Edit', 'ThisGlobalUser');
+    $I->login();
+    $I->amOnMailPoetPage ('Subscribers');
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
