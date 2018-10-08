@@ -75,13 +75,17 @@ class Capabilities {
   function registerMembersCapabilities() {
     $permissions = AccessControl::getPermissionLabels();
     foreach($permissions as $name => $label) {
-      members_register_cap(
-        $name,
-        array(
-          'label' => $label,
-          'group' => self::MEMBERS_CAP_GROUP_NAME
-        )
-      );
+      $this->registerMembersCapability($name, $label);
     }
+  }
+
+  function registerMembersCapability($name, $label) {
+    members_register_cap(
+      $name,
+      array(
+        'label' => $label,
+        'group' => self::MEMBERS_CAP_GROUP_NAME
+      )
+    );
   }
 }
