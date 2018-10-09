@@ -20,9 +20,9 @@
     "nesbot/carbon": "^1.21",
     "soundasleep/html2text": "dev-master",
     "sabberworm/php-css-parser": "^8.1",
-    "symfony/polyfill-php72": "^1.8",
-    "symfony/polyfill-mbstring": "1.8.0",
-    "sensiolabs/security-checker": "^4.1",
+    "symfony/polyfill-php72": "^1.9",
+    "symfony/polyfill-mbstring": "^1.9",
+    "sensiolabs/security-checker": "^5.0",
     "monolog/monolog": "^1.23"
   },
   "require-dev": {
