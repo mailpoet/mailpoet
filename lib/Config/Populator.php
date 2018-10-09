@@ -170,13 +170,18 @@ class Populator {
       ));
     }
 
+    $subscriber_email_notification = Setting::getValue('subscriber_email_notification');
+    if(empty($subscriber_email_notification)) {
+      Setting::setValue('subscriber_email_notification', ['enabled' => true]);
+    }
+
     // reset mailer log
     MailerLog::resetMailerLog();
   }
 
   private function createDefaultSegments() {
     // WP Users segment
-    $wp_segment = Segment::getWPSegment();
+    Segment::getWPSegment();
 
     // Synchronize WP Users
     WP::synchronizeUsers();

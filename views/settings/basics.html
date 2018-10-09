@@ -299,6 +299,39 @@
         </p>
       </td>
     </tr>
+
+    <!-- New subscriber emails notifications -->
+    <tr>
+      <th scope="row">
+        <label for="subscription_unsubscribe_page">
+          <%= __('New subscriber notifications') %>
+        </label>
+        <p class="description">
+          <%= __('Enter the email address that should receive notifications when someone subscribes.') %>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="subscriber_email_notification[enabled]"
+              value="1"
+              <% if(settings.subscriber_email_notification.enabled) %>
+                checked
+              <% endif %>
+            /><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+              type="radio"
+              name="subscriber_email_notification[enabled]"
+              value=""
+              <% if not(settings.subscriber_email_notification.enabled) %>
+                checked
+              <% endif %>
+            /><%= __('No') %>
+          </label>
+
     <!-- shortcode: archive page  -->
     <tr>
       <th scope="row">
