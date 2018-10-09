@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -106,6 +107,7 @@ class Setting extends Model {
   }
 
   public static function setValue($key, $value) {
+    $value = Helpers::recursiveTrim($value);
     $keys = explode('.', $key);
 
     if(count($keys) === 1) {

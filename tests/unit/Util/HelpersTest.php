@@ -34,4 +34,27 @@ class HelpersTest extends \MailPoetTest {
     $json = json_encode(array('one' => 1, 'two' => 2));
     expect(Helpers::isJson($json))->true();
   }
+
+  function testItTrimStringsRecursively() {
+    expect(Helpers::recursiveTrim('  foo'))->equals('foo');
+    expect(Helpers::recursiveTrim('foo  '))->equals('foo');
+    expect(Helpers::recursiveTrim(123))->equals(123);
+    expect(Helpers::recursiveTrim([
+      'name' => '   some text here   ',
+      'list' => [
+        'string 1',
+        'string 2   ',
+        '  string 3   '
+      ],
+      'number' => 523
+    ]))->equals([
+      'name' => 'some text here',
+      'list' => [
+        'string 1',
+        'string 2',
+        'string 3'
+      ],
+      'number' => 523
+    ]);
+  }
 }
