@@ -149,7 +149,8 @@ CREATE TABLE `mp_mailpoet_newsletter_links` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY queue_id (queue_id)
+  KEY queue_id (queue_id),
+  KEY newsletter_id (newsletter_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 
@@ -220,6 +221,7 @@ DROP TABLE IF EXISTS `mp_mailpoet_newsletter_templates`;
 CREATE TABLE `mp_mailpoet_newsletter_templates` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  `categories` varchar(250) NOT NULL DEFAULT "[]",
   `newsletter_id` int NULL DEFAULT 0,
   `description` varchar(250) COLLATE utf8mb4_unicode_520_ci NOT NULL,
   `body` longtext COLLATE utf8mb4_unicode_520_ci,
@@ -301,7 +303,8 @@ CREATE TABLE `mp_mailpoet_scheduled_task_subscribers` (
   `subscriber_id` int(11) unsigned NOT NULL,
   `processed` int(1) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`task_id`,`subscriber_id`)
+  PRIMARY KEY (`task_id`,`subscriber_id`),
+  KEY subscriber_id (subscriber_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 
@@ -336,7 +339,9 @@ CREATE TABLE `mp_mailpoet_sending_queues` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY task_id (task_id),
+  KEY newsletter_id (newsletter_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 
@@ -461,6 +466,7 @@ CREATE TABLE `mp_mailpoet_subscribers` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `unconfirmed_data` longtext COLLATE utf8mb4_unicode_520_ci,
+  `source` ENUM("form", "imported", "administrator", "api", "wordpress_user", "unknown") DEFAULT "unknown",
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `wp_user_id` (`wp_user_id`),
