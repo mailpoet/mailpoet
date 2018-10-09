@@ -18,9 +18,8 @@ class SavePostNotificationEmailAsTemplateCest {
     // step 1 - Prepare post notification data
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($newsletter_title)
-        ->withType('notification')
-        ->withPostNotificationOptions()
-        ->create();
+      ->withPostNotificationsType()
+      ->create();
 
     // step 2 - Go to editor
     $I->login();

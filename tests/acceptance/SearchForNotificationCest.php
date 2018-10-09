@@ -15,8 +15,7 @@ class SearchForNotificationCest {
     // step 1 - Prepare newsletter data
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject($newsletter_title)
-      ->withType('notification')
-      ->withPostNotificationOptions()
+      ->withPostNotificationsType()
       ->create();
     // step 2 - Search
     $I->login();

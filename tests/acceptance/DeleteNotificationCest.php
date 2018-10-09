@@ -14,8 +14,7 @@ class DeleteNotificationCest {
     $newsletter_name = 'Deletion Test Post Notification';
     $factory = new Newsletter();
     $factory->withSubject($newsletter_name)
-      ->withType('notification')
-      ->withPostNotificationOptions()
+      ->withPostNotificationsType()
       ->create();
     // step 2 - Open list of post notifications
     $I->login();
@@ -35,8 +34,7 @@ class DeleteNotificationCest {
     $newsletter_name = 'Restore from Trash Test Post Notification';
     $factory = new Newsletter();
     $factory->withSubject($newsletter_name)
-      ->withType('notification')
-      ->withPostNotificationOptions()
+      ->withPostNotificationsType()
       ->withDeleted()
       ->create();
     // step 2 - Open list of post notifications
@@ -59,8 +57,7 @@ class DeleteNotificationCest {
     $newsletter_name = 'Goodbye Forever Notification Test';
     $factory = new Newsletter();
     $factory->withSubject($newsletter_name)
-      ->withType('notification')
-      ->withPostNotificationOptions()
+      ->withPostNotificationsType()
       ->withDeleted()
       ->create();
     // step 2 - Open list of post notifications

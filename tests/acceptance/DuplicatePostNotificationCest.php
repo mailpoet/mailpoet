@@ -15,9 +15,8 @@ class DuplicatePostNotificationCest {
     $newsletter_title = 'Post Notification Duplicate Test';
     $newsletter_factory = new Newsletter();
     $newsletter_factory->withSubject($newsletter_title)
-        ->withType('notification')
-        ->withPostNotificationOptions()
-        ->create();
+      ->withPostNotificationsType()
+      ->create();
 
     // step 2 - Open list of post notifications
     $I->login();

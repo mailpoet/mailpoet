@@ -14,7 +14,6 @@ class ScheduleNewsletterCest {
     // step 1 - Prepare post notification data
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($newsletter_title)
-      ->withType('standard')
       ->create();
 
     // step 2 - Go to editor

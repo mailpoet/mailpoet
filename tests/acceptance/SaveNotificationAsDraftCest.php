@@ -14,8 +14,7 @@ class SaveNotificationAsDraftCest {
     $newsletter_title = 'Draft Test Post Notification';
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($newsletter_title)
-      ->withType('notification')
-      ->withPostNotificationOptions()
+      ->withPostNotificationsType()
       ->create();
     // step 2 - Go to editor
     $I->login();
