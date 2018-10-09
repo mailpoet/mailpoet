@@ -36,7 +36,7 @@
     "phpunit/phpunit": "5.7.27",
     "vlucas/phpdotenv": "^2.4.0",
     "umpirsky/twig-gettext-extractor": "1.1.*",
-    "kint-php/kint": "^2.2",
+    "kint-php/kint": "^3.0",
     "squizlabs/php_codesniffer": "^3.3",
     "phpcompatibility/php-compatibility": "^9.0",
     "coenjacobs/mozart": "^0.2.2"
