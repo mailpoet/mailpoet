@@ -162,7 +162,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 == Changelog ==
 
 = 3.11.2 - 2018-10-09 =
-* Added: Linux cron option for sending emails.
+* Added: Linux cron option for sending emails;
+* Fixed: fatal error for admins who are not also subscribers;
+* Fixed: minor style fixes;
+* Fixed: added missing translation string;
+* Fixed: orphaned tasks cleared after subscribers deleted;
+* Fixed: minor styling issue on schedule page for Mac Chrome users.
 
 = 3.11.1 - 2018-10-02 =
 * Fixed: JS assets caching issues;
