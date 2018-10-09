@@ -6,7 +6,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Util\Helpers;
 use MailPoet\WP\Hooks;
 
 class SubscribersFinder {
@@ -35,27 +34,6 @@ class SubscribersFinder {
     return array();
   }
 
-  function getSubscribersByList($segments) {
-    $result = array();
-    foreach($segments as $segment) {
-      $result = array_merge($result, $this->getSubscribers($segment));
-    }
-    return $this->unique($result);
-  }
-
-  private function getSubscribers($segment) {
-    if($this->isStaticSegment($segment)) {
-      return Subscriber::getSubscribedInSegments(array($segment['id']))->findArray();
-    }
-    $finders = Hooks::applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
-    foreach($finders as $finder) {
-      $subscribers = $finder->getSubscriberIdsInSegment($segment);
-      if($subscribers) {
-        return $subscribers;
-      }
-    }
-    return array();
-  }
 
   private function isStaticSegment($segment) {
     return $segment['type'] === Segment::TYPE_DEFAULT || $segment['type'] === Segment::TYPE_WP_USERS;
