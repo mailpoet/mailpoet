@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cb44256ac266ac704c6dd361cb3ea816",
+    "content-hash": "52272c947b8c5b6e5de42578478ca5a5",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -2911,6 +2911,61 @@
             "time": "2017-12-16T16:06:03+00:00"
         },
         {
+            "name": "gumlet/php-image-resize",
+            "version": "1.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gumlet/php-image-resize.git",
+                "reference": "d36a7bcd679445ec8f310fdbecac5d40b0c587de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gumlet/php-image-resize/zipball/d36a7bcd679445ec8f310fdbecac5d40b0c587de",
+                "reference": "d36a7bcd679445ec8f310fdbecac5d40b0c587de",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "ext-gd": "*",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "apigen/apigen": "^4.1",
+                "ext-exif": "*",
+                "ext-gd": "*",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^4.8"
+            },
+            "suggest": {
+                "ext-exif": "Auto-rotate jpeg files"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gumlet\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aditya Patadia",
+                    "homepage": "http://aditya.patadia.org/"
+                }
+            ],
+            "description": "PHP class to re-size and scale images",
+            "homepage": "https://github.com/gumlet/php-image-resize",
+            "keywords": [
+                "image",
+                "php",
+                "resize",
+                "scale"
+            ],
+            "time": "2018-07-28T11:04:15+00:00"
+        },
+        {
             "name": "guzzlehttp/guzzle",
             "version": "6.3.3",
             "source": {
@@ -3665,32 +3720,32 @@
         },
         {
             "name": "lucatume/wp-browser",
-            "version": "1.21.23",
+            "version": "1.24.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/wp-browser.git",
-                "reference": "bd33f4830ea0d2d9c3138dc057175f6c54aa6f3e"
+                "reference": "d491b9f8e8d4dbd57074fd6f34ba073cb4462103"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lucatume/wp-browser/zipball/bd33f4830ea0d2d9c3138dc057175f6c54aa6f3e",
-                "reference": "bd33f4830ea0d2d9c3138dc057175f6c54aa6f3e",
+                "url": "https://api.github.com/repos/lucatume/wp-browser/zipball/d491b9f8e8d4dbd57074fd6f34ba073cb4462103",
+                "reference": "d491b9f8e8d4dbd57074fd6f34ba073cb4462103",
                 "shasum": ""
             },
             "require": {
                 "antecedent/patchwork": "^2.0",
                 "codeception/codeception": "^2.3",
+                "gumlet/php-image-resize": "^1.6",
                 "lucatume/codeception-setup-local": "~1.0",
                 "lucatume/wp-browser-commons": "^1.2.5",
-                "symfony/process": "~2.1",
+                "symfony/process": ">=2.7 <5.0",
+                "vlucas/phpdotenv": "^2.4",
                 "wp-cli/wp-cli": "^1.1"
             },
             "require-dev": {
-                "eventviva/php-image-resize": "^1.6",
                 "mikey179/vfsstream": "^1.6",
                 "ofbeaton/console-tester": "^1.1",
-                "site5/phantoman": "^1.1",
-                "vlucas/phpdotenv": "^2.4"
+                "site5/phantoman": "^1.1"
             },
             "bin": [
                 "wpcept"
@@ -3702,7 +3757,8 @@
                     "tad\\": "src\\tad"
                 },
                 "files": [
-                    "src/tad/WPBrowser/functions.php"
+                    "src/tad/WPBrowser/functions.php",
+                    "shims.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3723,7 +3779,7 @@
                 "codeception",
                 "wordpress"
             ],
-            "time": "2017-12-13T16:20:09+00:00"
+            "time": "2018-08-01T15:06:14+00:00"
         },
         {
             "name": "lucatume/wp-browser-commons",
