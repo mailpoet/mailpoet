@@ -161,6 +161,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 == Changelog ==
 
+= 3.11.3 - 2018-10-09 =
+* Fixed: Linux cron to work again.
+
 = 3.11.2 - 2018-10-09 =
 * Added: Linux cron option for sending emails;
 * Fixed: fatal error for admins who are not also subscribers;
