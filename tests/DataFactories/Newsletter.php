@@ -55,6 +55,21 @@ class Newsletter {
   }
 
   /**
+   * @return Newsletter
+   */
+  public function withWelcomeType() {
+    $this->data['type'] = 'welcome';
+    $this->withOptions([
+      3 => 'segment', // event
+      4 => '2', // segment
+      5 => 'subscriber', // role
+      6 => '1', // afterTimeNumber
+      7 => 'immediate', // afterTimeType
+    ]);
+    return $this;
+  }
+
+  /**
    * @param array $options
    *
    * @return Newsletter
