@@ -74,6 +74,7 @@ rm -f $plugin_name/assets/js/lib/tinymce/package.json
 echo '[BUILD] Copying release files'
 cp license.txt $plugin_name
 cp index.php $plugin_name
+cp $plugin_name-cron.php $plugin_name
 cp $plugin_name.php $plugin_name
 cp mailpoet_initializer.php $plugin_name
 cp readme.txt $plugin_name
