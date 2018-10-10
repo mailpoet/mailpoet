@@ -42,6 +42,8 @@ $ ./do compile:all
 # Frameworks and libraries
 
 - [Paris ORM](https://github.com/j4mie/paris).
+- [Twig](https://twig.symfony.com/) and [Handlebars](https://handlebarsjs.com/) are used for templates rendering.
+- [Monolog](https://seldaek.github.io/monolog/) is used for logging.
 - [Robo](https://robo.li/) is used to write and run workflow commands.
 - [Codeception](https://codeception.com/) is used to write unit and acceptance tests.
 - [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) and [Selenium](https://www.seleniumhq.org/) to run acceptance tests.
