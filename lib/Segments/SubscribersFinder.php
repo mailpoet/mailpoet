@@ -13,15 +13,15 @@ class SubscribersFinder {
   function findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids) {
     $result = array();
     foreach($newsletter_segments_ids as $segment_id) {
-      $segment = Segment::find_one($segment_id)->asArray();
+      $segment = Segment::find_one($segment_id);
       $result = array_merge($result, $this->findSubscribersInSegment($segment, $subscribers_to_process_ids));
     }
     return $this->unique($result);
   }
 
-  private function findSubscribersInSegment($segment, $subscribers_to_process_ids) {
+  private function findSubscribersInSegment(Segment $segment, $subscribers_to_process_ids) {
     if($this->isStaticSegment($segment)) {
-      $subscribers = Subscriber::findSubscribersInSegments($subscribers_to_process_ids, array($segment['id']))->findMany();
+      $subscribers = Subscriber::findSubscribersInSegments($subscribers_to_process_ids, array($segment->id))->findMany();
       return Subscriber::extractSubscribersIds($subscribers);
     }
     $finders = Hooks::applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
@@ -34,9 +34,8 @@ class SubscribersFinder {
     return array();
   }
 
-
-  private function isStaticSegment($segment) {
-    return $segment['type'] === Segment::TYPE_DEFAULT || $segment['type'] === Segment::TYPE_WP_USERS;
+  private function isStaticSegment(Segment $segment) {
+    return $segment->type === Segment::TYPE_DEFAULT || $segment->type === Segment::TYPE_WP_USERS;
   }
 
   function addSubscribersToTaskFromSegments(ScheduledTask $task, array $segments) {
@@ -61,7 +60,9 @@ class SubscribersFinder {
   }
 
   private function addSubscribersToTaskFromStaticSegments(ScheduledTask $task, array $segments) {
-    $segment_ids = array_column($segments, 'id');
+    $segment_ids = array_map(function($segment) {
+      return $segment->id;
+    }, $segments);
     Subscriber::rawExecute(
       'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
        (task_id, subscriber_id, processed)
@@ -90,7 +91,7 @@ class SubscribersFinder {
     return $count;
   }
 
-  private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, $segment) {
+  private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, Segment $segment) {
     $finders = Hooks::applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
     $count = 0;
     foreach($finders as $finder) {

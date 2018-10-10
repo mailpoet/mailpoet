@@ -99,10 +99,10 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
-      array(
-        array('id' => $this->segment_1->id, 'type' => Segment::TYPE_DEFAULT),
-        array('id' => $this->segment_2->id, 'type' => Segment::TYPE_DEFAULT),
-      )
+      [
+        $this->getDummySegment($this->segment_1->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment_2->id, Segment::TYPE_DEFAULT),
+      ]
     );
     expect($subscribers_count)->equals(1);
     expect($this->sending->getSubscribers())->equals(array($this->subscriber_2->id));
@@ -112,9 +112,9 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
-      array(
-        array('id' => $this->segment_1->id, 'type' => 'UNKNOWN SEGMENT'),
-      )
+      [
+        $this->getDummySegment($this->segment_1->id, 'UNKNOWN SEGMENT'),
+      ]
     );
     expect($subscribers_count)->equals(0);
   }
@@ -134,9 +134,9 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
-      array(
-        array('id' => $this->segment_2->id, 'type' => ''),
-      )
+      [
+        $this->getDummySegment($this->segment_2->id, ''),
+      ]
     );
     expect($subscribers_count)->equals(1);
     expect($this->sending->getSubscribers())->equals(array($this->subscriber_1->id));
@@ -157,15 +157,22 @@ class SubscribersFinderTest extends \MailPoetTest {
 
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
-      array(
-        array('id' => $this->segment_1->id, 'type' => Segment::TYPE_DEFAULT),
-        array('id' => $this->segment_2->id, 'type' => Segment::TYPE_DEFAULT),
-        array('id' => $this->segment_3->id, 'type' => ''),
-      )
+      [
+        $this->getDummySegment($this->segment_1->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment_2->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment_3->id, ''),
+      ]
     );
 
     expect($subscribers_count)->equals(1);
     expect($this->sending->getSubscribers())->equals(array($this->subscriber_2->id));
+  }
+
+  private function getDummySegment($id, $type) {
+    $segment = Segment::create();
+    $segment->id = $id;
+    $segment->type = $type;
+    return $segment;
   }
 
 }

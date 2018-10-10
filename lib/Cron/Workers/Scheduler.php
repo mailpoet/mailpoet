@@ -81,7 +81,7 @@ class Scheduler {
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );
     // ensure that segments exist
-    $segments = $newsletter->segments()->findArray();
+    $segments = $newsletter->segments()->findMany();
     if(empty($segments)) {
       Logger::getLogger('post-notifications')->addInfo(
         'post notification no segments',
@@ -122,9 +122,9 @@ class Scheduler {
 
   function processScheduledAutomaticEmail($newsletter, $queue) {
     if($newsletter->sendTo === 'segment') {
-      $segment = Segment::findOne($newsletter->segment)->asArray();
+      $segment = Segment::findOne($newsletter->segment);
       $finder = new SubscribersFinder();
-      $result = $finder->addSubscribersToTaskFromSegments($queue->task(), array($segment));
+      $result = $finder->addSubscribersToTaskFromSegments($queue->task(), [$segment]);
       if(empty($result)) {
         $queue->delete();
         return false;
@@ -145,14 +145,14 @@ class Scheduler {
     return true;
   }
 
-  function processScheduledStandardNewsletter($newsletter, $queue) {
-    $segments = $newsletter->segments()->findArray();
+  function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
+    $segments = $newsletter->segments()->findMany();
     $finder = new SubscribersFinder();
-    $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
+    $finder->addSubscribersToTaskFromSegments($task->task(), $segments);
     // update current queue
-    $queue->updateCount();
-    $queue->status = null;
-    $queue->save();
+    $task->updateCount();
+    $task->status = null;
+    $task->save();
     // update newsletter status
     $newsletter->setStatus(Newsletter::STATUS_SENDING);
     return true;
