@@ -17,9 +17,7 @@ class SaveNewsletterAsTemplateCest {
 
     // step 1 - Prepare post notification data
     $newsletterFactory = new Newsletter();
-    $newsletter = $newsletterFactory->withSubject($newsletter_title)
-        ->withType('standard')
-        ->create();
+    $newsletter = $newsletterFactory->withSubject($newsletter_title)->create();
 
     // step 2 - Go to editor
     $I->login();
@@ -37,7 +35,7 @@ class SaveNewsletterAsTemplateCest {
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id="new_email"]');
     $I->seeInCurrentUrl('#/new');
-    $I->click('[data-automation-id=\'create_standard\']');
+    $I->click('[data-automation-id="create_standard"]');
     $I->waitForText('Newsletters');
     $I->seeInCurrentUrl('#/template');
 

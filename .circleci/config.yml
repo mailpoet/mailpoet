@@ -210,8 +210,6 @@ workflows:
       - php7_multisite:
           requires:
             - build_and_code_qa
-            - php7
       - acceptance_tests_multisite:
           requires:
             - build_and_code_qa
-            - acceptance_tests

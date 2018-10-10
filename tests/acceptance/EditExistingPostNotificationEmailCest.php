@@ -17,8 +17,7 @@ class EditExistingPostNotificationEmailCest {
     // step 1 - Prepare post notification data
     $form = new Newsletter();
     $newsletter = $form->withSubject($newsletter_title)
-      ->withType('notification')
-      ->withPostNotificationOptions()
+      ->withPostNotificationsType()
       ->create();
 
     // step 2 - Open list of post notifications

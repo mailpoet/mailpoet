@@ -41,16 +41,31 @@ class Newsletter {
   /**
    * @return Newsletter
    */
-  public function withStatus($status) {
-    $this->data['status'] = $status;
+  public function withPostNotificationsType() {
+    $this->data['type'] = 'notification';
+    $this->withOptions([
+      8 => 'daily', # intervalType
+      9 => '0', # timeOfDay
+      10 => '1', # intervalType
+      11 => '0', # monthDay
+      12 => '1', # nthWeekDay
+      13 => '0 0 * * *', # schedule
+    ]);
     return $this;
   }
 
   /**
    * @return Newsletter
    */
-  public function withType($type) {
-    $this->data['type'] = $type;
+  public function withWelcomeType() {
+    $this->data['type'] = 'welcome';
+    $this->withOptions([
+      3 => 'segment', // event
+      4 => '2', // segment
+      5 => 'subscriber', // role
+      6 => '1', // afterTimeNumber
+      7 => 'immediate', // afterTimeType
+    ]);
     return $this;
   }
 
@@ -59,24 +74,8 @@ class Newsletter {
    *
    * @return Newsletter
    */
-  public function withPostNotificationOptions(array $options = [
-    8 => 'daily', # intervalType
-    9 => '0', # timeOfDay
-    10 => '1', # intervalType
-    11 => '0', # monthDay
-    12 => '1', # nthWeekDay
-    13 => '0 0 * * *', # schedule
-  ]) {
-    return $this->withOptions($options);
-  }
-
-  /**
-   * @param array $options
-   *
-   * @return Newsletter
-   */
-  public function withOptions(array $options) {
-    $this->options = array_merge($this->options, $options);
+  private function withOptions(array $options) {
+    $this->options = $options;
     return $this;
   }
 

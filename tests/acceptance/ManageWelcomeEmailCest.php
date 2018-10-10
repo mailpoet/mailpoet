@@ -2,17 +2,35 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Test\DataFactories\Newsletter;
+
+require_once __DIR__ . '/../DataFactories/Newsletter.php';
+
 class ManageWelcomeEmailCest {
+
+  private $welcome_template;
+  private $title_element;
+
   function __construct() {
-    $this->welcome_template = '[data-automation-id=\'select_template_0\']';
-    $this->title_element = '[data-automation-id=\'newsletter_title\']';
+    $this->welcome_template = '[data-automation-id="select_template_0"]';
+    $this->title_element = '[data-automation-id="newsletter_title"]';
   }
 
   private function createWelcomeEmailWithTitle(\AcceptanceTester $I, $newsletter_title) {
+    $newsletter_factory = new Newsletter();
+    $newsletter_factory->withSubject($newsletter_title)
+     ->withWelcomeType()
+     ->create();
+  }
+
+  function saveWelcomeNewsletterAsDraft(\AcceptanceTester $I) {
+    $I->wantTo('save a welcome newsletter as a draft');
+    $newsletter_title = 'Save Welcome Email As Draft Test Email';
+    $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id=\'new_email\']');
+    $I->click('[data-automation-id="new_email"]');
     $I->seeInCurrentUrl('#/new');
-    $I->click('[data-automation-id=\'create_welcome\']');
+    $I->click('[data-automation-id="create_welcome"]');
     $I->waitForText('Welcome Email', 20);
     $I->seeInCurrentUrl('mailpoet-newsletters#/new/welcome');
     $I->click('Next');
@@ -26,24 +44,19 @@ class ManageWelcomeEmailCest {
     $I->click('Next');
     $I->waitForText('Reply-to', 20);
     $I->click('Save as draft and close');
-    $I->amOnMailpoetPage('Emails');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]', 20);
     $I->seeInCurrentUrl('mailpoet-newsletters');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-  }
-
-  function saveWelcomeNewsletterAsDraft(\AcceptanceTester $I) {
-    $I->wantTo('save a welcome newsletter as a draft');
-    $newsletter_title = 'Save Welcome Email As Draft Test Email';
-    $I->login();
-    $this->createWelcomeEmailWithTitle($I, $newsletter_title);
     $I->waitForText($newsletter_title, 20);
   }
+
   function editWelcomeEmail(\AcceptanceTester $I) {
-    $I->wantTo('Edit a welcome newsletter');
     $newsletter_title = 'Edit Welcome Email Test';
-    $I->login();
     $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $I->wantTo('Edit a welcome newsletter');
+    $I->login();
+    $I->amOnMailpoetPage('Emails');
+    $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText($newsletter_title, 20);
     $I->clickItemRowActionByItemName($newsletter_title, 'Edit');
     $I->waitForElement($this->title_element, 10);
@@ -58,11 +71,14 @@ class ManageWelcomeEmailCest {
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText('Edit Test Welcome Edited', 20);
   }
+
   function deleteWelcomeEmail(\AcceptanceTester $I) {
     $I->wantTo('Delete a welcome email');
     $newsletter_title = 'Delete Welcome Email Test';
-    $I->login();
     $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $I->login();
+    $I->amOnMailpoetPage('Emails');
+    $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText($newsletter_title, 20);
     $I->clickItemRowActionByItemName($newsletter_title, 'Move to trash');
     $I->waitForElement('[data-automation-id="filters_trash"]');
@@ -73,21 +89,27 @@ class ManageWelcomeEmailCest {
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText($newsletter_title, 15);
   }
+
   function duplicateWelcomeEmail (\AcceptanceTester $I) {
-    $I->wantTo('Duplicate a welcome email');
     $newsletter_title = 'Duplicate Welcome Email Test';
-    $I->login();
     $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $I->wantTo('Duplicate a welcome email');
+    $I->login();
+    $I->amOnMailpoetPage('Emails');
+    $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText($newsletter_title, 20);
     $I->clickItemRowActionByItemName($newsletter_title, 'Duplicate');
     $I->waitForText('Copy of ' . $newsletter_title, 10);
   }
+
   function searchForWelcomeEmail (\AcceptanceTester $I) {
     $I->wantTo('Search for a welcome email');
-    $newsletter_title = "Welcome Email Search Test";
+    $newsletter_title = 'Welcome Email Search Test';
     $failure_condition_newsletter = 'Totes Fake';
-    $I->login();
     $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $I->login();
+    $I->amOnMailpoetPage('Emails');
+    $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText($newsletter_title, 20);
     $I->fillField('#search_input', $failure_condition_newsletter);
     $I->click('Search');
@@ -97,15 +119,20 @@ class ManageWelcomeEmailCest {
     $I->click('Search');
     $I->waitForText($newsletter_title, 10);
   }
+
   function saveWelcomeEmailAsTemplate (\AcceptanceTester $I) {
     $I->wantTo('Save welcome email as a template');
     $newsletter_title = 'Save Welcome Email As Template Test';
     $template_title = 'Welcome Template Test Title';
     $template_descr = 'Welcome Template Test Descr';
+    $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+
     $save_template_option = '[data-automation-id="newsletter_save_as_template_option"]';
     $save_template_button = '[data-automation-id="newsletter_save_as_template_button"]';
+
     $I->login();
-    $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $I->amOnMailpoetPage('Emails');
+    $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText($newsletter_title, 20);
     $I->clickItemRowActionByItemName($newsletter_title, 'Edit');
     $I->waitForElement($this->title_element, 10);
@@ -132,4 +159,5 @@ class ManageWelcomeEmailCest {
     $I->waitForElement('[data-automation-id="newsletter_title"]');
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
   }
+
 }

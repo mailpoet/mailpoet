@@ -17,9 +17,7 @@ class SearchForStandardNewsletterCest {
 
     // step 1 - Prepare newsletter data
     $newsletterFactory = new Newsletter();
-    $newsletter = $newsletterFactory->withSubject($newsletter_title)
-        ->withType('standard')
-        ->create();
+    $newsletterFactory->withSubject($newsletter_title)->create();
 
     // step 2 - Search
     $I->login();

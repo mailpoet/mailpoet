@@ -14,9 +14,8 @@ class ConfirmNotificationAutosaveCest {
     // step 1 - Prepare post notification data
     $newsletter = new Newsletter();
     $newsletter = $newsletter->withSubject($newsletter_title)
-        ->withType('notification')
-        ->withPostNotificationOptions()
-        ->create();
+      ->withPostNotificationsType()
+      ->create();
     // step 2 - Go to editor
     $I->login();
     $I->amEditingNewsletter($newsletter->id);
