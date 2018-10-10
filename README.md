@@ -8,6 +8,7 @@ MailPoet done the right way.
 - [Frameworks and libraries](#frameworks-and-libraries)
 - [Files structure](#files-structure)
 - [Workflow Commands](#workflow-commands)
+- [Coding and Testing](#coding-and-testing)
 
 # Setup
 
@@ -124,6 +125,45 @@ $ ./do qa:lint:javascript  # JS code linter.
 $ ./do qa                  # PHP and JS linters.
 ```
 
+# Coding and Testing
+
+## i18n
+
+We use functions `__()`, `_n()` and `_x()` with domain `mailpoet` to translate strings.
+
+**in PHP code**
+
+```php
+__('text to translate', 'mailpoet');
+_n('single text', 'plural text', $number, 'mailpoet');
+_x('text to translate', 'context for translators', 'mailpoet');
+```
+
+**in Twig views**
+
+```html
+<%= __('text to translate') %>
+<%= _n('single text', 'plural text', $number) %>
+<%= _x('text to translate', 'context for translators') %>
+```
+
+The domain `mailpoet` will be added automatically by the Twig functions.
+
+**in Javascript code**
+
+First add the string to the translations block in the Twig view:
+
+```html
+<% block translations %>
+  <%= localize({
+    'key': __('string to translate'),
+    ...
+  }) %>
+<% endblock %>
+```
+
+Then use `MailPoet.I18n.t('key')` to get the translated string on your Javascript code.
+
 ## Acceptance testing
 
 We are using Gravity Flow plugin's setup as an example for our acceptance test suite: https://www.stevenhenty.com/learn-acceptance-testing-deeply/
@@ -135,4 +175,3 @@ _Windows users only: enable hard drive sharing in the Docker settings._
 The browser runs in a docker container. You can use a VNC client to watch the test run, follow instructions in official 
 repo: https://github.com/SeleniumHQ/docker-selenium
 If you’re on a Mac, you can open vnc://localhost:5900 in Safari to watch the tests running in Chrome. If you’re on Windows, you’ll need a VNC client. Password: secret.
-
