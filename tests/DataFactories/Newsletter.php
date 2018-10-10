@@ -19,14 +19,14 @@ class Newsletter {
       'status' => 'draft',
       ];
     $this->options = [];
-    $this->loadBodyFrom('newsletterWithALC.json');
+    $this->withTemplate('default');
   }
 
   /**
    * @return Newsletter
    */
-  public function loadBodyFrom($filename) {
-    $this->data['body'] = json_decode(file_get_contents(__DIR__ . '/../_data/' . $filename), true);
+  public function withTemplate($filename) {
+    $this->data['body'] = json_decode(file_get_contents(__DIR__ . '/../_data/templates/' . $filename . '.json'), true);
     return $this;
   }
 
