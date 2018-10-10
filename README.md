@@ -6,7 +6,6 @@ MailPoet done the right way.
 
 - [Setup](#setup)
 - [Frameworks and libraries](#frameworks-and-libraries)
-- [Files structure](#files-structure)
 - [Workflow Commands](#workflow-commands)
 - [Coding and Testing](#coding-and-testing)
 
@@ -53,42 +52,6 @@ $ ./do compile:all
 - [Mocha](https://mochajs.org/), [Chai](https://www.chaijs.com/) and [Sinon](https://sinonjs.org/) are used to write Javascript tests.
 - [ESLint](https://eslint.org/) is used to lint JS files.
 - [Webpack](https://webpack.js.org/) is used to bundle assets.
-
-# Files structure
-```bash
-assets/
-  css/src/    # CSS source files using Stylus
-  fonts/
-  img/
-  js/src/    # JS source files
-codeception.acceptance.yml
-codeception.unit.yml
-composer.json
-composer.lock
-CONTRIBUTING.md
-do -> vendor/bin/robo
-docker-compose.yml
-docker-entrypoint.sh
-Dockerfile
-index.php
-lib/         # PHP source files
-license.txt
-mailpoet-cron.php
-mailpoet_initializer.php
-mailpoet.php
-package.json
-package-lock.json
-README.md
-readme.txt
-RoboFile.php   # workflow commands are defined here
-tests/
-  acceptance/  # acceptance tests using Codeception
-  javascript/  # Javascript tests using mocha, chai and sinon
-  unit/        # PHP unit tests using Codeception
-uninstall.php
-views/         # templates using Twig and Handlebars
-webpack.config.js
-```
 
 # Workflow Commands
 
