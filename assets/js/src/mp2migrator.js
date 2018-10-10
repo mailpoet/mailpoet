@@ -33,9 +33,9 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
         jQuery('#logger').html('');
         result.split('\n').forEach(function (resultRow) {
           var row = resultRow;
-          if (row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row === MailPoet.I18n.t('import_stopped_by_user')) {
+          if (row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row.toLowerCase() === MailPoet.I18n.t('import_stopped_by_user').toLowerCase()) {
             row = '<span class="error_msg">' + row + '</span>'; // Mark the errors in red
-          } else if (row === MailPoet.I18n.t('import_complete')) { // Test if the import is complete
+          } else if (row.toLowerCase() === MailPoet.I18n.t('import_complete').toLowerCase()) { // Test if the import is complete
             jQuery('#import-actions').hide();
             jQuery('#upgrade-completed').show();
           }
