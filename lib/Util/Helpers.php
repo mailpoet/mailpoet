@@ -87,4 +87,12 @@ class Helpers {
       : null;
   }
 
+  static function recursiveTrim($value) {
+    if(is_array($value))
+      return array_map([__CLASS__, 'recursiveTrim'], $value);
+    if(is_string($value))
+      return trim($value);
+    return $value;
+  }
+
 }
