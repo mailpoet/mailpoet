@@ -14,15 +14,19 @@ class Form extends Model {
     ));
   }
 
+  function getSettings() {
+    return is_serialized($this->settings) ? unserialize($this->settings) : $this->settings;
+  }
+
+  function getBody() {
+    return is_serialized($this->body) ? unserialize($this->body) : $this->body;
+  }
+
   function asArray() {
     $model = parent::asArray();
 
-    $model['body'] = (is_serialized($this->body))
-      ? unserialize($this->body)
-      : $this->body;
-    $model['settings'] = (is_serialized($this->settings))
-      ? unserialize($this->settings)
-      : $this->settings;
+    $model['body'] = $this->getBody();
+    $model['settings'] = $this->getSettings();
 
     return $model;
   }
@@ -40,15 +44,15 @@ class Form extends Model {
   }
 
   function getFieldList() {
-    $form = $this->asArray();
-    if(empty($form['body'])) {
+    $body = $this->getBody();
+    if(empty($body)) {
       return false;
     }
 
     $skipped_types = array('html', 'divider', 'submit');
     $fields = array();
 
-    foreach((array)$form['body'] as $field) {
+    foreach((array)$body as $field) {
       if(empty($field['id'])
         || empty($field['type'])
         || in_array($field['type'], $skipped_types)
@@ -66,17 +70,17 @@ class Form extends Model {
   }
 
   function filterSegments(array $segment_ids = array()) {
-    $form = $this->asArray();
-    if(empty($form['settings']['segments'])) {
+    $settings = $this->getSettings();
+    if(empty($settings['segments'])) {
       return array();
     }
 
-    if(!empty($form['settings']['segments_selected_by'])
-      && $form['settings']['segments_selected_by'] == 'user'
+    if(!empty($settings['segments_selected_by'])
+      && $settings['segments_selected_by'] == 'user'
     ) {
-      $segment_ids = array_intersect($segment_ids, $form['settings']['segments']);
+      $segment_ids = array_intersect($segment_ids, $settings['segments']);
     } else {
-      $segment_ids = $form['settings']['segments'];
+      $segment_ids = $settings['segments'];
     }
 
     return $segment_ids;

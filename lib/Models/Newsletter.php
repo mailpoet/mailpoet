@@ -367,12 +367,12 @@ class Newsletter extends Model {
 
     if($duplicate->getErrors() === false) {
       // create relationships between duplicate and segments
-      $segments = $this->segments()->findArray();
+      $segments = $this->segments()->findMany();
 
       if(!empty($segments)) {
         foreach($segments as $segment) {
           $relation = NewsletterSegment::create();
-          $relation->segment_id = $segment['id'];
+          $relation->segment_id = $segment->id;
           $relation->newsletter_id = $duplicate->id;
           $relation->save();
         }
@@ -380,14 +380,14 @@ class Newsletter extends Model {
 
       // duplicate options
       $options = NewsletterOption::where('newsletter_id', $this->id)
-        ->findArray();
+        ->findMany();
 
       if(!empty($options)) {
         foreach($options as $option) {
           $relation = NewsletterOption::create();
           $relation->newsletter_id = $duplicate->id;
-          $relation->option_field_id = $option['option_field_id'];
-          $relation->value = $option['value'];
+          $relation->option_field_id = $option->option_field_id;
+          $relation->value = $option->value;
           $relation->save();
         }
       }
@@ -426,12 +426,12 @@ class Newsletter extends Model {
 
     if($notification_history->getErrors() === false) {
       // create relationships between notification history and segments
-      $segments = $this->segments()->findArray();
+      $segments = $this->segments()->findMany();
 
       if(!empty($segments)) {
         foreach($segments as $segment) {
           $relation = NewsletterSegment::create();
-          $relation->segment_id = $segment['id'];
+          $relation->segment_id = $segment->id;
           $relation->newsletter_id = $notification_history->id;
           $relation->save();
         }
