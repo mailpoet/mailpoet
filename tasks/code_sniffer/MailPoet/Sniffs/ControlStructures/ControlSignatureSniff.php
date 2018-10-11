@@ -14,7 +14,7 @@
  */
 
 if (class_exists('PHP_CodeSniffer\Sniffs\AbstractPatternSniff', true) === false) {
-    throw new PHP_CodeSniffer_Exception('Class PHP_CodeSniffer\Sniffs\AbstractPatternSniff not found');
+    throw new \PHP_CodeSniffer\Exceptions\RuntimeException('Class PHP_CodeSniffer\Sniffs\AbstractPatternSniff not found');
 }
 
 /**
