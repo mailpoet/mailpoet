@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a70b71ba248b6214df74d301b4a20ef",
+    "content-hash": "548dd0db75412e7939828d57012876ea",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -1290,25 +1290,25 @@
         },
         {
             "name": "codeception/aspect-mock",
-            "version": "2.2.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/AspectMock.git",
-                "reference": "3a4da1c9c68b5122da85188afe588ecd69412772"
+                "reference": "b7f5c50da89419824102400bb4c71988ec33044f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/AspectMock/zipball/3a4da1c9c68b5122da85188afe588ecd69412772",
-                "reference": "3a4da1c9c68b5122da85188afe588ecd69412772",
+                "url": "https://api.github.com/repos/Codeception/AspectMock/zipball/b7f5c50da89419824102400bb4c71988ec33044f",
+                "reference": "b7f5c50da89419824102400bb4c71988ec33044f",
                 "shasum": ""
             },
             "require": {
-                "goaop/framework": "^2.2.0",
+                "goaop/framework": "^2.0.0",
                 "php": ">=5.6.0",
-                "symfony/finder": "~2.4|~3.0|~4.0"
+                "symfony/finder": "~2.4|~3.0"
             },
             "require-dev": {
-                "codeception/base": "^2.4",
+                "codeception/base": "~2.1",
                 "codeception/specify": "~0.3",
                 "codeception/verify": "~0.2"
             },
@@ -1325,11 +1325,11 @@
             "authors": [
                 {
                     "name": "Michael Bodnarchuk",
-                    "email": "davert@codeception.com"
+                    "email": "davert.php@mailican.com"
                 }
             ],
             "description": "Experimental Mocking Framework powered by Aspects",
-            "time": "2018-03-20T08:09:18+00:00"
+            "time": "2017-01-31T20:29:56+00:00"
         },
         {
             "name": "codeception/codeception",
@@ -2363,76 +2363,6 @@
             "time": "2017-02-24T16:22:25+00:00"
         },
         {
-            "name": "doctrine/cache",
-            "version": "v1.6.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/cache.git",
-                "reference": "eb152c5100571c7a45470ff2a35095ab3f3b900b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/eb152c5100571c7a45470ff2a35095ab3f3b900b",
-                "reference": "eb152c5100571c7a45470ff2a35095ab3f3b900b",
-                "shasum": ""
-            },
-            "require": {
-                "php": "~5.5|~7.0"
-            },
-            "conflict": {
-                "doctrine/common": ">2.2,<2.4"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.8|~5.0",
-                "predis/predis": "~1.0",
-                "satooshi/php-coveralls": "~0.6"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.6.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Doctrine\\Common\\Cache\\": "lib/Doctrine/Common/Cache"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Roman Borschel",
-                    "email": "roman@code-factory.org"
-                },
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
-                },
-                {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com"
-                },
-                {
-                    "name": "Johannes Schmitt",
-                    "email": "schmittjoh@gmail.com"
-                }
-            ],
-            "description": "Caching library offering an object-oriented API for many cache backends",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "cache",
-                "caching"
-            ],
-            "time": "2017-07-22T12:49:21+00:00"
-        },
-        {
             "name": "doctrine/inflector",
             "version": "v1.1.0",
             "source": {
@@ -2702,32 +2632,29 @@
         },
         {
             "name": "goaop/framework",
-            "version": "2.2.0",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/goaop/framework.git",
-                "reference": "152abbffffcba72d2d159b892deb40b0829d0f28"
+                "reference": "6e2a0fe13c1943db02a67588cfd27692bddaffa5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/goaop/framework/zipball/152abbffffcba72d2d159b892deb40b0829d0f28",
-                "reference": "152abbffffcba72d2d159b892deb40b0829d0f28",
+                "url": "https://api.github.com/repos/goaop/framework/zipball/6e2a0fe13c1943db02a67588cfd27692bddaffa5",
+                "reference": "6e2a0fe13c1943db02a67588cfd27692bddaffa5",
                 "shasum": ""
             },
             "require": {
-                "doctrine/annotations": "^1.2.3",
-                "doctrine/cache": "^1.5",
-                "goaop/parser-reflection": "~1.4",
+                "doctrine/annotations": "~1.0",
+                "goaop/parser-reflection": "~1.2",
                 "jakubledl/dissect": "~1.0",
                 "php": ">=5.6.0"
             },
             "require-dev": {
                 "adlawson/vfs": "^0.12",
                 "doctrine/orm": "^2.5",
-                "phpunit/phpunit": "^5.7",
-                "symfony/console": "^2.7|^3.0",
-                "symfony/filesystem": "^3.3",
-                "symfony/process": "^3.3"
+                "phpunit/phpunit": "^4.8",
+                "symfony/console": "^2.7|^3.0"
             },
             "suggest": {
                 "symfony/console": "Enables the usage of the command-line tool."
@@ -2764,7 +2691,7 @@
                 "library",
                 "php"
             ],
-            "time": "2018-01-05T23:07:51+00:00"
+            "time": "2017-07-12T11:46:25+00:00"
         },
         {
             "name": "goaop/parser-reflection",
