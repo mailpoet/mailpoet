@@ -112,6 +112,7 @@ class CustomFieldTest extends \MailPoetTest {
       $association = SubscriberCustomField::create();
       $association->subscriber_id = $subscriber->id;
       $association->custom_field_id = $this->custom_field->id;
+      $association->value = '';
       $association->save();
     }
     $custom_field = CustomField::findOne($this->custom_field->id);
