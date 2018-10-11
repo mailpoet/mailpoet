@@ -59,7 +59,8 @@ $kernel->init(
   array(
     'debug' => true,
     'cacheDir' => $cacheDir,
-    'includePaths' => [__DIR__ . '/../lib']
+    'includePaths' => [__DIR__ . '/../lib'],
+    'appDir' => __DIR__ . '/../'
   )
 );
 

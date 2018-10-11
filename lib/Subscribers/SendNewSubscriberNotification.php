@@ -33,7 +33,7 @@ class SendNewSubscriberNotification {
     if($mailer) {
       $this->mailer = $mailer;
     } else {
-      $this->mailer = new \MailPoet\Mailer\Mailer();
+      $this->mailer = new \MailPoet\Mailer\Mailer(false, $this->constructSenderEmail());
     }
   }
 

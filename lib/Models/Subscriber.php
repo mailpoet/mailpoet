@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Subscribers\SendConfirmationEmail;
 use MailPoet\Subscribers\SendNewSubscriberNotification;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
@@ -83,71 +84,6 @@ class Subscriber extends Model {
     return self::where('wp_user_id', $wp_user->ID)->findOne();
   }
 
-  function sendConfirmationEmail() {
-    $signup_confirmation = Setting::getValue('signup_confirmation');
-
-    if((bool)$signup_confirmation['enabled'] === false) {
-      return false;
-    }
-
-    $segments = $this->segments()->findMany();
-    $segment_names = array_map(function($segment) {
-      return $segment->name;
-    }, $segments);
-
-    $body = nl2br($signup_confirmation['body']);
-
-    // replace list of segments shortcode
-    $body = str_replace(
-      '[lists_to_confirm]',
-      '<strong>'.join(', ', $segment_names).'</strong>',
-      $body
-    );
-
-    // replace activation link
-    $body = Helpers::replaceLinkTags(
-      $body,
-      Subscription\Url::getConfirmationUrl($this),
-      array('target' => '_blank'),
-      'activation_link'
-    );
-
-    // build email data
-    $email = array(
-      'subject' => $signup_confirmation['subject'],
-      'body' => array(
-        'html' => $body,
-        'text' => $body
-      )
-    );
-
-    // convert subscriber to array
-    $subscriber = $this->asArray();
-
-    // set from
-    $from = (
-      !empty($signup_confirmation['from'])
-      && !empty($signup_confirmation['from']['address'])
-    ) ? $signup_confirmation['from']
-      : false;
-
-    // set reply to
-    $reply_to = (
-      !empty($signup_confirmation['reply_to'])
-      && !empty($signup_confirmation['reply_to']['address'])
-    ) ? $signup_confirmation['reply_to']
-      : false;
-
-    // send email
-    try {
-      $mailer = new Mailer(false, $from, $reply_to);
-      return $mailer->send($email, $subscriber);
-    } catch(\Exception $e) {
-      $this->setError($e->getMessage());
-      return false;
-    }
-  }
-
   static function generateToken($email = null) {
     if($email !== null) {
       $auth_key = '';
@@ -216,8 +152,8 @@ class Subscriber extends Model {
       // link subscriber to segments
       SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
 
-      // signup confirmation
-      $subscriber->sendConfirmationEmail();
+      $sender = new SendConfirmationEmail();
+      $sender->sendConfirmationEmail($subscriber);
 
       if($subscriber->status === self::STATUS_SUBSCRIBED) {
         $sender = new SendNewSubscriberNotification();
