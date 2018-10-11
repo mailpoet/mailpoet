@@ -12,6 +12,7 @@ use MailPoet\Models\Subscriber;
 if(!defined('ABSPATH')) exit;
 
 class MailerTest extends \MailPoetTest {
+  /** @var MailerTask */
   public $mailer_task;
   public $sender;
 

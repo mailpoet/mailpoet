@@ -8,6 +8,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Subscribers\SendNewSubscriberNotification;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Url as UrlHelper;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -22,13 +23,20 @@ class Pages {
   private $action;
   private $data;
   private $subscriber;
+  /** @var SendNewSubscriberNotification */
+  private $new_subscriber_notification_sender;
 
-  function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false) {
+  function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false, $new_subscriber_notification_sender = null) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
     if($init_page_filters) $this->initPageFilters();
     if($init_shortcodes) $this->initShortcodes();
+    if($new_subscriber_notification_sender) {
+      $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
+    } else {
+      $this->new_subscriber_notification_sender = new SendNewSubscriberNotification();
+    }
   }
 
   private function isPreview() {
@@ -76,13 +84,17 @@ class Pages {
 
     if($this->subscriber->getErrors() === false) {
       // send welcome notification
-      $subsciber_segments = $this->subscriber->segments()->findArray();
+      $subsciber_segments = $this->subscriber->segments()->findMany();
       if($subsciber_segments) {
         Scheduler::scheduleSubscriberWelcomeNotification(
           $this->subscriber->id,
-          array_column($subsciber_segments, 'id')
+          array_map(function ($segment) {
+            return $segment->get('id');
+          }, $subsciber_segments)
         );
       }
+
+      $this->new_subscriber_notification_sender->send($this->subscriber, $subsciber_segments);
 
       // update subscriber from stored data after confirmation
       if(!empty($subscriber_data)) {

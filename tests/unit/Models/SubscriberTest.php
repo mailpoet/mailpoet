@@ -30,6 +30,10 @@ class SubscriberTest extends \MailPoetTest {
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate($this->test_data);
     $this->saved = $this->subscriber->save();
+    Setting::setValue('sender', array(
+      'name' => 'John Doe',
+      'address' => 'john.doe@example.com'
+    ));
   }
 
   function testItCanBeCreated() {
@@ -478,9 +482,7 @@ class SubscriberTest extends \MailPoetTest {
       expect($newsletter_option->getErrors())->false();
     }
 
-    $signup_confirmation_enabled = (bool)Setting::setValue(
-      'signup_confirmation.enabled', false
-    );
+    Setting::setValue('signup_confirmation.enabled', false);
     $subscriber = Subscriber::subscribe($this->test_data, array($segment->id()));
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(1);
