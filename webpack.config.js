@@ -273,6 +273,7 @@ var adminConfig = {
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
       'welcome_wizard/wizard.jsx',
+      'settings/announcement.jsx',
       'nps_poll.jsx'
     ],
     form_editor: [

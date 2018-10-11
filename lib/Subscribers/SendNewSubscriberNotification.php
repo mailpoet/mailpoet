@@ -58,7 +58,7 @@ class SendNewSubscriberNotification {
     }
   }
 
-  private function isDisabled($settings) {
+  public static function isDisabled($settings) {
     if(!is_array($settings)) {
       return true;
     }
