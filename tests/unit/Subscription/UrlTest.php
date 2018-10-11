@@ -15,7 +15,7 @@ class UrlTest extends \MailPoetTest {
 
   function testItReturnsTheConfirmationUrl() {
     // preview
-    $url = Url::getConfirmationUrl(false);
+    $url = Url::getConfirmationUrl(null);
     expect($url)->notNull();
     expect($url)->contains('action=confirm');
     expect($url)->contains('endpoint=subscription');
@@ -33,7 +33,7 @@ class UrlTest extends \MailPoetTest {
 
   function testItReturnsTheManageSubscriptionUrl() {
     // preview
-    $url = Url::getManageUrl(false);
+    $url = Url::getManageUrl(null);
     expect($url)->notNull();
     expect($url)->contains('action=manage');
     expect($url)->contains('endpoint=subscription');
@@ -51,7 +51,7 @@ class UrlTest extends \MailPoetTest {
 
   function testItReturnsTheUnsubscribeUrl() {
     // preview
-    $url = Url::getUnsubscribeUrl(false);
+    $url = Url::getUnsubscribeUrl(null);
     expect($url)->notNull();
     expect($url)->contains('action=unsubscribe');
     expect($url)->contains('endpoint=subscription');

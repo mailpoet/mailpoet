@@ -14,6 +14,10 @@ use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class ClicksTest extends \MailPoetTest {
+
+  /** @var Clicks */
+  private $clicks;
+
   function _before() {
     // create newsletter
     $newsletter = Newsletter::create();

@@ -730,8 +730,8 @@ class NewslettersTest extends \MailPoetTest {
 
   function testItCanSendAPreview() {
     $subscriber = 'test@subscriber.com';
-    $unsubscribeLink = SubscriptionUrl::getUnsubscribeUrl(false);
-    $manageLink = SubscriptionUrl::getManageUrl(false);
+    $unsubscribeLink = SubscriptionUrl::getUnsubscribeUrl(null);
+    $manageLink = SubscriptionUrl::getManageUrl(null);
     $viewInBrowserLink = Url::getViewInBrowserUrl(null, $this->newsletter, false, false, true);
     $data = array(
       'subscriber' => $subscriber,

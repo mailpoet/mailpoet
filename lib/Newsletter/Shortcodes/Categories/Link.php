@@ -22,7 +22,7 @@ class Link {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $shortcode_details['action'],
-          SubscriptionUrl::getUnsubscribeUrl($wp_user_preview ? false : $subscriber),
+          SubscriptionUrl::getUnsubscribeUrl($wp_user_preview ? null : $subscriber),
           $queue,
           $wp_user_preview
         );
@@ -30,7 +30,7 @@ class Link {
       case 'subscription_manage_url':
         return self::processUrl(
           $shortcode_details['action'],
-          SubscriptionUrl::getManageUrl($wp_user_preview ? false : $subscriber),
+          SubscriptionUrl::getManageUrl($wp_user_preview ? null : $subscriber),
           $queue,
           $wp_user_preview
         );
