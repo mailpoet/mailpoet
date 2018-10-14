@@ -53,11 +53,15 @@ if(is_dir(getenv('WP_TEST_CACHE_PATH'))) {
   $cacheDir = getenv('WP_TEST_CACHE_PATH');
 }
 
+$console->writeln('Clearing AspectMock cache...');
+exec('rm -rf ' . $cacheDir . '/_transformation.cache');
+
 $console->writeln('Initializing AspectMock library...');
 $kernel = \AspectMock\Kernel::getInstance();
 $kernel->init(
   array(
     'debug' => true,
+    'appDir' => __DIR__ . '/../',
     'cacheDir' => $cacheDir,
     'includePaths' => [__DIR__ . '/../lib']
   )
