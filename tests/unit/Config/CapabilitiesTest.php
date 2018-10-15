@@ -94,17 +94,6 @@ class CapabilitiesTest extends \MailPoetTest {
     expect(is_callable(WPHooksHelper::getActionAdded($hook_name)[0]))->true();
   }
 
-  function testItRegistersMembersCapGroup() {
-    if(function_exists('members_register_cap_group')) { // Members plugin active
-      $this->caps->registerMembersCapGroup();
-      expect_that(members_cap_group_exists(Capabilities::MEMBERS_CAP_GROUP_NAME));
-    } else {
-      $func = Mock::func('MailPoet\Config', 'members_register_cap_group', true);
-      $this->caps->registerMembersCapGroup();
-      $func->verifyInvoked([Capabilities::MEMBERS_CAP_GROUP_NAME]);
-    }
-  }
-
   function testItRegistersMembersCapabilities() {
     $permissions = AccessControl::getPermissionLabels();
     $permission_count = count($permissions);
@@ -113,9 +102,13 @@ class CapabilitiesTest extends \MailPoetTest {
       expect(members_get_cap_group(Capabilities::MEMBERS_CAP_GROUP_NAME)->caps)
         ->count($permission_count);
     } else {
-      $func = Mock::func('MailPoet\Config', 'members_register_cap', true);
-      $this->caps->registerMembersCapabilities();
-      $func->verifyInvokedMultipleTimes($permission_count);
+      $caps = Stub::makeEmptyExcept(
+        $this->caps,
+        'registerMembersCapabilities',
+        array('registerMembersCapability' => Expected::exactly($permission_count)),
+        $this
+      );
+      $caps->registerMembersCapabilities();
     }
   }
 

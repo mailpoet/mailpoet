@@ -3,7 +3,7 @@ jobs:
   build_and_code_qa:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.1_20180417.1
+      - image: mailpoet/wordpress:7.1_20181009.1
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
@@ -134,7 +134,7 @@ jobs:
   php7:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.1_20180417.1
+      - image: mailpoet/wordpress:7.1_20181009.1
       - image: circleci/mysql:5.7
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -165,7 +165,7 @@ jobs:
   php7_multisite:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.1_20180417.1
+      - image: mailpoet/wordpress:7.1_20181009.1
       - image: circleci/mysql:5.7
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC

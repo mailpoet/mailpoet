@@ -1,4 +1,4 @@
-FROM mailpoet/wordpress:5.6-cli_20180417.1
+FROM mailpoet/wordpress:5.6-cli_20181009.1
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 

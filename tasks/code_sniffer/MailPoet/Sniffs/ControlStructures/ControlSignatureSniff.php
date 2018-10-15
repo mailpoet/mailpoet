@@ -13,8 +13,8 @@
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
-if (class_exists('PHP_CodeSniffer_Standards_AbstractPatternSniff', true) === false) {
-    throw new PHP_CodeSniffer_Exception('Class PHP_CodeSniffer_Standards_AbstractPatternSniff not found');
+if (class_exists('PHP_CodeSniffer\Sniffs\AbstractPatternSniff', true) === false) {
+    throw new \PHP_CodeSniffer\Exceptions\RuntimeException('Class PHP_CodeSniffer\Sniffs\AbstractPatternSniff not found');
 }
 
 /**
@@ -29,7 +29,7 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractPatternSniff', true) === fal
  * @version   Release: @package_version@
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
-class MailPoet_Sniffs_ControlStructures_ControlSignatureSniff extends PHP_CodeSniffer_Standards_AbstractPatternSniff {
+class MailPoet_Sniffs_ControlStructures_ControlSignatureSniff extends PHP_CodeSniffer\Sniffs\AbstractPatternSniff {
 
     /**
      * If true, comments will be ignored if they are found in the code.
