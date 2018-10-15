@@ -68,6 +68,9 @@ class SendNewSubscriberNotification {
     if(!isset($settings['address'])) {
       return true;
     }
+    if(empty(trim($settings['address']))) {
+      return true;
+    }
     return !(bool)$settings['enabled'];
   }
 

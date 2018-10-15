@@ -173,7 +173,11 @@ class Populator {
 
     $subscriber_email_notification = Setting::getValue(SendNewSubscriberNotification::SETTINGS_KEY);
     if(empty($subscriber_email_notification)) {
-      Setting::setValue('subscriber_email_notification', ['enabled' => true]);
+      $sender = Setting::getValue('sender', []);
+      Setting::setValue('subscriber_email_notification', [
+        'enabled' => true,
+        'address' => isset($sender['address'])? $sender['address'] : null,
+      ]);
     }
 
     // reset mailer log
