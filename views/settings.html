@@ -87,6 +87,16 @@
           } else {
             $('#settings_re_captcha_tokens_error').hide();
           }
+          // if new subscriber notification is enabled but sender is empty, show error
+          var notifications_enabled = $('input[name="subscriber_email_notification[enabled]"]:checked').val(),
+            address = $('input[name="subscriber_email_notification[address]"]').val().trim();
+          if (notifications_enabled && address == '') {
+            $('#settings_subscriber_email_notification_error').show();
+            window.location.href = '#basic';
+            return false;
+          } else {
+            $('#settings_subscriber_email_notification_error').hide();
+          }
           // if we're setting up a sending method, try to activate it
           if ($('.mailpoet_mta_setup_save').is(':visible')) {
             $('.mailpoet_mta_setup_save').trigger('click');

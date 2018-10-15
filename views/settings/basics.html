@@ -337,7 +337,10 @@
             name="subscriber_email_notification[address]"
             value="<%= settings.subscriber_email_notification.address %>"
             placeholder="me@mydomain.com" />
-
+          <br>
+          <div id="settings_subscriber_email_notification_error" class="mailpoet_error_item mailpoet_error">
+            <%= __('Please fill the email address.') %>
+          </div>
     <!-- shortcode: archive page  -->
     <tr>
       <th scope="row">
