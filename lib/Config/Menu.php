@@ -391,7 +391,8 @@ class Menu {
   function premium() {
     $data = array(
       'subscriber_count' => Subscriber::getTotalSubscribers(),
-      'sub_menu' => self::MAIN_PAGE_SLUG
+      'sub_menu' => self::MAIN_PAGE_SLUG,
+      'display_discount' => time() <= strtotime('2018-11-30 23:59:59')
     );
 
     $this->displayPage('premium.html', $data);
