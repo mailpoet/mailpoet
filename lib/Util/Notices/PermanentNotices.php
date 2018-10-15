@@ -12,9 +12,12 @@ class PermanentNotices {
   /** @var AfterMigrationNotice */
   private $after_migration_notice;
 
+  private $discounts_announcement;
+
   public function __construct() {
     $this->php_version_warnings = new PHPVersionWarnings();
     $this->after_migration_notice = new AfterMigrationNotice();
+    $this->discounts_announcement = new DiscountsAnnouncement();
   }
 
   public function init() {
@@ -29,9 +32,11 @@ class PermanentNotices {
       Menu::isOnMailPoetAdminPage()
       && $_GET['page'] !== 'mailpoet-welcome-wizard'
     );
+    $this->discounts_announcement->init(empty($_GET['page']));
   }
 
   function ajaxDismissNoticeHandler() {
+    error_log('YOOOOOOOOOOOOOOOOO POST YES!');
     if(!isset($_POST['type'])) return;
     switch($_POST['type']) {
       case (PHPVersionWarnings::OPTION_NAME):
@@ -39,6 +44,9 @@ class PermanentNotices {
         break;
       case (AfterMigrationNotice::OPTION_NAME):
         $this->after_migration_notice->disable();
+        break;
+      case (DiscountsAnnouncement::OPTION_NAME):
+        $this->discounts_announcement->disable();
         break;
     }
   }
