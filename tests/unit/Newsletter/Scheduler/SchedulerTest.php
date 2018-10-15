@@ -30,7 +30,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testItGetsActiveNewslettersFilteredByTypeAndGroup() {
-    $newsletter = $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);
+    $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);
 
     // no newsletters with type "notification" should be found
     expect(Scheduler::getNewsletters(Newsletter::TYPE_NOTIFICATION))->isEmpty();
@@ -55,6 +55,7 @@ class SchedulerTest extends \MailPoetTest {
   function testItCanGetNextRunDate() {
     // it accepts cron syntax and returns next run date
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     expect(Scheduler::getNextRunDate('* * * * *'))
       ->equals($current_time->addMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
@@ -64,6 +65,7 @@ class SchedulerTest extends \MailPoetTest {
   function testItCanGetPreviousRunDate() {
     // it accepts cron syntax and returns previous run date
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     expect(Scheduler::getPreviousRunDate('* * * * *'))
       ->equals($current_time->subMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
@@ -125,11 +127,11 @@ class SchedulerTest extends \MailPoetTest {
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
-    $this->_after();
   }
 
   function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInDays() {
@@ -142,13 +144,13 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter->afterTimeType = 'days';
     Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addDays(2)->format('Y-m-d H:i'));
-    $this->_after();
   }
 
   function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInWeeks() {
@@ -161,13 +163,13 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter->afterTimeType = 'weeks';
     Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addWeeks(2)->format('Y-m-d H:i'));
-    $this->_after();
   }
 
   function testItCreatesWelcomeNotificationSendingTaskScheduledToSendImmediately() {
@@ -180,6 +182,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter->afterTimeType = null;
     Scheduler::createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
@@ -214,6 +217,7 @@ class SchedulerTest extends \MailPoetTest {
     // queue is created and scheduled for delivery one day later at 5 a.m.
     Scheduler::schedulePostNotification($post_id = 10);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     $next_run_date = ($current_time->hour < 5) ?
       $current_time :
       $current_time->addDay();
@@ -259,6 +263,7 @@ class SchedulerTest extends \MailPoetTest {
       )
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
@@ -349,7 +354,7 @@ class SchedulerTest extends \MailPoetTest {
       $wp_user = array('roles' => array('administrator'))
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
@@ -374,7 +379,7 @@ class SchedulerTest extends \MailPoetTest {
       $wp_user = array('roles' => array('administrator'))
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
@@ -522,6 +527,7 @@ class SchedulerTest extends \MailPoetTest {
     // new scheduled task should be created
     $task = SendingTask::getByNewsletterId($newsletter->id);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     expect($task->id)->greaterOrEquals(1);
     expect($task->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
     expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
@@ -573,6 +579,7 @@ class SchedulerTest extends \MailPoetTest {
     // new scheduled task should be created
     $task = SendingTask::getByNewsletterId($newsletter->id);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     expect($task->id)->greaterOrEquals(1);
     expect($task->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
     expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
@@ -622,6 +629,8 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testItSchedulesAutomaticEmailWhenConditionMatches() {
+    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     $newsletter_1 = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
     $this->_createNewsletterOptions(
       $newsletter_1->id,
@@ -657,19 +666,18 @@ class SchedulerTest extends \MailPoetTest {
     expect($result[0]->newsletter_id)->equals($newsletter_2->id);
     // scheduled task should be created
     $task = $result[0]->getTasks()->findOne();
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     expect($task->id)->greaterOrEquals(1);
     expect($task->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
     expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
     expect(Carbon::parse($task->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
   }
-  
+
   function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
     $hook = new Hooks;
-    
+
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_NOTIFICATION);
-    
+
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_NOTIFICATION,
@@ -678,33 +686,33 @@ class SchedulerTest extends \MailPoetTest {
         'schedule' => '* * * * *'
       )
     );
-    
+
     $this->_removePostNotificationHooks();
     register_post_type('post', array('exclude_from_search' => true));
     $hook->setupPostNotifications();
-    
+
     $post_data = array(
       'post_title' => 'title',
       'post_status' => 'publish',
     );
     wp_insert_post($post_data);
-    
+
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
     expect($queue)->equals(false);
-    
+
     $this->_removePostNotificationHooks();
     register_post_type('post', array('exclude_from_search' => false));
     $hook->setupPostNotifications();
-    
+
     wp_insert_post($post_data);
-    
+
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
     expect($queue)->notequals(false);
   }
-  
+
   function testSchedulerWontRunIfUnsentNotificationHistoryExists() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_NOTIFICATION);
-    
+
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_NOTIFICATION,
@@ -713,22 +721,22 @@ class SchedulerTest extends \MailPoetTest {
         'schedule' => '* * * * *'
       )
     );
-    
+
     $notification_history = Newsletter::create();
     $notification_history->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     $notification_history->status = Newsletter::STATUS_SENDING;
     $notification_history->parent_id = $newsletter->id;
     $notification_history->save();
-    
+
     $post_data = array(
       'post_title' => 'title',
       'post_status' => 'publish',
     );
     wp_insert_post($post_data);
-    
+
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
     expect($queue)->equals(false);
-  }  
+  }
 
   function _createQueue(
     $newsletter_id,
@@ -787,6 +795,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function _after() {
+    Carbon::setTestNow();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
