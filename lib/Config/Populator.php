@@ -11,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Segments\WP;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\Pages;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 
@@ -170,13 +171,22 @@ class Populator {
       ));
     }
 
+    $subscriber_email_notification = Setting::getValue(NewSubscriberNotificationMailer::SETTINGS_KEY);
+    if(empty($subscriber_email_notification)) {
+      $sender = Setting::getValue('sender', []);
+      Setting::setValue('subscriber_email_notification', [
+        'enabled' => true,
+        'address' => isset($sender['address'])? $sender['address'] : null,
+      ]);
+    }
+
     // reset mailer log
     MailerLog::resetMailerLog();
   }
 
   private function createDefaultSegments() {
     // WP Users segment
-    $wp_segment = Segment::getWPSegment();
+    Segment::getWPSegment();
 
     // Synchronize WP Users
     WP::synchronizeUsers();

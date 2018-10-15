@@ -299,6 +299,48 @@
         </p>
       </td>
     </tr>
+
+    <!-- New subscriber emails notifications -->
+    <tr>
+      <th scope="row">
+        <label for="subscription_unsubscribe_page">
+          <%= __('New subscriber notifications') %> <span id="new_subscriber_announcement" class="new_subscriber_announcement" />
+        </label>
+        <p class="description">
+          <%= __('Enter the email address that should receive notifications when someone subscribes.') %>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="subscriber_email_notification[enabled]"
+              value="1"
+              <% if(settings.subscriber_email_notification.enabled) %>
+                checked
+              <% endif %>
+            /><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+              type="radio"
+              name="subscriber_email_notification[enabled]"
+              value=""
+              <% if not(settings.subscriber_email_notification.enabled) %>
+                checked
+              <% endif %>
+            /><%= __('No') %>
+          </label>
+          <br>
+          <input type="email"
+            id="subscriber_email_notification[address]"
+            name="subscriber_email_notification[address]"
+            value="<%= settings.subscriber_email_notification.address %>"
+            placeholder="me@mydomain.com" />
+          <br>
+          <div id="settings_subscriber_email_notification_error" class="mailpoet_error_item mailpoet_error">
+            <%= __('Please fill the email address.') %>
+          </div>
     <!-- shortcode: archive page  -->
     <tr>
       <th scope="row">

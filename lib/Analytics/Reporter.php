@@ -9,6 +9,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\Pages;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 
 class Reporter {
 
@@ -47,6 +48,7 @@ class Reporter {
       'Newsletter task scheduler (cron)' => $isCronTriggerMethodWP ? 'visitors' : 'script',
       'Open and click tracking' => (boolean)Setting::getValue('tracking.enabled', false),
       'Premium key valid' => $checker->isPremiumKeyValid(),
+      'New subscriber notifications' => NewSubscriberNotificationMailer::isDisabled(Setting::getValue(NewSubscriberNotificationMailer::SETTINGS_KEY)),
       'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters'],
       'Number of active post notifications' => $newsletters['notifications_count'],
       'Number of active welcome emails' => $newsletters['welcome_newsletters_count'],

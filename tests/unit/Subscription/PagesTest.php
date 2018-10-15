@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Subscription;
 
+use Codeception\Stub;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -10,35 +11,43 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscription\Pages;
 
 class PagesTest extends \MailPoetTest {
+
+  private $test_data = [];
+
   function _before() {
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate(Fixtures::get('subscriber_template'));
     $this->subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $this->subscriber->save();
     expect($this->subscriber->getErrors())->false();
-    $this->data['email'] = $this->subscriber->email;
-    $this->data['token'] = Subscriber::generateToken($this->subscriber->email);
-    $this->subscription = new Pages($action = false, $this->data);
+    $this->test_data['email'] = $this->subscriber->email;
+    $this->test_data['token'] = Subscriber::generateToken($this->subscriber->email);
   }
 
   function testItConfirmsSubscription() {
-    $this->subscription->confirm();
+    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
+    $subscription->confirm();
     $confirmed_subscriber = Subscriber::findOne($this->subscriber->id);
     expect($confirmed_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
+    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
-    $subscription = new Pages($action = false, $this->data);
+    $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     expect($subscription->confirm())->false();
   }
 
   function testItSendsWelcomeNotificationUponConfirmingSubscription() {
+    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     // create segment
     $segment = Segment::create();
     $segment->hydrate(array('name' => 'List #1'));
@@ -83,7 +92,7 @@ class PagesTest extends \MailPoetTest {
     }
 
     // confirm subscription and ensure that welcome email is scheduled
-    $this->subscription->confirm();
+    $subscription->confirm();
     $scheduled_notification = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
       ->findOne();

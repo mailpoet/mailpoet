@@ -7,6 +7,8 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Tasks\Sending;
 
@@ -145,6 +147,7 @@ class API {
   function addSubscriber(array $subscriber, $segments = array(), $options = array()) {
     $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
     $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
+    $skip_subscriber_notification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true) ? true : false;
 
     // throw exception when subscriber email is missing
     if(empty($subscriber['email'])) {
@@ -203,6 +206,10 @@ class API {
       if($schedule_welcome_email && $new_subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
         $this->_scheduleWelcomeNotification($new_subscriber, $segments);
       }
+
+      if(!$skip_subscriber_notification) {
+        $this->sendSubscriberNotification($new_subscriber, $segments);
+      }
     }
     return $new_subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
@@ -248,7 +255,8 @@ class API {
   }
 
   protected function _sendConfirmationEmail(Subscriber $subscriber) {
-    return $subscriber->sendConfirmationEmail();
+    $sender = new ConfirmationEmailMailer();
+    return $sender->sendConfirmationEmail($subscriber);
   }
 
   protected function _scheduleWelcomeNotification(Subscriber $subscriber, array $segments) {
@@ -263,5 +271,10 @@ class API {
       }
     }
     return $result;
+  }
+
+  private function sendSubscriberNotification(Subscriber $subscriber, array $segment_ids) {
+    $sender = new NewSubscriberNotificationMailer();
+    $sender->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
   }
 }

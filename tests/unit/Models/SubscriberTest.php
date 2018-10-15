@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Test\Models;
 
-use AspectMock\Test as Mock;
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\CustomField;
@@ -30,6 +29,10 @@ class SubscriberTest extends \MailPoetTest {
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate($this->test_data);
     $this->saved = $this->subscriber->save();
+    Setting::setValue('sender', array(
+      'name' => 'John Doe',
+      'address' => 'john.doe@example.com'
+    ));
   }
 
   function testItCanBeCreated() {
@@ -478,9 +481,7 @@ class SubscriberTest extends \MailPoetTest {
       expect($newsletter_option->getErrors())->false();
     }
 
-    $signup_confirmation_enabled = (bool)Setting::setValue(
-      'signup_confirmation.enabled', false
-    );
+    Setting::setValue('signup_confirmation.enabled', false);
     $subscriber = Subscriber::subscribe($this->test_data, array($segment->id()));
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(1);
@@ -1116,48 +1117,6 @@ class SubscriberTest extends \MailPoetTest {
         '2' => 'France'
       )
     );
-  }
-
-  function testItSendsConfirmationEmail() {
-    Mock::double('MailPoet\Mailer\Mailer', [
-      '__construct' => null,
-      'send' => function($email) {
-        return $email;
-      }
-    ]);
-    Mock::double('MailPoet\Subscription\Url', [
-      'getConfirmationUrl' => 'http://example.com'
-    ]);
-
-    $segment = Segment::createOrUpdate(
-      array(
-        'name' => 'Test segment'
-      )
-    );
-    SubscriberSegment::subscribeToSegments(
-      $this->subscriber,
-      array($segment->id)
-    );
-
-    $result = $this->subscriber->sendConfirmationEmail();
-
-    // email contains subscriber's lists
-    expect($result['body']['html'])->contains('<strong>Test segment</strong>');
-    // email contains activation link
-    expect($result['body']['html'])->contains('<a target="_blank" href="http://example.com">Click here to confirm your subscription.</a>');
-  }
-
-  function testItSetsErrorsWhenConfirmationEmailCannotBeSent() {
-    Mock::double('MailPoet\Mailer\Mailer', [
-      '__construct' => null,
-      'send' => function() {
-        throw new \Exception('send error');
-      }
-    ]);
-
-    $this->subscriber->sendConfirmationEmail();
-    // error is set on the subscriber model object
-    expect($this->subscriber->getErrors()[0])->equals('send error');
   }
 
   function _after() {

@@ -6,12 +6,17 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Segment as SegmentModel;
 use MailPoet\Models\Setting as SettingModel;
+use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Subscription\Form;
 use MailPoet\Util\Security;
 
 class FormTest extends \MailPoetTest {
   function _before() {
+    Setting::setValue('sender', array(
+      'name' => 'John Doe',
+      'address' => 'john.doe@example.com'
+    ));
     $this->testEmail = 'test@example.com';
     $this->segment = SegmentModel::createOrUpdate(
       array(
@@ -78,6 +83,9 @@ class FormTest extends \MailPoetTest {
     $form->save();
     $mock = Mock::double('MailPoet\Util\Url', [
       'redirectTo' => function($params) {
+        return $params;
+      },
+      'redirectBack' => function($params) {
         return $params;
       }
     ]);
