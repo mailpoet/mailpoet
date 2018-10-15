@@ -1,187 +1,135 @@
-# MailPoet.
+# MailPoet
 
 MailPoet done the right way.
 
-# Install.
+# Contents
 
-- Install system dependencies:
-```
-php
-nodejs
-wordpress
-```
+- [Setup](#setup)
+- [Frameworks and libraries](#frameworks-and-libraries)
+- [Workflow Commands](#workflow-commands)
+- [Coding and Testing](#coding-and-testing)
 
-- Clone the repo in `wp-content/plugins`.
+# Setup
 
-- Install composer.
-```sh
-$ curl -sS https://getcomposer.org/installer | php
-$ ./composer.phar install
-```
+## Requirements
+- PHP 5.6+
+- NodeJS
+- WordPress
+- Docker & Docker Compose
 
-- Install dependencies.
-```sh
-$ ./do install
-```
-
-- Update dependencies when needed.
-```sh
-$ ./do update
-```
-
-- Copy .env.sample to .env.
-```sh
+## Installation
+```bash
+# go to WP plugins directory
+$ cd path_to_wp_directory/wp-content/plugins
+# clone this repository
+$ git clone https://github.com/mailpoet/mailpoet.git
+$ cd mailpoet
+# create the .env file
 $ cp .env.sample .env
-```
-
-- Compile assets.
-```sh
+# change the values on .env file
+# download composer
+$ curl -sS https://getcomposer.org/installer | php
+$ chmod +x ./composer.phar
+# install PHP dependencies
+$ ./composer.phar install
+# install all dependencies (PHP and JS)
+$ ./do install
+# compile JS and CSS files
 $ ./do compile:all
 ```
 
-# Tests.
+# Frameworks and libraries
 
-- Unit tests (using [verify](https://github.com/Codeception/Verify)):
-```sh
-$ ./do test:unit
+- [Paris ORM](https://github.com/j4mie/paris).
+- [Twig](https://twig.symfony.com/) and [Handlebars](https://handlebarsjs.com/) are used for templates rendering.
+- [Monolog](https://seldaek.github.io/monolog/) is used for logging.
+- [Robo](https://robo.li/) is used to write and run workflow commands.
+- [Codeception](https://codeception.com/) is used to write unit and acceptance tests.
+- [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) and [Selenium](https://www.seleniumhq.org/) to run acceptance tests.
+- [React](https://reactjs.org/) is used to create most of UIs.
+- [Marionette](https://marionettejs.com/) is used to build the newsletters editor.
+- [Stylus](http://stylus-lang.com/) is used to write styles.
+- [Mocha](https://mochajs.org/), [Chai](https://www.chaijs.com/) and [Sinon](https://sinonjs.org/) are used to write Javascript tests.
+- [ESLint](https://eslint.org/) is used to lint JS files.
+- [Webpack](https://webpack.js.org/) is used to bundle assets.
+
+# Workflow Commands
+
+```bash
+$ ./do install             # install PHP and JS dependencies
+$ ./do update              # update PHP and JS dependencies
+
+$ ./do compile:css         # compiles Stylus files into CSS.
+$ ./do compile:js          # bundles JS files for the browser.
+$ ./do compile:all         # compiles CSS and JS files.
+
+$ ./do watch:css           # watch CSS files for changes and compile them.
+$ ./do watch:js            # watch JS files for changes and compile them.
+$ ./do watch               # watch CSS and JS files for changes and compile them.
+
+$ ./do test:unit [--file=...] [--multisite] [--debug]
+  # runs the PHP unit tests.
+  # if --file specified then only tests on that file are executed.
+  # if --multisite then unit tests are executed in a multisite wordpress setup.
+  # if --debug then tests are executed in debugging mode.
+$ ./do test:multisite:unit # alias for ./do test:unit --multisite
+$ ./do test:debug          # alias for ./do test:unit --debug
+$ ./do test:failed         # run the last failing unit test.
+$ ./do test:coverage       # run unit tests and output coverage information.
+$ ./do test:javascript     # run the JS tests.
+$ ./do test:acceptance [--file=...] [--skip-deps]
+  # run acceptances tests into a docker environment.
+  # if --file given then only tests on that file are executed.
+  # if --skip-deps then it skips installation of composer dependencies.
+$ ./do test:acceptance:multisite [--file=...] [--skip-deps]
+  # same as test:acceptance but runs into a multisite wordpress setup.
+$ ./do delete:docker      # stop and remove all running docker containers.
+
+$ ./do qa:lint             # PHP code linter.
+$ ./do qa:lint:javascript  # JS code linter.
+$ ./do qa                  # PHP and JS linters.
 ```
 
-- JS tests (using Mocha):
-```sh
-$ ./do test:javascript
+# Coding and Testing
+
+## i18n
+
+We use functions `__()`, `_n()` and `_x()` with domain `mailpoet` to translate strings.
+
+**in PHP code**
+
+```php
+__('text to translate', 'mailpoet');
+_n('single text', 'plural text', $number, 'mailpoet');
+_x('text to translate', 'context for translators', 'mailpoet');
 ```
 
-- Debug tests:
-```sh
-$ ./do test:debug
-```
-
-- Code linters and quality checkers:
-```sh
-$ ./do qa
-```
-
-- Javascript linter:
-```sh
-$ ./do lint:javascript
-```
-
-# CSS
-- [Stylus](https://learnboost.github.io/stylus/)
-- [Nib extension](http://tj.github.io/nib/)
-
-```sh
-assets/css/src -> place your *.styl files here
-```
-
-### Watch for changes and recompile
-```sh
-$ ./do watch
-```
-
-## Module loading and organization
-
-Our JS modules are stored in `assets/js/` folder. Modules should follow AMD module definition style:
-
-```js
-define('moduleName', ['dependency1', 'dependency2'], function(dependency1, dependency2){
-  // Module code here
-
-  return {
-    // Module exports here
-  };
-})
-```
-
-Module loader will look for `dependency1` in `node_modules/` dependencies, as well as in `assets/js`. So you can use dependencies, defined in `package.json`, without the need of providing an absolute path to it.
-Once found, dependencies will be injected into your module via function arguments.
-
-When it comes to loading modules on a real page, WebPack uses "entry points" to create different bundles. In order for the module to be included in a specific bundle, it must be reachable from that bundle's entry point. [A good example on WebPack's website](http://webpack.github.io/docs/code-splitting.html#split-app-and-vendor-code).
-
-Once javascript is compiled with `./do compile:javascript`, your module will be placed into a bundle. Including that bundle in a webpage will give provide you access to your module.
-
-## Handlebars (`views/*.hbs`)
+**in Twig views**
 
 ```html
-<!-- use the `templates` block -->
-<% block templates %>
-  <!-- include a .hbs template -->
-  <%= partial('my_template_1', 'form/templates/toolbar/fields.hbs') %>
+<%= __('text to translate') %>
+<%= _n('single text', 'plural text', $number) %>
+<%= _x('text to translate', 'context for translators') %>
+```
 
-  <!-- include a .hbs template and register it as a partial -->
-  <%= partial('my_template_2', 'form/templates/blocks.hbs', '_my_partial') %>
+The domain `mailpoet` will be added automatically by the Twig functions.
 
-  <!-- custom partial using partial defined above -->
-  <script id="my_template_3" type="text/x-handlebars-template">
-    {{> _my_partial }}
-  </script>
+**in Javascript code**
+
+First add the string to the translations block in the Twig view:
+
+```html
+<% block translations %>
+  <%= localize({
+    'key': __('string to translate'),
+    ...
+  }) %>
 <% endblock %>
 ```
 
-# i18n
-- Use the regular WordPress functions in PHP and Twig:
+Then use `MailPoet.I18n.t('key')` to get the translated string on your Javascript code.
 
-```php
-__()
-_n()
-_x()
-```
-
-```html
-<p>
-  <%= __('Click %shere%s!') | format('<a href="#">', '</a>') | raw %>
-</p>
-```
-
-```html
-<p>
-  <%= _n('deleted %d message', 'deleted %d messages', count) | format(count) %>
-  <!-- count === 1 -> "deleted 1 message" -->
-  <!-- count > 1 -> "deleted $count messages" -->
-</p>
-```
-
-- Handlebars.
-
-You can use Twig i18n functions in Handlebars, just load your template from a Twig view.
-
-# Build
-
-To build a plugin , run `./build.sh`.
-
-Some build process steps are described below (their dependencies etc.).
-
-## packtranslations step
-
-This step imports translations from Transifex and generates MO files. It requires:
-* `tx` client: https://docs.transifex.com/client/installing-the-client
-* `msgfmt` command (from Gettext package)
-Finally , a `WP_TRANSIFEX_API_TOKEN` environment variable should be initialized with a valid key.
-
-# Publish
-
-The `publish` command currently does the following:
-* Pushes translations POT file to Transifex;
-* Publishes the release in SVN.
-
-Before you run it, you need to:
-1. Ensure there is an up-to-date local copy of MailPoet SVN repository in `.mp_svn` directory by running `./do svn:checkout`.
-2. Have all your features merged in Git `master`, your `mailpoet.php` and `readme.txt` tagged with a new version.
-3. Run `./build.sh` to produce a `mailpoet.zip` distributable archive.
-
-Everything's ready? Then run `./do publish`.
-If the job goes fine, you'll get a message like this:
-```
-Go to '.mp_svn' and run 'svn ci -m "Release 3.0.0-beta.9"' to publish the
-release
-
-Run 'svn copy ...' to tag the release
-```
-It's quite literal: you can review the changes to be pushed and if you're satisfied, run the suggested command to finish the release publishing process.
-
-If you're confident, execute `./do publish --force` and your release will be published to the remote SVN repository without manual intervention (automatically). For easier authentication you might want to set `WP_SVN_USERNAME` and `WP_SVN_PASSWORD` environment variables.
-
-# Acceptance testing
+## Acceptance testing
 
 We are using Gravity Flow plugin's setup as an example for our acceptance test suite: https://www.stevenhenty.com/learn-acceptance-testing-deeply/
 
@@ -192,14 +140,3 @@ _Windows users only: enable hard drive sharing in the Docker settings._
 The browser runs in a docker container. You can use a VNC client to watch the test run, follow instructions in official 
 repo: https://github.com/SeleniumHQ/docker-selenium
 If you’re on a Mac, you can open vnc://localhost:5900 in Safari to watch the tests running in Chrome. If you’re on Windows, you’ll need a VNC client. Password: secret.
-
-
-To run tests:
-```sh
-$ ./do test:acceptance
-```
-
-You can skip installation of composer dependencies using --skip-deps parameter.
-```sh
-$ ./do test:acceptance --skip-deps
-```
