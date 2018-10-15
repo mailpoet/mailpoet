@@ -68,4 +68,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     expect($subscriber->getErrors()[0])->equals('send error');
   }
 
+  function _after() {
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+  }
+
 }
