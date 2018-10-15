@@ -3,7 +3,6 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Notice as WPNotice;
 
 class PHPVersionWarnings {
 
@@ -27,7 +26,7 @@ class PHPVersionWarnings {
     $error = Helpers::replaceLinkTags($error_string, 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
 
-    return WPNotice::displayError($error, $extra_classes, self::OPTION_NAME);
+    return \MailPoet\WP\Notice::displayError($error, $extra_classes, self::OPTION_NAME);
   }
 
   function disable() {
