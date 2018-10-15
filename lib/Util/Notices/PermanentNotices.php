@@ -32,7 +32,7 @@ class PermanentNotices {
       Menu::isOnMailPoetAdminPage()
       && $_GET['page'] !== 'mailpoet-welcome-wizard'
     );
-    $this->discounts_announcement->init(empty($_GET['page']));
+    $this->discounts_announcement->init(empty($_GET['page']) && is_admin());
   }
 
   function ajaxDismissNoticeHandler() {

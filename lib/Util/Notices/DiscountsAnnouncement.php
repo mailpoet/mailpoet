@@ -7,7 +7,7 @@ use MailPoet\WP\Notice as WPNotice;
 
 class DiscountsAnnouncement {
 
-  const OPTION_NAME = 'mailpoet_display_discounts_announcement';
+  const OPTION_NAME = 'mailpoet_display_discounts_announcement_q4_2018';
 
   function enable() {
     Setting::setValue(self::OPTION_NAME, true);
@@ -27,7 +27,7 @@ class DiscountsAnnouncement {
   private function display() {
     $message = Helpers::replaceLinkTags(
       __('<h3>Save on MailPoet Premium for a limited time. Discounts up to 40%</h3>
-          <p>Our annual sale is a good opportunity to get more detailed stats & great email deliverability. Don\'t miss out!</p>
+          <p>Our annual sale is a good opportunity to get more detailed stats & great email deliverability. Don’t miss out!</p>
         [link]Visit the MailPoet Premium page[/link].', 'mailpoet'),
       'admin.php?page=mailpoet-premium',
       array('target' => '_blank', 'class' => 'button button-primary')
