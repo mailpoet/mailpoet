@@ -273,8 +273,8 @@ class API {
     return $result;
   }
 
-  private function sendSubscriberNotification(Subscriber $subscriber, array $segments) {
+  private function sendSubscriberNotification(Subscriber $subscriber, array $segment_ids) {
     $sender = new SendNewSubscriberNotification();
-    $sender->send($subscriber, $segments);
+    $sender->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
   }
 }
