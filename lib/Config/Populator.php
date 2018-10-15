@@ -11,7 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Segments\WP;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\Pages;
-use MailPoet\Subscribers\SendNewSubscriberNotification;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 
@@ -171,7 +171,7 @@ class Populator {
       ));
     }
 
-    $subscriber_email_notification = Setting::getValue(SendNewSubscriberNotification::SETTINGS_KEY);
+    $subscriber_email_notification = Setting::getValue(NewSubscriberNotificationMailer::SETTINGS_KEY);
     if(empty($subscriber_email_notification)) {
       $sender = Setting::getValue('sender', []);
       Setting::setValue('subscriber_email_notification', [

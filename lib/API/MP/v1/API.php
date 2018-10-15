@@ -7,8 +7,8 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
-use MailPoet\Subscribers\SendConfirmationEmail;
-use MailPoet\Subscribers\SendNewSubscriberNotification;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Tasks\Sending;
 
@@ -255,7 +255,7 @@ class API {
   }
 
   protected function _sendConfirmationEmail(Subscriber $subscriber) {
-    $sender = new SendConfirmationEmail();
+    $sender = new ConfirmationEmailMailer();
     return $sender->sendConfirmationEmail($subscriber);
   }
 
@@ -274,7 +274,7 @@ class API {
   }
 
   private function sendSubscriberNotification(Subscriber $subscriber, array $segment_ids) {
-    $sender = new SendNewSubscriberNotification();
+    $sender = new NewSubscriberNotificationMailer();
     $sender->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
   }
 }

@@ -8,7 +8,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Subscription\Url;
 use MailPoet\Util\Helpers;
 
-class SendConfirmationEmail {
+class ConfirmationEmailMailer {
 
   /** @var Mailer */
   private $mailer;

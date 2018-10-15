@@ -11,7 +11,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Subscribers\SendNewSubscriberNotification;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscription\Pages;
 
 class PagesTest extends \MailPoetTest {
@@ -29,7 +29,7 @@ class PagesTest extends \MailPoetTest {
   }
 
   function testItConfirmsSubscription() {
-    $new_subscriber_notification_sender = Stub::makeEmpty(SendNewSubscriberNotification::class, ['send' => Stub\Expected::once()]);
+    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     $subscription->confirm();
     $confirmed_subscriber = Subscriber::findOne($this->subscriber->id);
@@ -37,7 +37,7 @@ class PagesTest extends \MailPoetTest {
   }
 
   function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
-    $new_subscriber_notification_sender = Stub::makeEmpty(SendNewSubscriberNotification::class, ['send' => Stub\Expected::once()]);
+    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
@@ -46,7 +46,7 @@ class PagesTest extends \MailPoetTest {
   }
 
   function testItSendsWelcomeNotificationUponConfirmingSubscription() {
-    $new_subscriber_notification_sender = Stub::makeEmpty(SendNewSubscriberNotification::class, ['send' => Stub\Expected::once()]);
+    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     // create segment
     $segment = Segment::create();

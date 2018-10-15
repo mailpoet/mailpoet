@@ -9,7 +9,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 
-class SendConfirmationEmailTest extends \MailPoetTest {
+class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   function testItSendsConfirmationEmail() {
     Mock::double('MailPoet\Subscription\Url', [
@@ -30,7 +30,7 @@ class SendConfirmationEmailTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $sender = new SendConfirmationEmail($mailer);
+    $sender = new ConfirmationEmailMailer($mailer);
 
 
     $segment = Segment::createOrUpdate(
@@ -61,7 +61,7 @@ class SendConfirmationEmailTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $sender = new SendConfirmationEmail($mailer);
+    $sender = new ConfirmationEmailMailer($mailer);
 
     $sender->sendConfirmationEmail($subscriber);
     // error is set on the subscriber model object

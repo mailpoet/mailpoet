@@ -8,7 +8,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
-use MailPoet\Subscribers\SendNewSubscriberNotification;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Url as UrlHelper;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -23,7 +23,7 @@ class Pages {
   private $action;
   private $data;
   private $subscriber;
-  /** @var SendNewSubscriberNotification */
+  /** @var NewSubscriberNotificationMailer */
   private $new_subscriber_notification_sender;
 
   function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false, $new_subscriber_notification_sender = null) {
@@ -35,7 +35,7 @@ class Pages {
     if($new_subscriber_notification_sender) {
       $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
     } else {
-      $this->new_subscriber_notification_sender = new SendNewSubscriberNotification();
+      $this->new_subscriber_notification_sender = new NewSubscriberNotificationMailer();
     }
   }
 

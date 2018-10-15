@@ -9,7 +9,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 
-class SendNewSubscriberNotificationTest extends \MailPoetTest {
+class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
   /** @var Subscriber */
   private $subscriber;
@@ -26,36 +26,36 @@ class SendNewSubscriberNotificationTest extends \MailPoetTest {
   }
 
   function testItDoesNotSendIfNoSettings() {
-    Setting::setValue(SendNewSubscriberNotification::SETTINGS_KEY, null);
+    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, null);
     $mailer = Stub::makeEmpty(Mailer::class, ['getSenderNameAndAddress' => Expected::never()], $this);
-    $service = new SendNewSubscriberNotification($mailer);
+    $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
   }
 
   function testItDoesNotSendIfSettingsDoesNotHaveEnabled() {
-    Setting::setValue(SendNewSubscriberNotification::SETTINGS_KEY, []);
+    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, []);
     $mailer = Stub::makeEmpty(Mailer::class, ['getSenderNameAndAddress' => Expected::never()], $this);
-    $service = new SendNewSubscriberNotification($mailer);
+    $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
   }
 
 
   function testItDoesNotSendIfSettingsDoesNotHaveAddress() {
-    Setting::setValue(SendNewSubscriberNotification::SETTINGS_KEY, ['enabled' => false]);
+    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false]);
     $mailer = Stub::makeEmpty(Mailer::class, ['getSenderNameAndAddress' => Expected::never()], $this);
-    $service = new SendNewSubscriberNotification($mailer);
+    $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
   }
 
   function testItDoesNotSendIfDisabled() {
-    Setting::setValue(SendNewSubscriberNotification::SETTINGS_KEY, ['enabled' => false, 'address' => 'a@b.c']);
+    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false, 'address' => 'a@b.c']);
     $mailer = Stub::makeEmpty(Mailer::class, ['getSenderNameAndAddress' => Expected::never()], $this);
-    $service = new SendNewSubscriberNotification($mailer);
+    $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
   }
 
   function testItSends() {
-    Setting::setValue(SendNewSubscriberNotification::SETTINGS_KEY, ['enabled' => true, 'address' => 'a@b.c']);
+    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true, 'address' => 'a@b.c']);
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'getSenderNameAndAddress' =>
@@ -79,7 +79,7 @@ class SendNewSubscriberNotificationTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $service = new SendNewSubscriberNotification($mailer);
+    $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
   }
 

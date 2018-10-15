@@ -2,8 +2,8 @@
 namespace MailPoet\Models;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
-use MailPoet\Subscribers\SendConfirmationEmail;
-use MailPoet\Subscribers\SendNewSubscriberNotification;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 use MailPoet\Subscription;
@@ -152,11 +152,11 @@ class Subscriber extends Model {
       // link subscriber to segments
       SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
 
-      $sender = new SendConfirmationEmail();
+      $sender = new ConfirmationEmailMailer();
       $sender->sendConfirmationEmail($subscriber);
 
       if($subscriber->status === self::STATUS_SUBSCRIBED) {
-        $sender = new SendNewSubscriberNotification();
+        $sender = new NewSubscriberNotificationMailer();
         $sender->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
 
         Scheduler::scheduleSubscriberWelcomeNotification(

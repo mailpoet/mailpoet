@@ -7,7 +7,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 
-class SendNewSubscriberNotification {
+class NewSubscriberNotificationMailer {
 
   const SENDER_EMAIL_PREFIX = 'wordpress@';
   const SETTINGS_KEY = 'subscriber_email_notification';
@@ -44,7 +44,7 @@ class SendNewSubscriberNotification {
    * @throws \Exception
    */
   function send(Subscriber $subscriber, array $segments) {
-    $settings = Setting::getValue(SendNewSubscriberNotification::SETTINGS_KEY);
+    $settings = Setting::getValue(NewSubscriberNotificationMailer::SETTINGS_KEY);
     if($this->isDisabled($settings)) {
       return;
     }
