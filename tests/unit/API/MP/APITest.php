@@ -188,6 +188,26 @@ class APITest extends \MailPoetTest {
       ), $this);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $API->subscribeToLists($subscriber->id, array($segment->id));
+  }
+
+  function testItDoesNotScheduleWelcomeNotificationAfterSubscribingSubscriberToListsIfStatusIsNotSubscribed() {
+    $API = Stub::makeEmptyExcept(
+      new \MailPoet\API\MP\v1\API(),
+      'subscribeToLists',
+      array(
+        '_scheduleWelcomeNotification' => Expected::never()
+      ), $this);
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
     $segment = Segment::createOrUpdate(
       array(
@@ -207,6 +227,7 @@ class APITest extends \MailPoetTest {
       ), $this);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
     $segment = Segment::createOrUpdate(
       array(

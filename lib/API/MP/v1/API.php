@@ -88,7 +88,7 @@ class API {
     SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
 
     // schedule welcome email
-    if($schedule_welcome_email) {
+    if($schedule_welcome_email && $subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
       $this->_scheduleWelcomeNotification($subscriber, $found_segments_ids);
     }
 
