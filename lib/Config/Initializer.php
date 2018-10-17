@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\DI\ContainerFactory;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
 use MailPoet\Util\ConflictResolver;
@@ -18,6 +19,7 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 class Initializer {
   private $access_control;
   private $renderer;
+  private $container;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
@@ -49,6 +51,8 @@ class Initializer {
         array('target' => '_blank')
       ));
     }
+
+    $this->compileContainer();
 
     // activation function
     register_activation_hook(
@@ -170,7 +174,7 @@ class Initializer {
   }
 
   function setupAccessControl() {
-    $this->access_control = new AccessControl();
+    $this->access_control = $this->container->get(AccessControl::class);
   }
 
   function setupInstaller() {
