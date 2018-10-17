@@ -158,6 +158,26 @@ class RoboFile extends \Robo\Tasks {
 
     $command = 'vendor/bin/codecept run unit -c codeception.unit.yml';
 
+    if($opts['file']) {
+      $command .= ' -f ' . $opts['file'];
+    }
+
+    if($opts['xml']) {
+      $command .= ' --xml';
+    }
+
+    if($opts['debug']) {
+      $command .= ' --debug';
+    }
+
+    return $this->_exec($command);
+  }
+
+  function testIntegration(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
+    $this->loadEnv();
+
+    $command = 'vendor/bin/codecept run integration -c codeception.integration.yml';
+
     if($opts['multisite']) {
       $command = 'MULTISITE=true ' . $command;
     }
@@ -177,8 +197,8 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  function testMultisiteUnit($opts=['file' => null, 'xml' => false, 'multisite' => true]) {
-    return $this->testUnit($opts);
+  function testMultisiteIntegration($opts=['file' => null, 'xml' => false, 'multisite' => true]) {
+    return $this->testIntegration($opts);
   }
 
   function testCoverage($opts=['file' => null, 'xml' => false]) {
@@ -219,8 +239,12 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('vendor/bin/security-checker security:check --format=simple');
   }
 
-  function testDebug($opts=['file' => null, 'xml' => false, 'debug' => true]) {
+  function testDebugUnit($opts=['file' => null, 'xml' => false, 'debug' => true]) {
     return $this->testUnit($opts);
+  }
+
+  function testDebugIntegration($opts=['file' => null, 'xml' => false, 'debug' => true]) {
+    return $this->testIntegration($opts);
   }
 
   function testAcceptance($opts=['file' => null, 'skip-deps' => false]) {
@@ -290,8 +314,8 @@ class RoboFile extends \Robo\Tasks {
         './vendor/bin/phpcs '.
         '--standard=./tasks/code_sniffer/MailPoet '.
         '--runtime-set testVersion 5.5-7.2 '.
-        '--ignore=./tests/unit/_bootstrap.php '.
-        'tests/unit/ tests/acceptance tests/DataFactories '.
+        '--ignore=./tests/unit/_bootstrap.php,./tests/unit/_fixtures.php,./tests/integration/_bootstrap.php,./tests/integration/_fixtures.php '.
+        'tests/unit tests/integration tests/acceptance tests/DataFactories '.
         $severityFlag
       )
       ->run();

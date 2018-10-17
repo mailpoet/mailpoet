@@ -1,52 +1,6 @@
 <?php
 
-if((boolean)getenv('MULTISITE') === true) {
-  // REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
-  $_SERVER['REQUEST_URI'] = '/' . getenv('WP_TEST_MULTISITE_SLUG');
-  $wp_load_file = getenv('WP_TEST_PATH_MULTISITE') . '/wp-load.php';
-} else {
-  $wp_load_file = getenv('WP_TEST_PATH') . '/wp-load.php';
-}
-require_once($wp_load_file);
-
 $console = new \Codeception\Lib\Console\Output([]);
-$console->writeln('Loading WP core... (' . $wp_load_file . ')');
-
-$console->writeln('Cleaning up database...');
-$models = array(
-  'CustomField',
-  'Form',
-  'Newsletter',
-  'NewsletterLink',
-  'NewsletterPost',
-  'NewsletterSegment',
-  'NewsletterTemplate',
-  'NewsletterOption',
-  'NewsletterOptionField',
-  'Segment',
-  'Log',
-  'ScheduledTask',
-  'ScheduledTaskSubscriber',
-  'SendingQueue',
-  'Setting',
-  'Subscriber',
-  'SubscriberCustomField',
-  'SubscriberSegment',
-  'SubscriberIP',
-  'StatisticsOpens',
-  'StatisticsClicks',
-  'StatisticsNewsletters',
-  'StatisticsUnsubscribes'
-);
-$destroy = function($model) {
-  $class = new \ReflectionClass('\MailPoet\Models\\' . $model);
-  $table = $class->getStaticPropertyValue('_table');
-  $db = ORM::getDb();
-  $db->beginTransaction();
-  $db->exec('TRUNCATE ' . $table);
-  $db->commit();
-};
-array_map($destroy, $models);
 
 $cacheDir = '/tmp';
 if(is_dir(getenv('WP_TEST_CACHE_PATH'))) {
@@ -67,10 +21,6 @@ $kernel->init(
     'appDir' => __DIR__ . '/../'
   )
 );
-
-// This hook throws an 'Undefined index: SERVER_NAME' error in CLI mode,
-// the action is called in ConflictResolverTest
-remove_filter('admin_print_styles', 'wp_resource_hints', 1);
 
 abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $backupGlobals = true;

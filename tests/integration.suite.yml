@@ -2,7 +2,7 @@
 #
 # Suite for unit (internal) tests.
 
-actor: UnitTester
+actor: IntegrationTester
 settings:
     bootstrap: _bootstrap.php
 modules:
