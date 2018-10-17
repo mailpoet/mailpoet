@@ -92,7 +92,7 @@
             address = $('input[name="subscriber_email_notification[address]"]').val().trim();
           if (notifications_enabled && address == '') {
             $('#settings_subscriber_email_notification_error').show();
-            window.location.href = '#basic';
+            window.location.href = '#basics';
             return false;
           } else {
             $('#settings_subscriber_email_notification_error').hide();
@@ -175,6 +175,8 @@
         $('input[name="re_captcha[enabled]"]').on('click', toggleReCaptchaSettings);
         toggleReCaptchaSettings();
         $('#settings_re_captcha_tokens_error').hide();
+
+        $('#settings_subscriber_email_notification_error').hide();
 
         function toggleLinuxCronSettings() {
           if ($('input[name="cron_trigger[method]"]:checked').val() === '<%= cron_trigger.linux_cron %>') {
