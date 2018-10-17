@@ -70,6 +70,10 @@ jobs:
         name: "PHP Unit tests"
         command: |
           WP_TEST_PATH="/home/circleci/mailpoet/wordpress" ./do t:u --xml
+    - run:
+        name: "PHP Integration tests"
+        command: |
+          WP_TEST_PATH="/home/circleci/mailpoet/wordpress" ./do t:i --xml
     - store_test_results:
         path: test-results/mocha
     - store_artifacts:
@@ -154,6 +158,10 @@ jobs:
           name: "PHP Unit tests"
           command: |
             ./do t:u --xml
+      - run:
+          name: "PHP Integration tests"
+          command: |
+            ./do t:i --xml
       - store_test_results:
           path: tests/_output
       - store_artifacts:
@@ -184,7 +192,7 @@ jobs:
       - run:
           name: "PHP Unit tests"
           command: |
-            ./do t:multisite-unit --xml
+            ./do t:multisite-integration --xml
       - store_test_results:
           path: tests/_output
       - store_artifacts:
