@@ -17,30 +17,25 @@ class Subscription {
     self::ACTION_MANAGE,
     self::ACTION_UNSUBSCRIBE
   );
-  public $data;
   public $permissions = array(
     'global' => AccessControl::NO_ACCESS_RESTRICTION
   );
 
-  function __construct($data) {
-    $this->data = $data;
-  }
-
-  function confirm() {
-    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM);
+  function confirm($data) {
+    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM, $data);
     $subscription->confirm();
   }
 
-  function manage() {
-    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_MANAGE);
+  function manage($data) {
+    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_MANAGE, $data);
   }
 
-  function unsubscribe() {
-    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE);
+  function unsubscribe($data) {
+    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
     $subscription->unsubscribe();
   }
 
-  private function initSubscriptionPage($action) {
-    return new UserSubscription\Pages($action, $this->data, true, true);
+  private function initSubscriptionPage($action, $data) {
+    return new UserSubscription\Pages($action, $data, true, true);
   }
 }

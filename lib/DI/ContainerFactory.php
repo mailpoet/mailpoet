@@ -12,15 +12,16 @@ class ContainerFactory {
   private static $container;
 
   static function getContainer() {
-    if (!self::$container) {
+    if(!self::$container) {
       self::createContainer();
     }
     return self::$container;
   }
 
-  private static function createContainer() {
+  static function createContainer() {
     self::$container = new ContainerBuilder();
     $loader = new YamlFileLoader(self::$container, new FileLocator(__DIR__));
     $loader->load('services.yml');
+    return self::$container;
   }
 }

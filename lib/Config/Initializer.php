@@ -94,6 +94,11 @@ class Initializer {
     ));
   }
 
+  function compileContainer() {
+    $this->container = ContainerFactory::getContainer();
+    $this->container->compile();
+  }
+
   function checkRequirements() {
     $requirements = new RequirementsChecker();
     return $requirements->checkAllRequirements();
@@ -258,7 +263,7 @@ class Initializer {
   }
 
   function setupRouter() {
-    $router = new Router\Router($this->access_control);
+    $router = new Router\Router($this->access_control, $this->container);
     $router->init();
   }
 

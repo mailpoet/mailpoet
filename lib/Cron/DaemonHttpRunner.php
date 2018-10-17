@@ -6,7 +6,6 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class DaemonHttpRunner {
   public $settings_daemon_data;
-  public $request_data;
   public $timer;
   public $token;
 
@@ -15,15 +14,11 @@ class DaemonHttpRunner {
 
   const PING_SUCCESS_RESPONSE = 'pong';
 
-  function __construct($request_data = false, $daemon = null) {
-    $this->request_data = $request_data;
+  function __construct(Daemon $daemon = null) {
     $this->settings_daemon_data = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
     $this->timer = microtime(true);
     $this->daemon = $daemon;
-    if(!$daemon) {
-      $this->daemon = new Daemon($this->settings_daemon_data);
-    }
   }
 
   function ping() {
@@ -31,20 +26,20 @@ class DaemonHttpRunner {
     $this->terminateRequest(self::PING_SUCCESS_RESPONSE);
   }
 
-  function run() {
+  function run($request_data) {
     ignore_user_abort(true);
     if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
     $this->addCacheHeaders();
-    if(!$this->request_data) {
+    if(!$request_data) {
       $error = __('Invalid or missing request data.', 'mailpoet');
     } else {
       if(!$this->settings_daemon_data) {
         $error = __('Daemon does not exist.', 'mailpoet');
       } else {
-        if(!isset($this->request_data['token']) ||
-          $this->request_data['token'] !== $this->settings_daemon_data['token']
+        if(!isset($request_data['token']) ||
+          $request_data['token'] !== $this->settings_daemon_data['token']
         ) {
           $error = 'Invalid or missing token.';
         }

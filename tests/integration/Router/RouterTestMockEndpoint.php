@@ -14,11 +14,7 @@ class RouterTestMockEndpoint {
     'global' => AccessControl::NO_ACCESS_RESTRICTION
   );
 
-  function __construct($data) {
-    $this->data = $data;
-  }
-
-  function test() {
-    return $this->data;
+  function test($data) {
+    return $data;
   }
 }
