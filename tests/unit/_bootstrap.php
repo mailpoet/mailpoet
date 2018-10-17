@@ -15,10 +15,9 @@ $kernel = \AspectMock\Kernel::getInstance();
 $kernel->init(
   array(
     'debug' => true,
-    'appDir' => __DIR__ . '/../',
+    'appDir' => __DIR__ . '/../../',
     'cacheDir' => $cacheDir,
-    'includePaths' => [__DIR__ . '/../lib'],
-    'appDir' => __DIR__ . '/../'
+    'includePaths' => [__DIR__ . '/../../lib']
   )
 );
 
