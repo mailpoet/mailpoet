@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "548dd0db75412e7939828d57012876ea",
+    "content-hash": "8edd8712869d4ce2c72fe3a7a152a5aa",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -496,16 +496,16 @@
         },
         {
             "name": "sensiolabs/security-checker",
-            "version": "v5.0.0",
+            "version": "v5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/security-checker.git",
-                "reference": "df4625e39868ecf4e868355caf45352f566791db"
+                "reference": "9ea927417c949039a9cfb0d92af76fd1c538d9e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/security-checker/zipball/df4625e39868ecf4e868355caf45352f566791db",
-                "reference": "df4625e39868ecf4e868355caf45352f566791db",
+                "url": "https://api.github.com/repos/sensiolabs/security-checker/zipball/9ea927417c949039a9cfb0d92af76fd1c538d9e9",
+                "reference": "9ea927417c949039a9cfb0d92af76fd1c538d9e9",
                 "shasum": ""
             },
             "require": {
@@ -538,7 +538,7 @@
                 }
             ],
             "description": "A security checker for your composer.lock",
-            "time": "2018-09-04T07:02:17+00:00"
+            "time": "2018-10-16T10:30:44+00:00"
         },
         {
             "name": "soundasleep/html2text",
@@ -1536,16 +1536,16 @@
         },
         {
             "name": "coenjacobs/mozart",
-            "version": "0.2.2",
+            "version": "dev-dependency-tree",
             "source": {
                 "type": "git",
-                "url": "https://github.com/coenjacobs/mozart.git",
-                "reference": "f9218cc4643ba15d775bb8018a2c1b716a2951a6"
+                "url": "https://github.com/costasovo/mozart.git",
+                "reference": "e7f04ffc136f8175dec82615dcee43e234f001ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coenjacobs/mozart/zipball/f9218cc4643ba15d775bb8018a2c1b716a2951a6",
-                "reference": "f9218cc4643ba15d775bb8018a2c1b716a2951a6",
+                "url": "https://api.github.com/repos/costasovo/mozart/zipball/e7f04ffc136f8175dec82615dcee43e234f001ae",
+                "reference": "e7f04ffc136f8175dec82615dcee43e234f001ae",
                 "shasum": ""
             },
             "require": {
@@ -1567,7 +1567,6 @@
                     "CoenJacobs\\Mozart\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1577,7 +1576,10 @@
                     "email": "coenjacobs@gmail.com"
                 }
             ],
-            "time": "2018-06-25T14:11:53+00:00"
+            "support": {
+                "source": "https://github.com/costasovo/mozart/tree/dependency-tree"
+            },
+            "time": "2018-10-23T18:15:03+00:00"
         },
         {
             "name": "composer/composer",
@@ -1983,19 +1985,20 @@
         },
         {
             "name": "consolidation/output-formatters",
-            "version": "3.2.1",
+            "version": "3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/output-formatters.git",
-                "reference": "d78ef59aea19d3e2e5a23f90a055155ee78a0ad5"
+                "reference": "853d2d462a191d44a25a5593d8fe2c4a1e59e382"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/d78ef59aea19d3e2e5a23f90a055155ee78a0ad5",
-                "reference": "d78ef59aea19d3e2e5a23f90a055155ee78a0ad5",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/853d2d462a191d44a25a5593d8fe2c4a1e59e382",
+                "reference": "853d2d462a191d44a25a5593d8fe2c4a1e59e382",
                 "shasum": ""
             },
             "require": {
+                "dflydev/dot-access-data": "^1.1.0",
                 "php": ">=5.4.0",
                 "symfony/console": "^2.8|^3|^4",
                 "symfony/finder": "^2.5|^3|^4"
@@ -2034,7 +2037,7 @@
                 }
             ],
             "description": "Format text by applying transformations provided by plug-in formatters.",
-            "time": "2018-05-25T18:02:34+00:00"
+            "time": "2018-10-16T01:14:51+00:00"
         },
         {
             "name": "consolidation/robo",
@@ -3535,16 +3538,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.47",
+            "version": "1.0.48",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "a11e4a75f256bdacf99d20780ce42d3b8272975c"
+                "reference": "a6ded5b2f6055e2db97b4b859fdfca2b952b78aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a11e4a75f256bdacf99d20780ce42d3b8272975c",
-                "reference": "a11e4a75f256bdacf99d20780ce42d3b8272975c",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a6ded5b2f6055e2db97b4b859fdfca2b952b78aa",
+                "reference": "a6ded5b2f6055e2db97b4b859fdfca2b952b78aa",
                 "shasum": ""
             },
             "require": {
@@ -3615,7 +3618,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2018-09-14T15:30:29+00:00"
+            "time": "2018-10-15T13:53:10+00:00"
         },
         {
             "name": "lucatume/codeception-setup-local",
@@ -8642,7 +8645,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "swiftmailer/swiftmailer": 20,
-        "soundasleep/html2text": 20
+        "soundasleep/html2text": 20,
+        "coenjacobs/mozart": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

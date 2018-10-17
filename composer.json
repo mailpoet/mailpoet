@@ -7,7 +7,12 @@
     {
       "type": "vcs",
       "url": "https://github.com/mailpoet/swiftmailer"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/costasovo/mozart"
     }
+
   ],
   "require": {
     "php": ">=5.5",
@@ -39,7 +44,7 @@
     "kint-php/kint": "^3.0",
     "squizlabs/php_codesniffer": "^3.3",
     "phpcompatibility/php-compatibility": "^9.0",
-    "coenjacobs/mozart": "^0.2.2"
+    "coenjacobs/mozart": "dev-dependency-tree"
   },
   "autoload": {
     "psr-4": {
