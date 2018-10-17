@@ -156,7 +156,7 @@ class RoboFile extends \Robo\Tasks {
   function testUnit(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
     $this->loadEnv();
 
-    $command = 'vendor/bin/codecept run unit -c codeception.unit.yml';
+    $command = 'vendor/bin/codecept run unit';
 
     if($opts['file']) {
       $command .= ' -f ' . $opts['file'];
@@ -176,7 +176,7 @@ class RoboFile extends \Robo\Tasks {
   function testIntegration(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
     $this->loadEnv();
 
-    $command = 'vendor/bin/codecept run integration -c codeception.integration.yml';
+    $command = 'vendor/bin/codecept run integration';
 
     if($opts['multisite']) {
       $command = 'MULTISITE=true ' . $command;
@@ -204,7 +204,7 @@ class RoboFile extends \Robo\Tasks {
   function testCoverage($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
     $command = join(' ', array(
-      'vendor/bin/codecept run unit -c codeception.unit.yml ',
+      'vendor/bin/codecept run -s acceptance',
       (($opts['file']) ? $opts['file'] : ''),
       '--coverage',
       ($opts['xml']) ? '--coverage-xml' : '--coverage-html'
@@ -270,10 +270,16 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('docker-compose down -v --remove-orphans --rmi all');
   }
 
-  function testFailed() {
+  function testFailedUnit() {
     $this->loadEnv();
-    $this->_exec('vendor/bin/codecept build -c codeception.unit.yml');
-    return $this->_exec('vendor/bin/codecept run -c codeception.unit.yml -g failed');
+    $this->_exec('vendor/bin/codecept build');
+    return $this->_exec('vendor/bin/codecept run unit -g failed');
+  }
+
+  function testFailedIntegration() {
+    $this->loadEnv();
+    $this->_exec('vendor/bin/codecept build');
+    return $this->_exec('vendor/bin/codecept run integration -g failed');
   }
 
   function qa() {

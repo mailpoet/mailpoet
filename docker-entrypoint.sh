@@ -104,7 +104,7 @@ fi
 
 cd /wp-core/wp-content/plugins/mailpoet
 
-/project/vendor/bin/codecept run acceptance -c codeception.acceptance.yml $@
+/project/vendor/bin/codecept run acceptance $@
 exitcode=$?
 
 exit $exitcode

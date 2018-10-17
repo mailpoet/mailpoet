@@ -2,7 +2,39 @@ actor: AcceptanceTester
 modules:
     enabled:
         - \Helper\Acceptance
-        - WPLoader
-        - WPWebDriver
-        - WPDb
-        - WPCLI
+        - WPLoader:
+            loadOnly: false
+            wpRootFolder: /wp-core
+            dbName: wordpress
+            dbHost: mysql
+            dbUser: wordpress
+            dbPassword: wordpress
+            domain: wordpress
+            tablePrefix: 'mp_'
+            plugins: ['mailpoet/mailpoet.php']
+            activatePlugins: ['mailpoet/mailpoet.php']
+        - WPWebDriver:
+            host: chrome
+            url: 'http://wordpress'
+            browser: chrome
+            port: 4444
+            window_size: '1024x768'
+            restart: true
+            wait: 0
+            adminUsername: admin
+            adminPassword: password
+            adminPath: /wp-admin
+            log_js_errors: true
+        - WPDb:
+            dsn: 'mysql:host=mysql;dbname=wordpress'
+            user: wordpress
+            password: wordpress
+            dump: tests/_data/acceptanceGenerated.sql
+            populate: true
+            cleanup: false
+            url: 'http://wordpress'
+            urlReplacement: true
+            tablePrefix: 'mp_'
+        - WPCLI:
+            path: /wp-core
+            throw: true
