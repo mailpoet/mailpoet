@@ -44,7 +44,8 @@
     "kint-php/kint": "^3.0",
     "squizlabs/php_codesniffer": "^3.3",
     "phpcompatibility/php-compatibility": "^9.0",
-    "coenjacobs/mozart": "dev-dependency-tree"
+    "coenjacobs/mozart": "dev-dependency-tree",
+    "symfony/dependency-injection": "3.4.17"
   },
   "autoload": {
     "psr-4": {
@@ -54,11 +55,13 @@
   },
   "scripts": {
     "post-update-cmd": [
+      "rm -rf vendor/symfony/dependency-injection/Tests",
       "\"vendor/bin/mozart\" compose",
       "rm -rf vendor/monolog",
       "@fixPHPUnit57CodeCoverageForPHP72"
     ],
     "post-install-cmd": [
+      "rm -rf vendor/symfony/dependency-injection/Tests",
       "\"vendor/bin/mozart\" compose",
       "rm -rf vendor/monolog",
       "@fixPHPUnit57CodeCoverageForPHP72"
@@ -72,7 +75,8 @@
       "classmap_directory": "/classes/dependencies/",
       "classmap_prefix": "MP_",
       "packages": [
-        "monolog/monolog"
+        "monolog/monolog",
+        "symfony/dependency-injection"
       ]
     }
   },
