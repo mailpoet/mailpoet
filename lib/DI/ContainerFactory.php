@@ -15,7 +15,7 @@ class ContainerFactory {
     return self::$container;
   }
 
-  private static function createContainer() {
+  static function createContainer() {
     $container = new Container();
 
     // register the reflection container as a delegate to enable auto wiring

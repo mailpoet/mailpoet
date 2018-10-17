@@ -39,7 +39,7 @@ class ViewInBrowserTest extends \MailPoetTest {
       'preview' => false
     );
     // instantiate class
-    $this->view_in_browser = new ViewInBrowser($this->browser_preview_data, new AccessControl());
+    $this->view_in_browser = new ViewInBrowser(new AccessControl());
   }
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
@@ -203,8 +203,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $view_in_browser = Stub::make($this->view_in_browser, array(
       '_displayNewsletter' => Expected::exactly(1)
     ), $this);
-    $view_in_browser->data = $view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
-    $view_in_browser->view();
+    $view_in_browser->view($this->browser_preview_data);
   }
 
   function _after() {
