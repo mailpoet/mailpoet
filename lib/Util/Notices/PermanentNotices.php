@@ -26,7 +26,6 @@ class PermanentNotices {
       'ajaxDismissNoticeHandler'
     ));
 
-
     $this->php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
     $this->after_migration_notice->init(
       Menu::isOnMailPoetAdminPage()
@@ -35,7 +34,7 @@ class PermanentNotices {
     $this->discounts_announcement->init(
       empty($_GET['page'])
       && is_admin()
-      && strpos($_SERVER['REQUEST_URI'], 'wp-admin/index.php') !== false
+      && strpos($_SERVER['SCRIPT_NAME'], 'wp-admin/index.php') !== false
     );
   }
 
