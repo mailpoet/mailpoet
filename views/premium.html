@@ -8,7 +8,12 @@
     <h1><%= __('Discounts up to 40% for a limited time') %></h1>
     <p><%= __('Don’t miss out on our only sale of the year which ends on November 30.') %></p>
     <p><%= __('There’s never been a better time to change gears.') %></p>
-    <a href=" https://account.mailpoet.com/?s=<%= subscriber_count %>&utm_source=plugin&utm_medium=premium&utm_campaign=discount">Save up to 40%</a>
+    <a
+      href="https://account.mailpoet.com/?s=<%= subscriber_count %>&utm_source=plugin&utm_medium=premium&utm_campaign=discount"
+      class="button button-primary"
+    >
+      Save up to 40%
+    </a>
   </div>
   <% endif %>
 
