@@ -26,7 +26,7 @@ class DiscountsAnnouncement {
 
   private function display() {
     $message = Helpers::replaceLinkTags(
-      __('<h3>Save on MailPoet Premium for a limited time. Discounts up to 40%</h3>
+      __('<h3>Save on MailPoet Premium for a limited time. Discounts up to 50%</h3>
           <p>Our annual sale is a good opportunity to get more detailed stats & great email deliverability. Don’t miss out!</p>
         [link]Visit the MailPoet Premium page[/link]', 'mailpoet'),
       'admin.php?page=mailpoet-premium',
