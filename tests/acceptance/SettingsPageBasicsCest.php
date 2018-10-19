@@ -2,7 +2,7 @@
 
  namespace MailPoet\Test\Acceptance;
 
- class SettingsPageBasicsCest {
+class SettingsPageBasicsCest {
   function checkSettingsPagesLoad(\AcceptanceTester $I) {
     $I->wantTo('Confirm all settings pages load correctly');
     $I->login();
@@ -27,7 +27,7 @@
     $I->waitForText('Activation Key', 10);
     $I->seeNoJSErrors();
   }
-   function editDefaultSenderInformation(\AcceptanceTester $I) {
+  function editDefaultSenderInformation(\AcceptanceTester $I) {
     $I->wantTo('Confirm default sender information can be edited');
     $I->login();
     $I->amOnMailPoetPage('Settings');
@@ -40,7 +40,7 @@
     $I->click(['xpath'=>'//*[@id="mailpoet_settings_form"]/p/input']);
     $I->waitForText('Settings saved', 10);
   }
-   function allowSubscribeInComments(\AcceptanceTester $I) {
+  function allowSubscribeInComments(\AcceptanceTester $I) {
     $I->wantTo('Allow users to subscribe to lists in site comments');
     $post_title = 'Hello world!';
     $I->login();
