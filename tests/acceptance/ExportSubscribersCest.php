@@ -18,14 +18,13 @@ class ExportSubscribersCest {
     $I->wantTo('Export a list of subscribers');
     $I->login();
     $I->amOnMailPoetPage('Subscribers');
-    //click import, imports unique list to export
+    //import unique user list to export, so we have exact data regardless of other tests
     $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[2]']);
     $I->waitForText('Back to Subscribers', 10);
     //select upload file as import method, import CSV
     $I->click(['css'=>'#select_method > label:nth-of-type(2)']);
     $I->attachFile(['css'=>'#file_local'], 'MailPoetExportList.csv');
     $I->click(['xpath'=>'//*[@id="method_file"]/div/table/tbody/tr[2]/th/a']);
-    //$I->click('Next step');
     $I->waitForText('Jokūbas', 25);
     //click is to trigger dropdown to display selections, least restrictive working method
     $I->click($this->search_field_element);
@@ -41,5 +40,6 @@ class ExportSubscribersCest {
     //export
     $I->click(['xpath'=>'//*[@id="mailpoet_subscribers_export"]/div[2]/table/tbody/tr[4]/th/a']);
     $I->waitForText('9 subscribers were exported. Get the exported file here.');
+    $I->seeNoJSErrors();
   }
 }
