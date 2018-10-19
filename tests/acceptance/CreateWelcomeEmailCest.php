@@ -33,5 +33,6 @@ class CreateWelcomeEmailCest {
     $I->fillField('#search_input', $newsletter_title);
     $I->click('Search');
     $I->waitForText($newsletter_title, 10);
+    $I->seeNoJSErrors();
   }
 }

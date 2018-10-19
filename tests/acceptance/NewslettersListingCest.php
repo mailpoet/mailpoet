@@ -18,6 +18,7 @@ class NewslettersListingCest {
 
     $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText('Post notification', 5, '[data-automation-id="listing_item_3"]');
+    $I->seeNoJSErrors();
   }
 
   function statisticsColumn(\AcceptanceTester $I) {
@@ -44,6 +45,7 @@ class NewslettersListingCest {
     $I->amOnMailpoetPage('Emails');
     $I->waitForText('Subject', 5);
     $I->see('Opened, Clicked');
+    $I->seeNoJSErrors();
   }
 
 }

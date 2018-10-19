@@ -158,6 +158,7 @@ class ManageWelcomeEmailCest {
     $I->click(['xpath' => '//*[text()="' . $template_title . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
     $I->waitForElement('[data-automation-id="newsletter_title"]');
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
+    $I->seeNoJSErrors();
   }
 
 }
