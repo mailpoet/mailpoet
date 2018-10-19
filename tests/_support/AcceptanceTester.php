@@ -42,6 +42,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->amOnPage('/wp-login.php?action=logout');
     $I->click('log out');
     $I->wait(1);
+    $I->deleteSessionSnapshot('login');
   }
 
   /**
