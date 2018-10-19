@@ -3,14 +3,14 @@
 namespace MailPoet\Test\Acceptance;
 
 class SettingsSubscriptionPageCest {
-  function previvewDefaultSubscriptionPage(\AcceptanceTester $I){
+  function previvewDefaultSubscriptionPage(\AcceptanceTester $I) {
     $I->wantTo('Preview default MailPoet page from MP Settings page');
     $I->login();
     $I->amOnMailPoetPage('Settings');
     $I->click(['xpath'=>'//*[@id="mailpoet_settings_form"]/div[2]/table/tbody/tr[5]/td/p[1]/a']);
     $I->waitForText('Manage your subscription');
   }
-  function createNewSubscriptionPage(\AcceptanceTester $I){
+  function createNewSubscriptionPage(\AcceptanceTester $I) {
     $I->wantTo('Make a custom subscription page');
     $page_title='CustomSubscriptionPage';
     $page_content='[mailpoet_manage_subscription]';
