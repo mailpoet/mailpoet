@@ -629,8 +629,9 @@ class Subscriber extends Model {
 
     $emails_sent = 0;
     if(!empty($subscribers)) {
+      $sender = new ConfirmationEmailMailer();
       foreach($subscribers as $subscriber) {
-        if($subscriber->sendConfirmationEmail()) {
+        if($sender->sendConfirmationEmail($subscriber)) {
           $emails_sent++;
         }
       }
