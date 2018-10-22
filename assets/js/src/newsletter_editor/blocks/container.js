@@ -353,6 +353,44 @@ define([
     }
   });
 
+  Module.TwoColumn12ContainerWidgetView = base.WidgetView.extend({
+    className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+    getTemplate: function () { return window.templates.twoColumn12LayoutInsertion; },
+    behaviors: {
+      DraggableBehavior: {
+        cloneOriginal: true,
+        drop: function () {
+          return new Module.ContainerBlockModel({
+            orientation: 'horizontal',
+            blocks: [
+              new Module.ContainerBlockModel(),
+              new Module.ContainerBlockModel()
+            ]
+          });
+        }
+      }
+    }
+  });
+
+  Module.TwoColumn21ContainerWidgetView = base.WidgetView.extend({
+    className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+    getTemplate: function () { return window.templates.twoColumn21LayoutInsertion; },
+    behaviors: {
+      DraggableBehavior: {
+        cloneOriginal: true,
+        drop: function () {
+          const block1 = new Module.ContainerBlockModel();
+          const block2 = new Module.ContainerBlockModel();
+          block1.
+          return new Module.ContainerBlockModel({
+            orientation: 'horizontal',
+            blocks: [block1, block2],
+          });
+        }
+      }
+    }
+  });
+
   App.on('before:start', function (BeforeStartApp) {
     BeforeStartApp.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
@@ -375,6 +413,18 @@ define([
       name: 'threeColumnLayout',
       priority: 100,
       widgetView: Module.ThreeColumnContainerWidgetView
+    });
+
+    BeforeStartApp.registerLayoutWidget({
+      name: 'twoColumn12Layout',
+      priority: 100,
+      widgetView: Module.TwoColumn12ContainerWidgetView
+    });
+
+    BeforeStartApp.registerLayoutWidget({
+      name: 'twoColumn21Layout',
+      priority: 100,
+      widgetView: Module.TwoColumn21ContainerWidgetView
     });
   });
 

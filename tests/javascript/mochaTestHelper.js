@@ -106,6 +106,8 @@ testHelpers.loadTemplate('blocks/container/block.hbs', window, { id: 'newsletter
 testHelpers.loadTemplate('blocks/container/emptyBlock.hbs', window, { id: 'newsletter_editor_template_container_block_empty' });
 testHelpers.loadTemplate('blocks/container/oneColumnLayoutWidget.hbs', window, { id: 'newsletter_editor_template_container_one_column_widget' });
 testHelpers.loadTemplate('blocks/container/twoColumnLayoutWidget.hbs', window, { id: 'newsletter_editor_template_container_two_column_widget' });
+testHelpers.loadTemplate('blocks/container/twoColumnLayoutWidget12.hbs', window, { id: 'newsletter_editor_template_container_two_column_12_widget' });
+testHelpers.loadTemplate('blocks/container/twoColumnLayoutWidget21.hbs', window, { id: 'newsletter_editor_template_container_two_column_21_widget' });
 testHelpers.loadTemplate('blocks/container/threeColumnLayoutWidget.hbs', window, { id: 'newsletter_editor_template_container_three_column_widget' });
 testHelpers.loadTemplate('blocks/container/settings.hbs', window, { id: 'newsletter_editor_template_container_settings' });
 testHelpers.loadTemplate('blocks/container/columnSettings.hbs', window, { id: 'newsletter_editor_template_container_column_settings' });
@@ -178,6 +180,8 @@ global.templates = {
   containerEmpty: Handlebars.compile(jQuery('#newsletter_editor_template_container_block_empty').html()),
   oneColumnLayoutInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_container_one_column_widget').html()),
   twoColumnLayoutInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_container_two_column_widget').html()),
+  twoColumn12LayoutInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_container_two_column_12_widget').html()),
+  twoColumn21LayoutInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_container_two_column_21_widget').html()),
   threeColumnLayoutInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_container_three_column_widget').html()),
   containerBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_container_settings').html()),
   containerBlockColumnSettings: Handlebars.compile(jQuery('#newsletter_editor_template_container_column_settings').html()),
