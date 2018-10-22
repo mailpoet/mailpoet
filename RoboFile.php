@@ -99,7 +99,6 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('npm run stylelint -- "assets/css/src/components/**/*.scss"');
     $this->_exec('npm run scss');
     $compilation_result = $this->_exec('npm run autoprefixer');
-
     // Create manifest file
     $manifest = [];
     foreach (glob('assets/dist/css/*.css') as $style) {
@@ -329,7 +328,7 @@ class RoboFile extends \Robo\Tasks {
     $collection->addCode(function() {
       return $this->qaCodeSniffer('all');
     });
-    $collection->addCode([$this, 'qaLintJavascript']);
+    //$collection->addCode([$this, 'qaLintJavascript']);
     $collection->addCode([$this, 'qaLintCss']);
     return $collection->run();
   }

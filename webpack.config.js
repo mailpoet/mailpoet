@@ -420,7 +420,51 @@ const testConfig = {
   }
 };
 
-module.exports = [adminConfig, publicConfig, migratorConfig, testConfig].map((config) => {
+// Block config
+var blockEditorConfig = {
+  name: 'block_editor',
+  entry: {
+    form_block_editor: [
+      'gutenberg_block/blocks.jsx'
+    ]
+  },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    jquery: 'jQuery', // import $ from 'jquery' // Use the WordPress version.
+  },
+  module: {
+    rules: [
+      {
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+      }
+    ]
+  }
+};
+
+// Block config
+var blockFronEndConfig = {
+  name: 'block_fe',
+  entry: {
+    form_block_fe: [
+      'gutenberg_block/full_form_block_fe.jsx'
+    ]
+  },
+  externals: {
+    jquery: 'jQuery', // import $ from 'jquery' // Use the WordPress version.
+  },
+  module: {
+    rules: [
+      {
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+      }
+    ]
+  }
+};
+
+module.exports = [blockEditorConfig, blockFronEndConfig, adminConfig, publicConfig, migratorConfig, testConfig].map(function (config) {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(

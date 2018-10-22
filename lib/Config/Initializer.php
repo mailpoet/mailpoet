@@ -11,6 +11,7 @@ use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WP\Notice as WPNotice;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Form\Gutenberg\Blocks as FormGtbBlock;
 
 if (!defined('ABSPATH')) exit;
 
@@ -192,6 +193,7 @@ class Initializer {
       $this->setupCapabilities();
       $this->menu->init();
       $this->setupShortcodes();
+      $this->setupGutenbergFormBlock();
       $this->setupImages();
       $this->setupPersonalDataExporters();
       $this->setupPersonalDataErasers();
@@ -263,6 +265,11 @@ class Initializer {
 
   function setupShortcodes() {
     $this->shortcodes->init();
+  }
+
+  function setupGutenbergFormBlock() {
+    $block = new FormGtbBlock($this->renderer);
+    $block->setupBlocks();
   }
 
   function setupImages() {
