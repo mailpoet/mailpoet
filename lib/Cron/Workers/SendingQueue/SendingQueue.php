@@ -51,7 +51,7 @@ class SendingQueue {
       if(!$newsletter) {
         Logger::getLogger('newsletters')->addInfo(
           'delete task in sending queue',
-          ['newsletter_id' => $newsletter->id(), 'task_id' => $queue->task_id]
+          ['task_id' => $queue->task_id]
         );
         $queue->delete();
         continue;
