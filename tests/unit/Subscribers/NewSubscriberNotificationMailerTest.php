@@ -83,4 +83,20 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $service->send($this->subscriber, $this->segments);
   }
 
+  function testItRemovesWwwFromSenderAddress() {
+    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true,'address' => 'a@b.c']);
+    update_option( 'home', 'http://www.example.com/xyz' );
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'getSenderNameAndAddress' =>
+        Expected::once(function($sender) {
+          expect($sender)->count(2);
+          expect($sender['address'])->equals('wordpress@example.com');
+          expect($sender['name'])->equals('wordpress@example.com');
+        }),
+    ], $this);
+
+    $service = new NewSubscriberNotificationMailer($mailer);
+    $service->send($this->subscriber, $this->segments);
+  }
 }

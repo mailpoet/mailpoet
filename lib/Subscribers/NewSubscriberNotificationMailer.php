@@ -26,7 +26,7 @@ class NewSubscriberNotificationMailer {
     if($renderer) {
       $this->renderer = $renderer;
     } else {
-      $caching = ! WP_DEBUG;
+      $caching = !WP_DEBUG;
       $debugging = WP_DEBUG;
       $this->renderer = new Renderer($caching, $debugging);
     }
@@ -76,9 +76,13 @@ class NewSubscriberNotificationMailer {
 
   private function constructSenderEmail() {
     $url_parts = parse_url(home_url());
+    $site_name = strtolower($url_parts['host']);
+    if(substr($site_name, 0, 4) === 'www.') {
+      $site_name = substr($site_name, 4);
+    }
     return [
-      'address' => self::SENDER_EMAIL_PREFIX . $url_parts['host'],
-      'name' => self::SENDER_EMAIL_PREFIX . $url_parts['host'],
+      'address' => self::SENDER_EMAIL_PREFIX . $site_name,
+      'name' => self::SENDER_EMAIL_PREFIX . $site_name,
     ];
   }
 
