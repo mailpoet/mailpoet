@@ -4,6 +4,8 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Dependencies\League\Container\Container;
+use MailPoet\DI\ContainerFactory;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
 use MailPoet\Util\ConflictResolver;
@@ -18,6 +20,8 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 class Initializer {
   private $access_control;
   private $renderer;
+  /** @var Container */
+  private $container;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
@@ -26,6 +30,7 @@ class Initializer {
     'version' => '1.0.0'
   )) {
     Env::init($params['file'], $params['version']);
+    $this->container = ContainerFactory::getContainer();
   }
 
   function init() {
@@ -170,7 +175,7 @@ class Initializer {
   }
 
   function setupAccessControl() {
-    $this->access_control = new AccessControl();
+    $this->access_control = $this->container->get(AccessControl::class);
   }
 
   function setupInstaller() {
