@@ -48,8 +48,17 @@
     }
   },
   "scripts": {
-    "post-update-cmd": "\"vendor/bin/mozart\" compose; rm -rf vendor/monolog",
-    "post-install-cmd": "\"vendor/bin/mozart\" compose; rm -rf vendor/monolog"
+    "post-update-cmd": [
+      "\"vendor/bin/mozart\" compose",
+      "rm -rf vendor/monolog",
+      "@fixPHPUnit57CodeCoverageForPHP72"
+    ],
+    "post-install-cmd": [
+      "\"vendor/bin/mozart\" compose",
+      "rm -rf vendor/monolog",
+      "@fixPHPUnit57CodeCoverageForPHP72"
+    ],
+    "fixPHPUnit57CodeCoverageForPHP72": "sed -i -- 's/\\$numTests = count(\\$coverageData\\[\\$i\\]);/$numTests = (is_array($coverageData[$i]) ? count($coverageData[$i]) : 0);/g' vendor/phpunit/php-code-coverage/src/Report/Html/Renderer/File.php"
   },
   "extra": {
     "mozart": {
