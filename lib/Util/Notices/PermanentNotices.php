@@ -26,13 +26,16 @@ class PermanentNotices {
       'ajaxDismissNoticeHandler'
     ));
 
-
     $this->php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
     $this->after_migration_notice->init(
       Menu::isOnMailPoetAdminPage()
       && $_GET['page'] !== 'mailpoet-welcome-wizard'
     );
-    $this->discounts_announcement->init(empty($_GET['page']) && is_admin());
+    $this->discounts_announcement->init(
+      empty($_GET['page'])
+      && is_admin()
+      && strpos($_SERVER['SCRIPT_NAME'], 'wp-admin/index.php') !== false
+    );
   }
 
   function ajaxDismissNoticeHandler() {
