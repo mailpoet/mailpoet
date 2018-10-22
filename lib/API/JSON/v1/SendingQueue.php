@@ -73,7 +73,7 @@ class SendingQueue extends APIEndpoint {
       $queue->status = SendingQueueModel::STATUS_SCHEDULED;
       $queue->scheduled_at = Scheduler::formatDatetimeString($newsletter->scheduledAt);
     } else {
-      $segments = $newsletter->segments()->findArray();
+      $segments = $newsletter->segments()->findMany();
       $finder = new SubscribersFinder();
       $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
       if(!$subscribers_count) {

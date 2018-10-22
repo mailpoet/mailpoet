@@ -53,63 +53,6 @@ class SubscribersFinderTest extends \MailPoetTest {
     $this->sending = SendingTask::create();
   }
 
-  function testGetSubscribersInSegmentDefaultSegment() {
-    $finder = new SubscribersFinder();
-    $subscribers = $finder->getSubscribersByList(array(
-      array('id' => $this->segment_1->id, 'type' => Segment::TYPE_DEFAULT),
-      array('id' => $this->segment_2->id, 'type' => Segment::TYPE_DEFAULT),
-    ));
-    expect($subscribers)->count(1);
-    expect($subscribers[$this->subscriber_2->id]['id'])->equals($this->subscriber_2->id);
-  }
-
-  function testGetSubscribersNoSegment() {
-    $finder = new SubscribersFinder();
-    $subscribers = $finder->getSubscribersByList(array(
-      array('id' => $this->segment_1->id, 'type' => 'UNKNOWN SEGMENT'),
-    ));
-    expect($subscribers)->count(0);
-  }
-
-  function testGetSubscribersUsingFinder() {
-    $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', array('getSubscriberIdsInSegment'));
-    $mock
-      ->expects($this->once())
-      ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue(array($this->subscriber_1->id)));
-
-    remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    Hooks::addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
-      return array($mock);
-    });
-
-    $finder = new SubscribersFinder();
-    $subscribers = $finder->getSubscribersByList(array(
-      array('id' => $this->segment_2->id, 'type' => ''),
-    ));
-    expect($subscribers)->count(1);
-  }
-
-  function testGetSubscribersUsingFinderMakesResultUnique() {
-    $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', array('getSubscriberIdsInSegment'));
-    $mock
-      ->expects($this->exactly(2))
-      ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue(array($this->subscriber_1->id)));
-
-    remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    Hooks::addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
-      return array($mock);
-    });
-
-    $finder = new SubscribersFinder();
-    $subscribers = $finder->getSubscribersByList(array(
-      array('id' => $this->segment_2->id, 'type' => ''),
-      array('id' => $this->segment_2->id, 'type' => ''),
-    ));
-    expect($subscribers)->count(1);
-  }
-
   function testFindSubscribersInSegmentInSegmentDefaultSegment() {
     $finder = new SubscribersFinder();
     $subscribers = $finder->findSubscribersInSegments(array($this->subscriber_2->id), array($this->segment_1->id));
@@ -156,10 +99,10 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
-      array(
-        array('id' => $this->segment_1->id, 'type' => Segment::TYPE_DEFAULT),
-        array('id' => $this->segment_2->id, 'type' => Segment::TYPE_DEFAULT),
-      )
+      [
+        $this->getDummySegment($this->segment_1->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment_2->id, Segment::TYPE_DEFAULT),
+      ]
     );
     expect($subscribers_count)->equals(1);
     expect($this->sending->getSubscribers())->equals(array($this->subscriber_2->id));
@@ -169,9 +112,9 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
-      array(
-        array('id' => $this->segment_1->id, 'type' => 'UNKNOWN SEGMENT'),
-      )
+      [
+        $this->getDummySegment($this->segment_1->id, 'UNKNOWN SEGMENT'),
+      ]
     );
     expect($subscribers_count)->equals(0);
   }
@@ -191,9 +134,9 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
-      array(
-        array('id' => $this->segment_2->id, 'type' => ''),
-      )
+      [
+        $this->getDummySegment($this->segment_2->id, ''),
+      ]
     );
     expect($subscribers_count)->equals(1);
     expect($this->sending->getSubscribers())->equals(array($this->subscriber_1->id));
@@ -214,15 +157,22 @@ class SubscribersFinderTest extends \MailPoetTest {
 
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
-      array(
-        array('id' => $this->segment_1->id, 'type' => Segment::TYPE_DEFAULT),
-        array('id' => $this->segment_2->id, 'type' => Segment::TYPE_DEFAULT),
-        array('id' => $this->segment_3->id, 'type' => ''),
-      )
+      [
+        $this->getDummySegment($this->segment_1->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment_2->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment_3->id, ''),
+      ]
     );
 
     expect($subscribers_count)->equals(1);
     expect($this->sending->getSubscribers())->equals(array($this->subscriber_2->id));
+  }
+
+  private function getDummySegment($id, $type) {
+    $segment = Segment::create();
+    $segment->id = $id;
+    $segment->type = $type;
+    return $segment;
   }
 
 }

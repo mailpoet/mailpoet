@@ -13,15 +13,12 @@ class SubscribersListings {
       throw new \InvalidArgumentException('Missing segment id');
     }
     $segment = Segment::findOne($data['filter']['segment']);
-    if($segment) {
-      $segment = $segment->asArray();
-    }
-    return $this->getListings($segment, $data);
+    return $this->getListings($data, $segment ?: null);
 
   }
 
-  private function getListings($segment, $data) {
-    if(!$segment || $segment['type'] === Segment::TYPE_DEFAULT || $segment['type'] === Segment::TYPE_WP_USERS) {
+  private function getListings($data, Segment $segment = null) {
+    if(!$segment || $segment->type === Segment::TYPE_DEFAULT || $segment->type === Segment::TYPE_WP_USERS) {
       $listing = new Handler('\MailPoet\Models\Subscriber', $data);
 
       return $listing_data = $listing->get();

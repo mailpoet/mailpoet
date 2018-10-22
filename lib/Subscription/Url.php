@@ -7,36 +7,32 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 
 class Url {
-  static function getConfirmationUrl($subscriber = false) {
+  static function getConfirmationUrl(Subscriber $subscriber = null) {
     $post = get_post(Setting::getValue('subscription.pages.confirmation'));
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
-  static function getManageUrl($subscriber = false) {
+  static function getManageUrl(Subscriber $subscriber = null) {
     $post = get_post(Setting::getValue('subscription.pages.manage'));
     return self::getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
-  static function getUnsubscribeUrl($subscriber = false) {
+  static function getUnsubscribeUrl(Subscriber $subscriber = null) {
     $post = get_post(Setting::getValue('subscription.pages.unsubscribe'));
     return self::getSubscriptionUrl($post, 'unsubscribe', $subscriber);
   }
 
   static function getSubscriptionUrl(
-    $post = null, $action = null, $subscriber = false
+    $post = null, $action = null, Subscriber $subscriber = null
   ) {
     if($post === null || $action === null) return;
 
     $url = get_permalink($post);
 
-    if($subscriber !== false) {
-      if(is_object($subscriber)) {
-        $subscriber = $subscriber->asArray();
-      }
-
+    if($subscriber !== null) {
       $data = array(
-        'token' => Subscriber::generateToken($subscriber['email']),
-        'email' => $subscriber['email']
+        'token' => Subscriber::generateToken($subscriber->email),
+        'email' => $subscriber->email
       );
     } else {
       $data = array(

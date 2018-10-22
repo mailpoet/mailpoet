@@ -436,7 +436,7 @@ class Pages {
     );
 
     return '<a href="'.Url::getManageUrl(
-      $this->subscriber
+      $this->subscriber ?: null
     ).'">'.$text.'</a>';
   }
 }
