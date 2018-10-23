@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 3.11.5
+Stable tag: 3.12.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -164,6 +164,15 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.12.0 - 2018-10-23 =
+* Improved: formatting of "from" address for new subscriber emails;
+* Fixed: bulk resend of confirmation emails works again;
+* Fixed: email deletion error in the sending process. Thanks @jensgoro!
+* Fixed: in-app announcement shows properly;
+* Fixed: discount notice is now displayed in all places it was meant to;
+* Fixed: minor style and text changes to announcements;
+* Fixed: in MailPoet API welcome emails are scheduled only if subscriber is confirmed.
 
 = 3.11.5 - 2018-10-17 =
 * Fixed: javascript errors resolved;
