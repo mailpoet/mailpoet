@@ -151,6 +151,16 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       case 'Times New Roman': return new Handlebars.SafeString("'Times New Roman', Times, Baskerville, Georgia, serif");
       case 'Trebuchet MS': return new Handlebars.SafeString("'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif");
       case 'Verdana': return new Handlebars.SafeString('Verdana, Geneva, sans-serif');
+      case 'Arvo': return new Handlebars.SafeString('arvo, courier, georgia, serif');
+      case 'Lato': return new Handlebars.SafeString("lato, 'helvetica neue', helvetica, arial, sans-serif");
+      case 'Lora': return new Handlebars.SafeString("lora, georgia, 'times new roman', serif");
+      case 'Merriweather': return new Handlebars.SafeString("merriweather, georgia, 'times new roman', serif");
+      case 'Merriweather Sans': return new Handlebars.SafeString("'merriweather sans', 'helvetica neue', helvetica, arial, sans-serif");
+      case 'Noticia Text': return new Handlebars.SafeString("'noticia text', georgia, 'times new roman', serif");
+      case 'Open Sans': return new Handlebars.SafeString("'open sans', 'helvetica neue', helvetica, arial, sans-serif");
+      case 'Playfair Display': return new Handlebars.SafeString("playfair display, georgia, 'times new roman', serif");
+      case 'Roboto': return new Handlebars.SafeString("roboto, 'helvetica neue', helvetica, arial, sans-serif");
+      case 'Source Sans Pro': return new Handlebars.SafeString("'source sans pro', 'helvetica neue', helvetica, arial, sans-serif");
       default: return font;
     }
   });

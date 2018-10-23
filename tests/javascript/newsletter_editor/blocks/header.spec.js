@@ -153,7 +153,10 @@ define([
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
-        fonts: ['Arial', 'Tahoma'],
+        fonts: {
+          standard: ['Arial', 'Tahoma'],
+          custom: ['Arvo', 'Lato', 'Lora']
+        },
         textSizes: ['16px', '20px']
       });
 
@@ -173,7 +176,10 @@ define([
         beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
-            fonts: ['Arial', 'Tahoma'],
+            fonts: {
+              standard: ['Arial', 'Tahoma'],
+              custom: ['Arvo', 'Lato', 'Lora']
+            },
             textSizes: ['16px', '20px']
           });
           model = new (HeaderBlock.HeaderBlockModel)({});
