@@ -2,6 +2,7 @@ $column-margin = 20px
 $one-column-width = $newsletter-width - (2 * $column-margin)
 $two-column-width = ($newsletter-width / 2) - (2 * $column-margin)
 $three-column-width = ($newsletter-width / 3) - (2 * $column-margin)
+$two-column-width-width = (($newsletter-width / 3) - $column-margin) * 2
 
 .mailpoet_container
   width: 100%
@@ -31,8 +32,8 @@ $three-column-width = ($newsletter-width / 3) - (2 * $column-margin)
  * Enforce column widths:
  * 1 column: 20px + 560px + 20px
  * 2 columns: 20px + 260px + 20px + 260px + 20px
- * 12 columns: 20px + 160px + 20px + 360px + 20px
- * 21 columns: 20px + 360px + 20px + 160px + 20px
+ * 12 columns: 20px + 160px + 20px + 400px + 20px
+ * 21 columns: 20px + 400px + 20px + 160px + 20px
  * 3 columns: 20px + 160px + 20px + 20px + 160px + 20px + 20px + 160px + 20px
  */
 
@@ -74,6 +75,14 @@ $three-column-width = ($newsletter-width / 3) - (2 * $column-margin)
       //padding-left: 20px
       //padding-right: 20px
       width: $column-margin + $three-column-width + $column-margin
+
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_1_2 > .mailpoet_container_block:first-child,
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_2_1 > .mailpoet_container_block:nth-child(2)
+    width: $column-margin + $three-column-width + $column-margin
+
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_2_1 > .mailpoet_container_block:first-child,
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_1_2 > .mailpoet_container_block:nth-child(2)
+    width: $column-margin + $two-column-width-width + $column-margin
 
 .mailpoet_container_empty
   text-align: center
