@@ -1,6 +1,6 @@
 === MailPoet - emails and newsletters in WordPress ===
-Contributors: mailpoet, wysija, kgjerstad
-Tags: newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, mailing list
+Contributors: mailpoet, wysija
+Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 4.9
 Stable tag: 3.11.5
@@ -107,10 +107,14 @@ The MailPoet Sending Service is very easy to setup, you just have to enter a key
 * Danish
 * Swedish
 * Turkish
+* Chinese
+* Hungarian
 
 We welcome experienced translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work.
 
 = Security =
+
+[Our repository](https://github.com/mailpoet/mailpoet/) is public on GitHub.
 
 [Security audits are made by LogicalTrust](https://logicaltrust.net/en/), an independent third party.
 
@@ -119,8 +123,8 @@ Have a question for us? Reach us at security@ our domain.
 == Installation ==
 
 = Minimum requirements =
-PHP version 5.6 or greater (PHP 7 or greater is recommended)
-Visit our [Minimum and Recommended Requirements](https://beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3) for a detailed list of server requirements.
+PHP version 5.6 or greater. We highly recommend PHP 7.1 or greater. Speak to your host about upgrading. It's easier than you think!
+Visit our [Minimum and Recommended Requirements](https://beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3) page for a detailed list of server requirements and instructions to upgrade your PHP version.
 
 There are 3 ways to install this plugin:
 
@@ -401,145 +405,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 * Improved: content deletion in email designer to more clearly warn about what is being deleted;
 * Improved: HelpScout beacon no longer obstructs pagination in listings.
 
-= 3.3.2 - 2017-12-19 =
-* Thanked: 2017 finally saw the release of MailPoet 3 and MailPoet Sending Service. We wouldn't have done it without your patience and support, for which we are extremely grateful. Thank YOU!
-* Wished: 2018 turns out to be an amazing year for all of our beloved and new users, and brings new features to our plugin - we've planned some great things and can't wait to implement them. Happy Holidays!
-* Improved: MailPoet will not load its public assets when subscription form widgets are not used. Thanks Oliver!
-
-= 3.3.1 - 2017-12-14 =
-* Fixed: newsletter open/click rates are properly displayed in listings. Thanks to all who have reported the issue!
-
-= 3.3.0 - 2017-12-12 =
-* Premium: you can now segment your subscribers by email opens or clicks;
-* Fixed: default newsletter templates will not be duplicated when user switches profile language to one that's different from the system's.
-
-= 3.2.4 - 2017-12-05 =
-* Improved: [mailpoet_manage_subscription] always renders for logged in WP users. Thx Jon, Sean, Steve & metaglyphics;
-* Fixed: migration from MailPoet 2 on hosts with missing "mbstring" PHP extension. Thanks Alvaro!
-* Fixed: updated existing libraries that previously contained security issues. Thanks Rhiannon (@goija) and Bits of Freedom!
-
-= 3.2.3 - 2017-11-29 =
-* Fixed: bug that prevented configuring third-party sending methods.
-
-= 3.2.2 - 2017-11-28 =
-* Fixed: plugin language changes according to user's profile language;
-* Fixed: linked images with spaces inside URL are now properly displayed in Gmail. Thanks, Willie!
-* Fixed: proper error message is displayed when sending fails using Amazon SES. Thanks Andres!
-* Fixed: error message thrown in a rare case when trying to send a test email.
-
-= 3.2.1 - 2017-11-21 =
-* Fixed: Safari bug asking subscribers to leave the first field empty in MailPoet subscription forms;
-* Fixed: JavaScript error is not thrown when test email can't be sent;
-
-= 3.2.0 - 2017-11-14 =
-* Added: API method to access subscriber data by email;
-* Added: API method to unsubscribe from lists;
-* Fixed: shortcodes are properly removed from all post excerpts that are included in emails. Thanks Gerhard!
-* Premium: you can now view subscribers in dynamic segments.
-
-= 3.1.0 - 2017-11-07 =
-* Added: a method to create a new list via our public API;
-* Fixed: javascript files are loaded with a dependency on jquery. Thanks George!
-* Fixed: WP users sync no longer chokes on NULL values for first/last names. Thanks @cartpauj!
-* Fixed: superadmin users on Multisite installations can always access MailPoet on subsites. Thanks Ryan!
-
-= 3.0.9 - 2017-10-31 =
-* Improved: search forms in listings ignore preceding and trailing whitespace;
-* Fixed: tags aren't shown within categories for automated latest content posts anymore. Thanks Gregor!
-* Fixed: our subscription form no longer conflicts with themes/plugins that use jQuery Serialize Object function. Thanks Albert!
-
-= 3.0.8 - 2017-10-24 =
-* Improved: unsubscribe link now works in browser and email previews;
-* Improved: relative URLs in images are replaced by absolute URLs. Thanks Xavier!
-* Fixed: default email templates to be translated into your language. Thanks Webteam!
-* Fixed: subscription form's "required field" validation message is now translatable. Thanks, Frank!
-* Fixed: plugin doesn't fail to activate when WP users table contains custom columns. Thanks Brian!
-
-= 3.0.7 - 2017-10-17 =
-* Improved: subscribing from the same IP address is progressively throttled. Thanks Suyog Palav, Piyush Kumar and Bits of Freedom!
-* Fixed: WordPress users without an email address will not be added as subscribers;
-* Fixed: bug asking subscribers to leave the first field empty in MailPoet subscription forms;
-* Fixed: plugin no longer fails to activate on sites when certain user roles do not exist. Thanks to all who reported this!
-
-= 3.0.6 - 2017-10-10 =
-* Fixed: subscription forms to not throw form validation engine errors;
-
-= 3.0.5 - 2017-10-10 =
-* Added: images can now be aligned left, center or right in email designer;
-
-= 3.0.4 - 2017-10-05 =
-* Fixed: dividers and spacers' height can be changed on mouse drag again;
-
-= 3.0.3 - 2017-10-03 =
-* Fixed: mixed collation error in WordPress user synchronization. Thanks Chris, Till, Robin, Robero, @Seph, @kaiwen and others for the reports!
-
-= 3.0.2 - 2017-10-03 =
-* Improved: plugin capabilities can be managed with Members plugin;
-* Improved: removes unsightly horizontal scrollbar in some parts of the newsletter editor;
-* Improved: email templates to be displayed in order of last modification;
-* Fixed: it's not possible to submit a subscription form multiple times with an existing e-mail address anymore. Thanks Suyog Palav and Bits of Freedom!
-* Fixed: users subscribed before registering on a site are synchronized during WP users sync. Thanks Nicolas!
-
-= 3.0.1 - 2017-09-26 =
-* Added: images can be resized in newsletter editor;
-* Fixed: scheduled newsletters that are unscheduled will not be mistakenly sent. Thx Georges in Provence;
-* Fixed: plugin does not time out on sites with a large number of lists and subscribers. Thanks Roy;
-* Fixed: long email addresses no longer trigger MySQL errors during subscription. Thank you Sameer Bhatt and Bits of Freedom!
-
 = 3.0.0 - 2017-09-20 =
 * Official launch of the new MailPoet. :)
 * Improved: MailPoet 3 now works with other plugins that use a supported version of Twig templating engine. Thanks @supsysticcom;
 * Added: we now offer a free sending plan for "2000" subscribers or less. Thx MailPoet!
-
-= 3.0.0-rc.2.0.3 - 2017-09-12 =
-* Added: hook to override default cron URL. Thanks Fred;
-* Improved: WordPress user sync optimized for large membership sites; Thanks Nagui and @deltafactory!
-* Improved: column blocks are highlighted when hovering over their tools in the newsletter editor. Now column blocks are easier to visualize;
-* Improved: color picker in the the email designer got instant color previews and history of recent picks to help you design newsletter elements more rapidly;
-* Fixed: Twig does not throw a deprecated notice. Thanks Pascal;
-* Fixed: newsletter editor now longer hangs on Internet Explorer. Thanks Danielle;
-
-= 3.0.0-rc.2.0.2 - 2017-09-05 =
-* Added: browser spellchecker in newsletter editor;
-* Improved: newsletter editor uses an optimized data object to display post types. Thanks Facundo;
-* Fixed: when signup confirmation is disabled, subscribers added via API are automatically confirmed;
-* Fixed: browser preview from within newsletter editor works on HTTP sites loaded over HTTPS. Thanks @dave2084!
-
-= 3.0.0-rc.2.0.1 - 2017-08-30 =
-* Fixed: newsletters with emojis are properly saved and sent on certain hosts. Thanks Alison, Scott and Swann!
-* Fixed: plugin activates on multisite environments;
-* Fixed: subscription forms with list selection field are working now;
-* Fixed: newsletter editor does not require "unsubscribe" link when a third-party sending method is used;
-
-= 3.0.0-rc.2.0.0 - 2017-08-29 =
-* Improved: MailPoet updates on high traffic sites now use less resources;
-* Improved: newsletter is saved when "next" button is pressed in newsletter editor;
-* Improved: allows editors to manage emails and adds hooks to extend plugin's roles/permissions;
-* Improved: we collect more informative data from those who share their data with us. You should too!
-* Fixed: subscription management form works again;
-* Fixed: MailPoet 3 no longer processes the "wysija_form" shortcode used by the old MailPoet 2 to allow both plugins to display forms. Please use the newer "mailpoet_form" shortcode instead. Thx Lynn!
-* Fixed: reactivated post notifications will be sent on next scheduled time. Thx Luc!
-* Fixed: updating subscription information of WP users no longer erases their first/last name;
-* Fixed: automated latest content in welcome emails always displays the latest posts. Kudos Ehi!
-
-= 3.0.0-rc.1.0.4 - 2017-08-22 =
-* Added: newsletters can now be paused and edited while sending;
-* Added: tooltips across the UI to quickly answer questions we often get on support;
-* Added: extra measures to help prevent fake subscriptions by bots;
-* Added: a hook to modify maximum post excerpt length;
-* Fixed: it is possible again to switch to other sending methods after choosing MailPoet Sending Service. Thx Bastien!
-
-= 3.0.0-rc.1.0.3 - 2017-08-15 =
-* Improved: newsletter browser preview window in newsletter editor now fits correctly in any screen height;
-* Improved: date shortcode displays WP time and is available to be translated into other laguages. Thanks Rik and Yves!
-* Improved: rendered form body can be modified via a hook. Thanks, Vrodo;
-* Fixed: subscriber export will not fail on hosts with PHP's set_time_limit() disabled. Thanks, @miguelarroyo;
-
-= 3.0.0-rc.1.0.2 - 2017-08-08 =
-* Fixed: correct error notice is displayed when using IIS server. Thanks @flauer!
-
-= 3.0.0-rc.1.0.1 - 2017-08-02 =
-* Fixed: we were so excited to come out of Beta, we forgot to include translation files. Woops :)
 
 = 3.0.0-rc.1.0.0 - 2017-08-01 =
 * Improved: MailPoet 3 is no longer in Beta!
