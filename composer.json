@@ -55,13 +55,13 @@
   },
   "scripts": {
     "post-update-cmd": [
-      "rm -rf vendor/symfony/dependency-injection/Tests",
+      "rm -rf vendor/symfony/**/Tests",
       "\"vendor/bin/mozart\" compose",
       "rm -rf vendor/monolog",
       "@fixPHPUnit57CodeCoverageForPHP72"
     ],
     "post-install-cmd": [
-      "rm -rf vendor/symfony/dependency-injection/Tests",
+      "rm -rf vendor/symfony/**/Tests",
       "\"vendor/bin/mozart\" compose",
       "rm -rf vendor/monolog",
       "@fixPHPUnit57CodeCoverageForPHP72"
