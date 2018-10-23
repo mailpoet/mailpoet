@@ -44,6 +44,7 @@ define([
           src: null,
           display: 'scale'
         },
+        irregularWidthContents: false,
         styles: {
           block: {
             backgroundColor: 'transparent'
@@ -163,6 +164,7 @@ define([
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
     },
     onRender: function () {
+      var classIrregular = '';
       this.toolsView = new Module.ContainerBlockToolsView({
         model: this.model,
         tools: {
@@ -183,7 +185,12 @@ define([
       // Sets child container orientation HTML class here,
       // as child CollectionView won't have access to model
       // and will overwrite existing region element instead
-      this.$('> .mailpoet_container').attr('class', 'mailpoet_container mailpoet_container_' + this.model.get('orientation'));
+      if (typeof this.model.columnLayout === 'string') {
+        classIrregular = 'mailpoet_irregular_width_contents_container column_layout_' + this.model.columnLayout;
+      }
+      this.$('> .mailpoet_container').attr('class',
+        'mailpoet_container mailpoet_container_' + this.model.get('orientation') + ' ' + classIrregular
+      );
     },
     showTools: function () {
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
@@ -360,13 +367,15 @@ define([
       DraggableBehavior: {
         cloneOriginal: true,
         drop: function () {
-          return new Module.ContainerBlockModel({
+          var block = new Module.ContainerBlockModel({
             orientation: 'horizontal',
             blocks: [
               new Module.ContainerBlockModel(),
               new Module.ContainerBlockModel()
             ]
           });
+          block.columnLayout = '1_2';
+          return block;
         }
       }
     }
@@ -379,13 +388,15 @@ define([
       DraggableBehavior: {
         cloneOriginal: true,
         drop: function () {
-          const block1 = new Module.ContainerBlockModel();
-          const block2 = new Module.ContainerBlockModel();
-          block1.
-          return new Module.ContainerBlockModel({
+          var block = new Module.ContainerBlockModel({
             orientation: 'horizontal',
-            blocks: [block1, block2],
+            blocks: [
+              new Module.ContainerBlockModel(),
+              new Module.ContainerBlockModel()
+            ]
           });
+          block.columnLayout = '2_1';
+          return block;
         }
       }
     }
