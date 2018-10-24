@@ -165,6 +165,7 @@ define([
     },
     onRender: function () {
       var classIrregular = '';
+      var columnLayout;
       this.toolsView = new Module.ContainerBlockToolsView({
         model: this.model,
         tools: {
@@ -185,8 +186,9 @@ define([
       // Sets child container orientation HTML class here,
       // as child CollectionView won't have access to model
       // and will overwrite existing region element instead
-      if (typeof this.model.columnLayout === 'string') {
-        classIrregular = 'mailpoet_irregular_width_contents_container column_layout_' + this.model.columnLayout;
+      columnLayout = this.model.get('columnLayout');
+      if (typeof columnLayout === 'string') {
+        classIrregular = 'mailpoet_irregular_width_contents_container column_layout_' + columnLayout;
       }
       this.$('> .mailpoet_container').attr('class',
         'mailpoet_container mailpoet_container_' + this.model.get('orientation') + ' ' + classIrregular
@@ -374,7 +376,7 @@ define([
               new Module.ContainerBlockModel()
             ]
           });
-          block.columnLayout = '1_2';
+          block.set('columnLayout', '1_2');
           return block;
         }
       }
@@ -395,7 +397,7 @@ define([
               new Module.ContainerBlockModel()
             ]
           });
-          block.columnLayout = '2_1';
+          block.set('columnLayout', '2_1');
           return block;
         }
       }
