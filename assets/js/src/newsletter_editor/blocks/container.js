@@ -39,12 +39,12 @@ define([
     defaults: function () {
       return this._getDefaults({
         type: 'container',
+        columnLayout: false,
         orientation: 'vertical',
         image: {
           src: null,
           display: 'scale'
         },
-        irregularWidthContents: false,
         styles: {
           block: {
             backgroundColor: 'transparent'
