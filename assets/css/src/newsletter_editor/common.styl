@@ -245,7 +245,20 @@ span.select2-container--open > span.select2-dropdown
   
 span.select2-container--open > span.select2-dropdown li.select2-results__option
   margin: 0px !important
-  padding: 2px !important
+
+  & .select2-results__group
+    padding-left: 10px
+    background-color: #ddd
+    font-weight: 700
+    font-size: 1.1em
+
+  & .select2-results__option
+    padding-left: 10px
+    font-size: 13px
+
+    &[aria-selected=true]
+      background-color: #eee
+      color: #444
 
 .mailpoet-fonts-notice
   color: #999
