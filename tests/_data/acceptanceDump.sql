@@ -336,6 +336,7 @@ CREATE TABLE `mp_mailpoet_sending_queues` (
   `count_total` int(11) unsigned NOT NULL DEFAULT '0',
   `count_processed` int(11) unsigned NOT NULL DEFAULT '0',
   `count_to_process` int(11) unsigned NOT NULL DEFAULT '0',
+  `meta` longtext,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
