@@ -22,6 +22,10 @@ test -d node_modules && rm -rf node_modules
 npm install
 ./do compile:all --env production
 
+# Mozart processed libraries
+echo '[BUILD] Running composer to process libaries by mozart'
+./composer.phar install
+
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
 test -d vendor && rm -rf vendor

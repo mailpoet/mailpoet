@@ -57,6 +57,7 @@
     "post-update-cmd": [
       "\"vendor/bin/mozart\" compose",
       "rm -rf vendor/monolog",
+      "rm -rf vendor/league/container",
       "@fixPHPUnit57CodeCoverageForPHP72"
     ],
     "post-install-cmd": [
