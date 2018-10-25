@@ -3,6 +3,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterPost;
+use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
@@ -33,32 +34,41 @@ class Renderer {
     );
   }
 
-  function render($data, $column_count) {
+  function render($data) {
+    $column_count = count($data['blocks']);
+    $columns_layout = isset($data['columnLayout'])?$data['columnLayout']:null;
+    $column_widths = ColumnsHelper::columnWidth($column_count, $columns_layout);
+    $column_content = [];
+
+    foreach($data['blocks'] as $index => $column_blocks) {
+      $rendered_block_element = $this->renderBlocksInColumn($column_blocks, $column_widths[$index]);
+      $column_content[] = $rendered_block_element;
+    }
+
+    return $column_content;
+  }
+
+  private function renderBlocksInColumn($block, $column_base_width) {
     $block_content = '';
     $_this = $this;
-    array_map(function($block) use (&$block_content, &$column_content, $column_count, $_this) {
-      $rendered_block_element = $_this->createElementFromBlockType($block, $column_count);
+    array_map(function($block) use (&$block_content, $column_base_width, $_this) {
+      $rendered_block_element = $_this->createElementFromBlockType($block, $column_base_width);
       if(isset($block['blocks'])) {
-        $rendered_block_element = $_this->render($block, $column_count);
+        $rendered_block_element = $_this->renderBlocksInColumn($block, $column_base_width);
         // nested vertical column container is rendered as an array
         if(is_array($rendered_block_element)) {
           $rendered_block_element = implode('', $rendered_block_element);
         }
       }
 
-      // vertical orientation denotes column container
-      if($block['type'] === 'container' && $block['orientation'] === 'vertical') {
-        $column_content[] = $rendered_block_element;
-      } else {
-        $block_content .= $rendered_block_element;
-      }
-    }, $data['blocks']);
-    return (isset($column_content)) ? $column_content : $block_content;
+      $block_content .= $rendered_block_element;
+    }, $block['blocks']);
+    return $block_content;
   }
 
-  function createElementFromBlockType($block, $column_count) {
+  function createElementFromBlockType($block, $column_base_width) {
     if($block['type'] === 'automatedLatestContent') {
-      $content = $this->processAutomatedLatestContent($block, $column_count);
+      $content = $this->processAutomatedLatestContent($block, $column_base_width);
       return $content;
     }
     $block = StylesHelper::applyTextAlignment($block);
@@ -66,7 +76,7 @@ class Renderer {
     if(!class_exists($block_class)) {
       return '';
     }
-    return $block_class::render($block, $column_count);
+    return $block_class::render($block, $column_base_width);
   }
 
   function automatedLatestContentTransformedPosts($args) {
@@ -79,12 +89,12 @@ class Renderer {
     return $this->ALC->transformPosts($args, $ALC_posts);
   }
 
-  function processAutomatedLatestContent($args, $column_count) {
+  function processAutomatedLatestContent($args, $column_base_width) {
     $transformed_posts = array(
       'blocks' => $this->automatedLatestContentTransformedPosts($args)
     );
     $transformed_posts = StylesHelper::applyTextAlignment($transformed_posts);
-    $rendered_posts = $this->render($transformed_posts, $column_count);
+    $rendered_posts = $this->renderBlocksInColumn($transformed_posts, $column_base_width);
     return $rendered_posts;
   }
 

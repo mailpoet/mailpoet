@@ -97,17 +97,12 @@ class Renderer {
 
     $_this = $this;
     $rendered_content = array_map(function($content_block) use($_this) {
-      $column_count = count($content_block['blocks']);
-      $column_data = $_this->blocks_renderer->render(
-        $content_block,
-        $column_count
-      );
-      $content_block_image = isset($content_block['image'])?$content_block['image']:null;
+
+      $columns_data = $_this->blocks_renderer->render($content_block);
+
       return $_this->columns_renderer->render(
-        $content_block['styles'],
-        $content_block_image,
-        $column_count,
-        $column_data
+        $content_block,
+        $columns_data
       );
     }, $blocks);
     return implode('', $rendered_content);
