@@ -210,7 +210,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletter->id,
       Newsletter::TYPE_NOTIFICATION,
       array(
-        'schedule' => '* 5 * * *'
+        'schedule' => '0 5 * * *'
       )
     );
 
@@ -223,7 +223,7 @@ class SchedulerTest extends \MailPoetTest {
       $current_time->addDay();
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
-    expect($queue->scheduled_at)->equals($next_run_date->format('Y-m-d 05:00:00'));
+    expect($queue->scheduled_at)->startsWith($next_run_date->format('Y-m-d 05:00'));
   }
 
   function testItDoesNotSchedulesSubscriberWelcomeNotificationWhenSubscriberIsNotInSegment() {
