@@ -24,3 +24,6 @@ lang
 /nbproject/
 tests/_data/acceptanceGenerated.sql
 lib/Dependencies
+mozart/Dependencies
+mozart/Classes
+mozart/vendor

@@ -1,0 +1,50 @@
+{
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/costasovo/mozart"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "symfony/dependency-injection": "3.4.17",
+    "symfony/config": "3.4.17",
+    "symfony/yaml": "3.4.17",
+    "monolog/monolog": "^1.23",
+    "coenjacobs/mozart": "dev-dependency-tree"
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "@cleanup",
+      "vendor/bin/mozart compose",
+      "@unwantedDepsRemoval",
+      "mv ./Dependencies ../lib/"
+    ],
+    "post-install-cmd": [
+      "@cleanup",
+      "vendor/bin/mozart compose",
+      "@unwantedDepsRemoval",
+      "mv ./Dependencies ../lib/"
+    ],
+    "cleanup": "rm -rf vendor/symfony/**/Tests;rm -rf ../lib/Dependencies",
+    "unwantedDepsRemoval": "rm -rf ./Dependencies/Symfony/Debug;rm -rf ./Dependencies/Symfony/Finder;rm -rf ./Dependencies/Symfony/Console"
+  },
+
+  "extra": {
+    "mozart": {
+      "dep_namespace": "MailPoet\\Dependencies\\",
+      "dep_directory": "/Dependencies/",
+      "classmap_directory": "/Classes/",
+      "classmap_prefix": "MP_",
+      "packages": [
+        "monolog/monolog",
+        "symfony/dependency-injection"
+      ]
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "5.6.30"
+    }
+  }
+}
