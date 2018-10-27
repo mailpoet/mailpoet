@@ -20,8 +20,13 @@ class ContainerFactory {
 
   static function createContainer() {
     self::$container = new ContainerBuilder();
-    $loader = new YamlFileLoader(self::$container, new FileLocator(__DIR__));
-    $loader->load('services.yml');
+    self::$container->autowire(\MailPoet\Config\AccessControl::class);
+    self::$container->autowire(\MailPoet\Cron\Daemon::class);
+    self::$container->autowire(\MailPoet\Cron\DaemonHttpRunner::class);
+    self::$container->autowire(\MailPoet\Router\Endpoints\CronDaemon::class);
+    self::$container->autowire(\MailPoet\Router\Endpoints\Subscription::class);
+    self::$container->autowire(\MailPoet\Router\Endpoints\Track::class);
+    self::$container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class);
     return self::$container;
   }
 }

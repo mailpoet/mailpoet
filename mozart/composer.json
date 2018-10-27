@@ -9,7 +9,6 @@
     "php": ">=5.5",
     "symfony/dependency-injection": "3.4.17",
     "symfony/config": "3.4.17",
-    "symfony/yaml": "3.4.17",
     "monolog/monolog": "^1.23",
     "coenjacobs/mozart": "dev-dependency-tree"
   },
@@ -40,11 +39,6 @@
         "monolog/monolog",
         "symfony/dependency-injection"
       ]
-    }
-  },
-  "config": {
-    "platform": {
-      "php": "5.6.30"
     }
   }
 }
