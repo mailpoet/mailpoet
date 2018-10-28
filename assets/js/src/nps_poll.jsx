@@ -15,8 +15,8 @@ function displayPoll() {
       },
     });
     // Old users poll
-    satismeter({
-      writeKey: "k0aJAsQAWI2ERyGv",
+    window.satismeter({
+      writeKey: 'k0aJAsQAWI2ERyGv',
       userId: window.mailpoet_current_wp_user.ID + window.mailpoet_site_url,
       traits: {
         name: window.mailpoet_current_wp_user.user_nicename,
