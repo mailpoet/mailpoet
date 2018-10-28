@@ -484,7 +484,11 @@ module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], 
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     if (PRODUCTION_ENV) {
-      config.plugins.push(new webpackUglifyJsPlugin());
+      config.plugins.push(
+        new webpackUglifyJsPlugin({
+          mangle: false,
+        })
+      );
     }
     config.plugins.push(
       new webpackMD5HashPlugin(),
