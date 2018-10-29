@@ -7,6 +7,9 @@ class ConflictResolver {
       // WP default
       '^/wp-admin',
       '^/wp-includes',
+      // CDN
+      'googleapis.com/ajax/libs',
+      'wp.com',
       // third-party
       'query-monitor',
       'wpt-tx-updater-network'
