@@ -42,7 +42,35 @@ jobs:
           root: /home/circleci/mailpoet
           paths:
             - .
-  php5_and_js:
+  php5_unit:
+    working_directory: /home/circleci/mailpoet
+    docker:
+    - image: mailpoet/wordpress:5.6.30_20180417.1
+    - image: circleci/mysql:5.7
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    steps:
+    - attach_workspace:
+       at: /home/circleci/mailpoet
+    - run:
+        name: "Set up virtual host"
+        command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+    - run:
+        name: "Set up test environment"
+        command: source ./.circleci/setup.bash && setup php5
+    - run:
+        name: "PHP Unit tests"
+        command: |
+          WP_TEST_PATH="/home/circleci/mailpoet/wordpress" ./do t:u --xml
+    - store_test_results:
+        path: tests/_output
+    - store_artifacts:
+        path: tests/_output
+        destination: codeception
+    - store_artifacts:
+        path: /tmp/fake-mailer/
+        destination: fake-mailer
+  php5_integration_and_js:
     working_directory: /home/circleci/mailpoet
     docker:
     - image: mailpoet/wordpress:5.6.30_20180417.1
@@ -67,9 +95,9 @@ jobs:
           mkdir test-results/mocha
           ./do t:j test-results/mocha/junit.xml
     - run:
-        name: "PHP Unit tests"
+        name: "PHP Integration tests"
         command: |
-          WP_TEST_PATH="/home/circleci/mailpoet/wordpress" ./do t:u --xml
+          WP_TEST_PATH="/home/circleci/mailpoet/wordpress" ./do t:i --xml
     - store_test_results:
         path: test-results/mocha
     - store_artifacts:
@@ -131,7 +159,7 @@ jobs:
           path: tests/_output
       - store_test_results:
           path: tests/_output
-  php7:
+  php7_unit:
     working_directory: /home/circleci/mailpoet
     docker:
       - image: mailpoet/wordpress:7.1_20181009.1
@@ -162,7 +190,38 @@ jobs:
       - store_artifacts:
           path: /tmp/fake-mailer/
           destination: fake-mailer
-  php7_multisite:
+  php7_integration:
+    working_directory: /home/circleci/mailpoet
+    docker:
+      - image: mailpoet/wordpress:7.1_20181009.1
+      - image: circleci/mysql:5.7
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    steps:
+      - attach_workspace:
+         at: /home/circleci/mailpoet
+      - run:
+          name: "Set up virtual host"
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: "Prepare example.com for testing"
+          command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
+      - run:
+          name: "Set up test environment"
+          command: source ./.circleci/setup.bash && setup php7
+      - run:
+          name: "PHP Integration tests"
+          command: |
+            ./do t:i --xml
+      - store_test_results:
+          path: tests/_output
+      - store_artifacts:
+          path: tests/_output
+          destination: codeception
+      - store_artifacts:
+          path: /tmp/fake-mailer/
+          destination: fake-mailer
+  php7_integration_multisite:
     working_directory: /home/circleci/mailpoet
     docker:
       - image: mailpoet/wordpress:7.1_20181009.1
@@ -182,9 +241,9 @@ jobs:
           name: "Set up test environment"
           command: source ./.circleci/setup.bash && setup php7_multisite
       - run:
-          name: "PHP Unit tests"
+          name: "PHP Integration tests"
           command: |
-            ./do t:multisite-unit --xml
+            ./do t:multisite-integration --xml
       - store_test_results:
           path: tests/_output
       - store_artifacts:
@@ -198,18 +257,24 @@ workflows:
   build_and_test:
     jobs:
       - build_and_code_qa
-      - php7:
+      - php5_unit:
           requires:
             - build_and_code_qa
-      - php5_and_js:
+      - php7_unit:
           requires:
             - build_and_code_qa
+      - php5_integration_and_js:
+          requires:
+            - php5_unit
+      - php7_integration:
+          requires:
+            - php7_unit
+      - php7_integration_multisite:
+          requires:
+            - php7_unit
       - acceptance_tests:
           requires:
-            - build_and_code_qa
-      - php7_multisite:
-          requires:
-            - build_and_code_qa
+            - php5_unit
       - acceptance_tests_multisite:
           requires:
-            - build_and_code_qa
+            - php5_unit

@@ -67,16 +67,22 @@ $ ./do watch:css           # watch CSS files for changes and compile them.
 $ ./do watch:js            # watch JS files for changes and compile them.
 $ ./do watch               # watch CSS and JS files for changes and compile them.
 
-$ ./do test:unit [--file=...] [--multisite] [--debug]
+$ ./do test:unit [--file=...] [--debug]
   # runs the PHP unit tests.
   # if --file specified then only tests on that file are executed.
-  # if --multisite then unit tests are executed in a multisite wordpress setup.
   # if --debug then tests are executed in debugging mode.
-$ ./do test:multisite:unit # alias for ./do test:unit --multisite
-$ ./do test:debug          # alias for ./do test:unit --debug
-$ ./do test:failed         # run the last failing unit test.
-$ ./do test:coverage       # run unit tests and output coverage information.
-$ ./do test:javascript     # run the JS tests.
+$ ./do test:integration [--file=...] [--multisite] [--debug]
+  # runs the PHP integration tests.
+  # if --file specified then only tests on that file are executed.
+  # if --multisite then tests are executed in a multisite wordpress setup.
+  # if --debug then tests are executed in debugging mode.
+$ ./do test:multisite:integration # alias for ./do test:integration --multisite
+$ ./do test:debug:unit            # alias for ./do test:unit --debug
+$ ./do test:debug:integration     # alias for ./do test:integration --debug
+$ ./do test:failed:unit           # run the last failing unit test.
+$ ./do test:failed:integration    # run the last failing integration test.
+$ ./do test:coverage              # run tests and output coverage information.
+$ ./do test:javascript            # run the JS tests.
 $ ./do test:acceptance [--file=...] [--skip-deps]
   # run acceptances tests into a docker environment.
   # if --file given then only tests on that file are executed.
@@ -137,6 +143,6 @@ From the article above:
 
 _Windows users only: enable hard drive sharing in the Docker settings._
 
-The browser runs in a docker container. You can use a VNC client to watch the test run, follow instructions in official 
+The browser runs in a docker container. You can use a VNC client to watch the test run, follow instructions in official
 repo: https://github.com/SeleniumHQ/docker-selenium
 If you’re on a Mac, you can open vnc://localhost:5900 in Safari to watch the tests running in Chrome. If you’re on Windows, you’ll need a VNC client. Password: secret.
