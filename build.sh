@@ -27,6 +27,9 @@ echo '[BUILD] Fetching production libraries'
 test -d vendor && rm -rf vendor
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
+echo '[BUILD] Fetching mozart managed production libraries'
+./composer.phar install --no-dev --prefer-dist --working-dir=./mozart/
+
 # Copy release folders.
 echo '[BUILD] Copying release folders'
 cp -Rf lang $plugin_name
