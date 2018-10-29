@@ -82,7 +82,7 @@ class ScienceWeekly {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Science-Logo.png',
+                                  'src' => 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly/Science-Logo.png',
                                   'alt' => 'Science-Logo',
                                   'fullWidth' => true,
                                   'width' => '1280px',
@@ -99,7 +99,7 @@ class ScienceWeekly {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Health-Mag-Title-22.png',
+                                  'src' => 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly/Health-Mag-Title-22.png',
                                   'alt' => 'Health-Mag-Title-2',
                                   'fullWidth' => true,
                                   'width' => '1280px',
@@ -157,127 +157,89 @@ class ScienceWeekly {
                                   'type' => 'text',
                                   'text' => '<h1 style="text-align: center;"><span style="color: #ffffff;"><strong>The latest news from the world of science</strong></span></h1>',
                                 ),
-                            ),
-                        ),
-                    ),
-                ),
-              2 =>
-                array (
-                  'type' => 'container',
-                  'orientation' => 'horizontal',
-                  'image' =>
-                    array (
-                      'src' => NULL,
-                      'display' => 'scale',
-                    ),
-                  'styles' =>
-                    array (
-                      'block' =>
-                        array (
-                          'backgroundColor' => '#ffffff',
-                        ),
-                    ),
-                  'blocks' =>
-                    array (
-                      0 =>
-                        array (
-                          'type' => 'container',
-                          'orientation' => 'vertical',
-                          'image' =>
-                            array (
-                              'src' => NULL,
-                              'display' => 'scale',
-                            ),
-                          'styles' =>
-                            array (
-                              'block' =>
-                                array (
-                                  'backgroundColor' => 'transparent',
-                                ),
-                            ),
-                          'blocks' =>
-                            array (
-                              0 =>
+                              1 =>
                                 array (
                                   'type' => 'spacer',
                                   'styles' =>
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
+                                          'backgroundColor' => '#ffffff',
+                                          'height' => '40px',
                                         ),
                                     ),
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'automatedLatestContent',
-                                  'withLayout' => false,
-                                  'amount' => '2',
-                                  'contentType' => 'post',
-                                  'terms' =>
-                                    array (
-                                    ),
-                                  'inclusionType' => 'include',
-                                  'displayType' => 'excerpt',
-                                  'titleFormat' => 'h1',
-                                  'titleAlignment' => 'left',
-                                  'titleIsLink' => false,
-                                  'imageFullWidth' => false,
-                                  'featuredImagePosition' => 'belowTitle',
-                                  'showAuthor' => 'no',
-                                  'authorPrecededBy' => 'Author:',
-                                  'showCategories' => 'no',
-                                  'categoriesPrecededBy' => 'Categories:',
-                                  'readMoreType' => 'button',
-                                  'readMoreText' => 'Read more',
-                                  'readMoreButton' =>
-                                    array (
-                                      'type' => 'button',
-                                      'text' => 'Read more',
-                                      'url' => '[postLink]',
-                                      'styles' =>
-                                        array (
-                                          'block' =>
-                                            array (
-                                              'backgroundColor' => '#2b2d37',
-                                              'borderColor' => '#112d31',
-                                              'borderWidth' => '1px',
-                                              'borderRadius' => '21px',
-                                              'borderStyle' => 'solid',
-                                              'width' => '114px',
-                                              'lineHeight' => '33px',
-                                              'fontColor' => '#ffffff',
-                                              'fontFamily' => 'Arial',
-                                              'fontSize' => '16px',
-                                              'fontWeight' => 'normal',
-                                              'textAlign' => 'left',
-                                            ),
-                                        ),
-                                    ),
-                                  'sortBy' => 'newest',
-                                  'showDivider' => true,
-                                  'divider' =>
-                                    array (
-                                      'type' => 'divider',
-                                      'styles' =>
-                                        array (
-                                          'block' =>
-                                            array (
-                                              'backgroundColor' => 'transparent',
-                                              'padding' => '13px',
-                                              'borderStyle' => 'solid',
-                                              'borderWidth' => '3px',
-                                              'borderColor' => '#aaaaaa',
-                                            ),
-                                        ),
-                                    ),
-                                  'backgroundColor' => '#ffffff',
-                                  'backgroundColorAlternate' => '#eeeeee',
                                 ),
                             ),
                         ),
                     ),
+                ),
+              2 =>
+                array (
+                  'type' => 'automatedLatestContentLayout',
+                  'withLayout' => true,
+                  'amount' => '2',
+                  'contentType' => 'post',
+                  'terms' =>
+                    array (
+                    ),
+                  'inclusionType' => 'include',
+                  'displayType' => 'excerpt',
+                  'titleFormat' => 'h1',
+                  'titleAlignment' => 'left',
+                  'titleIsLink' => false,
+                  'imageFullWidth' => false,
+                  'featuredImagePosition' => 'alternate',
+                  'showAuthor' => 'no',
+                  'authorPrecededBy' => 'Author:',
+                  'showCategories' => 'no',
+                  'categoriesPrecededBy' => 'Categories:',
+                  'readMoreType' => 'button',
+                  'readMoreText' => 'Read more',
+                  'readMoreButton' =>
+                    array (
+                      'type' => 'button',
+                      'text' => 'Read more',
+                      'url' => '[postLink]',
+                      'styles' =>
+                        array (
+                          'block' =>
+                            array (
+                              'backgroundColor' => '#2b2d37',
+                              'borderColor' => '#2b2d37',
+                              'borderWidth' => '1px',
+                              'borderRadius' => '21px',
+                              'borderStyle' => 'solid',
+                              'width' => '114px',
+                              'lineHeight' => '33px',
+                              'fontColor' => '#ffffff',
+                              'fontFamily' => 'Verdana',
+                              'fontSize' => '14px',
+                              'fontWeight' => 'normal',
+                              'textAlign' => 'left',
+                            ),
+                        ),
+                      'context' => 'automatedLatestContentLayout.readMoreButton',
+                    ),
+                  'sortBy' => 'newest',
+                  'showDivider' => true,
+                  'divider' =>
+                    array (
+                      'type' => 'divider',
+                      'styles' =>
+                        array (
+                          'block' =>
+                            array (
+                              'backgroundColor' => 'transparent',
+                              'padding' => '13px',
+                              'borderStyle' => 'solid',
+                              'borderWidth' => '3px',
+                              'borderColor' => '#aaaaaa',
+                            ),
+                        ),
+                      'context' => 'automatedLatestContentLayout.divider',
+                    ),
+                  'backgroundColor' => '#ffffff',
+                  'backgroundColorAlternate' => '#eeeeee',
                 ),
               3 =>
                 array (
@@ -331,7 +293,7 @@ class ScienceWeekly {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Health-Mag-End-1.png',
+                                  'src' => 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly/Health-Mag-End-1.png',
                                   'alt' => 'Health-Mag-End',
                                   'fullWidth' => true,
                                   'width' => '1280px',
@@ -400,7 +362,7 @@ class ScienceWeekly {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Health-Mag-Promo-Start.png',
+                                  'src' => 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly/Health-Mag-Promo-Start.png',
                                   'alt' => 'Health-Mag-Promo-Start',
                                   'fullWidth' => true,
                                   'width' => '1280px',
@@ -522,7 +484,7 @@ class ScienceWeekly {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Health-Mag-Phone.png',
+                                  'src' => 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly/Health-Mag-Phone.png',
                                   'alt' => 'Health-Mag-Phone',
                                   'fullWidth' => false,
                                   'width' => '400px',
@@ -579,7 +541,7 @@ class ScienceWeekly {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Health-Mag-Promo-End.png',
+                                  'src' => 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly/Health-Mag-Promo-End.png',
                                   'alt' => 'Health-Mag-Promo-End',
                                   'fullWidth' => true,
                                   'width' => '1280px',
@@ -648,7 +610,7 @@ class ScienceWeekly {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Health-Mag-Promo-Start.png',
+                                  'src' => 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly/Health-Mag-Promo-Start.png',
                                   'alt' => 'Health-Mag-Promo-Start',
                                   'fullWidth' => true,
                                   'width' => '1280px',
@@ -709,7 +671,7 @@ class ScienceWeekly {
                               1 =>
                                 array (
                                   'type' => 'social',
-                                  'iconSet' => 'circles',
+                                  'iconSet' => 'full-symbol-black',
                                   'icons' =>
                                     array (
                                       0 =>
@@ -717,7 +679,7 @@ class ScienceWeekly {
                                           'type' => 'socialIcon',
                                           'iconType' => 'facebook',
                                           'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Facebook.png',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/07-full-symbol-black/Facebook.png?mailpoet_version=3.11.1',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Facebook',
@@ -727,30 +689,10 @@ class ScienceWeekly {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Twitter.png',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/07-full-symbol-black/Twitter.png?mailpoet_version=3.11.1',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
-                                        ),
-                                      2 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'youtube',
-                                          'link' => 'http://www.youtube.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Youtube.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Youtube',
-                                        ),
-                                      3 =>
-                                        array (
-                                          'type' => 'socialIcon',
-                                          'iconType' => 'instagram',
-                                          'link' => 'http://instagram.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Instagram.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Instagram',
                                         ),
                                     ),
                                 ),
@@ -798,7 +740,7 @@ class ScienceWeekly {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Health-Mag-Promo-End.png',
+                                  'src' => 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly/Health-Mag-Promo-End.png',
                                   'alt' => 'Health-Mag-Promo-End',
                                   'fullWidth' => true,
                                   'width' => '1280px',
@@ -971,7 +913,7 @@ class ScienceWeekly {
             ),
           'automatedLatestContentLayout' =>
             array (
-              'amount' => '5',
+              'amount' => '2',
               'withLayout' => true,
               'contentType' => 'post',
               'inclusionType' => 'include',
@@ -996,20 +938,21 @@ class ScienceWeekly {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => '#2ea1cd',
-                          'borderColor' => '#0074a2',
+                          'backgroundColor' => '#2b2d37',
+                          'borderColor' => '#2b2d37',
                           'borderWidth' => '1px',
-                          'borderRadius' => '5px',
+                          'borderRadius' => '21px',
                           'borderStyle' => 'solid',
-                          'width' => '180px',
-                          'lineHeight' => '40px',
+                          'width' => '114px',
+                          'lineHeight' => '33px',
                           'fontColor' => '#ffffff',
                           'fontFamily' => 'Verdana',
-                          'fontSize' => '18px',
+                          'fontSize' => '14px',
                           'fontWeight' => 'normal',
-                          'textAlign' => 'center',
+                          'textAlign' => 'left',
                         ),
                     ),
+                  'type' => 'button',
                 ),
               'sortBy' => 'newest',
               'showDivider' => true,
@@ -1027,9 +970,14 @@ class ScienceWeekly {
                           'borderColor' => '#aaaaaa',
                         ),
                     ),
+                  'type' => 'divider',
                 ),
               'backgroundColor' => '#ffffff',
               'backgroundColorAlternate' => '#eeeeee',
+              'type' => 'automatedLatestContentLayout',
+              'terms' =>
+                array (
+                ),
             ),
           'button' =>
             array (
@@ -1054,6 +1002,21 @@ class ScienceWeekly {
                     ),
                 ),
               'type' => 'button',
+            ),
+          'container' =>
+            array (
+              'image' =>
+                array (
+                  'src' => NULL,
+                  'display' => 'scale',
+                ),
+              'styles' =>
+                array (
+                  'block' =>
+                    array (
+                      'backgroundColor' => 'transparent',
+                    ),
+                ),
             ),
           'divider' =>
             array (
@@ -1158,7 +1121,7 @@ class ScienceWeekly {
             ),
           'social' =>
             array (
-              'iconSet' => 'default',
+              'iconSet' => 'full-symbol-black',
               'icons' =>
                 array (
                   0 =>
@@ -1166,7 +1129,7 @@ class ScienceWeekly {
                       'type' => 'socialIcon',
                       'iconType' => 'facebook',
                       'link' => 'http://www.facebook.com',
-                      'image' => $this->social_icon_url . '/01-social/Facebook.png?mailpoet_version=3.8.1',
+                      'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/07-full-symbol-black/Facebook.png?mailpoet_version=3.11.1',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Facebook',
@@ -1176,12 +1139,13 @@ class ScienceWeekly {
                       'type' => 'socialIcon',
                       'iconType' => 'twitter',
                       'link' => 'http://www.twitter.com',
-                      'image' => $this->social_icon_url . '/01-social/Twitter.png?mailpoet_version=3.8.1',
+                      'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/07-full-symbol-black/Twitter.png?mailpoet_version=3.11.1',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Twitter',
                     ),
                 ),
+              'type' => 'social',
             ),
           'spacer' =>
             array (
@@ -1189,10 +1153,11 @@ class ScienceWeekly {
                 array (
                   'block' =>
                     array (
-                      'backgroundColor' => 'transparent',
+                      'backgroundColor' => '#ffffff',
                       'height' => '40px',
                     ),
                 ),
+              'type' => 'spacer',
             ),
           'header' =>
             array (

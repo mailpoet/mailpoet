@@ -32,6 +32,11 @@ class RssSimpleNews {
         array (
           'type' => 'container',
           'orientation' => 'vertical',
+          'image' =>
+            array (
+              'src' => NULL,
+              'display' => 'scale',
+            ),
           'styles' =>
             array (
               'block' =>
@@ -45,6 +50,11 @@ class RssSimpleNews {
                 array (
                   'type' => 'container',
                   'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
                   'styles' =>
                     array (
                       'block' =>
@@ -58,6 +68,11 @@ class RssSimpleNews {
                         array (
                           'type' => 'container',
                           'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
                           'styles' =>
                             array (
                               'block' =>
@@ -87,6 +102,11 @@ class RssSimpleNews {
                 array (
                   'type' => 'container',
                   'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
                   'styles' =>
                     array (
                       'block' =>
@@ -100,6 +120,11 @@ class RssSimpleNews {
                         array (
                           'type' => 'container',
                           'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
                           'styles' =>
                             array (
                               'block' =>
@@ -113,7 +138,7 @@ class RssSimpleNews {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/RSS-Logo-2.png',
+                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/08/RSS-Logo-2.png',
                                   'alt' => 'RSS-Logo-2',
                                   'fullWidth' => true,
                                   'width' => '210px',
@@ -132,6 +157,11 @@ class RssSimpleNews {
                         array (
                           'type' => 'container',
                           'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
                           'styles' =>
                             array (
                               'block' =>
@@ -159,6 +189,11 @@ class RssSimpleNews {
                         array (
                           'type' => 'container',
                           'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
                           'styles' =>
                             array (
                               'block' =>
@@ -191,7 +226,7 @@ class RssSimpleNews {
                                           'type' => 'socialIcon',
                                           'iconType' => 'facebook',
                                           'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/06-full-symbol-color/Facebook.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/06-full-symbol-color/Facebook.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Facebook',
@@ -201,7 +236,7 @@ class RssSimpleNews {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/06-full-symbol-color/Twitter.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/06-full-symbol-color/Twitter.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
@@ -211,7 +246,7 @@ class RssSimpleNews {
                                           'type' => 'socialIcon',
                                           'iconType' => 'website',
                                           'link' => '',
-                                          'image' => $this->social_icon_url . '/06-full-symbol-color/Website.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/06-full-symbol-color/Website.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Website',
@@ -226,6 +261,11 @@ class RssSimpleNews {
                 array (
                   'type' => 'container',
                   'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
                   'styles' =>
                     array (
                       'block' =>
@@ -239,6 +279,11 @@ class RssSimpleNews {
                         array (
                           'type' => 'container',
                           'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
                           'styles' =>
                             array (
                               'block' =>
@@ -268,73 +313,6 @@ class RssSimpleNews {
                                 ),
                               2 =>
                                 array (
-                                  'type' => 'automatedLatestContent',
-                                  'amount' => '3',
-                                  'contentType' => 'post',
-                                  'terms' =>
-                                    array (
-                                    ),
-                                  'inclusionType' => 'include',
-                                  'displayType' => 'excerpt',
-                                  'titleFormat' => 'h3',
-                                  'titleAlignment' => 'left',
-                                  'titleIsLink' => true,
-                                  'imageFullWidth' => false,
-                                  'featuredImagePosition' => 'belowTitle',
-                                  'showAuthor' => 'no',
-                                  'authorPrecededBy' => 'Author:',
-                                  'showCategories' => 'no',
-                                  'categoriesPrecededBy' => 'Categories:',
-                                  'readMoreType' => 'link',
-                                  'readMoreText' => 'Read more',
-                                  'readMoreButton' =>
-                                    array (
-                                      'type' => 'button',
-                                      'text' => 'Read more',
-                                      'url' => '[postLink]',
-                                      'styles' =>
-                                        array (
-                                          'block' =>
-                                            array (
-                                              'backgroundColor' => '#2ea1cd',
-                                              'borderColor' => '#0074a2',
-                                              'borderWidth' => '1px',
-                                              'borderRadius' => '5px',
-                                              'borderStyle' => 'solid',
-                                              'width' => '180px',
-                                              'lineHeight' => '40px',
-                                              'fontColor' => '#ffffff',
-                                              'fontFamily' => 'Verdana',
-                                              'fontSize' => '18px',
-                                              'fontWeight' => 'normal',
-                                              'textAlign' => 'center',
-                                            ),
-                                        ),
-                                      'context' => 'automatedLatestContent.readMoreButton',
-                                    ),
-                                  'sortBy' => 'newest',
-                                  'showDivider' => true,
-                                  'divider' =>
-                                    array (
-                                      'type' => 'divider',
-                                      'styles' =>
-                                        array (
-                                          'block' =>
-                                            array (
-                                              'backgroundColor' => 'transparent',
-                                              'padding' => '13px',
-                                              'borderStyle' => 'solid',
-                                              'borderWidth' => '1px',
-                                              'borderColor' => '#efe7f0',
-                                            ),
-                                        ),
-                                      'context' => 'automatedLatestContent.divider',
-                                    ),
-                                  'backgroundColor' => '#ffffff',
-                                  'backgroundColorAlternate' => '#eeeeee',
-                                ),
-                              3 =>
-                                array (
                                   'type' => 'spacer',
                                   'styles' =>
                                     array (
@@ -351,8 +329,81 @@ class RssSimpleNews {
                 ),
               3 =>
                 array (
+                  'type' => 'automatedLatestContentLayout',
+                  'withLayout' => true,
+                  'amount' => '5',
+                  'contentType' => 'post',
+                  'terms' =>
+                    array (
+                    ),
+                  'inclusionType' => 'include',
+                  'displayType' => 'excerpt',
+                  'titleFormat' => 'h3',
+                  'titleAlignment' => 'left',
+                  'titleIsLink' => true,
+                  'imageFullWidth' => false,
+                  'featuredImagePosition' => 'alternate',
+                  'showAuthor' => 'no',
+                  'authorPrecededBy' => 'Author:',
+                  'showCategories' => 'no',
+                  'categoriesPrecededBy' => 'Categories:',
+                  'readMoreType' => 'link',
+                  'readMoreText' => 'Read more.',
+                  'readMoreButton' =>
+                    array (
+                      'type' => 'button',
+                      'text' => 'Read more',
+                      'url' => '[postLink]',
+                      'styles' =>
+                        array (
+                          'block' =>
+                            array (
+                              'backgroundColor' => '#2ea1cd',
+                              'borderColor' => '#0074a2',
+                              'borderWidth' => '1px',
+                              'borderRadius' => '5px',
+                              'borderStyle' => 'solid',
+                              'width' => '180px',
+                              'lineHeight' => '40px',
+                              'fontColor' => '#ffffff',
+                              'fontFamily' => 'Verdana',
+                              'fontSize' => '18px',
+                              'fontWeight' => 'normal',
+                              'textAlign' => 'center',
+                            ),
+                        ),
+                      'context' => 'automatedLatestContentLayout.readMoreButton',
+                    ),
+                  'sortBy' => 'newest',
+                  'showDivider' => true,
+                  'divider' =>
+                    array (
+                      'type' => 'divider',
+                      'styles' =>
+                        array (
+                          'block' =>
+                            array (
+                              'backgroundColor' => 'transparent',
+                              'padding' => '13px',
+                              'borderStyle' => 'solid',
+                              'borderWidth' => '1px',
+                              'borderColor' => '#ececec',
+                            ),
+                        ),
+                      'context' => 'automatedLatestContentLayout.divider',
+                    ),
+                  'backgroundColor' => '#ffffff',
+                  'backgroundColorAlternate' => '#eeeeee',
+                ),
+              4 =>
+                array (
                   'type' => 'container',
                   'orientation' => 'horizontal',
+                  'image' =>
+                    array (
+                      'src' => NULL,
+                      'display' => 'scale',
+                    ),
                   'styles' =>
                     array (
                       'block' =>
@@ -366,6 +417,11 @@ class RssSimpleNews {
                         array (
                           'type' => 'container',
                           'orientation' => 'vertical',
+                          'image' =>
+                            array (
+                              'src' => NULL,
+                              'display' => 'scale',
+                            ),
                           'styles' =>
                             array (
                               'block' =>
@@ -508,6 +564,75 @@ class RssSimpleNews {
               'terms' =>
                 array (
                 ),
+              'withLayout' => false,
+            ),
+          'automatedLatestContentLayout' =>
+            array (
+              'amount' => '5',
+              'withLayout' => true,
+              'contentType' => 'post',
+              'inclusionType' => 'include',
+              'displayType' => 'excerpt',
+              'titleFormat' => 'h3',
+              'titleAlignment' => 'left',
+              'titleIsLink' => true,
+              'imageFullWidth' => false,
+              'featuredImagePosition' => 'alternate',
+              'showAuthor' => 'no',
+              'authorPrecededBy' => 'Author:',
+              'showCategories' => 'no',
+              'categoriesPrecededBy' => 'Categories:',
+              'readMoreType' => 'link',
+              'readMoreText' => 'Read more.',
+              'readMoreButton' =>
+                array (
+                  'text' => 'Read more',
+                  'url' => '[postLink]',
+                  'context' => 'automatedLatestContentLayout.readMoreButton',
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => '#2ea1cd',
+                          'borderColor' => '#0074a2',
+                          'borderWidth' => '1px',
+                          'borderRadius' => '5px',
+                          'borderStyle' => 'solid',
+                          'width' => '180px',
+                          'lineHeight' => '40px',
+                          'fontColor' => '#ffffff',
+                          'fontFamily' => 'Verdana',
+                          'fontSize' => '18px',
+                          'fontWeight' => 'normal',
+                          'textAlign' => 'center',
+                        ),
+                    ),
+                  'type' => 'button',
+                ),
+              'sortBy' => 'newest',
+              'showDivider' => true,
+              'divider' =>
+                array (
+                  'context' => 'automatedLatestContentLayout.divider',
+                  'styles' =>
+                    array (
+                      'block' =>
+                        array (
+                          'backgroundColor' => 'transparent',
+                          'padding' => '13px',
+                          'borderStyle' => 'solid',
+                          'borderWidth' => '1px',
+                          'borderColor' => '#ececec',
+                        ),
+                    ),
+                  'type' => 'divider',
+                ),
+              'backgroundColor' => '#ffffff',
+              'backgroundColorAlternate' => '#eeeeee',
+              'type' => 'automatedLatestContentLayout',
+              'terms' =>
+                array (
+                ),
             ),
           'button' =>
             array (
@@ -533,6 +658,16 @@ class RssSimpleNews {
                 ),
               'type' => 'button',
             ),
+          'container' =>
+            array (
+              'styles' =>
+                array (
+                  'block' =>
+                    array (
+                      'backgroundColor' => 'transparent',
+                    ),
+                ),
+            ),
           'divider' =>
             array (
               'styles' =>
@@ -546,6 +681,7 @@ class RssSimpleNews {
                       'borderColor' => '#aaaaaa',
                     ),
                 ),
+              'type' => 'divider',
             ),
           'footer' =>
             array (
@@ -642,7 +778,7 @@ class RssSimpleNews {
                       'type' => 'socialIcon',
                       'iconType' => 'facebook',
                       'link' => 'http://www.facebook.com',
-                      'image' => $this->social_icon_url . '/01-social/Facebook.png?mailpoet_version=3.7.1',
+                      'image' => 'https://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/01-social/Facebook.png?mailpoet_version=3.7.1',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Facebook',
@@ -652,7 +788,7 @@ class RssSimpleNews {
                       'type' => 'socialIcon',
                       'iconType' => 'twitter',
                       'link' => 'http://www.twitter.com',
-                      'image' => $this->social_icon_url . '/01-social/Twitter.png?mailpoet_version=3.7.1',
+                      'image' => 'https://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/01-social/Twitter.png?mailpoet_version=3.7.1',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Twitter',

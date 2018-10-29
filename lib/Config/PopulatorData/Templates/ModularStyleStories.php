@@ -31,6 +31,7 @@ class ModularStyleStories {
       'content' =>
         array (
           'type' => 'container',
+          'columnLayout' => false,
           'orientation' => 'vertical',
           'image' =>
             array (
@@ -49,6 +50,7 @@ class ModularStyleStories {
               0 =>
                 array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -67,6 +69,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -101,6 +104,7 @@ class ModularStyleStories {
               1 =>
                 array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -119,6 +123,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -150,7 +155,7 @@ class ModularStyleStories {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => $this->template_image_url . '/Modular-Logo.png',
+                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/08/Modular-Logo.png',
                                   'alt' => 'Modular-Logo',
                                   'fullWidth' => false,
                                   'width' => '271px',
@@ -168,6 +173,7 @@ class ModularStyleStories {
                       1 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -206,7 +212,7 @@ class ModularStyleStories {
                                           'type' => 'socialIcon',
                                           'iconType' => 'facebook',
                                           'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/06-full-symbol-color/Facebook.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/06-full-symbol-color/Facebook.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Facebook',
@@ -216,7 +222,7 @@ class ModularStyleStories {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/06-full-symbol-color/Twitter.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/06-full-symbol-color/Twitter.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
@@ -226,7 +232,7 @@ class ModularStyleStories {
                                           'type' => 'socialIcon',
                                           'iconType' => 'instagram',
                                           'link' => 'http://instagram.com',
-                                          'image' => $this->social_icon_url . '/06-full-symbol-color/Instagram.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/06-full-symbol-color/Instagram.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Instagram',
@@ -236,7 +242,7 @@ class ModularStyleStories {
                                           'type' => 'socialIcon',
                                           'iconType' => 'pinterest',
                                           'link' => 'http://www.pinterest.com',
-                                          'image' => $this->social_icon_url . '/06-full-symbol-color/Pinterest.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/06-full-symbol-color/Pinterest.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Pinterest',
@@ -250,6 +256,7 @@ class ModularStyleStories {
               2 =>
                 array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -260,7 +267,7 @@ class ModularStyleStories {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => '#b956c5',
+                          'backgroundColor' => 'transparent',
                         ),
                     ),
                   'blocks' =>
@@ -268,6 +275,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -291,89 +299,9 @@ class ModularStyleStories {
                                       'block' =>
                                         array (
                                           'backgroundColor' => '#efe7f0',
-                                          'height' => '20px',
+                                          'height' => '40px',
                                         ),
                                     ),
-                                ),
-                              1 =>
-                                array (
-                                  'type' => 'spacer',
-                                  'styles' =>
-                                    array (
-                                      'block' =>
-                                        array (
-                                          'backgroundColor' => 'transparent',
-                                          'height' => '20px',
-                                        ),
-                                    ),
-                                ),
-                              2 =>
-                                array (
-                                  'type' => 'automatedLatestContent',
-                                  'withLayout' => false,
-                                  'amount' => '1',
-                                  'contentType' => 'post',
-                                  'terms' =>
-                                    array (
-                                    ),
-                                  'inclusionType' => 'include',
-                                  'displayType' => 'excerpt',
-                                  'titleFormat' => 'h3',
-                                  'titleAlignment' => 'left',
-                                  'titleIsLink' => false,
-                                  'imageFullWidth' => true,
-                                  'featuredImagePosition' => 'aboveTitle',
-                                  'showAuthor' => 'no',
-                                  'authorPrecededBy' => 'Author:',
-                                  'showCategories' => 'no',
-                                  'categoriesPrecededBy' => 'Categories:',
-                                  'readMoreType' => 'button',
-                                  'readMoreText' => 'Read more',
-                                  'readMoreButton' =>
-                                    array (
-                                      'type' => 'button',
-                                      'text' => 'Read more',
-                                      'url' => '[postLink]',
-                                      'styles' =>
-                                        array (
-                                          'block' =>
-                                            array (
-                                              'backgroundColor' => '#ffffff',
-                                              'borderColor' => '#0074a2',
-                                              'borderWidth' => '0px',
-                                              'borderRadius' => '0px',
-                                              'borderStyle' => 'solid',
-                                              'width' => '116px',
-                                              'lineHeight' => '40px',
-                                              'fontColor' => '#b956c5',
-                                              'fontFamily' => 'Arial',
-                                              'fontSize' => '18px',
-                                              'fontWeight' => 'normal',
-                                              'textAlign' => 'center',
-                                            ),
-                                        ),
-                                      'context' => 'automatedLatestContent.readMoreButton',
-                                    ),
-                                  'sortBy' => 'newest',
-                                  'showDivider' => true,
-                                  'divider' =>
-                                    array (
-                                      'type' => 'divider',
-                                      'styles' =>
-                                        array (
-                                          'block' =>
-                                            array (
-                                              'backgroundColor' => 'transparent',
-                                              'padding' => '13px',
-                                              'borderStyle' => 'solid',
-                                              'borderWidth' => '3px',
-                                              'borderColor' => '#aaaaaa',
-                                            ),
-                                        ),
-                                      'context' => 'automatedLatestContent.divider',
-                                    ),
-                                  'backgroundColor' => '#ffffff',
-                                  'backgroundColorAlternate' => '#eeeeee',
                                 ),
                             ),
                         ),
@@ -381,7 +309,76 @@ class ModularStyleStories {
                 ),
               3 =>
                 array (
+                  'type' => 'automatedLatestContentLayout',
+                  'withLayout' => true,
+                  'amount' => '3',
+                  'contentType' => 'post',
+                  'terms' =>
+                    array (
+                    ),
+                  'inclusionType' => 'include',
+                  'displayType' => 'excerpt',
+                  'titleFormat' => 'h3',
+                  'titleAlignment' => 'left',
+                  'titleIsLink' => false,
+                  'imageFullWidth' => false,
+                  'featuredImagePosition' => 'alternate',
+                  'showAuthor' => 'no',
+                  'authorPrecededBy' => 'Author:',
+                  'showCategories' => 'no',
+                  'categoriesPrecededBy' => 'Categories:',
+                  'readMoreType' => 'button',
+                  'readMoreText' => 'Read more',
+                  'readMoreButton' =>
+                    array (
+                      'type' => 'button',
+                      'text' => 'Read more',
+                      'url' => '[postLink]',
+                      'styles' =>
+                        array (
+                          'block' =>
+                            array (
+                              'backgroundColor' => '#ffffff',
+                              'borderColor' => '#ffffff',
+                              'borderWidth' => '1px',
+                              'borderRadius' => '0px',
+                              'borderStyle' => 'solid',
+                              'width' => '120px',
+                              'lineHeight' => '40px',
+                              'fontColor' => '#b956c5',
+                              'fontFamily' => 'Verdana',
+                              'fontSize' => '18px',
+                              'fontWeight' => 'normal',
+                              'textAlign' => 'center',
+                            ),
+                        ),
+                      'context' => 'automatedLatestContentLayout.readMoreButton',
+                    ),
+                  'sortBy' => 'newest',
+                  'showDivider' => true,
+                  'divider' =>
+                    array (
+                      'type' => 'divider',
+                      'styles' =>
+                        array (
+                          'block' =>
+                            array (
+                              'backgroundColor' => 'transparent',
+                              'padding' => '13px',
+                              'borderStyle' => 'dashed',
+                              'borderWidth' => '3px',
+                              'borderColor' => '#efe7f0',
+                            ),
+                        ),
+                      'context' => 'automatedLatestContentLayout.divider',
+                    ),
+                  'backgroundColor' => '#ffffff',
+                  'backgroundColorAlternate' => '#eeeeee',
+                ),
+              4 =>
+                array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -400,6 +397,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -422,7 +420,7 @@ class ModularStyleStories {
                                     array (
                                       'block' =>
                                         array (
-                                          'backgroundColor' => 'transparent',
+                                          'backgroundColor' => '#efe7f0',
                                           'height' => '40px',
                                         ),
                                     ),
@@ -431,9 +429,10 @@ class ModularStyleStories {
                         ),
                     ),
                 ),
-              4 =>
+              5 =>
                 array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -452,6 +451,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -471,7 +471,7 @@ class ModularStyleStories {
                                 array (
                                   'type' => 'image',
                                   'link' => 'http://mailpoet.info/ladybirds-transparent-shell-reveals-how-it-folds-its-wings/',
-                                  'src' => $this->template_image_url . '/gettyimages-578313682-800x533.jpg',
+                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/05/gettyimages-578313682-800x533.jpg',
                                   'alt' => 'Ladybird’s transparent shell reveals how it folds its wings',
                                   'fullWidth' => false,
                                   'width' => 660,
@@ -519,6 +519,7 @@ class ModularStyleStories {
                       1 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -538,7 +539,7 @@ class ModularStyleStories {
                                 array (
                                   'type' => 'image',
                                   'link' => 'http://mailpoet.info/plasma-jet-engines-that-could-take-you-from-the-ground-to-space/',
-                                  'src' => $this->template_image_url . '/plasma-stingray111-800x533.jpg',
+                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/05/plasma-stingray111-800x533.jpg',
                                   'alt' => 'Plasma jet engines that could take you from the ground to space',
                                   'fullWidth' => false,
                                   'width' => 660,
@@ -585,9 +586,10 @@ class ModularStyleStories {
                         ),
                     ),
                 ),
-              5 =>
+              6 =>
                 array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -598,7 +600,7 @@ class ModularStyleStories {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => 'transparent',
+                          'backgroundColor' => '#efe7f0',
                         ),
                     ),
                   'blocks' =>
@@ -606,6 +608,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -637,9 +640,10 @@ class ModularStyleStories {
                         ),
                     ),
                 ),
-              6 =>
+              7 =>
                 array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -650,7 +654,7 @@ class ModularStyleStories {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => 'transparent',
+                          'backgroundColor' => '#efe7f0',
                         ),
                     ),
                   'blocks' =>
@@ -658,6 +662,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -677,7 +682,7 @@ class ModularStyleStories {
                                 array (
                                   'type' => 'image',
                                   'link' => 'http://mailpoet.info/cutting-through-the-smog-what-to-do-to-fight-air-pollution/',
-                                  'src' => $this->template_image_url . '/5_what_to_do_p352m1141746-800x533.jpg',
+                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/05/5_what_to_do_p352m1141746-800x533.jpg',
                                   'alt' => 'Cutting through the smog: What to do to fight air pollution',
                                   'fullWidth' => false,
                                   'width' => 660,
@@ -724,6 +729,7 @@ class ModularStyleStories {
                       1 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -743,7 +749,7 @@ class ModularStyleStories {
                                 array (
                                   'type' => 'image',
                                   'link' => 'http://mailpoet.info/ladybirds-transparent-shell-reveals-how-it-folds-its-wings/',
-                                  'src' => $this->template_image_url . '/gettyimages-578313682-800x533.jpg',
+                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/05/gettyimages-578313682-800x533.jpg',
                                   'alt' => 'Ladybird’s transparent shell reveals how it folds its wings',
                                   'fullWidth' => false,
                                   'width' => 660,
@@ -790,6 +796,7 @@ class ModularStyleStories {
                       2 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -809,7 +816,7 @@ class ModularStyleStories {
                                 array (
                                   'type' => 'image',
                                   'link' => 'http://mailpoet.info/plasma-jet-engines-that-could-take-you-from-the-ground-to-space/',
-                                  'src' => $this->template_image_url . '/plasma-stingray111-800x533.jpg',
+                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/05/plasma-stingray111-800x533.jpg',
                                   'alt' => 'Plasma jet engines that could take you from the ground to space',
                                   'fullWidth' => false,
                                   'width' => 660,
@@ -855,9 +862,10 @@ class ModularStyleStories {
                         ),
                     ),
                 ),
-              7 =>
+              8 =>
                 array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -868,7 +876,7 @@ class ModularStyleStories {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => 'transparent',
+                          'backgroundColor' => '#efe7f0',
                         ),
                     ),
                   'blocks' =>
@@ -876,6 +884,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -907,9 +916,10 @@ class ModularStyleStories {
                         ),
                     ),
                 ),
-              8 =>
+              9 =>
                 array (
                   'type' => 'container',
+                  'columnLayout' => false,
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
@@ -928,6 +938,7 @@ class ModularStyleStories {
                       0 =>
                         array (
                           'type' => 'container',
+                          'columnLayout' => false,
                           'orientation' => 'vertical',
                           'image' =>
                             array (
@@ -966,7 +977,7 @@ class ModularStyleStories {
                                           'type' => 'socialIcon',
                                           'iconType' => 'facebook',
                                           'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/08-full-symbol-grey/Facebook.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Facebook',
@@ -976,7 +987,7 @@ class ModularStyleStories {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/08-full-symbol-grey/Twitter.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
@@ -986,7 +997,7 @@ class ModularStyleStories {
                                           'type' => 'socialIcon',
                                           'iconType' => 'website',
                                           'link' => '',
-                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Website.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/08-full-symbol-grey/Website.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Website',
@@ -996,7 +1007,7 @@ class ModularStyleStories {
                                           'type' => 'socialIcon',
                                           'iconType' => 'instagram',
                                           'link' => 'http://instagram.com',
-                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Instagram.png?mailpoet_version=3.0.0-rc.2.0.0',
+                                          'image' => 'http://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/08-full-symbol-grey/Instagram.png?mailpoet_version=3.0.0-rc.2.0.0',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Instagram',
@@ -1055,15 +1066,15 @@ class ModularStyleStories {
             ),
           'h1' =>
             array (
-              'fontColor' => '#111111',
+              'fontColor' => '#ffffff',
               'fontFamily' => 'Arial',
-              'fontSize' => '26px',
+              'fontSize' => '30px',
             ),
           'h2' =>
             array (
-              'fontColor' => '#222222',
+              'fontColor' => '#ffffff',
               'fontFamily' => 'Arial',
-              'fontSize' => '22px',
+              'fontSize' => '26px',
             ),
           'h3' =>
             array (
@@ -1078,7 +1089,7 @@ class ModularStyleStories {
             ),
           'wrapper' =>
             array (
-              'backgroundColor' => '#efe7f0',
+              'backgroundColor' => '#b956c5',
             ),
           'body' =>
             array (
@@ -1089,11 +1100,11 @@ class ModularStyleStories {
         array (
           'automatedLatestContent' =>
             array (
-              'amount' => '1',
+              'amount' => '2',
               'contentType' => 'post',
               'inclusionType' => 'include',
               'displayType' => 'excerpt',
-              'titleFormat' => 'h3',
+              'titleFormat' => 'h2',
               'titleAlignment' => 'left',
               'titleIsLink' => false,
               'imageFullWidth' => true,
@@ -1140,9 +1151,9 @@ class ModularStyleStories {
                         array (
                           'backgroundColor' => 'transparent',
                           'padding' => '13px',
-                          'borderStyle' => 'solid',
+                          'borderStyle' => 'dashed',
                           'borderWidth' => '3px',
-                          'borderColor' => '#aaaaaa',
+                          'borderColor' => '#ffffff',
                         ),
                     ),
                   'type' => 'divider',
@@ -1153,15 +1164,16 @@ class ModularStyleStories {
               'terms' =>
                 array (
                 ),
+              'withLayout' => false,
             ),
           'automatedLatestContentLayout' =>
             array (
-              'amount' => '5',
+              'amount' => '3',
               'withLayout' => true,
               'contentType' => 'post',
               'inclusionType' => 'include',
               'displayType' => 'excerpt',
-              'titleFormat' => 'h1',
+              'titleFormat' => 'h3',
               'titleAlignment' => 'left',
               'titleIsLink' => false,
               'imageFullWidth' => false,
@@ -1181,20 +1193,21 @@ class ModularStyleStories {
                     array (
                       'block' =>
                         array (
-                          'backgroundColor' => '#2ea1cd',
-                          'borderColor' => '#0074a2',
+                          'backgroundColor' => '#ffffff',
+                          'borderColor' => '#ffffff',
                           'borderWidth' => '1px',
-                          'borderRadius' => '5px',
+                          'borderRadius' => '0px',
                           'borderStyle' => 'solid',
-                          'width' => '180px',
+                          'width' => '120px',
                           'lineHeight' => '40px',
-                          'fontColor' => '#ffffff',
+                          'fontColor' => '#b956c5',
                           'fontFamily' => 'Verdana',
                           'fontSize' => '18px',
                           'fontWeight' => 'normal',
                           'textAlign' => 'center',
                         ),
                     ),
+                  'type' => 'button',
                 ),
               'sortBy' => 'newest',
               'showDivider' => true,
@@ -1207,14 +1220,19 @@ class ModularStyleStories {
                         array (
                           'backgroundColor' => 'transparent',
                           'padding' => '13px',
-                          'borderStyle' => 'solid',
+                          'borderStyle' => 'dashed',
                           'borderWidth' => '3px',
-                          'borderColor' => '#aaaaaa',
+                          'borderColor' => '#efe7f0',
                         ),
                     ),
+                  'type' => 'divider',
                 ),
               'backgroundColor' => '#ffffff',
               'backgroundColorAlternate' => '#eeeeee',
+              'type' => 'automatedLatestContentLayout',
+              'terms' =>
+                array (
+                ),
             ),
           'button' =>
             array (
@@ -1239,6 +1257,16 @@ class ModularStyleStories {
                     ),
                 ),
               'type' => 'button',
+            ),
+          'container' =>
+            array (
+              'styles' =>
+                array (
+                  'block' =>
+                    array (
+                      'backgroundColor' => 'transparent',
+                    ),
+                ),
             ),
           'divider' =>
             array (
@@ -1358,7 +1386,7 @@ class ModularStyleStories {
                       'type' => 'socialIcon',
                       'iconType' => 'facebook',
                       'link' => 'http://www.facebook.com',
-                      'image' => $this->social_icon_url . '/01-social/Facebook.png?mailpoet_version=3.7.1',
+                      'image' => 'https://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/01-social/Facebook.png?mailpoet_version=3.7.1',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Facebook',
@@ -1368,7 +1396,7 @@ class ModularStyleStories {
                       'type' => 'socialIcon',
                       'iconType' => 'twitter',
                       'link' => 'http://www.twitter.com',
-                      'image' => $this->social_icon_url . '/01-social/Twitter.png?mailpoet_version=3.7.1',
+                      'image' => 'https://mailpoet.info/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/01-social/Twitter.png?mailpoet_version=3.7.1',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Twitter',
@@ -1381,10 +1409,11 @@ class ModularStyleStories {
                 array (
                   'block' =>
                     array (
-                      'backgroundColor' => 'transparent',
+                      'backgroundColor' => '#efe7f0',
                       'height' => '40px',
                     ),
                 ),
+              'type' => 'spacer',
             ),
           'header' =>
             array (
