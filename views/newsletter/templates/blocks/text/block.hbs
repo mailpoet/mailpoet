@@ -1,3 +1,8 @@
 <div class="mailpoet_tools"></div>
-<div class="mailpoet_content mailpoet_text_content">{{{ model.text }}}</div>
+<div
+    class="mailpoet_content mailpoet_text_content"
+    {{#if model.styles.block.paddingTop }}style="padding-top:{{model.styles.block.paddingTop}};"{{/if}}
+>
+    {{{ model.text }}}
+</div>
 <div class="mailpoet_block_highlight"></div>
