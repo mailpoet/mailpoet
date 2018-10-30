@@ -1188,7 +1188,7 @@ class ScienceWeekly {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/science-weekly-new.jpg';
+    return $this->template_image_url . '/science-weekly-1558.jpg';
   }
 
 }

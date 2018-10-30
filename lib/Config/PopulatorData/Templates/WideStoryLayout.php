@@ -23,7 +23,7 @@ class WideStoryLayout {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/wide-story-layout.jpg';
+    return $this->template_image_url . '/wide-story-layout-1558.jpg';
   }
 
   private function getBody() {

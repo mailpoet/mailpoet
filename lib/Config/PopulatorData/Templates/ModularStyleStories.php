@@ -23,7 +23,7 @@ class ModularStyleStories {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/modular-style-stories.jpg';
+    return $this->template_image_url . '/modular-style-stories-1558.jpg';
   }
 
   private function getBody() {

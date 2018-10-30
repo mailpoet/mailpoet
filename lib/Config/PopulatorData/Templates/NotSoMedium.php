@@ -23,7 +23,7 @@ class NotSoMedium {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/not-so-medium.jpg';
+    return $this->template_image_url . '/not-so-medium-1558.jpg';
   }
 
   private function getBody() {

@@ -23,7 +23,7 @@ class RssSimpleNews {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/rss-simple-news.jpg';
+    return $this->template_image_url . '/rss-simple-news-1558.jpg';
   }
 
   private function getBody() {
