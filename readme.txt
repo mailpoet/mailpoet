@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 3.12.0
+Stable tag: 3.12.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -164,6 +164,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.12.1 - 2018-10-30 =
+* Added: 2:1 and 1:2 column blocks for further newsletter customization;
+* Fixed: conflict with JetPack 6.6 Asset CDN module.
 
 = 3.12.0 - 2018-10-23 =
 * Improved: formatting of "from" address for new subscriber emails;
