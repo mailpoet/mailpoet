@@ -6,7 +6,7 @@ use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {
-  static function render($element, $column_count) {
+  static function render($element, $column_base_width) {
     if(empty($element['src'])) {
       return '';
     }
@@ -16,7 +16,7 @@ class Image {
 
     $element['width'] = (int)$element['width'];
     $element['height'] = (int)$element['height'];
-    $element = self::adjustImageDimensions($element, $column_count);
+    $element = self::adjustImageDimensions($element, $column_base_width);
     $image_template = '
       <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
       width="' . $element['width'] . '" alt="' . $element['alt'] . '"/>
@@ -37,21 +37,20 @@ class Image {
     return $template;
   }
 
-  static function adjustImageDimensions($element, $column_count) {
-    $column_width = ColumnsHelper::columnWidth($column_count);
+  static function adjustImageDimensions($element, $column_base_width) {
     $padded_width = StylesHelper::$padding_width * 2;
     // scale image to fit column width
-    if($element['width'] > $column_width) {
-      $ratio = $element['width'] / $column_width;
-      $element['width'] = $column_width;
+    if($element['width'] > $column_base_width) {
+      $ratio = $element['width'] / $column_base_width;
+      $element['width'] = $column_base_width;
       $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     // resize image if the image is padded and wider than padded column width
     if($element['fullWidth'] === false &&
-      $element['width'] > ($column_width - $padded_width)
+      $element['width'] > ($column_base_width - $padded_width)
     ) {
-      $ratio = $element['width'] / ($column_width - $padded_width);
-      $element['width'] = $column_width - $padded_width;
+      $ratio = $element['width'] / ($column_base_width - $padded_width);
+      $element['width'] = $column_base_width - $padded_width;
       $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     return $element;

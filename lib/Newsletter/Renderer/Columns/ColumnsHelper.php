@@ -3,9 +3,11 @@ namespace MailPoet\Newsletter\Renderer\Columns;
 
 class ColumnsHelper {
   static $columns_width = array(
-    1 => 660,
-    2 => 330,
-    3 => 220
+    1 => [660],
+    2 => [330, 330],
+    "1_2" => [220, 440],
+    "2_1" => [440, 220],
+    3 => [220, 220, 220],
   );
 
   static $columns_class = array(
@@ -20,7 +22,11 @@ class ColumnsHelper {
     3 => 'right'
   );
 
-  static function columnWidth($columns_count) {
+  /** @return int[] */
+  static function columnWidth($columns_count, $columns_layout) {
+    if(isset(self::$columns_width[$columns_layout])) {
+      return self::$columns_width[$columns_layout];
+    }
     return self::$columns_width[$columns_count];
   }
 

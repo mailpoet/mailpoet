@@ -58,6 +58,14 @@
     'newsletter/templates/blocks/container/twoColumnLayoutWidget.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_container_two_column_12_widget',
+    'newsletter/templates/blocks/container/twoColumnLayoutWidget12.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_container_two_column_21_widget',
+    'newsletter/templates/blocks/container/twoColumnLayoutWidget21.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_container_three_column_widget',
     'newsletter/templates/blocks/container/threeColumnLayoutWidget.hbs'
   ) %>
@@ -434,6 +442,12 @@
       ),
       twoColumnLayoutInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_container_two_column_widget').html()
+      ),
+      twoColumn12LayoutInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_container_two_column_12_widget').html()
+      ),
+      twoColumn21LayoutInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_container_two_column_21_widget').html()
       ),
       threeColumnLayoutInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_container_three_column_widget').html()

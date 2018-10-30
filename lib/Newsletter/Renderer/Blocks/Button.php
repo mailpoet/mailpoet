@@ -5,8 +5,8 @@ use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Button {
-  static function render($element, $column_count) {
-    $element['styles']['block']['width'] = self::calculateWidth($element, $column_count);
+  static function render($element, $column_base_width) {
+    $element['styles']['block']['width'] = self::calculateWidth($element, $column_base_width);
     $template = '
       <tr>
         <td class="mailpoet_padded_bottom mailpoet_padded_side" valign="top">
@@ -40,9 +40,8 @@ class Button {
     return $template;
   }
 
-  static function calculateWidth($element, $column_count) {
-    $column_width = ColumnsHelper::columnWidth($column_count);
-    $column_width = $column_width - (StylesHelper::$padding_width * 2);
+  static function calculateWidth($element, $column_base_width) {
+    $column_width = $column_base_width - (StylesHelper::$padding_width * 2);
     $border_width = (int)$element['styles']['block']['borderWidth'];
     $button_width = (int)$element['styles']['block']['width'];
     $button_width = ($button_width > $column_width) ?

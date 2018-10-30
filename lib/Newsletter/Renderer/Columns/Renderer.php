@@ -2,25 +2,26 @@
 namespace MailPoet\Newsletter\Renderer\Columns;
 
 class Renderer {
-  function render($column_styles, $column_image, $columns_count, $columns_data) {
-    $styles = $column_styles['block'];
-    $width = ColumnsHelper::columnWidth($columns_count);
-    $class = ColumnsHelper::columnClass($columns_count);
-    $alignment = ColumnsHelper::columnAlignment($columns_count);
-    $template = ($columns_count === 1) ?
-      $this->getOneColumnTemplate($styles, $column_image, $class) :
-      $this->getMultipleColumnsTemplate($styles, $column_image, $width, $alignment, $class);
-    $result = array_map(function($content) use ($template) {
-      return $template['content_start'] . $content . $template['content_end'];
-    }, $columns_data);
-    $result = implode('', $result);
-    if($columns_count !== 1) {
-      $result = $template['container_start'] . $result . $template['container_end'];
+
+  function render($content_block, $columns_data) {
+
+    $columns_count = count($content_block['blocks']);
+
+    if($columns_count === 1) {
+      return $this->renderOneColumn($content_block, $columns_data[0]);
     }
-    return $result;
+    return $this->renderMultipleColumns($content_block, $columns_data);
   }
 
-  function getOneColumnTemplate($styles, $image, $class) {
+  private function renderOneColumn($content_block, $content) {
+    $template = $this->getOneColumnTemplate(
+      $content_block['styles']['block'],
+      isset($content_block['image'])?$content_block['image']:null
+    );
+    return $template['content_start'] . $content . $template['content_end'];
+  }
+
+  function getOneColumnTemplate($styles, $image) {
     $background_css = $this->getBackgroundCss($styles, $image);
     $template['content_start'] = '
       <tr>
@@ -29,7 +30,7 @@ class Renderer {
             <tbody>
               <tr>
                 <td style="padding-left:0;padding-right:0">
-                  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="mailpoet_' . $class . '" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="mailpoet_' . ColumnsHelper::columnClass(1) . '" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;">
                     <tbody>';
     $template['content_end'] = '
                     </tbody>
@@ -43,11 +44,28 @@ class Renderer {
     return $template;
   }
 
-  function getMultipleColumnsTemplate($styles, $image, $width, $alignment, $class) {
-    $background_css = $this->getBackgroundCss($styles, $image);
-    $template['container_start'] = '
+  private function renderMultipleColumns($content_block, $columns_data) {
+    $columns_count = count($content_block['blocks']);
+    $columns_layout = isset($content_block['columnLayout'])?$content_block['columnLayout']:null;
+
+    $widths = ColumnsHelper::columnWidth($columns_count, $columns_layout);
+    $class = ColumnsHelper::columnClass($columns_count);
+    $alignment = ColumnsHelper::columnAlignment($columns_count);
+    $index = 0;
+    $result = $this->getMultipleColumnsContainerStart($class, $content_block['styles']['block'], isset($content_block['image'])?$content_block['image']:null);
+    foreach($columns_data as $content) {
+      $result .= $this->getMultipleColumnsContentStart($widths[$index++], $alignment, $class);
+      $result .= $content;
+      $result .= $this->getMultipleColumnsContentEnd();
+    }
+    $result .=  $this->getMultipleColumnsContainerEnd();
+    return $result;
+  }
+
+  private function getMultipleColumnsContainerStart($class, $styles, $image) {
+    return '
       <tr>
-        <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;' . $background_css . '">
+        <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;' . $this->getBackgroundCss($styles, $image) . '">
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
             <tbody>
               <tr>
@@ -55,17 +73,10 @@ class Renderer {
                   <table border="0" width="100%" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>';
-    $template['content_start'] = '
-      <td width="' . $width . '" valign="top">
-        <![endif]--><div style="display:inline-block; max-width:' . $width . 'px; vertical-align:top; width:100%;">
-          <table width="' . $width . '" class="mailpoet_' . $class . '" border="0" cellpadding="0" cellspacing="0" align="' . $alignment . '" style="width:100%;max-width:' . $width . 'px;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;">
-            <tbody>';
-    $template['content_end'] = '
-            </tbody>
-          </table>
-        </div><!--[if mso]>
-      </td>';
-    $template['container_end'] = '
+  }
+
+  private function getMultipleColumnsContainerEnd() {
+    return '
                   </tr>
                 </tbody>
               </table>
@@ -75,7 +86,22 @@ class Renderer {
         </table>
       </td>
     </tr>';
-    return $template;
+  }
+
+  private function getMultipleColumnsContentEnd() {
+    return '
+            </tbody>
+          </table>
+        </div><!--[if mso]>
+      </td>';
+  }
+
+  function getMultipleColumnsContentStart($width, $alignment, $class) {
+    return '
+      <td width="' . $width . '" valign="top">
+        <![endif]--><div style="display:inline-block; max-width:' . $width . 'px; vertical-align:top; width:100%;">
+          <table width="' . $width . '" class="mailpoet_' . $class . '" border="0" cellpadding="0" cellspacing="0" align="' . $alignment . '" style="width:100%;max-width:' . $width . 'px;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;">
+            <tbody>';
   }
 
   private function getBackgroundCss($styles, $image) {

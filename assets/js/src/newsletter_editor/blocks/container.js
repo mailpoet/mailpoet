@@ -39,6 +39,7 @@ define([
     defaults: function () {
       return this._getDefaults({
         type: 'container',
+        columnLayout: false,
         orientation: 'vertical',
         image: {
           src: null,
@@ -163,6 +164,8 @@ define([
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
     },
     onRender: function () {
+      var classIrregular = '';
+      var columnLayout;
       this.toolsView = new Module.ContainerBlockToolsView({
         model: this.model,
         tools: {
@@ -183,7 +186,13 @@ define([
       // Sets child container orientation HTML class here,
       // as child CollectionView won't have access to model
       // and will overwrite existing region element instead
-      this.$('> .mailpoet_container').attr('class', 'mailpoet_container mailpoet_container_' + this.model.get('orientation'));
+      columnLayout = this.model.get('columnLayout');
+      if (typeof columnLayout === 'string') {
+        classIrregular = 'mailpoet_irregular_width_contents_container column_layout_' + columnLayout;
+      }
+      this.$('> .mailpoet_container').attr('class',
+        'mailpoet_container mailpoet_container_' + this.model.get('orientation') + ' ' + classIrregular
+      );
     },
     showTools: function () {
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
@@ -353,6 +362,48 @@ define([
     }
   });
 
+  Module.TwoColumn12ContainerWidgetView = base.WidgetView.extend({
+    className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+    getTemplate: function () { return window.templates.twoColumn12LayoutInsertion; },
+    behaviors: {
+      DraggableBehavior: {
+        cloneOriginal: true,
+        drop: function () {
+          var block = new Module.ContainerBlockModel({
+            orientation: 'horizontal',
+            blocks: [
+              new Module.ContainerBlockModel(),
+              new Module.ContainerBlockModel()
+            ]
+          });
+          block.set('columnLayout', '1_2');
+          return block;
+        }
+      }
+    }
+  });
+
+  Module.TwoColumn21ContainerWidgetView = base.WidgetView.extend({
+    className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+    getTemplate: function () { return window.templates.twoColumn21LayoutInsertion; },
+    behaviors: {
+      DraggableBehavior: {
+        cloneOriginal: true,
+        drop: function () {
+          var block = new Module.ContainerBlockModel({
+            orientation: 'horizontal',
+            blocks: [
+              new Module.ContainerBlockModel(),
+              new Module.ContainerBlockModel()
+            ]
+          });
+          block.set('columnLayout', '2_1');
+          return block;
+        }
+      }
+    }
+  });
+
   App.on('before:start', function (BeforeStartApp) {
     BeforeStartApp.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
@@ -375,6 +426,18 @@ define([
       name: 'threeColumnLayout',
       priority: 100,
       widgetView: Module.ThreeColumnContainerWidgetView
+    });
+
+    BeforeStartApp.registerLayoutWidget({
+      name: 'twoColumn12Layout',
+      priority: 100,
+      widgetView: Module.TwoColumn12ContainerWidgetView
+    });
+
+    BeforeStartApp.registerLayoutWidget({
+      name: 'twoColumn21Layout',
+      priority: 100,
+      widgetView: Module.TwoColumn21ContainerWidgetView
     });
   });
 
