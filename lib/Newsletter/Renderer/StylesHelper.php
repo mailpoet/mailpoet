@@ -14,7 +14,7 @@ class StylesHelper {
     'borderStyle' => 'border-style',
     'borderColor' => 'border-color',
     'borderRadius' => 'border-radius',
-    'lineHeight' => 'line-height'
+    'lineHeight' => 'line-height',
   ];
   static $font = [
     'Arial' => "Arial, 'Helvetica Neue', Helvetica, sans-serif",
@@ -35,7 +35,7 @@ class StylesHelper {
     'Open Sans' => "open sans, helvetica neue, helvetica, arial, sans-serif",
     'Playfair Display' => "playfair display, georgia, times new roman, serif",
     'Roboto' => "roboto, helvetica neue, helvetica, arial, sans-serif",
-    'Source Sans Pro' => "source sans pro, helvetica neue, helvetica, arial, sans-serif"
+    'Source Sans Pro' => "source sans pro, helvetica neue, helvetica, arial, sans-serif",
   ];
   static $custom_fonts = [
     'Arvo',
@@ -47,7 +47,7 @@ class StylesHelper {
     'Open Sans',
     'Playfair Display',
     'Roboto',
-    'Source Sans Pro'
+    'Source Sans Pro',
   ];
   static $line_height_multiplier = 1.6;
   static $heading_margin_multiplier = 0.3;
@@ -125,10 +125,10 @@ class StylesHelper {
     return $style;
   }
 
-  static function getCustomFontsNames($styles) {
+  private static function getCustomFontsNames($styles) {
     $font_names = [];
     foreach($styles as $style) {
-      if (isset($style['fontFamily']) && in_array($style['fontFamily'], self::$custom_fonts))
+      if(isset($style['fontFamily']) && in_array($style['fontFamily'], self::$custom_fonts))
         $font_names[$style['fontFamily']] = true;
     }
     return array_keys($font_names);
@@ -137,10 +137,12 @@ class StylesHelper {
   static function getCustomFontsLinks($styles) {
     $links = [];
     foreach(self::getCustomFontsNames($styles) as $name) {
-      $links[] = '<!--[if !mso]><!--><link href="https://fonts.googleapis.com/css?family='
-        . str_replace(' ', '+', $name)
-        . ':400,400i,700,700i" rel="stylesheet"><!--<![endif]-->';
+      $links[] = urlencode($name) . ':400,400i,700,700i';
     }
-    return implode("\n", $links);
+    if(!count($links))
+      return '';
+    return '<!--[if !mso]><link href="https://fonts.googleapis.com/css?family='
+      . implode("|", $links)
+      . '" rel="stylesheet"><![endif]-->';
   }
 }

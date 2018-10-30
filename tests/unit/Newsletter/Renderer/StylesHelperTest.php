@@ -5,9 +5,8 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class StylesHelperTest extends \MailPoetTest {
 
-  function __construct() {
-    parent::__construct();
-    $this->styles = [
+  function testItGetsCustomFontsLinks() {
+    $styles_with_custom_fonts = [
       "text" => [
         "fontColor" => "#565656",
         "fontFamily" => "Arial",
@@ -33,18 +32,38 @@ class StylesHelperTest extends \MailPoetTest {
         "textDecoration" => "underline"
       ],
     ];
-  }
 
-  function testItGetsCustomFontsNames() {
-    expect(StylesHelper::getCustomFontsNames($this->styles))
-      ->equals(['Roboto', 'Source Sans Pro']);
-  }
+    $styles_without_custom_fonts = [
+      "text" => [
+        "fontColor" => "#565656",
+        "fontFamily" => "Arial",
+        "fontSize" => "16px"
+      ],
+      "h1" => [
+        "fontColor" => "#565656",
+        "fontFamily" => "Arial",
+        "fontSize" => "36px"
+      ],
+      "h2" => [
+        "fontColor" => "#565656",
+        "fontFamily" => "Times New Roman",
+        "fontSize" => "26px"
+      ],
+      "h3" => [
+        "fontColor" => "#565656",
+        "fontFamily" => "Georgia",
+        "fontSize" => "18px"
+      ],
+      "link" => [
+        "fontColor" => "#561ab9",
+        "textDecoration" => "underline"
+      ],
+    ];
 
-  function testItGetsCustomFontsLinks() {
-    expect(StylesHelper::getCustomFontsLinks($this->styles))
-      ->equals(implode("\n", [
-        '<!--[if !mso]><!--><link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i" rel="stylesheet"><!--<![endif]-->',
-        '<!--[if !mso]><!--><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i" rel="stylesheet"><!--<![endif]-->',
-      ]));
+    expect(StylesHelper::getCustomFontsLinks($styles_with_custom_fonts))
+      ->equals('<!--[if !mso]><link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i|Source+Sans+Pro:400,400i,700,700i" rel="stylesheet"><![endif]-->');
+
+    expect(StylesHelper::getCustomFontsLinks($styles_without_custom_fonts))
+      ->equals('');
   }
 }
