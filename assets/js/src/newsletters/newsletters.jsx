@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, IndexRedirect, useRouterHistory } from 'react-router';
+import { IndexRedirect, Route, Router, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import NewsletterTypes from 'newsletters/types.jsx';
 import NewsletterTemplates from 'newsletters/templates.jsx';
 import NewsletterSend from 'newsletters/send.jsx';
+import NewsletterCongratulate from 'newsletters/send/congratulate/congratulate.jsx';
 import NewsletterTypeStandard from 'newsletters/types/standard.jsx';
 import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx';
 import NewsletterTypeWelcome from 'newsletters/types/welcome/welcome.jsx';
@@ -89,6 +90,11 @@ if (container) {
       path: 'template/:id',
       component: NewsletterTemplates,
     },
+    /* congratulate */
+    {
+      path: 'send/congratulate/:id',
+      component: NewsletterCongratulate,
+    },
     /* Sending options */
     {
       path: 'send/:id',
@@ -98,7 +104,7 @@ if (container) {
 
   routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [...routes, ...getAutomaticEmailsRoutes()]);
 
-  const mailpoetListing = ReactDOM.render(( // eslint-disable-line react/no-render-return-value
+  window.mailpoet_listing = ReactDOM.render(( // eslint-disable-line react/no-render-return-value
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRedirect to="standard" />
@@ -115,6 +121,4 @@ if (container) {
       </Route>
     </Router>
   ), container);
-
-  window.mailpoet_listing = mailpoetListing;
 }

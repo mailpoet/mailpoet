@@ -575,6 +575,8 @@ class Menu {
       '+1 hour',
       24
     );
+    $data['mailpoet_main_page'] = admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG);
+    $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter'])?$data['settings']['show_congratulate_after_first_newsletter']:'false';
 
     $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
