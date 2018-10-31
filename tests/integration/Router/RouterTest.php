@@ -26,7 +26,8 @@ class RouterTest extends \MailPoetTest {
       'data' => base64_encode(json_encode(array('data' => 'dummy data')))
     );
     $this->access_control = new AccessControl();
-    $this->container = ContainerFactory::createContainer();
+    $container_factory = new ContainerFactory(true);
+    $this->container = $container_factory->createContainer();
     $this->container->register(RouterTestMockEndpoint::class)->setPublic(true);
     $this->container->compile();
     $this->router = new Router($this->access_control, $this->container, $this->router_data);

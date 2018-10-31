@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
@@ -19,6 +20,7 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 class Initializer {
   private $access_control;
   private $renderer;
+  /** @var Container */
   private $container;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
@@ -52,7 +54,7 @@ class Initializer {
       ));
     }
 
-    $this->compileContainer();
+    $this->loadContainer();
 
     // activation function
     register_activation_hook(
@@ -94,9 +96,9 @@ class Initializer {
     ));
   }
 
-  function compileContainer() {
-    $this->container = ContainerFactory::getContainer();
-    $this->container->compile();
+  function loadContainer() {
+    $container_factory = new ContainerFactory(WP_DEBUG);
+    $this->container = $container_factory->getContainer();
   }
 
   function checkRequirements() {

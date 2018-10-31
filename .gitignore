@@ -24,6 +24,7 @@ lang
 /nbproject/
 tests/_data/acceptanceGenerated.sql
 lib/Dependencies
+lib/DI/CachedContainer.php
 mozart/Dependencies
 mozart/Classes
 mozart/vendor
