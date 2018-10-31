@@ -2,8 +2,8 @@ import React from 'react';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 
-const ListingFilters = React.createClass({
-  handleFilterAction: function handleFilterAction() {
+class ListingFilters extends React.Component {
+  handleFilterAction = () => {
     const filters = {};
     this.getAvailableFilters().forEach((filter, i) => {
       filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
@@ -12,11 +12,13 @@ const ListingFilters = React.createClass({
       this.props.onBeforeSelectFilter(filters);
     }
     return this.props.onSelectFilter(filters);
-  },
-  handleEmptyTrash: function handleEmptyTrash() {
+  };
+
+  handleEmptyTrash = () => {
     return this.props.onEmptyTrash();
-  },
-  getAvailableFilters: function getAvailableFilters() {
+  };
+
+  getAvailableFilters = () => {
     const filters = this.props.filters;
     return Object.keys(filters).filter(filter => !(
       filters[filter].length === 0
@@ -25,8 +27,9 @@ const ListingFilters = React.createClass({
           && !filters[filter][0].value
         )
     ));
-  },
-  componentDidUpdate: function componentDidUpdate() {
+  };
+
+  componentDidUpdate() {
     const selectedFilters = this.props.filter;
     this.getAvailableFilters().forEach(
       (filter, i) => {
@@ -37,8 +40,9 @@ const ListingFilters = React.createClass({
         }
       }
     );
-  },
-  render: function render() {
+  }
+
+  render() {
     const filters = this.props.filters;
     const availableFilters = this.getAvailableFilters()
       .map((filter, i) => (
@@ -89,7 +93,7 @@ const ListingFilters = React.createClass({
         { emptyTrash }
       </div>
     );
-  },
-});
+  }
+}
 
 export default ListingFilters;

@@ -4,29 +4,30 @@ import classNames from 'classnames';
 import FormField from 'form/fields/field.jsx';
 import jQuery from 'jquery';
 
-const Form = React.createClass({
-  contextTypes: {
+class Form extends React.Component {
+  static contextTypes = {
     router: React.PropTypes.object.isRequired,
-  },
-  getDefaultProps: function getDefaultProps() {
-    return {
-      params: {},
-    };
-  },
-  getInitialState: function getInitialState() {
-    return {
-      loading: false,
-      errors: [],
-      item: {},
-    };
-  },
-  getValues: function getValues() {
+  };
+
+  static defaultProps = {
+    params: {},
+  };
+
+  state = {
+    loading: false,
+    errors: [],
+    item: {},
+  };
+
+  getValues = () => {
     return this.props.item ? this.props.item : this.state.item;
-  },
-  getErrors: function getErrors() {
+  };
+
+  getErrors = () => {
     return this.props.errors ? this.props.errors : this.state.errors;
-  },
-  componentDidMount: function componentDidMount() {
+  };
+
+  componentDidMount() {
     if (this.props.params.id !== undefined) {
       this.loadItem(this.props.params.id);
     } else {
@@ -36,8 +37,9 @@ const Form = React.createClass({
         });
       });
     }
-  },
-  componentWillReceiveProps: function componentWillReceiveProps(props) {
+  }
+
+  componentWillReceiveProps(props) {
     if (props.params.id === undefined) {
       setImmediate(() => {
         this.setState({
@@ -49,8 +51,9 @@ const Form = React.createClass({
         this.form.reset();
       }
     }
-  },
-  loadItem: function loadItem(id) {
+  }
+
+  loadItem = (id) => {
     this.setState({ loading: true });
 
     MailPoet.Ajax.post({
@@ -76,8 +79,9 @@ const Form = React.createClass({
         this.context.router.push('/new');
       });
     });
-  },
-  handleSubmit: function handleSubmit(e) {
+  };
+
+  handleSubmit = (e) => {
     e.preventDefault();
 
     // handle validation
@@ -129,8 +133,9 @@ const Form = React.createClass({
         this.setState({ errors: response.errors });
       }
     });
-  },
-  handleValueChange: function handleValueChange(e) {
+  };
+
+  handleValueChange = (e) => {
     if (this.props.onChange) {
       return this.props.onChange(e);
     }
@@ -143,8 +148,9 @@ const Form = React.createClass({
       item,
     });
     return true;
-  },
-  render: function render() {
+  };
+
+  render() {
     let errors;
     if (this.getErrors() !== undefined) {
       errors = this.getErrors().map(error => (
@@ -231,7 +237,7 @@ const Form = React.createClass({
         { afterFormContent }
       </div>
     );
-  },
-});
+  }
+}
 
 export default Form;

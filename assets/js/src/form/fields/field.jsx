@@ -8,8 +8,8 @@ import FormFieldSelection from 'form/fields/selection.jsx';
 import FormFieldDate from 'form/fields/date.jsx';
 import jQuery from 'jquery';
 
-const FormField = React.createClass({
-  renderField: function renderField(data, inline = false) {
+class FormField extends React.Component {
+  renderField = (data, inline = false) => {
     let description = false;
     if (data.field.description) {
       description = (
@@ -76,8 +76,9 @@ const FormField = React.createClass({
         { description }
       </div>
     );
-  },
-  render: function render() {
+  };
+
+  render() {
     let field = false;
 
     if (this.props.field.fields !== undefined) {
@@ -113,7 +114,7 @@ const FormField = React.createClass({
         </td>
       </tr>
     );
-  },
-});
+  }
+}
 
 export default FormField;

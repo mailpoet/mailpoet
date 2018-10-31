@@ -34,11 +34,12 @@ const nthWeekDayField = {
   values: nthWeekDayValues,
 };
 
-const NotificationScheduling = React.createClass({
-  getCurrentValue: function getCurrentValue() {
+class NotificationScheduling extends React.Component {
+  getCurrentValue = () => {
     return (this.props.item[this.props.field.name] || {});
-  },
-  handleValueChange: function handleValueChange(name, value) {
+  };
+
+  handleValueChange = (name, value) => {
     const oldValue = this.getCurrentValue();
     const newValue = {};
 
@@ -50,38 +51,44 @@ const NotificationScheduling = React.createClass({
         value: _.extend({}, oldValue, newValue),
       },
     });
-  },
-  handleIntervalChange: function handleIntervalChange(event) {
+  };
+
+  handleIntervalChange = (event) => {
     return this.handleValueChange(
       'intervalType',
       event.target.value
     );
-  },
-  handleTimeOfDayChange: function handleTimeOfDayChange(event) {
+  };
+
+  handleTimeOfDayChange = (event) => {
     return this.handleValueChange(
       'timeOfDay',
       event.target.value
     );
-  },
-  handleWeekDayChange: function handleWeekDayChange(event) {
+  };
+
+  handleWeekDayChange = (event) => {
     return this.handleValueChange(
       'weekDay',
       event.target.value
     );
-  },
-  handleMonthDayChange: function handleMonthDayChange(event) {
+  };
+
+  handleMonthDayChange = (event) => {
     return this.handleValueChange(
       'monthDay',
       event.target.value
     );
-  },
-  handleNthWeekDayChange: function handleNthWeekDayChange(event) {
+  };
+
+  handleNthWeekDayChange = (event) => {
     return this.handleValueChange(
       'nthWeekDay',
       event.target.value
     );
-  },
-  render: function render() {
+  };
+
+  render() {
     const value = this.getCurrentValue();
     let timeOfDaySelection;
     let weekDaySelection;
@@ -143,7 +150,7 @@ const NotificationScheduling = React.createClass({
         {timeOfDaySelection}
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = NotificationScheduling;

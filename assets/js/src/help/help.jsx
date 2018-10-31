@@ -9,11 +9,11 @@ import KnowledgeBase from 'help/knowledge_base.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
-const App = React.createClass({
+class App extends React.Component {
   render() {
     return this.props.children;
-  },
-});
+  }
+}
 
 const container = document.getElementById('help_container');
 

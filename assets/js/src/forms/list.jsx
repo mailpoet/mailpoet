@@ -122,8 +122,8 @@ const itemActions = [
   },
 ];
 
-const FormList = React.createClass({
-  createForm() {
+class FormList extends React.Component {
+  createForm = () => {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'forms',
@@ -138,8 +138,9 @@ const FormList = React.createClass({
         );
       }
     });
-  },
-  renderItem(form, actions) {
+  };
+
+  renderItem = (form, actions) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -177,7 +178,8 @@ const FormList = React.createClass({
         </td>
       </div>
     );
-  },
+  };
+
   render() {
     return (
       <div>
@@ -204,7 +206,7 @@ const FormList = React.createClass({
         />
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = FormList;

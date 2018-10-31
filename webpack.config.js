@@ -246,6 +246,7 @@ var adminConfig = {
       'react-dom',
       require.resolve('react-router'),
       'react-string-replace',
+      'prop-types',
       'listing/listing.jsx',
       'form/form.jsx',
       'intro.js',

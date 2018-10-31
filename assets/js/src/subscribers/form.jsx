@@ -175,8 +175,8 @@ function afterFormContent() {
   );
 }
 
-const SubscriberForm = React.createClass({
-  render: function render() {
+class SubscriberForm extends React.Component {
+  render() {
     return (
       <div>
         <h1 className="title">
@@ -194,7 +194,7 @@ const SubscriberForm = React.createClass({
         />
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = SubscriberForm;

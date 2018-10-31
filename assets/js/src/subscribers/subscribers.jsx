@@ -7,11 +7,11 @@ import SubscriberForm from 'subscribers/form.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
-const App = React.createClass({
+class App extends React.Component {
   render() {
     return this.props.children;
-  },
-});
+  }
+}
 
 const container = document.getElementById('subscribers_container');
 

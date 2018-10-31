@@ -1,4 +1,5 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
 import { Link } from 'react-router';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
@@ -57,8 +58,10 @@ let newsletterActions = [
 Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', StatisticsMixin.addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletterActions);
 
-const NewsletterListNotificationHistory = React.createClass({
+const NewsletterListNotificationHistory = createReactClass({
+  displayName: 'NewsletterListNotificationHistory',
   mixins: [QueueMixin, StatisticsMixin, MailerMixin, CronMixin],
+
   renderItem: function renderItem(newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
@@ -96,6 +99,7 @@ const NewsletterListNotificationHistory = React.createClass({
       </div>
     );
   },
+
   render: function render() {
     return (
       <div>

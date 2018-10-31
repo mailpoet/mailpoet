@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'underscore';
 
-const FormFieldSelect = React.createClass({
+class FormFieldSelect extends React.Component {
   render() {
     if (this.props.field.values === undefined) {
       return false;
@@ -70,7 +70,7 @@ const FormFieldSelect = React.createClass({
         {options}
       </select>
     );
-  },
-});
+  }
+}
 
 module.exports = FormFieldSelect;

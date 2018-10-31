@@ -2,13 +2,14 @@ import MailPoet from 'mailpoet';
 import React from 'react';
 import classNames from 'classnames';
 
-const ListingHeader = React.createClass({
-  handleSelectItems: function handleSelectItems() {
+class ListingHeader extends React.Component {
+  handleSelectItems = () => {
     return this.props.onSelectItems(
       this.toggle.checked
     );
-  },
-  render: function render() {
+  };
+
+  render() {
     const columns = this.props.columns.map((column, index) => {
       const renderColumn = column;
       renderColumn.is_primary = (index === 0);
@@ -53,16 +54,17 @@ const ListingHeader = React.createClass({
         {columns}
       </tr>
     );
-  },
-});
+  }
+}
 
-const ListingColumn = React.createClass({
-  handleSort: function handleSort() {
+class ListingColumn extends React.Component {
+  handleSort = () => {
     const sortBy = this.props.column.name;
     const sortOrder = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
     this.props.onSort(sortBy, sortOrder);
-  },
-  render: function render() {
+  };
+
+  render() {
     const classes = classNames(
       'manage-column',
       { 'column-primary': this.props.column.is_primary },
@@ -95,7 +97,7 @@ const ListingColumn = React.createClass({
         width={this.props.column.width || null}
       >{label}</th>
     );
-  },
-});
+  }
+}
 
 module.exports = ListingHeader;

@@ -4,29 +4,28 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 
-const ListingTabs = React.createClass({
-  getInitialState() {
-    return {
-      tab: null,
-      tabs: Hooks.applyFilters('mailpoet_newsletters_listings_tabs', [
-        {
-          name: 'standard',
-          label: MailPoet.I18n.t('tabStandardTitle'),
-          link: '/standard',
-        },
-        {
-          name: 'welcome',
-          label: MailPoet.I18n.t('tabWelcomeTitle'),
-          link: '/welcome',
-        },
-        {
-          name: 'notification',
-          label: MailPoet.I18n.t('tabNotificationTitle'),
-          link: '/notification',
-        },
-      ]),
-    };
-  },
+class ListingTabs extends React.Component {
+  state = {
+    tab: null,
+    tabs: Hooks.applyFilters('mailpoet_newsletters_listings_tabs', [
+      {
+        name: 'standard',
+        label: MailPoet.I18n.t('tabStandardTitle'),
+        link: '/standard',
+      },
+      {
+        name: 'welcome',
+        label: MailPoet.I18n.t('tabWelcomeTitle'),
+        link: '/welcome',
+      },
+      {
+        name: 'notification',
+        label: MailPoet.I18n.t('tabNotificationTitle'),
+        link: '/notification',
+      },
+    ]),
+  };
+
   render() {
     const tabs = this.state.tabs.map((tab) => {
       const tabClasses = classNames(
@@ -51,7 +50,7 @@ const ListingTabs = React.createClass({
         { tabs }
       </h2>
     );
-  },
-});
+  }
+}
 
 module.exports = ListingTabs;

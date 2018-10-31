@@ -1,14 +1,13 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-const ListingBulkActions = React.createClass({
-  getInitialState: function getInitialState() {
-    return {
-      action: false,
-      extra: false,
-    };
-  },
-  handleChangeAction: function handleChangeAction(e) {
+class ListingBulkActions extends React.Component {
+  state = {
+    action: false,
+    extra: false,
+  };
+
+  handleChangeAction = (e) => {
     this.setState({
       action: e.target.value,
       extra: false,
@@ -22,8 +21,9 @@ const ListingBulkActions = React.createClass({
         });
       }
     });
-  },
-  handleApplyAction: function handleApplyAction(e) {
+  };
+
+  handleApplyAction = (e) => {
     e.preventDefault();
 
     const action = this.getSelectedAction();
@@ -58,8 +58,9 @@ const ListingBulkActions = React.createClass({
       action: false,
       extra: false,
     });
-  },
-  getSelectedAction: function getSelectedAction() {
+  };
+
+  getSelectedAction = () => {
     const selectedAction = this.action.value;
     if (selectedAction.length > 0) {
       const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
@@ -69,8 +70,9 @@ const ListingBulkActions = React.createClass({
       }
     }
     return null;
-  },
-  render: function render() {
+  };
+
+  render() {
     if (this.props.bulk_actions.length === 0) {
       return null;
     }
@@ -108,7 +110,7 @@ const ListingBulkActions = React.createClass({
         { this.state.extra }
       </div>
     );
-  },
-});
+  }
+}
 
 export default ListingBulkActions;

@@ -1,11 +1,12 @@
 import React from 'react';
 
-const FormFieldCheckbox = React.createClass({
-  onValueChange: function onValueChange(e) {
+class FormFieldCheckbox extends React.Component {
+  onValueChange = (e) => {
     e.target.value = this.checkbox.checked ? '1' : '0';
     return this.props.onValueChange(e);
-  },
-  render: function render() {
+  };
+
+  render() {
     if (this.props.field.values === undefined) {
       return false;
     }
@@ -37,7 +38,7 @@ const FormFieldCheckbox = React.createClass({
         { options }
       </div>
     );
-  },
-});
+  }
+}
 
 export default FormFieldCheckbox;

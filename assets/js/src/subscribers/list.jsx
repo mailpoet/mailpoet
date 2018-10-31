@@ -242,8 +242,8 @@ const itemActions = [
   },
 ];
 
-const SubscriberList = React.createClass({
-  getSegmentFromId: function getSegmentFromId(segmentId) {
+class SubscriberList extends React.Component {
+  getSegmentFromId = (segmentId) => {
     let result = false;
     window.mailpoet_segments.forEach((segment) => {
       if (segment.id === segmentId) {
@@ -251,8 +251,9 @@ const SubscriberList = React.createClass({
       }
     });
     return result;
-  },
-  renderItem: function renderItem(subscriber, actions) {
+  };
+
+  renderItem = (subscriber, actions) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -333,8 +334,9 @@ const SubscriberList = React.createClass({
         </td>
       </div>
     );
-  },
-  render: function render() {
+  };
+
+  render() {
     return (
       <div>
         <h1 className="title">
@@ -368,7 +370,7 @@ const SubscriberList = React.createClass({
         />
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = SubscriberList;

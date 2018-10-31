@@ -5,11 +5,12 @@ import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import 'react-router';
 
-const NewsletterTypes = React.createClass({
-  contextTypes: {
+class NewsletterTypes extends React.Component {
+  static contextTypes = {
     router: React.PropTypes.object.isRequired,
-  },
-  setupNewsletter: function setupNewsletter(type) {
+  };
+
+  setupNewsletter = (type) => {
     if (type !== undefined) {
       this.context.router.push(`/new/${type}`);
       MailPoet.trackEvent('Emails > Type selected', {
@@ -17,8 +18,9 @@ const NewsletterTypes = React.createClass({
         'Email type': type,
       });
     }
-  },
-  createNewsletter: function createNewsletter(type) {
+  };
+
+  createNewsletter = (type) => {
     MailPoet.trackEvent('Emails > Type selected', {
       'MailPoet Free version': window.mailpoet_version,
       'Email type': type,
@@ -41,8 +43,9 @@ const NewsletterTypes = React.createClass({
         );
       }
     });
-  },
-  getAutomaticEmails: function getAutomaticEmails() {
+  };
+
+  getAutomaticEmails = () => {
     if (!window.mailpoet_automatic_emails) return [];
 
     return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
@@ -63,8 +66,9 @@ const NewsletterTypes = React.createClass({
 
       return email;
     });
-  },
-  render: function render() {
+  };
+
+  render() {
     const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');
     const createNotificationNewsletter = _.partial(this.setupNewsletter, 'notification');
     const createWelcomeNewsletter = _.partial(this.setupNewsletter, 'welcome');
@@ -169,7 +173,7 @@ const NewsletterTypes = React.createClass({
         </ul>
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = NewsletterTypes;

@@ -19,11 +19,11 @@ import NewsletterListNotificationHistory from 'newsletters/listings/notification
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
-const App = React.createClass({
+class App extends React.Component {
   render() {
     return this.props.children;
-  },
-});
+  }
+}
 
 const container = document.getElementById('newsletters_container');
 

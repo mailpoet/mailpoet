@@ -1,5 +1,7 @@
 import React from 'react';
 
+import createReactClass from 'create-react-class';
+
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
@@ -153,8 +155,10 @@ let newsletterActions = [
 Hooks.addFilter('mailpoet_newsletters_listings_welcome_notification_actions', StatisticsMixin.addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletterActions);
 
-const NewsletterListWelcome = React.createClass({
+const NewsletterListWelcome = createReactClass({
+  displayName: 'NewsletterListWelcome',
   mixins: [StatisticsMixin, MailerMixin, CronMixin],
+
   updateStatus: function updateStatus(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -181,6 +185,7 @@ const NewsletterListWelcome = React.createClass({
       e.target.value = response.status;
     });
   },
+
   renderStatus: function renderStatus(newsletter) {
     const totalSent = (parseInt(newsletter.total_sent, 10)) ?
       MailPoet.I18n.t('sentToXSubscribers')
@@ -203,6 +208,7 @@ const NewsletterListWelcome = React.createClass({
       </div>
     );
   },
+
   renderSettings: function renderSettings(newsletter) {
     let sendingEvent;
     let sendingDelay;
@@ -278,6 +284,7 @@ const NewsletterListWelcome = React.createClass({
       </span>
     );
   },
+
   renderItem: function renderItem(newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
@@ -316,6 +323,7 @@ const NewsletterListWelcome = React.createClass({
       </div>
     );
   },
+
   render: function render() {
     return (
       <div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
@@ -11,10 +12,13 @@ import jQuery from 'jquery';
 import { fromUrl } from 'common/thumbnail.jsx';
 import Hooks from 'wp-js-hooks';
 
-const NewsletterSend = React.createClass({
+const NewsletterSend = createReactClass({
+  displayName: 'NewsletterSend',
+
   contextTypes: {
     router: React.PropTypes.object.isRequired,
   },
+
   getInitialState: function getInitialState() {
     return {
       fields: [],
@@ -22,14 +26,17 @@ const NewsletterSend = React.createClass({
       loading: true,
     };
   },
+
   getFieldsByNewsletter: function getFieldsByNewsletter(newsletter) {
     const type = this.getSubtype(newsletter);
     return type.getFields(newsletter);
   },
+
   getSendButtonOptions: function getSendButtonOptions() {
     const type = this.getSubtype(this.state.item);
     return type.getSendButtonOptions(this.state.item);
   },
+
   getSubtype: function getSubtype(newsletter) {
     switch (newsletter.type) {
       case 'notification': return NotificationNewsletterFields;
@@ -37,16 +44,20 @@ const NewsletterSend = React.createClass({
       default: return Hooks.applyFilters('mailpoet_newsletters_send_newsletter_fields', StandardNewsletterFields, newsletter);
     }
   },
+
   isValid: function isValid() {
     return jQuery('#mailpoet_newsletter').parsley().isValid();
   },
+
   componentDidMount: function componentDidMount() {
     this.loadItem(this.props.params.id);
     jQuery('#mailpoet_newsletter').parsley();
   },
+
   componentWillReceiveProps: function componentWillReceiveProps(props) {
     this.loadItem(props.params.id);
   },
+
   loadItem: function loadItem(id) {
     this.setState({ loading: true });
 
@@ -72,6 +83,7 @@ const NewsletterSend = React.createClass({
       });
     });
   },
+
   saveTemplate: function saveTemplate(response, done) {
     fromUrl(response.meta.preview_url)
       .then((thumbnail) => {
@@ -97,6 +109,7 @@ const NewsletterSend = React.createClass({
         this.showError({ errors: [err] });
       });
   },
+
   handleSend: function handleSend(e) {
     e.preventDefault();
 
@@ -124,6 +137,7 @@ const NewsletterSend = React.createClass({
         MailPoet.Modal.loading(false);
       });
   },
+
   sendNewsletter: function sendNewsletter(newsletter) {
     return MailPoet.Ajax.post(
       Hooks.applyFilters(
@@ -171,6 +185,7 @@ const NewsletterSend = React.createClass({
       MailPoet.Modal.loading(false);
     });
   },
+
   activateNewsletter: function activateEmail(newsletter) {
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -213,6 +228,7 @@ const NewsletterSend = React.createClass({
       MailPoet.Modal.loading(false);
     });
   },
+
   handleResume: function handleResume(e) {
     e.preventDefault();
     if (!this.isValid()) {
@@ -251,6 +267,7 @@ const NewsletterSend = React.createClass({
     }
     return false;
   },
+
   handleSave: function handleSave(e) {
     e.preventDefault();
 
@@ -264,6 +281,7 @@ const NewsletterSend = React.createClass({
       this.showError(err);
     });
   },
+
   handleRedirectToDesign: function handleRedirectToDesign(e) {
     e.preventDefault();
     const redirectTo = e.target.href;
@@ -278,6 +296,7 @@ const NewsletterSend = React.createClass({
       this.showError(err);
     });
   },
+
   saveNewsletter: function saveNewsletter() {
     const data = this.state.item;
     data.queue = undefined;
@@ -302,6 +321,7 @@ const NewsletterSend = React.createClass({
       this.setState({ loading: false });
     });
   },
+
   showError: (response) => {
     if (response.errors.length > 0) {
       MailPoet.Notice.error(
@@ -310,6 +330,7 @@ const NewsletterSend = React.createClass({
       );
     }
   },
+
   handleFormChange: function handleFormChange(e) {
     const item = this.state.item;
     const field = e.target.name;
@@ -321,6 +342,7 @@ const NewsletterSend = React.createClass({
     });
     return true;
   },
+
   render: function render() {
     const isPaused = this.state.item.status === 'sending'
       && this.state.item.queue

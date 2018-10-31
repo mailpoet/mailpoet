@@ -3,9 +3,10 @@ import classNames from 'classnames';
 import { Link } from 'react-router';
 import MailPoet from 'mailpoet';
 
-const Breadcrumb = React.createClass({
-  getInitialState: function getInitialState() {
-    const steps = this.props.steps || [
+class Breadcrumb extends React.Component {
+  constructor(props) {
+    super(props);
+    const steps = props.steps || [
       {
         name: 'type',
         label: MailPoet.I18n.t('selectType'),
@@ -24,12 +25,14 @@ const Breadcrumb = React.createClass({
         label: MailPoet.I18n.t('send'),
       },
     ];
-    return {
+
+    this.state = {
       step: null,
       steps,
     };
-  },
-  render: function render() {
+  }
+
+  render() {
     const steps = this.state.steps.map((step, index) => {
       const stepClasses = classNames(
         { mailpoet_current: (this.props.step === step.name) }
@@ -58,8 +61,8 @@ const Breadcrumb = React.createClass({
         { steps }
       </p>
     );
-  },
-});
+  }
+}
 
 module.exports = Breadcrumb;
 

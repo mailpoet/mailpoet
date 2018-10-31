@@ -1,7 +1,7 @@
 import React from 'react';
 
-const FormFieldRadio = React.createClass({
-  render: function render() {
+class FormFieldRadio extends React.Component {
+  render() {
     if (this.props.field.values === undefined) {
       return false;
     }
@@ -30,7 +30,7 @@ const FormFieldRadio = React.createClass({
         { options }
       </div>
     );
-  },
-});
+  }
+}
 
 export default FormFieldRadio;

@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import _ from 'underscore';
 import { Link } from 'react-router';
 import classNames from 'classnames';
@@ -11,33 +12,37 @@ import ListingSearch from 'listing/search.jsx';
 import ListingGroups from 'listing/groups.jsx';
 import ListingFilters from 'listing/filters.jsx';
 
-const ListingItem = React.createClass({
-  getInitialState: function getInitialState() {
-    return {
-      expanded: false,
-    };
-  },
-  handleSelectItem: function handleSelectItem(e) {
+class ListingItem extends React.Component {
+  state = {
+    expanded: false,
+  };
+
+  handleSelectItem = (e) => {
     this.props.onSelectItem(
       parseInt(e.target.value, 10),
       e.target.checked
     );
 
     return !e.target.checked;
-  },
-  handleRestoreItem: function handleRestoreItem(id) {
+  };
+
+  handleRestoreItem = (id) => {
     this.props.onRestoreItem(id);
-  },
-  handleTrashItem: function handleTrashItem(id) {
+  };
+
+  handleTrashItem = (id) => {
     this.props.onTrashItem(id);
-  },
-  handleDeleteItem: function handleDeleteItem(id) {
+  };
+
+  handleDeleteItem = (id) => {
     this.props.onDeleteItem(id);
-  },
-  handleToggleItem: function handleToggleItem() {
+  };
+
+  handleToggleItem = () => {
     this.setState({ expanded: !this.state.expanded });
-  },
-  render: function render() {
+  };
+
+  render() {
     let checkbox = false;
 
     if (this.props.is_selectable === true) {
@@ -193,12 +198,11 @@ const ListingItem = React.createClass({
         { this.props.onRenderItem(this.props.item, actions) }
       </tr>
     );
-  },
-});
+  }
+}
 
-
-const ListingItems = React.createClass({
-  render: function render() {
+class ListingItems extends React.Component {
+  render() {
     if (this.props.items.length === 0) {
       let message;
       if (this.props.loading === true) {
@@ -293,13 +297,16 @@ const ListingItems = React.createClass({
         })}
       </tbody>
     );
-  },
-});
+  }
+}
 
-const Listing = React.createClass({
+const Listing = createReactClass({
+  displayName: 'Listing',
+
   contextTypes: {
     router: React.PropTypes.object.isRequired,
   },
+
   getInitialState: function getInitialState() {
     return {
       loading: false,
@@ -319,11 +326,13 @@ const Listing = React.createClass({
       meta: {},
     };
   },
+
   getParam: function getParam(param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
     return [matches[1], matches[2]];
   },
+
   initWithParams: function initWithParams(params) {
     const state = this.getInitialState();
     // check for url params
@@ -365,6 +374,7 @@ const Listing = React.createClass({
       this.getItems();
     });
   },
+
   getParams: function getParams() {
     // get all route parameters (without the "splat")
     const params = _.omit(this.props.params, 'splat');
@@ -376,6 +386,7 @@ const Listing = React.createClass({
     }
     return params;
   },
+
   setParams: function setParams() {
     if (this.props.location) {
       const params = Object.keys(this.state)
@@ -413,6 +424,7 @@ const Listing = React.createClass({
       }
     }
   },
+
   getUrlWithParams: function getUrlWithParams(params) {
     let baseUrl = (this.props.base_url !== undefined)
       ? this.props.base_url
@@ -424,6 +436,7 @@ const Listing = React.createClass({
     }
     return `/${params}`;
   },
+
   setBaseUrlParams: function setBaseUrlParams(baseUrl) {
     let ret = baseUrl;
     if (ret.indexOf(':') !== -1) {
@@ -437,6 +450,7 @@ const Listing = React.createClass({
 
     return ret;
   },
+
   componentDidMount: function componentDidMount() {
     this.isComponentMounted = true;
     const params = this.props.params || {};
@@ -448,13 +462,16 @@ const Listing = React.createClass({
       });
     }
   },
+
   componentWillUnmount: function componentWillUnmount() {
     this.isComponentMounted = false;
   },
+
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     const params = nextProps.params || {};
     this.initWithParams(params);
   },
+
   getItems: function getItems() {
     if (!this.isComponentMounted) return;
 
@@ -507,6 +524,7 @@ const Listing = React.createClass({
       }
     });
   },
+
   handleRestoreItem: function handleRestoreItem(id) {
     this.setState({
       loading: true,
@@ -535,6 +553,7 @@ const Listing = React.createClass({
       );
     });
   },
+
   handleTrashItem: function handleTrashItem(id) {
     this.setState({
       loading: true,
@@ -563,6 +582,7 @@ const Listing = React.createClass({
       );
     });
   },
+
   handleDeleteItem: function handleDeleteItem(id) {
     this.setState({
       loading: true,
@@ -591,6 +611,7 @@ const Listing = React.createClass({
       );
     });
   },
+
   handleEmptyTrash: function handleEmptyTrash() {
     return this.handleBulkAction('all', {
       action: 'delete',
@@ -611,6 +632,7 @@ const Listing = React.createClass({
       );
     });
   },
+
   handleBulkAction: function handleBulkAction(selectedIds, params) {
     if (
       this.state.selection === false
@@ -651,6 +673,7 @@ const Listing = React.createClass({
       }
     });
   },
+
   handleSearch: function handleSearch(search) {
     this.setState({
       search,
@@ -661,6 +684,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleSort: function handleSort(sortBy, sortOrder = 'asc') {
     this.setState({
       sort_by: sortBy,
@@ -669,6 +693,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleSelectItem: function handleSelectItem(id, isChecked) {
     let selectedIds = this.state.selected_ids;
     let selection = false;
@@ -690,6 +715,7 @@ const Listing = React.createClass({
       selected_ids: selectedIds,
     });
   },
+
   handleSelectItems: function handleSelectItems(isChecked) {
     if (isChecked === false) {
       this.clearSelection();
@@ -702,6 +728,7 @@ const Listing = React.createClass({
       });
     }
   },
+
   handleSelectAll: function handleSelectAll() {
     if (this.state.selection === 'all') {
       this.clearSelection();
@@ -712,12 +739,14 @@ const Listing = React.createClass({
       });
     }
   },
+
   clearSelection: function clearSelection() {
     this.setState({
       selection: false,
       selected_ids: [],
     });
   },
+
   handleFilter: function handleFilter(filters) {
     this.setState({
       filter: filters,
@@ -726,6 +755,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleGroup: function handleGroup(group) {
     // reset search
     jQuery('#search_input').val('');
@@ -739,6 +769,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleSetPage: function handleSetPage(page) {
     this.setState({
       page,
@@ -748,13 +779,16 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleRenderItem: function handleRenderItem(item, actions) {
     const render = this.props.onRenderItem(item, actions, this.state.meta);
     return render.props.children;
   },
+
   handleRefreshItems: function handleRefreshItems() {
     this.getItems();
   },
+
   render: function render() {
     const items = this.state.items;
     const sortBy = this.state.sort_by;

@@ -47,14 +47,16 @@ const afterTimeTypeField = {
   values: timeDelayValues,
 };
 
-const WelcomeScheduling = React.createClass({
-  contextTypes: {
+class WelcomeScheduling extends React.Component {
+  static contextTypes = {
     router: React.PropTypes.object.isRequired,
-  },
-  getCurrentValue: function getCurrentValue() {
+  };
+
+  getCurrentValue = () => {
     return (this.props.item[this.props.field.name] || {});
-  },
-  handleValueChange: function handleValueChange(name, value) {
+  };
+
+  handleValueChange = (name, value) => {
     const oldValue = this.getCurrentValue();
     const newValue = {};
 
@@ -66,38 +68,44 @@ const WelcomeScheduling = React.createClass({
         value: _.extend({}, oldValue, newValue),
       },
     });
-  },
-  handleEventChange: function handleEventChange(event) {
+  };
+
+  handleEventChange = (event) => {
     return this.handleValueChange(
       'event',
       event.target.value
     );
-  },
-  handleSegmentChange: function handleSegmentChange(event) {
+  };
+
+  handleSegmentChange = (event) => {
     return this.handleValueChange(
       'segment',
       event.target.value
     );
-  },
-  handleRoleChange: function handleRoleChange(event) {
+  };
+
+  handleRoleChange = (event) => {
     return this.handleValueChange(
       'role',
       event.target.value
     );
-  },
-  handleAfterTimeNumberChange: function handleAfterTimeNumberChange(event) {
+  };
+
+  handleAfterTimeNumberChange = (event) => {
     return this.handleValueChange(
       'afterTimeNumber',
       event.target.value
     );
-  },
-  handleAfterTimeTypeChange: function handleAfterTimeTypeChange(event) {
+  };
+
+  handleAfterTimeTypeChange = (event) => {
     return this.handleValueChange(
       'afterTimeType',
       event.target.value
     );
-  },
-  handleNext: function handleNext() {
+  };
+
+  handleNext = () => {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -116,11 +124,13 @@ const WelcomeScheduling = React.createClass({
         );
       }
     });
-  },
-  showTemplateSelection: function showTemplateSelection(newsletterId) {
+  };
+
+  showTemplateSelection = (newsletterId) => {
     this.context.router.push(`/template/${newsletterId}`);
-  },
-  render: function render() {
+  };
+
+  render() {
     const value = this.getCurrentValue();
     let roleSegmentSelection;
     let timeNumber;
@@ -171,7 +181,7 @@ const WelcomeScheduling = React.createClass({
         />
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = WelcomeScheduling;

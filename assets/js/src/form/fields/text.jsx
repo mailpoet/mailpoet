@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FormFieldText = React.createClass({
+class FormFieldText extends React.Component {
   render() {
     const name = this.props.field.name || null;
     const item = this.props.item || {};
@@ -51,7 +51,7 @@ const FormFieldText = React.createClass({
         {...this.props.field.validation}
       />
     );
-  },
-});
+  }
+}
 
 module.exports = FormFieldText;

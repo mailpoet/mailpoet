@@ -72,8 +72,8 @@ const datepickerTranslations = {
   ],
 };
 
-const DateText = React.createClass({
-  onChange: function onChange(event) {
+class DateText extends React.Component {
+  onChange = (event) => {
     const changeEvent = event;
     // Swap display format to storage format
     const displayDate = changeEvent.target.value;
@@ -81,8 +81,9 @@ const DateText = React.createClass({
 
     changeEvent.target.value = storageDate;
     this.props.onChange(changeEvent);
-  },
-  componentDidMount: function componentDidMount() {
+  };
+
+  componentDidMount() {
     const $element = jQuery(this.dateInput);
     const that = this;
     if ($element.datepicker) {
@@ -117,28 +118,33 @@ const DateText = React.createClass({
 
       this.datepickerInitialized = true;
     }
-  },
-  componentWillUnmount: function componentWillUnmount() {
+  }
+
+  componentWillUnmount() {
     if (this.datepickerInitialized) {
       jQuery(this.dateInput).datepicker('destroy');
     }
-  },
-  getFieldName: function getFieldName() {
+  }
+
+  getFieldName = () => {
     return this.props.name || 'date';
-  },
-  getDisplayDate: function getDisplayDate(date) {
+  };
+
+  getDisplayDate = (date) => {
     return MailPoet.Date.format(date, {
       parseFormat: this.props.storageFormat,
       format: this.props.displayFormat,
     });
-  },
-  getStorageDate: function getStorageDate(date) {
+  };
+
+  getStorageDate = (date) => {
     return MailPoet.Date.format(date, {
       parseFormat: this.props.displayFormat,
       format: this.props.storageFormat,
     });
-  },
-  render: function render() {
+  };
+
+  render() {
     return (
       <input
         type="text"
@@ -152,11 +158,11 @@ const DateText = React.createClass({
         {...this.props.validation}
       />
     );
-  },
-});
+  }
+}
 
-const TimeSelect = React.createClass({
-  render: function render() {
+class TimeSelect extends React.Component {
+  render() {
     const options = Object.keys(timeOfDayItems).map(
       value => (
         <option
@@ -179,32 +185,33 @@ const TimeSelect = React.createClass({
         {options}
       </select>
     );
-  },
-});
+  }
+}
 
-const DateTime = React.createClass({
-  DATE_TIME_SEPARATOR: ' ',
-  getInitialState: function getInitialState() {
-    return this.buildStateFromProps(this.props);
-  },
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+class DateTime extends React.Component {
+  DATE_TIME_SEPARATOR = ' ';
+
+  componentWillReceiveProps(nextProps) {
     this.setState(this.buildStateFromProps(nextProps));
-  },
-  buildStateFromProps: function buildStateFromProps(props) {
+  }
+
+  buildStateFromProps = (props) => {
     const value = props.value || defaultDateTime;
     const [date, time] = value.split(this.DATE_TIME_SEPARATOR);
     return {
       date,
       time,
     };
-  },
-  handleChange: function handleChange(event) {
+  };
+
+  handleChange = (event) => {
     const newState = {};
     newState[event.target.name] = event.target.value;
 
     this.setState(newState, this.propagateChange);
-  },
-  propagateChange: function propagateChange() {
+  };
+
+  propagateChange = () => {
     if (this.props.onChange) {
       this.props.onChange({
         target: {
@@ -213,11 +220,15 @@ const DateTime = React.createClass({
         },
       });
     }
-  },
-  getDateTime: function getDateTime() {
+  };
+
+  getDateTime = () => {
     return [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
-  },
-  render: function render() {
+  };
+
+  state = this.buildStateFromProps(this.props);
+
+  render() {
     return (
       <span>
         <DateText
@@ -238,11 +249,11 @@ const DateTime = React.createClass({
         />
       </span>
     );
-  },
-});
+  }
+}
 
-const StandardScheduling = React.createClass({
-  getCurrentValue: function getCurrentValue() {
+class StandardScheduling extends React.Component {
+  getCurrentValue = () => {
     return _.defaults(
       this.props.item[this.props.field.name] || {},
       {
@@ -250,8 +261,9 @@ const StandardScheduling = React.createClass({
         scheduledAt: defaultDateTime,
       }
     );
-  },
-  handleValueChange: function handleValueChange(event) {
+  };
+
+  handleValueChange = (event) => {
     const oldValue = this.getCurrentValue();
     const newValue = {};
     newValue[event.target.name] = event.target.value;
@@ -262,23 +274,27 @@ const StandardScheduling = React.createClass({
         value: _.extend({}, oldValue, newValue),
       },
     });
-  },
-  handleCheckboxChange: function handleCheckboxChange(event) {
+  };
+
+  handleCheckboxChange = (event) => {
     const changeEvent = event;
     changeEvent.target.value = this.isScheduledInput.checked ? '1' : '0';
     return this.handleValueChange(changeEvent);
-  },
-  isScheduled: function isScheduled() {
+  };
+
+  isScheduled = () => {
     return this.getCurrentValue().isScheduled === '1';
-  },
-  getDateValidation: function getDateValidation() {
+  };
+
+  getDateValidation = () => {
     return {
       'data-parsley-required': true,
       'data-parsley-required-message': MailPoet.I18n.t('noScheduledDateError'),
       'data-parsley-errors-container': '#mailpoet_scheduling',
     };
-  },
-  render: function render() {
+  };
+
+  render() {
     let schedulingOptions;
 
     if (this.isScheduled()) {
@@ -313,8 +329,8 @@ const StandardScheduling = React.createClass({
         {schedulingOptions}
       </div>
     );
-  },
-});
+  }
+}
 
 let fields = [
   {
