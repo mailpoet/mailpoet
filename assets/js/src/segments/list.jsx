@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 
@@ -275,5 +276,10 @@ class SegmentList extends React.Component {
     );
   }
 }
+
+SegmentList.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 module.exports = SegmentList;

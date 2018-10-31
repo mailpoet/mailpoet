@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
+import PropTypes from 'prop-types';
 
 import SegmentList from 'segments/list.jsx';
 import SegmentForm from 'segments/form.jsx';
@@ -13,6 +14,10 @@ class App extends React.Component {
     return this.props.children;
   }
 }
+
+App.propTypes = {
+  children: PropTypes.element.isRequired,
+};
 
 const container = document.getElementById('segments_container');
 
