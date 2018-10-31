@@ -47,7 +47,7 @@ class Setting extends Model {
       'signup_confirmation' => array(
         'enabled' => true,
         'subject' => sprintf(__('Confirm your subscription to %1$s', 'mailpoet'), get_option('blogname')),
-        'body' => __("Hello!\n\nHurray! You've subscribed to our site.\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team", 'mailpoet')
+        'body' => __("Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team", 'mailpoet')
       ),
       'tracking' => array(
         'enabled' => true
