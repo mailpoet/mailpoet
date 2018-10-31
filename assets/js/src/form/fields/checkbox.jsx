@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class FormFieldCheckbox extends React.Component {
   onValueChange = (e) => {
@@ -40,5 +41,14 @@ class FormFieldCheckbox extends React.Component {
     );
   }
 }
+
+FormFieldCheckbox.propTypes = {
+  onValueChange: PropTypes.func.isRequired,
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    values: PropTypes.object.isRequired,
+  }).isRequired,
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 export default FormFieldCheckbox;

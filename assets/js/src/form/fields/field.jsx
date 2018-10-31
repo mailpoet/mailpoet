@@ -7,6 +7,7 @@ import FormFieldCheckbox from 'form/fields/checkbox.jsx';
 import FormFieldSelection from 'form/fields/selection.jsx';
 import FormFieldDate from 'form/fields/date.jsx';
 import jQuery from 'jquery';
+import PropTypes from 'prop-types';
 
 class FormField extends React.Component {
   renderField = (data, inline = false) => {
@@ -116,5 +117,24 @@ class FormField extends React.Component {
     );
   }
 }
+
+FormField.propTypes = {
+  onValueChange: PropTypes.func,
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    values: PropTypes.object,
+    tip: PropTypes.string,
+    label: PropTypes.string,
+    fields: PropTypes.array,
+    description: PropTypes.string,
+  }).isRequired,
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
+
+FormField.defaultProps = {
+  onValueChange: function onValueChange() {
+    // no-op
+  },
+};
 
 export default FormField;
