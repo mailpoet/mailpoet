@@ -1,34 +1,9 @@
 import React from 'react';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 
 class ListingFilters extends React.Component {
-  handleFilterAction = () => {
-    const filters = {};
-    this.getAvailableFilters().forEach((filter, i) => {
-      filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
-    });
-    if (this.props.onBeforeSelectFilter) {
-      this.props.onBeforeSelectFilter(filters);
-    }
-    return this.props.onSelectFilter(filters);
-  };
-
-  handleEmptyTrash = () => {
-    return this.props.onEmptyTrash();
-  };
-
-  getAvailableFilters = () => {
-    const filters = this.props.filters;
-    return Object.keys(filters).filter(filter => !(
-      filters[filter].length === 0
-        || (
-          filters[filter].length === 1
-          && !filters[filter][0].value
-        )
-    ));
-  };
-
   componentDidUpdate() {
     const selectedFilters = this.props.filter;
     this.getAvailableFilters().forEach(
@@ -41,6 +16,30 @@ class ListingFilters extends React.Component {
       }
     );
   }
+
+  getAvailableFilters = () => {
+    const filters = this.props.filters;
+    return Object.keys(filters).filter(filter => !(
+      filters[filter].length === 0
+        || (
+          filters[filter].length === 1
+          && !filters[filter][0].value
+        )
+    ));
+  };
+
+  handleEmptyTrash = () => this.props.onEmptyTrash();
+
+  handleFilterAction = () => {
+    const filters = {};
+    this.getAvailableFilters().forEach((filter, i) => {
+      filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
+    });
+    if (this.props.onBeforeSelectFilter) {
+      this.props.onBeforeSelectFilter(filters);
+    }
+    return this.props.onSelectFilter(filters);
+  };
 
   render() {
     const filters = this.props.filters;
@@ -95,5 +94,21 @@ class ListingFilters extends React.Component {
     );
   }
 }
+
+ListingFilters.propTypes = {
+  filters: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array,
+  ]).isRequired,
+  onEmptyTrash: PropTypes.func.isRequired,
+  onBeforeSelectFilter: PropTypes.func,
+  onSelectFilter: PropTypes.func.isRequired,
+  filter: PropTypes.objectOf(PropTypes.string).isRequired,
+  group: PropTypes.string.isRequired,
+};
+
+ListingFilters.defaultProps = {
+  onBeforeSelectFilter: undefined,
+};
 
 export default ListingFilters;

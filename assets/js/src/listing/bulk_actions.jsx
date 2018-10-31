@@ -1,5 +1,6 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 
 class ListingBulkActions extends React.Component {
   state = {
@@ -7,20 +8,16 @@ class ListingBulkActions extends React.Component {
     extra: false,
   };
 
-  handleChangeAction = (e) => {
-    this.setState({
-      action: e.target.value,
-      extra: false,
-    }, () => {
-      const action = this.getSelectedAction();
+  getSelectedAction = () => {
+    const selectedAction = this.action.value;
+    if (selectedAction.length > 0) {
+      const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
 
-      // action on select callback
-      if (action !== null && action.onSelect !== undefined) {
-        this.setState({
-          extra: action.onSelect(e),
-        });
+      if (action.length > 0) {
+        return action[0];
       }
-    });
+    }
+    return null;
   };
 
   handleApplyAction = (e) => {
@@ -60,16 +57,20 @@ class ListingBulkActions extends React.Component {
     });
   };
 
-  getSelectedAction = () => {
-    const selectedAction = this.action.value;
-    if (selectedAction.length > 0) {
-      const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
+  handleChangeAction = (e) => {
+    this.setState({
+      action: e.target.value,
+      extra: false,
+    }, () => {
+      const action = this.getSelectedAction();
 
-      if (action.length > 0) {
-        return action[0];
+      // action on select callback
+      if (action !== null && action.onSelect !== undefined) {
+        this.setState({
+          extra: action.onSelect(e),
+        });
       }
-    }
-    return null;
+    });
   };
 
   render() {
@@ -112,5 +113,15 @@ class ListingBulkActions extends React.Component {
     );
   }
 }
+
+ListingBulkActions.propTypes = {
+  bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selection: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]).isRequired,
+  selected_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
+  onBulkAction: PropTypes.func.isRequired,
+};
 
 export default ListingBulkActions;

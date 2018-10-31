@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 
 class ListingPages extends React.Component {
   state = {
@@ -35,9 +36,7 @@ class ListingPages extends React.Component {
     );
   };
 
-  constrainPage = (page) => {
-    return Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
-  };
+  getLastPage = () => Math.ceil(this.props.count / this.props.limit);
 
   handleSetManualPage = (e) => {
     if (e.which === 13) {
@@ -55,9 +54,7 @@ class ListingPages extends React.Component {
     this.setPage(e.target.value);
   };
 
-  getLastPage = () => {
-    return Math.ceil(this.props.count / this.props.limit);
-  };
+  constrainPage = page => Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
 
   render() {
     if (this.props.count === 0) {
@@ -192,5 +189,15 @@ class ListingPages extends React.Component {
     );
   }
 }
+
+ListingPages.propTypes = {
+  onSetPage: PropTypes.func.isRequired,
+  page: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]).isRequired,
+  count: PropTypes.number.isRequired,
+  limit: PropTypes.number.isRequired,
+};
 
 module.exports = ListingPages;

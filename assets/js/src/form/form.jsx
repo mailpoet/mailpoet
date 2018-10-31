@@ -26,6 +26,11 @@ class Form extends React.Component {
     id: '',
     onSubmit: undefined,
     automationId: '',
+    messages: {
+      onUpdate: () => { /* no-op */ },
+      onCreate: () => { /* no-op */ },
+    },
+    endpoint: undefined,
   };
 
   state = {
@@ -67,6 +72,7 @@ class Form extends React.Component {
   loadItem = (id) => {
     this.setState({ loading: true });
 
+    if (!this.props.endpoint) return;
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
@@ -119,6 +125,8 @@ class Form extends React.Component {
     if (this.props.params.id !== undefined) {
       item.id = this.props.params.id;
     }
+
+    if (!this.props.endpoint) return;
 
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -257,14 +265,14 @@ Form.propTypes = {
   }).isRequired,
   item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   errors: PropTypes.arrayOf(PropTypes.object),
-  endpoint: PropTypes.string.isRequired,
+  endpoint: PropTypes.string,
   fields: PropTypes.arrayOf(PropTypes.object),
   messages: PropTypes.shape({
     onUpdate: PropTypes.func,
     onCreate: PropTypes.func,
   }).isRequired,
   loading: PropTypes.bool,
-  children: PropTypes.element,
+  children: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   id: PropTypes.string,
   automationId: PropTypes.string,
   beforeFormContent: PropTypes.func,

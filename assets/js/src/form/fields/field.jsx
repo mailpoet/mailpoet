@@ -123,7 +123,10 @@ FormField.propTypes = {
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
     values: PropTypes.object,
-    tip: PropTypes.string,
+    tip: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string,
+    ]),
     label: PropTypes.string,
     fields: PropTypes.array,
     description: PropTypes.string,
