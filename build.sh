@@ -22,6 +22,11 @@ test -d node_modules && rm -rf node_modules
 npm install
 ./do compile:all --env production
 
+# Dependency injection container cache.
+echo '[BUILD] Building DI Container cache'
+./composer.phar install
+./do container:dump
+
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
 test -d vendor && rm -rf vendor

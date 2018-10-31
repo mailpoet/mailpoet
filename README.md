@@ -94,6 +94,8 @@ $ ./do delete:docker      # stop and remove all running docker containers.
 $ ./do qa:lint             # PHP code linter.
 $ ./do qa:lint:javascript  # JS code linter.
 $ ./do qa                  # PHP and JS linters.
+
+$ ./do container:dump      # Dumps DI container.
 ```
 
 # Coding and Testing
