@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 import Selection from 'form/fields/selection.jsx';
@@ -372,5 +373,10 @@ class SubscriberList extends React.Component {
     );
   }
 }
+
+SubscriberList.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 module.exports = SubscriberList;

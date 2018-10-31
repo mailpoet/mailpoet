@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 import Form from 'form/form.jsx';
 import ReactStringReplace from 'react-string-replace';
 
@@ -175,7 +176,7 @@ function afterFormContent() {
   );
 }
 
-class SubscriberForm extends React.Component {
+class SubscriberForm extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
   render() {
     return (
       <div>
@@ -196,5 +197,9 @@ class SubscriberForm extends React.Component {
     );
   }
 }
+
+SubscriberForm.propTypes = {
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 module.exports = SubscriberForm;
