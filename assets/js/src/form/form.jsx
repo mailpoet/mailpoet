@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import FormField from 'form/fields/field.jsx';
 import jQuery from 'jquery';
+import PropTypes from 'prop-types';
 
 class Form extends React.Component {
   static contextTypes = {
@@ -11,20 +12,26 @@ class Form extends React.Component {
 
   static defaultProps = {
     params: {},
+    errors: undefined,
+    fields: undefined,
+    item: undefined,
+    onItemLoad: undefined,
+    isValid: undefined,
+    onSuccess: undefined,
+    onChange: undefined,
+    loading: false,
+    beforeFormContent: undefined,
+    afterFormContent: undefined,
+    children: undefined,
+    id: '',
+    onSubmit: undefined,
+    automationId: '',
   };
 
   state = {
     loading: false,
     errors: [],
     item: {},
-  };
-
-  getValues = () => {
-    return this.props.item ? this.props.item : this.state.item;
-  };
-
-  getErrors = () => {
-    return this.props.errors ? this.props.errors : this.state.errors;
   };
 
   componentDidMount() {
@@ -52,6 +59,10 @@ class Form extends React.Component {
       }
     }
   }
+
+  getValues = () => this.props.item || this.state.item;
+
+  getErrors = () => this.props.errors || this.state.errors;
 
   loadItem = (id) => {
     this.setState({ loading: true });
@@ -239,5 +250,30 @@ class Form extends React.Component {
     );
   }
 }
+
+Form.propTypes = {
+  params: PropTypes.shape({
+    id: PropTypes.string,
+  }).isRequired,
+  item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  errors: PropTypes.arrayOf(PropTypes.object),
+  endpoint: PropTypes.string.isRequired,
+  fields: PropTypes.arrayOf(PropTypes.object),
+  messages: PropTypes.shape({
+    onUpdate: PropTypes.func,
+    onCreate: PropTypes.func,
+  }).isRequired,
+  loading: PropTypes.bool,
+  children: PropTypes.element,
+  id: PropTypes.string,
+  automationId: PropTypes.string,
+  beforeFormContent: PropTypes.func,
+  afterFormContent: PropTypes.func,
+  onItemLoad: PropTypes.func,
+  isValid: PropTypes.func,
+  onChange: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onSuccess: PropTypes.func,
+};
 
 export default Form;
