@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
+import PropTypes from 'prop-types';
 import Listing from '../listing/listing.jsx';
 
 const columns = [
@@ -208,5 +209,10 @@ class FormList extends React.Component {
     );
   }
 }
+
+FormList.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 module.exports = FormList;

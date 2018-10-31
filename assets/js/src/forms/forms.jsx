@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, useRouterHistory } from 'react-router';
+import PropTypes from 'prop-types';
 import { createHashHistory } from 'history';
 import FormList from './list.jsx';
 
@@ -11,6 +12,10 @@ class App extends React.Component {
     return this.props.children;
   }
 }
+
+App.propTypes = {
+  children: PropTypes.element.isRequired,
+};
 
 const container = document.getElementById('forms_container');
 
