@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import Select from 'form/fields/select.jsx';
 import Text from 'form/fields/text.jsx';
 import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
+import PropTypes from 'prop-types';
 
 const availableRoles = window.mailpoet_roles || {};
 const availableSegments = _.filter(
@@ -52,9 +53,7 @@ class WelcomeScheduling extends React.Component {
     router: React.PropTypes.object.isRequired,
   };
 
-  getCurrentValue = () => {
-    return (this.props.item[this.props.field.name] || {});
-  };
+  getCurrentValue = () => this.props.item[this.props.field.name] || {};
 
   handleValueChange = (name, value) => {
     const oldValue = this.getCurrentValue();
@@ -70,40 +69,11 @@ class WelcomeScheduling extends React.Component {
     });
   };
 
-  handleEventChange = (event) => {
-    return this.handleValueChange(
-      'event',
-      event.target.value
-    );
-  };
-
-  handleSegmentChange = (event) => {
-    return this.handleValueChange(
-      'segment',
-      event.target.value
-    );
-  };
-
-  handleRoleChange = (event) => {
-    return this.handleValueChange(
-      'role',
-      event.target.value
-    );
-  };
-
-  handleAfterTimeNumberChange = (event) => {
-    return this.handleValueChange(
-      'afterTimeNumber',
-      event.target.value
-    );
-  };
-
-  handleAfterTimeTypeChange = (event) => {
-    return this.handleValueChange(
-      'afterTimeType',
-      event.target.value
-    );
-  };
+  handleEventChange = event => this.handleValueChange('event', event.target.value);
+  handleSegmentChange = event => this.handleValueChange('segment', event.target.value);
+  handleRoleChange = event => this.handleValueChange('role', event.target.value);
+  handleAfterTimeNumberChange = event => this.handleValueChange('afterTimeNumber', event.target.value);
+  handleAfterTimeTypeChange = event => this.handleValueChange('afterTimeType', event.target.value);
 
   handleNext = () => {
     MailPoet.Ajax.post({
@@ -183,5 +153,13 @@ class WelcomeScheduling extends React.Component {
     );
   }
 }
+
+WelcomeScheduling.propTypes = {
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  field: PropTypes.shape({
+    name: PropTypes.string,
+  }).isRequired,
+  onValueChange: PropTypes.func.isRequired,
+};
 
 module.exports = WelcomeScheduling;

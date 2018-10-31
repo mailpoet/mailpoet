@@ -4,6 +4,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
+import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
@@ -173,8 +174,14 @@ let newsletterActions = [
 Hooks.addFilter('mailpoet_newsletters_listings_standard_actions', StatisticsMixin.addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletterActions);
 
-const NewsletterListStandard = createReactClass({
+const NewsletterListStandard = createReactClass({ // eslint-disable-line react/prefer-es6-class
   displayName: 'NewsletterListStandard',
+
+  propTypes: {
+    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  },
+
   mixins: [QueueMixin, StatisticsMixin, MailerMixin, CronMixin],
 
   renderItem: function renderItem(newsletter, actions, meta) {

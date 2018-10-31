@@ -20,6 +20,29 @@ class NewsletterTypes extends React.Component {
     }
   };
 
+  getAutomaticEmails = () => {
+    if (!window.mailpoet_automatic_emails) return [];
+
+    return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
+      const email = automaticEmail;
+      const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
+      email.action = (() => (
+        <div>
+          <a
+            className="button button-primary"
+            onClick={onClick}
+            role="button"
+            tabIndex={0}
+          >
+            { MailPoet.I18n.t('setUp') }
+          </a>
+        </div>
+      ))();
+
+      return email;
+    });
+  };
+
   createNewsletter = (type) => {
     MailPoet.trackEvent('Emails > Type selected', {
       'MailPoet Free version': window.mailpoet_version,
@@ -42,29 +65,6 @@ class NewsletterTypes extends React.Component {
           { scroll: true }
         );
       }
-    });
-  };
-
-  getAutomaticEmails = () => {
-    if (!window.mailpoet_automatic_emails) return [];
-
-    return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
-      const email = automaticEmail;
-      const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
-      email.action = (() => (
-        <div>
-          <a
-            className="button button-primary"
-            onClick={onClick}
-            role="button"
-            tabIndex={0}
-          >
-            { MailPoet.I18n.t('setUp') }
-          </a>
-        </div>
-      ))();
-
-      return email;
     });
   };
 

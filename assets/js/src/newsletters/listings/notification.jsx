@@ -1,6 +1,7 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { Link } from 'react-router';
+import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
@@ -158,8 +159,15 @@ const newsletterActions = [
   },
 ];
 
-const NewsletterListNotification = createReactClass({
+const NewsletterListNotification = createReactClass({ // eslint-disable-line react/prefer-es6-class
+
   displayName: 'NewsletterListNotification',
+
+  propTypes: {
+    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  },
+
   mixins: [MailerMixin, CronMixin],
 
   updateStatus: function updateStatus(e) {

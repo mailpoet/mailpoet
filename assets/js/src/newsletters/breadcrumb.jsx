@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Link } from 'react-router';
+import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
 class Breadcrumb extends React.Component {
@@ -64,5 +65,14 @@ class Breadcrumb extends React.Component {
   }
 }
 
-module.exports = Breadcrumb;
+Breadcrumb.propTypes = {
+  steps: PropTypes.arrayOf(PropTypes.object),
+  step: PropTypes.string,
+};
 
+Breadcrumb.defaultProps = {
+  steps: undefined,
+  step: null,
+};
+
+module.exports = Breadcrumb;

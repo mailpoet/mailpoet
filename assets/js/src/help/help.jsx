@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRedirect, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
+import PropTypes from 'prop-types';
 
 import SystemStatus from 'help/system_status.jsx';
 import SystemInfo from 'help/system_info.jsx';
@@ -14,6 +15,10 @@ class App extends React.Component {
     return this.props.children;
   }
 }
+
+App.propTypes = {
+  children: PropTypes.element.isRequired,
+};
 
 const container = document.getElementById('help_container');
 

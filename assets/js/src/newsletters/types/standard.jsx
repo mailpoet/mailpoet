@@ -7,10 +7,6 @@ class NewsletterStandard extends React.Component {
     router: React.PropTypes.object.isRequired,
   };
 
-  showTemplateSelection = (newsletterId) => {
-    this.context.router.push(`/template/${newsletterId}`);
-  };
-
   componentDidMount() {
     // No options for this type, create a newsletter upon mounting
     MailPoet.Ajax.post({
@@ -31,6 +27,10 @@ class NewsletterStandard extends React.Component {
       }
     });
   }
+
+  showTemplateSelection = (newsletterId) => {
+    this.context.router.push(`/template/${newsletterId}`);
+  };
 
   render() {
     return (

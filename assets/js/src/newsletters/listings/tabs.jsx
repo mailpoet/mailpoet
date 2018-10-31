@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
+import PropTypes from 'prop-types';
 
 class ListingTabs extends React.Component {
   state = {
@@ -52,5 +53,9 @@ class ListingTabs extends React.Component {
     );
   }
 }
+
+ListingTabs.propTypes = {
+  tab: PropTypes.string.isRequired,
+};
 
 module.exports = ListingTabs;

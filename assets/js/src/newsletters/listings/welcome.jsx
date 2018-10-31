@@ -1,6 +1,6 @@
 import React from 'react';
-
 import createReactClass from 'create-react-class';
+import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
@@ -155,8 +155,14 @@ let newsletterActions = [
 Hooks.addFilter('mailpoet_newsletters_listings_welcome_notification_actions', StatisticsMixin.addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletterActions);
 
-const NewsletterListWelcome = createReactClass({
+const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/prefer-es6-class
   displayName: 'NewsletterListWelcome',
+
+  propTypes: {
+    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  },
+
   mixins: [StatisticsMixin, MailerMixin, CronMixin],
 
   updateStatus: function updateStatus(e) {

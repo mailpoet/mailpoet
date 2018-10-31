@@ -11,9 +11,16 @@ import HelpTooltip from 'help-tooltip.jsx';
 import jQuery from 'jquery';
 import { fromUrl } from 'common/thumbnail.jsx';
 import Hooks from 'wp-js-hooks';
+import PropTypes from 'prop-types';
 
-const NewsletterSend = createReactClass({
+const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es6-class
   displayName: 'NewsletterSend',
+
+  propTypes: {
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }).isRequired,
+  },
 
   contextTypes: {
     router: React.PropTypes.object.isRequired,
@@ -25,6 +32,15 @@ const NewsletterSend = createReactClass({
       item: {},
       loading: true,
     };
+  },
+
+  componentDidMount: function componentDidMount() {
+    this.loadItem(this.props.params.id);
+    jQuery('#mailpoet_newsletter').parsley();
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(props) {
+    this.loadItem(props.params.id);
   },
 
   getFieldsByNewsletter: function getFieldsByNewsletter(newsletter) {
@@ -47,15 +63,6 @@ const NewsletterSend = createReactClass({
 
   isValid: function isValid() {
     return jQuery('#mailpoet_newsletter').parsley().isValid();
-  },
-
-  componentDidMount: function componentDidMount() {
-    this.loadItem(this.props.params.id);
-    jQuery('#mailpoet_newsletter').parsley();
-  },
-
-  componentWillReceiveProps: function componentWillReceiveProps(props) {
-    this.loadItem(props.params.id);
   },
 
   loadItem: function loadItem(id) {
