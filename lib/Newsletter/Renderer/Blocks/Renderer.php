@@ -14,19 +14,15 @@ class Renderer {
   function __construct(array $newsletter, $preview) {
     $this->newsletter = $newsletter;
     $this->posts = array();
+    $newer_than_timestamp = false;
+    $newsletter_id = false;
     if($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
       $newsletter_id = $newsletter['parent_id'];
 
       $last_post = NewsletterPost::getNewestNewsletterPost($newsletter_id);
       if($last_post) {
         $newer_than_timestamp = $last_post->created_at;
-      } else {
-        $parent = Newsletter::findOne($newsletter_id);
-        $newer_than_timestamp = $parent->created_at;
       }
-    } else {
-      $newsletter_id = false;
-      $newer_than_timestamp = false;
     }
     $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent(
       $newsletter_id,
