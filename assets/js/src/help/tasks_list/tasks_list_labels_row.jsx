@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
@@ -13,7 +14,7 @@ const TasksListLabelsRow = props => (
 );
 
 TasksListLabelsRow.propTypes = {
-  show_scheduled_at: React.PropTypes.bool,
+  show_scheduled_at: PropTypes.bool,
 };
 
 TasksListLabelsRow.defaultProps = {

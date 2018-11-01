@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 const KeyValueTable = props => (
@@ -13,13 +14,13 @@ const KeyValueTable = props => (
 );
 
 KeyValueTable.propTypes = {
-  max_width: React.PropTypes.string,
-  rows: React.PropTypes.arrayOf(React.PropTypes.shape({
-    key: React.PropTypes.string.isRequired,
-    value: React.PropTypes.oneOfType([
-      React.PropTypes.string,
-      React.PropTypes.number,
-      React.PropTypes.element,
+  max_width: PropTypes.string,
+  rows: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.element,
     ]).isRequired,
   })).isRequired,
 };

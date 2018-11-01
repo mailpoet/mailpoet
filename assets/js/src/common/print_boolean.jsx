@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
@@ -10,10 +11,10 @@ const PrintBoolean = props => (
 );
 
 PrintBoolean.propTypes = {
-  truthy: React.PropTypes.string,
-  falsy: React.PropTypes.string,
-  unknown: React.PropTypes.string,
-  children: React.PropTypes.bool,
+  truthy: PropTypes.string,
+  falsy: PropTypes.string,
+  unknown: PropTypes.string,
+  children: PropTypes.bool,
 };
 
 PrintBoolean.defaultProps = {

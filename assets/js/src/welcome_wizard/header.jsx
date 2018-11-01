@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import SteppedProgressBar from '../common/stepped_progess_bar.jsx';
 
@@ -13,9 +14,9 @@ const WelcomeWizardHeader = props => (
 );
 
 WelcomeWizardHeader.propTypes = {
-  current_step: React.PropTypes.number.isRequired,
-  steps_count: React.PropTypes.number.isRequired,
-  logo_src: React.PropTypes.string.isRequired,
+  current_step: PropTypes.number.isRequired,
+  steps_count: PropTypes.number.isRequired,
+  logo_src: PropTypes.string.isRequired,
 };
 
 module.exports = WelcomeWizardHeader;

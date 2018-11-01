@@ -23,7 +23,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   contextTypes: {
-    router: React.PropTypes.object.isRequired,
+    router: PropTypes.object.isRequired,
   },
 
   getInitialState: function getInitialState() {

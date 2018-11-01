@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import InAppAnnouncementDot from './in_app_announcement_dot.jsx';
@@ -78,11 +79,11 @@ const validateBooleanWithWindowDependency = (props, propName, componentName, win
 };
 
 InAppAnnouncement.propTypes = {
-  width: React.PropTypes.string,
-  height: React.PropTypes.string,
-  className: React.PropTypes.string,
-  children: React.PropTypes.element.isRequired,
-  validUntil: React.PropTypes.instanceOf(Date),
+  width: PropTypes.string,
+  height: PropTypes.string,
+  className: PropTypes.string,
+  children: PropTypes.element.isRequired,
+  validUntil: PropTypes.instanceOf(Date),
   showToNewUser: (props, propName, componentName) => (
     validateBooleanWithWindowDependency(props, propName, componentName, 'mailpoet_is_new_user')
   ),

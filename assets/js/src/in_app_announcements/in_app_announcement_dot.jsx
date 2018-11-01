@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import classNames from 'classnames';
@@ -20,11 +21,11 @@ const InAppAnnouncementDot = props => (
 );
 
 InAppAnnouncementDot.propTypes = {
-  children: React.PropTypes.element.isRequired,
-  width: React.PropTypes.string,
-  height: React.PropTypes.string,
-  className: React.PropTypes.string,
-  onUserTrigger: React.PropTypes.func,
+  children: PropTypes.element.isRequired,
+  width: PropTypes.string,
+  height: PropTypes.string,
+  className: PropTypes.string,
+  onUserTrigger: PropTypes.func,
 };
 
 InAppAnnouncementDot.defaultProps = {

@@ -48,7 +48,7 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
   /* eslint-enable react/require-default-props */
 
   contextTypes: {
-    router: React.PropTypes.object.isRequired,
+    router: PropTypes.object.isRequired,
   },
 
   getDefaultProps: () => ({

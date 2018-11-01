@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import TaskListDataRow from './tasks_list_data_row.jsx';
@@ -30,8 +31,8 @@ const TasksList = (props) => {
 };
 
 TasksList.propTypes = {
-  show_scheduled_at: React.PropTypes.bool,
-  tasks: React.PropTypes.arrayOf(TaskListDataRow.propTypes.task).isRequired,
+  show_scheduled_at: PropTypes.bool,
+  tasks: PropTypes.arrayOf(TaskListDataRow.propTypes.task).isRequired,
 };
 
 TasksList.defaultProps = {

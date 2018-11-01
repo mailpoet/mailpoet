@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import ReactHtmlParser from 'react-html-parser';
@@ -47,10 +48,10 @@ function Tooltip(props) {
 }
 
 Tooltip.propTypes = {
-  tooltipId: React.PropTypes.string,
-  tooltip: React.PropTypes.node.isRequired,
-  place: React.PropTypes.string,
-  className: React.PropTypes.string,
+  tooltipId: PropTypes.string,
+  tooltip: PropTypes.node.isRequired,
+  place: PropTypes.string,
+  className: PropTypes.string,
 };
 
 Tooltip.defaultProps = {

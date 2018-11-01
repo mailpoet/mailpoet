@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
@@ -47,13 +48,13 @@ const WelcomeWizardSenderStep = props => (
 );
 
 WelcomeWizardSenderStep.propTypes = {
-  finish: React.PropTypes.func.isRequired,
-  loading: React.PropTypes.bool.isRequired,
-  update_sender: React.PropTypes.func.isRequired,
-  submit_sender: React.PropTypes.func.isRequired,
-  sender: React.PropTypes.shape({
-    name: React.PropTypes.string,
-    address: React.PropTypes.string,
+  finish: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  update_sender: PropTypes.func.isRequired,
+  submit_sender: PropTypes.func.isRequired,
+  sender: PropTypes.shape({
+    name: PropTypes.string,
+    address: PropTypes.string,
   }),
 };
 
