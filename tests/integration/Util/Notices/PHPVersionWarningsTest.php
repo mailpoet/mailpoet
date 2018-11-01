@@ -40,7 +40,7 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     $warning = $this->phpVersionWarning->init('5.5.3', true);
     $mock->verifyInvoked('displayError');
     expect($warning)->contains('Your website is running on PHP 5.5.3');
-    expect($warning)->contains('MailPoet requires version 5.6');
+    expect($warning)->contains('MailPoet runs a whole lot better with version 7');
   }
 
 
