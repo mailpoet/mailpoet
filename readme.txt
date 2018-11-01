@@ -159,9 +159,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 1. Sample newsletters
 2. The drag-and-drop email designer
-3. Subscriber management
-4. Sending method configuration in Settings
+3. MailPoet email types
+4. Newsletter stats (Premium)
 5. Subscriber import (via a CSV file or directly from MailChimp)
+6. WooCommerce emails
 
 == Changelog ==
 
