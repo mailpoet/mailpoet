@@ -155,7 +155,7 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
       ? this.props.base_url
       : null;
 
-    if (baseUrl !== null) {
+    if (baseUrl) {
       baseUrl = this.setBaseUrlParams(baseUrl);
       return `/${baseUrl}/${params}`;
     }
