@@ -40,6 +40,7 @@ TimeSelect.propTypes = {
 TimeSelect.defaultProps = {
   name: 'time',
   disabled: false,
+  validation: {},
 };
 
 module.exports = TimeSelect;
