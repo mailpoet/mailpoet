@@ -40,14 +40,14 @@ function setup {
     	# Add a second blog
     	wp site create --slug=php7_multisite $wp_cli_wordpress_path $wp_cli_allow_root
     	echo "WP_TEST_MULTISITE_SLUG=php7_multisite" >> .env
-    	echo "WP_TEST_PATH_MULTISITE=/home/circleci/mailpoet/wordpress" >> .env
+    	echo "WP_ROOT_MULTISITE=/home/circleci/mailpoet/wordpress" >> .env
     	echo "HTTP_HOST=mailpoet.loc" >> .env
 
     	# Add a third dummy blog
         wp site create --slug=dummy_multisite $wp_cli_wordpress_path $wp_cli_allow_root
     else
     	wp core install --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc --title="WordPress Single" $wp_cli_wordpress_path $wp_cli_allow_root
-    	echo "WP_TEST_PATH=/home/circleci/mailpoet/wordpress" >> .env
+    	echo "WP_ROOT=/home/circleci/mailpoet/wordpress" >> .env
     fi
 
 	# Softlink plugin to plugin path
