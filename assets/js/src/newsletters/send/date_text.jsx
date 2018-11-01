@@ -75,7 +75,7 @@ class DateText extends React.Component {
       jQuery.datepicker.parseDate = function parseDate(format, value) {
         // Transform string format to Date object
         return MailPoet.Date.toDate(value, {
-          parseFormat: this.props.dateDisplayFormat,
+          parseFormat: this.props.displayFormat,
           format,
         });
       };
@@ -163,7 +163,6 @@ DateText.propTypes = {
   value: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
   validation: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  dateDisplayFormat: PropTypes.string.isRequired,
 };
 
 DateText.defaultProps = {

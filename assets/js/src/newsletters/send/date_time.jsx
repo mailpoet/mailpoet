@@ -5,7 +5,11 @@ import DateText from 'newsletters/send/date_text.jsx';
 import TimeSelect from 'newsletters/send/time_select.jsx';
 
 class DateTime extends React.Component {
-  state = this.buildStateFromProps(this.props);
+  constructor(props) {
+    super(props);
+
+    this.state = this.buildStateFromProps(props);
+  }
 
   componentWillReceiveProps(nextProps) {
     this.setState(this.buildStateFromProps(nextProps));
@@ -74,7 +78,7 @@ DateTime.propTypes = {
   onChange: PropTypes.func,
   name: PropTypes.string,
   disabled: PropTypes.bool,
-  dateValidation: PropTypes.objectOf(PropTypes.string).isRequired,
+  dateValidation: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   timeValidation: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   timeOfDayItems: PropTypes.objectOf(PropTypes.string).isRequired,
 };

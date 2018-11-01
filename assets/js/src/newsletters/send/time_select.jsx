@@ -34,7 +34,7 @@ TimeSelect.propTypes = {
   value: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
-  validation: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  validation: PropTypes.object, // eslint-disable-line react/forbid-prop-types
 };
 
 TimeSelect.defaultProps = {
