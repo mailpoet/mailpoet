@@ -23,8 +23,8 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     expect($this->phpVersionWarning->isOutdatedPHPVersion('5.5.3'))->true();
   }
 
-  function testPHP56IsOutdated() {
-    expect($this->phpVersionWarning->isOutdatedPHPVersion('5.5.3'))->true();
+  function testPHP56IsNotOutdated() {
+    expect($this->phpVersionWarning->isOutdatedPHPVersion('5.6.3'))->false();
   }
 
   function testPHP72IsNotOutdated() {
