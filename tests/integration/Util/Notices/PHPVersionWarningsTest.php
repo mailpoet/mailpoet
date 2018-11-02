@@ -23,30 +23,24 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     expect($this->phpVersionWarning->isOutdatedPHPVersion('5.5.3'))->true();
   }
 
-  function testPHP56IsNotOutdated() {
-    expect($this->phpVersionWarning->isOutdatedPHPVersion('5.6.3'))->false();
+  function testPHP56IsOutdated() {
+    expect($this->phpVersionWarning->isOutdatedPHPVersion('5.6.3'))->true();
   }
 
   function testPHP72IsNotOutdated() {
     expect($this->phpVersionWarning->isOutdatedPHPVersion('7.2'))->false();
   }
 
-  function testItPrintsWarningFor55() {
+  function testItPrintsWarningFor56() {
     $mock = Mock::double('MailPoet\WP\Notice', [
       'displayError' => function($message, $classes, $data_notice_name) {
         return $message;
       }
     ]);
-    $warning = $this->phpVersionWarning->init('5.5.3', true);
+    $warning = $this->phpVersionWarning->init('5.6.3', true);
     $mock->verifyInvoked('displayError');
-    expect($warning)->contains('Your website is running on PHP 5.5.3');
+    expect($warning)->contains('Your website is running on PHP 5.6.3');
     expect($warning)->contains('MailPoet runs a whole lot better with version 7');
-  }
-
-
-  function testItPrintsNoWarningFor56() {
-    $warning = $this->phpVersionWarning->init('5.6', true);
-    expect($warning)->null();
   }
 
   function testItPrintsNoWarningFor70() {

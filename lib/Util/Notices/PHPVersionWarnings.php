@@ -17,7 +17,7 @@ class PHPVersionWarnings {
   }
 
   function isOutdatedPHPVersion($php_version) {
-    return version_compare($php_version, '5.6', '<') && !get_transient(self::OPTION_NAME);
+    return version_compare($php_version, '7.0', '<') && !get_transient(self::OPTION_NAME);
   }
 
   function display($php_version) {
