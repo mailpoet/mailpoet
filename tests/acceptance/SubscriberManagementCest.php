@@ -23,6 +23,7 @@ class SubscriberManagementCest {
     $I->cli('user import-csv --path /wp-core/wp-content/plugins/mailpoet/tests/_data/users.csv --allow-root');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
+    $I->seeNoJSErrors();
   }
 
   private function generateSingleSubscriber($new_subscriber_email, $subscriber_first_name, $subscriber_last_name) {
@@ -47,6 +48,7 @@ class SubscriberManagementCest {
     $I->fillField('#search_input', 'Alec Saunders');
     $I->click('Search');
     $I->waitForText('Alec Saunders', 10);
+    $I->seeNoJSErrors();
   }
 
   function addGlobalSubscriber(\AcceptanceTester $I) {
@@ -64,6 +66,7 @@ class SubscriberManagementCest {
     $I->fillField('#search_input', 'newglobaluser99@fakemail.fake');
     $I->click('Search');
     $I->waitForText('newglobaluser99@fakemail.fake', 10);
+    $I->seeNoJSErrors();
   }
 
   function deleteGlobalSubscriber(\AcceptanceTester $I) {
@@ -79,6 +82,7 @@ class SubscriberManagementCest {
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Restore');
     $I->amOnMailpoetPage('Subscribers');
     $I->waitForText($new_subscriber_email);
+    $I->seeNoJSErrors();
   }
 
   function addSubscriberToList(\AcceptanceTester $I) {
@@ -93,6 +97,7 @@ class SubscriberManagementCest {
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
     $I->selectOptionInSelect2('Cooking');
     $I->click('Save');
+    $I->seeNoJSErrors();
   }
 
   function deleteSubscriberFromList(\AcceptanceTester $I) {
