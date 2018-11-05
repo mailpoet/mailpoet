@@ -10,23 +10,18 @@ class SubscribeOnRegistrationPageCest {
     $I->amOnMailPoetPage('Settings');
     $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->checkOption('#settings[subscribe_on_register]');
-    //work around funky legacy code with brittle xpath selectors
-    $I->click(['xpath'=>'//*[@id="mailpoet_subscribe_in_form"]/p[3]/span/span[1]/span/ul/li/input']);
-    $I->waitForText('My First List', 5);
-    $I->fillField(['xpath'=>'//*[@id="mailpoet_subscribe_in_form"]/p[3]/span/span[1]/span/ul/li/input'], 'My First List');
-    $I->pressKey(['xpath'=>'//*[@id="mailpoet_subscribe_in_form"]/p[3]/span/span[1]/span/ul/li/input'], \WebDriverKeys::ENTER);
+    $I->selectOptionInSelect2("My First List");
     //save settings
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_form"]/p/input']);
+    $I->click('[data-automation-id="settings-submit-button"]');
     $I->logout();
     $I->amOnPage('/wp-login.php?action=register');
     $I->waitForElement(['css'=>'.registration-form-mailpoet'], 10);
-    $I->deleteSessionSnapshot('logout');
-    //log back in manually, login helper tries to load snapshot, doesn't work after logout in test above
+    //clear setting to hide select2 from subsequent tests
     $I->login();
     $I->amOnMailPoetPage('Settings');
     $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->uncheckOption('#settings[subscribe_on_register]');
     //save settings
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_form"]/p/input']);
+    $I->click('[data-automation-id="settings-submit-button"]');
   }
 }
