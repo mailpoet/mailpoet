@@ -200,6 +200,7 @@ class PostTransformer {
 
   private function getTitle($post) {
     $title = $post->post_title;
+    $top_padding = '20px';
 
     if(filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
       $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
@@ -209,6 +210,7 @@ class PostTransformer {
       $tag = $this->args['titleFormat'];
     } elseif($this->args['titleFormat'] === 'ul') {
       $tag = 'li';
+      $top_padding = '0';
     } else {
       $tag = 'h1';
     }
@@ -218,7 +220,12 @@ class PostTransformer {
     $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
     return array(
       'type' => 'text',
-      'text' => $title
+      'text' => $title,
+      'styles' => [
+        'block' => [
+          'paddingTop' => $top_padding,
+        ],
+      ]
     );
   }
 

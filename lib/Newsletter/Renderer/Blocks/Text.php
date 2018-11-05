@@ -8,6 +8,7 @@ use MailPoet\Util\pQuery\pQuery;
 class Text {
   static function render($element) {
     $html = $element['text'];
+    $padding_top = isset($element['styles']['block']['paddingTop']) ? $element['styles']['block']['paddingTop'] : '0';
     // replace &nbsp; with spaces
     $html = str_replace('&nbsp;', ' ', $html);
     $html = str_replace('\xc2\xa0', ' ', $html);
@@ -18,7 +19,7 @@ class Text {
     $html = self::removeLastLineBreak($html);
     $template = '
       <tr>
-        <td class="mailpoet_text mailpoet_padded_bottom mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
+        <td class="mailpoet_text mailpoet_padded_bottom mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;padding-top:' . $padding_top .'">
           ' . $html . '
         </td>
       </tr>';
