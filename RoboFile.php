@@ -282,6 +282,21 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('vendor/bin/codecept run integration -g failed');
   }
 
+  function containerDump() {
+    $this->say('Deleting DI Container');
+    $this->_exec('rm -f ./lib/DI/CachedContainer.php');
+    $this->say('Generating DI container cache');
+    $this->loadEnv();
+    define('ABSPATH', getenv('WP_ROOT') . '/');
+    if (!file_exists(ABSPATH . 'wp-config.php')) {
+      $this->yell('WP_ROOT env variable does not contain valid path to wordpress root.', 40, 'red');
+      exit(1);
+    }
+    require_once __DIR__ . '/vendor/autoload.php';
+    $container_factory = new \MailPoet\DI\ContainerFactory();
+    $container_factory->dumpContainer();
+  }
+
   function qa() {
     $collection = $this->collectionBuilder();
     $collection->addCode(array($this, 'qaLint'));

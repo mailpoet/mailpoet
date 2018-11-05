@@ -22,23 +22,18 @@ class Track {
     self::ACTION_CLICK,
     self::ACTION_OPEN
   );
-  public $data;
   public $permissions = array(
     'global' => AccessControl::NO_ACCESS_RESTRICTION
   );
 
-  function __construct($data) {
-    $this->data = $this->_processTrackData($data);
-  }
-
-  function click() {
+  function click($data) {
     $click_event = new Clicks();
-    return $click_event->track($this->data);
+    return $click_event->track($this->_processTrackData($data));
   }
 
-  function open() {
+  function open($data) {
     $open_event = new Opens();
-    return $open_event->track($this->data);
+    return $open_event->track($this->_processTrackData($data));
   }
 
   function _processTrackData($data) {
@@ -82,7 +77,7 @@ class Track {
       false;
   }
 
-  private function terminate($code) {
+  function terminate($code) {
     status_header($code);
     get_template_part((string)$code);
     exit;

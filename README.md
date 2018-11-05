@@ -41,6 +41,8 @@ $ ./do compile:all
 # Frameworks and libraries
 
 - [Paris ORM](https://github.com/j4mie/paris).
+- [Symfony/dependency-injection](https://github.com/symfony/dependency-injection) ([docs for 3.4](https://symfony.com/doc/3.4/components/dependency_injection.html)).
+- [Mozart](https://github.com/coenjacobs/mozart) for moving dependencies into MP namespace
 - [Twig](https://twig.symfony.com/) and [Handlebars](https://handlebarsjs.com/) are used for templates rendering.
 - [Monolog](https://seldaek.github.io/monolog/) is used for logging.
 - [Robo](https://robo.li/) is used to write and run workflow commands.
@@ -94,9 +96,22 @@ $ ./do delete:docker      # stop and remove all running docker containers.
 $ ./do qa:lint             # PHP code linter.
 $ ./do qa:lint:javascript  # JS code linter.
 $ ./do qa                  # PHP and JS linters.
+
+$ ./do container:dump      # Generates DI container cache.
 ```
 
 # Coding and Testing
+
+## DI
+
+We use Symfony/dependency-injection container. Container configuration can be found in `libs/DI/ContainerFactory.php`
+The container is configured and used with minimum sub-dependencies to keep final package size small.
+You can check [the docs](https://symfony.com/doc/3.4/components/dependency_injection.html) to learn more about Symfony Container.
+
+## Mozart
+
+We use Mozart plugin for composer to prevent plugin libraries conflicts in PHP. Two plugins may be using different versions of a library. Mozart prefix dependencies namespaces and moves them into `libs\Dependencies` directory.
+Dependencies handled by Mozart are configured in extra configuration file `mozart/composer.json`. Installation and processing is triggered in post scripts of the main `composer.json` file.
 
 ## i18n
 

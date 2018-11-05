@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Test\Router\Endpoints;
 
-use AspectMock\Test as Mock;
+use Codeception\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
@@ -74,9 +74,10 @@ class TrackTest extends \MailPoetTest {
       )
     );
     $data->subscriber->email = 'random@email.com';
-    $track = Mock::double($this->track, array('terminate' => null));
+    $track = Stub::make(new Track(), ['terminate' => function($code) {
+      expect($code)->equals(403);
+    }]);
     $track->_validateTrackData($data);
-    $track->verifyInvokedOnce('terminate', array(403));
   }
 
   function testItFailsWhenSubscriberIsNotOnProcessedList() {

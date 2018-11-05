@@ -5,7 +5,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer global require --optimize-autoloader "hirak/prestissimo"
 
 WORKDIR /wp-core/wp-content/plugins/mailpoet
-ENV WP_TEST_PATH=/wp-core
+ENV WP_ROOT=/wp-core
 
 ADD docker-entrypoint.sh /
 

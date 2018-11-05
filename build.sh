@@ -22,10 +22,18 @@ test -d node_modules && rm -rf node_modules
 npm install
 ./do compile:all --env production
 
+# Dependency injection container cache.
+echo '[BUILD] Building DI Container cache'
+./composer.phar install
+./do container:dump
+
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
 test -d vendor && rm -rf vendor
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
+
+echo '[BUILD] Fetching mozart managed production libraries'
+./composer.phar install --no-dev --prefer-dist --working-dir=./mozart/
 
 # Copy release folders.
 echo '[BUILD] Copying release folders'

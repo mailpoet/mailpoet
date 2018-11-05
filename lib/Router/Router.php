@@ -3,6 +3,7 @@
 namespace MailPoet\Router;
 
 use MailPoet\Config\AccessControl;
+use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -12,11 +13,13 @@ class Router {
   public $endpoint;
   public $action;
   public $data;
+  /** @var Container */
+  private $container;
   const NAME = 'mailpoet_router';
   const RESPONSE_ERROR = 404;
   const RESPONE_FORBIDDEN = 403;
 
-  function __construct(AccessControl $access_control, $api_data = false) {
+  function __construct(AccessControl $access_control, Container $container, $api_data = false) {
     $api_data = ($api_data) ? $api_data : $_GET;
     $this->api_request = isset($api_data[self::NAME]);
     $this->endpoint = isset($api_data['endpoint']) ?
@@ -29,15 +32,19 @@ class Router {
       self::decodeRequestData($api_data['data']) :
       array();
     $this->access_control = $access_control;
+    $this->container = $container;
   }
 
   function init() {
-    $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
     if(!$this->api_request) return;
+    $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
+
     if(!$this->endpoint || !class_exists($endpoint_class)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint', 'mailpoet'));
     }
-    $endpoint = new $endpoint_class($this->data, $this->access_control);
+
+    $endpoint = $this->container->get($endpoint_class);
+
     if(!method_exists($endpoint, $this->endpoint_action) || !in_array($this->endpoint_action, $endpoint->allowed_actions)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action', 'mailpoet'));
     }
@@ -46,10 +53,11 @@ class Router {
     }
     do_action('mailpoet_conflict_resolver_router_url_query_parameters');
     return call_user_func(
-      array(
+      [
         $endpoint,
-        $this->endpoint_action
-      )
+        $this->endpoint_action,
+      ],
+      $this->data
     );
   }
 

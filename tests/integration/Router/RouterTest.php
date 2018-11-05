@@ -5,6 +5,9 @@ namespace MailPoet\Test\Router;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
+use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
+use MailPoet\DI\ContainerFactory;
+use MailPoet\Router\Endpoints\RouterTestMockEndpoint;
 use MailPoet\Router\Router;
 
 require_once('RouterTestMockEndpoint.php');
@@ -12,6 +15,8 @@ require_once('RouterTestMockEndpoint.php');
 class RouterTest extends \MailPoetTest {
   public $access_control;
   public $router_data;
+  /** @var Container */
+  private $container;
 
   function _before() {
     $this->router_data = array(
@@ -21,7 +26,11 @@ class RouterTest extends \MailPoetTest {
       'data' => base64_encode(json_encode(array('data' => 'dummy data')))
     );
     $this->access_control = new AccessControl();
-    $this->router = new Router($this->access_control, $this->router_data);
+    $container_factory = new ContainerFactory(true);
+    $this->container = $container_factory->createContainer();
+    $this->container->register(RouterTestMockEndpoint::class)->setPublic(true);
+    $this->container->compile();
+    $this->router = new Router($this->access_control, $this->container, $this->router_data);
   }
 
   function testItCanGetAPIDataFromGetRequest() {
@@ -29,7 +38,7 @@ class RouterTest extends \MailPoetTest {
     $url = 'http://example.com/?' . Router::NAME . '&endpoint=view_in_browser&action=view&data='
       . base64_encode(json_encode($data));
     parse_str(parse_url($url, PHP_URL_QUERY), $_GET);
-    $router = new Router($this->access_control);
+    $router = new Router($this->access_control, $this->container);
     expect($router->api_request)->equals(true);
     expect($router->endpoint)->equals('viewInBrowser');
     expect($router->endpoint_action)->equals('view');
@@ -41,7 +50,7 @@ class RouterTest extends \MailPoetTest {
     unset($router_data[Router::NAME]);
     $router = Stub::construct(
       '\MailPoet\Router\Router',
-      array($this->access_control, $router_data)
+      array($this->access_control, $this->container, $router_data)
     );
     $result = $router->init();
     expect($result)->null();
@@ -52,7 +61,7 @@ class RouterTest extends \MailPoetTest {
     $router_data['endpoint'] = 'invalid_endpoint';
     $router = Stub::construct(
       '\MailPoet\Router\Router',
-      array($this->access_control, $router_data),
+      array($this->access_control, $this->container, $router_data),
       array(
         'terminateRequest' => function($code, $error) {
           return array(
@@ -76,7 +85,7 @@ class RouterTest extends \MailPoetTest {
     $router_data['action'] = 'invalid_action';
     $router = Stub::construct(
       '\MailPoet\Router\Router',
-      array($this->access_control, $router_data),
+      array($this->access_control, $this->container, $router_data),
       array(
         'terminateRequest' => function($code, $error) {
           return array(
@@ -164,7 +173,7 @@ class RouterTest extends \MailPoetTest {
   function testItValidatesPermissionBeforeProcessingEndpointAction() {
     $router = Stub::construct(
       '\MailPoet\Router\Router',
-      array($this->access_control, $this->router_data),
+      array($this->access_control, $this->container, $this->router_data),
       array(
         'validatePermissions' => function($action, $permissions) {
           expect($action)->equals($this->router_data['action']);
@@ -186,7 +195,7 @@ class RouterTest extends \MailPoetTest {
   function testItReturnsForbiddenResponseWhenPermissionFailsValidation() {
     $router = Stub::construct(
       '\MailPoet\Router\Router',
-      array($this->access_control, $this->router_data),
+      array($this->access_control, $this->container, $this->router_data),
       array(
         'validatePermissions' => false,
         'terminateRequest' => function($code, $error) {
