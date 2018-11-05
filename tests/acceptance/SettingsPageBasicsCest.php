@@ -19,7 +19,7 @@ class SettingsPageBasicsCest {
     $I->waitForText('MailPoet Sending Service', 10);
     $I->seeNoJSErrors();
     //Advanced Tab
-    $I->click('[data-automation-id="settings_advanced_tab"]');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
     $I->waitForText('Bounce email address');
     $I->seeNoJSErrors();
     //Activation Key Tab
@@ -64,6 +64,6 @@ class SettingsPageBasicsCest {
     $I->amOnPage('/');
     $I->waitForText($post_title, 10);
     $I->click($post_title);
-    $I->dontSee(['css'=>'.comment-form-mailpoet']);    
+    $I->dontSee("Yes, add me to your mailing list");    
   }
 }
