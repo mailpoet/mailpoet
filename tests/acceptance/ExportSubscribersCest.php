@@ -19,10 +19,10 @@ class ExportSubscribersCest {
     $I->login();
     $I->amOnMailPoetPage('Subscribers');
     //import unique user list to export, so we have exact data regardless of other tests
-    $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[2]']);
+    $I->click('[data-automation-id="import_subscribers_button"]');
     $I->waitForText('Back to Subscribers', 10);
     //select upload file as import method, import CSV
-    $I->click(['css'=>'#select_method > label:nth-of-type(2)']);
+    $I->click('[data-automation-id="upload_subscriber_csv_file"]');
     $I->attachFile(['css'=>'#file_local'], 'MailPoetExportList.csv');
     $I->click(['xpath'=>'//*[@id="method_file"]/div/table/tbody/tr[2]/th/a']);
     $I->waitForText('Jokūbas', 25);
