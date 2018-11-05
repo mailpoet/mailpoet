@@ -124,7 +124,7 @@ class SegmentsTest extends \MailPoetTest {
   }
 
   function testItCanBulkDeleteSegments() {
-    $subscriber_segment = SubscriberSegment::create(array(
+    $subscriber_segment = SubscriberSegment::createOrUpdate(array(
       'subscriber_id' => 1,
       'segment_id' => $this->segment_1->id,
       'status' => Subscriber::STATUS_SUBSCRIBED
