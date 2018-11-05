@@ -11,19 +11,19 @@ class SettingsPageBasicsCest {
     $I->waitForText('Basics', 10);
     $I->seeNoJSErrors();
     //Sign-up Confirmation Tab
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_tabs"]/a[2]']);
+    $I->click('[data-automation-id="signup_settings_tab"]');
     $I->waitForText('Enable sign-up confirmation', 10);
     $I->seeNoJSErrors();
     //Send With Tab
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_tabs"]/a[3]']);
+    $I->click('[data-automation-id="send_with_settings_tab"]');
     $I->waitForText('MailPoet Sending Service', 10);
     $I->seeNoJSErrors();
     //Advanced Tab
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_tabs"]/a[4]']);
+    $I->click('[data-automation-id="settings_addvanced_tab"]');
     $I->waitForText('Bounce email address');
     $I->seeNoJSErrors();
     //Activation Key Tab
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_tabs"]/a[5]']);
+    $I->click('[data-automation-id="activation_settings_tab"]');
     $I->waitForText('Activation Key', 10);
     $I->seeNoJSErrors();
   }
@@ -37,7 +37,7 @@ class SettingsPageBasicsCest {
     $I->fillField(['name' => 'reply_to[name]'], 'Reply Name');
     $I->fillField(['name' => 'reply_to[address]'], 'reply@fake.fake');
     //save settings
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_form"]/p/input']);
+    $I->click('[data-automation-id="settings-submit-button"]');
     $I->waitForText('Settings saved', 10);
   }
   function allowSubscribeInComments(\AcceptanceTester $I) {
@@ -49,7 +49,7 @@ class SettingsPageBasicsCest {
     $I->checkOption('#settings[subscribe_on_comment]');
     $I->selectOptionInSelect2('My First List');
     //save settings
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_form"]/p/input']);
+    $I->click('[data-automation-id="settings-submit-button"]');
     $I->amOnPage('/');
     $I->waitForText($post_title, 10);
     $I->click($post_title);
@@ -59,6 +59,6 @@ class SettingsPageBasicsCest {
     $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->uncheckOption('#settings[subscribe_on_comment]');
     //save settings
-    $I->click(['xpath'=>'//*[@id="mailpoet_settings_form"]/p/input']);
+    $I->click('[data-automation-id="settings-submit-button"]');
   }
 }
