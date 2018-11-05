@@ -1,5 +1,7 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
 import { Link } from 'react-router';
+import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
@@ -157,8 +159,17 @@ const newsletterActions = [
   },
 ];
 
-const NewsletterListNotification = React.createClass({
+const NewsletterListNotification = createReactClass({ // eslint-disable-line react/prefer-es6-class
+
+  displayName: 'NewsletterListNotification',
+
+  propTypes: {
+    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  },
+
   mixins: [MailerMixin, CronMixin],
+
   updateStatus: function updateStatus(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -185,6 +196,7 @@ const NewsletterListNotification = React.createClass({
       e.target.value = response.status;
     });
   },
+
   renderStatus: function renderStatus(newsletter) {
     return (
       <select
@@ -197,6 +209,7 @@ const NewsletterListNotification = React.createClass({
       </select>
     );
   },
+
   renderSettings: function renderSettings(newsletter) {
     let sendingFrequency;
 
@@ -265,6 +278,7 @@ const NewsletterListNotification = React.createClass({
       </span>
     );
   },
+
   renderHistoryLink: function renderHistoryLink(newsletter) {
     const childrenCount = Number((newsletter.children_count));
     if (childrenCount === 0) {
@@ -278,6 +292,7 @@ const NewsletterListNotification = React.createClass({
       >{ MailPoet.I18n.t('viewHistory') }</Link>
     );
   },
+
   renderItem: function renderItem(newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
@@ -311,6 +326,7 @@ const NewsletterListNotification = React.createClass({
       </div>
     );
   },
+
   render: function render() {
     return (
       <div>

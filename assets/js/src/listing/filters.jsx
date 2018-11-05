@@ -1,32 +1,10 @@
 import React from 'react';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 
-const ListingFilters = React.createClass({
-  handleFilterAction: function handleFilterAction() {
-    const filters = {};
-    this.getAvailableFilters().forEach((filter, i) => {
-      filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
-    });
-    if (this.props.onBeforeSelectFilter) {
-      this.props.onBeforeSelectFilter(filters);
-    }
-    return this.props.onSelectFilter(filters);
-  },
-  handleEmptyTrash: function handleEmptyTrash() {
-    return this.props.onEmptyTrash();
-  },
-  getAvailableFilters: function getAvailableFilters() {
-    const filters = this.props.filters;
-    return Object.keys(filters).filter(filter => !(
-      filters[filter].length === 0
-        || (
-          filters[filter].length === 1
-          && !filters[filter][0].value
-        )
-    ));
-  },
-  componentDidUpdate: function componentDidUpdate() {
+class ListingFilters extends React.Component {
+  componentDidUpdate() {
     const selectedFilters = this.props.filter;
     this.getAvailableFilters().forEach(
       (filter, i) => {
@@ -37,8 +15,33 @@ const ListingFilters = React.createClass({
         }
       }
     );
-  },
-  render: function render() {
+  }
+
+  getAvailableFilters = () => {
+    const filters = this.props.filters;
+    return Object.keys(filters).filter(filter => !(
+      filters[filter].length === 0
+        || (
+          filters[filter].length === 1
+          && !filters[filter][0].value
+        )
+    ));
+  };
+
+  handleEmptyTrash = () => this.props.onEmptyTrash();
+
+  handleFilterAction = () => {
+    const filters = {};
+    this.getAvailableFilters().forEach((filter, i) => {
+      filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
+    });
+    if (this.props.onBeforeSelectFilter) {
+      this.props.onBeforeSelectFilter(filters);
+    }
+    return this.props.onSelectFilter(filters);
+  };
+
+  render() {
     const filters = this.props.filters;
     const availableFilters = this.getAvailableFilters()
       .map((filter, i) => (
@@ -89,7 +92,23 @@ const ListingFilters = React.createClass({
         { emptyTrash }
       </div>
     );
-  },
-});
+  }
+}
+
+ListingFilters.propTypes = {
+  filters: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array,
+  ]).isRequired,
+  onEmptyTrash: PropTypes.func.isRequired,
+  onBeforeSelectFilter: PropTypes.func,
+  onSelectFilter: PropTypes.func.isRequired,
+  filter: PropTypes.objectOf(PropTypes.string).isRequired,
+  group: PropTypes.string.isRequired,
+};
+
+ListingFilters.defaultProps = {
+  onBeforeSelectFilter: undefined,
+};
 
 export default ListingFilters;

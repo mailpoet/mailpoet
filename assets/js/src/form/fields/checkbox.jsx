@@ -1,11 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-const FormFieldCheckbox = React.createClass({
-  onValueChange: function onValueChange(e) {
+class FormFieldCheckbox extends React.Component {
+  onValueChange = (e) => {
     e.target.value = this.checkbox.checked ? '1' : '0';
     return this.props.onValueChange(e);
-  },
-  render: function render() {
+  };
+
+  render() {
     if (this.props.field.values === undefined) {
       return false;
     }
@@ -37,7 +39,16 @@ const FormFieldCheckbox = React.createClass({
         { options }
       </div>
     );
-  },
-});
+  }
+}
+
+FormFieldCheckbox.propTypes = {
+  onValueChange: PropTypes.func.isRequired,
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    values: PropTypes.object.isRequired,
+  }).isRequired,
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 export default FormFieldCheckbox;

@@ -1,4 +1,5 @@
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 import React from 'react';
 import KeyValueTable from 'common/key_value_table.jsx';
 import TasksList from './tasks_list/tasks_list.jsx';
@@ -58,23 +59,23 @@ const QueueStatus = (props) => {
 };
 
 QueueStatus.propTypes = {
-  status_data: React.PropTypes.shape({
-    status: React.PropTypes.string,
-    started: React.PropTypes.number,
-    sent: React.PropTypes.number,
-    retry_attempt: React.PropTypes.number,
-    retry_at: React.PropTypes.number,
-    error: React.PropTypes.shape({
-      operation: React.PropTypes.string,
-      error_message: React.PropTypes.string,
+  status_data: PropTypes.shape({
+    status: PropTypes.string,
+    started: PropTypes.number,
+    sent: PropTypes.number,
+    retry_attempt: PropTypes.number,
+    retry_at: PropTypes.number,
+    error: PropTypes.shape({
+      operation: PropTypes.string,
+      error_message: PropTypes.string,
     }),
-    tasksStatusCounts: React.PropTypes.shape({
-      completed: React.PropTypes.number.isRequired,
-      running: React.PropTypes.number.isRequired,
-      paused: React.PropTypes.number.isRequired,
-      scheduled: React.PropTypes.number.isRequired,
+    tasksStatusCounts: PropTypes.shape({
+      completed: PropTypes.number.isRequired,
+      running: PropTypes.number.isRequired,
+      paused: PropTypes.number.isRequired,
+      scheduled: PropTypes.number.isRequired,
     }).isRequired,
-    latestTasks: React.PropTypes.arrayOf(TasksListDataRow.propTypes.task).isRequired,
+    latestTasks: PropTypes.arrayOf(TasksListDataRow.propTypes.task).isRequired,
   }).isRequired,
 };
 

@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 import Selection from 'form/fields/selection.jsx';
@@ -242,8 +243,8 @@ const itemActions = [
   },
 ];
 
-const SubscriberList = React.createClass({
-  getSegmentFromId: function getSegmentFromId(segmentId) {
+class SubscriberList extends React.Component {
+  getSegmentFromId = (segmentId) => {
     let result = false;
     window.mailpoet_segments.forEach((segment) => {
       if (segment.id === segmentId) {
@@ -251,8 +252,9 @@ const SubscriberList = React.createClass({
       }
     });
     return result;
-  },
-  renderItem: function renderItem(subscriber, actions) {
+  };
+
+  renderItem = (subscriber, actions) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -333,8 +335,9 @@ const SubscriberList = React.createClass({
         </td>
       </div>
     );
-  },
-  render: function render() {
+  };
+
+  render() {
     return (
       <div>
         <h1 className="title">
@@ -368,7 +371,12 @@ const SubscriberList = React.createClass({
         />
       </div>
     );
-  },
-});
+  }
+}
+
+SubscriberList.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 module.exports = SubscriberList;

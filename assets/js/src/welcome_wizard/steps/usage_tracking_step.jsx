@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
@@ -48,8 +49,8 @@ const WelcomeWizardUsageTrackingStep = props => (
 module.exports = WelcomeWizardUsageTrackingStep;
 
 WelcomeWizardUsageTrackingStep.propTypes = {
-  allow_action: React.PropTypes.func.isRequired,
-  allow_text: React.PropTypes.string.isRequired,
-  skip_action: React.PropTypes.func.isRequired,
-  loading: React.PropTypes.bool.isRequired,
+  allow_action: PropTypes.func.isRequired,
+  allow_text: PropTypes.string.isRequired,
+  skip_action: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 };

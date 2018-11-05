@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router';
 import classNames from 'classnames';
@@ -44,7 +45,7 @@ function Tabs(props) {
   );
 }
 
-Tabs.propTypes = { tab: React.PropTypes.string };
+Tabs.propTypes = { tab: PropTypes.string };
 Tabs.defaultProps = { tab: 'knowledgeBase' };
 
 module.exports = Tabs;

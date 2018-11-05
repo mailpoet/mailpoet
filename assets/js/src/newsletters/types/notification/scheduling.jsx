@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import React from 'react';
+import PropTypes from 'prop-types';
 import Select from 'form/fields/select.jsx';
 import {
   intervalValues,
@@ -34,11 +35,10 @@ const nthWeekDayField = {
   values: nthWeekDayValues,
 };
 
-const NotificationScheduling = React.createClass({
-  getCurrentValue: function getCurrentValue() {
-    return (this.props.item[this.props.field.name] || {});
-  },
-  handleValueChange: function handleValueChange(name, value) {
+class NotificationScheduling extends React.Component {
+  getCurrentValue = () => this.props.item[this.props.field.name] || {};
+
+  handleValueChange = (name, value) => {
     const oldValue = this.getCurrentValue();
     const newValue = {};
 
@@ -50,38 +50,15 @@ const NotificationScheduling = React.createClass({
         value: _.extend({}, oldValue, newValue),
       },
     });
-  },
-  handleIntervalChange: function handleIntervalChange(event) {
-    return this.handleValueChange(
-      'intervalType',
-      event.target.value
-    );
-  },
-  handleTimeOfDayChange: function handleTimeOfDayChange(event) {
-    return this.handleValueChange(
-      'timeOfDay',
-      event.target.value
-    );
-  },
-  handleWeekDayChange: function handleWeekDayChange(event) {
-    return this.handleValueChange(
-      'weekDay',
-      event.target.value
-    );
-  },
-  handleMonthDayChange: function handleMonthDayChange(event) {
-    return this.handleValueChange(
-      'monthDay',
-      event.target.value
-    );
-  },
-  handleNthWeekDayChange: function handleNthWeekDayChange(event) {
-    return this.handleValueChange(
-      'nthWeekDay',
-      event.target.value
-    );
-  },
-  render: function render() {
+  };
+
+  handleIntervalChange = event => this.handleValueChange('intervalType', event.target.value);
+  handleTimeOfDayChange = event => this.handleValueChange('timeOfDay', event.target.value);
+  handleWeekDayChange = event => this.handleValueChange('weekDay', event.target.value);
+  handleMonthDayChange = event => this.handleValueChange('monthDay', event.target.value);
+  handleNthWeekDayChange = event => this.handleValueChange('nthWeekDay', event.target.value);
+
+  render() {
     const value = this.getCurrentValue();
     let timeOfDaySelection;
     let weekDaySelection;
@@ -143,7 +120,15 @@ const NotificationScheduling = React.createClass({
         {timeOfDaySelection}
       </div>
     );
-  },
-});
+  }
+}
+
+NotificationScheduling.propTypes = {
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  field: PropTypes.shape({
+    name: PropTypes.string,
+  }).isRequired,
+  onValueChange: PropTypes.func.isRequired,
+};
 
 module.exports = NotificationScheduling;

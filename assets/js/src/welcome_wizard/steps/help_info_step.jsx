@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
@@ -62,7 +63,7 @@ const WelcomeWizardHelpInfoStep = props => (
 module.exports = WelcomeWizardHelpInfoStep;
 
 WelcomeWizardHelpInfoStep.propTypes = {
-  next: React.PropTypes.func.isRequired,
+  next: PropTypes.func.isRequired,
 };
 
 module.exports = WelcomeWizardHelpInfoStep;

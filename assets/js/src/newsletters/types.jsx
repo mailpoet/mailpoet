@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
@@ -5,11 +6,12 @@ import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import 'react-router';
 
-const NewsletterTypes = React.createClass({
-  contextTypes: {
-    router: React.PropTypes.object.isRequired,
-  },
-  setupNewsletter: function setupNewsletter(type) {
+class NewsletterTypes extends React.Component {
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  };
+
+  setupNewsletter = (type) => {
     if (type !== undefined) {
       this.context.router.push(`/new/${type}`);
       MailPoet.trackEvent('Emails > Type selected', {
@@ -17,8 +19,32 @@ const NewsletterTypes = React.createClass({
         'Email type': type,
       });
     }
-  },
-  createNewsletter: function createNewsletter(type) {
+  };
+
+  getAutomaticEmails = () => {
+    if (!window.mailpoet_automatic_emails) return [];
+
+    return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
+      const email = automaticEmail;
+      const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
+      email.action = (() => (
+        <div>
+          <a
+            className="button button-primary"
+            onClick={onClick}
+            role="button"
+            tabIndex={0}
+          >
+            { MailPoet.I18n.t('setUp') }
+          </a>
+        </div>
+      ))();
+
+      return email;
+    });
+  };
+
+  createNewsletter = (type) => {
     MailPoet.trackEvent('Emails > Type selected', {
       'MailPoet Free version': window.mailpoet_version,
       'Email type': type,
@@ -41,30 +67,9 @@ const NewsletterTypes = React.createClass({
         );
       }
     });
-  },
-  getAutomaticEmails: function getAutomaticEmails() {
-    if (!window.mailpoet_automatic_emails) return [];
+  };
 
-    return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
-      const email = automaticEmail;
-      const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
-      email.action = (() => (
-        <div>
-          <a
-            className="button button-primary"
-            onClick={onClick}
-            role="button"
-            tabIndex={0}
-          >
-            { MailPoet.I18n.t('setUp') }
-          </a>
-        </div>
-      ))();
-
-      return email;
-    });
-  },
-  render: function render() {
+  render() {
     const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');
     const createNotificationNewsletter = _.partial(this.setupNewsletter, 'notification');
     const createWelcomeNewsletter = _.partial(this.setupNewsletter, 'welcome');
@@ -169,7 +174,7 @@ const NewsletterTypes = React.createClass({
         </ul>
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = NewsletterTypes;

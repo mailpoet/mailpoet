@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
@@ -10,27 +11,28 @@ const field = {
   component: Scheduling,
 };
 
-const NewsletterNotification = React.createClass({
-  contextTypes: {
-    router: React.PropTypes.object.isRequired,
-  },
-  getInitialState: function getInitialState() {
-    return {
-      options: {
-        intervalType: 'daily',
-        timeOfDay: 0,
-        weekDay: 1,
-        monthDay: 0,
-        nthWeekDay: 1,
-      },
-    };
-  },
-  handleValueChange: function handleValueChange(event) {
+class NewsletterNotification extends React.Component {
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  };
+
+  state = {
+    options: {
+      intervalType: 'daily',
+      timeOfDay: 0,
+      weekDay: 1,
+      monthDay: 0,
+      nthWeekDay: 1,
+    },
+  };
+
+  handleValueChange = (event) => {
     const state = this.state;
     state[event.target.name] = event.target.value;
     this.setState(state);
-  },
-  handleNext: function handleNext() {
+  };
+
+  handleNext = () => {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -49,11 +51,13 @@ const NewsletterNotification = React.createClass({
         );
       }
     });
-  },
-  showTemplateSelection: function showTemplateSelection(newsletterId) {
+  };
+
+  showTemplateSelection = (newsletterId) => {
     this.context.router.push(`/template/${newsletterId}`);
-  },
-  render: function render() {
+  };
+
+  render() {
     return (
       <div>
         <h1>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h1>
@@ -77,8 +81,8 @@ const NewsletterNotification = React.createClass({
         </p>
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = NewsletterNotification;
 

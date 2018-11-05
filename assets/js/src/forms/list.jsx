@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
+import PropTypes from 'prop-types';
 import Listing from '../listing/listing.jsx';
 
 const columns = [
@@ -122,8 +123,8 @@ const itemActions = [
   },
 ];
 
-const FormList = React.createClass({
-  createForm() {
+class FormList extends React.Component {
+  createForm = () => {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'forms',
@@ -138,8 +139,9 @@ const FormList = React.createClass({
         );
       }
     });
-  },
-  renderItem(form, actions) {
+  };
+
+  renderItem = (form, actions) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -177,7 +179,8 @@ const FormList = React.createClass({
         </td>
       </div>
     );
-  },
+  };
+
   render() {
     return (
       <div>
@@ -204,7 +207,12 @@ const FormList = React.createClass({
         />
       </div>
     );
-  },
-});
+  }
+}
+
+FormList.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 module.exports = FormList;

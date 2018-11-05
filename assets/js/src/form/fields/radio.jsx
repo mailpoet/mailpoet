@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-const FormFieldRadio = React.createClass({
-  render: function render() {
+class FormFieldRadio extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
+  render() {
     if (this.props.field.values === undefined) {
       return false;
     }
@@ -30,7 +31,23 @@ const FormFieldRadio = React.createClass({
         { options }
       </div>
     );
+  }
+}
+
+FormFieldRadio.propTypes = {
+  onValueChange: PropTypes.func,
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    values: PropTypes.object,
+  }).isRequired,
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
+
+FormFieldRadio.defaultProps = {
+  onValueChange: function onValueChange() {
+    // no-op
   },
-});
+};
+
 
 export default FormFieldRadio;

@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-const FormFieldText = React.createClass({
+class FormFieldText extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
   render() {
     const name = this.props.field.name || null;
     const item = this.props.item || {};
@@ -51,7 +52,31 @@ const FormFieldText = React.createClass({
         {...this.props.field.validation}
       />
     );
+  }
+}
+
+FormFieldText.propTypes = {
+  onValueChange: PropTypes.func,
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    defaultValue: PropTypes.string,
+    id: PropTypes.string,
+    class: PropTypes.string,
+    size: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
+    disabled: PropTypes.func,
+    placeholder: PropTypes.string,
+    validation: PropTypes.object,
+  }).isRequired,
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
+
+FormFieldText.defaultProps = {
+  onValueChange: function onValueChange() {
+    // no-op
   },
-});
+};
 
 module.exports = FormFieldText;

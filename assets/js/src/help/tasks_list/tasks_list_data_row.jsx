@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
@@ -36,19 +37,19 @@ const TasksListDataRow = props => (
 );
 
 TasksListDataRow.propTypes = {
-  show_scheduled_at: React.PropTypes.bool,
-  task: React.PropTypes.shape({
-    id: React.PropTypes.number.isRequired,
-    type: React.PropTypes.string.isRequired,
-    priority: React.PropTypes.number.isRequired,
-    updated_at: React.PropTypes.number.isRequired,
-    scheduled_at: React.PropTypes.number,
-    status: React.PropTypes.string,
-    newsletter: React.PropTypes.shape({
-      newsletter_id: React.PropTypes.number.isRequired,
-      queue_id: React.PropTypes.number.isRequired,
-      preview_url: React.PropTypes.string.isRequired,
-      subject: React.PropTypes.string,
+  show_scheduled_at: PropTypes.bool,
+  task: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    type: PropTypes.string.isRequired,
+    priority: PropTypes.number.isRequired,
+    updated_at: PropTypes.number.isRequired,
+    scheduled_at: PropTypes.number,
+    status: PropTypes.string,
+    newsletter: PropTypes.shape({
+      newsletter_id: PropTypes.number.isRequired,
+      queue_id: PropTypes.number.isRequired,
+      preview_url: PropTypes.string.isRequired,
+      subject: PropTypes.string,
     }),
   }).isRequired,
 };

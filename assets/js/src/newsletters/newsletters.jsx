@@ -4,6 +4,7 @@ import { Router, Route, IndexRedirect, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
+import PropTypes from 'prop-types';
 
 import NewsletterTypes from 'newsletters/types.jsx';
 import NewsletterTemplates from 'newsletters/templates.jsx';
@@ -19,11 +20,15 @@ import NewsletterListNotificationHistory from 'newsletters/listings/notification
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
-const App = React.createClass({
+class App extends React.Component {
   render() {
     return this.props.children;
-  },
-});
+  }
+}
+
+App.propTypes = {
+  children: PropTypes.element.isRequired,
+};
 
 const container = document.getElementById('newsletters_container');
 

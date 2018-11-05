@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import WelcomeWizardHeader from './header.jsx';
@@ -136,11 +137,11 @@ class WelcomeWizardStepsController extends React.Component {
 }
 
 WelcomeWizardStepsController.propTypes = {
-  params: React.PropTypes.shape({
-    step: React.PropTypes.string.isRequired,
+  params: PropTypes.shape({
+    step: PropTypes.string.isRequired,
   }).isRequired,
-  router: React.PropTypes.shape({
-    push: React.PropTypes.func.isRequired,
+  router: PropTypes.shape({
+    push: PropTypes.func.isRequired,
   }).isRequired,
 };
 

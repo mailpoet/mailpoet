@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
@@ -12,7 +13,7 @@ const WelcomeWizardMigratedUserStep = props => (
 );
 
 WelcomeWizardMigratedUserStep.propTypes = {
-  next: React.PropTypes.func.isRequired,
+  next: PropTypes.func.isRequired,
 };
 
 module.exports = WelcomeWizardMigratedUserStep;

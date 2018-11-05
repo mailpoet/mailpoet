@@ -36,7 +36,10 @@ FormFieldDateYear.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onValueChange: PropTypes.func.isRequired,
-  year: PropTypes.string.isRequired,
+  year: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
 };
 
 function FormFieldDateMonth(props) {
@@ -71,7 +74,10 @@ FormFieldDateMonth.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onValueChange: PropTypes.func.isRequired,
-  month: PropTypes.string.isRequired,
+  month: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
   monthNames: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
@@ -108,7 +114,10 @@ FormFieldDateDay.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onValueChange: PropTypes.func.isRequired,
-  day: PropTypes.string.isRequired,
+  day: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
 };
 
 class FormFieldDate extends React.Component {

@@ -1,15 +1,14 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 
-const NewsletterStandard = React.createClass({
-  contextTypes: {
-    router: React.PropTypes.object.isRequired,
-  },
-  showTemplateSelection: function showTemplateSelection(newsletterId) {
-    this.context.router.push(`/template/${newsletterId}`);
-  },
-  componentDidMount: function componentDidMount() {
+class NewsletterStandard extends React.Component {
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  };
+
+  componentDidMount() {
     // No options for this type, create a newsletter upon mounting
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -28,16 +27,21 @@ const NewsletterStandard = React.createClass({
         );
       }
     });
-  },
-  render: function render() {
+  }
+
+  showTemplateSelection = (newsletterId) => {
+    this.context.router.push(`/template/${newsletterId}`);
+  };
+
+  render() {
     return (
       <div>
         <h1>{MailPoet.I18n.t('regularNewsletterTypeTitle')}</h1>
         <Breadcrumb step="type" />
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = NewsletterStandard;
 

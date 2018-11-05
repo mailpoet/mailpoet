@@ -7,9 +7,10 @@ import FormFieldCheckbox from 'form/fields/checkbox.jsx';
 import FormFieldSelection from 'form/fields/selection.jsx';
 import FormFieldDate from 'form/fields/date.jsx';
 import jQuery from 'jquery';
+import PropTypes from 'prop-types';
 
-const FormField = React.createClass({
-  renderField: function renderField(data, inline = false) {
+class FormField extends React.Component {
+  renderField = (data, inline = false) => {
     let description = false;
     if (data.field.description) {
       description = (
@@ -76,8 +77,9 @@ const FormField = React.createClass({
         { description }
       </div>
     );
-  },
-  render: function render() {
+  };
+
+  render() {
     let field = false;
 
     if (this.props.field.fields !== undefined) {
@@ -113,7 +115,29 @@ const FormField = React.createClass({
         </td>
       </tr>
     );
+  }
+}
+
+FormField.propTypes = {
+  onValueChange: PropTypes.func,
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    values: PropTypes.object,
+    tip: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string,
+    ]),
+    label: PropTypes.string,
+    fields: PropTypes.array,
+    description: PropTypes.string,
+  }).isRequired,
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
+
+FormField.defaultProps = {
+  onValueChange: function onValueChange() {
+    // no-op
   },
-});
+};
 
 export default FormField;

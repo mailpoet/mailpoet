@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 const SteppedProgressBar = (props) => {
@@ -20,8 +21,8 @@ const SteppedProgressBar = (props) => {
 };
 
 SteppedProgressBar.propTypes = {
-  steps_count: React.PropTypes.number.isRequired,
-  step: React.PropTypes.number.isRequired,
+  steps_count: PropTypes.number.isRequired,
+  step: PropTypes.number.isRequired,
 };
 
 module.exports = SteppedProgressBar;

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
@@ -35,7 +36,7 @@ const WelcomeWizardWooCommerceStep = props => (
 module.exports = WelcomeWizardWooCommerceStep;
 
 WelcomeWizardWooCommerceStep.propTypes = {
-  next: React.PropTypes.func.isRequired,
-  screenshot_src: React.PropTypes.string.isRequired,
-  loading: React.PropTypes.bool.isRequired,
+  next: PropTypes.func.isRequired,
+  screenshot_src: PropTypes.string.isRequired,
+  loading: PropTypes.bool.isRequired,
 };

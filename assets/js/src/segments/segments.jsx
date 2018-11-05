@@ -2,17 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
+import PropTypes from 'prop-types';
 
 import SegmentList from 'segments/list.jsx';
 import SegmentForm from 'segments/form.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
-const App = React.createClass({
+class App extends React.Component {
   render() {
     return this.props.children;
-  },
-});
+  }
+}
+
+App.propTypes = {
+  children: PropTypes.element.isRequired,
+};
 
 const container = document.getElementById('segments_container');
 

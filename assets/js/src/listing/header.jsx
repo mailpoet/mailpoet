@@ -1,14 +1,12 @@
 import MailPoet from 'mailpoet';
 import React from 'react';
-import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import ListingColumn from './listing_column.jsx';
 
-const ListingHeader = React.createClass({
-  handleSelectItems: function handleSelectItems() {
-    return this.props.onSelectItems(
-      this.toggle.checked
-    );
-  },
-  render: function render() {
+class ListingHeader extends React.Component {
+  handleSelectItems = () => this.props.onSelectItems(this.toggle.checked);
+
+  render() {
     const columns = this.props.columns.map((column, index) => {
       const renderColumn = column;
       renderColumn.is_primary = (index === 0);
@@ -53,49 +51,26 @@ const ListingHeader = React.createClass({
         {columns}
       </tr>
     );
-  },
-});
+  }
+}
 
-const ListingColumn = React.createClass({
-  handleSort: function handleSort() {
-    const sortBy = this.props.column.name;
-    const sortOrder = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
-    this.props.onSort(sortBy, sortOrder);
-  },
-  render: function render() {
-    const classes = classNames(
-      'manage-column',
-      { 'column-primary': this.props.column.is_primary },
-      { sortable: this.props.column.sortable },
-      this.props.column.sorted,
-      { sorted: (this.props.sort_by === this.props.column.name) }
-    );
-    let label;
+ListingHeader.propTypes = {
+  onSelectItems: PropTypes.func.isRequired,
+  onSort: PropTypes.func.isRequired,
+  columns: PropTypes.arrayOf(PropTypes.object),
+  sort_by: PropTypes.string,
+  sort_order: PropTypes.string,
+  is_selectable: PropTypes.bool.isRequired,
+  selection: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]).isRequired,
+};
 
-    if (this.props.column.sortable === true) {
-      label = (
-        <a
-          onClick={this.handleSort}
-          role="button"
-          tabIndex={0}
-        >
-          <span>{ this.props.column.label }</span>
-          <span className="sorting-indicator" />
-        </a>
-      );
-    } else {
-      label = this.props.column.label;
-    }
-    return (
-      <th
-        role="columnheader"
-        className={classes}
-        id={this.props.column.name}
-        scope="col"
-        width={this.props.column.width || null}
-      >{label}</th>
-    );
-  },
-});
+ListingHeader.defaultProps = {
+  columns: [],
+  sort_by: undefined,
+  sort_order: 'desc',
+};
 
 module.exports = ListingHeader;

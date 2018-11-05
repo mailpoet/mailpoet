@@ -3,30 +3,43 @@ import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import FormField from 'form/fields/field.jsx';
 import jQuery from 'jquery';
+import PropTypes from 'prop-types';
 
-const Form = React.createClass({
-  contextTypes: {
-    router: React.PropTypes.object.isRequired,
-  },
-  getDefaultProps: function getDefaultProps() {
-    return {
-      params: {},
-    };
-  },
-  getInitialState: function getInitialState() {
-    return {
-      loading: false,
-      errors: [],
-      item: {},
-    };
-  },
-  getValues: function getValues() {
-    return this.props.item ? this.props.item : this.state.item;
-  },
-  getErrors: function getErrors() {
-    return this.props.errors ? this.props.errors : this.state.errors;
-  },
-  componentDidMount: function componentDidMount() {
+class Form extends React.Component {
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  };
+
+  static defaultProps = {
+    params: {},
+    errors: undefined,
+    fields: undefined,
+    item: undefined,
+    onItemLoad: undefined,
+    isValid: undefined,
+    onSuccess: undefined,
+    onChange: undefined,
+    loading: false,
+    beforeFormContent: undefined,
+    afterFormContent: undefined,
+    children: undefined,
+    id: '',
+    onSubmit: undefined,
+    automationId: '',
+    messages: {
+      onUpdate: () => { /* no-op */ },
+      onCreate: () => { /* no-op */ },
+    },
+    endpoint: undefined,
+  };
+
+  state = {
+    loading: false,
+    errors: [],
+    item: {},
+  };
+
+  componentDidMount() {
     if (this.props.params.id !== undefined) {
       this.loadItem(this.props.params.id);
     } else {
@@ -36,8 +49,9 @@ const Form = React.createClass({
         });
       });
     }
-  },
-  componentWillReceiveProps: function componentWillReceiveProps(props) {
+  }
+
+  componentWillReceiveProps(props) {
     if (props.params.id === undefined) {
       setImmediate(() => {
         this.setState({
@@ -49,10 +63,16 @@ const Form = React.createClass({
         this.form.reset();
       }
     }
-  },
-  loadItem: function loadItem(id) {
+  }
+
+  getValues = () => this.props.item || this.state.item;
+
+  getErrors = () => this.props.errors || this.state.errors;
+
+  loadItem = (id) => {
     this.setState({ loading: true });
 
+    if (!this.props.endpoint) return;
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
@@ -76,8 +96,9 @@ const Form = React.createClass({
         this.context.router.push('/new');
       });
     });
-  },
-  handleSubmit: function handleSubmit(e) {
+  };
+
+  handleSubmit = (e) => {
     e.preventDefault();
 
     // handle validation
@@ -105,6 +126,8 @@ const Form = React.createClass({
       item.id = this.props.params.id;
     }
 
+    if (!this.props.endpoint) return;
+
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
@@ -129,8 +152,9 @@ const Form = React.createClass({
         this.setState({ errors: response.errors });
       }
     });
-  },
-  handleValueChange: function handleValueChange(e) {
+  };
+
+  handleValueChange = (e) => {
     if (this.props.onChange) {
       return this.props.onChange(e);
     }
@@ -143,8 +167,9 @@ const Form = React.createClass({
       item,
     });
     return true;
-  },
-  render: function render() {
+  };
+
+  render() {
     let errors;
     if (this.getErrors() !== undefined) {
       errors = this.getErrors().map(error => (
@@ -231,7 +256,32 @@ const Form = React.createClass({
         { afterFormContent }
       </div>
     );
-  },
-});
+  }
+}
+
+Form.propTypes = {
+  params: PropTypes.shape({
+    id: PropTypes.string,
+  }).isRequired,
+  item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  errors: PropTypes.arrayOf(PropTypes.object),
+  endpoint: PropTypes.string,
+  fields: PropTypes.arrayOf(PropTypes.object),
+  messages: PropTypes.shape({
+    onUpdate: PropTypes.func,
+    onCreate: PropTypes.func,
+  }).isRequired,
+  loading: PropTypes.bool,
+  children: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+  id: PropTypes.string,
+  automationId: PropTypes.string,
+  beforeFormContent: PropTypes.func,
+  afterFormContent: PropTypes.func,
+  onItemLoad: PropTypes.func,
+  isValid: PropTypes.func,
+  onChange: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onSuccess: PropTypes.func,
+};
 
 export default Form;

@@ -1,4 +1,5 @@
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 import React from 'react';
 import KeyValueTable from 'common/key_value_table.jsx';
 import PrintBoolean from 'common/print_boolean.jsx';
@@ -46,12 +47,12 @@ const CronStatus = (props) => {
 };
 
 CronStatus.propTypes = {
-  status_data: React.PropTypes.shape({
-    accessible: React.PropTypes.bool,
-    status: React.PropTypes.string,
-    updated_at: React.PropTypes.number,
-    run_accessed_at: React.PropTypes.number,
-    run_completed_at: React.PropTypes.number,
+  status_data: PropTypes.shape({
+    accessible: PropTypes.bool,
+    status: PropTypes.string,
+    updated_at: PropTypes.number,
+    run_accessed_at: PropTypes.number,
+    run_completed_at: PropTypes.number,
   }).isRequired,
 };
 

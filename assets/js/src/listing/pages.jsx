@@ -1,56 +1,62 @@
 import React from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 
-const ListingPages = React.createClass({
-  getInitialState: function getInitialState() {
-    return {
-      page: null,
-    };
-  },
-  setPage: function setPage(page) {
+class ListingPages extends React.Component {
+  state = {
+    page: null,
+  };
+
+  setPage = (page) => {
     this.setState({
       page: null,
     }, () => {
       this.props.onSetPage(this.constrainPage(page));
     });
-  },
-  setFirstPage: function setFirstPage() {
+  };
+
+  setFirstPage = () => {
     this.setPage(1);
-  },
-  setLastPage: function setLastPage() {
+  };
+
+  setLastPage = () => {
     this.setPage(this.getLastPage());
-  },
-  setPreviousPage: function setPreviousPage() {
+  };
+
+  setPreviousPage = () => {
     this.setPage(this.constrainPage(
       parseInt(this.props.page, 10) - 1)
     );
-  },
-  setNextPage: function setNextPage() {
+  };
+
+  setNextPage = () => {
     this.setPage(this.constrainPage(
       parseInt(this.props.page, 10) + 1)
     );
-  },
-  constrainPage: function constrainPage(page) {
-    return Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
-  },
-  handleSetManualPage: function handleSetManualPage(e) {
+  };
+
+  getLastPage = () => Math.ceil(this.props.count / this.props.limit);
+
+  handleSetManualPage = (e) => {
     if (e.which === 13) {
       this.setPage(this.state.page);
     }
-  },
-  handleChangeManualPage: function handleChangeManualPage(e) {
+  };
+
+  handleChangeManualPage = (e) => {
     this.setState({
       page: e.target.value,
     });
-  },
-  handleBlurManualPage: function handleBlurManualPage(e) {
+  };
+
+  handleBlurManualPage = (e) => {
     this.setPage(e.target.value);
-  },
-  getLastPage: function getLastPage() {
-    return Math.ceil(this.props.count / this.props.limit);
-  },
-  render: function render() {
+  };
+
+  constrainPage = page => Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
+
+  render() {
     if (this.props.count === 0) {
       return false;
     }
@@ -181,7 +187,17 @@ const ListingPages = React.createClass({
         { pagination }
       </div>
     );
-  },
-});
+  }
+}
+
+ListingPages.propTypes = {
+  onSetPage: PropTypes.func.isRequired,
+  page: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]).isRequired,
+  count: PropTypes.number.isRequired,
+  limit: PropTypes.number.isRequired,
+};
 
 module.exports = ListingPages;

@@ -672,7 +672,7 @@ WysijaForm = {
     if (type === undefined) type = 'block';
     // identify element
     id = element.identify();
-    instance = WysijaForm.instances[id] || new WysijaForm[type.capitalize().camelize()](id);
+    instance = WysijaForm.instances[id] || new (WysijaForm[type.capitalize().camelize()])(id);
 
     WysijaForm.instances[id] = instance;
     return instance;

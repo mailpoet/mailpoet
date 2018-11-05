@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 
@@ -191,8 +192,8 @@ const itemActions = [
   },
 ];
 
-const SegmentList = React.createClass({
-  renderItem: function renderItem(segment, actions) {
+class SegmentList extends React.Component {
+  renderItem = (segment, actions) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -248,8 +249,9 @@ const SegmentList = React.createClass({
         </td>
       </div>
     );
-  },
-  render: function render() {
+  };
+
+  render() {
     return (
       <div>
         <h1 className="title">
@@ -272,7 +274,12 @@ const SegmentList = React.createClass({
         />
       </div>
     );
-  },
-});
+  }
+}
+
+SegmentList.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 module.exports = SegmentList;

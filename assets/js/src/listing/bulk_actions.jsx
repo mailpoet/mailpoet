@@ -1,29 +1,26 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 
-const ListingBulkActions = React.createClass({
-  getInitialState: function getInitialState() {
-    return {
-      action: false,
-      extra: false,
-    };
-  },
-  handleChangeAction: function handleChangeAction(e) {
-    this.setState({
-      action: e.target.value,
-      extra: false,
-    }, () => {
-      const action = this.getSelectedAction();
+class ListingBulkActions extends React.Component {
+  state = {
+    action: false,
+    extra: false,
+  };
 
-      // action on select callback
-      if (action !== null && action.onSelect !== undefined) {
-        this.setState({
-          extra: action.onSelect(e),
-        });
+  getSelectedAction = () => {
+    const selectedAction = this.action.value;
+    if (selectedAction.length > 0) {
+      const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
+
+      if (action.length > 0) {
+        return action[0];
       }
-    });
-  },
-  handleApplyAction: function handleApplyAction(e) {
+    }
+    return null;
+  };
+
+  handleApplyAction = (e) => {
     e.preventDefault();
 
     const action = this.getSelectedAction();
@@ -58,19 +55,25 @@ const ListingBulkActions = React.createClass({
       action: false,
       extra: false,
     });
-  },
-  getSelectedAction: function getSelectedAction() {
-    const selectedAction = this.action.value;
-    if (selectedAction.length > 0) {
-      const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
+  };
 
-      if (action.length > 0) {
-        return action[0];
+  handleChangeAction = (e) => {
+    this.setState({
+      action: e.target.value,
+      extra: false,
+    }, () => {
+      const action = this.getSelectedAction();
+
+      // action on select callback
+      if (action !== null && action.onSelect !== undefined) {
+        this.setState({
+          extra: action.onSelect(e),
+        });
       }
-    }
-    return null;
-  },
-  render: function render() {
+    });
+  };
+
+  render() {
     if (this.props.bulk_actions.length === 0) {
       return null;
     }
@@ -108,7 +111,17 @@ const ListingBulkActions = React.createClass({
         { this.state.extra }
       </div>
     );
-  },
-});
+  }
+}
+
+ListingBulkActions.propTypes = {
+  bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selection: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]).isRequired,
+  selected_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
+  onBulkAction: PropTypes.func.isRequired,
+};
 
 export default ListingBulkActions;

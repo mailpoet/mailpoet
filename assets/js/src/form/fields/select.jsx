@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'underscore';
+import PropTypes from 'prop-types';
 
-const FormFieldSelect = React.createClass({
+class FormFieldSelect extends React.Component {
   render() {
     if (this.props.field.values === undefined) {
       return false;
@@ -70,7 +71,29 @@ const FormFieldSelect = React.createClass({
         {options}
       </select>
     );
+  }
+}
+
+FormFieldSelect.propTypes = {
+  onValueChange: PropTypes.func,
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    values: PropTypes.object,
+    placeholder: PropTypes.string,
+    filter: PropTypes.func,
+    sortBy: PropTypes.func,
+    validation: PropTypes.object,
+  }).isRequired,
+  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  automationId: PropTypes.string,
+};
+
+FormFieldSelect.defaultProps = {
+  automationId: '',
+  onValueChange: function onValueChange() {
+    // no-op
   },
-});
+};
+
 
 module.exports = FormFieldSelect;

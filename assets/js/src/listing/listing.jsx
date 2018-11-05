@@ -1,305 +1,76 @@
-import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import _ from 'underscore';
-import { Link } from 'react-router';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import MailPoet from 'mailpoet';
 import ListingBulkActions from 'listing/bulk_actions.jsx';
 import ListingHeader from 'listing/header.jsx';
 import ListingPages from 'listing/pages.jsx';
 import ListingSearch from 'listing/search.jsx';
 import ListingGroups from 'listing/groups.jsx';
 import ListingFilters from 'listing/filters.jsx';
+import ListingItems from 'listing/listing_items.jsx';
 
-const ListingItem = React.createClass({
-  getInitialState: function getInitialState() {
-    return {
-      expanded: false,
-    };
+const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
+  displayName: 'Listing',
+
+  /* eslint-disable react/require-default-props */
+  propTypes: {
+    limit: PropTypes.number,
+    sort_by: PropTypes.string,
+    sort_order: PropTypes.string,
+    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    auto_refresh: PropTypes.bool,
+    location: PropTypes.shape({
+      pathname: PropTypes.string,
+    }),
+    base_url: PropTypes.string,
+    type: PropTypes.string,
+    endpoint: PropTypes.string.isRequired,
+    afterGetItems: PropTypes.func,
+    messages: PropTypes.shape({
+      onRestore: PropTypes.func,
+      onTrash: PropTypes.func,
+      onDelete: PropTypes.func,
+    }),
+    onRenderItem: PropTypes.func.isRequired,
+    columns: PropTypes.arrayOf(PropTypes.object),
+    bulk_actions: PropTypes.arrayOf(PropTypes.object),
+    item_actions: PropTypes.arrayOf(PropTypes.object),
+    search: PropTypes.bool,
+    groups: PropTypes.bool,
+    renderExtraActions: PropTypes.func,
+    onBeforeSelectFilter: PropTypes.func,
+    getListingItemKey: PropTypes.func,
   },
-  handleSelectItem: function handleSelectItem(e) {
-    this.props.onSelectItem(
-      parseInt(e.target.value, 10),
-      e.target.checked
-    );
+  /* eslint-enable react/require-default-props */
 
-    return !e.target.checked;
-  },
-  handleRestoreItem: function handleRestoreItem(id) {
-    this.props.onRestoreItem(id);
-  },
-  handleTrashItem: function handleTrashItem(id) {
-    this.props.onTrashItem(id);
-  },
-  handleDeleteItem: function handleDeleteItem(id) {
-    this.props.onDeleteItem(id);
-  },
-  handleToggleItem: function handleToggleItem() {
-    this.setState({ expanded: !this.state.expanded });
-  },
-  render: function render() {
-    let checkbox = false;
-
-    if (this.props.is_selectable === true) {
-      checkbox = (
-        <th className="check-column" scope="row">
-          <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>{
-            `Select ${this.props.item[this.props.columns[0].name]}`
-          }</label>
-          <input
-            type="checkbox"
-            value={this.props.item.id}
-            checked={
-              this.props.item.selected || this.props.selection === 'all'
-            }
-            onChange={this.handleSelectItem}
-            disabled={this.props.selection === 'all'}
-            id={`listing-row-checkbox-${this.props.item.id}`}
-          />
-        </th>
-      );
-    }
-
-    const customActions = this.props.item_actions;
-    let itemActions = false;
-
-    if (customActions.length > 0) {
-      let isFirst = true;
-      itemActions = customActions
-        .filter(action => action.display === undefined || action.display(this.props.item))
-        .map((action, index) => {
-          let customAction = null;
-
-          if (action.name === 'trash') {
-            customAction = (
-              <span key={`action-${action.name}`} className="trash">
-                {(!isFirst) ? ' | ' : ''}
-                <a
-                  href="javascript:;"
-                  onClick={() => this.handleTrashItem(this.props.item.id)}
-                >
-                  {MailPoet.I18n.t('moveToTrash')}
-                </a>
-              </span>
-            );
-          } else if (action.refresh) {
-            customAction = (
-              <span
-                onClick={this.props.onRefreshItems}
-                key={`action-${action.name}`}
-                className={action.name}
-                role="button"
-                tabIndex={index}
-              >
-                {(!isFirst) ? ' | ' : ''}
-                { action.link(this.props.item) }
-              </span>
-            );
-          } else if (action.link) {
-            customAction = (
-              <span
-                key={`action-${action.name}`}
-                className={action.name}
-              >
-                {(!isFirst) ? ' | ' : ''}
-                { action.link(this.props.item) }
-              </span>
-            );
-          } else {
-            customAction = (
-              <span
-                key={`action-${action.name}`}
-                className={action.name}
-              >
-                {(!isFirst) ? ' | ' : ''}
-                <a
-                  href="javascript:;"
-                  onClick={
-                    (action.onClick !== undefined)
-                      ? () => action.onClick(this.props.item, this.props.onRefreshItems)
-                      : false
-                  }
-                >{ action.label }</a>
-              </span>
-            );
-          }
-
-          if (customAction !== null && isFirst === true) {
-            isFirst = false;
-          }
-
-          return customAction;
-        });
-    } else {
-      itemActions = (
-        <span className="edit">
-          <Link to={`/edit/${this.props.item.id}`}>{MailPoet.I18n.t('edit')}</Link>
-        </span>
-      );
-    }
-
-    let actions;
-
-    if (this.props.group === 'trash') {
-      actions = (
-        <div>
-          <div className="row-actions">
-            <span>
-              <a
-                href="javascript:;"
-                onClick={() => this.handleRestoreItem(this.props.item.id)}
-              >{MailPoet.I18n.t('restore')}</a>
-            </span>
-            { ' | ' }
-            <span className="delete">
-              <a
-                className="submitdelete"
-                href="javascript:;"
-                onClick={() => this.handleDeleteItem(this.props.item.id)}
-              >{MailPoet.I18n.t('deletePermanently')}</a>
-            </span>
-          </div>
-          <button
-            onClick={() => this.handleToggleItem(this.props.item.id)}
-            className="toggle-row"
-            type="button"
-          >
-            <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
-          </button>
-        </div>
-      );
-    } else {
-      actions = (
-        <div>
-          <div className="row-actions">
-            { itemActions }
-          </div>
-          <button
-            onClick={() => this.handleToggleItem(this.props.item.id)}
-            className="toggle-row"
-            type="button"
-          >
-            <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
-          </button>
-        </div>
-      );
-    }
-
-    const rowClasses = classNames({ 'is-expanded': this.state.expanded });
-
-    return (
-      <tr className={rowClasses} data-automation-id={`listing_item_${this.props.item.id}`}>
-        { checkbox }
-        { this.props.onRenderItem(this.props.item, actions) }
-      </tr>
-    );
-  },
-});
-
-
-const ListingItems = React.createClass({
-  render: function render() {
-    if (this.props.items.length === 0) {
-      let message;
-      if (this.props.loading === true) {
-        message = (this.props.messages.onLoadingItems
-          && this.props.messages.onLoadingItems(this.props.group))
-          || MailPoet.I18n.t('loadingItems');
-      } else {
-        message = (this.props.messages.onNoItemsFound
-          && this.props.messages.onNoItemsFound(this.props.group))
-          || MailPoet.I18n.t('noItemsFound');
-      }
-
-      return (
-        <tbody>
-          <tr className="no-items">
-            <td
-              colSpan={
-                this.props.columns.length
-                + (this.props.is_selectable ? 1 : 0)
-              }
-              className="colspanchange"
-            >
-              {message}
-            </td>
-          </tr>
-        </tbody>
-      );
-    }
-    const selectAllClasses = classNames(
-      'mailpoet_select_all',
-      { mailpoet_hidden: (
-        this.props.selection === false
-            || (this.props.count <= this.props.limit)
-      ),
-      }
-    );
-
-    return (
-      <tbody>
-        <tr className={selectAllClasses}>
-          <td colSpan={
-            this.props.columns.length
-                + (this.props.is_selectable ? 1 : 0)
-          }
-          >
-            {
-              (this.props.selection !== 'all')
-                ? MailPoet.I18n.t('selectAllLabel')
-                : MailPoet.I18n.t('selectedAllLabel').replace(
-                  '%d',
-                  this.props.count.toLocaleString()
-                )
-            }
-              &nbsp;
-            <a
-              onClick={this.props.onSelectAll}
-              href="javascript:;"
-            >{
-                (this.props.selection !== 'all')
-                  ? MailPoet.I18n.t('selectAllLink')
-                  : MailPoet.I18n.t('clearSelection')
-              }</a>
-          </td>
-        </tr>
-
-        {this.props.items.map((item) => {
-          const renderItem = item;
-          renderItem.id = parseInt(item.id, 10);
-          renderItem.selected = (this.props.selected_ids.indexOf(renderItem.id) !== -1);
-          let key = `item-${renderItem.id}-${item.id}`;
-          if (typeof this.props.getListingItemKey === 'function') {
-            key = this.props.getListingItemKey(item);
-          }
-
-          return (
-            <ListingItem
-              columns={this.props.columns}
-              onSelectItem={this.props.onSelectItem}
-              onRenderItem={this.props.onRenderItem}
-              onDeleteItem={this.props.onDeleteItem}
-              onRestoreItem={this.props.onRestoreItem}
-              onTrashItem={this.props.onTrashItem}
-              onRefreshItems={this.props.onRefreshItems}
-              selection={this.props.selection}
-              is_selectable={this.props.is_selectable}
-              item_actions={this.props.item_actions}
-              group={this.props.group}
-              key={key}
-              item={renderItem}
-            />
-          );
-        })}
-      </tbody>
-    );
-  },
-});
-
-const Listing = React.createClass({
   contextTypes: {
-    router: React.PropTypes.object.isRequired,
+    router: PropTypes.object.isRequired,
   },
+
+  getDefaultProps: () => ({
+    limit: 10,
+    sort_by: null,
+    sort_order: undefined,
+    auto_refresh: true,
+    location: undefined,
+    base_url: '',
+    type: undefined,
+    afterGetItems: undefined,
+    messages: undefined,
+    columns: [],
+    bulk_actions: [],
+    item_actions: [],
+    search: true,
+    groups: true,
+    renderExtraActions: undefined,
+    onBeforeSelectFilter: undefined,
+    getListingItemKey: undefined,
+  }),
+
   getInitialState: function getInitialState() {
     return {
       loading: false,
@@ -319,63 +90,28 @@ const Listing = React.createClass({
       meta: {},
     };
   },
-  getParam: function getParam(param) {
-    const regex = /(.*)\[(.*)\]/;
-    const matches = regex.exec(param);
-    return [matches[1], matches[2]];
-  },
-  initWithParams: function initWithParams(params) {
-    const state = this.getInitialState();
-    // check for url params
-    if (params.splat) {
-      params.splat.split('/').forEach((param) => {
-        const [key, value] = this.getParam(param);
-        const filters = {};
-        switch (key) {
-          case 'filter':
-            value.split('&').forEach((pair) => {
-              const [k, v] = pair.split('=');
-              filters[k] = v;
-            });
 
-            state.filter = filters;
-            break;
-          default:
-            state[key] = value;
-        }
+  componentDidMount: function componentDidMount() {
+    this.isComponentMounted = true;
+    const params = this.props.params || {};
+    this.initWithParams(params);
+
+    if (this.props.auto_refresh) {
+      jQuery(document).on('heartbeat-tick.mailpoet', () => {
+        this.getItems();
       });
     }
-
-    // limit per page
-    if (this.props.limit !== undefined) {
-      state.limit = Math.abs(Number(this.props.limit));
-    }
-
-    // sort by
-    if (state.sort_by === null && this.props.sort_by !== undefined) {
-      state.sort_by = this.props.sort_by;
-    }
-
-    // sort order
-    if (state.sort_order === null && this.props.sort_order !== undefined) {
-      state.sort_order = this.props.sort_order;
-    }
-
-    this.setState(state, () => {
-      this.getItems();
-    });
   },
-  getParams: function getParams() {
-    // get all route parameters (without the "splat")
-    const params = _.omit(this.props.params, 'splat');
-    // TODO:
-    // find a way to set the "type" in the routes definition
-    // so that it appears in `this.props.params`
-    if (this.props.type) {
-      params.type = this.props.type;
-    }
-    return params;
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    const params = nextProps.params || {};
+    this.initWithParams(params);
   },
+
+  componentWillUnmount: function componentWillUnmount() {
+    this.isComponentMounted = false;
+  },
+
   setParams: function setParams() {
     if (this.props.location) {
       const params = Object.keys(this.state)
@@ -413,17 +149,19 @@ const Listing = React.createClass({
       }
     }
   },
+
   getUrlWithParams: function getUrlWithParams(params) {
     let baseUrl = (this.props.base_url !== undefined)
       ? this.props.base_url
       : null;
 
-    if (baseUrl !== null) {
+    if (baseUrl) {
       baseUrl = this.setBaseUrlParams(baseUrl);
       return `/${baseUrl}/${params}`;
     }
     return `/${params}`;
   },
+
   setBaseUrlParams: function setBaseUrlParams(baseUrl) {
     let ret = baseUrl;
     if (ret.indexOf(':') !== -1) {
@@ -437,24 +175,25 @@ const Listing = React.createClass({
 
     return ret;
   },
-  componentDidMount: function componentDidMount() {
-    this.isComponentMounted = true;
-    const params = this.props.params || {};
-    this.initWithParams(params);
 
-    if (this.props.auto_refresh) {
-      jQuery(document).on('heartbeat-tick.mailpoet', () => {
-        this.getItems();
-      });
+  getParams: function getParams() {
+    // get all route parameters (without the "splat")
+    const params = _.omit(this.props.params, 'splat');
+    // TODO:
+    // find a way to set the "type" in the routes definition
+    // so that it appears in `this.props.params`
+    if (this.props.type) {
+      params.type = this.props.type;
     }
+    return params;
   },
-  componentWillUnmount: function componentWillUnmount() {
-    this.isComponentMounted = false;
+
+  getParam: function getParam(param) {
+    const regex = /(.*)\[(.*)\]/;
+    const matches = regex.exec(param);
+    return [matches[1], matches[2]];
   },
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    const params = nextProps.params || {};
-    this.initWithParams(params);
-  },
+
   getItems: function getItems() {
     if (!this.isComponentMounted) return;
 
@@ -507,6 +246,49 @@ const Listing = React.createClass({
       }
     });
   },
+
+  initWithParams: function initWithParams(params) {
+    const state = this.getInitialState();
+    // check for url params
+    if (params.splat) {
+      params.splat.split('/').forEach((param) => {
+        const [key, value] = this.getParam(param);
+        const filters = {};
+        switch (key) {
+          case 'filter':
+            value.split('&').forEach((pair) => {
+              const [k, v] = pair.split('=');
+              filters[k] = v;
+            });
+
+            state.filter = filters;
+            break;
+          default:
+            state[key] = value;
+        }
+      });
+    }
+
+    // limit per page
+    if (this.props.limit !== undefined) {
+      state.limit = Math.abs(Number(this.props.limit));
+    }
+
+    // sort by
+    if (state.sort_by === null && this.props.sort_by !== undefined) {
+      state.sort_by = this.props.sort_by;
+    }
+
+    // sort order
+    if (state.sort_order === null && this.props.sort_order !== undefined) {
+      state.sort_order = this.props.sort_order;
+    }
+
+    this.setState(state, () => {
+      this.getItems();
+    });
+  },
+
   handleRestoreItem: function handleRestoreItem(id) {
     this.setState({
       loading: true,
@@ -535,6 +317,7 @@ const Listing = React.createClass({
       );
     });
   },
+
   handleTrashItem: function handleTrashItem(id) {
     this.setState({
       loading: true,
@@ -563,6 +346,7 @@ const Listing = React.createClass({
       );
     });
   },
+
   handleDeleteItem: function handleDeleteItem(id) {
     this.setState({
       loading: true,
@@ -591,6 +375,7 @@ const Listing = React.createClass({
       );
     });
   },
+
   handleEmptyTrash: function handleEmptyTrash() {
     return this.handleBulkAction('all', {
       action: 'delete',
@@ -611,6 +396,7 @@ const Listing = React.createClass({
       );
     });
   },
+
   handleBulkAction: function handleBulkAction(selectedIds, params) {
     if (
       this.state.selection === false
@@ -651,6 +437,7 @@ const Listing = React.createClass({
       }
     });
   },
+
   handleSearch: function handleSearch(search) {
     this.setState({
       search,
@@ -661,6 +448,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleSort: function handleSort(sortBy, sortOrder = 'asc') {
     this.setState({
       sort_by: sortBy,
@@ -669,6 +457,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleSelectItem: function handleSelectItem(id, isChecked) {
     let selectedIds = this.state.selected_ids;
     let selection = false;
@@ -690,6 +479,7 @@ const Listing = React.createClass({
       selected_ids: selectedIds,
     });
   },
+
   handleSelectItems: function handleSelectItems(isChecked) {
     if (isChecked === false) {
       this.clearSelection();
@@ -702,6 +492,7 @@ const Listing = React.createClass({
       });
     }
   },
+
   handleSelectAll: function handleSelectAll() {
     if (this.state.selection === 'all') {
       this.clearSelection();
@@ -712,12 +503,14 @@ const Listing = React.createClass({
       });
     }
   },
+
   clearSelection: function clearSelection() {
     this.setState({
       selection: false,
       selected_ids: [],
     });
   },
+
   handleFilter: function handleFilter(filters) {
     this.setState({
       filter: filters,
@@ -726,6 +519,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleGroup: function handleGroup(group) {
     // reset search
     jQuery('#search_input').val('');
@@ -739,6 +533,7 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleSetPage: function handleSetPage(page) {
     this.setState({
       page,
@@ -748,13 +543,16 @@ const Listing = React.createClass({
       this.setParams();
     });
   },
+
   handleRenderItem: function handleRenderItem(item, actions) {
     const render = this.props.onRenderItem(item, actions, this.state.meta);
     return render.props.children;
   },
+
   handleRefreshItems: function handleRefreshItems() {
     this.getItems();
   },
+
   render: function render() {
     const items = this.state.items;
     const sortBy = this.state.sort_by;
