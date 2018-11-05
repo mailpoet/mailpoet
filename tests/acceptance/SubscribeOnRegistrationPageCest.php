@@ -13,7 +13,7 @@ class SubscribeOnRegistrationPageCest {
     $I->selectOptionInSelect2("My First List");
     //save settings
     $I->click('[data-automation-id="settings-submit-button"]');
-    $I->logout();
+    $I->logOut();
     $I->amOnPage('/wp-login.php?action=register');
     $I->waitForElement(['css'=>'.registration-form-mailpoet'], 10);
     //clear setting to hide select2 from subsequent tests
