@@ -60,5 +60,10 @@ class SettingsPageBasicsCest {
     $I->uncheckOption('#settings[subscribe_on_comment]');
     //save settings
     $I->click('[data-automation-id="settings-submit-button"]');
+    //check to make sure comment subscription form is gone
+    $I->amOnPage('/');
+    $I->waitForText($post_title, 10);
+    $I->click($post_title);
+    $I->doNotSee(['css'=>'.comment-form-mailpoet']);    
   }
 }
