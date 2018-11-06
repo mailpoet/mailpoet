@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 3.12.1
+Stable tag: 3.13.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -165,6 +165,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.13.0 - 2018-11-06 =
+* Improved: content of default signup confirmation email;
+* Changed: sites using PHP 5.6 will get an old version warning due to no longer receiving security updates after December. Please consider upgrading to PHP 7.2!
+* Changed: end of support for PHP 5.5. Please upgrade to PHP 7.0 or newer!
 
 = 3.12.1 - 2018-10-30 =
 * Added: 2:1 and 1:2 column blocks for further newsletter customization;
