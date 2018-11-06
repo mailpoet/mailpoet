@@ -26,16 +26,16 @@ class StylesHelper {
     'Times New Roman' => "'Times New Roman', Times, Baskerville, Georgia, serif",
     'Trebuchet MS' => "'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif",
     'Verdana' => 'Verdana, Geneva, sans-serif',
-    'Arvo' => "arvo, courier, georgia, serif",
-    'Lato' => "lato, helvetica neue, helvetica, arial, sans-serif",
-    'Lora' => "lora, georgia, times new roman, serif",
-    'Merriweather' => "merriweather, georgia, times new roman, serif",
-    'Merriweather Sans' => "merriweather sans, helvetica neue, helvetica, arial, sans-serif",
-    'Noticia Text' => "noticia text, georgia, times new roman, serif",
-    'Open Sans' => "open sans, helvetica neue, helvetica, arial, sans-serif",
-    'Playfair Display' => "playfair display, georgia, times new roman, serif",
-    'Roboto' => "roboto, helvetica neue, helvetica, arial, sans-serif",
-    'Source Sans Pro' => "source sans pro, helvetica neue, helvetica, arial, sans-serif",
+    'Arvo' => 'arvo, courier, georgia, serif',
+    'Lato' => "lato, 'helvetica neue', helvetica, arial, sans-serif",
+    'Lora' => "lora, georgia, 'times new roman', serif",
+    'Merriweather' => "merriweather, georgia, 'times new roman', serif",
+    'Merriweather Sans' => "'merriweather sans', 'helvetica neue', helvetica, arial, sans-serif",
+    'Noticia Text' => "'noticia text', georgia, 'times new roman', serif",
+    'Open Sans' => "'open sans', 'helvetica neue', helvetica, arial, sans-serif",
+    'Playfair Display' => "'playfair display', georgia, 'times new roman', serif",
+    'Roboto' => "roboto, 'helvetica neue', helvetica, arial, sans-serif",
+    'Source Sans Pro' => "'source sans pro', 'helvetica neue', helvetica, arial, sans-serif",
   ];
   static $custom_fonts = [
     'Arvo',
@@ -128,8 +128,9 @@ class StylesHelper {
   private static function getCustomFontsNames($styles) {
     $font_names = [];
     foreach($styles as $style) {
-      if(isset($style['fontFamily']) && in_array($style['fontFamily'], self::$custom_fonts))
+      if(isset($style['fontFamily']) && in_array($style['fontFamily'], self::$custom_fonts)) {
         $font_names[$style['fontFamily']] = true;
+      }
     }
     return array_keys($font_names);
   }
@@ -139,8 +140,9 @@ class StylesHelper {
     foreach(self::getCustomFontsNames($styles) as $name) {
       $links[] = urlencode($name) . ':400,400i,700,700i';
     }
-    if(!count($links))
+    if(!count($links)) { 
       return '';
+    }
     return '<!--[if !mso]><link href="https://fonts.googleapis.com/css?family='
       . implode("|", $links)
       . '" rel="stylesheet"><![endif]-->';
