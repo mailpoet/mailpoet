@@ -8,6 +8,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterPost;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -129,9 +130,21 @@ class Scheduler {
   }
 
   static function createPostNotificationSendingTask($newsletter) {
-    $existing_notification_history = Newsletter::where('parent_id', $newsletter->id)
-      ->where('type', Newsletter::TYPE_NOTIFICATION_HISTORY)
-      ->where('status', Newsletter::STATUS_SENDING)
+    $existing_notification_history = Newsletter::table_alias('newsletters')
+      ->where('newsletters.parent_id', $newsletter->id)
+      ->where('newsletters.type', Newsletter::TYPE_NOTIFICATION_HISTORY)
+      ->where('newsletters.status', Newsletter::STATUS_SENDING)
+      ->join(
+        MP_SENDING_QUEUES_TABLE,
+        'queues.newsletter_id = newsletters.id',
+        'queues'
+      )
+      ->join(
+        MP_SCHEDULED_TASKS_TABLE,
+        'queues.task_id = tasks.id',
+        'tasks'
+      )
+      ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
       ->findOne();
     if($existing_notification_history) {
       return;

@@ -94,6 +94,28 @@ class SchedulerTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(1);
   }
 
+  function testItCreatesPostNotificationSendingTaskIfAPausedNotificationExists() {
+    $newsletter = $this->_createNewsletter();
+    $newsletter->schedule = '* 5 * * *';
+
+    // new queue record should be created
+    $queue_to_be_paused = Scheduler::createPostNotificationSendingTask($newsletter);
+    $queue_to_be_paused->task()->pause();
+
+    // another queue record should be created because the first one was paused
+    $newsletter->schedule = '* 10 * * *'; // different time to not clash with the first queue
+    $queue = Scheduler::createPostNotificationSendingTask($newsletter);
+    expect(SendingQueue::findMany())->count(2);
+    expect($queue->newsletter_id)->equals($newsletter->id);
+    expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect($queue->scheduled_at)->equals(Scheduler::getNextRunDate('* 10 * * *'));
+    expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
+
+    // duplicate queue record should not be created
+    Scheduler::createPostNotificationSendingTask($newsletter);
+    expect(SendingQueue::findMany())->count(2);
+  }
+
   function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
     $newsletter = (object)array(
       'id' => 1,
@@ -727,6 +749,11 @@ class SchedulerTest extends \MailPoetTest {
     $notification_history->status = Newsletter::STATUS_SENDING;
     $notification_history->parent_id = $newsletter->id;
     $notification_history->save();
+
+    $sending_task = SendingTask::create();
+    $sending_task->newsletter_id = $notification_history->id;
+    $sending_task->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_task->save();
 
     $post_data = array(
       'post_title' => 'title',
