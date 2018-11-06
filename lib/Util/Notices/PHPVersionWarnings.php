@@ -17,11 +17,11 @@ class PHPVersionWarnings {
   }
 
   function isOutdatedPHPVersion($php_version) {
-    return version_compare($php_version, '5.6', '<') && !get_transient(self::OPTION_NAME);
+    return version_compare($php_version, '7.0', '<') && !get_transient(self::OPTION_NAME);
   }
-  
+
   function display($php_version) {
-    $error_string = __('Your website is running on PHP %s. MailPoet requires version 5.6. Please consider upgrading your site\'s PHP version. [link]Your host can help you.[/link]', 'mailpoet');
+    $error_string = __('Your website is running on PHP %s. MailPoet runs a whole lot better with version 7. In fact, so does your WordPress website. [link]Your host can help you upgrade to the latest PHP version risk free in a few minutes.[/link]', 'mailpoet');
     $error_string = sprintf($error_string, $php_version);
     $error = Helpers::replaceLinkTags($error_string, 'https://beta.docs.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
