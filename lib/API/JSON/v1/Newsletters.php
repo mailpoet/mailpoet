@@ -191,7 +191,9 @@ class Newsletters extends APIEndpoint {
           ->set('scheduled_at', $next_run_date)
           ->save();
       }
+      Scheduler::createPostNotificationSendingTask($newsletter);
     }
+
 
     return $this->successResponse(
       Newsletter::findOne($newsletter->id)->asArray()
@@ -503,6 +505,10 @@ class Newsletters extends APIEndpoint {
       ) {
         $newsletter = Newsletter::filter('filterWithOptions', $data['type'])->findOne($newsletter->id);
         Scheduler::processPostNotificationSchedule($newsletter);
+      }
+
+      if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+        Scheduler::createPostNotificationSendingTask($newsletter);
       }
 
       return $this->successResponse(
