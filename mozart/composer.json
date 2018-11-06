@@ -40,5 +40,10 @@
         "symfony/dependency-injection"
       ]
     }
+  },
+  "config": {
+    "platform": {
+      "php": "5.6"
+    }
   }
 }
