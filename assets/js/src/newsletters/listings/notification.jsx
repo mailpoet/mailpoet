@@ -288,6 +288,7 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
     }
     return (
       <Link
+        data-automation-id={`history-${newsletter.id}`}
         to={`/notification/history/${newsletter.id}`}
       >{ MailPoet.I18n.t('viewHistory') }</Link>
     );

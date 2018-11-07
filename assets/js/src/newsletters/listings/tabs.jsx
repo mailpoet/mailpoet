@@ -38,6 +38,7 @@ class ListingTabs extends React.Component {
         <Link
           key={`tab-${tab.label}`}
           className={tabClasses}
+          data-automation-id={`tab-${tab.label}`}
           to={tab.link}
           onClick={() => MailPoet.trackEvent(`Tab Emails > ${tab.name} clicked`,
             { 'MailPoet Free version': window.mailpoet_version }

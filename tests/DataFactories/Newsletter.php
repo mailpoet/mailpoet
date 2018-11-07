@@ -2,6 +2,7 @@
 namespace MailPoet\Test\DataFactories;
 
 use Carbon\Carbon;
+use MailPoet\Models\NewsletterSegment;
 
 class Newsletter {
 
@@ -11,6 +12,9 @@ class Newsletter {
   /** @var array */
   private $options;
 
+  /** @var array */
+  private $segments;
+
   public function __construct() {
     $this->data = [
       'subject' => 'Some subject',
@@ -19,6 +23,7 @@ class Newsletter {
       'status' => 'draft',
       ];
     $this->options = [];
+    $this->segments = [];
     $this->loadBodyFrom('newsletterWithALC.json');
   }
 
@@ -35,6 +40,23 @@ class Newsletter {
    */
   public function withSubject($subject) {
     $this->data['subject'] = $subject;
+    return $this;
+  }
+
+  public function withActiveStatus() {
+    $this->data['status'] = 'active';
+    return $this;
+  }
+
+  public function withImmediateSendingSettings() {
+    $this->withOptions([
+      8 => 'immediately', # intervalType
+      9 => '0', # timeOfDay
+      10 => '1', # intervalType
+      11 => '0', # monthDay
+      12 => '1', # nthWeekDay
+      13 => '* * * * *', # schedule
+    ]);
     return $this;
   }
 
@@ -88,6 +110,17 @@ class Newsletter {
   }
 
   /**
+   * @param \MailPoet\Models\Segment[] $segments
+   * @return Newsletter
+   */
+  public function withSegments(array $segments) {
+    foreach($segments as $segment) {
+      $this->segments[] = $segment->id();
+    }
+    return $this;
+  }
+
+  /**
    * @return \MailPoet\Models\Newsletter
    */
   public function create() {
@@ -100,6 +133,12 @@ class Newsletter {
           'value' => $option_value,
         ]
       );
+    }
+    foreach($this->segments as $segment_id) {
+      NewsletterSegment::createOrUpdate([
+        'newsletter_id' => $newsletter->id,
+        'segment_id' => $segment_id,
+      ]);
     }
     return $newsletter;
   }
