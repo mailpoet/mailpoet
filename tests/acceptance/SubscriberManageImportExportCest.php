@@ -57,5 +57,6 @@ class SubscriberManageImportExportCest {
     $I->fillField('#search_input', 'iii@example.com');
     $I->click('Search');
     $I->waitForText('iii@example.com', 10);
+    $I->seeNoJSErrors();
   }
 }

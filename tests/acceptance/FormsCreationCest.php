@@ -19,6 +19,7 @@ class FormsCreationCest {
 
     $I->waitForElement('[data-automation-id="listing_item_1"]');
     $I->see('My new form');
+    $I->seeNoJSErrors();
   }
 
   function createFormWithoutAList(\AcceptanceTester $I) {

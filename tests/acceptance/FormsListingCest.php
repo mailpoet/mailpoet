@@ -11,6 +11,7 @@ class FormsListingCest {
     $I->amOnMailpoetPage('Forms');
 
     $I->waitForText('Test Form', 5, '[data-automation-id="listing_item_1"]');
+    $I->seeNoJSErrors();
   }
 
 }
