@@ -32,6 +32,7 @@ class ListingGroups extends React.Component {
             data-automation-id={`filters_${group.label.replace(' ', '_').toLowerCase()}`}
           >
             {group.label}
+            &nbsp;
             <span className="count">({ parseInt(group.count, 10).toLocaleString() })</span>
           </a>
         </li>
