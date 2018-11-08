@@ -353,7 +353,7 @@ class WorldCup {
                   ),
                   array(
                     'type' => 'text',
-                    'text' => '<h3 style="text-align: left;" data-post-id="1938"><strong>Brazil&rsquo;s history-making Hurricane</strong></h3>
+                    'text' => '<h3 style="text-align: left;"><strong>Brazil&rsquo;s history-making Hurricane</strong></h3>
                                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam consequat lorem at est congue, non consequat lacus iaculis. Integer euismod mauris velit, vel ultrices nibh bibendum quis. Donec eget fermentum magna. Nullam congue dui lectus, quis pellentesque orci placerat eu. Fusce semper neque a mi aliquet vulputate sed sit amet nisi...</p>
                                             <p><a href="http://mailpoet.info/brazils-history-making-hurricane/">Read More</a></p>',
                   ),
@@ -436,7 +436,7 @@ class WorldCup {
                   ),
                   array(
                     'type' => 'text',
-                    'text' => '<h3 style="text-align: left;" data-post-id="1932"><strong>Impact and legacy of 2018 FIFA World Cup Russia: facts and figures</strong></h3>
+                    'text' => '<h3 style="text-align: left;"><strong>Impact and legacy of 2018 FIFA World Cup Russia: facts and figures</strong></h3>
                                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam consequat lorem at est congue, non consequat lacus iaculis. Integer euismod...</p>
                                         <p><a href="http://mailpoet.info/impact-and-legacy-of-2018-fifa-world-cup-russia-facts-and-figures/">Read More</a></p>',
                   ),
@@ -468,7 +468,7 @@ class WorldCup {
 
                   array(
                     'type' => 'text',
-                    'text' => '<h3 style="text-align: left;" data-post-id="1929"><strong>Lineker&rsquo;s life-changing treble</strong></h3>
+                    'text' => '<h3 style="text-align: left;"><strong>Lineker&rsquo;s life-changing treble</strong></h3>
                                       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam consequat lorem at est congue, non consequat lacus iaculis. Integer euismod mauris velit&nbsp;<span style="background-color: inherit;">consequat lorem at est congue...</span></p>
                                       <p><a href="http://mailpoet.info/linekers-life-changing-treble/">Read More</a></p>',
                   ),

@@ -207,7 +207,7 @@ class NewsDay {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h2 style="text-align: left;" data-post-id="1991"><strong>Plasma jet engines that could take you from the ground to space</strong></h2>',
+                                  'text' => '<h2 style="text-align: left;"><strong>Plasma jet engines that could take you from the ground to space</strong></h2>',
                                 ),
                               2 =>
                                 array (
@@ -318,7 +318,7 @@ class NewsDay {
                               0 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1997"><strong>Cutting through the smog: What to do to fight air pollution</strong></h3>
+                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;"><strong>Cutting through the smog: What to do to fight air pollution</strong></h3>
                       <p class="mailpoet_wp_post">Tackling our air problems starts with traffic control, but individual action to reduce energy use and intensive farming would also help clean our air.</p>
                       <p><a href="http://mailpoet.info/cutting-through-the-smog-what-to-do-to-fight-air-pollution/">Read More</a></p>',
                                 ),
@@ -340,7 +340,7 @@ class NewsDay {
                               2 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1994"><strong>Ladybird&rsquo;s transparent shell reveals how it&nbsp;moves</strong></h3>
+                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;"><strong>Ladybird&rsquo;s transparent shell reveals how it&nbsp;moves</strong></h3>
                       <p class="mailpoet_wp_post">They certainly know how to fold. A see-through artificial wing case has been used to watch for the first time as ladybirds put away their wings after flight.</p>
                       <p><a href="http://mailpoet.info/ladybirds-transparent-shell-reveals-how-it-folds-its-wings/">Read More</a></p>',
                                 ),
@@ -362,7 +362,7 @@ class NewsDay {
                               4 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1938"><strong>Brazil&rsquo;s history-making Hurricane</strong></h3>
+                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;"><strong>Brazil&rsquo;s history-making Hurricane</strong></h3>
                       <p class="mailpoet_wp_post">Jairzinho has just made history. In claiming the fourth goal of an unforgettable 1970 FIFA World Cup Mexico&trade; Final against Italy, he has maintained his record of scoring in every one of Brazil&rsquo;s matches en route to the Trophy.</p>
                       <p><a href="http://mailpoet.info/brazils-history-making-hurricane/">Read More</a></p>',
                                 ),
@@ -389,7 +389,7 @@ class NewsDay {
                               0 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1935"><strong>Iceland&rsquo;s dentist-coach defying convention and expectations</strong></h3>
+                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;"><strong>Iceland&rsquo;s dentist-coach defying convention and expectations</strong></h3>
                       <p class="mailpoet_wp_post">As Iceland&rsquo;s key matches loom, with kick-off just a couple of hours away, you will find their national coach in the pub. This may seem unusual...</p>
                       <p><a href="http://mailpoet.info/icelands-dentist-coach-defying-convention-and-expectations/">Read More</a></p>',
                                 ),
@@ -411,7 +411,7 @@ class NewsDay {
                               2 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1932"><strong>Impact and legacy of 2018 FIFA World Cup Russia</strong></h3>
+                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;"><strong>Impact and legacy of 2018 FIFA World Cup Russia</strong></h3>
                       <p class="mailpoet_wp_post">Organising a FIFA World Cup&trade; in a sustainable manner is a major challenge. The scale of the event inevitably has an impact on the Host Country.&nbsp;</p>
                       <p><a href="http://mailpoet.info/impact-and-legacy-of-2018-fifa-world-cup-russia-facts-and-figures/">Read More</a></p>',
                                 ),
@@ -433,7 +433,7 @@ class NewsDay {
                               4 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;" data-post-id="1929"><strong>Lineker&rsquo;s life-changing treble</strong></h3>
+                                  'text' => '<h3 style="text-align: left; font-size: 18px; line-height: 1.4;"><strong>Lineker&rsquo;s life-changing treble</strong></h3>
                       <p class="mailpoet_wp_post">Given that he won the Golden Boot in his first and came within a whisker of the Final in his second, one might expect Gary Lineker to have a tough time picking his FIFA World Cup&trade; highlight. Yet the man who scored ten times...</p>
                       <p><a href="http://mailpoet.info/linekers-life-changing-treble/">Read More</a></p>',
                                 ),

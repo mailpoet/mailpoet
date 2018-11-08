@@ -265,7 +265,7 @@ class RetroComputingMagazine {
                               0 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left;" data-post-id="1987"><strong>What is it like to use a Windows 98 PC in 2017?</strong></h3>',
+                                  'text' => '<h3 style="text-align: left;"><strong>What is it like to use a Windows 98 PC in 2017?</strong></h3>',
                                 ),
                               1 =>
                                 array (
@@ -291,7 +291,7 @@ class RetroComputingMagazine {
                               0 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left;" data-post-id="1938"><strong>Windows 95 still finds life online</strong></h3>',
+                                  'text' => '<h3 style="text-align: left;"><strong>Windows 95 still finds life online</strong></h3>',
                                 ),
                               1 =>
                                 array (
@@ -317,7 +317,7 @@ class RetroComputingMagazine {
                               0 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left;" data-post-id="1997"><strong>New Sinclair ZX Spectrum Fully Funded</strong></h3>',
+                                  'text' => '<h3 style="text-align: left;"><strong>New Sinclair ZX Spectrum Fully Funded</strong></h3>',
                                 ),
                               1 =>
                                 array (
