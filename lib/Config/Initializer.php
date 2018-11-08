@@ -216,7 +216,7 @@ class Initializer {
   }
 
   function setupMenu() {
-    $menu = new Menu($this->renderer, Env::$assets_url, $this->access_control);
+    $menu = new Menu($this->renderer, $this->access_control);
     $menu->init();
   }
 

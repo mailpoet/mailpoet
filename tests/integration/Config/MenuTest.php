@@ -40,8 +40,7 @@ class MenuTest extends \MailPoetTest {
 
   function testItChecksMailpoetAPIKey() {
     $renderer = Stub::make(new Renderer());
-    $assets_url = '';
-    $menu = new Menu($renderer, $assets_url, new AccessControl());
+    $menu = new Menu($renderer, new AccessControl());
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
@@ -63,8 +62,7 @@ class MenuTest extends \MailPoetTest {
 
   function testItChecksPremiumKey() {
     $renderer = Stub::make(new Renderer());
-    $assets_url = '';
-    $menu = new Menu($renderer, $assets_url, new AccessControl());
+    $menu = new Menu($renderer, new AccessControl());
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
