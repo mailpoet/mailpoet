@@ -1,10 +1,13 @@
 <div class="mailpoet_save_wrapper {{ wrapperClass }}">
-    <div class="mailpoet_button_group">
+    <input type="button" name="next" value="<%= __('Next') %>" class="button button-primary mailpoet_save_next" />
+    <div class="mailpoet_button_group mailpoet_save_button_group">
         <input type="button" name="save" value="<%= __('Save') %>" class="button button-primary mailpoet_save_button" /><button class="button button-primary mailpoet_save_show_options" data-automation-id="newsletter_save_options_toggle" ><span class="dashicons mailpoet_save_show_options_icon"></span></button>
     </div>
-    <input type="button" name="next" value="<%= __('Next') %>" class="button button-primary mailpoet_save_next" />
-    <span class="mailpoet_save_error"></span>
-    <div class="mailpoet_editor_last_saved mailpoet_hidden"><%= __('Autosaved') %> <span class="mailpoet_autosaved_at"></span></div>
+    <div class="clearfix"></div>
+    <div class="mailpoet_editor_messages">    
+        <div class="mailpoet_save_error"></div>
+        <div class="mailpoet_editor_last_saved mailpoet_hidden"><%= __('Autosaved') %> <span class="mailpoet_autosaved_at"></span></div>
+    </div>
     <ul class="mailpoet_save_options mailpoet_hidden">
         <li class="mailpoet_save_option"><a href="javascript:;" class="mailpoet_save_template" data-automation-id="newsletter_save_as_template_option"><%= __('Save as template') %></a></li>
         <li class="mailpoet_save_option"><a href="javascript:;" class="mailpoet_save_export"><%= __('Export as template') %></a></li>
