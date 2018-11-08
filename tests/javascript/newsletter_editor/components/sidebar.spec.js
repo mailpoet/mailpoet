@@ -79,7 +79,13 @@ define([
             }
           });
           availableStyles = new Backbone.SuperModel({
-            fonts: ['Arial', 'Times New Roman', 'Tahoma', 'Comic Sans', 'Lucida'],
+            fonts: {
+              standard: ['Arial', 'Times New Roman', 'Tahoma', 'Comic Sans', 'Lucida'],
+              custom: [
+                'Arvo', 'Lato', 'Lora', 'Merriweather', 'Merriweather Sans', 'Noticia Text',
+                'Open Sans', 'Playfair Display', 'Roboto', 'Source Sans Pro'
+              ]
+            },
             textSizes: [
               '9px', '10px'
             ],

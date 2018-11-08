@@ -50,10 +50,12 @@ class Renderer {
     $content = $this->preProcessALC($content);
     $rendered_body = $this->renderBody($content);
     $rendered_styles = $this->renderStyles($styles);
+    $custom_fonts_links = StylesHelper::getCustomFontsLinks($styles);
 
     $template = $this->injectContentIntoTemplate($this->template, array(
       htmlspecialchars($newsletter['subject']),
       $rendered_styles,
+      $custom_fonts_links,
       $newsletter['preheader'],
       $rendered_body
     ));

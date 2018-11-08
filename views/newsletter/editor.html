@@ -397,6 +397,21 @@
   <%= do_action('mailpoet_newsletter_editor_after_javascript') %>
 
   <script type="text/javascript">
+    function renderWithFont(node) {
+      if (!node.element) return node.text;
+      var $wrapper = $('<span></span>');
+      $wrapper.css({'font-family': Handlebars.helpers.fontWithFallback(node.element.value)});
+      $wrapper.text(node.text);
+      return $wrapper;
+    }
+    function fontsSelect(selector) {
+      jQuery(selector).select2({
+        minimumResultsForSearch: Infinity,
+        templateSelection: renderWithFont,
+        templateResult: renderWithFont
+      });
+    }
+
     var templates = {
       styles: Handlebars.compile(
         jQuery('#newsletter_editor_template_styles').html()
@@ -604,17 +619,31 @@
           '10px', '12px', '14px', '16px', '18px', '20px', '22px', '24px',
           '26px', '30px', '36px', '40px'
         ],
-        fonts: [
-          'Arial',
-          'Comic Sans MS',
-          'Courier New',
-          'Georgia',
-          'Lucida',
-          'Tahoma',
-          'Times New Roman',
-          'Trebuchet MS',
-          'Verdana'
-        ],
+        fonts: {
+          standard: [
+            'Arial',
+            'Comic Sans MS',
+            'Courier New',
+            'Georgia',
+            'Lucida',
+            'Tahoma',
+            'Times New Roman',
+            'Trebuchet MS',
+            'Verdana'
+          ],
+          custom: [
+            'Arvo',
+            'Lato',
+            'Lora',
+            'Merriweather',
+            'Merriweather Sans',
+            'Noticia Text',
+            'Open Sans',
+            'Playfair Display',
+            'Roboto',
+            'Source Sans Pro'
+          ]
+        },
         socialIconSets: {
           'default': {
             'custom': '<%= image_url(
@@ -1322,5 +1351,6 @@
     };
     var mailpoet_in_app_announcements = <%= json_encode(settings.in_app_announcements) %>;
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
+
   </script>
 <% endblock %>
