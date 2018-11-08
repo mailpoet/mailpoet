@@ -324,8 +324,6 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
       endpoint: 'newsletters',
       action: 'save',
       data: newsletterData,
-    }).always(() => {
-      this.setState({ loading: false });
     });
   },
 
