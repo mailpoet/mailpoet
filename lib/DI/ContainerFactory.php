@@ -46,13 +46,13 @@ class ContainerFactory {
 
   function createContainer() {
     $container = new ContainerBuilder();
-    $container->autowire(\MailPoet\Config\AccessControl::class);
-    $container->autowire(\MailPoet\Cron\Daemon::class);
-    $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class);
-    $container->autowire(\MailPoet\Router\Endpoints\CronDaemon::class);
-    $container->autowire(\MailPoet\Router\Endpoints\Subscription::class);
-    $container->autowire(\MailPoet\Router\Endpoints\Track::class);
-    $container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class);
+    $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Endpoints\CronDaemon::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Endpoints\Subscription::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class)->setPublic(true);
     return $container;
   }
 
