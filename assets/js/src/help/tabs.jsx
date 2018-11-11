@@ -20,6 +20,11 @@ const tabs = [
     label: MailPoet.I18n.t('tabSystemInfoTitle'),
     link: '/systemInfo',
   },
+  {
+    name: 'yourPrivacy',
+    label: MailPoet.I18n.t('tabYourPrivacyTitle'),
+    link: '/yourPrivacy',
+  },
 ];
 
 function Tabs(props) {
