@@ -4,9 +4,10 @@ import { Router, Route, IndexRedirect, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
 import PropTypes from 'prop-types';
 
-import SystemStatus from 'help/system_status.jsx';
-import SystemInfo from 'help/system_info.jsx';
 import KnowledgeBase from 'help/knowledge_base.jsx';
+import SystemInfo from 'help/system_info.jsx';
+import SystemStatus from 'help/system_status.jsx';
+import YourPrivacy from 'help/your_privacy.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
@@ -31,6 +32,7 @@ if (container) {
         <Route path="knowledgeBase(/)**" params={{ tab: 'knowledgeBase' }} component={KnowledgeBase} />
         <Route path="systemStatus(/)**" params={{ tab: 'systemStatus' }} component={SystemStatus} />
         <Route path="systemInfo(/)**" params={{ tab: 'systemInfo' }} component={SystemInfo} />
+        <Route path="yourPrivacy(/)**" params={{ tab: 'yourPrivacy' }} component={YourPrivacy} />
       </Route>
     </Router>
   ), container);
