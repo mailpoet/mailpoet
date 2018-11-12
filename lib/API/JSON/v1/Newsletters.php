@@ -191,7 +191,9 @@ class Newsletters extends APIEndpoint {
           ->set('scheduled_at', $next_run_date)
           ->save();
       }
+      Scheduler::createPostNotificationSendingTask($newsletter);
     }
+
 
     return $this->successResponse(
       Newsletter::findOne($newsletter->id)->asArray()
