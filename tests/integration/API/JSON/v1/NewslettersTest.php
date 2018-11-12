@@ -420,7 +420,7 @@ class NewslettersTest extends \MailPoetTest {
     $sending_queue_3->save();
 
     $router = new Newsletters();
-    $response = $router->setStatus(
+    $router->setStatus(
       array(
         'id' => $this->post_notification->id,
         'status' => Newsletter::STATUS_ACTIVE
@@ -433,6 +433,31 @@ class NewslettersTest extends \MailPoetTest {
     expect($tasks[1]->scheduled_at)->equals($random_future_date);
     // previously unscheduled (e.g., sent/sending) notifications are left intact
     expect($tasks[2]->scheduled_at)->equals(Scheduler::getPreviousRunDate($schedule));
+  }
+
+  function testItSchedulesPostNotificationsWhenStatusIsSetBackToActive() {
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->name = 'schedule';
+    $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
+    $newsletter_option_field->save();
+    $schedule = '* * * * *';
+    NewsletterOption::createOrUpdate(
+      array(
+        'newsletter_id' => $this->post_notification->id,
+        'option_field_id' => $newsletter_option_field->id,
+        'value' => $schedule
+      )
+    );
+
+    $router = new Newsletters();
+    $router->setStatus(
+      array(
+        'id' => $this->post_notification->id,
+        'status' => Newsletter::STATUS_ACTIVE
+      )
+    );
+    $tasks = ScheduledTask::findMany();
+    expect($tasks)->notEmpty();
   }
 
   function testItCanRestoreANewsletter() {

@@ -507,10 +507,6 @@ class Newsletters extends APIEndpoint {
         Scheduler::processPostNotificationSchedule($newsletter);
       }
 
-      if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
-        Scheduler::createPostNotificationSendingTask($newsletter);
-      }
-
       return $this->successResponse(
         Newsletter::findOne($newsletter->id)->asArray()
       );
