@@ -162,6 +162,11 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
     ).done((response) => {
       // save template in recently sent category
       this.saveTemplate(newsletter, () => {
+        if (window.mailpoet_show_congratulate_after_first_newsletter) {
+          MailPoet.Modal.loading(false);
+          this.context.router.push(`/send/congratulate/${this.state.item.id}`);
+          return;
+        }
         // redirect to listing based on newsletter type
         this.context.router.push(Hooks.applyFilters('mailpoet_newsletters_send_server_request_response_redirect', `/${this.state.item.type || ''}`, this.state.item));
         const customResponse = Hooks.applyFilters('mailpoet_newsletters_send_server_request_response', this.state.item, response);
@@ -205,6 +210,11 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
     }).done((response) => {
       // save template in recently sent category
       this.saveTemplate(newsletter, () => {
+        if (window.mailpoet_show_congratulate_after_first_newsletter) {
+          MailPoet.Modal.loading(false);
+          this.context.router.push(`/send/congratulate/${this.state.item.id}`);
+          return;
+        }
         // redirect to listing based on newsletter type
         this.context.router.push(`/${this.state.item.type || ''}`);
         const opts = this.state.item.options;

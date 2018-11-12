@@ -87,7 +87,7 @@ define('modal', ['mailpoet', 'jquery'],
         '<div class="mailpoet_popup_body clearfix"></div>' +
         '</div>' +
         '</div>',
-        loading: '<div id="mailpoet_loading" style="display:none;">' +
+        loading: '<div id="mailpoet_loading" class="mailpoet_loading" style="display:none;">' +
         '<div id="mailpoet_modal_loading_1" class="mailpoet_modal_loading"></div>' +
         '<div id="mailpoet_modal_loading_2" class="mailpoet_modal_loading"></div>' +
         '<div id="mailpoet_modal_loading_3" class="mailpoet_modal_loading"></div>' +

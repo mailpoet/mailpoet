@@ -53,6 +53,7 @@ class Changelog {
             Setting::setValue('show_intro', true);
           }
         }
+        Setting::setValue('show_congratulate_after_first_newsletter', true);
       }
     }
 
