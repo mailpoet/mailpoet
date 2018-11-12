@@ -15,7 +15,7 @@ class KidsClothing {
   function get() {
     return array(
       'name' => __("Kids Clothing", 'mailpoet'),
-      'categories' => json_encode(array('woocommerce', 'sample')),
+      'categories' => json_encode(array('woocommerce', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

@@ -15,7 +15,7 @@ class PostNotificationsBlank1Column {
   function get() {
     return array(
       'name' => __("Post Notifications: Blank 1 Column", 'mailpoet'),
-      'categories' => json_encode(array('notification', 'blank')),
+      'categories' => json_encode(array('notification')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

@@ -15,7 +15,7 @@ class WelcomeBlank12Column {
   function get() {
     return array(
       'name' => __("Welcome Email: Blank 1:2 Column", 'mailpoet'),
-      'categories' => json_encode(array('welcome', 'blank')),
+      'categories' => json_encode(array('welcome')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
