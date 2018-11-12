@@ -24,27 +24,31 @@ const templatesCategories = [
     name: 'notification',
     label: MailPoet.I18n.t('tabNotificationTitle'),
   },
-  {
+];
+
+if (window.mailpoet_woocommerce_active) {
+  templatesCategories.push({
     name: 'woocommerce',
     label: MailPoet.I18n.t('tabWoocommerceTitle'),
-  },
-  {
-    name: 'sample',
-    label: MailPoet.I18n.t('sample'),
-  },
-  {
-    name: 'blank',
-    label: MailPoet.I18n.t('blank'),
-  },
-  {
-    name: 'recent',
-    label: MailPoet.I18n.t('recentlySent'),
-  },
-  {
-    name: 'saved',
-    label: MailPoet.I18n.t('savedTemplates'),
-  },
-];
+  });
+}
+
+templatesCategories.push(
+  ...[
+    {
+      name: 'all',
+      label: MailPoet.I18n.t('allTemplates'),
+    },
+    {
+      name: 'recent',
+      label: MailPoet.I18n.t('recentlySent'),
+    },
+    {
+      name: 'saved',
+      label: MailPoet.I18n.t('savedTemplates'),
+    },
+  ]
+);
 
 class NewsletterTemplates extends React.Component {
   constructor(props) {

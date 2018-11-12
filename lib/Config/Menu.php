@@ -580,6 +580,7 @@ class Menu {
 
     $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
+    $data['is_woocommerce_active'] = class_exists('WooCommerce');
 
     $data['automatic_emails'] = array(
       array(
