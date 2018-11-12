@@ -487,7 +487,7 @@ class ModularStyleStories {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left;" data-post-id="1994"><strong>Ladybird&rsquo;s transparent shell reveals how it folds its wings</strong></h3>
+                                  'text' => '<h3 style="text-align: left;"><strong>Ladybird&rsquo;s transparent shell reveals how it folds its wings</strong></h3>
 <p class="mailpoet_wp_post">They certainly know how to fold. A see-through artificial wing case has been used to watch for the first time as ladybirds put away their wings after flight.</p>',
                                 ),
                               2 =>
@@ -555,7 +555,7 @@ class ModularStyleStories {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left;" data-post-id="1991"><strong>Plasma jet engines that could take you from ground to space</strong></h3>
+                                  'text' => '<h3 style="text-align: left;"><strong>Plasma jet engines that could take you from ground to space</strong></h3>
 <p class="mailpoet_wp_post">FORGET fuel-powered jet engines. We&rsquo;re on the verge of having aircraft that can fly from the ground up to the edge of space using air and electricity alone.</p>',
                                 ),
                               2 =>
@@ -698,7 +698,7 @@ class ModularStyleStories {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left;" data-post-id="1997"><span style="color: #333333;"><strong>Cutting through the smog: What to do to fight air pollution</strong></span></h3>',
+                                  'text' => '<h3 style="text-align: left;"><span style="color: #333333;"><strong>Cutting through the smog: What to do to fight air pollution</strong></span></h3>',
                                 ),
                               2 =>
                                 array (
@@ -765,7 +765,7 @@ class ModularStyleStories {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left;" data-post-id="1994"><span style="color: #333333;"><strong>Ladybird&rsquo;s transparent shell reveals how it folds its wings</strong></span></h3>',
+                                  'text' => '<h3 style="text-align: left;"><span style="color: #333333;"><strong>Ladybird&rsquo;s transparent shell reveals how it folds its wings</strong></span></h3>',
                                 ),
                               2 =>
                                 array (
@@ -832,7 +832,7 @@ class ModularStyleStories {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<h3 style="text-align: left;" data-post-id="1991"><span style="color: #333333;"><strong>Plasma jet engines that could take you from the ground to space</strong></span></h3>',
+                                  'text' => '<h3 style="text-align: left;"><span style="color: #333333;"><strong>Plasma jet engines that could take you from the ground to space</strong></span></h3>',
                                 ),
                               2 =>
                                 array (
