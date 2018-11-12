@@ -394,6 +394,7 @@ class Newsletters extends APIEndpoint {
         $newsletter
           ->withOptions()
           ->withTotalSent()
+          ->withScheduledToBeSent()
           ->withStatistics();
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter

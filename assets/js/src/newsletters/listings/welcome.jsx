@@ -193,10 +193,24 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
   },
 
   renderStatus: function renderStatus(newsletter) {
-    const totalSent = (parseInt(newsletter.total_sent, 10)) ?
-      MailPoet.I18n.t('sentToXSubscribers')
-        .replace('%$1d', newsletter.total_sent.toLocaleString()) :
-      MailPoet.I18n.t('notSentYet');
+    let totalSentMessage = MailPoet.I18n.t('notSentYet');
+    const totalSent = (parseInt(newsletter.total_sent, 10));
+    if (totalSent === 1) {
+      totalSentMessage = MailPoet.I18n.t('sentToXSubscribers');
+    }
+    if (totalSent > 1) {
+      totalSentMessage = MailPoet.I18n.t('sentToXSubscribersPlural')
+        .replace('%$1d', newsletter.total_sent.toLocaleString());
+    }
+    let totalScheduledMessage = '';
+    const totalScheduled = (parseInt(newsletter.total_scheduled, 10));
+    if (totalScheduled === 1) {
+      totalScheduledMessage = MailPoet.I18n.t('scheduledToXSubscribers');
+    }
+    if (totalScheduled > 1) {
+      totalScheduledMessage = MailPoet.I18n.t('scheduledToXSubscribersPlural')
+        .replace('%$1d', newsletter.total_sent.toLocaleString());
+    }
 
     return (
       <div>
@@ -210,7 +224,11 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
             <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
           </select>
         </p>
-        <p>{ totalSent }</p>
+        <p>
+          { totalSentMessage }
+          { totalScheduledMessage !== '' ? <br /> : '' }
+          { totalScheduledMessage }
+        </p>
       </div>
     );
   },
