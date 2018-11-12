@@ -47,7 +47,7 @@ Trusted by 300,000 WordPress websites since 2011.
 Please note:
 
 * Not optimized for right-to-left (RTL) languages yet
-* Multisite not officially supported
+* Multisite is not supported
 * Review [our minimum requirements](http://beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3)
 
 = WooCommerce emails (Premium) =
