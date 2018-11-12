@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsForms;
@@ -89,6 +90,7 @@ class Populator {
     $this->createDefaultSettings();
     $this->createMailPoetPage();
     $this->createSourceForSubscribers();
+    $this->updateNewsletterCategories();
   }
 
   private function createMailPoetPage() {
@@ -380,5 +382,19 @@ class Populator {
       ' WHERE `source` = "' . Source::UNKNOWN . '"' .
       ' AND `wp_user_id` IS NOT NULL'
     );
+  }
+
+  private function updateNewsletterCategories() {
+    global $wpdb;
+    // perform once for versions below or equal to 3.14.0
+    if(version_compare(Setting::getValue('db_version', '3.14.1'), '3.14.0', '>')) {
+      return false;
+    }
+    $query = "UPDATE `%s` SET categories = REPLACE(REPLACE(categories, ',\"blank\"', ''), ',\"sample\"', ',\"all\"')";
+    $wpdb->query(sprintf(
+      $query,
+      NewsletterTemplate::$_table
+    ));
+    return true;
   }
 }
