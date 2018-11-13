@@ -44,9 +44,16 @@
     <div class="mailpoet_form_field_input_option">
         <input type="text" name="font-color" id="mailpoet_field_button_font_color" class="mailpoet_field_button_font_color mailpoet_color" value="{{ model.styles.block.fontColor }}" />
         <select id="mailpoet_field_button_font_family" name="font-family" class="mailpoet_select mailpoet_select_medium mailpoet_field_button_font_family mailpoet_font_family">
-        {{#each availableStyles.fonts}}
+        <optgroup label="<%= __('Standard fonts')%>">
+        {{#each availableStyles.fonts.standard}}
             <option value="{{ this }}" {{#ifCond this '==' ../model.styles.block.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
         {{/each}}
+        </optgroup>
+        <optgroup label="<%= __('Custom fonts')%>">
+        {{#each availableStyles.fonts.custom}}
+            <option value="{{ this }}" {{#ifCond this '==' ../model.styles.block.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
+        {{/each}}
+        </optgroup>
         </select>
         <select id="mailpoet_field_button_font_size" name="font-size" class="mailpoet_select mailpoet_select_small mailpoet_field_button_font_size mailpoet_font_size">
         {{#each availableStyles.headingSizes}}
@@ -117,3 +124,6 @@
     <input type="button" class="button button-primary mailpoet_done_editing" value="<%= __('Done') | escape('html_attr') %>" />
 </div>
 
+<script type="text/javascript">
+    fontsSelect('#mailpoet_field_button_font_family');
+</script>

@@ -322,7 +322,10 @@ define([
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubAvailableStyles(EditorApplication, {
-          fonts: ['Arial', 'Tahoma'],
+          fonts: {
+            standard: ['Arial', 'Tahoma'],
+            custom: ['Arvo', 'Lato', 'Lora']
+          },
           headingSizes: ['16px', '20px']
         });
 
@@ -343,7 +346,10 @@ define([
           global.stubChannel(EditorApplication);
           global.stubConfig(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
-            fonts: ['Arial', 'Tahoma'],
+            fonts: {
+              standard: ['Arial', 'Tahoma'],
+              custom: ['Arvo', 'Lato', 'Lora']
+            },
             headingSizes: ['16px', '20px']
           });
         });
