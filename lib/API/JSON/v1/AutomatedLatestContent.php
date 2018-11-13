@@ -43,7 +43,7 @@ class AutomatedLatestContent extends APIEndpoint {
   function getTerms($data = array()) {
     $taxonomies = (isset($data['taxonomies'])) ? $data['taxonomies'] : array();
     $search = (isset($data['search'])) ? $data['search'] : '';
-    $limit = (isset($data['limit'])) ? (int)$data['limit'] : 50;
+    $limit = (isset($data['limit'])) ? (int)$data['limit'] : 100;
     $page = (isset($data['page'])) ? (int)$data['page'] : 1;
     $args = array(
       'taxonomy' => $taxonomies,
@@ -56,8 +56,9 @@ class AutomatedLatestContent extends APIEndpoint {
     );
 
     $args = Hooks::applyFilters('mailpoet_search_terms_args', $args);
+    $terms = WPPosts::getTerms($args);
 
-    return $this->successResponse(WPPosts::getTerms($args));
+    return $this->successResponse(array_values($terms));
   }
 
   function getPosts($data = array()) {

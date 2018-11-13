@@ -372,7 +372,8 @@ define([
         ajax: {
           data: function (params) {
             return {
-              term: params.term
+              term: params.term,
+              page: params.page || 1
             };
           },
           transport: function (options, success, failure) {
@@ -385,6 +386,7 @@ define([
               // Fetch available terms based on the list of taxonomies already fetched
               termsPromise = CommunicationComponent.getTerms({
                 search: options.data.term,
+                page: options.data.page,
                 taxonomies: _.keys(taxonomies)
               }).then(function (terms) {
                 return {
@@ -410,7 +412,10 @@ define([
                     id: item.term_id
                   }, item);
                 }
-              )
+              ),
+              pagination: {
+                more: data.terms.length === 100
+              }
             };
           }
         }
