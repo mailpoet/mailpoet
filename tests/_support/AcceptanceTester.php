@@ -18,6 +18,9 @@
 class AcceptanceTester extends \Codeception\Actor {
   use _generated\AcceptanceTesterActions;
 
+  const WP_URL = 'http://wordpress';
+  const MAIL_URL = 'http://mailhog:8025';
+
   /**
    * Define custom actions here
    */

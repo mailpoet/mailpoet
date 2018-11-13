@@ -26,6 +26,7 @@
             <input
               type="radio"
               class="mailpoet_signup_confirmation"
+              data-automation-id="enable_signup_confirmation"
               name="signup_confirmation[enabled]"
               value="1"
               <% if(settings.signup_confirmation.enabled) %>
@@ -38,6 +39,7 @@
             <input
               type="radio"
               class="mailpoet_signup_confirmation"
+              data-automation-id="disable_signup_confirmation"
               name="signup_confirmation[enabled]"
               value=""
               <% if not(settings.signup_confirmation.enabled) %>
