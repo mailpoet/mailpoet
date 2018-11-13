@@ -266,7 +266,6 @@ define([
     },
     validateNewsletter: function (jsonObject) {
       var body = '';
-      var contents;
       if (!App._contentContainer.isValid()) {
         this.showValidationError(App._contentContainer.validationError);
         return;
@@ -282,10 +281,9 @@ define([
         return;
       }
 
-      contents = JSON.stringify(jsonObject);
       if ((App.getNewsletter().get('type') === 'notification') &&
-        contents.indexOf('"type":"automatedLatestContent"') < 0 &&
-        contents.indexOf('"type":"automatedLatestContentLayout"') < 0
+        body.indexOf('"type":"automatedLatestContent"') < 0 &&
+        body.indexOf('"type":"automatedLatestContentLayout"') < 0
       ) {
         this.showValidationError(MailPoet.I18n.t('automatedLatestContentMissing'));
         return;

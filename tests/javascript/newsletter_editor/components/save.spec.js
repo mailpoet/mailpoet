@@ -129,10 +129,12 @@ define([
           var newsletter = { get: sinon.stub().withArgs('type').returns('notification') };
           EditorApplication.getNewsletter = sinon.stub().returns(newsletter);
           view.validateNewsletter({
-            content: {
-              blocks: [
-                { type: 'automatedLatestContent' }
-              ]
+            body: {
+              content: {
+                blocks: [
+                  { type: 'automatedLatestContent' }
+                ]
+              }
             }
           });
           expect(hideValidationErrorStub.callCount).to.be.equal(1);
