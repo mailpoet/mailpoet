@@ -261,7 +261,7 @@ class Initializer {
   }
 
   function setupJSONAPI() {
-    $json_api = API\API::JSON($this->access_control);
+    $json_api = API\API::JSON();
     $json_api->init();
   }
 

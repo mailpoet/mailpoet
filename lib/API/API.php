@@ -2,7 +2,6 @@
 
 namespace MailPoet\API;
 
-use MailPoet\Config\AccessControl;
 use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
 use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
@@ -17,8 +16,9 @@ class API {
     self::$container = $container;
   }
 
-  static function JSON(AccessControl $access_control) {
-    return new \MailPoet\API\JSON\API($access_control);
+  static function JSON() {
+    self::checkContainer();
+    return self::$container->get(JSON\API::class);
   }
 
   static function MP($version) {

@@ -2,6 +2,7 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
+use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -20,10 +21,16 @@ class API {
   private $_available_api_versions = array(
       'v1'
   );
+  /** @var Container */
+  private $container;
+
+  /** @var AccessControl */
   private $access_control;
+
   const CURRENT_VERSION = 'v1';
 
-  function __construct(AccessControl $access_control) {
+  function __construct(Container $container, AccessControl $access_control) {
+    $this->container = $container;
     $this->access_control = $access_control;
     foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
@@ -135,7 +142,7 @@ class API {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
 
-      $endpoint = new $this->_request_endpoint_class();
+      $endpoint = $this->container->get($this->_request_endpoint_class);
 
       if(!method_exists($endpoint, $this->_request_method)) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
