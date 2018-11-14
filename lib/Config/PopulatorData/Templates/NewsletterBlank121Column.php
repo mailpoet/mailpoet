@@ -15,7 +15,7 @@ class NewsletterBlank121Column {
   function get() {
     return array(
       'name' => __("Newsletter: Blank 1:2:1 Column", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'blank')),
+      'categories' => json_encode(array('standard')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

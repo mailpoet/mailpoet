@@ -15,7 +15,7 @@ class DogFood {
   function get() {
     return array(
       'name' => __("Dog Food", 'mailpoet'),
-      'categories' => json_encode(array('woocommerce', 'sample')),
+      'categories' => json_encode(array('woocommerce', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

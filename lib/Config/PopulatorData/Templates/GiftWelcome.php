@@ -15,7 +15,7 @@ class GiftWelcome {
   function get() {
     return array(
       'name' => __("Gift Welcome", 'mailpoet'),
-      'categories' => json_encode(array('welcome', 'sample')),
+      'categories' => json_encode(array('welcome', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

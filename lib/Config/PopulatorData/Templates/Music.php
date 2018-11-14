@@ -15,7 +15,7 @@ class Music {
   function get() {
     return array(
       'name' => __("Music", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'sample')),
+      'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

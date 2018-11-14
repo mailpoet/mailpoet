@@ -15,7 +15,7 @@ class RssSimpleNews {
   function get() {
     return array(
       'name' => __("Stripped RSS Style Layout", 'mailpoet'),
-      'categories' => json_encode(array('notification', 'sample')),
+      'categories' => json_encode(array('notification', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

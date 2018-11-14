@@ -16,7 +16,7 @@ class RealEstate {
   function get() {
     return array(
       'name' => __("Real Estate", 'mailpoet'),
-      'categories' => json_encode(['welcome', 'sample']),
+      'categories' => json_encode(['welcome', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
