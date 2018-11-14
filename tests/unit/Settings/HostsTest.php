@@ -3,7 +3,7 @@ namespace MailPoet\Test\Settings;
 
 use MailPoet\Settings\Hosts;
 
-class HostsTest extends \MailPoetTest {
+class HostsTest extends \MailPoetUnitTest {
   function testItReturnsAListOfWebHosts() {
     $web_hosts = Hosts::getWebHosts();
     expect($web_hosts)->notEmpty();

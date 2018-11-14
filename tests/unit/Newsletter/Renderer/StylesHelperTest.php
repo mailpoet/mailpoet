@@ -3,7 +3,7 @@ namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
-class StylesHelperTest extends \MailPoetTest {
+class StylesHelperTest extends \MailPoetUnitTest {
 
   function testItGetsCustomFontsLinks() {
     $styles_with_custom_fonts = [
