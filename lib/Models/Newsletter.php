@@ -514,6 +514,13 @@ class Newsletter extends Model {
     return $this;
   }
 
+  function withScheduledToBeSent() {
+    $this->total_scheduled = (int)SendingQueue::findTaskByNewsletterId($this->id)
+      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
+      ->count();
+    return $this;
+  }
+
   function withStatistics() {
     $statistics = $this->getStatistics();
     $this->statistics = $statistics;
