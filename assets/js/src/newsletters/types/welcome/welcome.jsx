@@ -65,7 +65,7 @@ class NewsletterWelcome extends React.Component {
   }
 
   showTemplateSelection(newsletterId) {
-    this.props.router.push(`/template/${newsletterId}`);
+    this.props.history.push(`/template/${newsletterId}`);
   }
 
   render() {
@@ -96,7 +96,7 @@ class NewsletterWelcome extends React.Component {
 }
 
 NewsletterWelcome.propTypes = {
-  router: PropTypes.shape({
+  history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
 };

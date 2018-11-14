@@ -6,6 +6,10 @@ import 'select2';
 import PropTypes from 'prop-types';
 
 class Selection extends React.Component {
+  constructor(props) {
+    super(props);
+    this.selectRef = React.createRef();
+  }
   componentDidMount() {
     if (this.isSelect2Component()) {
       this.setupSelect2();
@@ -16,7 +20,7 @@ class Selection extends React.Component {
     if ((this.props.item !== undefined && prevProps.item !== undefined)
       && (this.props.item.id !== prevProps.item.id)
     ) {
-      jQuery(`#${this.select.id}`)
+      jQuery(`#${this.selectRef.current.id}`)
         .val(this.getSelectedValues())
         .trigger('change');
     }
@@ -152,7 +156,7 @@ class Selection extends React.Component {
       select2Options = Object.assign(select2Options, this.props.field.extendSelect2Options);
     }
 
-    const select2 = jQuery(`#${this.select.id}`).select2(select2Options);
+    const select2 = jQuery(`#${this.selectRef.current.id}`).select2(select2Options);
 
     let hasRemoved = false;
     select2.on('select2:unselecting', () => {
@@ -175,33 +179,33 @@ class Selection extends React.Component {
 
   destroySelect2 = () => {
     if (this.isSelect2Initialized()) {
-      jQuery(`#${this.select.id}`).select2('destroy');
+      jQuery(`#${this.selectRef.current.id}`).select2('destroy');
       this.cleanupAfterSelect2();
     }
   };
 
   cleanupAfterSelect2 = () => {
     // remove DOM elements created by Select2 that are not tracked by React
-    jQuery(`#${this.select.id}`)
+    jQuery(`#${this.selectRef.current.id}`)
       .find('option:not(.default)')
       .remove();
 
     // unbind events (https://select2.org/programmatic-control/methods#event-unbinding)
-    jQuery(`#${this.select.id}`)
+    jQuery(`#${this.selectRef.current.id}`)
       .off('select2:unselecting')
       .off('select2:opening');
   };
 
   allowMultipleValues = () => (this.props.field.multiple === true);
 
-  isSelect2Initialized = () => (jQuery(`#${this.select.id}`).hasClass('select2-hidden-accessible') === true);
+  isSelect2Initialized = () => (jQuery(`#${this.selectRef.current.id}`).hasClass('select2-hidden-accessible') === true);
 
   isSelect2Component = () => this.allowMultipleValues() || this.props.field.forceSelect2;
 
   handleChange = (e) => {
     if (this.props.onValueChange === undefined) return;
 
-    const valueTextPair = jQuery(`#${this.select.id}`).children(':selected').map(function element() {
+    const valueTextPair = jQuery(`#${this.selectRef.current.id}`).children(':selected').map(function element() {
       return { id: jQuery(this).val(), text: jQuery(this).text() };
     });
     const value = (this.props.field.multiple) ? _.pluck(valueTextPair, 'id') : _.pluck(valueTextPair, 'id').toString();
@@ -258,7 +262,7 @@ class Selection extends React.Component {
     return (
       <select
         id={this.getFieldId()}
-        ref={(c) => { this.select = c; }}
+        ref={this.selectRef}
         disabled={this.props.field.disabled}
         data-placeholder={this.props.field.placeholder}
         multiple={this.props.field.multiple}

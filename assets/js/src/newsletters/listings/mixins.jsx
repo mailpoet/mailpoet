@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactStringReplace from 'react-string-replace';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import moment from 'moment';

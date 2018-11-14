@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import InAppAnnoucement from 'in_app_announcements/in_app_announcement.jsx';
 

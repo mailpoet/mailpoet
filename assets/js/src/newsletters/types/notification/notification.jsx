@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import _ from 'underscore';
 import Scheduling from 'newsletters/types/notification/scheduling.jsx';
+import { withRouter } from 'react-router-dom';
 
 const field = {
   name: 'options',
@@ -12,8 +13,10 @@ const field = {
 };
 
 class NewsletterNotification extends React.Component {
-  static contextTypes = {
-    router: PropTypes.object.isRequired,
+  static propTypes = {
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
   };
 
   state = {
@@ -54,7 +57,7 @@ class NewsletterNotification extends React.Component {
   };
 
   showTemplateSelection = (newsletterId) => {
-    this.context.router.push(`/template/${newsletterId}`);
+    this.props.history.push(`/template/${newsletterId}`);
   };
 
   render() {
@@ -84,5 +87,5 @@ class NewsletterNotification extends React.Component {
   }
 }
 
-module.exports = NewsletterNotification;
+module.exports = withRouter(NewsletterNotification);
 

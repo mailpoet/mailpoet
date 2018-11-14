@@ -68,12 +68,12 @@ class Congratulate extends React.Component {
   }
 
   componentDidMount() {
-    this.loadNewsletter(this.props.params.id);
+    this.loadNewsletter(this.props.match.params.id);
     this.tick();
   }
 
   componentWillReceiveProps(props) {
-    this.loadNewsletter(props.params.id);
+    this.loadNewsletter(props.match.params.id);
   }
 
   tick() {
@@ -81,7 +81,7 @@ class Congratulate extends React.Component {
       this.setState({ error: true, loading: false });
     }
     if (this.state.loading) {
-      this.loadNewsletter(this.props.params.id);
+      this.loadNewsletter(this.props.match.params.id);
     }
     if (moment().subtract(SECONDS_MINIMUIM_LOADING_SCREEN_DISPLAYED, 'seconds').isAfter(this.state.timeStart)) {
       this.setState({ minimumLoadingTimePassed: true });
@@ -128,8 +128,10 @@ class Congratulate extends React.Component {
 }
 
 Congratulate.propTypes = {
-  params: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }).isRequired,
   }).isRequired,
 };
 

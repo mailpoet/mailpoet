@@ -77,10 +77,6 @@ var baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.ReactTooltip',
       },
       {
-        include: require.resolve('history'),
-        loader: 'expose-loader?' + globalPrefix + '.History',
-      },
-      {
         include: require.resolve('react'),
         loader: 'expose-loader?' + globalPrefix + '.React',
       },
@@ -89,7 +85,7 @@ var baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.ReactDOM',
       },
       {
-        include: require.resolve('react-router'),
+        include: require.resolve('react-router-dom'),
         use: 'expose-loader?' + globalPrefix + '.ReactRouter',
       },
       {
@@ -245,7 +241,7 @@ var adminConfig = {
     admin_vendor: [
       'react',
       'react-dom',
-      require.resolve('react-router'),
+      require.resolve('react-router-dom'),
       'react-string-replace',
       'prop-types',
       'listing/listing.jsx',
@@ -260,7 +256,6 @@ var adminConfig = {
       'newsletters/types/automatic_emails/breadcrumb.jsx',
       'newsletters/types/welcome/scheduling.jsx',
       'newsletter_editor/initializer.jsx',
-      'history',
       'classnames'
     ],
     admin: [

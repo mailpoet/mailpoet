@@ -1,6 +1,6 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
@@ -64,7 +64,9 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
 
   propTypes: {
     location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    match: PropTypes.shape({
+      params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    }).isRequired,
   },
 
   mixins: [QueueMixin, StatisticsMixin, MailerMixin, CronMixin],
@@ -122,7 +124,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
         <Listing
           limit={window.mailpoet_listing_per_page}
           location={this.props.location}
-          params={this.props.params}
+          params={this.props.match.params}
           endpoint="newsletters"
           type="notification_history"
           base_url="notification/history/:parent_id"

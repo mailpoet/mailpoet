@@ -12,6 +12,7 @@ import ListingSearch from 'listing/search.jsx';
 import ListingGroups from 'listing/groups.jsx';
 import ListingFilters from 'listing/filters.jsx';
 import ListingItems from 'listing/listing_items.jsx';
+import { withRouter } from 'react-router-dom';
 
 const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
   displayName: 'Listing',
@@ -44,12 +45,11 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     renderExtraActions: PropTypes.func,
     onBeforeSelectFilter: PropTypes.func,
     getListingItemKey: PropTypes.func,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
   },
   /* eslint-enable react/require-default-props */
-
-  contextTypes: {
-    router: PropTypes.object.isRequired,
-  },
 
   getDefaultProps: () => ({
     limit: 10,
@@ -145,7 +145,7 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
       const url = this.getUrlWithParams(params);
 
       if (this.props.location.pathname !== url) {
-        this.context.router.push(`${url}`);
+        this.props.history.push(`${url}`);
       }
     }
   },
@@ -177,7 +177,6 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
   },
 
   getParams: function getParams() {
-    // get all route parameters (without the "splat")
     const params = _.omit(this.props.params, 'splat');
     // TODO:
     // find a way to set the "type" in the routes definition
@@ -191,6 +190,7 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
   getParam: function getParam(param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
+    if (!matches) return null;
     return [matches[1], matches[2]];
   },
 
@@ -250,9 +250,13 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
   initWithParams: function initWithParams(params) {
     const state = this.getInitialState();
     // check for url params
-    if (params.splat) {
-      params.splat.split('/').forEach((param) => {
-        const [key, value] = this.getParam(param);
+    _.mapObject(params, (param) => {
+      if (!param) return;
+      param.split('/').forEach((item) => {
+        if (!item) return;
+        const parsedParam = this.getParam(item);
+        if (!parsedParam) return;
+        const [key, value] = parsedParam;
         const filters = {};
         switch (key) {
           case 'filter':
@@ -267,7 +271,7 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
             state[key] = value;
         }
       });
-    }
+    });
 
     // limit per page
     if (this.props.limit !== undefined) {
@@ -723,4 +727,4 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
   },
 });
 
-module.exports = Listing;
+module.exports = withRouter(Listing);

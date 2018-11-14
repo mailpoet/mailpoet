@@ -4,16 +4,18 @@ import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
-import 'react-router';
+import { withRouter } from 'react-router-dom';
 
 class NewsletterTypes extends React.Component {
-  static contextTypes = {
-    router: PropTypes.object.isRequired,
+  static propTypes = {
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
   };
 
   setupNewsletter = (type) => {
     if (type !== undefined) {
-      this.context.router.push(`/new/${type}`);
+      this.props.history.push(`/new/${type}`);
       MailPoet.trackEvent('Emails > Type selected', {
         'MailPoet Free version': window.mailpoet_version,
         'Email type': type,
@@ -58,7 +60,7 @@ class NewsletterTypes extends React.Component {
         subject: MailPoet.I18n.t('draftNewsletterTitle'),
       },
     }).done((response) => {
-      this.context.router.push(`/template/${response.data.id}`);
+      this.props.history.push(`/template/${response.data.id}`);
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -177,4 +179,4 @@ class NewsletterTypes extends React.Component {
   }
 }
 
-module.exports = NewsletterTypes;
+module.exports = withRouter(NewsletterTypes);

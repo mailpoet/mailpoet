@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import Form from 'form/form.jsx';
@@ -188,7 +188,7 @@ class SubscriberForm extends React.Component { // eslint-disable-line react/pref
         <Form
           endpoint="subscribers"
           fields={fields}
-          params={this.props.params}
+          params={this.props.match.params}
           messages={messages}
           beforeFormContent={beforeFormContent}
           afterFormContent={afterFormContent}
@@ -199,7 +199,11 @@ class SubscriberForm extends React.Component { // eslint-disable-line react/pref
 }
 
 SubscriberForm.propTypes = {
-  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
 };
 
 module.exports = SubscriberForm;

@@ -3,15 +3,27 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
 class ListingSearch extends React.Component {
-  componentWillReceiveProps(nextProps) {
-    this.search.value = nextProps.search;
+  constructor(props) {
+    super(props);
+    this.state = {
+      search: '',
+    };
     this.handleSearch = this.handleSearch.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ search: nextProps.search });
+  }
+
+  onChange(e) {
+    this.setState({ search: e.target.value });
   }
 
   handleSearch(e) {
     e.preventDefault();
     this.props.onSearch(
-      this.search.value.trim()
+      this.state.search.trim()
     );
   }
 
@@ -28,13 +40,13 @@ class ListingSearch extends React.Component {
           <input
             type="search"
             id="search_input"
-            ref={(c) => { this.search = c; }}
             name="s"
-            defaultValue={this.props.search}
+            onChange={this.onChange}
+            value={this.state.search}
           />
           <input
             type="submit"
-            defaultValue={MailPoet.I18n.t('searchLabel')}
+            value={MailPoet.I18n.t('searchLabel')}
             className="button"
           />
         </p>

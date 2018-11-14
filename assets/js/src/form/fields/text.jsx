@@ -41,7 +41,7 @@ class FormFieldText extends React.Component { // eslint-disable-line react/prefe
         size={
           (this.props.field.size !== 'auto' && this.props.field.size > 0)
             ? this.props.field.size
-            : false
+            : null
         }
         name={name}
         id={id}

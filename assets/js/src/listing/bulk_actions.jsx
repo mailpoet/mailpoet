@@ -3,13 +3,19 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
 class ListingBulkActions extends React.Component {
-  state = {
-    action: false,
-    extra: false,
-  };
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+    this.state = {
+      action: false,
+      extra: false,
+    };
+    this.handleApplyAction = this.handleApplyAction.bind(this);
+    this.handleChangeAction = this.handleChangeAction.bind(this);
+  }
 
-  getSelectedAction = () => {
-    const selectedAction = this.action.value;
+  getSelectedAction() {
+    const selectedAction = this.myRef.current.value;
     if (selectedAction.length > 0) {
       const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
 
@@ -18,9 +24,9 @@ class ListingBulkActions extends React.Component {
       }
     }
     return null;
-  };
+  }
 
-  handleApplyAction = (e) => {
+  handleApplyAction(e) {
     e.preventDefault();
 
     const action = this.getSelectedAction();
@@ -55,9 +61,9 @@ class ListingBulkActions extends React.Component {
       action: false,
       extra: false,
     });
-  };
+  }
 
-  handleChangeAction = (e) => {
+  handleChangeAction(e) {
     this.setState({
       action: e.target.value,
       extra: false,
@@ -71,7 +77,7 @@ class ListingBulkActions extends React.Component {
         });
       }
     });
-  };
+  }
 
   render() {
     if (this.props.bulk_actions.length === 0) {
@@ -89,7 +95,7 @@ class ListingBulkActions extends React.Component {
 
         <select
           name="bulk_actions"
-          ref={(c) => { this.action = c; }}
+          ref={this.myRef}
           value={this.state.action}
           onChange={this.handleChangeAction}
         >
