@@ -7,6 +7,7 @@ use MailPoet\Models\NewsletterTemplate;
 
 class NewsletterTemplatesTest extends \MailPoetTest {
   function _before() {
+    NewsletterTemplate::deleteMany();
     NewsletterTemplate::createOrUpdate(array(
       'name' => 'Template #1',
       'body' => '{"key1": "value1"}'
@@ -40,16 +41,13 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     );
   }
 
-
   function testItCanGetAllNewsletterTemplates() {
-    $templates = array_map(function($template) {
-      return $template->asArray();
-    }, NewsletterTemplate::findMany());
+    $templates = NewsletterTemplate::count();
 
     $router = new NewsletterTemplates();
     $response = $router->getAll();
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->count(count($templates));
+    expect($response->data)->count($templates);
   }
 
   function testItCanSaveANewTemplate() {
