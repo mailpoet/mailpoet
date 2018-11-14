@@ -99,6 +99,7 @@ class Initializer {
   function loadContainer() {
     $container_factory = new ContainerFactory(WP_DEBUG);
     $this->container = $container_factory->getContainer();
+    API\API::injectContainer($this->container);
   }
 
   function checkRequirements() {

@@ -53,6 +53,10 @@ class ContainerFactory {
     $container->autowire(\MailPoet\Router\Endpoints\Subscription::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class)->setPublic(true);
+    $container->autowire(\MailPoet\API\MP\v1\API::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
     return $container;
   }
 
