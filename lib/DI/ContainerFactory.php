@@ -81,6 +81,8 @@ class ContainerFactory {
     $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
+    // Newsletter
+    $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
     return $container;
   }
 

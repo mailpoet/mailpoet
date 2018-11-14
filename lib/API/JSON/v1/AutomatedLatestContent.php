@@ -10,13 +10,14 @@ use MailPoet\WP\Posts as WPPosts;
 if(!defined('ABSPATH')) exit;
 
 class AutomatedLatestContent extends APIEndpoint {
+  /** @var \MailPoet\Newsletter\AutomatedLatestContent  */
   public $ALC;
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS
   );
 
-  function __construct() {
-    $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent();
+  function __construct(\MailPoet\Newsletter\AutomatedLatestContent $alc) {
+    $this->ALC = $alc;
   }
 
   function getPostTypes() {
@@ -74,14 +75,12 @@ class AutomatedLatestContent extends APIEndpoint {
   }
 
   function getBulkTransformedPosts($data = array()) {
-    $alc = new \MailPoet\Newsletter\AutomatedLatestContent();
-
     $used_posts = array();
     $rendered_posts = array();
 
     foreach($data['blocks'] as $block) {
-      $posts = $alc->getPosts($block, $used_posts);
-      $rendered_posts[] = $alc->transformPosts($block, $posts);
+      $posts = $this->ALC->getPosts($block, $used_posts);
+      $rendered_posts[] = $this->ALC->transformPosts($block, $posts);
 
       foreach($posts as $post) {
         $used_posts[] = $post->ID;
