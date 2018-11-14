@@ -47,18 +47,8 @@ class ContainerFactory {
 
   function createContainer() {
     $container = new ContainerBuilder();
-    $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
-    $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
-    $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
-    $container->autowire(\MailPoet\Router\Endpoints\CronDaemon::class)->setPublic(true);
-    $container->autowire(\MailPoet\Router\Endpoints\Subscription::class)->setPublic(true);
-    $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
-    $container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class)->setPublic(true);
+    // API
     $container->autowire(\MailPoet\API\MP\v1\API::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
-    // JSON API
     $container->register(\MailPoet\API\JSON\API::class)
       ->addArgument(new Reference('service_container'))
       ->setAutowired(true)
@@ -77,6 +67,20 @@ class ContainerFactory {
     $container->autowire(\MailPoet\API\JSON\v1\Settings::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Setup::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Subscribers::class)->setPublic(true);
+    // Config
+    $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
+    // Cron
+    $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
+    // Router
+    $container->autowire(\MailPoet\Router\Endpoints\CronDaemon::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Endpoints\Subscription::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class)->setPublic(true);
+    // Subscribers
+    $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
     return $container;
   }
 
