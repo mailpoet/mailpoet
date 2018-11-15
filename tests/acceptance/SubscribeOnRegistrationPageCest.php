@@ -10,18 +10,12 @@ class SubscribeOnRegistrationPageCest {
     $I->amOnMailPoetPage('Settings');
     $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->checkOption('#settings[subscribe_on_register]');
-    $I->selectOptionInSelect2("My First List");
+    $I->selectOptionInSelect2("My First List", '#mailpoet_subscribe_in_form input.select2-search__field');
     //save settings
     $I->click('[data-automation-id="settings-submit-button"]');
     $I->logOut();
     $I->amOnPage('/wp-login.php?action=register');
     $I->waitForElement(['css'=>'.registration-form-mailpoet'], 10);
-    //clear setting to hide select2 from subsequent tests
     $I->login();
-    $I->amOnMailPoetPage('Settings');
-    $I->seeInCurrentUrl('page=mailpoet-settings');
-    $I->uncheckOption('#settings[subscribe_on_register]');
-    //save settings
-    $I->click('[data-automation-id="settings-submit-button"]');
   }
 }
