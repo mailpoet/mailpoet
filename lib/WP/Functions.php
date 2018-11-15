@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\WP;
 
-use Mailpoet\Config\Env;
+use MailPoet\Config\Env;
 
 class Functions {
   static function wpRemotePost() {

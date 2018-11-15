@@ -4,7 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Models\Setting;
 use MailPoet\Util\Url;
-use MailPoet\Wp\Hooks as WPHooks;
+use MailPoet\WP\Hooks as WPHooks;
 
 class Changelog {
   function init() {
