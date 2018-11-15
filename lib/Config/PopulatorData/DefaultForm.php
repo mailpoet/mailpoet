@@ -49,7 +49,7 @@ class DefaultForm {
         'id' => 'submit',
         'unique' => '0',
         'static' => '1',
-        'params' => ['label' => __('Subscribe!', 'Form label', 'mailpoet')],
+        'params' => ['label' => _x('Subscribe!', 'Form label', 'mailpoet')],
         'position' => '4',
       ],
     ];
