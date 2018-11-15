@@ -6,7 +6,7 @@ use MailPoet\Config\AccessControl;
 
 class APITest extends \MailPoetTest {
   function testItCallsJSONAPI() {
-    expect(API::JSON(new AccessControl()))->isInstanceOf('MailPoet\API\JSON\API');
+    expect(API::JSON())->isInstanceOf('MailPoet\API\JSON\API');
   }
 
   function testItCallsMPAPI() {

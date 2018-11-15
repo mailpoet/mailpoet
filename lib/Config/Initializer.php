@@ -99,6 +99,7 @@ class Initializer {
   function loadContainer() {
     $container_factory = new ContainerFactory(WP_DEBUG);
     $this->container = $container_factory->getContainer();
+    API\API::injectContainer($this->container);
   }
 
   function checkRequirements() {
@@ -260,7 +261,7 @@ class Initializer {
   }
 
   function setupJSONAPI() {
-    $json_api = API\API::JSON($this->access_control);
+    $json_api = API\API::JSON();
     $json_api->init();
   }
 

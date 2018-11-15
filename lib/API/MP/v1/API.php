@@ -15,6 +15,26 @@ use MailPoet\Tasks\Sending;
 if(!defined('ABSPATH')) exit;
 
 class API {
+
+  /** @var NewSubscriberNotificationMailer */
+  private $new_subscribe_notification_mailer;
+
+  /** @var ConfirmationEmailMailer */
+  private $confirmation_email_mailer;
+
+  /** @var RequiredCustomFieldValidator */
+  private $required_custom_field_validator;
+
+  public function __construct(
+    NewSubscriberNotificationMailer $new_subscribe_notification_mailer,
+    ConfirmationEmailMailer $confirmation_email_mailer,
+    RequiredCustomFieldValidator $required_custom_field_validator
+  ) {
+    $this->new_subscribe_notification_mailer = $new_subscribe_notification_mailer;
+    $this->confirmation_email_mailer = $confirmation_email_mailer;
+    $this->required_custom_field_validator = $required_custom_field_validator;
+  }
+
   function getSubscriberFields() {
     $data = array(
       array(
@@ -168,8 +188,7 @@ class API {
     // if some required default fields are missing, set their values
     $default_fields = Subscriber::setRequiredFieldsDefaultValues($default_fields);
 
-    $validator = new RequiredCustomFieldValidator();
-    $validator->validate($custom_fields);
+    $this->required_custom_field_validator->validate($custom_fields);
 
     // add subscriber
     $new_subscriber = Subscriber::create();
@@ -255,8 +274,7 @@ class API {
   }
 
   protected function _sendConfirmationEmail(Subscriber $subscriber) {
-    $sender = new ConfirmationEmailMailer();
-    return $sender->sendConfirmationEmail($subscriber);
+    return $this->confirmation_email_mailer->sendConfirmationEmail($subscriber);
   }
 
   protected function _scheduleWelcomeNotification(Subscriber $subscriber, array $segments) {
@@ -274,7 +292,6 @@ class API {
   }
 
   private function sendSubscriberNotification(Subscriber $subscriber, array $segment_ids) {
-    $sender = new NewSubscriberNotificationMailer();
-    $sender->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
+    $this->new_subscribe_notification_mailer->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
   }
 }

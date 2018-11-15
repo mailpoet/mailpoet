@@ -6,16 +6,26 @@ use AspectMock\Test as Mock;
 use Codeception\Util\Fixtures;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use MailPoet\API\API;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Tasks\Sending;
 
 class APITest extends \MailPoetTest {
   const VERSION = 'v1';
+
+  private function getApi() {
+    return new \MailPoet\API\MP\v1\API(
+      Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+      Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
+      Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate')
+    );
+  }
 
   function testItReturnsSubscriberFields() {
     $custom_field = CustomField::create();
@@ -23,7 +33,7 @@ class APITest extends \MailPoetTest {
     $custom_field->type = CustomField::TYPE_TEXT;
     $custom_field->save();
 
-    $response = API::MP(self::VERSION)->getSubscriberFields();
+    $response = $this->getApi()->getSubscriberFields();
 
     expect($response)->equals(
       array(
@@ -49,7 +59,7 @@ class APITest extends \MailPoetTest {
 
   function testItDoesNotSubscribeMissingSubscriberToLists() {
     try {
-      API::MP(self::VERSION)->subscribeToLists(false, array(1,2,3));
+      $this->getApi()->subscribeToLists(false, array(1,2,3));
       $this->fail('Subscriber does not exist exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('This subscriber does not exist.');
@@ -62,14 +72,14 @@ class APITest extends \MailPoetTest {
     $subscriber->save();
     // multiple lists error message
     try {
-      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array(1,2,3));
+      $this->getApi()->subscribeToLists($subscriber->id, array(1,2,3));
       $this->fail('Missing segments exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('These lists do not exist.');
     }
     // single list error message
     try {
-      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array(1));
+      $this->getApi()->subscribeToLists($subscriber->id, array(1));
       $this->fail('Missing segments exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('This list does not exist.');
@@ -87,7 +97,7 @@ class APITest extends \MailPoetTest {
       )
     );
     try {
-      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
+      $this->getApi()->subscribeToLists($subscriber->id, array($segment->id));
       $this->fail('WP Users segment exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->id}.");
@@ -106,14 +116,14 @@ class APITest extends \MailPoetTest {
     );
     // multiple lists error message
     try {
-      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id, 90, 100));
+      $this->getApi()->subscribeToLists($subscriber->id, array($segment->id, 90, 100));
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
     }
     // single list error message
     try {
-      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id, 90));
+      $this->getApi()->subscribeToLists($subscriber->id, array($segment->id, 90));
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('List with ID 90 does not exist.');
@@ -123,7 +133,7 @@ class APITest extends \MailPoetTest {
   function testItUsesMultipleListsSubscribeMethodWhenSubscribingToSingleList() {
     // subscribing to single list = converting list ID to an array and using
     // multiple lists subscription method
-    $API = Stub::make(new \MailPoet\API\MP\v1\API(), array(
+    $API = Stub::make($this->getApi(), array(
       'subscribeToLists' => function() {
         return func_get_args();
       }
@@ -152,13 +162,13 @@ class APITest extends \MailPoetTest {
 
     // test if segments are specified
     try {
-      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array());
+      $this->getApi()->subscribeToLists($subscriber->id, array());
       $this->fail('Segments are required exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('At least one segment ID is required.');
     }
 
-    $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
+    $result = $this->getApi()->subscribeToLists($subscriber->id, array($segment->id));
     expect($result['id'])->equals($subscriber->id);
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
@@ -173,7 +183,7 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
-    $result = API::MP(self::VERSION)->subscribeToList($subscriber->email, $segment->id);
+    $result = $this->getApi()->subscribeToList($subscriber->email, $segment->id);
     expect($result['id'])->equals($subscriber->id);
     expect($result['subscriptions'])->notEmpty();
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
@@ -181,7 +191,7 @@ class APITest extends \MailPoetTest {
 
   function testItSchedulesWelcomeNotificationByDefaultAfterSubscriberSubscriberToLists() {
     $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
+      \MailPoet\API\MP\v1\API::class,
       'subscribeToLists',
       array(
         '_scheduleWelcomeNotification' => Expected::once()
@@ -201,7 +211,7 @@ class APITest extends \MailPoetTest {
 
   function testItDoesNotScheduleWelcomeNotificationAfterSubscribingSubscriberToListsIfStatusIsNotSubscribed() {
     $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
+      \MailPoet\API\MP\v1\API::class,
       'subscribeToLists',
       array(
         '_scheduleWelcomeNotification' => Expected::never()
@@ -220,7 +230,7 @@ class APITest extends \MailPoetTest {
 
   function testItDoesNotScheduleWelcomeNotificationAfterSubscribingSubscriberToListsWhenDisabledByOption() {
     $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
+      \MailPoet\API\MP\v1\API::class,
       'subscribeToLists',
       array(
         '_scheduleWelcomeNotification' => Expected::never()
@@ -246,7 +256,7 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
-    $result = API::MP(self::VERSION)->getLists();
+    $result = $this->getApi()->getLists();
     expect($result)->count(1);
     expect($result[0]['id'])->equals($segment->id);
   }
@@ -264,14 +274,14 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_WP_USERS
       )
     );
-    $result = API::MP(self::VERSION)->getLists();
+    $result = $this->getApi()->getLists();
     expect($result)->count(1);
     expect($result[0]['id'])->equals($default_segment->id);
   }
 
   function testItRequiresEmailAddressToAddSubscriber() {
     try {
-      API::MP(self::VERSION)->addSubscriber(array());
+      $this->getApi()->addSubscriber(array());
       $this->fail('Subscriber email address required exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('Subscriber email address is required.');
@@ -283,7 +293,7 @@ class APITest extends \MailPoetTest {
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
     try {
-      API::MP(self::VERSION)->addSubscriber(array('email' => $subscriber->email));
+      $this->getApi()->addSubscriber(array('email' => $subscriber->email));
       $this->fail('Subscriber exists exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('This subscriber already exists.');
@@ -295,7 +305,7 @@ class APITest extends \MailPoetTest {
       'email' => 'test' // invalid email
     );
     try {
-      API::MP(self::VERSION)->addSubscriber($subscriber);
+      $this->getApi()->addSubscriber($subscriber);
       $this->fail('Failed to add subscriber exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->contains('Failed to add subscriber:');
@@ -315,7 +325,7 @@ class APITest extends \MailPoetTest {
     'cf_' . $custom_field->id => 'test'
     );
 
-    $result = API::MP(self::VERSION)->addSubscriber($subscriber);
+    $result = $this->getApi()->addSubscriber($subscriber);
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
     expect($result['cf_' . $custom_field->id])->equals('test');
@@ -334,16 +344,10 @@ class APITest extends \MailPoetTest {
     );
 
     $this->setExpectedException('Exception');
-    API::MP(self::VERSION)->addSubscriber($subscriber);
+    $this->getApi()->addSubscriber($subscriber);
   }
 
   function testItSubscribesToSegmentsWhenAddingSubscriber() {
-    $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
-      'addSubscriber',
-      array(
-        '_sendConfirmationEmail' => Expected::once()
-      ), $this);
     $segment = Segment::createOrUpdate(
       array(
         'name' => 'Default',
@@ -354,7 +358,7 @@ class APITest extends \MailPoetTest {
       'email' => 'test@example.com'
     );
 
-    $result = $API->addSubscriber($subscriber, array($segment->id));
+    $result = $this->getApi()->addSubscriber($subscriber, array($segment->id));
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
@@ -362,16 +366,18 @@ class APITest extends \MailPoetTest {
 
   function testItSchedulesWelcomeNotificationByDefaultAfterAddingSubscriber() {
     $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
+      \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
       array(
-        '_scheduleWelcomeNotification' => Expected::once()
+        'new_subscribe_notification_mailer'=> Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        '_scheduleWelcomeNotification' => Expected::once(),
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com',
       'status' => Subscriber::STATUS_SUBSCRIBED
     );
-    $segments = array(1);
+    $segments = [1];
     $API->addSubscriber($subscriber, $segments);
   }
 
@@ -389,7 +395,7 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
-    $API = new \MailPoet\API\MP\v1\API();
+    $API = $this->getApi();
     $subscriber = array(
       'email' => 'test@example.com',
       'status' => Subscriber::STATUS_SUBSCRIBED
@@ -401,10 +407,12 @@ class APITest extends \MailPoetTest {
 
   function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberIfStatusIsNotSubscribed() {
     $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
+      \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
       array(
-        '_scheduleWelcomeNotification' => Expected::never()
+        '_scheduleWelcomeNotification' => Expected::never(),
+        'new_subscribe_notification_mailer'=> Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com'
@@ -415,10 +423,12 @@ class APITest extends \MailPoetTest {
 
   function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberWhenDisabledByOption() {
     $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
+      \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
       array(
-        '_scheduleWelcomeNotification' => Expected::never()
+        '_scheduleWelcomeNotification' => Expected::never(),
+        'new_subscribe_notification_mailer'=> Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate'])
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com',
@@ -431,10 +441,12 @@ class APITest extends \MailPoetTest {
 
   function testByDefaultItSendsConfirmationEmailAfterAddingSubscriber() {
     $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
+      \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
       array(
-        '_sendConfirmationEmail' => Expected::once()
+        '_sendConfirmationEmail' => Expected::once(),
+        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'new_subscribe_notification_mailer'=> Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send'])
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com'
@@ -444,14 +456,17 @@ class APITest extends \MailPoetTest {
   }
 
   function testItThrowsWhenConfirmationEmailFailsToSend() {
-    $API = new \MailPoet\API\MP\v1\API();
-    Mock::double($API, array(
-        '_sendConfirmationEmail' => function ($subscriber) {
-          $subscriber->setError('Big Error');
-          return false;
-        }
-      )
-    );
+    $confirmation_mailer = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmation_mailer->expects($this->once())
+      ->method('sendConfirmationEmail')
+      ->willReturnCallback(function (Subscriber $subscriber) {
+        $subscriber->setError('Big Error');
+        return false;
+      });
+
+    $API = Stub::copy($this->getApi(), [
+      'confirmation_email_mailer' => $confirmation_mailer,
+    ]);
     $segment = Segment::createOrUpdate(
       array(
         'name' => 'Default',
@@ -467,10 +482,12 @@ class APITest extends \MailPoetTest {
 
   function testItDoesNotSendConfirmationEmailAfterAddingSubscriberWhenOptionIsSet() {
     $API = Stub::makeEmptyExcept(
-      new \MailPoet\API\MP\v1\API(),
+      \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
       array(
-        '_sendConfirmationEmail' => Expected::never()
+        '__sendConfirmationEmail' => Expected::never(),
+        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'new_subscribe_notification_mailer'=> Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send'])
       ), $this);
     $subscriber = array(
       'email' => 'test@example.com'
@@ -482,7 +499,7 @@ class APITest extends \MailPoetTest {
 
   function testItRequiresNameToAddList() {
     try {
-      API::MP(self::VERSION)->addList(array());
+      $this->getApi()->addList(array());
       $this->fail('List name required exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('List name is required.');
@@ -494,7 +511,7 @@ class APITest extends \MailPoetTest {
     $segment->name = 'Test segment';
     $segment->save();
     try {
-      API::MP(self::VERSION)->addList(array('name' => $segment->name));
+      $this->getApi()->addList(array('name' => $segment->name));
       $this->fail('List exists exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('This list already exists.');
@@ -506,14 +523,14 @@ class APITest extends \MailPoetTest {
       'name' => 'Test segment'
     );
 
-    $result = API::MP(self::VERSION)->addList($segment);
+    $result = $this->getApi()->addList($segment);
     expect($result['id'])->greaterThan(0);
     expect($result['name'])->equals($segment['name']);
   }
 
   function testItDoesNotUnsubscribeMissingSubscriberFromLists() {
     try {
-      API::MP(self::VERSION)->unsubscribeFromLists(false, array(1,2,3));
+      $this->getApi()->unsubscribeFromLists(false, array(1,2,3));
       $this->fail('Subscriber does not exist exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('This subscriber does not exist.');
@@ -526,14 +543,14 @@ class APITest extends \MailPoetTest {
     $subscriber->save();
     // multiple lists error message
     try {
-      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array(1,2,3));
+      $this->getApi()->unsubscribeFromLists($subscriber->id, array(1,2,3));
       $this->fail('Missing segments exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('These lists do not exist.');
     }
     // single list error message
     try {
-      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array(1));
+      $this->getApi()->unsubscribeFromLists($subscriber->id, array(1));
       $this->fail('Missing segments exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('This list does not exist.');
@@ -552,14 +569,14 @@ class APITest extends \MailPoetTest {
     );
     // multiple lists error message
     try {
-      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id, 90, 100));
+      $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id, 90, 100));
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
     }
     // single list error message
     try {
-      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id, 90));
+      $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id, 90));
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('List with ID 90 does not exist.');
@@ -577,7 +594,7 @@ class APITest extends \MailPoetTest {
       )
     );
     try {
-      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id));
+      $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id));
       $this->fail('WP Users segment exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->id}.");
@@ -587,7 +604,7 @@ class APITest extends \MailPoetTest {
   function testItUsesMultipleListsUnsubscribeMethodWhenUnsubscribingFromSingleList() {
     // unsubscribing from single list = converting list ID to an array and using
     // multiple lists unsubscribe method
-    $API = Stub::make(new \MailPoet\API\MP\v1\API(), array(
+    $API = Stub::make(\MailPoet\API\MP\v1\API::class, array(
       'unsubscribeFromLists' => function() {
         return func_get_args();
       }
@@ -615,15 +632,15 @@ class APITest extends \MailPoetTest {
 
     // test if segments are specified
     try {
-      API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array());
+      $this->getApi()->unsubscribeFromLists($subscriber->id, array());
       $this->fail('Segments are required exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('At least one segment ID is required.');
     }
 
-    $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
+    $result = $this->getApi()->subscribeToLists($subscriber->id, array($segment->id));
     expect($result['subscriptions'][0]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
-    $result = API::MP(self::VERSION)->unsubscribeFromLists($subscriber->id, array($segment->id));
+    $result = $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id));
     expect($result['subscriptions'][0]['status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
@@ -637,16 +654,16 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT
       )
     );
-    API::MP(self::VERSION)->subscribeToList($subscriber->id, $segment->id);
+    $this->getApi()->subscribeToList($subscriber->id, $segment->id);
 
     // successful response
-    $result = API::MP(self::VERSION)->getSubscriber($subscriber->email);
+    $result = $this->getApi()->getSubscriber($subscriber->email);
     expect($result['email'])->equals($subscriber->email);
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
 
     // error response
     try {
-      API::MP(self::VERSION)->getSubscriber('some_fake_email');
+      $this->getApi()->getSubscriber('some_fake_email');
       $this->fail('Subscriber does not exist exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('This subscriber does not exist.');
