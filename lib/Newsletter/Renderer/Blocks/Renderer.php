@@ -11,7 +11,7 @@ class Renderer {
   public $posts;
   public $ALC;
 
-  function __construct(array $newsletter, $preview) {
+  function __construct(array $newsletter) {
     $this->newsletter = $newsletter;
     $this->posts = array();
     $newer_than_timestamp = false;

@@ -21,7 +21,7 @@ class Renderer {
   function __construct($newsletter, $preview = false) {
     $this->newsletter = (is_object($newsletter)) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;
-    $this->blocks_renderer = new Blocks\Renderer($this->newsletter, $this->preview);
+    $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
     $this->DOM_parser = new pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();

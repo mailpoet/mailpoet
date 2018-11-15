@@ -318,7 +318,7 @@ class Populator {
   private function rowExists($table, $columns) {
     global $wpdb;
 
-    $conditions = array_map(function($key) use ($columns) {
+    $conditions = array_map(function($key) {
       return $key . '=%s';
     }, array_keys($columns));
 
