@@ -3,6 +3,7 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
+use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -142,7 +143,12 @@ class API {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
 
-      $endpoint = $this->container->get($this->_request_endpoint_class);
+      try {
+        $endpoint = $this->container->get($this->_request_endpoint_class);
+      } catch (ServiceNotFoundException $e) {
+        // Hotfix for Premium plugin which adds endpoints which are not registered in DI container
+        $endpoint = new $this->_request_endpoint_class();
+      }
 
       if(!method_exists($endpoint, $this->_request_method)) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
