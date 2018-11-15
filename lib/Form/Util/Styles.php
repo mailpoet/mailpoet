@@ -58,6 +58,7 @@ class Styles {
 }
 
 .mailpoet_validate_success {
+  font-weight: 600;
   color:#468847;
 }
 
