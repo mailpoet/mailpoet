@@ -46,7 +46,7 @@ class Engine
     */
     public function addValidator($label, $function)
     {
-        if (isset($this->_checks[$label])) throw \Exception();
+        if (isset($this->_checks[$label])) throw new \Exception();
         $this->setValidator($label, $function);
     }
 

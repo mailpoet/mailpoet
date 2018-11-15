@@ -103,7 +103,7 @@ class MP2Migrator {
       $sql = "SHOW TABLES LIKE '{$table}'";
       $result = $wpdb->query($sql);
       return !empty($result);
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       // Do nothing
     }
 
