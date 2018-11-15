@@ -4,6 +4,7 @@ namespace MailPoet\API;
 
 use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
 use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use MailPoet\DI\ContainerFactory;
 
 if(!defined('ABSPATH')) exit;
 
@@ -17,12 +18,11 @@ class API {
   }
 
   static function JSON() {
-    self::checkContainer();
     return self::$container->get(JSON\API::class);
   }
 
   static function MP($version) {
-    self::checkContainer();
+    self::ensureContainerIsLoaded();
     $api_class = sprintf('%s\MP\%s\API', __NAMESPACE__, $version);
     try {
       return self::$container->get($api_class);
@@ -31,9 +31,14 @@ class API {
     }
   }
 
-  private static function checkContainer() {
+  /**
+   * MP API is used by third party plugins so we have to ensure that container is loaded
+   * @see https://kb.mailpoet.com/article/195-add-subscribers-through-your-own-form-or-plugin
+   */
+  private static function ensureContainerIsLoaded() {
     if(!self::$container) {
-      throw new \Exception(__('Api was not initialized properly. Is MailPoet plugin active?.', 'mailpoet'));
+      $factory = new ContainerFactory();
+      self::$container = $factory->getContainer();
     }
   }
 }
