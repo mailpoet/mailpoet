@@ -12,10 +12,11 @@ if(!defined('ABSPATH')) exit;
 abstract class SimpleWorker {
   public $timer;
 
+  const TASK_TYPE = null;
   const TASK_BATCH_SIZE = 5;
 
   function __construct($timer = false) {
-    if(!defined('static::TASK_TYPE')) {
+    if(static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -27,14 +28,15 @@ abstract class SimpleWorker {
     return true;
   }
 
+  function init() {
+  }
+
   function process() {
     if(!$this->checkProcessingRequirements()) {
       return false;
     }
 
-    if(is_callable(array($this, 'init'))) {
-      $this->init();
-    }
+    $this->init();
 
     $scheduled_tasks = self::getScheduledTasks();
     $running_tasks = self::getRunningTasks();
