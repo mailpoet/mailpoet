@@ -325,7 +325,7 @@ class Menu {
   }
 
   function migration() {
-    $mp2_migrator = new MP2Migrator($this->access_control);
+    $mp2_migrator = new MP2Migrator();
     $mp2_migrator->init();
     $data = array(
       'log_file_url' => $mp2_migrator->log_file_url,
