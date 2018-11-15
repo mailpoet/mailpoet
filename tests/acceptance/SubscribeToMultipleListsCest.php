@@ -14,7 +14,7 @@ class SubscribeToMultipleListsCest {
   private $subscriber_email;
   function __construct() {
     $this->subscriber_email = 'multiple-test-form@example.com';
-    }
+  }
   function subsrcibeToMultipleLists(\AcceptanceTester $I) {
     //Step one - create form with three lists
     $segment_factory = new Segment();
