@@ -25,7 +25,8 @@ class SubscriptionFormCest {
     $I->wantTo('Subscribe using form widget');
 
     $I->cli('widget add mailpoet_form sidebar-1 2 --form=' . $form->id . ' --title="Subscribe to Our Newsletter" --allow-root');
-
+    //login to avoid time limit for subscribing
+    $I->login();
     $I->amOnPage('/');
     $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
     $I->click('.mailpoet_submit');
