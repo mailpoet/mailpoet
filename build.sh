@@ -64,14 +64,14 @@ find $findPreArgs $plugin_name/vendor -type d $findMidArgs -iregex ".*\/(docs?|e
 
 # Remove unit tests from 3rd party extensions
 echo '[BUILD] Removing unit tests from vendor libraries'
-rm -rf $plugin_name/vendor/twig/twig/test
-rm -rf $plugin_name/vendor/symfony/translation/Tests
-rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
-rm -rf $plugin_name/vendor/soundasleep/html2text/tests
-rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
-rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
 rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
+rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
+rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
 rm -rf $plugin_name/vendor/sabberworm/php-css-parser/tests
+rm -rf $plugin_name/vendor/soundasleep/html2text/tests
+rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
+rm -rf $plugin_name/vendor/symfony/translation/Tests
+rm -rf $plugin_name/vendor/twig/twig/test
 
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'
