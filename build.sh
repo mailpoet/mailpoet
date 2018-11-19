@@ -64,9 +64,13 @@ find $findPreArgs $plugin_name/vendor -type d $findMidArgs -iregex ".*\/(docs?|e
 
 # Remove unit tests from 3rd party extensions
 echo '[BUILD] Removing unit tests from vendor libraries'
+rm -rf $plugin_name/vendor/cerdic/css-tidy/COPYING
+rm -rf $plugin_name/vendor/cerdic/css-tidy/NEWS
 rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
 rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
+rm -rf $plugin_name/vendor/nesbot/Carbon/Laravel
 rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
+rm -rf $plugin_name/vendor/psr/log/Psr/Log/Test
 rm -rf $plugin_name/vendor/sabberworm/php-css-parser/tests
 rm -rf $plugin_name/vendor/soundasleep/html2text/tests
 rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
