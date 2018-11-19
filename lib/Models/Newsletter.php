@@ -557,7 +557,7 @@ class Newsletter extends Model {
           ))->findOne();
       }
 
-      $result[$name] = !empty($row->cnt) ? $row->cnt : 0;
+      $result[$name] = !empty($row->cnt) ? (int)$row->cnt : 0;
     }
 
     return $result;
