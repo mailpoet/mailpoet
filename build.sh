@@ -59,6 +59,7 @@ fi
 echo '[BUILD] Removing obsolete files from vendor libraries'
 find $findPreArgs $plugin_name/vendor -type f $findMidArgs -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
 find $findPreArgs $plugin_name/vendor -type f $findMidArgs -iregex ".*\/(readme|license|version|changes|changelog|composer\.json|composer\.lock|phpunit\.xml.*|doxyfile)" -print0 | xargs -0 rm -f
+find $findPreArgs $plugin_name/vendor -type f $findMidArgs -iregex ".*\/(\.editorconfig|\.git.*|\.travis.yml|\.php_cs.*)" -print0 | xargs -0 rm -f
 find $findPreArgs $plugin_name/vendor -type d $findMidArgs -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
 
 # Remove unit tests from 3rd party extensions
