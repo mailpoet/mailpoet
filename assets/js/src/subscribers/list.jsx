@@ -345,7 +345,6 @@ const SubscriberList = React.createClass({
           <a
             className="page-title-action"
             href="?page=mailpoet-import#step1"
-            data-automation-id="import_subscribers_button"
           >{MailPoet.I18n.t('import')}</a>
           <a
             id="mailpoet_export_button"
