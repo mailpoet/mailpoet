@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 3.14.0
+Stable tag: 3.14.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -165,6 +165,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.14.1 - 2018-11-20 =
+* Added: show number of sent and scheduled welcome emails on Welcome Emails listing page;
+* Improved: naming and organization of template categories;
+* Fixed: limits on number of categories and tags which may be selected for ALC increased to 100. Thanks, Radwan!;
 
 = 3.14.0 - 2018-11-13 =
 * Added: readme clarified to show we do not support multisite;
