@@ -30,6 +30,7 @@ echo '[BUILD] Building DI Container cache'
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
 test -d vendor && rm -rf vendor
+test -d vendor-prefixed && rm -rf vendor-prefixed
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
 echo '[BUILD] Fetching mozart managed production libraries'
@@ -41,6 +42,7 @@ cp -Rf lang $plugin_name
 cp -RfL assets $plugin_name
 cp -Rf lib $plugin_name
 cp -Rf vendor $plugin_name
+cp -Rf vendor-prefixed $plugin_name
 cp -Rf views $plugin_name
 rm -Rf $plugin_name/assets/css/src
 rm -Rf $plugin_name/assets/js/src
@@ -55,7 +57,7 @@ else
    findPreArgs=''
    findMidArgs=' -regextype posix-egrep '
 fi
-findDestinations="$plugin_name/vendor $plugin_name/lib/Dependencies"
+findDestinations="$plugin_name/vendor $plugin_name/vendor-prefixed"
 
 echo '[BUILD] Removing obsolete files from vendor libraries'
 find $findPreArgs $findDestinations -type f $findMidArgs -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f

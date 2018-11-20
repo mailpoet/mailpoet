@@ -2,9 +2,9 @@
 
 namespace MailPoet\DI;
 
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\ContainerBuilder;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Reference;
+use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Reference;
 
 class ContainerFactory {
 

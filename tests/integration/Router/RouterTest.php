@@ -5,7 +5,7 @@ namespace MailPoet\Test\Router;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\Router\Endpoints\RouterTestMockEndpoint;
 use MailPoet\Router\Router;

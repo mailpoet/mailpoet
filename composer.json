@@ -42,6 +42,7 @@
   "autoload": {
     "psr-4": {
       "MailPoet\\": "lib/",
+      "MailPoetVendor\\": "vendor-prefixed/",
       "Sudzy\\": "lib/Util/Sudzy"
     }
   },

@@ -2,8 +2,8 @@
 
 namespace MailPoet\API;
 
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use MailPoet\DI\ContainerFactory;
 
 if(!defined('ABSPATH')) exit;

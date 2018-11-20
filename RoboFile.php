@@ -326,7 +326,7 @@ class RoboFile extends \Robo\Tasks {
         './vendor/bin/phpcs '.
         '--standard=./tasks/code_sniffer/MailPoet '.
         '--runtime-set testVersion 5.6-7.2 '.
-        '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,./lib/Dependencies/*,'.
+        '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
         './lib/Util/pQuery/*,./lib/Config/PopulatorData/Templates/* '.
         'lib/ '.
         $severityFlag

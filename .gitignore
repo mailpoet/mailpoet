@@ -2,6 +2,7 @@
 TODO
 composer.phar
 /vendor
+/vendor-prefixed
 /vendor_backup
 tests/_output/*
 tests/_support/_generated/*
@@ -23,7 +24,6 @@ lang
 .mp_svn
 /nbproject/
 tests/_data/acceptanceGenerated.sql
-lib/Dependencies
 lib/DI/CachedContainer.php
 mozart/Dependencies
 mozart/Classes

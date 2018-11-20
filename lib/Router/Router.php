@@ -3,7 +3,7 @@
 namespace MailPoet\Router;
 
 use MailPoet\Config\AccessControl;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;

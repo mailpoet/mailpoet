@@ -12,7 +12,7 @@ use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\APITestNamespacedEndpointStubV1;
 use MailPoet\API\JSON\v2\APITestNamespacedEndpointStubV2;
 use MailPoet\Config\AccessControl;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\WP\Hooks;
 

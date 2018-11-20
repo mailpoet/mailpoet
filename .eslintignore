@@ -1,3 +1,4 @@
 **/vendor/**
+**/vendor-prefixed/**
 **/testBundles/**
 assets/js/src/newsletter_editor/tinymce/wplink/plugin.js
