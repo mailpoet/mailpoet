@@ -50,7 +50,7 @@ rm -Rf $plugin_name/lang/*.po
 
 # Remove extra files (docs, examples,...) from 3rd party extensions
 unameString=`uname`
-if [[ "$unameString" == 'Darwin' ]]; then
+if [ "$unameString" = 'Darwin' ]; then
    findPreArgs=' -E '
    findMidArgs=''
 else
