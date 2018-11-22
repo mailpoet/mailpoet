@@ -12,7 +12,6 @@ use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 class ShortcodesTest extends \MailPoetTest {

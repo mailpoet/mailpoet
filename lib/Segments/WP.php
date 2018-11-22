@@ -10,8 +10,6 @@ use MailPoet\Subscribers\Source;
 
 if(!defined('ABSPATH')) exit;
 
-require_once(ABSPATH . 'wp-includes/pluggable.php');
-
 class WP {
   static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {
     $wp_user = \get_userdata($wp_user_id);

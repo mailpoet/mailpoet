@@ -9,7 +9,6 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Daemon {
   public $timer;

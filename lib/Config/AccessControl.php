@@ -5,7 +5,6 @@ namespace MailPoet\Config;
 use MailPoet\WP\Hooks as WPHooks;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class AccessControl {
   const PERMISSION_ACCESS_PLUGIN_ADMIN = 'mailpoet_access_plugin_admin';

@@ -2,7 +2,6 @@
 namespace MailPoet\Cron;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class DaemonHttpRunner {
   public $settings_daemon_data;
