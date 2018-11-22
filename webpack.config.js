@@ -2,6 +2,7 @@ var webpack = require('webpack');
 var webpackManifestPlugin = require('webpack-manifest-plugin');
 var webpackMD5HashPlugin = require('webpack-md5-hash');
 var webpackCleanPlugin = require('clean-webpack-plugin');
+var webpackUglifyJsPlugin = require('uglifyjs-webpack-plugin');
 var _ = require('underscore');
 var path = require('path');
 var globalPrefix = 'MailPoetLib';
@@ -482,6 +483,9 @@ var testConfig = {
 module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], function (config) {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
+    if (PRODUCTION_ENV) {
+      config.plugins.push(new webpackUglifyJsPlugin());
+    }
     config.plugins.push(
       new webpackMD5HashPlugin(),
       new webpackManifestPlugin({
