@@ -38,7 +38,8 @@ var baseConfig = {
       'blob$': 'blob-tmp/Blob.js',
       'papaparse': 'papaparse/papaparse.min.js',
       'html2canvas': 'html2canvas/dist/html2canvas.js',
-      'asyncqueue': 'vendor/jquery.asyncqueue.js'
+      'asyncqueue': 'vendor/jquery.asyncqueue.js',
+      'intro.js': 'intro.js/intro.js',
     },
   },
   node: {
@@ -219,110 +220,81 @@ var adminConfig = {
   name: 'admin',
   entry: {
     vendor: [
-      'handlebars',
-      'handlebars_helpers',
-      'wp-js-hooks'
+      'handlebars', // no side effect - this just explicitly requires Handlebars
+      'handlebars_helpers', // side effect - extends Handlebars, assigns to window
+      'wp-js-hooks' // side effect - assigns to window
     ],
     mailpoet: [
-      'mailpoet',
-      'ajax',
-      'date',
-      'i18n',
-      'modal',
-      'notice',
-      'num',
-      'jquery.serialize_object',
-      'parsleyjs',
-      'analytics_event',
-      'help-tooltip.jsx',
-      'help-tooltip',
-      'dismissible-notice.jsx',
+      'mailpoet', // side effect - assigns MailPoet to window
+      'ajax', // side effect - extends MailPoet object
+      'date', // side effect - extends MailPoet object
+      'i18n', // side effect - extends MailPoet object
+      'modal', // side effect - extends MailPoet object
+      'notice', // side effect - extends MailPoet object
+      'num', // side effect - extends MailPoet object
+      'jquery.serialize_object', // side effect - extends jQuery
+      'parsleyjs', // side effect - extends jQuery
+      'analytics_event', // side effect - extends MailPoet object
+      'help-tooltip', // side effect - extends MailPoet object
+      'dismissible-notice.jsx', // side effect - adds jQuery event
     ],
     admin_vendor: [
-      'react',
-      'react-dom',
-      require.resolve('react-router-dom'),
-      'react-string-replace',
-      'prop-types',
-      'listing/listing.jsx',
-      'form/form.jsx',
-      'intro.js',
-      'newsletters/badges/stats.jsx',
-      'newsletters/breadcrumb.jsx',
-      'newsletters/listings/tabs.jsx',
-      'newsletters/listings/mixins.jsx',
-      'newsletters/listings/heading.jsx',
-      'newsletters/types/automatic_emails/events_list.jsx',
-      'newsletters/types/automatic_emails/breadcrumb.jsx',
-      'newsletters/types/welcome/scheduling.jsx',
-      'newsletter_editor/initializer.jsx',
-      'classnames'
+      'newsletter_editor/initializer.jsx', // side effect - calls Hooks.addAction()
     ],
     admin: [
-      'subscribers/subscribers.jsx',
-      'newsletters/newsletters.jsx',
-      'segments/segments.jsx',
-      'forms/forms.jsx',
-      'settings/tabs.js',
-      'help/help.jsx',
-      'intro.jsx',
-      'settings/reinstall_from_scratch.js',
-      'subscribers/importExport/import.js',
-      'subscribers/importExport/export.js',
-      'welcome_wizard/wizard.jsx',
-      'settings/announcement.jsx',
-      'nps_poll.jsx'
+      'subscribers/subscribers.jsx', // side effect - renders ReactDOM to document
+      'newsletters/newsletters.jsx', // side effect - renders ReactDOM to window
+      'segments/segments.jsx', // side effect - renders ReactDOM to document
+      'forms/forms.jsx', // side effect - renders ReactDOM to document
+      'settings/tabs.js', // side effect - assigns to MailPoet.Router, executes code on doc ready
+      'help/help.jsx', // side effect - renders ReactDOM to document
+      'intro.jsx', // side effect - assigns to MailPoet.showIntro
+      'settings/reinstall_from_scratch.js', // side effect - adds event handler to document
+      'subscribers/importExport/import.js', // side effect - executes on doc ready, adds events
+      'subscribers/importExport/export.js', // side effect - executes on doc ready
+      'welcome_wizard/wizard.jsx', // side effect - renders ReactDOM to document
+      'settings/announcement.jsx', // side effect - renders ReactDOM to document
+      'nps_poll.jsx' // side effect - calls setImmediate()
     ],
     form_editor: [
-      'form_editor/form_editor.js',
-      'codemirror',
-      'codemirror/mode/css/css'
+      'form_editor/form_editor.js', // side effect - calls document.observe()
+      'codemirror', // side effect - has to be loaded here, used in 'editor.html'
+      'codemirror/mode/css/css' // side effect - has to be loaded here, used in 'editor.html'
     ],
     newsletter_editor: [
-      'underscore',
-      'backbone',
-      'backbone.marionette',
-      'backbone.supermodel',
-      'interact.js',
-      'backbone.radio',
-      'select2',
-      'spectrum',
-      'sticky-kit',
-      'blob',
-      'file-saver',
-      'velocity-animate',
-      'newsletter_editor/App',
-      'newsletter_editor/components/config.js',
-      'newsletter_editor/components/styles.js',
-      'newsletter_editor/components/sidebar.js',
-      'newsletter_editor/components/content.js',
-      'newsletter_editor/components/heading.js',
-      'newsletter_editor/components/save.js',
-      'newsletter_editor/components/communication.js',
-      'newsletter_editor/behaviors/BehaviorsLookup.js',
-      'newsletter_editor/behaviors/ColorPickerBehavior.js',
-      'newsletter_editor/behaviors/ContainerDropZoneBehavior.js',
-      'newsletter_editor/behaviors/DraggableBehavior.js',
-      'newsletter_editor/behaviors/HighlightContainerBehavior.js',
-      'newsletter_editor/behaviors/HighlightEditingBehavior.js',
-      'newsletter_editor/behaviors/MediaManagerBehavior.js',
-      'newsletter_editor/behaviors/ResizableBehavior.js',
-      'newsletter_editor/behaviors/SortableBehavior.js',
-      'newsletter_editor/behaviors/ShowSettingsBehavior.js',
-      'newsletter_editor/behaviors/TextEditorBehavior.js',
-      'newsletter_editor/blocks/base.js',
-      'newsletter_editor/blocks/container.js',
-      'newsletter_editor/blocks/button.js',
-      'newsletter_editor/blocks/image.js',
-      'newsletter_editor/blocks/divider.js',
-      'newsletter_editor/blocks/text.js',
-      'newsletter_editor/blocks/spacer.js',
-      'newsletter_editor/blocks/footer.js',
-      'newsletter_editor/blocks/header.js',
-      'newsletter_editor/blocks/automatedLatestContent.js',
-      'newsletter_editor/blocks/automatedLatestContentLayout.js',
-      'newsletter_editor/blocks/posts.js',
-      'newsletter_editor/blocks/social.js'
+      'sticky-kit', // side effect - extends jQuery
+      'velocity-animate', // side effect - assigns to window
+      'newsletter_editor/App', // side effect - assigns to window
+      'newsletter_editor/components/config.js', // side effect - calls App.on()
+      'newsletter_editor/components/styles.js', // side effect - calls App.on()
+      'newsletter_editor/components/sidebar.js', // side effect - calls App.on()
+      'newsletter_editor/components/content.js', // side effect - calls App.on()
+      'newsletter_editor/components/heading.js', // side effect - calls App.on()
+      'newsletter_editor/components/save.js', // side effect - calls App.on()
+      'newsletter_editor/components/communication.js', // side effect - calls App.on()
+      'newsletter_editor/behaviors/BehaviorsLookup.js', // side effect - assings to window and Marionette
+      'newsletter_editor/behaviors/ColorPickerBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/ContainerDropZoneBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/DraggableBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/HighlightContainerBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/HighlightEditingBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/MediaManagerBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/ResizableBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/SortableBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/ShowSettingsBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/behaviors/TextEditorBehavior.js', // side effect - assigns to BehaviorsLookup
+      'newsletter_editor/blocks/container.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/button.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/image.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/divider.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/text.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/spacer.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/footer.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/header.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/automatedLatestContent.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/automatedLatestContentLayout.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/posts.js', // side effect - calls App.on()
+      'newsletter_editor/blocks/social.js' // side effect - calls App.on()
     ]
   },
   plugins: [
@@ -349,12 +321,12 @@ var publicConfig = {
   name: 'public',
   entry: {
     public: [
-      'mailpoet',
-      'i18n',
-      'ajax',
-      'iframe',
-      'jquery.serialize_object',
-      'public.js'
+      'mailpoet', // side effect - assigns MailPoet to window
+      'i18n', // side effect - extends MailPoet object
+      'ajax', // side effect - extends MailPoet object
+      'iframe', // side effect - extends MailPoet object
+      'jquery.serialize_object', // side effect - extends jQuery
+      'public.js' // side effect - assigns to window, sets up form validation, etc.
     ]
   },
   externals: {
@@ -381,16 +353,6 @@ var testConfig = {
   entry: {
     vendor: ['handlebars', 'handlebars_helpers'],
     testNewsletterEditor: [
-      'underscore',
-      'backbone',
-      'backbone.marionette',
-      'backbone.supermodel',
-      'backbone.radio',
-      'select2',
-      'blob',
-      'file-saver',
-      'velocity-animate',
-
       'mailpoet',
       'notice',
       'i18n',
