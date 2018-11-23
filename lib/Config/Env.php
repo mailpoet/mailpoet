@@ -10,6 +10,7 @@ class Env {
   static $version;
   static $plugin_name;
   static $plugin_path;
+  static $base_url;
   static $file;
   static $path;
   static $views_path;
@@ -41,6 +42,7 @@ class Env {
     self::$file = $file;
     self::$path = dirname(self::$file);
     self::$plugin_name = 'mailpoet';
+    self::$base_url = plugins_url('', $file);
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);
