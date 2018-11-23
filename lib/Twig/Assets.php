@@ -5,6 +5,7 @@ namespace MailPoet\Twig;
 if(!defined('ABSPATH')) exit;
 
 class Assets extends \Twig_Extension {
+  const CDN_URL = 'https://ps.w.org/mailpoet/';
   private $_globals;
 
   function __construct($globals) {
@@ -26,6 +27,11 @@ class Assets extends \Twig_Extension {
       new \Twig_SimpleFunction(
         'image_url',
         array($this, 'generateImageUrl'),
+        array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
+        'cdn_url',
+        array($this, 'generateCdnUrl'),
         array('is_safe' => array('all'))
       )
     );
@@ -73,5 +79,10 @@ class Assets extends \Twig_Extension {
 
   function getAssetFileName($manifest, $asset) {
     return (!empty($manifest[$asset])) ? $manifest[$asset] : $asset;
+  }
+
+  function generateCdnUrl($path) {
+    $useCdn = defined('MAILPOET_USE_CDN') ? MAILPOET_USE_CDN : true;
+    return ($useCdn ? self::CDN_URL : $this->_globals['base_url'] . '/plugin_repository/') . "assets/$path";
   }
 }
