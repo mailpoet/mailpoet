@@ -151,6 +151,9 @@ There are 3 ways to install this plugin:
 
 == Frequently Asked Questions ==
 
+Question: Is it MailPoet or Mail poet?
+Answer: It’s MailPoet, not mail poet. We’ll answer to either though!
+
 = Need help? =
 
 Stop by our [support site](https://www.mailpoet.com/support).
