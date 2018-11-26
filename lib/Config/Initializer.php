@@ -4,7 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\Models\Setting;
 use MailPoet\Router;

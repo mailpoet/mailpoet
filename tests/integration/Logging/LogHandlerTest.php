@@ -25,7 +25,7 @@ class LogHandlerTest extends \MailPoetTest {
     ]);
 
     $log_handler->handle([
-      'level' => \MailPoet\Dependencies\Monolog\Logger::EMERGENCY,
+      'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
       'context' => [],
       'channel' => 'name',
@@ -47,7 +47,7 @@ class LogHandlerTest extends \MailPoetTest {
     $log_handler = new LogHandler();
     $log_handler = Mock::double($log_handler, ['getRandom' => 0]);
     $log_handler->handle([
-      'level' => \MailPoet\Dependencies\Monolog\Logger::EMERGENCY,
+      'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
       'context' => [],
       'channel' => 'name',
@@ -71,7 +71,7 @@ class LogHandlerTest extends \MailPoetTest {
     $log_handler = new LogHandler();
     $log_handler = Mock::double($log_handler, ['getRandom' => 100]);
     $log_handler->handle([
-      'level' => \MailPoet\Dependencies\Monolog\Logger::EMERGENCY,
+      'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
       'context' => [],
       'channel' => 'name',

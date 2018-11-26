@@ -30,6 +30,7 @@ echo '[BUILD] Building DI Container cache'
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
 test -d vendor && rm -rf vendor
+test -d vendor-prefixed && rm -rf vendor-prefixed
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
 echo '[BUILD] Fetching mozart managed production libraries'
@@ -41,6 +42,7 @@ cp -Rf lang $plugin_name
 cp -RfL assets $plugin_name
 cp -Rf lib $plugin_name
 cp -Rf vendor $plugin_name
+cp -Rf vendor-prefixed $plugin_name
 cp -Rf views $plugin_name
 rm -Rf $plugin_name/assets/css/src
 rm -Rf $plugin_name/assets/js/src
@@ -55,22 +57,28 @@ else
    findPreArgs=''
    findMidArgs=' -regextype posix-egrep '
 fi
+findDestinations="$plugin_name/vendor $plugin_name/vendor-prefixed"
 
 echo '[BUILD] Removing obsolete files from vendor libraries'
-find $findPreArgs $plugin_name/vendor -type f $findMidArgs -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
-find $findPreArgs $plugin_name/vendor -type f $findMidArgs -iregex ".*\/(readme|license|version|changes|changelog)" -print0 | xargs -0 rm -f
-find $findPreArgs $plugin_name/vendor -type d $findMidArgs -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
+find $findPreArgs $findDestinations -type f $findMidArgs -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
+find $findPreArgs $findDestinations -type f $findMidArgs -iregex ".*\/(readme|license|version|changes|changelog|composer\.json|composer\.lock|phpunit\.xml.*|doxyfile)" -print0 | xargs -0 rm -f
+find $findPreArgs $findDestinations -type f $findMidArgs -iregex ".*\/(\.editorconfig|\.git.*|\.travis.yml|\.php_cs.*)" -print0 | xargs -0 rm -f
+find $findPreArgs $findDestinations -type d $findMidArgs -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
 
 # Remove unit tests from 3rd party extensions
 echo '[BUILD] Removing unit tests from vendor libraries'
-rm -rf $plugin_name/vendor/twig/twig/test
-rm -rf $plugin_name/vendor/symfony/translation/Tests
-rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
-rm -rf $plugin_name/vendor/soundasleep/html2text/tests
-rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
-rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
+rm -rf $plugin_name/vendor/cerdic/css-tidy/COPYING
+rm -rf $plugin_name/vendor/cerdic/css-tidy/NEWS
 rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
+rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
+rm -rf $plugin_name/vendor/nesbot/Carbon/Laravel
+rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
+rm -rf $plugin_name/vendor/psr/log/Psr/Log/Test
 rm -rf $plugin_name/vendor/sabberworm/php-css-parser/tests
+rm -rf $plugin_name/vendor/soundasleep/html2text/tests
+rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
+rm -rf $plugin_name/vendor/symfony/translation/Tests
+rm -rf $plugin_name/vendor/twig/twig/test
 
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'

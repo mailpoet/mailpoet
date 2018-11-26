@@ -8,7 +8,6 @@
   "require": {
     "php": ">=5.5",
     "symfony/dependency-injection": "3.4.17",
-    "symfony/config": "3.4.17",
     "monolog/monolog": "^1.23",
     "coenjacobs/mozart": "dev-dependency-tree"
   },
@@ -17,21 +16,21 @@
       "@cleanup",
       "vendor/bin/mozart compose",
       "@unwantedDepsRemoval",
-      "mv ./Dependencies ../lib/"
+      "mv ./Dependencies ../vendor-prefixed"
     ],
     "post-install-cmd": [
       "@cleanup",
       "vendor/bin/mozart compose",
       "@unwantedDepsRemoval",
-      "mv ./Dependencies ../lib/"
+      "mv ./Dependencies ../vendor-prefixed"
     ],
-    "cleanup": "rm -rf vendor/symfony/**/Tests;rm -rf ../lib/Dependencies",
-    "unwantedDepsRemoval": "rm -rf ./Dependencies/Symfony/Debug;rm -rf ./Dependencies/Symfony/Finder;rm -rf ./Dependencies/Symfony/Console"
+    "cleanup": "rm -rf vendor/symfony/**/Tests;rm -rf ../vendor-prefixed",
+    "unwantedDepsRemoval": "rm -rf ./Dependencies/Symfony/Component/Finder"
   },
 
   "extra": {
     "mozart": {
-      "dep_namespace": "MailPoet\\Dependencies\\",
+      "dep_namespace": "MailPoetVendor\\",
       "dep_directory": "/Dependencies/",
       "classmap_directory": "/Classes/",
       "classmap_prefix": "MP_",

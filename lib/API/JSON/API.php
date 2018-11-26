@@ -2,8 +2,8 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Container;
-use MailPoet\Dependencies\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
