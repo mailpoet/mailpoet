@@ -9,7 +9,6 @@ use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Mailer {
   public $mailer_config;

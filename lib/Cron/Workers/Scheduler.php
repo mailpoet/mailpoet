@@ -16,7 +16,6 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Scheduler {
   public $timer;

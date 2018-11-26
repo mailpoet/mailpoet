@@ -11,8 +11,6 @@ use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 
 if(!defined('ABSPATH')) exit;
 
-require_once(ABSPATH . 'wp-includes/pluggable.php');
-
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';

@@ -6,7 +6,6 @@ use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\WP\Posts as WPPosts;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . "wp-includes/pluggable.php");
 
 class Newsletter {
   static function process(
