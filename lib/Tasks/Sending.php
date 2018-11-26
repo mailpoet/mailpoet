@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;

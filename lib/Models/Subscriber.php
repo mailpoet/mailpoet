@@ -1,12 +1,12 @@
 <?php
 namespace MailPoet\Models;
-use MailPoet\Mailer\Mailer;
+
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
-use MailPoet\Subscription;
+use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 

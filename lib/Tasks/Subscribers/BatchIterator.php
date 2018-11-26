@@ -2,7 +2,7 @@
 namespace MailPoet\Tasks\Subscribers;
 
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 

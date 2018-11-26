@@ -11,6 +11,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 
 class Import {
   public $subscribers_data;

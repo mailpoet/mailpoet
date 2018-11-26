@@ -6,6 +6,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
+use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 

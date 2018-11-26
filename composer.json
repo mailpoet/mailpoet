@@ -40,6 +40,9 @@
     "phpcompatibility/php-compatibility": "^9.0"
   },
   "autoload": {
+    "files": [
+      "lib/Util/ArrayColumn.php"
+    ],
     "psr-4": {
       "MailPoet\\": "lib/",
       "Sudzy\\": "lib/Util/Sudzy"
