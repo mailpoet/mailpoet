@@ -4,7 +4,7 @@ namespace MailPoet\Test\Util;
 use pQuery;
 use MailPoet\Util\DOM as DOMUtil;
 
-class DOMTest extends \MailPoetTest {
+class DOMTest extends \MailPoetUnitTest {
 
   function _before() {
     $this->root = pQuery::parseStr('<p><i>italic</i><em>previous text<a href="#mylink"><img src="#myimage" /></a>next text</em><b>bolded</b></p>');

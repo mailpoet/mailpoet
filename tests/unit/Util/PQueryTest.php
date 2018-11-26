@@ -3,7 +3,7 @@ namespace MailPoet\Test\Util;
 
 use MailPoet\Util\pQuery\pQuery;
 
-class PQueryTest extends \MailPoetTest {
+class PQueryTest extends \MailPoetUnitTest {
   function testBreakingQuoteAreNotRendered() {
     $html = '<a href="#" title="Escape " this"></a>';
     $domnode = pQuery::parseStr($html);

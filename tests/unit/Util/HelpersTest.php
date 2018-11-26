@@ -3,7 +3,7 @@ namespace MailPoet\Test\Util;
 
 use MailPoet\Util\Helpers;
 
-class HelpersTest extends \MailPoetTest {
+class HelpersTest extends \MailPoetUnitTest {
   function testItReplacesLinkTags() {
     $source = '[link]example link[/link]';
     $link = 'http://example.com';

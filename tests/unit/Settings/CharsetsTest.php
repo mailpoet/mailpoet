@@ -3,7 +3,7 @@ namespace MailPoet\Test\Settings;
 
 use MailPoet\Settings\Charsets;
 
-class CharsetsTest extends \MailPoetTest {
+class CharsetsTest extends \MailPoetUnitTest {
   function testItReturnsAListOfCharsets() {
     $charsets = Charsets::getAll();
     expect($charsets)->notEmpty();

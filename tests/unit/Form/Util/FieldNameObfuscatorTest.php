@@ -2,7 +2,7 @@
 
 namespace MailPoet\Form\Util;
 
-class FieldNameObfuscatorTest extends \MailPoetTest {
+class FieldNameObfuscatorTest extends \MailPoetUnitTest {
 
   public function testObfuscateWorks() {
     $obfuscator = new FieldNameObfuscator();
