@@ -219,75 +219,11 @@ var baseConfig = {
 var adminConfig = {
   name: 'admin',
   entry: {
-    vendor: [
-      'handlebars', // no side effect - this just explicitly requires Handlebars
-      'handlebars_helpers', // side effect - extends Handlebars, assigns to window
-      'wp-js-hooks' // side effect - assigns to window
-    ],
-    mailpoet: [
-      'mailpoet', // side effect - assigns MailPoet to window
-      'jquery.serialize_object', // side effect - extends jQuery
-      'parsleyjs', // side effect - extends jQuery
-      'dismissible-notice.jsx', // side effect - adds jQuery event
-    ],
-    admin_vendor: [
-      'newsletter_editor/initializer.jsx', // side effect - calls Hooks.addAction()
-    ],
-    admin: [
-      'subscribers/subscribers.jsx', // side effect - renders ReactDOM to document
-      'newsletters/newsletters.jsx', // side effect - renders ReactDOM to window
-      'segments/segments.jsx', // side effect - renders ReactDOM to document
-      'forms/forms.jsx', // side effect - renders ReactDOM to document
-      'settings/tabs.js', // side effect - assigns to MailPoet.Router, executes code on doc ready
-      'help/help.jsx', // side effect - renders ReactDOM to document
-      'intro.jsx', // side effect - assigns to MailPoet.showIntro
-      'settings/reinstall_from_scratch.js', // side effect - adds event handler to document
-      'subscribers/importExport/import.js', // side effect - executes on doc ready, adds events
-      'subscribers/importExport/export.js', // side effect - executes on doc ready
-      'welcome_wizard/wizard.jsx', // side effect - renders ReactDOM to document
-      'settings/announcement.jsx', // side effect - renders ReactDOM to document
-      'nps_poll.jsx' // side effect - calls setImmediate()
-    ],
-    form_editor: [
-      'form_editor/form_editor.js', // side effect - calls document.observe()
-      'codemirror', // side effect - has to be loaded here, used in 'editor.html'
-      'codemirror/mode/css/css' // side effect - has to be loaded here, used in 'editor.html'
-    ],
-    newsletter_editor: [
-      'sticky-kit', // side effect - extends jQuery
-      'velocity-animate', // side effect - assigns to window
-      'newsletter_editor/App', // side effect - assigns to window
-      'newsletter_editor/components/config.js', // side effect - calls App.on()
-      'newsletter_editor/components/styles.js', // side effect - calls App.on()
-      'newsletter_editor/components/sidebar.js', // side effect - calls App.on()
-      'newsletter_editor/components/content.js', // side effect - calls App.on()
-      'newsletter_editor/components/heading.js', // side effect - calls App.on()
-      'newsletter_editor/components/save.js', // side effect - calls App.on()
-      'newsletter_editor/components/communication.js', // side effect - calls App.on()
-      'newsletter_editor/behaviors/BehaviorsLookup.js', // side effect - assings to window and Marionette
-      'newsletter_editor/behaviors/ColorPickerBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/ContainerDropZoneBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/DraggableBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/HighlightContainerBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/HighlightEditingBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/MediaManagerBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/ResizableBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/SortableBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/ShowSettingsBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/behaviors/TextEditorBehavior.js', // side effect - assigns to BehaviorsLookup
-      'newsletter_editor/blocks/container.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/button.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/image.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/divider.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/text.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/spacer.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/footer.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/header.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/automatedLatestContent.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/automatedLatestContentLayout.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/posts.js', // side effect - calls App.on()
-      'newsletter_editor/blocks/social.js' // side effect - calls App.on()
-    ]
+    vendor: 'webpack_vendor_index.jsx',
+    mailpoet: 'webpack_mailpoet_index.jsx',
+    admin: 'webpack_admin_index.jsx',
+    form_editor: 'form_editor/webpack_index.jsx',
+    newsletter_editor: 'newsletter_editor/webpack_index.jsx',
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
@@ -312,11 +248,7 @@ var adminConfig = {
 var publicConfig = {
   name: 'public',
   entry: {
-    public: [
-      'mailpoet', // side effect - assigns MailPoet to window
-      'jquery.serialize_object', // side effect - extends jQuery
-      'public.js' // side effect - assigns to window, sets up form validation, etc.
-    ]
+    public: 'webpack_public_index.jsx',
   },
   plugins: [
     // replace MailPoet definition with a smaller version for public
@@ -347,42 +279,10 @@ var migratorConfig = {
 var testConfig = {
   name: 'test',
   entry: {
-    vendor: ['handlebars', 'handlebars_helpers'],
+    vendor: 'webpack_vendor_index.jsx',
     testNewsletterEditor: [
-      'mailpoet',
-
-      'newsletter_editor/App',
-      'newsletter_editor/components/config.js',
-      'newsletter_editor/components/styles.js',
-      'newsletter_editor/components/sidebar.js',
-      'newsletter_editor/components/content.js',
-      'newsletter_editor/components/heading.js',
-      'newsletter_editor/components/save.js',
-      'newsletter_editor/components/communication.js',
-      'newsletter_editor/behaviors/BehaviorsLookup.js',
-      'newsletter_editor/behaviors/ColorPickerBehavior.js',
-      'newsletter_editor/behaviors/ContainerDropZoneBehavior.js',
-      'newsletter_editor/behaviors/DraggableBehavior.js',
-      'newsletter_editor/behaviors/HighlightContainerBehavior.js',
-      'newsletter_editor/behaviors/HighlightEditingBehavior.js',
-      'newsletter_editor/behaviors/MediaManagerBehavior.js',
-      'newsletter_editor/behaviors/ResizableBehavior.js',
-      'newsletter_editor/behaviors/SortableBehavior.js',
-      'newsletter_editor/behaviors/ShowSettingsBehavior.js',
-      'newsletter_editor/behaviors/TextEditorBehavior.js',
-      'newsletter_editor/blocks/base.js',
-      'newsletter_editor/blocks/container.js',
-      'newsletter_editor/blocks/button.js',
-      'newsletter_editor/blocks/image.js',
-      'newsletter_editor/blocks/divider.js',
-      'newsletter_editor/blocks/text.js',
-      'newsletter_editor/blocks/spacer.js',
-      'newsletter_editor/blocks/footer.js',
-      'newsletter_editor/blocks/header.js',
-      'newsletter_editor/blocks/automatedLatestContent.js',
-      'newsletter_editor/blocks/automatedLatestContentLayout.js',
-      'newsletter_editor/blocks/posts.js',
-      'newsletter_editor/blocks/social.js',
+      'webpack_mailpoet_index.jsx',
+      'newsletter_editor/webpack_index.jsx',
 
       'components/config.spec.js',
       'components/content.spec.js',
@@ -426,7 +326,8 @@ var testConfig = {
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
-      'blob$': 'blob-tmp/Blob.js'
+      'blob$': 'blob-tmp/Blob.js',
+      'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
     },
   },
   externals: {
