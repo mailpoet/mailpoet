@@ -72,6 +72,7 @@ class Renderer {
   function setupGlobalVariables() {
     $this->renderer->addExtension(new Twig\Assets(array(
       'version' => Env::$version,
+      'base_url' => Env::$base_url,
       'assets_url' => Env::$assets_url,
       'assets_manifest_js' => $this->assets_manifest_js,
       'assets_manifest_css' => $this->assets_manifest_css

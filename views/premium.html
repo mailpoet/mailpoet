@@ -36,7 +36,7 @@
 
   <div class="feature-section one-col">
     <p class="lead-description"><%= __("Which links get the most clicks? Which subscribers opened your emails? With MailPoet's stats program, it's easy to find out. Need even more details? Integrating with Google Analytics is as easy as 1-2-3.") %></p>
-    <% set video_url = '//ps.w.org/mailpoet/assets/premium/premium-page-animated-stats.mp4' %>
+    <% set video_url = cdn_url('premium/premium-page-animated-stats.mp4') %>
     <video autoplay loop width="100%" class="mailpoet_video">
       <source type="video/mp4" src="<%= video_url %>" />
       <a href="<%= video_url %>"><%= video_url %></a>
@@ -113,7 +113,7 @@
 
   <div class="feature-section">
     <h2><%= __("We’re Here to Help!") %></h2>
-    <% set video_url = '//ps.w.org/mailpoet/assets/premium/premium-page-animated-support.mp4' %>
+    <% set video_url = cdn_url('premium/premium-page-animated-support.mp4') %>
     <video autoplay loop width="100%" class="mailpoet_video half-width-centered">
       <source type="video/mp4" src="<%= video_url %>" />
       <a href="<%= video_url %>"><%= video_url %></a>
