@@ -40,23 +40,27 @@
     "sensiolabs/security-checker": "^5.0"
   },
   "autoload": {
+    "classmap": [
+      "vendor-prefixed"
+    ],
     "files": [
       "lib/Util/ArrayColumn.php"
     ],
     "psr-4": {
       "MailPoet\\": "lib/",
-      "MailPoetVendor\\": "vendor-prefixed/",
       "Sudzy\\": "lib/Util/Sudzy"
     }
   },
   "scripts": {
     "post-update-cmd": [
       "@fixPHPUnit57CodeCoverageForPHP72",
-      "./composer.phar install --working-dir=./mozart/"
+      "./composer.phar install --working-dir=./prefixer/",
+      "./composer.phar dump-autoload"
     ],
     "post-install-cmd": [
       "@fixPHPUnit57CodeCoverageForPHP72",
-      "./composer.phar install --working-dir=./mozart/"
+      "./composer.phar install --working-dir=./prefixer/",
+      "./composer.phar dump-autoload"
     ],
     "fixPHPUnit57CodeCoverageForPHP72": "sed -i -- 's/\\$numTests = count(\\$coverageData\\[\\$i\\]);/$numTests = (is_array($coverageData[$i]) ? count($coverageData[$i]) : 0);/g' vendor/phpunit/php-code-coverage/src/Report/Html/Renderer/File.php"
   },
