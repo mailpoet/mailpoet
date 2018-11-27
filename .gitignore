@@ -1,6 +1,7 @@
 .DS_Store
 TODO
 composer.phar
+php-scoper.phar
 /vendor
 /vendor-prefixed
 /vendor_backup
@@ -25,6 +26,8 @@ lang
 /nbproject/
 tests/_data/acceptanceGenerated.sql
 lib/DI/CachedContainer.php
+prefixer/vendor
+prefixer/build
 mozart/Dependencies
 mozart/Classes
 mozart/vendor

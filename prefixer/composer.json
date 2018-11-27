@@ -1,0 +1,18 @@
+{
+  "require": {
+    "php": ">=5.5",
+    "symfony/dependency-injection": "3.4.17",
+    "monolog/monolog": "^1.23"
+  },
+  "scripts": {
+    "post-update-cmd": "@process",
+    "post-install-cmd": "@process",
+    "process": [
+      "rm -rf ./build",
+      "rm -rf ../vendor-prefixed",
+      "mkdir ../vendor-prefixed",
+      "../php-scoper.phar add-prefix",
+      "mv ./build/* ../vendor-prefixed"
+    ]
+  }
+}
