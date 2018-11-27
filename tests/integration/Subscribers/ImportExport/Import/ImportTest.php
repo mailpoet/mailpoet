@@ -7,7 +7,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\Import\Import;
-use MailPoet\Util\Helpers;
 
 class ImportTest extends \MailPoetTest {
   function _before() {

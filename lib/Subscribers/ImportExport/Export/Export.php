@@ -4,11 +4,8 @@ namespace MailPoet\Subscribers\ImportExport\Export;
 
 use MailPoet\Config\Env;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
-use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 use MailPoet\Util\Security;
 use MailPoet\Util\XLSXWriter;
 

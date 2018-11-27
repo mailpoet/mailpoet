@@ -11,7 +11,7 @@ use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 

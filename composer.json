@@ -40,6 +40,9 @@
     "sensiolabs/security-checker": "^5.0"
   },
   "autoload": {
+    "files": [
+      "lib/Util/ArrayColumn.php"
+    ],
     "psr-4": {
       "MailPoet\\": "lib/",
       "MailPoetVendor\\": "vendor-prefixed/",

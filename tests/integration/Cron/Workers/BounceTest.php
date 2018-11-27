@@ -9,7 +9,6 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Util\Helpers;
 
 require_once('BounceTestMockAPI.php');
 use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;

@@ -7,6 +7,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Hooks;
+use function MailPoet\Util\array_column;
 
 class SubscribersFinder {
 
