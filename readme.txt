@@ -169,6 +169,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 == Changelog ==
 
+= 3.15.0 - 2018-11-27 =
+* Improved: plugin ZIP file size is considerably reduced;
+* Fixed: sent and scheduled welcome email counts are displayed correctly;
+* Fixed: hidden honeypot field in subscription form now also hidden in editor;
+* Fixed: email listing renders consistently in PHP 7.0.32;
+* Removed: pluggable.php requirement to avoid conflicts with other plugins.
+
 = 3.14.1 - 2018-11-20 =
 * Added: show number of sent and scheduled welcome emails on Welcome Emails listing page;
 * Improved: naming and organization of template categories;
