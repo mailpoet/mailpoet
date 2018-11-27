@@ -28,6 +28,3 @@ tests/_data/acceptanceGenerated.sql
 lib/DI/CachedContainer.php
 prefixer/vendor
 prefixer/build
-mozart/Dependencies
-mozart/Classes
-mozart/vendor
