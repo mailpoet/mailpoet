@@ -815,7 +815,7 @@ class SchedulerTest extends \MailPoetTest {
     foreach(WPPosts::getTypes() as $post_type) {
       remove_filter(
         'publish_' . $post_type,
-        '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification',
+        '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook',
         10, 1
       );
     }

@@ -167,12 +167,10 @@ class Hooks {
   }
 
   function setupPostNotifications() {
-    foreach(WPPosts::getTypes() as $post_type) {
-      add_filter(
-        'publish_' . $post_type,
-        '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification',
-        10, 1
-      );
-    }
+    add_action(
+      'transition_post_status',
+      '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook',
+      10, 3
+    );
   }
 }
