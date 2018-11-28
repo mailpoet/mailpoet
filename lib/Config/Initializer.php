@@ -4,7 +4,6 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
-use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
@@ -12,6 +11,7 @@ use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WP\Notice as WPNotice;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 
 if(!defined('ABSPATH')) exit;
 
@@ -20,7 +20,7 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 class Initializer {
   private $access_control;
   private $renderer;
-  /** @var Container */
+  /** @var ContainerInterface */
   private $container;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';

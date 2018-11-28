@@ -3,7 +3,7 @@
 namespace MailPoet\Router;
 
 use MailPoet\Config\AccessControl;
-use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -13,13 +13,13 @@ class Router {
   public $endpoint;
   public $action;
   public $data;
-  /** @var Container */
+  /** @var ContainerInterface */
   private $container;
   const NAME = 'mailpoet_router';
   const RESPONSE_ERROR = 404;
   const RESPONE_FORBIDDEN = 403;
 
-  function __construct(AccessControl $access_control, Container $container, $api_data = false) {
+  function __construct(AccessControl $access_control, ContainerInterface $container, $api_data = false) {
     $api_data = ($api_data) ? $api_data : $_GET;
     $this->api_request = isset($api_data[self::NAME]);
     $this->endpoint = isset($api_data['endpoint']) ?

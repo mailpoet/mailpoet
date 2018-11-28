@@ -2,7 +2,7 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
-use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
@@ -22,7 +22,7 @@ class API {
   private $_available_api_versions = array(
       'v1'
   );
-  /** @var Container */
+  /** @var ContainerInterface */
   private $container;
 
   /** @var AccessControl */
@@ -30,7 +30,7 @@ class API {
 
   const CURRENT_VERSION = 'v1';
 
-  function __construct(Container $container, AccessControl $access_control) {
+  function __construct(ContainerInterface $container, AccessControl $access_control) {
     $this->container = $container;
     $this->access_control = $access_control;
     foreach($this->_available_api_versions as $available_api_version) {
