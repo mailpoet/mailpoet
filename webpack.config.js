@@ -226,16 +226,8 @@ var adminConfig = {
     ],
     mailpoet: [
       'mailpoet', // side effect - assigns MailPoet to window
-      'ajax', // side effect - extends MailPoet object
-      'date', // side effect - extends MailPoet object
-      'i18n', // side effect - extends MailPoet object
-      'modal', // side effect - extends MailPoet object
-      'notice', // side effect - extends MailPoet object
-      'num', // side effect - extends MailPoet object
       'jquery.serialize_object', // side effect - extends jQuery
       'parsleyjs', // side effect - extends jQuery
-      'analytics_event', // side effect - extends MailPoet object
-      'help-tooltip', // side effect - extends MailPoet object
       'dismissible-notice.jsx', // side effect - adds jQuery event
     ],
     admin_vendor: [
@@ -322,13 +314,17 @@ var publicConfig = {
   entry: {
     public: [
       'mailpoet', // side effect - assigns MailPoet to window
-      'i18n', // side effect - extends MailPoet object
-      'ajax', // side effect - extends MailPoet object
-      'iframe', // side effect - extends MailPoet object
       'jquery.serialize_object', // side effect - extends jQuery
       'public.js' // side effect - assigns to window, sets up form validation, etc.
     ]
   },
+  plugins: [
+    // replace MailPoet definition with a smaller version for public
+    new webpack.NormalModuleReplacementPlugin(
+      /mailpoet\.js/,
+      './mailpoet_public.js'
+    ),
+  ],
   externals: {
     'jquery': 'jQuery'
   }
@@ -354,9 +350,6 @@ var testConfig = {
     vendor: ['handlebars', 'handlebars_helpers'],
     testNewsletterEditor: [
       'mailpoet',
-      'notice',
-      'i18n',
-      'help-tooltip',
 
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',
@@ -416,6 +409,13 @@ var testConfig = {
     path: path.join(__dirname, 'tests/javascript/testBundles'),
     filename: '[name].js',
   },
+  plugins: [
+    // replace MailPoet definition with a smaller version for public
+    new webpack.NormalModuleReplacementPlugin(
+      /mailpoet\.js/,
+      './mailpoet_tests.js'
+    ),
+  ],
   resolve: {
     modules: [
       'node_modules',
