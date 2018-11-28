@@ -799,7 +799,12 @@ class NewslettersTest extends \MailPoetTest {
             expect($subscriber)->equals($subscriber);
             return array(
               'response' => false,
-              'error_message' => 'failed'
+              'error' => Stub::make(
+                '\MailPoet\Mailer\MailerError',
+                array(
+                  'getMessage' => 'failed'
+                )
+              )
             );
           }
         )
