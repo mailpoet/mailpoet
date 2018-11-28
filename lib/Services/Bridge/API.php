@@ -20,6 +20,7 @@ class API {
   const RESPONSE_CODE_NOT_ARRAY = 422;
   const RESPONSE_CODE_PAYLOAD_TOO_BIG = 413;
   const RESPONSE_CODE_PAYLOAD_ERROR = 400;
+  const RESPONSE_CODE_BANNED_ACCOUNT = 403;
 
   private $api_key;
 
@@ -85,6 +86,7 @@ class API {
         'message' => $result->get_error_message()
       );
     }
+
     $response_code = WPFunctions::wpRemoteRetrieveResponseCode($result);
     if($response_code !== 201) {
       $response = (WPFunctions::wpRemoteRetrieveBody($result)) ?
