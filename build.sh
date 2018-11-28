@@ -31,6 +31,7 @@ echo '[BUILD] Building DI Container cache'
 echo '[BUILD] Fetching production libraries'
 rm -rf vendor
 rm -rf vendor-prefixed
+mkdir vendor-prefixed
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
 echo '[BUILD] Fetching prefixed production libraries'

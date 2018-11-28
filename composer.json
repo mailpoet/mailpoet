@@ -54,12 +54,12 @@
   "scripts": {
     "post-update-cmd": [
       "@fixPHPUnit57CodeCoverageForPHP72",
-      "./composer.phar install --working-dir=./prefixer/",
+      "./prefixer/process.sh",
       "./composer.phar dump-autoload"
     ],
     "post-install-cmd": [
       "@fixPHPUnit57CodeCoverageForPHP72",
-      "./composer.phar install --working-dir=./prefixer/",
+      "./prefixer/process.sh",
       "./composer.phar dump-autoload"
     ],
     "fixPHPUnit57CodeCoverageForPHP72": "sed -i -- 's/\\$numTests = count(\\$coverageData\\[\\$i\\]);/$numTests = (is_array($coverageData[$i]) ? count($coverageData[$i]) : 0);/g' vendor/phpunit/php-code-coverage/src/Report/Html/Renderer/File.php"
