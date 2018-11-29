@@ -35,7 +35,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disab
       id: null,
       positionAfter: false,
       scroll: false,
-      timeout: 5000,
+      timeout: 10000,
       onOpen: null,
       onClose: null
     },
