@@ -9,17 +9,7 @@ use MailPoet\Test\DataFactories\Form;
 
 require_once __DIR__ . '/../DataFactories/Form.php';
 
-class EnableAndDisableSignupConfirmationCest {
-  function enableSignupConfirmation(AcceptanceTester $I) {
-    $I->wantTo('Enable signup confirmation');
-    $I->login();
-    $this->setSignupConfirmationSetting($I, $enabled = true);
-    $this->addFormWidget($I);
-    $confirmation_emails_count = $this->countConfirmationEmails($I);
-    $this->subscribeUsingWidgetForm($I);
-    $this->seeConfirmationEmailsCountIs($I, $confirmation_emails_count + 1);
-  }
-
+class EnableAndDisableSignupConfirmationCest {  
   function disableSignupConfirmation(AcceptanceTester $I) {
     $I->wantTo('Disable signup confirmation');
     $I->login();
@@ -28,6 +18,16 @@ class EnableAndDisableSignupConfirmationCest {
     $confirmation_emails_count = $this->countConfirmationEmails($I);
     $this->subscribeUsingWidgetForm($I);
     $this->seeConfirmationEmailsCountIs($I, $confirmation_emails_count);
+  }
+
+  function enableSignupConfirmation(AcceptanceTester $I) {
+    $I->wantTo('Enable signup confirmation');
+    $I->login();
+    $this->setSignupConfirmationSetting($I, $enabled = true);
+    $this->addFormWidget($I);
+    $confirmation_emails_count = $this->countConfirmationEmails($I);
+    $this->subscribeUsingWidgetForm($I);
+    $this->seeConfirmationEmailsCountIs($I, $confirmation_emails_count + 1);
   }
 
   function _after(AcceptanceTester $I) {
