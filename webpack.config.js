@@ -345,7 +345,10 @@ module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], 
       config.plugins.push(
         new webpackUglifyJsPlugin({
           mangle: false,
-        })
+        }),
+        new webpack.DefinePlugin({
+          'process.env.NODE_ENV': JSON.stringify('production')
+        }),
       );
     }
     config.plugins.push(
