@@ -229,8 +229,8 @@ var adminConfig = {
     new webpack.optimize.CommonsChunkPlugin({
       name: 'admin_vendor',
       fileName: 'admin_vendor.js',
-      chunks: ['admin_vendor', 'admin'],
-      minChunks: Infinity
+      chunks: ['admin', 'form_editor', 'newsletter_editor'],
+      minChunks: 2
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
