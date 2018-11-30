@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
-import MailPoet from '../../../mailpoet';
+import MailPoet from 'mailpoet';
 
 function Fail(props) {
   return (

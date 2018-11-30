@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from '../../../mailpoet';
-import LoadingDots from '../../../loading.jsx';
+import MailPoet from 'mailpoet';
+import LoadingDots from 'loading.jsx';
 
 function renderRichData(showRichData, illustrationImageUrl) {
   if (showRichData) {
