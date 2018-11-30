@@ -5,6 +5,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Services\Bridge\API;
 use InvalidArgumentException;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -48,6 +49,13 @@ class MailPoetMapper {
       case API::RESPONSE_CODE_TEMPORARY_UNAVAILABLE:
         $message = __('Email service is temporarily not available, please try again in a few minutes.', 'mailpoet');
         $retry_interval = self::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL;
+        break;
+      case API::RESPONSE_CODE_BANNED_ACCOUNT:
+        $message = Helpers::replaceLinkTags(
+          __('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
+          'https://www.mailpoet.com/support/',
+          array('target' => '_blank')
+        );
         break;
       case API::RESPONSE_CODE_KEY_INVALID:
       case API::RESPONSE_CODE_PAYLOAD_TOO_BIG:

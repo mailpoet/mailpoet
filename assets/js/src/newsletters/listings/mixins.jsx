@@ -410,9 +410,11 @@ const MailerMixin = {
       mailerErrorNotice += ` ${MailPoet.I18n.t('mailerErrorCode')
         .replace('%$1s', state.meta.mta_log.error.error_code)}`;
     }
+    // eslint-disable-next-line react/no-danger
+    mailerErrorNotice = <p dangerouslySetInnerHTML={{ __html: mailerErrorNotice }} />;
     return (
       <div>
-        <p>{ mailerErrorNotice }</p>
+        { mailerErrorNotice }
         <p>{ mailerCheckSettingsNotice }</p>
         <p>
           <a

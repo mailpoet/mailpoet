@@ -4,6 +4,7 @@ namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Services\Bridge\API;
+use MailPoet\Util\Helpers;
 
 class MailPoetMapperTest extends \MailPoetTest {
   /** @var MailPoetMapper */
@@ -37,6 +38,24 @@ class MailPoetMapperTest extends \MailPoetTest {
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
     expect($error->getMessage())->equals('JSON input is not an array');
+  }
+
+  function testGetErrorBannedAccount() {
+    $api_result = [
+      'code' => API::RESPONSE_CODE_BANNED_ACCOUNT,
+      'status' => API::SENDING_STATUS_SEND_ERROR,
+      'message' => 'this is a spam',
+    ];
+    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->equals(Helpers::replaceLinkTags(
+      __('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
+      'https://www.mailpoet.com/support/',
+      array('target' => '_blank')
+    ));
   }
 
   function testGetErrorPayloadTooBig() {
