@@ -26,10 +26,12 @@ class PermanentNotices {
       'ajaxDismissNoticeHandler'
     ));
 
-    $this->php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
+    $this->php_version_warnings->init(
+      phpversion(),
+      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+    );
     $this->after_migration_notice->init(
-      Menu::isOnMailPoetAdminPage()
-      && $_GET['page'] !== 'mailpoet-welcome-wizard'
+      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
     );
     $this->discounts_announcement->init(
       empty($_GET['page'])
