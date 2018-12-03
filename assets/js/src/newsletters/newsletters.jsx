@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { IndexRedirect, Route, Router, useRouterHistory } from 'react-router';
-import { createHashHistory } from 'history';
+import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
@@ -18,8 +17,6 @@ import NewsletterListStandard from 'newsletters/listings/standard.jsx';
 import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
 import NewsletterListNotification from 'newsletters/listings/notification.jsx';
 import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx';
-
-const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
 class App extends React.Component {
   render() {
@@ -50,54 +47,53 @@ if (container) {
   let routes = [
     /* Listings */
     {
-      path: 'standard(/)**',
-      params: { tab: 'standard' },
+      path: '/standard(/)**',
       component: NewsletterListStandard,
     },
     {
-      path: 'welcome(/)**',
+      path: '/welcome(/)**',
       component: NewsletterListWelcome,
     },
     {
-      path: 'notification/history/:parent_id(/)**',
+      path: '/notification/history/:parent_id(/)**',
       component: NewsletterListNotificationHistory,
     },
     {
-      path: 'notification(/)**',
+      path: '/notification(/)**',
       component: NewsletterListNotification,
-    },
-    /* Newsletter: type selection */
-    {
-      path: 'new',
-      component: NewsletterTypes,
     },
     /* New newsletter: types */
     {
-      path: 'new/standard',
+      path: '/new/standard',
       component: NewsletterTypeStandard,
     },
     {
-      path: 'new/notification',
+      path: '/new/notification',
       component: NewsletterTypeNotification,
     },
     {
-      path: 'new/welcome',
+      path: '/new/welcome',
       component: NewsletterTypeWelcome,
+    },
+    /* Newsletter: type selection */
+    {
+      path: '/new',
+      component: NewsletterTypes,
     },
     /* Template selection */
     {
       name: 'template',
-      path: 'template/:id',
+      path: '/template/:id',
       component: NewsletterTemplates,
     },
     /* congratulate */
     {
-      path: 'send/congratulate/:id',
+      path: '/send/congratulate/:id',
       component: NewsletterCongratulate,
     },
     /* Sending options */
     {
-      path: 'send/:id',
+      path: '/send/:id',
       component: NewsletterSend,
     },
   ];
@@ -105,20 +101,19 @@ if (container) {
   routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [...routes, ...getAutomaticEmailsRoutes()]);
 
   window.mailpoet_listing = ReactDOM.render(( // eslint-disable-line react/no-render-return-value
-    <Router history={history}>
-      <Route path="/" component={App}>
-        <IndexRedirect to="standard" />
+    <HashRouter>
+      <Switch>
+        <Route exact path="/" render={() => <Redirect to="/standard" />} />
         {routes.map(route => (
           <Route
             key={route.path}
             path={route.path}
             component={route.component}
             name={route.name || null}
-            params={route.params || null}
             data={route.data || null}
           />
         ))}
-      </Route>
-    </Router>
+      </Switch>
+    </HashRouter>
   ), container);
 }

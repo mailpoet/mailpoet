@@ -179,7 +179,9 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
 
   propTypes: {
     location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    match: PropTypes.shape({
+      params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    }).isRequired,
   },
 
   mixins: [QueueMixin, StatisticsMixin, MailerMixin, CronMixin],
@@ -233,7 +235,7 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
         <Listing
           limit={window.mailpoet_listing_per_page}
           location={this.props.location}
-          params={this.props.params}
+          params={this.props.match.params}
           endpoint="newsletters"
           type="standard"
           base_url="standard"

@@ -8,7 +8,6 @@ function AutomaticEmailsBreadcrumb(props) {
     {
       name: 'type',
       label: MailPoet.I18n.t('selectType'),
-      link: '/new',
     },
     {
       name: 'events',

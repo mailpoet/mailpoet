@@ -34,7 +34,7 @@ class StandardScheduling extends React.Component {
 
   handleCheckboxChange = (event) => {
     const changeEvent = event;
-    changeEvent.target.value = this.isScheduledInput.checked ? '1' : '0';
+    changeEvent.target.value = event.target.checked ? '1' : '0';
     return this.handleValueChange(changeEvent);
   };
 
@@ -78,7 +78,6 @@ class StandardScheduling extends React.Component {
     return (
       <div>
         <input
-          ref={(c) => { this.isScheduledInput = c; }}
           type="checkbox"
           value="1"
           checked={this.isScheduled()}

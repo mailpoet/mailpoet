@@ -196,7 +196,7 @@ class FormList extends React.Component {
         <Listing
           limit={window.mailpoet_listing_per_page}
           location={this.props.location}
-          params={this.props.params}
+          params={this.props.match.params}
           messages={messages}
           search={false}
           endpoint="forms"
@@ -212,7 +212,9 @@ class FormList extends React.Component {
 
 FormList.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  match: PropTypes.shape({
+    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  }).isRequired,
 };
 
 module.exports = FormList;

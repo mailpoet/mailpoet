@@ -12,18 +12,20 @@ import jQuery from 'jquery';
 import { fromUrl } from 'common/thumbnail.jsx';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 
 const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es6-class
   displayName: 'NewsletterSend',
 
   propTypes: {
-    params: PropTypes.shape({
-      id: PropTypes.string,
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        id: PropTypes.string,
+      }).isRequired,
     }).isRequired,
-  },
-
-  contextTypes: {
-    router: PropTypes.object.isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
   },
 
   getInitialState: function getInitialState() {
@@ -35,12 +37,12 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   componentDidMount: function componentDidMount() {
-    this.loadItem(this.props.params.id);
+    this.loadItem(this.props.match.params.id);
     jQuery('#mailpoet_newsletter').parsley();
   },
 
   componentWillReceiveProps: function componentWillReceiveProps(props) {
-    this.loadItem(props.params.id);
+    this.loadItem(props.match.params.id);
   },
 
   getFieldsByNewsletter: function getFieldsByNewsletter(newsletter) {
@@ -86,7 +88,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
         loading: false,
         item: {},
       }, () => {
-        this.context.router.push('/new');
+        this.props.history.push('/new');
       });
     });
   },
@@ -164,11 +166,11 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
       this.saveTemplate(newsletter, () => {
         if (window.mailpoet_show_congratulate_after_first_newsletter) {
           MailPoet.Modal.loading(false);
-          this.context.router.push(`/send/congratulate/${this.state.item.id}`);
+          this.props.history.push(`/send/congratulate/${this.state.item.id}`);
           return;
         }
         // redirect to listing based on newsletter type
-        this.context.router.push(Hooks.applyFilters('mailpoet_newsletters_send_server_request_response_redirect', `/${this.state.item.type || ''}`, this.state.item));
+        this.props.history.push(Hooks.applyFilters('mailpoet_newsletters_send_server_request_response_redirect', `/${this.state.item.type || ''}`, this.state.item));
         const customResponse = Hooks.applyFilters('mailpoet_newsletters_send_server_request_response', this.state.item, response);
         if (_.isFunction(customResponse)) {
           customResponse();
@@ -204,7 +206,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
       endpoint: 'newsletters',
       action: 'setStatus',
       data: {
-        id: this.props.params.id,
+        id: this.props.match.params.id,
         status: 'active',
       },
     }).done((response) => {
@@ -212,11 +214,11 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
       this.saveTemplate(newsletter, () => {
         if (window.mailpoet_show_congratulate_after_first_newsletter) {
           MailPoet.Modal.loading(false);
-          this.context.router.push(`/send/congratulate/${this.state.item.id}`);
+          this.props.history.push(`/send/congratulate/${this.state.item.id}`);
           return;
         }
         // redirect to listing based on newsletter type
-        this.context.router.push(`/${this.state.item.type || ''}`);
+        this.props.history.push(`/${this.state.item.type || ''}`);
         const opts = this.state.item.options;
         // display success message depending on newsletter type
         if (response.data.type === 'welcome') {
@@ -262,7 +264,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
             newsletter_id: this.state.item.id,
           },
         }).done(() => {
-          this.context.router.push(`/${this.state.item.type || ''}`);
+          this.props.history.push(`/${this.state.item.type || ''}`);
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterSendingHasBeenResumed')
           );
@@ -293,7 +295,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
         MailPoet.I18n.t('newsletterUpdated')
       );
     }).done(() => {
-      this.context.router.push(`/${this.state.item.type || ''}`);
+      this.props.history.push(`/${this.state.item.type || ''}`);
     }).fail((err) => {
       this.showError(err);
     });
@@ -419,7 +421,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
             &nbsp;{MailPoet.I18n.t('orSimply')}&nbsp;
             <a
               href={
-                `?page=mailpoet-newsletter-editor&id=${this.props.params.id}`
+                `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
               }
               onClick={this.handleRedirectToDesign}
             >
@@ -438,4 +440,4 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 });
 
-module.exports = NewsletterSend;
+module.exports = withRouter(NewsletterSend);

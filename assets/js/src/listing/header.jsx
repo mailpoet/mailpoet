@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ListingColumn from './listing_column.jsx';
 
 class ListingHeader extends React.Component {
-  handleSelectItems = () => this.props.onSelectItems(this.toggle.checked);
+  handleSelectItems = evt => this.props.onSelectItems(evt.target.checked);
 
   render() {
     const columns = this.props.columns.map((column, index) => {
@@ -37,7 +37,6 @@ class ListingHeader extends React.Component {
             type="checkbox"
             name="select_all"
             id="select_all"
-            ref={(c) => { this.toggle = c; }}
             checked={this.props.selection}
             onChange={this.handleSelectItems}
           />

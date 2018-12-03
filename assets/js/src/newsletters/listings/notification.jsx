@@ -1,6 +1,6 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
@@ -165,7 +165,9 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
 
   propTypes: {
     location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    match: PropTypes.shape({
+      params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    }).isRequired,
   },
 
   mixins: [MailerMixin, CronMixin],
@@ -338,7 +340,7 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
         <Listing
           limit={window.mailpoet_listing_per_page}
           location={this.props.location}
-          params={this.props.params}
+          params={this.props.match.params}
           endpoint="newsletters"
           type="notification"
           base_url="notification"

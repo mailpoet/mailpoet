@@ -2,10 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
+import { withRouter } from 'react-router-dom';
 
 class NewsletterStandard extends React.Component {
-  static contextTypes = {
-    router: PropTypes.object.isRequired,
+  static propTypes = {
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
   };
 
   componentDidMount() {
@@ -30,7 +33,7 @@ class NewsletterStandard extends React.Component {
   }
 
   showTemplateSelection = (newsletterId) => {
-    this.context.router.push(`/template/${newsletterId}`);
+    this.props.history.push(`/template/${newsletterId}`);
   };
 
   render() {
@@ -43,5 +46,5 @@ class NewsletterStandard extends React.Component {
   }
 }
 
-module.exports = NewsletterStandard;
+module.exports = withRouter(NewsletterStandard);
 

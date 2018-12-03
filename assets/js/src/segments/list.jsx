@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -261,7 +261,7 @@ class SegmentList extends React.Component {
         <Listing
           limit={window.mailpoet_listing_per_page}
           location={this.props.location}
-          params={this.props.params}
+          params={this.props.match.params}
           messages={messages}
           search={false}
           endpoint="segments"
@@ -279,7 +279,9 @@ class SegmentList extends React.Component {
 
 SegmentList.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  match: PropTypes.shape({
+    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  }).isRequired,
 };
 
 module.exports = SegmentList;

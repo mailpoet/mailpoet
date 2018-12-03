@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
@@ -359,7 +359,7 @@ class SubscriberList extends React.Component {
         <Listing
           limit={window.mailpoet_listing_per_page}
           location={this.props.location}
-          params={this.props.params}
+          params={this.props.match.params}
           endpoint="subscribers"
           onRenderItem={this.renderItem}
           columns={columns}
@@ -376,7 +376,9 @@ class SubscriberList extends React.Component {
 
 SubscriberList.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  match: PropTypes.shape({
+    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  }).isRequired,
 };
 
 module.exports = SubscriberList;

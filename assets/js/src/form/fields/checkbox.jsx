@@ -2,8 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class FormFieldCheckbox extends React.Component {
+  constructor(props) {
+    super(props);
+    this.checkboxRef = React.createRef();
+    this.onValueChange = this.onValueChange.bind(this);
+  }
+
   onValueChange = (e) => {
-    e.target.value = this.checkbox.checked ? '1' : '0';
+    e.target.value = this.checkboxRef.current.checked ? '1' : '0';
     return this.props.onValueChange(e);
   };
 
@@ -20,7 +26,7 @@ class FormFieldCheckbox extends React.Component {
         <p key={`checkbox-${value}`}>
           <label htmlFor={this.props.field.name}>
             <input
-              ref={(c) => { this.checkbox = c; }}
+              ref={this.checkboxRef}
               type="checkbox"
               value="1"
               checked={isChecked}

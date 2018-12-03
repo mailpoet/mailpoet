@@ -5,6 +5,7 @@ import Select from 'form/fields/select.jsx';
 import Text from 'form/fields/text.jsx';
 import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 
 const availableRoles = window.mailpoet_roles || {};
 const availableSegments = _.filter(
@@ -49,10 +50,6 @@ const afterTimeTypeField = {
 };
 
 class WelcomeScheduling extends React.Component {
-  static contextTypes = {
-    router: PropTypes.object.isRequired,
-  };
-
   getCurrentValue = () => this.props.item[this.props.field.name] || {};
 
   handleValueChange = (name, value) => {
@@ -97,7 +94,7 @@ class WelcomeScheduling extends React.Component {
   };
 
   showTemplateSelection = (newsletterId) => {
-    this.context.router.push(`/template/${newsletterId}`);
+    this.props.history.push(`/template/${newsletterId}`);
   };
 
   render() {
@@ -155,6 +152,9 @@ class WelcomeScheduling extends React.Component {
 }
 
 WelcomeScheduling.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   field: PropTypes.shape({
     name: PropTypes.string,
@@ -162,4 +162,4 @@ WelcomeScheduling.propTypes = {
   onValueChange: PropTypes.func.isRequired,
 };
 
-module.exports = WelcomeScheduling;
+module.exports = withRouter(WelcomeScheduling);

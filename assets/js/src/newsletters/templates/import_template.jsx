@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 class ImportTemplate extends React.Component {
   constructor(props) {
     super(props);
+    this.fileRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -62,11 +63,11 @@ class ImportTemplate extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    if (_.size(this.templateFile.files) <= 0) {
+    if (_.size(this.fileRef.current.files) <= 0) {
       return false;
     }
 
-    const file = _.first(this.templateFile.files);
+    const file = _.first(this.fileRef.current.files);
     const reader = new FileReader();
 
     reader.onload = (evt) => {
@@ -98,7 +99,7 @@ class ImportTemplate extends React.Component {
           <input
             type="file"
             placeholder={MailPoet.I18n.t('selectJsonFileToUpload')}
-            ref={(c) => { this.templateFile = c; }}
+            ref={this.fileRef}
           />
           <p className="submit">
             <input

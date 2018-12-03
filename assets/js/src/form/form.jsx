@@ -4,12 +4,9 @@ import classNames from 'classnames';
 import FormField from 'form/fields/field.jsx';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 
 class Form extends React.Component {
-  static contextTypes = {
-    router: PropTypes.object.isRequired,
-  };
-
   static defaultProps = {
     params: {},
     errors: undefined,
@@ -33,11 +30,15 @@ class Form extends React.Component {
     endpoint: undefined,
   };
 
-  state = {
-    loading: false,
-    errors: [],
-    item: {},
-  };
+  constructor(props) {
+    super(props);
+    this.formRef = React.createRef();
+    this.state = {
+      loading: false,
+      errors: [],
+      item: {},
+    };
+  }
 
   componentDidMount() {
     if (this.props.params.id !== undefined) {
@@ -60,7 +61,7 @@ class Form extends React.Component {
         });
       });
       if (props.item === undefined) {
-        this.form.reset();
+        this.formRef.current.reset();
       }
     }
   }
@@ -93,7 +94,7 @@ class Form extends React.Component {
         loading: false,
         item: {},
       }, function failSetStateCallback() {
-        this.context.router.push('/new');
+        this.props.history.push('/new');
       });
     });
   };
@@ -139,7 +140,7 @@ class Form extends React.Component {
       if (this.props.onSuccess !== undefined) {
         this.props.onSuccess();
       } else {
-        this.context.router.push('/');
+        this.props.history.push('/');
       }
 
       if (this.props.params.id !== undefined) {
@@ -234,7 +235,7 @@ class Form extends React.Component {
         { beforeFormContent }
         <form
           id={this.props.id}
-          ref={(c) => { this.form = c; }}
+          ref={this.formRef}
           className={formClasses}
           onSubmit={
             (this.props.onSubmit !== undefined)
@@ -282,6 +283,9 @@ Form.propTypes = {
   onChange: PropTypes.func,
   onSubmit: PropTypes.func,
   onSuccess: PropTypes.func,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
-export default Form;
+export default withRouter(Form);

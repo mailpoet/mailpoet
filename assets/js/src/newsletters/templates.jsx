@@ -141,7 +141,7 @@ class NewsletterTemplates extends React.Component {
       endpoint: 'newsletters',
       action: 'get',
       data: {
-        id: this.props.params.id,
+        id: this.props.match.params.id,
       },
     }).done((response) => {
       emailType = response.data.type;
@@ -226,7 +226,7 @@ class NewsletterTemplates extends React.Component {
           <TemplateBox
             key={template.id}
             index={index}
-            newsletterId={this.props.params.id}
+            newsletterId={this.props.match.params.id}
             beforeDelete={() => this.setState({ loading: true })}
             afterDelete={this.afterTemplateDelete}
             beforeSelect={() => this.setState({ loading: true })}
@@ -265,8 +265,10 @@ class NewsletterTemplates extends React.Component {
 }
 
 NewsletterTemplates.propTypes = {
-  params: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }).isRequired,
   }).isRequired,
 };
 

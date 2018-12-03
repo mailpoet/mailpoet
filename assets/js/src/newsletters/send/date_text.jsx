@@ -67,8 +67,13 @@ const datepickerTranslations = {
 };
 
 class DateText extends React.Component {
+  constructor(props) {
+    super(props);
+    this.dateInput = React.createRef();
+  }
+
   componentDidMount() {
-    const $element = jQuery(this.dateInput);
+    const $element = jQuery(this.dateInput.current);
     const that = this;
     if ($element.datepicker) {
       // Override jQuery UI datepicker Date parsing and formatting
@@ -106,7 +111,7 @@ class DateText extends React.Component {
 
   componentWillUnmount() {
     if (this.datepickerInitialized) {
-      jQuery(this.dateInput).datepicker('destroy');
+      jQuery(this.dateInput.current).datepicker('destroy');
     }
   }
 
@@ -148,7 +153,7 @@ class DateText extends React.Component {
         readOnly
         disabled={this.props.disabled}
         onChange={this.onChange}
-        ref={(c) => { this.dateInput = c; }}
+        ref={this.dateInput}
         {...this.props.validation}
       />
     );

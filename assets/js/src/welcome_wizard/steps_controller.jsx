@@ -29,9 +29,9 @@ class WelcomeWizardStepsController extends React.Component {
   }
 
   componentDidUpdate() {
-    const step = parseInt(this.props.params.step, 10);
+    const step = parseInt(this.props.match.params.step, 10);
     if (step > this.state.stepsCount || step < 1) {
-      this.props.router.push('steps/1');
+      this.props.history.push('/steps/1');
     }
   }
 
@@ -42,7 +42,7 @@ class WelcomeWizardStepsController extends React.Component {
 
   showWooCommerceStepOrFinish() {
     if (this.state.stepsCount === 4) {
-      this.props.router.push('steps/4');
+      this.props.history.push('/steps/4');
     } else {
       this.finishWizard();
     }
@@ -80,11 +80,11 @@ class WelcomeWizardStepsController extends React.Component {
   }
 
   submitSender() {
-    this.updateSettings({ sender: this.state.sender }).then(() => (this.props.router.push('steps/2')));
+    this.updateSettings({ sender: this.state.sender }).then(() => (this.props.history.push('/steps/2')));
   }
 
   render() {
-    const step = parseInt(this.props.params.step, 10);
+    const step = parseInt(this.props.match.params.step, 10);
     return (
       <div className="mailpoet_welcome_wizard_steps mailpoet_welcome_wizard_centered_column">
         <WelcomeWizardHeader
@@ -104,13 +104,13 @@ class WelcomeWizardStepsController extends React.Component {
 
         { step === 1 && !this.state.shouldSetSender ?
           <WelcomeWizardMigratedUserStep
-            next={() => this.props.router.push('steps/2')}
+            next={() => this.props.history.push('/steps/2')}
           /> : null
         }
 
         { step === 2 ?
           <WelcomeWizardHelpInfoStep
-            next={() => this.props.router.push('steps/3')}
+            next={() => this.props.history.push('/steps/3')}
           /> : null
         }
 
@@ -137,10 +137,12 @@ class WelcomeWizardStepsController extends React.Component {
 }
 
 WelcomeWizardStepsController.propTypes = {
-  params: PropTypes.shape({
-    step: PropTypes.string.isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      step: PropTypes.string,
+    }).isRequired,
   }).isRequired,
-  router: PropTypes.shape({
+  history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
 };

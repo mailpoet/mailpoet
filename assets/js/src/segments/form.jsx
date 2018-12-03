@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import Form from 'form/form.jsx';
 import PropTypes from 'prop-types';
@@ -30,7 +30,7 @@ const messages = {
   },
 };
 
-const SegmentForm = ({ params }) => (
+const SegmentForm = props => (
   <div>
     <h1 className="title">
       {MailPoet.I18n.t('segment')}
@@ -40,15 +40,17 @@ const SegmentForm = ({ params }) => (
     <Form
       endpoint="segments"
       fields={fields}
-      params={params}
+      params={props.match.params}
       messages={messages}
     />
   </div>
 );
 
 SegmentForm.propTypes = {
-  params: PropTypes.shape({
-    id: PropTypes.string,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }).isRequired,
   }).isRequired,
 };
 
