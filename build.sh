@@ -36,6 +36,7 @@ mkdir vendor-prefixed
 
 echo '[BUILD] Fetching prefixed production libraries'
 ./composer.phar install --prefer-dist --working-dir=./prefixer/
+./composer.phar dump-autoload
 
 # Copy release folders.
 echo '[BUILD] Copying release folders'
