@@ -226,6 +226,7 @@ var adminConfig = {
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
   },
   plugins: [
+    ...baseConfig.plugins,
     new webpack.optimize.CommonsChunkPlugin({
       name: 'admin_vendor',
       fileName: 'admin_vendor.js',
@@ -251,6 +252,8 @@ var publicConfig = {
     public: 'webpack_public_index.jsx',
   },
   plugins: [
+    ...baseConfig.plugins,
+
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.js/,
@@ -310,6 +313,8 @@ var testConfig = {
     filename: '[name].js',
   },
   plugins: [
+    ...baseConfig.plugins,
+
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.js/,
