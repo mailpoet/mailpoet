@@ -97,7 +97,7 @@ var baseConfig = {
         test: /wp-js-hooks/i,
         use: [
           'expose-loader?' + globalPrefix + '.Hooks',
-          'exports-loader?wp.hooks',
+          'exports-loader?window.wp.hooks',
         ]
       },
       {
