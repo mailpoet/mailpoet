@@ -12,6 +12,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Posts;
 
 class Scheduler {
   const SECONDS_IN_HOUR = 3600;
@@ -23,6 +24,22 @@ class Scheduler {
   const INTERVAL_WEEKLY = 'weekly';
   const INTERVAL_MONTHLY = 'monthly';
   const INTERVAL_NTHWEEKDAY = 'nthWeekDay';
+
+  static function transitionHook($new_status, $old_status, $post) {
+    Logger::getLogger('post-notifications')->addInfo(
+      'transition post notification hook initiated',
+      [
+        'post_id' => $post->ID,
+        'new_status' => $new_status,
+        'old_status' => $old_status,
+      ]
+    );
+    $types = Posts::getTypes();
+    if(($new_status !== 'publish') || !isset($types[$post->post_type])) {
+      return;
+    }
+    self::schedulePostNotification($post->ID);
+  }
 
   static function schedulePostNotification($post_id) {
     Logger::getLogger('post-notifications')->addInfo(

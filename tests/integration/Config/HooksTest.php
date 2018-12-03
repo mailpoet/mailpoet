@@ -8,8 +8,6 @@ class HooksTest extends \MailPoetTest {
   function testItHooksSchedulerToMultiplePostTypes() {
     $hooks = new Hooks();
     $hooks->setupPostNotifications();
-    foreach(WPPosts::getTypes() as $post_type) {
-      expect(has_filter('publish_' . $post_type, '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification'))->notEmpty();
-    }
+    expect(has_filter('transition_post_status', '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook'))->notEmpty();
   }
 }
