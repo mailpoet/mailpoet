@@ -21,6 +21,8 @@ use MailPoet\Subscribers\Source;
 
 class SubscribersTest extends \MailPoetTest {
   function _before() {
+    $this->cleanup();
+
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -650,6 +652,10 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function _after() {
+    $this->cleanup();
+  }
+
+  private function cleanup() {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
