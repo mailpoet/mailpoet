@@ -2,9 +2,9 @@
 
 namespace MailPoet\API;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use MailPoet\DI\ContainerFactory;
 
 if(!defined('ABSPATH')) exit;
 
@@ -37,8 +37,7 @@ class API {
    */
   private static function ensureContainerIsLoaded() {
     if(!self::$container) {
-      $factory = new ContainerFactory();
-      self::$container = $factory->getContainer();
+      self::$container = ContainerWrapper::getInstance();
     }
   }
 }

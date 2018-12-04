@@ -4,7 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\DI\ContainerFactory;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
 use MailPoet\Util\ConflictResolver;
@@ -97,8 +97,7 @@ class Initializer {
   }
 
   function loadContainer() {
-    $container_factory = new ContainerFactory(WP_DEBUG);
-    $this->container = $container_factory->getContainer();
+    $this->container = ContainerWrapper::getInstance(WP_DEBUG);
     API\API::injectContainer($this->container);
   }
 
