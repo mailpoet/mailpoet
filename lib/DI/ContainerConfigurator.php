@@ -66,4 +66,22 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
     return $container;
   }
+
+  private function registerPremiumService(ContainerBuilder $container, $id) {
+    $container->register($id)
+      ->setPublic(true)
+      ->addArgument($id)
+      ->addArgument(new Reference('service_container'))
+      ->setFactory([
+        self::class,
+        'getPremiumService',
+      ]);
+  }
+
+  static function getPremiumService($id, ContainerInterface $container = null) {
+    if(!$container->has(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)) {
+      return null;
+    }
+    return $container->get(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)->get($id);
+  }
 }
