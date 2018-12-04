@@ -42,6 +42,7 @@ echo '[BUILD] Fetching prefixed production libraries'
 echo '[BUILD] Copying release folders'
 cp -Rf lang $plugin_name
 cp -RfL assets $plugin_name
+cp -Rf generated $plugin_name
 cp -Rf lib $plugin_name
 cp -Rf vendor $plugin_name
 cp -Rf vendor-prefixed $plugin_name

@@ -3,7 +3,6 @@
 namespace MailPoet\DI;
 
 use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
-use MailPoetVendor\Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
 class ContainerFactory {
 
@@ -35,17 +34,5 @@ class ContainerFactory {
 
   function getConfiguredContainer() {
     return $this->configurator->configure(new ContainerBuilder());
-  }
-
-  function dumpContainer() {
-    $container = $this->createContainer();
-    $container->compile();
-    $dumper = new PhpDumper($container);
-    file_put_contents(
-      __DIR__ . '/' . $this->dump_file,
-      $dumper->dump([
-        'class' => $this->dump_class
-      ])
-    );
   }
 }
