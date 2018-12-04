@@ -12,6 +12,8 @@ class Submit extends Base {
 
     $html .= 'value="'.static::getFieldLabel($block).'" ';
 
+    $html .= 'data-automation-id="subscribe-submit-button" ';
+
     $html .= '/></p>';
 
     return $html;

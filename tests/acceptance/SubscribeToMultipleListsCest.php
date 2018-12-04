@@ -28,16 +28,9 @@ class SubscribeToMultipleListsCest {
     $form_factory = new Form();
     $form = $form_factory->withName($form_name)->withSegments([$segment1, $segment2, $segment3])->create();
     //Add this form to a widget
-    $I->cli('widget reset sidebar-1 --allow-root');
-    $I->cli('widget add mailpoet_form sidebar-1 2 --form=' . $form->id . ' --title="Multiple List Widget" --allow-root');
-    $I->wantTo('Subscribe to multiple lists using form widget');
-    $I->amOnPage('/');
-    $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
-    $I->click('.mailpoet_submit');
-    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
-    $I->seeNoJSErrors();
+    $I->createFormAndSubscribe($form);
     //Subscribe via that form
-    $I->amOnUrl('http://mailhog:8025');
+    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
     $I->click(Locator::contains('span.subject', 'Confirm your subscription'));
     $I->switchToIframe('preview-html');
     $I->click('Click here to confirm your subscription');
