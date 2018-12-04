@@ -280,7 +280,10 @@ Selection.propTypes = {
   onValueChange: PropTypes.func,
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    values: PropTypes.object,
+    values: PropTypes.oneOfType([
+      PropTypes.object,
+      PropTypes.array,
+    ]),
     getLabel: PropTypes.func,
     resetSelect2OnUpdate: PropTypes.bool,
     selected: PropTypes.func,
@@ -297,7 +300,7 @@ Selection.propTypes = {
     disabled: PropTypes.bool,
     validation: PropTypes.object,
   }).isRequired,
-  item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   disabled: PropTypes.bool,
   width: PropTypes.string,
 };
@@ -308,6 +311,7 @@ Selection.defaultProps = {
   },
   disabled: false,
   width: '',
+  item: undefined,
 };
 
 

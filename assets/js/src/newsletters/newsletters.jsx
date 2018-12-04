@@ -111,6 +111,7 @@ if (container) {
             component={route.component}
             name={route.name || null}
             data={route.data || null}
+            render={route.render}
           />
         ))}
       </Switch>
