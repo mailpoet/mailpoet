@@ -31,10 +31,12 @@ echo '[BUILD] Building DI Container cache'
 echo '[BUILD] Fetching production libraries'
 rm -rf vendor
 rm -rf vendor-prefixed
+mkdir vendor-prefixed
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
-echo '[BUILD] Fetching mozart managed production libraries'
-./composer.phar install --no-dev --prefer-dist --working-dir=./mozart/
+echo '[BUILD] Fetching prefixed production libraries'
+./composer.phar install --prefer-dist --working-dir=./prefixer/
+./composer.phar dump-autoload
 
 # Copy release folders.
 echo '[BUILD] Copying release folders'
