@@ -582,6 +582,12 @@ class Menu {
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = class_exists('WooCommerce');
 
+    // If the last_announcement_date is newer than the user's last_announcement_seen setting,
+    // a small red dot is added on top of the What's New announcement button
+    $last_announcement_date = strtotime('2018-12-05 10:00:00');
+    $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'])
+      || $data['settings']['last_announcement_seen'] < $last_announcement_date;
+
     $data['automatic_emails'] = array(
       array(
         'slug' => 'woocommerce',
