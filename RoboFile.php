@@ -342,6 +342,24 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  function qaPhpstan() {
+    // PHPStan must be run out of main plugin directory to avoid its autoloading
+    // from vendor/autoload.php where some dev dependencies cause conflicts.
+    $dir = __DIR__;
+    $this->loadEnv();
+    return $this->collectionBuilder()
+      ->taskExec(
+        'WP_ROOT="'.getenv('WP_ROOT').'" '.
+        'php -d memory_limit=2G '.
+        "$dir/phpstan.phar analyse ".
+        "--configuration $dir/tasks/phpstan/phpstan.neon ".
+        '--level 0 '.
+        "$dir/lib"
+      )
+      ->dir(__DIR__ . '/tasks/phpstan')
+      ->run();
+  }
+
   function svnCheckout() {
     $svn_dir = ".mp_svn";
 
