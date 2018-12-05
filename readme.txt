@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 3.16.0
+Stable tag: 3.16.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -169,7 +169,7 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 == Changelog ==
 
-= 3.16.0 - 2018-12-05 =
+= 3.16.1 - 2018-12-05 =
 * Added: error message for banned senders;
 * Improved: PHP compatibility warning updated to recommend PHP 7.2 or later;
 * Improved: Error handling and display;
