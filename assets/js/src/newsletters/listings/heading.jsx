@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
-import InAppAnnoucement from 'in_app_announcements/in_app_announcement.jsx';
+import InAppAnnoucement from 'announcements/in_app_announcement.jsx';
 
 const ListingHeading = () => (
   <h1 className="title">
