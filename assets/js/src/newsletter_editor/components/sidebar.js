@@ -345,6 +345,11 @@ define([
 
   Module.NewsletterPreviewView = Marionette.View.extend({
     getTemplate: function () { return window.templates.newsletterPreview; },
+    events: function () {
+      return {
+        'change .mailpoet_browser_preview_type': 'changeBrowserPreviewType'
+      };
+    },
     initialize: function (options) {
       this.previewUrl = options.previewUrl;
       this.width = '100%';
@@ -358,6 +363,17 @@ define([
         width: this.width,
         height: this.height
       };
+    },
+    changeBrowserPreviewType: function (event) {
+      var value = jQuery(event.target).val();
+
+      if (value === 'mobile') {
+        this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_desktop');
+        this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_mobile');
+      } else {
+        this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_desktop');
+        this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_mobile');
+      }
     }
   });
 
