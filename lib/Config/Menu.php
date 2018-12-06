@@ -583,8 +583,9 @@ class Menu {
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = class_exists('WooCommerce');
 
-    $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'])
-      || $data['settings']['last_announcement_seen'] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
+    $user_id = $data['current_wp_user']['ID'];
+    $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'][$user_id])
+      || $data['settings']['last_announcement_seen'][$user_id] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
 
     $data['automatic_emails'] = array(
       array(
