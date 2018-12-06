@@ -60,14 +60,14 @@ define(
         jQuery('.nav-tab-wrapper a').removeClass('nav-tab-active');
 
         // hide panels & sections
-        jQuery('.mailpoet_panel, .mailpoet_section').hide();
+        jQuery('.mailpoet_tab_panel, .mailpoet_section').hide();
 
         // set active tab
         jQuery('a.nav-tab[href="#' + tab + '"]').addClass('nav-tab-active').blur();
 
         // show selected panel
-        if (jQuery('.mailpoet_panel[data-tab="' + tab + '"]').length > 0) {
-          jQuery('.mailpoet_panel[data-tab="' + tab + '"]').show();
+        if (jQuery('.mailpoet_tab_panel[data-tab="' + tab + '"]').length > 0) {
+          jQuery('.mailpoet_tab_panel[data-tab="' + tab + '"]').show();
         }
 
         // show "save settings" button

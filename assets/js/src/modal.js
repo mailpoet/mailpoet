@@ -79,21 +79,21 @@ define('modal', ['mailpoet', 'jquery'],
       renderer: 'html',
       options: {},
       templates: {
-        overlay: '<div id="mailpoet_modal_overlay" style="display:none;"></div>',
-        popup: '<div id="mailpoet_popup" tabindex="-1">' +
+        overlay: '<div id="mailpoet_modal_overlay" class="mailpoet_modal_overlay" style="display:none;"></div>',
+        popup: '<div id="mailpoet_popup" class="mailpoet_popup" tabindex="-1">' +
         '<div class="mailpoet_popup_wrapper">' +
-        '<a href="javascript:;" id="mailpoet_modal_close"></a>' +
-        '<div id="mailpoet_popup_title"><h2></h2></div>' +
+        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close"></a>' +
+        '<div id="mailpoet_popup_title" class="mailpoet_popup_title"><h2></h2></div>' +
         '<div class="mailpoet_popup_body clearfix"></div>' +
         '</div>' +
         '</div>',
         loading: '<div id="mailpoet_loading" class="mailpoet_loading" style="display:none;">' +
-        '<div id="mailpoet_modal_loading_1" class="mailpoet_modal_loading"></div>' +
-        '<div id="mailpoet_modal_loading_2" class="mailpoet_modal_loading"></div>' +
-        '<div id="mailpoet_modal_loading_3" class="mailpoet_modal_loading"></div>' +
+        '<div id="mailpoet_modal_loading_1" class="mailpoet_modal_loading mailpoet_modal_loading_1"></div>' +
+        '<div id="mailpoet_modal_loading_2" class="mailpoet_modal_loading mailpoet_modal_loading_2"></div>' +
+        '<div id="mailpoet_modal_loading_3" class="mailpoet_modal_loading mailpoet_modal_loading_3"></div>' +
         '</div>',
-        panel: '<div id="mailpoet_panel">' +
-        '<a href="javascript:;" id="mailpoet_modal_close"></a>' +
+        panel: '<div id="mailpoet_panel" class="mailpoet_panel">' +
+        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close"></a>' +
         '<div class="mailpoet_panel_wrapper" tabindex="-1">' +
         '<div class="mailpoet_panel_body clearfix"></div>' +
         '</div>' +
