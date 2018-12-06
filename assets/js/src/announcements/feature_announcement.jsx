@@ -38,7 +38,7 @@ class FeatureAnnouncement extends React.Component {
     this.setState({ showDot: false });
     MailPoet.Modal.loading(false);
     window.Beamer.show();
-    const data = { last_announcement_seen: {} };
+    const data = { last_announcement_seen: window.mailpoet_settings.last_announcement_seen || {} };
     const userId = window.mailpoet_current_wp_user.ID;
     data.last_announcement_seen[userId] = Math.floor(Date.now() / 1000);
     MailPoet.Ajax.post({
