@@ -1137,6 +1137,7 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
       title: window.MailPoet.I18n.t('editFieldSettings'),
       template: window.jQuery('#form_template_field_settings').html(),
       data: this.getData(),
+      minWidth: '500px',
       onSuccess: function () {
         var data = window.jQuery('#form_field_settings').mailpoetSerializeObject();
         this.redraw(data);

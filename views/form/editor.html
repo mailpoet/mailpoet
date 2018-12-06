@@ -598,6 +598,7 @@
           // open popup
           MailPoet.Modal.popup({
             title: "<%= __('Add new field') %>",
+            minWidth: "500px",
             template: $('#form_template_field_form').html()
           });
 
@@ -619,6 +620,7 @@
             MailPoet.Modal.popup({
               title: "<%= __('Edit field') %>",
               template: $('#form_template_field_form').html(),
+              minWidth: "500px",
               data: response.data
             });
           }).fail(function(response) {

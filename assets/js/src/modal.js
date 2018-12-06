@@ -320,6 +320,9 @@ define('modal', ['mailpoet', 'jquery'],
             jQuery('#mailpoet_popup_wrapper').css({
               height: this.options.height
             });
+            if (this.options.minWidth) {
+              jQuery('#mailpoet_popup').css({ minWidth: this.options.minWidth });
+            }
             break;
           case 'panel':
             // set dimensions
