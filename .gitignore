@@ -2,6 +2,7 @@
 TODO
 composer.phar
 php-scoper.phar
+phpstan.phar
 /vendor
 /vendor-prefixed
 /vendor_backup
