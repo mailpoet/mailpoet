@@ -3,36 +3,70 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
-let beamerLoaded = false;
+class FeatureAnnouncement extends React.Component {
+  constructor(props) {
+    super(props);
+    this.loadBeamer = this.loadBeamer.bind(this);
+    this.beamerCallback = this.beamerCallback.bind(this);
 
-const loadBeamer = (e) => {
-  let s;
-  e.preventDefault();
-  if (!beamerLoaded) {
-    MailPoet.Modal.loading(true);
-    beamerLoaded = true;
-    window.mailpoet_feature_announcement_has_news = false;
-    s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.src = 'https://app.getbeamer.com/js/beamer-embed.js';
-    document.getElementsByTagName('body')[0].appendChild(s);
+    this.state = {
+      showDot: props.hasNews,
+      beamerLoaded: typeof window.Beamer !== 'undefined',
+    };
   }
-};
 
-const FeatureAnnouncement = (props) => {
-  const buttonClasses = classNames(
-    'button mailpoet_feature_announcement_button',
-    props.hasNews ? 'mailpoet_feature_announcement_dot' : ''
-  );
+  loadBeamer(e) {
+    e.preventDefault();
+    if (!this.state.beamerLoaded) {
+      window.beamer_config = {
+        product_id: 'VvHbhYWy7118',
+        selector: 'beamer-selector',
+        language: window.mailpoet_user_locale,
+        callback: this.beamerCallback,
+      };
+      MailPoet.Modal.loading(true);
+      this.setState({ beamerLoaded: true });
+      window.mailpoet_feature_announcement_has_news = false;
+      const s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.src = 'https://app.getbeamer.com/js/beamer-embed.js';
+      document.getElementsByTagName('body')[0].appendChild(s);
+    }
+  }
 
-  return (
-    <div className="mailpoet_feature_announcement">
-      <a href="" id="beamer-selector" onClick={loadBeamer} className={buttonClasses} title={MailPoet.I18n.t('whatsNew')}>
-        <span className="mailpoet_feature_announcement_icon dashicons dashicons-carrot" />
-      </a>
-    </div>
-  );
-};
+  beamerCallback() {
+    this.setState({ showDot: false });
+    MailPoet.Modal.loading(false);
+    window.Beamer.show();
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'settings',
+      action: 'set',
+      data: { last_announcement_seen: Math.floor(Date.now() / 1000) },
+    });
+  }
+
+  render() {
+    const buttonClasses = classNames(
+      'button mailpoet_feature_announcement_button',
+      this.state.showDot ? 'mailpoet_feature_announcement_dot' : ''
+    );
+    return (
+      <div className="mailpoet_feature_announcement">
+        <a
+          href=""
+          id="beamer-selector"
+          onClick={this.loadBeamer}
+          className={buttonClasses}
+          title={MailPoet.I18n.t('whatsNew')}
+        >
+          <span className="mailpoet_feature_announcement_icon dashicons dashicons-carrot" />
+        </a>
+      </div>
+
+    );
+  }
+}
 
 FeatureAnnouncement.propTypes = {
   hasNews: PropTypes.bool,

@@ -24,6 +24,7 @@
     var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
     var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
     var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
+    var mailpoet_user_locale = '<%= get_locale() %>';
     var mailpoet_in_app_announcements = mailpoet_settings.in_app_announcements;
     var mailpoet_free_welcome_emails_image = '<%= cdn_url('in-app-announcements/hello-illustration-for-welcome-emails.20181121-1440.png') %>';
     var mailpoet_congratulations_success_image = '<%= cdn_url('newsletter/congrat-illu-success.20181121-1440.png') %>';
@@ -315,7 +316,7 @@
     'freeWelcomeEmailsHeading': __('Welcome Emails are now free for everyone'),
     'freeWelcomeEmailsParagraph': __('Say “Hello!” automatically to all your new subscribers. They’ll appreciate the extra touch.'),
 
-    'whatsNew': __("What's new"),
+    'whatsNew': __("What’s new"),
 
     'congratulationsSendSuccessHeader': __('Congratulations, your newsletter is being sent!'),
     'congratulationsScheduleSuccessHeader': __('Congratulations, your newsletter is scheduled to be sent.'),
@@ -340,25 +341,4 @@
   });
 </script>
 <% endif %>
-
-<script>
-// Beamer
-var beamer_config = {
-  product_id : "VvHbhYWy7118",
-  selector : "beamer-selector",
-  language: '<%= get_locale() %>',
-  callback : function(){
-    MailPoet.Modal.loading(false);
-    Beamer.show();
-    $('.mailpoet_feature_announcement_dot').removeClass('mailpoet_feature_announcement_dot');
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'settings',
-      action: 'set',
-      data: { 'last_announcement_seen': Math.floor(Date.now() / 1000) },
-    });
-  }
-};
-</script>
-
 <% endblock %>

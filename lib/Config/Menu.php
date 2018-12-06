@@ -34,6 +34,7 @@ if(!defined('ABSPATH')) exit;
 
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
+  const LAST_ANNOUNCEMENT_DATE = '2018-12-05 10:00:00';
 
   public $renderer;
   private $access_control;
@@ -582,11 +583,8 @@ class Menu {
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = class_exists('WooCommerce');
 
-    // If the last_announcement_date is newer than the user's last_announcement_seen setting,
-    // a small red dot is added on top of the What's New announcement button
-    $last_announcement_date = strtotime('2018-12-05 10:00:00');
     $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'])
-      || $data['settings']['last_announcement_seen'] < $last_announcement_date;
+      || $data['settings']['last_announcement_seen'] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
 
     $data['automatic_emails'] = array(
       array(
