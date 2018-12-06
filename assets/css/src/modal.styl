@@ -19,6 +19,9 @@ body.mailpoet_modal_opened
   width: 100%
   z-index: 100000
   background-color: overlay_background_color
+  display: flex
+  align-items: center
+  justify-content: center
 
 .mailpoet_modal_highlight
   pointer-events: none
@@ -34,7 +37,7 @@ body.mailpoet_modal_opened
 // overlay: state
 .mailpoet_modal_overlay.mailpoet_overlay_loading
   background-color: overlay_background_color !important
-  display: block !important
+  display: flex !important
 
 .mailpoet_modal_opened .mailpoet_modal_overlay
   display: block
@@ -163,13 +166,6 @@ body.mailpoet_modal_opened
 
   .mailpoet_panel_body
     padding-bottom: 52px
-
-#mailpoet_loading
-  position: relative
-  left: 50%
-  top: 50%
-  margin-left: -75px
-  margin-top: -16px
 
 .mailpoet_loading
   height: 32px
