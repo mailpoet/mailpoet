@@ -1,7 +1,8 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import { confirmAlert } from 'react-confirm-alert';
 import PropTypes from 'prop-types';
+
+import confirmAlert from 'common/confirm_alert.jsx';
 
 /**
  * props = {
@@ -40,12 +41,8 @@ class TemplateBox extends React.Component {
       });
     };
     confirmAlert({
-      title: MailPoet.I18n.t('confirmTitle'),
       message: MailPoet.I18n.t('confirmTemplateDeletion').replace('%$1s', name),
-      confirmLabel: MailPoet.I18n.t('confirmLabel'),
-      cancelLabel: MailPoet.I18n.t('cancelLabel'),
       onConfirm,
-      onCancel: () => {},
     });
   }
 

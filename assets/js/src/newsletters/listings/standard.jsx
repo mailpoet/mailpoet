@@ -1,11 +1,11 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { confirmAlert } from 'react-confirm-alert';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 
+import confirmAlert from 'common/confirm_alert.jsx';
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
@@ -113,10 +113,7 @@ const confirmEdit = (newsletter) => {
     redirectToEditing();
   } else {
     confirmAlert({
-      title: MailPoet.I18n.t('confirmTitle'),
       message: MailPoet.I18n.t('confirmEdit'),
-      confirmLabel: MailPoet.I18n.t('confirmLabel'),
-      cancelLabel: MailPoet.I18n.t('cancelLabel'),
       onConfirm: redirectToEditing,
     });
   }
