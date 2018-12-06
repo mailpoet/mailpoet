@@ -24,6 +24,7 @@
     var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
     var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
     var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
+    var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
     var mailpoet_user_locale = '<%= get_locale() %>';
     var mailpoet_in_app_announcements = mailpoet_settings.in_app_announcements;
     var mailpoet_free_welcome_emails_image = '<%= cdn_url('in-app-announcements/hello-illustration-for-welcome-emails.20181121-1440.png') %>';

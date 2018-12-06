@@ -586,6 +586,7 @@ class Menu {
     $user_id = $data['current_wp_user']['ID'];
     $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'][$user_id])
       || $data['settings']['last_announcement_seen'][$user_id] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
+    $data['last_announcement_seen'] = isset($data['settings']['last_announcement_seen']) ? $data['settings']['last_announcement_seen'] : false;
 
     $data['automatic_emails'] = array(
       array(
