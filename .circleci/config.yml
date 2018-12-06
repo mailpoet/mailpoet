@@ -59,7 +59,7 @@ jobs:
         name: "Set up environment"
         command: |
           source ./.circleci/setup.bash && setup php7
-          wget https://github.com/phpstan/phpstan/releases/download/0.10.5/phpstan.phar
+          wget https://github.com/phpstan/phpstan/releases/download/0.10.6/phpstan.phar
     - run:
         name: "Static analysis"
         command: ./do qa:phpstan
