@@ -42,7 +42,7 @@ class NewsletterNotification extends React.Component {
       action: 'create',
       data: _.extend({}, this.state, {
         type: 'notification',
-        subject: MailPoet.I18n.t('draftNewsletterTitle'),
+        subject: MailPoet.I18n.t('draftPostNotificationTitle'),
       }),
     }).done((response) => {
       this.showTemplateSelection(response.data.id);
