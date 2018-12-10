@@ -58,13 +58,11 @@ jobs:
     - run:
         name: "Set up environment"
         command: |
-          ./composer.phar install --no-dev --no-scripts
           source ./.circleci/setup.bash && setup php7
-          wget https://github.com/phpstan/phpstan/releases/download/0.10.5/phpstan.phar
+          wget https://github.com/phpstan/phpstan/releases/download/0.10.6/phpstan.phar
     - run:
         name: "Static analysis"
-        command: |
-          WP_ROOT="/home/circleci/mailpoet/wordpress" php -d memory_limit=2G phpstan.phar analyse -c tasks/phpstan/phpstan.neon -l 0 lib/
+        command: ./do qa:phpstan
   php5_unit:
     working_directory: /home/circleci/mailpoet
     docker:
