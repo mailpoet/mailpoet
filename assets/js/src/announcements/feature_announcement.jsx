@@ -3,38 +3,14 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
-const LAST_ANNOUNCEMENT_SEEN_LS_KEY = 'last_announcement_seen';
-
-const getLocalStorageKey = function getLocalStorageKey() {
-  try {
-    return parseInt(window.localStorage.getItem(LAST_ANNOUNCEMENT_SEEN_LS_KEY), 10);
-  } catch (e) {
-    return null;
-  }
-};
-
-const setLocalStorageKey = function setLocalStorageKey(value) {
-  try {
-    return window.localStorage.setItem(LAST_ANNOUNCEMENT_SEEN_LS_KEY, String(value));
-  } catch (e) {
-    return null;
-  }
-};
-
 class FeatureAnnouncement extends React.Component {
   constructor(props) {
     super(props);
     this.loadBeamer = this.loadBeamer.bind(this);
     this.beamerCallback = this.beamerCallback.bind(this);
 
-    // localStorage is used as a backup for users who don't have a permission to update settings
-    const lastAnnouncementSeenLS = getLocalStorageKey();
-    const hasNewsLS = lastAnnouncementSeenLS > 0 ?
-      lastAnnouncementSeenLS < window.mailpoet_last_announcement_date :
-      null;
-
     this.state = {
-      showDot: hasNewsLS !== null ? hasNewsLS : props.hasNews,
+      showDot: props.hasNews,
       beamerLoaded: typeof window.Beamer !== 'undefined',
     };
   }
@@ -64,9 +40,7 @@ class FeatureAnnouncement extends React.Component {
     window.Beamer.show();
     const data = { last_announcement_seen: window.mailpoet_last_announcement_seen || {} };
     const userId = window.mailpoet_current_wp_user.ID;
-    const lastAnnouncementSeen = Math.floor(Date.now() / 1000);
-    data.last_announcement_seen[userId] = lastAnnouncementSeen;
-    setLocalStorageKey(lastAnnouncementSeen);
+    data.last_announcement_seen[userId] = Math.floor(Date.now() / 1000);
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'settings',
