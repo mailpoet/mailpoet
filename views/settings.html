@@ -98,6 +98,17 @@
           } else {
             $('#settings_subscriber_email_notification_error').hide();
           }
+          console.log("whatever");
+          // if new subscriber notification is enabled but sender is empty, show error
+          var stats_notifications_enabled = $('input[name="stats_notifications[enabled]"]:checked').val(),
+            stats_notifications_address = $('input[name="stats_notifications[address]"]').val().trim();
+          if (stats_notifications_enabled && stats_notifications_address == '') {
+            $('#settings_stats_notifications_error').show();
+            window.location.href = '#basics';
+            errorFound = true;
+          } else {
+            $('#settings_stats_notifications_error').hide();
+          }
           // stop processing if an error was found
           if (errorFound) {
             return false;
@@ -182,6 +193,7 @@
         $('#settings_re_captcha_tokens_error').hide();
 
         $('#settings_subscriber_email_notification_error').hide();
+        $('#settings_stats_notifications_error').hide();
 
         function toggleLinuxCronSettings() {
           if ($('input[name="cron_trigger[method]"]:checked').val() === '<%= cron_trigger.linux_cron %>') {

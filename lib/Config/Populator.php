@@ -194,6 +194,15 @@ class Populator {
       ]);
     }
 
+    $stats_notifications = Setting::getValue('stats_notifications');
+    if(empty($stats_notifications)) {
+      $sender = Setting::getValue('sender', []);
+      Setting::setValue('stats_notifications', [
+        'enabled' => true,
+        'address' => isset($sender['address'])? $sender['address'] : null,
+      ]);
+    }
+
     // reset mailer log
     MailerLog::resetMailerLog();
   }

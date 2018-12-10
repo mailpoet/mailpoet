@@ -281,6 +281,48 @@
       </td>
     </tr>
 
+    <!-- Stats notifications -->
+    <tr>
+      <th scope="row">
+        <label for="subscription_unsubscribe_page">
+          <%= _x('Stats notifications', 'name of a setting to automatically send statistics (newsletter open rate, click rate, etc) by email') %>
+        </label>
+        <p class="description">
+          <%= __('Enter the email address that should receive your newsletter’s stats 24 hours after it has been sent.') %>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="stats_notifications[enabled]"
+              value="1"
+              <% if(settings.stats_notifications.enabled) %>
+                checked
+              <% endif %>
+            /><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+              type="radio"
+              name="stats_notifications[enabled]"
+              value=""
+              <% if not(settings.stats_notifications.enabled) %>
+                checked
+              <% endif %>
+            ><%= __('No') %>
+          </label>
+          <br>
+          <input type="email"
+            id="stats_notifications[address]"
+            name="stats_notifications[address]"
+            value="<%= settings.stats_notifications.address %>"
+            placeholder="me@mydomain.com" >
+          <br>
+          <div id="settings_stats_notifications_error" class="mailpoet_error_item mailpoet_error">
+            <%= __('Please fill the email address.') %>
+          </div>
+
     <!-- New subscriber emails notifications -->
     <tr>
       <th scope="row">
@@ -296,9 +338,9 @@
               type="radio"
               name="subscriber_email_notification[enabled]"
               value="1"
-              <% if(settings.subscriber_email_notification.enabled) %>
-                checked
-              <% endif %>
+            <% if(settings.subscriber_email_notification.enabled) %>
+            checked
+            <% endif %>
             /><%= __('Yes') %>
           </label>
           &nbsp;
@@ -307,21 +349,22 @@
               type="radio"
               name="subscriber_email_notification[enabled]"
               value=""
-              <% if not(settings.subscriber_email_notification.enabled) %>
-                checked
-              <% endif %>
+            <% if not(settings.subscriber_email_notification.enabled) %>
+            checked
+            <% endif %>
             /><%= __('No') %>
           </label>
           <br>
           <input type="email"
-            id="subscriber_email_notification[address]"
-            name="subscriber_email_notification[address]"
-            value="<%= settings.subscriber_email_notification.address %>"
-            placeholder="me@mydomain.com" />
+                 id="subscriber_email_notification[address]"
+                 name="subscriber_email_notification[address]"
+                 value="<%= settings.subscriber_email_notification.address %>"
+                 placeholder="me@mydomain.com" />
           <br>
-          <div id="settings_subscriber_email_notification_error" class="mailpoet_error_item mailpoet_error">
-            <%= __('Please fill the email address.') %>
-          </div>
+        <div id="settings_subscriber_email_notification_error" class="mailpoet_error_item mailpoet_error">
+          <%= __('Please fill the email address.') %>
+        </div>
+
     <!-- shortcode: archive page  -->
     <tr>
       <th scope="row">
