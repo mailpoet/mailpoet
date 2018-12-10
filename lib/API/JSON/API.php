@@ -108,7 +108,7 @@ class API {
           $namespace,
           ucfirst($this->_request_endpoint)
         );
-        if(class_exists($endpoint_class)) {
+        if($this->container->has($endpoint_class)) {
           $this->_request_endpoint_class = $endpoint_class;
           break;
         }
@@ -138,7 +138,9 @@ class API {
 
   function processRoute() {
     try {
-      if(empty($this->_request_endpoint_class)) {
+      if(empty($this->_request_endpoint_class) ||
+        !$this->container->has($this->_request_endpoint_class)
+      ) {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
 
