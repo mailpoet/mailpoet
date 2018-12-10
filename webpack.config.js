@@ -38,7 +38,8 @@ var baseConfig = {
       'blob$': 'blob-tmp/Blob.js',
       'papaparse': 'papaparse/papaparse.min.js',
       'html2canvas': 'html2canvas/dist/html2canvas.js',
-      'asyncqueue': 'vendor/jquery.asyncqueue.js'
+      'asyncqueue': 'vendor/jquery.asyncqueue.js',
+      'intro.js': 'intro.js/intro.js',
     },
   },
   node: {
@@ -96,7 +97,7 @@ var baseConfig = {
         test: /wp-js-hooks/i,
         use: [
           'expose-loader?' + globalPrefix + '.Hooks',
-          'exports-loader?wp.hooks',
+          'exports-loader?window.wp.hooks',
         ]
       },
       {
@@ -218,119 +219,19 @@ var baseConfig = {
 var adminConfig = {
   name: 'admin',
   entry: {
-    vendor: [
-      'handlebars',
-      'handlebars_helpers',
-      'wp-js-hooks'
-    ],
-    mailpoet: [
-      'mailpoet',
-      'ajax',
-      'date',
-      'i18n',
-      'modal',
-      'notice',
-      'num',
-      'jquery.serialize_object',
-      'parsleyjs',
-      'analytics_event',
-      'help-tooltip.jsx',
-      'help-tooltip',
-      'dismissible-notice.jsx',
-    ],
-    admin_vendor: [
-      'react',
-      'react-dom',
-      require.resolve('react-router-dom'),
-      'react-string-replace',
-      'prop-types',
-      'listing/listing.jsx',
-      'form/form.jsx',
-      'intro.js',
-      'newsletters/badges/stats.jsx',
-      'newsletters/breadcrumb.jsx',
-      'newsletters/listings/tabs.jsx',
-      'newsletters/listings/mixins.jsx',
-      'newsletters/listings/heading.jsx',
-      'newsletters/types/automatic_emails/events_list.jsx',
-      'newsletters/types/automatic_emails/breadcrumb.jsx',
-      'newsletters/types/welcome/scheduling.jsx',
-      'newsletter_editor/initializer.jsx',
-      'classnames'
-    ],
-    admin: [
-      'subscribers/subscribers.jsx',
-      'newsletters/newsletters.jsx',
-      'segments/segments.jsx',
-      'forms/forms.jsx',
-      'settings/tabs.js',
-      'help/help.jsx',
-      'intro.jsx',
-      'settings/reinstall_from_scratch.js',
-      'subscribers/importExport/import.js',
-      'subscribers/importExport/export.js',
-      'welcome_wizard/wizard.jsx',
-      'settings/announcement.jsx',
-      'nps_poll.jsx'
-    ],
-    form_editor: [
-      'form_editor/form_editor.js',
-      'codemirror',
-      'codemirror/mode/css/css'
-    ],
-    newsletter_editor: [
-      'underscore',
-      'backbone',
-      'backbone.marionette',
-      'backbone.supermodel',
-      'interact.js',
-      'backbone.radio',
-      'select2',
-      'spectrum',
-      'sticky-kit',
-      'blob',
-      'file-saver',
-      'velocity-animate',
-      'newsletter_editor/App',
-      'newsletter_editor/components/config.js',
-      'newsletter_editor/components/styles.js',
-      'newsletter_editor/components/sidebar.js',
-      'newsletter_editor/components/content.js',
-      'newsletter_editor/components/heading.js',
-      'newsletter_editor/components/save.js',
-      'newsletter_editor/components/communication.js',
-      'newsletter_editor/behaviors/BehaviorsLookup.js',
-      'newsletter_editor/behaviors/ColorPickerBehavior.js',
-      'newsletter_editor/behaviors/ContainerDropZoneBehavior.js',
-      'newsletter_editor/behaviors/DraggableBehavior.js',
-      'newsletter_editor/behaviors/HighlightContainerBehavior.js',
-      'newsletter_editor/behaviors/HighlightEditingBehavior.js',
-      'newsletter_editor/behaviors/MediaManagerBehavior.js',
-      'newsletter_editor/behaviors/ResizableBehavior.js',
-      'newsletter_editor/behaviors/SortableBehavior.js',
-      'newsletter_editor/behaviors/ShowSettingsBehavior.js',
-      'newsletter_editor/behaviors/TextEditorBehavior.js',
-      'newsletter_editor/blocks/base.js',
-      'newsletter_editor/blocks/container.js',
-      'newsletter_editor/blocks/button.js',
-      'newsletter_editor/blocks/image.js',
-      'newsletter_editor/blocks/divider.js',
-      'newsletter_editor/blocks/text.js',
-      'newsletter_editor/blocks/spacer.js',
-      'newsletter_editor/blocks/footer.js',
-      'newsletter_editor/blocks/header.js',
-      'newsletter_editor/blocks/automatedLatestContent.js',
-      'newsletter_editor/blocks/automatedLatestContentLayout.js',
-      'newsletter_editor/blocks/posts.js',
-      'newsletter_editor/blocks/social.js'
-    ]
+    vendor: 'webpack_vendor_index.jsx',
+    mailpoet: 'webpack_mailpoet_index.jsx',
+    admin: 'webpack_admin_index.jsx',
+    form_editor: 'form_editor/webpack_index.jsx',
+    newsletter_editor: 'newsletter_editor/webpack_index.jsx',
   },
   plugins: [
+    ...baseConfig.plugins,
     new webpack.optimize.CommonsChunkPlugin({
       name: 'admin_vendor',
       fileName: 'admin_vendor.js',
-      chunks: ['admin_vendor', 'admin'],
-      minChunks: Infinity
+      chunks: ['admin', 'form_editor', 'newsletter_editor'],
+      minChunks: 2
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
@@ -348,15 +249,17 @@ var adminConfig = {
 var publicConfig = {
   name: 'public',
   entry: {
-    public: [
-      'mailpoet',
-      'i18n',
-      'ajax',
-      'iframe',
-      'jquery.serialize_object',
-      'public.js'
-    ]
+    public: 'webpack_public_index.jsx',
   },
+  plugins: [
+    ...baseConfig.plugins,
+
+    // replace MailPoet definition with a smaller version for public
+    new webpack.NormalModuleReplacementPlugin(
+      /mailpoet\.js/,
+      './mailpoet_public.js'
+    ),
+  ],
   externals: {
     'jquery': 'jQuery'
   }
@@ -379,55 +282,10 @@ var migratorConfig = {
 var testConfig = {
   name: 'test',
   entry: {
-    vendor: ['handlebars', 'handlebars_helpers'],
+    vendor: 'webpack_vendor_index.jsx',
     testNewsletterEditor: [
-      'underscore',
-      'backbone',
-      'backbone.marionette',
-      'backbone.supermodel',
-      'backbone.radio',
-      'select2',
-      'blob',
-      'file-saver',
-      'velocity-animate',
-
-      'mailpoet',
-      'notice',
-      'i18n',
-      'help-tooltip',
-
-      'newsletter_editor/App',
-      'newsletter_editor/components/config.js',
-      'newsletter_editor/components/styles.js',
-      'newsletter_editor/components/sidebar.js',
-      'newsletter_editor/components/content.js',
-      'newsletter_editor/components/heading.js',
-      'newsletter_editor/components/save.js',
-      'newsletter_editor/components/communication.js',
-      'newsletter_editor/behaviors/BehaviorsLookup.js',
-      'newsletter_editor/behaviors/ColorPickerBehavior.js',
-      'newsletter_editor/behaviors/ContainerDropZoneBehavior.js',
-      'newsletter_editor/behaviors/DraggableBehavior.js',
-      'newsletter_editor/behaviors/HighlightContainerBehavior.js',
-      'newsletter_editor/behaviors/HighlightEditingBehavior.js',
-      'newsletter_editor/behaviors/MediaManagerBehavior.js',
-      'newsletter_editor/behaviors/ResizableBehavior.js',
-      'newsletter_editor/behaviors/SortableBehavior.js',
-      'newsletter_editor/behaviors/ShowSettingsBehavior.js',
-      'newsletter_editor/behaviors/TextEditorBehavior.js',
-      'newsletter_editor/blocks/base.js',
-      'newsletter_editor/blocks/container.js',
-      'newsletter_editor/blocks/button.js',
-      'newsletter_editor/blocks/image.js',
-      'newsletter_editor/blocks/divider.js',
-      'newsletter_editor/blocks/text.js',
-      'newsletter_editor/blocks/spacer.js',
-      'newsletter_editor/blocks/footer.js',
-      'newsletter_editor/blocks/header.js',
-      'newsletter_editor/blocks/automatedLatestContent.js',
-      'newsletter_editor/blocks/automatedLatestContentLayout.js',
-      'newsletter_editor/blocks/posts.js',
-      'newsletter_editor/blocks/social.js',
+      'webpack_mailpoet_index.jsx',
+      'newsletter_editor/webpack_index.jsx',
 
       'components/config.spec.js',
       'components/content.spec.js',
@@ -454,6 +312,15 @@ var testConfig = {
     path: path.join(__dirname, 'tests/javascript/testBundles'),
     filename: '[name].js',
   },
+  plugins: [
+    ...baseConfig.plugins,
+
+    // replace MailPoet definition with a smaller version for public
+    new webpack.NormalModuleReplacementPlugin(
+      /mailpoet\.js/,
+      './mailpoet_tests.js'
+    ),
+  ],
   resolve: {
     modules: [
       'node_modules',
@@ -464,7 +331,8 @@ var testConfig = {
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
-      'blob$': 'blob-tmp/Blob.js'
+      'blob$': 'blob-tmp/Blob.js',
+      'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
     },
   },
   externals: {
@@ -482,7 +350,10 @@ module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], 
       config.plugins.push(
         new webpackUglifyJsPlugin({
           mangle: false,
-        })
+        }),
+        new webpack.DefinePlugin({
+          'process.env.NODE_ENV': JSON.stringify('production')
+        }),
       );
     }
     config.plugins.push(

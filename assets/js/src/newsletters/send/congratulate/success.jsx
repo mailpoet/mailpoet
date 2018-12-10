@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from '../../../mailpoet';
+import MailPoet from 'mailpoet';
 
 function renderHeader(newsletter) {
   if (newsletter.type === 'welcome') {
