@@ -6,12 +6,14 @@ use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Cron\Daemon;
+use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
+use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Models\Setting;
 
 class DaemonTest extends \MailPoetTest {
 
   function testItCanExecuteWorkers() {
-    $daemon = Stub::make(new Daemon(), array(
+    $daemon = Stub::construct(Daemon::class, [new WorkersFactory(new SendingErrorHandler())], array(
       'executeScheduleWorker' => Expected::exactly(1),
       'executeQueueWorker' => Expected::exactly(1),
       'pauseExecution' => null,
@@ -21,12 +23,11 @@ class DaemonTest extends \MailPoetTest {
       'token' => 123
     );
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct($data);
     $daemon->run([]);
   }
 
   function testItCanRun() {
-    $daemon = Stub::make(new Daemon(), array(
+    $daemon = Stub::construct(Daemon::class, [new WorkersFactory(new SendingErrorHandler())], array(
       'pauseExecution' => null,
       // workers should be executed
       'executeScheduleWorker' => Expected::exactly(1),
@@ -38,7 +39,6 @@ class DaemonTest extends \MailPoetTest {
       'token' => 123
     );
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct();
     $daemon->run($data);
   }
 

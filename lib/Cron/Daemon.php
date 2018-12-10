@@ -1,20 +1,19 @@
 <?php
 namespace MailPoet\Cron;
-use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
-use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
-use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
-use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
-use MailPoet\Cron\Workers\Bounce as BounceWorker;
-use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
-use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
+
+use MailPoet\Cron\Workers\WorkersFactory;
 
 if(!defined('ABSPATH')) exit;
 
 class Daemon {
   public $timer;
 
-  function __construct() {
+  /** @var WorkersFactory */
+  private $workers_factory;
+
+  function __construct(WorkersFactory $workers_factory) {
     $this->timer = microtime(true);
+    $this->workers_factory = $workers_factory;
   }
 
   function run($settings_daemon_data) {
@@ -35,32 +34,32 @@ class Daemon {
   }
 
   function executeScheduleWorker() {
-    $scheduler = new SchedulerWorker($this->timer);
+    $scheduler = $this->workers_factory->createScheduleWorker($this->timer);
     return $scheduler->process();
   }
 
   function executeQueueWorker() {
-    $queue = new SendingQueueWorker(new SendingErrorHandler(), $this->timer);
+    $queue = $this->workers_factory->createQueueWorker($this->timer);
     return $queue->process();
   }
 
   function executeSendingServiceKeyCheckWorker() {
-    $worker = new SendingServiceKeyCheckWorker($this->timer);
+    $worker = $this->workers_factory->createSendingServiceKeyCheckWorker($this->timer);
     return $worker->process();
   }
 
   function executePremiumKeyCheckWorker() {
-    $worker = new PremiumKeyCheckWorker($this->timer);
+    $worker = $this->workers_factory->createPremiumKeyCheckWorker($this->timer);
     return $worker->process();
   }
 
   function executeBounceWorker() {
-    $bounce = new BounceWorker($this->timer);
+    $bounce = $this->workers_factory->createBounceWorker($this->timer);
     return $bounce->process();
   }
 
   function executeMigrationWorker() {
-    $migration = new MigrationWorker($this->timer);
+    $migration = $this->workers_factory->createMigrationWorker($this->timer);
     return $migration->process();
   }
 
