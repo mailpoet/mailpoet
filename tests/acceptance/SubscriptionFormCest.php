@@ -62,7 +62,7 @@ class SubscriptionFormCest {
    * @depends subscriptionFormWidget
    */
   function subscriptionConfirmation(\AcceptanceTester $I) {
-    $I->amOnUrl('http://mailhog:8025');
+    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
     $I->click(Locator::contains('span.subject', 'Confirm your subscription'));
     $I->switchToIframe('preview-html');
     $I->click('Click here to confirm your subscription');

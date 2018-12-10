@@ -1,5 +1,9 @@
 <?php
 
+use MailPoet\Test\DataFactories\Form;
+
+require_once __DIR__ . '/../DataFactories/Form.php';
+
 /**
  * Inherited Methods
  * @method void wantToTest($text)
@@ -90,4 +94,23 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $id);
     $I->waitForElement('[data-automation-id="newsletter_title"]');
   }
+
+  public function createFormAndSubscribe($form = null) {
+    $I = $this;
+    // create form widget
+    if(!$form) {
+      $form_factory = new Form();
+      $form = $form_factory->withName('Confirmation Form')->create();
+    }
+    $I->cli('widget reset sidebar-1 --allow-root');
+    $I->cli('widget add mailpoet_form sidebar-1 2 --form=' . $form->id . ' --title="Subscribe to Our Newsletter" --allow-root');
+
+    // subscribe
+    $I->amOnUrl(\AcceptanceTester::WP_URL);
+    $I->fillField('[data-automation-id="form_email"]', 'subscriber@example.com');
+    $I->click('[data-automation-id="subscribe-submit-button"]');
+    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', 30, '.mailpoet_validate_success');
+    $I->seeNoJSErrors();
+  }
+
 }
