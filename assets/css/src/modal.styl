@@ -9,7 +9,7 @@ body.mailpoet_modal_opened
   overflow: hidden
 
 // overlay
-#mailpoet_modal_overlay
+.mailpoet_modal_overlay
   height: 100%
   left: 0
   overflow-y: auto
@@ -19,6 +19,9 @@ body.mailpoet_modal_opened
   width: 100%
   z-index: 100000
   background-color: overlay_background_color
+  display: flex
+  align-items: center
+  justify-content: center
 
 .mailpoet_modal_highlight
   pointer-events: none
@@ -28,24 +31,21 @@ body.mailpoet_modal_opened
   box-shadow(0px 0px 20px 2px alpha(#fff, 75%))
 
 // overlay: state
-#mailpoet_modal_overlay.mailpoet_overlay_hidden
+.mailpoet_modal_overlay.mailpoet_overlay_hidden
   background-color: transparent
 
 // overlay: state
-#mailpoet_modal_overlay.mailpoet_overlay_loading
+.mailpoet_modal_overlay.mailpoet_overlay_loading
   background-color: overlay_background_color !important
-  display: block !important
+  display: flex !important
 
-.mailpoet_modal_opened #mailpoet_modal_overlay
+.mailpoet_modal_opened .mailpoet_modal_overlay
   display: block
 
 // modal popup
-#mailpoet_popup
-  display: none
-  position: absolute
+.mailpoet_popup
   z-index: 25
-  top: 48px
-  margin: 0
+  margin: auto
 
 .mailpoet_popup_wrapper
   background-color: modal_content_background_color
@@ -58,14 +58,14 @@ body.mailpoet_modal_opened
 .mailpoet_overlay_hidden .mailpoet_popup_wrapper
   border: 1px solid #333
 
-#mailpoet_popup_title
+.mailpoet_popup_title
   background-color: modal_title_background_color
   border: 1px solid #333
   height: 27px
   margin: 0
   padding: 0 30px 0 0
 
-#mailpoet_popup_title h2
+.mailpoet_popup_title h2
   color: modal_title_color
   font-size: 12px
   font-weight: normal
@@ -77,12 +77,15 @@ body.mailpoet_modal_opened
   padding: 10px 10px 10px 10px
   height: 92%
 
+  .button + .button
+    margin-left: 10px
+
 // modal panel
-#mailpoet_modal_overlay.mailpoet_panel_overlay
+.mailpoet_modal_overlay.mailpoet_panel_overlay
   top: 32px
   overflow: hidden
 
-#mailpoet_panel
+.mailpoet_panel
   display: none
   position: fixed
   z-index: 100002
@@ -104,13 +107,13 @@ body.mailpoet_modal_opened
   top: 0
   z-index: 0
 
-#mailpoet_panel_title
+.mailpoet_panel_title
   margin: 0
   padding: 0
   position: relative
   height: 0
 
-#mailpoet_panel_title h2
+.mailpoet_panel_title h2
   color: modal_title_color
   background-color: modal_title_background_color
   border-left: 1px solid #444
@@ -126,8 +129,10 @@ body.mailpoet_modal_opened
   padding: 10px 10px 36px 10px
 
 // modal button
-#mailpoet_modal_close
+.mailpoet_modal_close
   background: url(../img/modal_close_button.png) 7px 7px no-repeat
+  border: 0
+  cursor: pointer
   height: 30px
   overflow: hidden
   padding: 0
@@ -136,15 +141,15 @@ body.mailpoet_modal_opened
   z-index: 2
   outline: 0 none
 
-#mailpoet_popup #mailpoet_modal_close
+.mailpoet_popup .mailpoet_modal_close
   right: 0
   top: 0
 
-#mailpoet_panel #mailpoet_modal_close
+.mailpoet_panel .mailpoet_modal_close
   right: 10px
   top: 7px
 
-#mailpoet_modal_close:focus
+.mailpoet_modal_close:focus
   outline: 0 none
 
 // buttons
@@ -161,18 +166,11 @@ body.mailpoet_modal_opened
   text-align: right
 
 @media screen and (max-width: 782px)
-  #mailpoet_modal_overlay.mailpoet_panel_overlay
+  .mailpoet_modal_overlay.mailpoet_panel_overlay
     top: 46px
 
   .mailpoet_panel_body
     padding-bottom: 52px
-
-#mailpoet_loading
-  position: relative
-  left: 50%
-  top: 50%
-  margin-left: -75px
-  margin-top: -16px
 
 .mailpoet_loading
   height: 32px
@@ -191,13 +189,13 @@ body.mailpoet_modal_opened
   margin-left: 17px
   width: 32px
 
-#mailpoet_modal_loading_1, .mailpoet_modal_loading_1
+.mailpoet_modal_loading_1, .mailpoet_modal_loading_1
   animation-delay(0.39s)
 
-#mailpoet_modal_loading_2, .mailpoet_modal_loading_2
+.mailpoet_modal_loading_2, .mailpoet_modal_loading_2
   animation-delay(0.9099999999999999s)
 
-#mailpoet_modal_loading_3, .mailpoet_modal_loading_3
+.mailpoet_modal_loading_3, .mailpoet_modal_loading_3
   animation-delay(1.1700000000000002s)
 
 @keyframes bounce_mailpoet_modal_loading
