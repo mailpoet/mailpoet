@@ -265,6 +265,7 @@ define([
         MailPoet.Modal.loading(false);
       }).done(function (response) {
         this.previewView = new Module.NewsletterPreviewView({
+          previewType: window.localStorage.getItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey')),
           previewUrl: response.meta.preview_url
         });
 
@@ -351,6 +352,7 @@ define([
       };
     },
     initialize: function (options) {
+      this.previewType = options.previewType;
       this.previewUrl = options.previewUrl;
       this.width = '100%';
       this.height = '100%';
@@ -359,6 +361,7 @@ define([
     },
     templateContext: function () {
       return {
+        previewType: this.previewType,
         previewUrl: this.previewUrl,
         width: this.width,
         height: this.height
@@ -374,6 +377,9 @@ define([
         this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_desktop');
         this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_mobile');
       }
+
+      window.localStorage.setItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey'), value);
+      this.previewType = value;
     }
   });
 
