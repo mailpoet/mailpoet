@@ -6,7 +6,18 @@ use Carbon\Carbon;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
-use MailPoet\Tasks\Sending;
+
+
+/**
+ * TODO:
+ * - finish stats_notifications table, test if it is working and the migration is creating the table
+ * - remove all the SendingQueue from here
+ * - in schedule method add a row to stats_notifications table
+ * - when sending of post notification or a standard newsletter is finished call schedule
+ * - add processing of this task to Daemon
+ * - check JIRA what to do next and how to send the newsletter
+ * - see \MailPoet\Subscribers\NewSubscriberNotificationMailer how to send an email, now with DI everything should be easy
+ */
 
 class StatsNotifications {
 
