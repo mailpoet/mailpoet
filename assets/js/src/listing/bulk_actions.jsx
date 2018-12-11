@@ -110,7 +110,7 @@ class ListingBulkActions extends React.Component {
         <input
           onClick={this.handleApplyAction}
           type="submit"
-          defaultValue={MailPoet.I18n.t('apply')}
+          value={MailPoet.I18n.t('apply')}
           className="button action"
         />
 
