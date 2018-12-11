@@ -81,6 +81,7 @@ class NewsletterCreationCest {
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
     $I->waitForElement($send_form_element);
     $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
+    $I->waitForElement('.select2');
     $I->selectOptionInSelect2('WordPress Users');
     $I->click('Send');
   }
