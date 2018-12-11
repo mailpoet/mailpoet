@@ -67,7 +67,7 @@ class ListingFilters extends React.Component {
           id="post-query-submit"
           onClick={this.handleFilterAction}
           type="submit"
-          defaultValue={MailPoet.I18n.t('filter')}
+          value={MailPoet.I18n.t('filter')}
           className="button"
         />
       );
