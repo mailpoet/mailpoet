@@ -67,7 +67,6 @@
   "config": {
     "platform": {
       "php": "5.6.30"
-    },
-    "prepend-autoloader": false
+    }
   }
 }

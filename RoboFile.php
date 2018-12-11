@@ -348,6 +348,9 @@ class RoboFile extends \Robo\Tasks {
     $dir = __DIR__;
     $this->loadEnv();
     return $this->collectionBuilder()
+      ->taskExec('rm -rf ' . __DIR__ . '/vendor/goaop')
+      ->taskExec('rm -rf ' . __DIR__ . '/vendor/nikic')
+      ->taskExec('cd ' . __DIR__ . ' && ./composer.phar dump-autoload')
       ->taskExec(
         'WP_ROOT="'.getenv('WP_ROOT').'" '.
         'php -d memory_limit=2G '.
@@ -357,6 +360,7 @@ class RoboFile extends \Robo\Tasks {
         "$dir/lib"
       )
       ->dir(__DIR__ . '/tasks/phpstan')
+      ->taskExec('cd ' . __DIR__ . ' && ./composer.phar install')
       ->run();
   }
 
