@@ -39,7 +39,7 @@ class ListingItem extends React.Component {
 
     if (this.props.is_selectable === true) {
       checkbox = (
-        <th className="check-column" scope="row">
+        <th className="mailpoet-check-column" scope="row">
           <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>{
             `Select ${this.props.item[this.props.columns[0].name]}`
           }</label>

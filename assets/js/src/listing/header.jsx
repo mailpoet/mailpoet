@@ -4,7 +4,14 @@ import PropTypes from 'prop-types';
 import ListingColumn from './listing_column.jsx';
 
 class ListingHeader extends React.Component {
-  handleSelectItems = evt => this.props.onSelectItems(evt.target.checked);
+  constructor(props) {
+    super(props);
+    this.handleSelectItems = this.handleSelectItems.bind(this);
+  }
+
+  handleSelectItems(evt) {
+    this.props.onSelectItems(evt.target.checked);
+  }
 
   render() {
     const columns = this.props.columns.map((column, index) => {
@@ -28,7 +35,7 @@ class ListingHeader extends React.Component {
     if (this.props.is_selectable === true) {
       checkbox = (
         <th
-          className="manage-column column-cb check-column"
+          className="manage-column column-cb mailpoet-check-column"
         >
           <label className="screen-reader-text" htmlFor="select_all">
             {MailPoet.I18n.t('selectAll')}

@@ -470,7 +470,7 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
       selectedIds = jQuery.merge(selectedIds, [id]);
       // check whether all items on the page are selected
       if (
-        jQuery('tbody .check-column :checkbox:not(:checked)').length === 0
+        jQuery('tbody .mailpoet-check-column :checkbox:not(:checked)').length === 0
       ) {
         selection = 'page';
       }
