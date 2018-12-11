@@ -47,19 +47,19 @@ if (container) {
   let routes = [
     /* Listings */
     {
-      path: '/standard(/)**',
+      path: '/standard/(.*)?',
       component: NewsletterListStandard,
     },
     {
-      path: '/welcome(/)**',
+      path: '/welcome/(.*)?',
       component: NewsletterListWelcome,
     },
     {
-      path: '/notification/history/:parent_id(/)**',
+      path: '/notification/history/:parent_id/(.*)?',
       component: NewsletterListNotificationHistory,
     },
     {
-      path: '/notification(/)**',
+      path: '/notification/(.*)?',
       component: NewsletterListNotification,
     },
     /* New newsletter: types */
