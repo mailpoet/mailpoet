@@ -14,9 +14,17 @@ use MailPoet\Models\StatisticsForms;
 if(!defined('ABSPATH')) exit;
 
 class Forms extends APIEndpoint {
+
+  /** @var Listing\BulkActionController */
+  private $bulk_action;
+
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_FORMS
   );
+
+  function __construct(Listing\BulkActionController $bulk_action) {
+    $this->bulk_action = $bulk_action;
+  }
 
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
@@ -280,8 +288,7 @@ class Forms extends APIEndpoint {
 
   function bulkAction($data = array()) {
     try {
-      $bulk_action = new Listing\BulkActionController();
-      $meta = $bulk_action->apply('\MailPoet\Models\Form', $data);
+      $meta = $this->bulk_action->apply('\MailPoet\Models\Form', $data);
       return $this->successResponse(null, $meta);
     } catch(\Exception $e) {
       return $this->errorResponse(array(

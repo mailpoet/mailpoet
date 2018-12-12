@@ -16,6 +16,13 @@ class Segments extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS
   );
 
+  /** @var Listing\BulkActionController */
+  private $bulk_action;
+
+  function __construct(Listing\BulkActionController $bulk_action) {
+    $this->bulk_action = $bulk_action;
+  }
+
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
@@ -152,8 +159,7 @@ class Segments extends APIEndpoint {
 
   function bulkAction($data = array()) {
     try {
-      $bulk_action = new Listing\BulkActionController();
-      $meta = $bulk_action->apply('\MailPoet\Models\Segment', $data);
+      $meta = $this->bulk_action->apply('\MailPoet\Models\Segment', $data);
       return $this->successResponse(null, $meta);
     } catch(\Exception $e) {
       return $this->errorResponse(array(

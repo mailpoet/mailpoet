@@ -29,6 +29,13 @@ class Subscribers extends APIEndpoint {
     'methods' => array('subscribe' => AccessControl::NO_ACCESS_RESTRICTION)
   );
 
+  /** @var Listing\BulkActionController */
+  private $bulk_action_controller;
+
+  public function __construct(Listing\BulkActionController $bulk_action_controller) {
+    $this->bulk_action_controller = $bulk_action_controller;
+  }
+
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
@@ -262,10 +269,9 @@ class Subscribers extends APIEndpoint {
   function bulkAction($data = array()) {
     try {
       if(!isset($data['listing']['filter']['segment'])) {
-        $bulk_action = new Listing\BulkActionController();
         return $this->successResponse(
           null,
-          $bulk_action->apply('\MailPoet\Models\Subscriber', $data)
+          $this->bulk_action_controller->apply('\MailPoet\Models\Subscriber', $data)
         );
       } else {
         $bulk_action = new BulkAction($data);

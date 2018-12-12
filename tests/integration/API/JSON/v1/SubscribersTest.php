@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
@@ -20,9 +21,13 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\Source;
 
 class SubscribersTest extends \MailPoetTest {
+
+  /** @var Subscribers */
+  private $endpoint;
+
   function _before() {
     $this->cleanup();
-
+    $this->endpoint = ContainerWrapper::getInstance()->get(Subscribers::class);
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -68,21 +73,19 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanGetASubscriber() {
-    $router = new Subscribers();
-
-    $response = $router->get(array('id' => 'not_an_id'));
+    $response = $this->endpoint->get(array('id' => 'not_an_id'));
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals(
       'This subscriber does not exist.'
     );
 
-    $response = $router->get(/* missing argument */);
+    $response = $this->endpoint->get(/* missing argument */);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals(
       'This subscriber does not exist.'
     );
 
-    $response = $router->get(array('id' => $this->subscriber_1->id));
+    $response = $this->endpoint->get(array('id' => $this->subscriber_1->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Subscriber::findOne($this->subscriber_1->id)
@@ -103,8 +106,7 @@ class SubscribersTest extends \MailPoetTest {
       )
     );
 
-    $router = new Subscribers();
-    $response = $router->save($valid_data);
+    $response = $this->endpoint->save($valid_data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Subscriber::where('email', 'raul.doe@mailpoet.com')
@@ -118,7 +120,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($subscriber_segments[0]->name)->equals($this->segment_1->name);
     expect($subscriber_segments[1]->name)->equals($this->segment_2->name);
 
-    $response = $router->save(/* missing data */);
+    $response = $this->endpoint->save(/* missing data */);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])
       ->equals('Please enter your email address');
@@ -127,7 +129,7 @@ class SubscribersTest extends \MailPoetTest {
       'email' => 'john.doe@invalid'
     );
 
-    $response = $router->save($invalid_data);
+    $response = $this->endpoint->save($invalid_data);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])
       ->equals('Your email address is invalid!');
@@ -135,13 +137,12 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanSaveAnExistingSubscriber() {
-    $router = new Subscribers();
     $subscriber_data = $this->subscriber_2->asArray();
     unset($subscriber_data['created_at']);
     $subscriber_data['segments'] = array($this->segment_1->id);
     $subscriber_data['first_name'] = 'Super Jane';
 
-    $response = $router->save($subscriber_data);
+    $response = $this->endpoint->save($subscriber_data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Subscriber::findOne($this->subscriber_2->id)->asArray()
@@ -151,12 +152,11 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanRemoveListsFromAnExistingSubscriber() {
-    $router = new Subscribers();
     $subscriber_data = $this->subscriber_2->asArray();
     unset($subscriber_data['created_at']);
     unset($subscriber_data['segments']);
 
-    $response = $router->save($subscriber_data);
+    $response = $this->endpoint->save($subscriber_data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Subscriber::findOne($this->subscriber_2->id)->asArray()
@@ -170,8 +170,7 @@ class SubscribersTest extends \MailPoetTest {
     $trashed_subscriber = Subscriber::findOne($this->subscriber_1->id);
     expect($trashed_subscriber->deleted_at)->notNull();
 
-    $router = new Subscribers();
-    $response = $router->restore(array('id' => $this->subscriber_1->id));
+    $response = $this->endpoint->restore(array('id' => $this->subscriber_1->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Subscriber::findOne($this->subscriber_1->id)->asArray()
@@ -181,8 +180,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanTrashASubscriber() {
-    $router = new Subscribers();
-    $response = $router->trash(array('id' => $this->subscriber_2->id));
+    $response = $this->endpoint->trash(array('id' => $this->subscriber_2->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Subscriber::findOne($this->subscriber_2->id)->asArray()
@@ -192,18 +190,15 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanDeleteASubscriber() {
-    $router = new Subscribers();
-    $response = $router->delete(array('id' => $this->subscriber_1->id));
+    $response = $this->endpoint->delete(array('id' => $this->subscriber_1->id));
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
   }
 
   function testItCanFilterListing() {
-    $router = new Subscribers();
-
     // filter by non existing segment
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'filter' => array(
         'segment' => '### invalid_segment_id ###'
       )
@@ -213,7 +208,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(2);
 
     // filter by 1st segment
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'filter' => array(
         'segment' => $this->segment_1->id
       )
@@ -223,7 +218,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data[0]['email'])->equals($this->subscriber_2->email);
 
     // filter by 2nd segment
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'filter' => array(
         'segment' => $this->segment_2->id
       )
@@ -238,8 +233,7 @@ class SubscribersTest extends \MailPoetTest {
       return 'segment';
     };
     add_filter('mailpoet_subscribers_listings_filters_segments', $add_segment);
-    $router = new Subscribers();
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'filter' => array(
         'segment' => $this->segment_2->id
       )
@@ -254,23 +248,21 @@ class SubscribersTest extends \MailPoetTest {
       'last_name' => 'Thornton'
     ));
 
-    $router = new Subscribers();
-
     // empty search returns everything
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'search' => ''
     ));
     expect($response->meta['count'])->equals(3);
 
     // search by email
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'search' => '.me'
     ));
     expect($response->meta['count'])->equals(1);
     expect($response->data[0]['email'])->equals($new_subscriber->email);
 
     // search by last name
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'search' => 'doe'
     ));
     expect($response->meta['count'])->equals(2);
@@ -278,7 +270,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data[1]['email'])->equals($this->subscriber_2->email);
 
     // search by first name
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'search' => 'billy'
     ));
     expect($response->meta['count'])->equals(1);
@@ -286,9 +278,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanGroupListing() {
-    $router = new Subscribers();
-
-    $subscribed_group = $router->listing(array(
+    $subscribed_group = $this->endpoint->listing(array(
       'group' => Subscriber::STATUS_SUBSCRIBED
     ));
     expect($subscribed_group->meta['count'])->equals(1);
@@ -296,12 +286,12 @@ class SubscribersTest extends \MailPoetTest {
       $this->subscriber_2->email
     );
 
-    $unsubscribed_group = $router->listing(array(
+    $unsubscribed_group = $this->endpoint->listing(array(
       'group' => Subscriber::STATUS_UNSUBSCRIBED
     ));
     expect($unsubscribed_group->meta['count'])->equals(0);
 
-    $unconfirmed_group = $router->listing(array(
+    $unconfirmed_group = $this->endpoint->listing(array(
       'group' => Subscriber::STATUS_UNCONFIRMED
     ));
     expect($unconfirmed_group->meta['count'])->equals(1);
@@ -309,7 +299,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->subscriber_1->email
     );
 
-    $trashed_group = $router->listing(array(
+    $trashed_group = $this->endpoint->listing(array(
       'group' => 'trash'
     ));
     expect($trashed_group->meta['count'])->equals(0);
@@ -317,7 +307,7 @@ class SubscribersTest extends \MailPoetTest {
     // trash 1st subscriber
     $this->subscriber_1->trash();
 
-    $trashed_group = $router->listing(array(
+    $trashed_group = $this->endpoint->listing(array(
       'group' => 'trash'
     ));
     expect($trashed_group->meta['count'])->equals(1);
@@ -327,9 +317,8 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanSortAndLimitListing() {
-    $router = new Subscribers();
     // get 1st page (limit items per page to 1)
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'limit' => 1,
       'sort_by' => 'first_name',
       'sort_order' => 'asc'
@@ -342,7 +331,7 @@ class SubscribersTest extends \MailPoetTest {
     );
 
     // get 1st page (limit items per page to 1)
-    $response = $router->listing(array(
+    $response = $this->endpoint->listing(array(
       'limit' => 1,
       'offset' => 1,
       'sort_by' => 'first_name',
@@ -366,8 +355,7 @@ class SubscribersTest extends \MailPoetTest {
       $deletable_subscriber->id
     );
 
-    $router = new Subscribers();
-    $response = $router->bulkAction(array(
+    $response = $this->endpoint->bulkAction(array(
       'listing' => array(
         'selection' => $selection_ids
       ),
@@ -389,23 +377,21 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanBulkDeleteSubscribers() {
-    $router = new Subscribers();
-    $response = $router->bulkAction(array(
+    $response = $this->endpoint->bulkAction(array(
       'action' => 'trash',
       'listing' => array('group' => 'all')
     ));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(2);
 
-    $router = new Subscribers();
-    $response = $router->bulkAction(array(
+    $response = $this->endpoint->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(2);
 
-    $response = $router->bulkAction(array(
+    $response = $this->endpoint->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
@@ -414,8 +400,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCannotRunAnInvalidBulkAction() {
-    $router = new Subscribers();
-    $response = $router->bulkAction(array(
+    $response = $this->endpoint->bulkAction(array(
       'action' => 'invalidAction',
       'listing' => array()
     ));
@@ -424,8 +409,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItFailsWithEmailFilled() {
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $response = $this->endpoint->subscribe(array(
       'form_id' => $this->form->id,
       'email' => 'toto@mailpoet.com'
       // no form ID specified
@@ -436,8 +420,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCannotSubscribeWithoutFormID() {
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $response = $this->endpoint->subscribe(array(
       'form_field_ZW1haWw' => 'toto@mailpoet.com'
       // no form ID specified
     ));
@@ -447,8 +430,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCannotSubscribeWithoutSegmentsIfTheyAreSelectedByUser() {
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $response = $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id
       // no segments specified
@@ -459,8 +441,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanSubscribe() {
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $response = $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
@@ -470,8 +451,7 @@ class SubscribersTest extends \MailPoetTest {
 
   function testItCannotSubscribeWithoutCaptchaWhenEnabled() {
     Setting::setValue('re_captcha', array('enabled' => true));
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $response = $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
@@ -487,8 +467,7 @@ class SubscribersTest extends \MailPoetTest {
       'type' => 'text',
       'params' => ['required' => '1']
     ]);
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $response = $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
@@ -502,8 +481,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->form->settings = $form['settings'];
     $this->form->save();
 
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $response = $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id
       // no segments specified
@@ -524,8 +502,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->form->settings = $form['settings'];
     $this->form->save();
 
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $response = $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
@@ -538,15 +515,14 @@ class SubscribersTest extends \MailPoetTest {
   function testItCannotMassSubscribe() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     try {
-      $response = $router->subscribe(array(
+      $this->endpoint->subscribe(array(
         $this->obfuscatedEmail => 'tata@mailpoet.com',
         'form_id' => $this->form->id,
         $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
@@ -560,8 +536,7 @@ class SubscribersTest extends \MailPoetTest {
   function testItCannotMassResubscribe() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
-    $router = new Subscribers();
-    $response = $router->subscribe(array(
+    $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
@@ -574,7 +549,7 @@ class SubscribersTest extends \MailPoetTest {
     $subscriber->save();
 
     try {
-      $response = $router->subscribe(array(
+      $this->endpoint->subscribe(array(
         $this->obfuscatedEmail => $subscriber->email,
         'form_id' => $this->form->id,
         $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
@@ -596,8 +571,7 @@ class SubscribersTest extends \MailPoetTest {
       )
     );
 
-    $router = new Subscribers();
-    $router->save($subscriber_data);
+    $this->endpoint->save($subscriber_data);
     expect(SendingQueue::findMany())->count(1);
   }
 
@@ -613,12 +587,11 @@ class SubscribersTest extends \MailPoetTest {
     );
 
     // welcome notification is created only for segment #1
-    $router = new Subscribers();
-    $router->save($subscriber_data);
+    $this->endpoint->save($subscriber_data);
     expect(SendingQueue::findMany())->isEmpty();
 
     $subscriber_data['segments'] = array($this->segment_1->id);
-    $router->save($subscriber_data);
+    $this->endpoint->save($subscriber_data);
     expect(SendingQueue::findMany())->count(1);
   }
 
