@@ -334,6 +334,20 @@ class RendererTest extends \MailPoetTest {
     expect($new_image_dimensions['width'])->equals(619);
   }
 
+  function testItRendersImageWithAutoDimensions() {
+    $image = array(
+      'width' => 'auto',
+      'height' => 'auto',
+      'src' => 'https://example.com/image.jpg',
+      'link' => '',
+      'fullWidth' => false,
+      'alt' => 'some test alt text'
+    );
+    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
+    expect($rendered_image)->contains('width="auto"');
+    expect($rendered_image)->contains('max-width:100%');
+  }
+
   function testItRendersText() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][2];
