@@ -6,6 +6,19 @@ use AcceptanceTester;
 use Codeception\Util\Locator;
 
 class EnableAndDisableSignupConfirmationCest {
+
+  function removeAllEmails(AcceptanceTester $I) {
+    // Remove all mails, because when there is more mails than paging allows it causes
+    // problems with counting ones, which would be moved to other page after adding more mails
+    $I->amOnUrl(AcceptanceTester::MAIL_URL);
+    $I->waitForElement(Locator::contains('a', 'Delete all messages'), 10);
+    $I->click(Locator::contains('a', 'Delete all messages'));
+    $I->waitForElement('.modal-footer');
+    $I->wait(2); // Wait for modal fade-in animation to finish
+    $I->click(Locator::contains('.btn', 'Delete all messages'));
+    $I->waitForElementNotVisible('.modal');
+  }
+
   function disableSignupConfirmation(AcceptanceTester $I) {
     $I->wantTo('Disable signup confirmation');
     $I->login();
@@ -13,6 +26,7 @@ class EnableAndDisableSignupConfirmationCest {
     $confirmation_emails_count = $this->countConfirmationEmails($I);
     $I->createFormAndSubscribe();
     $this->seeConfirmationEmailsCountIs($I, $confirmation_emails_count);
+    $I->cli('widget reset sidebar-1 --allow-root');
   }
 
   function enableSignupConfirmation(AcceptanceTester $I) {
@@ -22,9 +36,6 @@ class EnableAndDisableSignupConfirmationCest {
     $confirmation_emails_count = $this->countConfirmationEmails($I);
     $I->createFormAndSubscribe();
     $this->seeConfirmationEmailsCountIs($I, $confirmation_emails_count + 1);
-  }
-
-  function _after(AcceptanceTester $I) {
     $I->cli('widget reset sidebar-1 --allow-root');
   }
 
