@@ -62,7 +62,7 @@ class SubscriberManagementCest {
     $I->fillField(['name' => 'first_name'], 'New');
     $I->fillField(['name' => 'last_name'], 'GlobalUser');
     $I->selectOptionInSelect2($this->segment->get('name'));
-    $I->click('Save');
+    $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->amOnMailPoetPage ('Subscribers');
     $I->fillField('#search_input', 'newglobaluser99@fakemail.fake');
     $I->click('Search');
@@ -98,8 +98,10 @@ class SubscriberManagementCest {
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 30);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
+    $I->waitForElementNotVisible('.mailpoet_form_loading');
+    $I->waitForElement('.select2');
     $I->selectOptionInSelect2('Cooking');
-    $I->click('Save');
+    $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->seeNoJSErrors();
   }
 
@@ -113,9 +115,11 @@ class SubscriberManagementCest {
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
+    $I->waitForElementNotVisible('.mailpoet_form_loading');
+    $I->waitForElement('.select2');
     $I->selectOptionInSelect2('Cooking');
     $I->click('.select2-selection__choice__remove');
-    $I->click('Save');
+    $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->waitForText('Subscriber was updated', 10);
   }
 

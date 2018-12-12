@@ -186,6 +186,7 @@ class SubscriberForm extends React.Component { // eslint-disable-line react/pref
         </h1>
 
         <Form
+          automationId="subscriber_edit_form"
           endpoint="subscribers"
           fields={fields}
           params={this.props.match.params}
