@@ -56,8 +56,9 @@ class Bridge {
       'blocking' => true,
       'timeout' => 10
     );
-    $result = WPFunctions::wpRemoteGet(self::BRIDGE_URL, $params);
-    return WPFunctions::wpRemoteRetrieveResponseCode($result) === 200;
+    $wp = new WPFunctions();
+    $result = $wp->wpRemoteGet(self::BRIDGE_URL, $params);
+    return $wp->wpRemoteRetrieveResponseCode($result) === 200;
   }
 
   function initApi($api_key) {

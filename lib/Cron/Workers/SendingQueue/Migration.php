@@ -241,8 +241,11 @@ class Migration extends SimpleWorker {
     return true;
   }
 
-  static function getNextRunDate() {
+  static function getNextRunDate($wp = null) {
+    if(is_null($wp)) {
+      $wp = new WPFunctions();
+    }
     // run migration immediately
-    return Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    return Carbon::createFromTimestamp($wp->currentTime('timestamp'));
   }
 }

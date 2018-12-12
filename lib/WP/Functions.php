@@ -4,39 +4,31 @@ namespace MailPoet\WP;
 use MailPoet\Config\Env;
 
 class Functions {
-  static function wpRemotePost() {
-    return self::callWithFallback('wp_remote_post', func_get_args());
+  function wpRemotePost() {
+    return call_user_func_array('wp_remote_post', func_get_args());
   }
 
-  static function wpRemoteGet() {
-    return self::callWithFallback('wp_remote_get', func_get_args());
+  function wpRemoteGet() {
+    return call_user_func_array('wp_remote_get', func_get_args());
   }
 
-  static function wpRemoteRetrieveBody() {
-    return self::callWithFallback('wp_remote_retrieve_body', func_get_args());
+  function wpRemoteRetrieveBody() {
+    return call_user_func_array('wp_remote_retrieve_body', func_get_args());
   }
 
-  static function wpRemoteRetrieveResponseCode() {
-    return self::callWithFallback('wp_remote_retrieve_response_code', func_get_args());
+  function wpRemoteRetrieveResponseCode() {
+    return call_user_func_array('wp_remote_retrieve_response_code', func_get_args());
   }
 
-  static function wpRemoteRetrieveResponseMessage() {
-    return self::callWithFallback('wp_remote_retrieve_response_message', func_get_args());
+  function wpRemoteRetrieveResponseMessage() {
+    return call_user_func_array('wp_remote_retrieve_response_message', func_get_args());
   }
 
-  static function currentTime() {
-    return self::callWithFallback('current_time', func_get_args());
+  function currentTime() {
+    return call_user_func_array('current_time', func_get_args());
   }
 
-  private static function callWithFallback($func, $args) {
-    $local_func = __NAMESPACE__ . '\\' . $func;
-    if(function_exists($local_func)) {
-      return call_user_func_array($local_func, $args);
-    }
-    return call_user_func_array($func, $args);
-  }
-
-  static function getImageInfo($id) {
+  function getImageInfo($id) {
     /*
      * In some cases wp_get_attachment_image_src ignore the second parameter
      * and use global variable $content_width value instead.

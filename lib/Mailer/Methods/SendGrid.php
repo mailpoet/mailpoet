@@ -17,15 +17,18 @@ class SendGrid {
   /** @var SendGridMapper */
   private $error_mapper;
 
+  private $wp;
+
   function __construct($api_key, $sender, $reply_to, SendGridMapper $error_mapper) {
     $this->api_key = $api_key;
     $this->sender = $sender;
     $this->reply_to = $reply_to;
     $this->error_mapper = $error_mapper;
+    $this->wp = new WPFunctions();
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
-    $result = WPFunctions::wpRemotePost(
+    $result = $this->wp->wpRemotePost(
       $this->url,
       $this->request($newsletter, $subscriber, $extra_params)
     );
@@ -33,7 +36,7 @@ class SendGrid {
       $error = $this->error_mapper->getConnectionError($result->get_error_message());
       return Mailer::formatMailerErrorResult($error);
     }
-    if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
+    if($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = json_decode($result['body'], true);
       $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
       return Mailer::formatMailerErrorResult($error);

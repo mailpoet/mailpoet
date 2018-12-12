@@ -16,6 +16,13 @@ class ScheduledTask extends Model {
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
 
+  private $wp;
+
+  function __construct() {
+    parent::__construct();
+    $this->wp = new WPFunctions();
+  }
+
   function subscribers() {
     return $this->hasManyThrough(
       __NAMESPACE__.'\Subscriber',
@@ -61,7 +68,7 @@ class ScheduledTask extends Model {
   }
 
   function complete() {
-    $this->processed_at = WPFunctions::currentTime('mysql');
+    $this->processed_at = $this->wp->currentTime('mysql');
     $this->set('status', self::STATUS_COMPLETED);
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);

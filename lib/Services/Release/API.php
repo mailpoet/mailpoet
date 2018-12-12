@@ -8,11 +8,12 @@ if(!defined('ABSPATH')) exit;
 
 class API {
   private $api_key;
-
+  private $wp;
   public $url_products = 'https://release.mailpoet.com/products/';
 
   function __construct($api_key) {
     $this->setKey($api_key);
+    $this->wp = new WPFunctions();
   }
 
   function getPluginInformation($plugin_name) {
@@ -20,10 +21,10 @@ class API {
       $this->url_products . $plugin_name
     );
 
-    $code = WPFunctions::wpRemoteRetrieveResponseCode($result);
+    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
     switch($code) {
       case 200:
-        if($body = WPFunctions::wpRemoteRetrieveBody($result)) {
+        if($body = $this->wp->wpRemoteRetrieveBody($result)) {
           $body = json_decode($body);
         }
         break;
@@ -50,6 +51,6 @@ class API {
       'timeout' => 10,
       'httpversion' => '1.0'
     );
-    return WPFunctions::wpRemoteGet($url, $args);
+    return $this->wp->wpRemoteGet($url, $args);
   }
 }
