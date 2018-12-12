@@ -348,6 +348,34 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_image)->contains('max-width:100%');
   }
 
+  function testItAdjustImageDimensionsWithPx() {
+    $image = array(
+      'width' => '1000px',
+      'height' => '1000px',
+      'src' => 'https://example.com/image.jpg',
+      'link' => '',
+      'fullWidth' => false,
+      'alt' => 'some test alt text'
+    );
+    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
+    expect($rendered_image)->contains('width="620"');
+    expect($rendered_image)->contains('max-width:620px');
+  }
+
+  function testItAdjustImageDimensionsWithoutPx() {
+    $image = array(
+      'width' => '1000',
+      'height' => '1000',
+      'src' => 'https://example.com/image.jpg',
+      'link' => '',
+      'fullWidth' => false,
+      'alt' => 'some test alt text'
+    );
+    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
+    expect($rendered_image)->contains('width="620"');
+    expect($rendered_image)->contains('max-width:620px');
+  }
+
   function testItRendersText() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][2];
