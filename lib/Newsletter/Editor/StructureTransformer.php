@@ -49,14 +49,16 @@ class StructureTransformer {
           $image = $item;
         }
 
+        $width = $image->getAttribute('width');
+        $height = $image->getAttribute('height');
         return array(
           'type' => 'image',
           'link' => $link,
           'src' => $image->getAttribute('src'),
           'alt' => $image->getAttribute('alt'),
           'fullWidth' => $image_full_width,
-          'width' => $image->getAttribute('width'),
-          'height' => $image->getAttribute('height'),
+          'width' => $width === null ? 'auto' : $width,
+          'height' => $height === null ? 'auto' : $height,
           'styles' => array(
             'block' => array(
               'textAlign' => 'center',
