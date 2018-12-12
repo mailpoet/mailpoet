@@ -98,7 +98,6 @@ class Initializer {
 
   function loadContainer() {
     $this->container = ContainerWrapper::getInstance(WP_DEBUG);
-    API\API::injectContainer($this->container);
   }
 
   function checkRequirements() {
@@ -260,8 +259,7 @@ class Initializer {
   }
 
   function setupJSONAPI() {
-    $json_api = API\API::JSON();
-    $json_api->init();
+    $this->container->get(API\JSON\API::class)->init();
   }
 
   function setupRouter() {
