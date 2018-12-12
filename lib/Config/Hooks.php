@@ -3,9 +3,17 @@
 namespace MailPoet\Config;
 
 use MailPoet\Models\Setting;
-use MailPoet\WP\Posts as WPPosts;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 
 class Hooks {
+
+  /** @var ContainerInterface */
+  private $container;
+
+  function __construct(ContainerInterface $container) {
+    $this->container = $container;
+  }
+
   function init() {
     $this->setupWPUsers();
     $this->setupImageSize();
@@ -93,11 +101,11 @@ class Hooks {
     // Subscription form
     add_action(
       'admin_post_mailpoet_subscription_form',
-      '\MailPoet\Subscription\Form::onSubmit'
+      [$this, 'subscriptionFormOnSubmit']
     );
     add_action(
       'admin_post_nopriv_mailpoet_subscription_form',
-      '\MailPoet\Subscription\Form::onSubmit'
+      [$this, 'subscriptionFormOnSubmit']
     );
   }
 
@@ -172,5 +180,10 @@ class Hooks {
       '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook',
       10, 3
     );
+  }
+
+  // Callbacks
+  function subscriptionFormOnSubmit($data = false) {
+    $this->container->get(\MailPoet\Subscription\Form::class)->onSubmit($data);
   }
 }

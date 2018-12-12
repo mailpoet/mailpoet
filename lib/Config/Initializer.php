@@ -282,8 +282,7 @@ class Initializer {
   }
 
   function setupHooks() {
-    $hooks = new Hooks();
-    $hooks->init();
+    $this->container->get(\MailPoet\Config\Hooks::class)->init();
   }
 
   function setupPrivacyPolicy() {
