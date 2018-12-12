@@ -42,10 +42,7 @@ class EnableAndDisableSignupConfirmationCest {
 
   private function countConfirmationEmails(AcceptanceTester $I) {
     $I->amOnUrl(AcceptanceTester::MAIL_URL);
-    $subjects = $I->grabMultiple('span.subject');
-    $confirmation_emails = array_filter($subjects, function($subject) {
-      return strpos($subject, 'Confirm your subscription') !== false;
-    });
+    $confirmation_emails = $I->grabMultiple(Locator::contains('span.subject', 'Confirm your subscription'));
     return count($confirmation_emails);
   }
 
