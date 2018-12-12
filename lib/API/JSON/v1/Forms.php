@@ -39,12 +39,8 @@ class Forms extends APIEndpoint {
   }
 
   function listing($data = array()) {
-    $listing = new Listing\Handler(
-      '\MailPoet\Models\Form',
-      $data
-    );
-
-    $listing_data = $listing->get();
+    $listing = new Listing\Handler();
+    $listing_data = $listing->get('\MailPoet\Models\Form', $data);
 
     $data = array();
     foreach($listing_data['items'] as $form) {

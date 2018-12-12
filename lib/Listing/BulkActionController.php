@@ -14,14 +14,11 @@ class BulkActionController {
       );
     }
 
-    $listing_handler = new Handler(
-      $model_class,
-      $data['listing']
-    );
+    $listing_handler = new Handler();
 
     return call_user_func_array(
       array($model_class, $bulk_action_method),
-      array($listing_handler->getSelection(), $data)
+      array($listing_handler->getSelection($model_class, $data['listing']), $data)
     );
   }
 }

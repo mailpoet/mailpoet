@@ -56,9 +56,9 @@ class Subscribers extends APIEndpoint {
   function listing($data = array()) {
 
     if(!isset($data['filter']['segment'])) {
-      $listing = new Listing\Handler('\MailPoet\Models\Subscriber', $data);
+      $listing = new Listing\Handler();
 
-      $listing_data = $listing->get();
+      $listing_data = $listing->get('\MailPoet\Models\Subscriber', $data);
     } else {
       $listings = new SubscribersListings();
       $listing_data = $listings->getListingsInSegment($data);

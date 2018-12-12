@@ -383,11 +383,8 @@ class Newsletters extends APIEndpoint {
   }
 
   function listing($data = array()) {
-    $listing = new Listing\Handler(
-      '\MailPoet\Models\Newsletter',
-      $data
-    );
-    $listing_data = $listing->get();
+    $listing = new Listing\Handler();
+    $listing_data = $listing->get('\MailPoet\Models\Newsletter', $data);
 
     $data = array();
     foreach($listing_data['items'] as $newsletter) {

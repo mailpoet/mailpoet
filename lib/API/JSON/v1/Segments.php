@@ -36,12 +36,8 @@ class Segments extends APIEndpoint {
   }
 
   function listing($data = array()) {
-    $listing = new Listing\Handler(
-      '\MailPoet\Models\Segment',
-      $data
-    );
-
-    $listing_data = $listing->get();
+    $listing = new Listing\Handler();
+    $listing_data = $listing->get('\MailPoet\Models\Segment', $data);
 
     $data = array();
     foreach($listing_data['items'] as $segment) {
