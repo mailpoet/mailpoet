@@ -14,11 +14,17 @@ class Image {
       $element['src'] = get_option('siteurl') . $element['src'];
     }
 
-    $element['width'] = (int)$element['width'];
-    $element['height'] = (int)$element['height'];
-    $element = self::adjustImageDimensions($element, $column_base_width);
+    $element['width'] = str_replace('px', '', $element['width']);
+    $element['height'] = str_replace('px', '', $element['height']);
+    if(is_numeric($element['width']) && is_numeric($element['height'])) {
+      $element['width'] = (int)$element['width'];
+      $element['height'] = (int)$element['height'];
+      $element = self::adjustImageDimensions($element, $column_base_width);
+    }
+
+    $max_width = is_numeric($element['width']) ? ($element['width'] . 'px') : '100%';
     $image_template = '
-      <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
+      <img style="max-width:' . $max_width . ';" src="' . $element['src'] . '"
       width="' . $element['width'] . '" alt="' . $element['alt'] . '"/>
       ';
     if(!empty($element['link'])) {
