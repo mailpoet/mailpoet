@@ -30,12 +30,19 @@ class Newsletters extends APIEndpoint {
   /** @var Listing\BulkActionController */
   private $bulk_action;
 
+  /** @var Listing\Handler */
+  private $listing_handler;
+
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS
   );
 
-  function __construct(Listing\BulkActionController $bulk_action) {
+  function __construct(
+    Listing\BulkActionController $bulk_action,
+    Listing\Handler $listing_handler
+  ) {
     $this->bulk_action = $bulk_action;
+    $this->listing_handler = $listing_handler;
   }
 
   function get($data = array()) {
@@ -383,8 +390,7 @@ class Newsletters extends APIEndpoint {
   }
 
   function listing($data = array()) {
-    $listing = new Listing\Handler();
-    $listing_data = $listing->get('\MailPoet\Models\Newsletter', $data);
+    $listing_data = $this->listing_handler->get('\MailPoet\Models\Newsletter', $data);
 
     $data = array();
     foreach($listing_data['items'] as $newsletter) {

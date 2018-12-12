@@ -5,6 +5,7 @@ namespace MailPoet\Segments;
 require_once('DynamicListingsHandlerMock.php');
 
 use Codeception\Util\Stub;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -12,7 +13,11 @@ use MailPoet\WP\Hooks;
 
 class SubscribersListingsTest extends \MailPoetTest {
 
+  /** @var SubscribersListings */
+  private $finder;
+
   function _before() {
+    $this->finder = ContainerWrapper::getInstance()->get(SubscribersListings::class);
     $this->cleanData();
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1', 'type' => 'default'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 3', 'type' => 'not default'));
@@ -49,20 +54,17 @@ class SubscribersListingsTest extends \MailPoetTest {
   }
 
   function testTryToGetListingsWithoutPassingSegment() {
-    $finder = new SubscribersListings();
     $this->setExpectedException('InvalidArgumentException');
-    $finder->getListingsInSegment(array());
+    $this->finder->getListingsInSegment(array());
   }
 
   function testGetListingsForDefaultSegment() {
-    $finder = new SubscribersListings();
-    $listings = $finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_1->id)));
+    $listings = $this->finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_1->id)));
     expect($listings['items'])->count(1);
   }
 
   function testGetListingsForNonExistingSegmen() {
-    $finder = new SubscribersListings();
-    $listings = $finder->getListingsInSegment(array('filter'=> array('segment' => 'non-existing-id')));
+    $listings = $this->finder->getListingsInSegment(array('filter'=> array('segment' => 'non-existing-id')));
     expect($listings['items'])->notEmpty();
   }
 
@@ -78,16 +80,14 @@ class SubscribersListingsTest extends \MailPoetTest {
       return array($mock);
     });
 
-    $finder = new SubscribersListings();
-    $listings = $finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_2->id)));
+    $listings = $this->finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_2->id)));
     expect($listings)->equals('dynamic listings');
   }
 
   function testTryToGetListingsForSegmentWithoutHandler() {
-    $finder = new SubscribersListings();
     $this->setExpectedException('InvalidArgumentException');
     remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
-    $finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_2->id)));
+    $this->finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_2->id)));
   }
 
 }

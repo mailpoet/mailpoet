@@ -32,8 +32,25 @@ class Subscribers extends APIEndpoint {
   /** @var Listing\BulkActionController */
   private $bulk_action_controller;
 
-  public function __construct(Listing\BulkActionController $bulk_action_controller) {
+  /** @var SubscribersListings */
+  private $subscribers_listings;
+
+  /** @var RequiredCustomFieldValidator */
+  private $required_custom_field_validator;
+
+  /** @var Listing\Handler */
+  private $listing_handler;
+
+  public function __construct(
+    Listing\BulkActionController $bulk_action_controller,
+    SubscribersListings $subscribers_listings,
+    RequiredCustomFieldValidator $required_custom_field_validator,
+    Listing\Handler $listing_handler
+  ) {
     $this->bulk_action_controller = $bulk_action_controller;
+    $this->subscribers_listings = $subscribers_listings;
+    $this->required_custom_field_validator = $required_custom_field_validator;
+    $this->listing_handler = $listing_handler;
   }
 
   function get($data = array()) {
@@ -56,12 +73,9 @@ class Subscribers extends APIEndpoint {
   function listing($data = array()) {
 
     if(!isset($data['filter']['segment'])) {
-      $listing = new Listing\Handler();
-
-      $listing_data = $listing->get('\MailPoet\Models\Subscriber', $data);
+      $listing_data = $this->listing_handler->get('\MailPoet\Models\Subscriber', $data);
     } else {
-      $listings = new SubscribersListings();
-      $listing_data = $listings->getListingsInSegment($data);
+      $listing_data = $this->subscribers_listings->getListingsInSegment($data);
     }
 
     $data = array();
@@ -130,8 +144,7 @@ class Subscribers extends APIEndpoint {
     $data = $this->deobfuscateFormPayload($data);
 
     try {
-      $validator = new RequiredCustomFieldValidator();
-      $validator->validate($data);
+      $this->required_custom_field_validator->validate($data);
     } catch (\Exception $e) {
       return $this->badRequest([APIError::BAD_REQUEST => $e->getMessage()]);
     }
