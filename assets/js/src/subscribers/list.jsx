@@ -108,7 +108,7 @@ const bulkActions = [
     onSelect: function onSelect() {
       const field = {
         id: 'move_to_segment',
-        api_version: window.mailpoet_api_version,
+        name: 'move_to_segment',
         endpoint: 'segments',
         filter: function filter(segment) {
           return !!(
@@ -140,7 +140,7 @@ const bulkActions = [
     onSelect: function onSelect() {
       const field = {
         id: 'add_to_segment',
-        api_version: window.mailpoet_api_version,
+        name: 'add_to_segment',
         endpoint: 'segments',
         filter: function filter(segment) {
           return !!(
@@ -172,7 +172,7 @@ const bulkActions = [
     onSelect: function onSelect() {
       const field = {
         id: 'remove_from_segment',
-        api_version: window.mailpoet_api_version,
+        name: 'remove_from_segment',
         endpoint: 'segments',
         filter: function filter(segment) {
           return !!(
