@@ -42,12 +42,14 @@ class EnableAndDisableSignupConfirmationCest {
 
   private function countConfirmationEmails(AcceptanceTester $I) {
     $I->amOnUrl(AcceptanceTester::MAIL_URL);
+    $I->waitForElement('.messages.ng-scope'); // ensure that angular is loaded
     $confirmation_emails = $I->grabMultiple(Locator::contains('span.subject', 'Confirm your subscription'));
     return count($confirmation_emails);
   }
 
   private function seeConfirmationEmailsCountIs(AcceptanceTester $I, $n) {
     $I->amOnUrl(AcceptanceTester::MAIL_URL);
+    $I->waitForElement('.messages.ng-scope'); // ensure that angular is loaded
     $I->seeNumberOfElements(Locator::contains('span.subject', 'Confirm your subscription'), $n);
   }
 }
