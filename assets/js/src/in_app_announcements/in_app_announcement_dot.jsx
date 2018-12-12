@@ -35,4 +35,4 @@ InAppAnnouncementDot.defaultProps = {
   onUserTrigger: null,
 };
 
-module.exports = InAppAnnouncementDot;
+export default InAppAnnouncementDot;

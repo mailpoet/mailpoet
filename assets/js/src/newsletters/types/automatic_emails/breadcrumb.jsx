@@ -40,4 +40,4 @@ AutomaticEmailsBreadcrumb.propTypes = {
   step: PropTypes.string.isRequired,
 };
 
-module.exports = AutomaticEmailsBreadcrumb;
+export default AutomaticEmailsBreadcrumb;

@@ -31,4 +31,4 @@ Fail.propTypes = {
   failClicked: PropTypes.func.isRequired,
 };
 
-module.exports = Fail;
+export default Fail;

@@ -59,4 +59,4 @@ ListingTabs.propTypes = {
   tab: PropTypes.string.isRequired,
 };
 
-module.exports = ListingTabs;
+export default ListingTabs;

@@ -19,4 +19,4 @@ WelcomeWizardHeader.propTypes = {
   logo_src: PropTypes.string.isRequired,
 };
 
-module.exports = WelcomeWizardHeader;
+export default WelcomeWizardHeader;

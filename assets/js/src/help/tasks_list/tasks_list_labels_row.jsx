@@ -21,4 +21,4 @@ TasksListLabelsRow.defaultProps = {
   show_scheduled_at: false,
 };
 
-module.exports = TasksListLabelsRow;
+export default TasksListLabelsRow;

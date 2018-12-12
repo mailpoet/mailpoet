@@ -131,4 +131,4 @@ NotificationScheduling.propTypes = {
   onValueChange: PropTypes.func.isRequired,
 };
 
-module.exports = NotificationScheduling;
+export default NotificationScheduling;

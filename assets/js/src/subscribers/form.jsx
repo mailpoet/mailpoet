@@ -206,4 +206,4 @@ SubscriberForm.propTypes = {
   }).isRequired,
 };
 
-module.exports = SubscriberForm;
+export default SubscriberForm;

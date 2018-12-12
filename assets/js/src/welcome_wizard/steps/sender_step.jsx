@@ -62,4 +62,4 @@ WelcomeWizardSenderStep.defaultProps = {
   sender: null,
 };
 
-module.exports = WelcomeWizardSenderStep;
+export default WelcomeWizardSenderStep;

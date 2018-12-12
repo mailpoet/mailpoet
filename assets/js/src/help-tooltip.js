@@ -1,20 +1,16 @@
-define('helpTooltip', ['mailpoet', 'react', 'react-dom', 'help-tooltip.jsx'],
-  function helpTooltip(mp, React, ReactDOM, TooltipComponent) {
-    'use strict';
+var TooltipComponent = require('help-tooltip.jsx').default;
+var React = require('react');
+var ReactDOM = require('react-dom');
+var MailPoet = require('mailpoet');
 
-    var MailPoet = mp;
-
-    MailPoet.helpTooltip = {
-      show: function show(domContainerNode, opts) {
-        ReactDOM.render(React.createElement(
-          TooltipComponent, {
-            tooltip: opts.tooltip,
-            tooltipId: opts.tooltipId,
-            place: opts.place
-          }
-        ), domContainerNode);
+MailPoet.helpTooltip = {
+  show: function show(domContainerNode, opts) {
+    ReactDOM.render(React.createElement(
+      TooltipComponent, {
+        tooltip: opts.tooltip,
+        tooltipId: opts.tooltipId,
+        place: opts.place
       }
-    };
+    ), domContainerNode);
   }
-);
-
+};

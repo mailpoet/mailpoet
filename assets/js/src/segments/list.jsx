@@ -284,4 +284,4 @@ SegmentList.propTypes = {
   }).isRequired,
 };
 
-module.exports = SegmentList;
+export default SegmentList;

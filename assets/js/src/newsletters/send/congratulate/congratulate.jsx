@@ -135,4 +135,4 @@ Congratulate.propTypes = {
   }).isRequired,
 };
 
-module.exports = Congratulate;
+export default Congratulate;

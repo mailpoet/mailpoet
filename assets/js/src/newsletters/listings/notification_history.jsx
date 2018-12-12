@@ -141,4 +141,4 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
   },
 });
 
-module.exports = NewsletterListNotificationHistory;
+export default NewsletterListNotificationHistory;

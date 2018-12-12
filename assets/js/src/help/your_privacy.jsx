@@ -17,4 +17,4 @@ function YourPrivacy() {
   );
 }
 
-module.exports = YourPrivacy;
+export default YourPrivacy;

@@ -46,11 +46,11 @@ const WelcomeWizardUsageTrackingStep = props => (
   </div>
 );
 
-module.exports = WelcomeWizardUsageTrackingStep;
-
 WelcomeWizardUsageTrackingStep.propTypes = {
   allow_action: PropTypes.func.isRequired,
   allow_text: PropTypes.string.isRequired,
   skip_action: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
 };
+
+export default WelcomeWizardUsageTrackingStep;

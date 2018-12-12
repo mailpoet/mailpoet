@@ -212,4 +212,4 @@ ListingItem.propTypes = {
   group: PropTypes.string.isRequired,
 };
 
-module.exports = ListingItem;
+export default ListingItem;

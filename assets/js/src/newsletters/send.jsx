@@ -440,4 +440,4 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 });
 
-module.exports = withRouter(NewsletterSend);
+export default withRouter(NewsletterSend);

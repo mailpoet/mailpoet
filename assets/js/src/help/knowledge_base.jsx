@@ -25,4 +25,4 @@ function KnowledgeBase() {
   );
 }
 
-module.exports = KnowledgeBase;
+export default KnowledgeBase;

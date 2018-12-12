@@ -359,4 +359,4 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
   },
 });
 
-module.exports = NewsletterListNotification;
+export default NewsletterListNotification;

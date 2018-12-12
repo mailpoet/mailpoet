@@ -96,4 +96,4 @@ FormFieldSelect.defaultProps = {
 };
 
 
-module.exports = FormFieldSelect;
+export default FormFieldSelect;

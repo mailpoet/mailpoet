@@ -60,10 +60,8 @@ const WelcomeWizardHelpInfoStep = props => (
   </div>
 );
 
-module.exports = WelcomeWizardHelpInfoStep;
-
 WelcomeWizardHelpInfoStep.propTypes = {
   next: PropTypes.func.isRequired,
 };
 
-module.exports = WelcomeWizardHelpInfoStep;
+export default WelcomeWizardHelpInfoStep;

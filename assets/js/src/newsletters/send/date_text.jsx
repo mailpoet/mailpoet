@@ -174,4 +174,4 @@ DateText.defaultProps = {
   name: 'date',
 };
 
-module.exports = DateText;
+export default DateText;

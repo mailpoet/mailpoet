@@ -137,4 +137,4 @@ ListingItems.defaultProps = {
   getListingItemKey: undefined,
 };
 
-module.exports = ListingItems;
+export default ListingItems;

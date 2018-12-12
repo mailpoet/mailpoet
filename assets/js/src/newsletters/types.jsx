@@ -179,4 +179,4 @@ class NewsletterTypes extends React.Component {
   }
 }
 
-module.exports = withRouter(NewsletterTypes);
+export default withRouter(NewsletterTypes);

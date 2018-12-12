@@ -147,4 +147,4 @@ WelcomeWizardStepsController.propTypes = {
   }).isRequired,
 };
 
-module.exports = WelcomeWizardStepsController;
+export default WelcomeWizardStepsController;

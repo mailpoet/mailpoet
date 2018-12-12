@@ -200,4 +200,4 @@ ListingPages.propTypes = {
   limit: PropTypes.number.isRequired,
 };
 
-module.exports = ListingPages;
+export default ListingPages;

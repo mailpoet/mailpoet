@@ -119,4 +119,4 @@ InAppAnnouncement.defaultProps = {
   showOnlyOnceSlug: null,
 };
 
-module.exports = InAppAnnouncement;
+export default InAppAnnouncement;

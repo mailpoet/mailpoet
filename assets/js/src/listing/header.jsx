@@ -79,4 +79,4 @@ ListingHeader.defaultProps = {
   sort_order: 'desc',
 };
 
-module.exports = ListingHeader;
+export default ListingHeader;

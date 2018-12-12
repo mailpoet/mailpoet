@@ -39,4 +39,4 @@ const ListingHeading = () => (
 );
 
 
-module.exports = ListingHeading;
+export default ListingHeading;

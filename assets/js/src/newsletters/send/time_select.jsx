@@ -43,4 +43,4 @@ TimeSelect.defaultProps = {
   validation: {},
 };
 
-module.exports = TimeSelect;
+export default TimeSelect;
