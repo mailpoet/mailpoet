@@ -22,7 +22,7 @@ class NewsletterClicksExporter {
 
     $result = array();
 
-    $statistics = StatisticsClicks::getAllForSubsciber($subscriber)
+    $statistics = StatisticsClicks::getAllForSubscriber($subscriber)
        ->limit(self::LIMIT)
        ->offset(self::LIMIT * ($page - 1))
        ->findArray();

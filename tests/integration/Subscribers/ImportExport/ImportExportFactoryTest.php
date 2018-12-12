@@ -122,7 +122,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     }
   }
 
-  function testItCanFormatSubsciberFields() {
+  function testItCanFormatSubscriberFields() {
     $formattedSubscriberFields =
       $this->importFactory->formatSubscriberFields(
         $this->importFactory->getSubscriberFields()
@@ -140,7 +140,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($formattedSubscriberFields[0]['custom'])->false();
   }
 
-  function testItCanGetSubsciberCustomFields() {
+  function testItCanGetSubscriberCustomFields() {
     $subscriberCustomFields =
       $this->importFactory
         ->getSubscriberCustomFields();
@@ -148,7 +148,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       ->equals('date');
   }
 
-  function testItCanFormatSubsciberCustomFields() {
+  function testItCanFormatSubscriberCustomFields() {
     $formattedSubscriberCustomFields =
       $this->importFactory->formatSubscriberCustomFields(
         $this->importFactory->getSubscriberCustomFields()

@@ -88,7 +88,7 @@ class SubscriberManagementCest {
   }
 
   function addSubscriberToList(\AcceptanceTester $I) {
-    $I->wantTo('Add a subsciber to a list');
+    $I->wantTo('Add a subscriber to a list');
     $new_subscriber_email = 'addtolistuser99@fakemail.fake';
     $this->generateMultipleLists();
     $this->generateSingleSubscriber('addtolistuser99@fakemail.fake', 'Add', 'ToAList');
