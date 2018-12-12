@@ -45,6 +45,7 @@ class SubscriberManagementCest {
   function viewSubscriberList(\AcceptanceTester $I) {
     $I->wantTo('View list of subscribers');
     $this->generateWPUsersList($I);
+    $I->wait(2);
     $I->fillField('#search_input', 'Alec Saunders');
     $I->click('Search');
     $I->waitForText('Alec Saunders', 10);
@@ -74,7 +75,8 @@ class SubscriberManagementCest {
     $new_subscriber_email = 'deleteglobaluser99@fakemail.fake';
     $this->generateSingleSubscriber('deleteglobaluser99@fakemail.fake', 'Delete', 'ThisGlobalUser');
     $I->login();
-    $I->amOnMailPoetPage ('Subscribers');
+    $I->amOnMailPoetPage('Subscribers');
+    $I->waitForElementNotVisible('.mailpoet_listing_loading');
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Move to trash');
     $I->waitForElement('[data-automation-id="filters_trash"]');
     $I->click('[data-automation-id="filters_trash"]');
@@ -92,6 +94,7 @@ class SubscriberManagementCest {
     $this->generateSingleSubscriber('addtolistuser99@fakemail.fake', 'Add', 'ToAList');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
+    $I->waitForElementNotVisible('.mailpoet_listing_loading');
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 30);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
@@ -106,6 +109,7 @@ class SubscriberManagementCest {
     $this->generateSingleSubscriber('deletefromlistuser99@fakemail.fake', 'Delete', 'FromAList');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
+    $I->waitForElementNotVisible('.mailpoet_listing_loading');
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
@@ -121,6 +125,7 @@ class SubscriberManagementCest {
     $this->generateSingleSubscriber('editglobaluser99@fakemail.fake', 'Edit', 'ThisGlobalUser');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
+    $I->waitForElementNotVisible('.mailpoet_listing_loading');
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
