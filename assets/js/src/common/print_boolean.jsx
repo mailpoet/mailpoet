@@ -24,4 +24,4 @@ PrintBoolean.defaultProps = {
   children: null,
 };
 
-module.exports = PrintBoolean;
+export default PrintBoolean;

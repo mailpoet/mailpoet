@@ -217,4 +217,4 @@ FormList.propTypes = {
   }).isRequired,
 };
 
-module.exports = FormList;
+export default FormList;

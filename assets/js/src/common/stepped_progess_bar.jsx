@@ -25,4 +25,4 @@ SteppedProgressBar.propTypes = {
   step: PropTypes.number.isRequired,
 };
 
-module.exports = SteppedProgressBar;
+export default SteppedProgressBar;

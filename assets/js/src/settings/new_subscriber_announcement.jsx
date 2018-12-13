@@ -27,4 +27,4 @@ NewSubscriberNotificationAnnouncement.propTypes = {
   imageUrl: PropTypes.string.isRequired,
 };
 
-module.exports = NewSubscriberNotificationAnnouncement;
+export default NewSubscriberNotificationAnnouncement;

@@ -364,4 +364,4 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
   },
 });
 
-module.exports = NewsletterListWelcome;
+export default NewsletterListWelcome;

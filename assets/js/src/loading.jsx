@@ -10,4 +10,4 @@ function Loading() {
   );
 }
 
-module.exports = Loading;
+export default Loading;

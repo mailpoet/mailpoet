@@ -79,4 +79,4 @@ FormFieldText.defaultProps = {
   },
 };
 
-module.exports = FormFieldText;
+export default FormFieldText;

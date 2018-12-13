@@ -40,4 +40,4 @@ function SystemInfo() {
   );
 }
 
-module.exports = SystemInfo;
+export default SystemInfo;

@@ -65,4 +65,4 @@ Breadcrumb.defaultProps = {
   step: null,
 };
 
-module.exports = Breadcrumb;
+export default Breadcrumb;

@@ -70,4 +70,4 @@ AutomaticEmailEventsList.propTypes = {
   }).isRequired,
 };
 
-module.exports = withRouter(AutomaticEmailEventsList);
+export default withRouter(AutomaticEmailEventsList);

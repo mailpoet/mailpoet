@@ -53,4 +53,4 @@ function Tabs(props) {
 Tabs.propTypes = { tab: PropTypes.string };
 Tabs.defaultProps = { tab: 'knowledgeBase' };
 
-module.exports = Tabs;
+export default Tabs;

@@ -251,4 +251,4 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
   },
 });
 
-module.exports = NewsletterListStandard;
+export default NewsletterListStandard;

@@ -87,4 +87,4 @@ AutomaticEmailEvent.propTypes = {
   }).isRequired,
 };
 
-module.exports = AutomaticEmailEvent;
+export default AutomaticEmailEvent;

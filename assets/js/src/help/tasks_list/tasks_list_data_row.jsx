@@ -61,4 +61,4 @@ TasksListDataRow.defaultProps = {
   },
 };
 
-module.exports = TasksListDataRow;
+export default TasksListDataRow;

@@ -33,10 +33,10 @@ const WelcomeWizardWooCommerceStep = props => (
   </div>
 );
 
-module.exports = WelcomeWizardWooCommerceStep;
-
 WelcomeWizardWooCommerceStep.propTypes = {
   next: PropTypes.func.isRequired,
   screenshot_src: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
 };
+
+export default WelcomeWizardWooCommerceStep;

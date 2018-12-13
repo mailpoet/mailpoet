@@ -60,4 +60,4 @@ Tooltip.defaultProps = {
   className: undefined,
 };
 
-module.exports = Tooltip;
+export default Tooltip;

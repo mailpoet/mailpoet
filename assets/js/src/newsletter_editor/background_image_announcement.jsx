@@ -24,4 +24,4 @@ BackgroundImageAnnouncement.propTypes = {
   videoUrl: PropTypes.string.isRequired,
 };
 
-module.exports = BackgroundImageAnnouncement;
+export default BackgroundImageAnnouncement;

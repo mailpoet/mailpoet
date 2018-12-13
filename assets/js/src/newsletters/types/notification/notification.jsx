@@ -87,5 +87,5 @@ class NewsletterNotification extends React.Component {
   }
 }
 
-module.exports = withRouter(NewsletterNotification);
+export default withRouter(NewsletterNotification);
 
