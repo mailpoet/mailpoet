@@ -283,9 +283,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function containerDump() {
-    $this->say('Deleting DI Container');
-    $this->_exec('rm -f ./lib/DI/CachedContainer.php');
-    $this->say('Generating DI container cache');
     $this->loadEnv();
     define('ABSPATH', getenv('WP_ROOT') . '/');
     if (!file_exists(ABSPATH . 'wp-config.php')) {
@@ -293,8 +290,22 @@ class RoboFile extends \Robo\Tasks {
       exit(1);
     }
     require_once __DIR__ . '/vendor/autoload.php';
-    $container_factory = new \MailPoet\DI\ContainerFactory();
-    $container_factory->dumpContainer();
+    $configurator = new \MailPoet\DI\ContainerConfigurator();
+    $dump_file = __DIR__ .  '/generated/' . $configurator->getDumpClassname() . '.php';
+    $this->say('Deleting DI Container');
+    $this->_exec("rm -f $dump_file");
+    $this->say('Generating DI container cache');
+    $container_factory = new \MailPoet\DI\ContainerFactory($configurator);
+    $container = $container_factory->getConfiguredContainer();
+    $container->compile();
+    $dumper = new \MailPoetVendor\Symfony\Component\DependencyInjection\Dumper\PhpDumper($container);
+    file_put_contents(
+      $dump_file,
+      $dumper->dump([
+        'class' => $configurator->getDumpClassname(),
+        'namespace' => $configurator->getDumpNamespace()
+      ])
+    );
   }
 
   function qa() {

@@ -2,18 +2,18 @@
 
 namespace MailPoet\API;
 
-use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
+use MailPoet\DI\ContainerWrapper;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use MailPoet\DI\ContainerFactory;
 
 if(!defined('ABSPATH')) exit;
 
 class API {
 
-  /** @var Container */
+  /** @var ContainerInterface */
   private static $container;
 
-  static function injectContainer(Container $container) {
+  static function injectContainer(ContainerInterface $container) {
     self::$container = $container;
   }
 
@@ -37,8 +37,7 @@ class API {
    */
   private static function ensureContainerIsLoaded() {
     if(!self::$container) {
-      $factory = new ContainerFactory();
-      self::$container = $factory->getContainer();
+      self::$container = ContainerWrapper::getInstance();
     }
   }
 }

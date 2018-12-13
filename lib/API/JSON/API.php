@@ -2,8 +2,7 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
-use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
-use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -22,7 +21,7 @@ class API {
   private $_available_api_versions = array(
       'v1'
   );
-  /** @var Container */
+  /** @var ContainerInterface */
   private $container;
 
   /** @var AccessControl */
@@ -30,7 +29,7 @@ class API {
 
   const CURRENT_VERSION = 'v1';
 
-  function __construct(Container $container, AccessControl $access_control) {
+  function __construct(ContainerInterface $container, AccessControl $access_control) {
     $this->container = $container;
     $this->access_control = $access_control;
     foreach($this->_available_api_versions as $available_api_version) {
@@ -109,7 +108,7 @@ class API {
           $namespace,
           ucfirst($this->_request_endpoint)
         );
-        if(class_exists($endpoint_class)) {
+        if($this->container->has($endpoint_class)) {
           $this->_request_endpoint_class = $endpoint_class;
           break;
         }
@@ -139,17 +138,13 @@ class API {
 
   function processRoute() {
     try {
-      if(empty($this->_request_endpoint_class)) {
+      if(empty($this->_request_endpoint_class) ||
+        !$this->container->has($this->_request_endpoint_class)
+      ) {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
 
-      try {
-        $endpoint = $this->container->get($this->_request_endpoint_class);
-      } catch (ServiceNotFoundException $e) {
-        // Hotfix for Premium plugin which adds endpoints which are not registered in DI container
-        $endpoint = new $this->_request_endpoint_class();
-      }
-
+      $endpoint = $this->container->get($this->_request_endpoint_class);
       if(!method_exists($endpoint, $this->_request_method)) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
       }

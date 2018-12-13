@@ -6,5 +6,4 @@ parameters:
 		- '#Static call to instance method MailPoet\\Models\\Model::#'
 		- '#Access to an undefined static property MailPoet\\Models\\Model::#'
 		- '#Function members_register_.+ not found#'
-	excludes_analyse:
-		- */lib/DI/CachedContainer.php
+		- '#MailPoet\\Premium\\DI\\ContainerConfigurator not found#' # this class is not available when premium is not active
