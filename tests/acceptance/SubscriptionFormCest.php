@@ -4,7 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Form;
+use MailPoet\Test\DataFactories\Settings;
 
+require_once __DIR__ . '/../DataFactories/Settings.php';
 require_once __DIR__ . '/../DataFactories/Form.php';
 
 class SubscriptionFormCest {
@@ -16,6 +18,13 @@ class SubscriptionFormCest {
 
   function __construct() {
     $this->subscriber_email = 'test-form@example.com';
+  }
+
+  function _before() {
+    $settings = new Settings();
+    $settings
+      ->withConfirmationEmailSubject()
+      ->withConfirmationEmailEnabled();
   }
 
   function subscriptionFormWidget(\AcceptanceTester $I) {
