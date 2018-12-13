@@ -11,7 +11,9 @@
     var mailpoet_settings = <%= json_encode(settings) %>;
     var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
     var mailpoet_installed_at_isoFormat = "<%= settings['installed_at'] | date('c') %>";
+    var mailpoet_installed_days_ago = <%= installed_days_ago %>;
     var mailpoet_current_wp_user = <%= json_encode(current_wp_user) %>;
+    var mailpoet_current_wp_user_firstname = '<%= current_wp_user_firstname %>';
     var mailpoet_lists = <%= json_encode(lists) %>;
     var mailpoet_roles = <%= json_encode(roles) %>;
     var mailpoet_current_date = <%= json_encode(current_date) %>;
@@ -29,6 +31,7 @@
     var mailpoet_congratulations_success_image = '<%= cdn_url('newsletter/congrat-illu-success.20181121-1440.png') %>';
     var mailpoet_congratulations_loading_image = '<%= cdn_url('newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png') %>';
     var mailpoet_main_page = '<%= mailpoet_main_page %>';
+    var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20181207-1345.png') %>';
     <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     var mailpoet_is_new_user = <%= newUser %>;
   </script>
@@ -323,6 +326,13 @@
     'congratulationsSendFailHeader': __('Oops! We can’t send your newsletter 😕'),
     'congratulationsSendFailExplain': __('Rest assured, this is fairly common and is usually fixed quickly. [link]See our quick guide[/link] to help you solve this and get your website sending.'),
     'congratulationsLoadingHeader': __('Congrats, you’re sending your first newsletter! We’re doing a quick verification to make sure everything works fine.'),
+
+    'reviewRequestHeading': _x('Thank you! Time to tell the world?', 'After a user gives us positive feedback via the NPS poll, we ask them to review our plugin on WordPress.org.'),
+    'reviewRequestDidYouKnow': __('[username], did you know that hundreds of WordPress users read the reviews on the plugin repository? They’re also a source of inspiration for our team.'),
+    'reviewRequestUsingForDays': _n('You’ve been using MailPoet for [days] day now, and we would love to read your own review.', 'You’ve been using MailPoet for [days] days now, and we would love to read your own review.', installed_days_ago),
+    'reviewRequestUsingForMonths': _n('You’ve been using MailPoet for [months] month now, and we would love to read your own review.', 'You’ve been using MailPoet for [months] months now, and we would love to read your own review.', (installed_days_ago / 30) | round),
+    'reviewRequestRateUsNow': _x('Rate us now', 'Review our plugin on WordPress.org.'),
+    'reviewRequestNotNow': __('Not now'),
   }) %>
 <% endblock %>
 
