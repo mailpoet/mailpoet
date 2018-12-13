@@ -21,7 +21,7 @@ class Reporter {
     $checker = new ServicesChecker();
     $bounceAddress = Setting::getValue('bounce.address');
     $segments = Segment::getAnalytics();
-    $has_wc = is_plugin_active('woocommerce/woocommerce.php');
+    $has_wc = class_exists('WooCommerce');
     $wc_customers_count = 0;
     if($has_wc) {
       $wc_customers_count = (int)Newsletter::rawQuery(
