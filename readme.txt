@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.16.2
+Stable tag: 3.16.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.16.3 - 2018-12-13 =
+* Fixed: select all once again selects all;
+* Fixed: Post Notification emails to include post images for posts created with WordPress 5.0;
+* Fixed: restored correct button captions;
+* Fixed: after a brief rebellion, post notification history now displays in an orderly fashion again;
 
 = 3.16.2 - 2018-12-11 =
 * Added: new post notification default subject to highlight how to use Subject Line variables;
