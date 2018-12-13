@@ -36,12 +36,8 @@ class BulkAction {
    */
   private function applySegment($segment) {
     if(!$segment || $segment['type'] === Segment::TYPE_DEFAULT || $segment['type'] === Segment::TYPE_WP_USERS) {
-      $bulk_action = new \MailPoet\Listing\BulkAction(
-        '\MailPoet\Models\Subscriber',
-        $this->data
-      );
-
-      return $bulk_action->apply();
+      $bulk_action = new \MailPoet\Listing\BulkActionController();
+      return $bulk_action->apply('\MailPoet\Models\Subscriber', $this->data);
     } else {
       $handlers = Hooks::applyFilters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers', array());
       foreach($handlers as $handler) {

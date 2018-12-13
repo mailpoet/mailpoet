@@ -262,11 +262,15 @@ class Subscribers extends APIEndpoint {
   function bulkAction($data = array()) {
     try {
       if(!isset($data['listing']['filter']['segment'])) {
-        $bulk_action = new Listing\BulkAction('\MailPoet\Models\Subscriber', $data);
+        $bulk_action = new Listing\BulkActionController();
+        return $this->successResponse(
+          null,
+          $bulk_action->apply('\MailPoet\Models\Subscriber', $data)
+        );
       } else {
         $bulk_action = new BulkAction($data);
+        return $this->successResponse(null, $bulk_action->apply());
       }
-      return $this->successResponse(null, $bulk_action->apply());
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()

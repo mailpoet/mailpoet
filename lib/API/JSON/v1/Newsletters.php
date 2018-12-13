@@ -438,11 +438,8 @@ class Newsletters extends APIEndpoint {
 
   function bulkAction($data = array()) {
     try {
-      $bulk_action = new Listing\BulkAction(
-        '\MailPoet\Models\Newsletter',
-        $data
-      );
-      $meta = $bulk_action->apply();
+      $bulk_action = new Listing\BulkActionController();
+      $meta = $bulk_action->apply('\MailPoet\Models\Newsletter', $data);
       return $this->successResponse(null, $meta);
     } catch(\Exception $e) {
       return $this->errorResponse(array(

@@ -152,11 +152,8 @@ class Segments extends APIEndpoint {
 
   function bulkAction($data = array()) {
     try {
-      $bulk_action = new Listing\BulkAction(
-        '\MailPoet\Models\Segment',
-        $data
-      );
-      $meta = $bulk_action->apply();
+      $bulk_action = new Listing\BulkActionController();
+      $meta = $bulk_action->apply('\MailPoet\Models\Segment', $data);
       return $this->successResponse(null, $meta);
     } catch(\Exception $e) {
       return $this->errorResponse(array(
