@@ -69,4 +69,9 @@ class ReinstallFromScratchCest {
     $subscribers_count = (int)$I->grabTextFrom('.displaying-num');
     Asserts::assertEquals($wp_users_count['total_users'], $subscribers_count);
   }
+
+  function _after(\AcceptanceTester $I) {
+    $I->logOut(); // to force next test to login again, since DB will be repopulated again
+    $I->cli('db query < /wp-core/wp-content/plugins/mailpoet/tests/_data/acceptanceDump.sql --allow-root');
+  }
 }
