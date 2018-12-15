@@ -1,0 +1,72 @@
+<?php
+
+namespace MailPoet\Test\Acceptance;
+
+use MailPoet\Models\Setting;
+use MailPoet\Test\DataFactories\Form;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Subscriber;
+use PHPUnit_Framework_Assert as Asserts;
+
+require_once __DIR__ . '/../DataFactories/Form.php';
+require_once __DIR__ . '/../DataFactories/Newsletter.php';
+require_once __DIR__ . '/../DataFactories/Segment.php';
+require_once __DIR__ . '/../DataFactories/Subscriber.php';
+
+// This test should run last, because it removes all test data
+class ReinstallFromScratchCest {
+
+  function reinstallFromScratch(\AcceptanceTester $I) {
+    $I->wantTo('Reinstall from scratch');
+    $I->login();
+
+    // Step 1 - create email, form, list and subscribers
+    $newsletter = new Newsletter();
+    $newsletter->create();
+    $form = new Form();
+    $form->create();
+    $segment = new Segment();
+    $segment->create();
+    $subscriber = new Subscriber();
+    $subscriber->create();
+    // Create few WP users, which should be imported after reinstall
+    for($i = 0; $i <= 5; $i++) {
+      wp_create_user('test' . $i, 'password', 'imported' . $i . '@from.wordpress');
+    }
+
+    // Step 2 - reinstall from scratch
+    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-settings#advanced');
+    $I->waitForElement('#mailpoet_reinstall', 5);
+    $I->click('Reinstall now...');
+    $I->acceptPopup();
+    $I->waitForElement('#mailpoet_loading', 5);
+    $I->waitForElementNotVisible('#mailpoet_loading', 10);
+
+    // Step 3 - skip all tutorials, which could interfere with other tests
+    Setting::setValue('show_intro', 0);
+    Setting::setValue('user_seen_editor_tutorial1', 1);
+    Setting::setValue('show_congratulate_after_first_newsletter', 0);
+
+    // Step 4 - check if data are emptied and repopulated
+    // Check emails
+    $I->amOnMailpoetPage('Emails');
+    $I->waitForText('Nothing here yet!', 5);
+    $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 0);
+    // Check forms
+    $I->amOnMailpoetPage('Forms');
+    $I->waitForText('A GDPR friendly form', 5, '[data-automation-id="listing_item_1"]');
+    $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 1);
+    // Check lists
+    $I->amOnMailpoetPage('Lists');
+    $I->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
+    $I->see('My First List', '[data-automation-id="listing_item_2"]');
+    $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 2);
+    // Check subscribers
+    $I->amOnMailPoetPage('Subscribers');
+    $I->waitForText('admin', 5, '[data-automation-id="listing_item_1"]');
+    $wp_users_count = count_users();
+    $subscribers_count = (int)$I->grabTextFrom('.displaying-num');
+    Asserts::assertEquals($wp_users_count['total_users'], $subscribers_count);
+  }
+}
