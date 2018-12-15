@@ -22,6 +22,8 @@ class SearchForStandardNewsletterCest {
     // step 2 - Search
     $I->login();
     $I->amOnMailpoetPage('Emails');
+    $I->waitForElement('#search_input');
+    $I->wait(2);
     $I->fillField('#search_input', $failure_condition_newsletter);
     $I->click('Search');
     $I->wait(5);
