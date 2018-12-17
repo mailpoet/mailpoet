@@ -10,7 +10,7 @@ class EnableAndDisableSignupConfirmationCest {
   function removeAllEmails(AcceptanceTester $I) {
     // Remove all mails, because when there is more mails than paging allows it causes
     // problems with counting ones, which would be moved to other page after adding more mails
-    $I->amOnUrl(AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->waitForElement(Locator::contains('a', 'Delete all messages'), 10);
     $I->click(Locator::contains('a', 'Delete all messages'));
     $I->waitForElement('.modal-footer');
@@ -52,15 +52,13 @@ class EnableAndDisableSignupConfirmationCest {
   }
 
   private function countConfirmationEmails(AcceptanceTester $I) {
-    $I->amOnUrl(AcceptanceTester::MAIL_URL);
-    $I->waitForElement('.messages.ng-scope'); // ensure that angular is loaded
+    $I->amOnMailboxAppPage();
     $confirmation_emails = $I->grabMultiple(Locator::contains('span.subject', 'Confirm your subscription'));
     return count($confirmation_emails);
   }
 
   private function seeConfirmationEmailsCountIs(AcceptanceTester $I, $n) {
-    $I->amOnUrl(AcceptanceTester::MAIL_URL);
-    $I->waitForElement('.messages.ng-scope'); // ensure that angular is loaded
+    $I->amOnMailboxAppPage();
     $I->seeNumberOfElements(Locator::contains('span.subject', 'Confirm your subscription'), $n);
   }
 }

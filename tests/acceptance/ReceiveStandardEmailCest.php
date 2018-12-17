@@ -39,7 +39,7 @@ class ReceiveStandardEmailCest {
     $I->click('Send');
     $I->waitForElement('.mailpoet_progress_label', 90);
     //confirm newsletter is received
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->waitForText($newsletter_title, 90);
     $I->click(Locator::contains('span.subject', $newsletter_title));
   }

@@ -62,7 +62,7 @@ class ReceivePostNotificationCest {
     $I->waitForText('Sent to 1 of 1', 90);
 
     // confirm newsletter is received
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->waitForText($newsletter_subject, 90);
     $I->click(Locator::contains('span.subject', $newsletter_subject));
     $I->switchToIframe('preview-html');
