@@ -90,6 +90,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function selectOptionInSelect2($value, $element = 'input.select2-search__field') {
     $I = $this;
+    $I->waitForElement($element);
     $I->fillField($element, $value);
     $I->pressKey($element, \WebDriverKeys::ENTER);
   }

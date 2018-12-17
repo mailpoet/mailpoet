@@ -5,10 +5,6 @@ namespace MailPoet\Test\Acceptance;
 require_once __DIR__ . '/../_data/MailPoetImportList.csv';
 
 class SubscriberManageImportExportCest {
-  function __construct() {
-    $this->search_field_element = 'input.select2-search__field';
-  }
-
   function importUsersToSubscribersViaCSV(\AcceptanceTester $I) {
     $I->wantTo('Import a subscriber list from CSV');
     $I->login();
@@ -21,7 +17,7 @@ class SubscriberManageImportExportCest {
     $I->attachFile(['css'=>'#file_local'], 'MailPoetImportList.csv');
     $I->click(['xpath'=>'//*[@id="method_file"]/div/table/tbody/tr[2]/th/a']);
     //click is to trigger dropdown to display selections
-    $I->click($this->search_field_element);
+    $I->click('input.select2-search__field');
     //choose My First List
     $I->click(['xpath'=>'//*[@id="select2-mailpoet_segments_select-results"]/li[2]']);
     //click next step

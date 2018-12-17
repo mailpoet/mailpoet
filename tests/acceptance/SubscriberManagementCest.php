@@ -96,7 +96,6 @@ class SubscriberManagementCest {
     $I->waitForText('Subscriber', 30);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
     $I->waitForElementNotVisible('.mailpoet_form_loading');
-    $I->waitForElement('.select2');
     $I->selectOptionInSelect2('Cooking');
     $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->seeNoJSErrors();
@@ -113,7 +112,6 @@ class SubscriberManagementCest {
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
     $I->waitForElementNotVisible('.mailpoet_form_loading');
-    $I->waitForElement('.select2');
     $I->selectOptionInSelect2('Cooking');
     $I->click('.select2-selection__choice__remove');
     $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
