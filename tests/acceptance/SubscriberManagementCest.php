@@ -45,9 +45,7 @@ class SubscriberManagementCest {
   function viewSubscriberList(\AcceptanceTester $I) {
     $I->wantTo('View list of subscribers');
     $this->generateWPUsersList($I);
-    $I->wait(2);
-    $I->fillField('#search_input', 'Alec Saunders');
-    $I->click('Search');
+    $I->searchFor('Alec Saunders', 2);
     $I->waitForText('Alec Saunders', 10);
     $I->seeNoJSErrors();
   }
@@ -64,8 +62,7 @@ class SubscriberManagementCest {
     $I->selectOptionInSelect2($this->segment->get('name'));
     $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->amOnMailPoetPage ('Subscribers');
-    $I->fillField('#search_input', 'newglobaluser99@fakemail.fake');
-    $I->click('Search');
+    $I->searchFor('newglobaluser99@fakemail.fake', 2);
     $I->waitForText('newglobaluser99@fakemail.fake', 10);
     $I->seeNoJSErrors();
   }
