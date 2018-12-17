@@ -1,1 +1,11 @@
-<iframe src="{{ previewUrl }}" width="{{ width }}" height="{{ height }}"></iframe>
+<div class="mailpoet_browser_preview_toggle">
+  <label>
+    <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="desktop" {{#ifCond previewType '!=' 'mobile'}}CHECKED{{/ifCond}} /><%= _x('Desktop', 'Desktop browser preview mode') %>
+  </label>
+  <label>
+    <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="mobile" {{#ifCond previewType '==' 'mobile'}}CHECKED{{/ifCond}} /><%= _x('Mobile', 'Mobile browser preview mode') %>
+  </label>
+</div>
+<div class="mailpoet_browser_preview_container {{#ifCond previewType '==' 'mobile'}}mailpoet_browser_preview_container_mobile{{else}}mailpoet_browser_preview_container_desktop{{/ifCond}}">
+  <iframe class="mailpoet_browser_preview_iframe" src="{{ previewUrl }}" width="{{ width }}" height="{{ height }}"></iframe>
+</div>
