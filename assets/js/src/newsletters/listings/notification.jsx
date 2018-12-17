@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
+import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
 import {
   MailerMixin,
@@ -334,6 +335,8 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
     return (
       <div>
         <ListingHeading />
+
+        <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
 
         <ListingTabs tab="notification" />
 

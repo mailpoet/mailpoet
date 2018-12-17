@@ -34,6 +34,7 @@ if(!defined('ABSPATH')) exit;
 
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
+  const LAST_ANNOUNCEMENT_DATE = '2018-12-05 10:00:00';
 
   public $renderer;
   private $access_control;
@@ -581,6 +582,11 @@ class Menu {
     $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = class_exists('WooCommerce');
+
+    $user_id = $data['current_wp_user']['ID'];
+    $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'][$user_id])
+      || $data['settings']['last_announcement_seen'][$user_id] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
+    $data['last_announcement_seen'] = isset($data['settings']['last_announcement_seen']) ? $data['settings']['last_announcement_seen'] : false;
 
     $data['automatic_emails'] = array(
       array(

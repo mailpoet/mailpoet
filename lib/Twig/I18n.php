@@ -2,6 +2,8 @@
 
 namespace MailPoet\Twig;
 
+use MailPoet\Config\Localizer;
+
 if(!defined('ABSPATH')) exit;
 
 class I18n extends \Twig_Extension {
@@ -22,6 +24,7 @@ class I18n extends \Twig_Extension {
       '__' => 'translate',
       '_n' => 'pluralize',
       '_x' => 'translateWithContext',
+      'get_locale' => 'getLocale',
       'date' => 'date'
     );
 
@@ -65,6 +68,11 @@ class I18n extends \Twig_Extension {
     $args = func_get_args();
 
     return call_user_func_array('_x', $this->setTextDomain($args));
+  }
+
+  function getLocale() {
+    $localizer = new Localizer;
+    return $localizer->locale();
   }
 
   function date() {
