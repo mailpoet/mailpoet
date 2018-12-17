@@ -564,9 +564,13 @@ class Menu {
     $data['segments'] = $segments;
     $data['settings'] = Setting::getAll();
     $data['current_wp_user'] = wp_get_current_user()->to_array();
+    $data['current_wp_user_firstname'] = wp_get_current_user()->user_firstname;
     $data['site_url'] = site_url();
     $data['roles'] = $wp_roles->get_names();
     $data['roles']['mailpoet_all'] = __('In any WordPress role', 'mailpoet');
+
+    $installedAtDateTime = new \DateTime($data['settings']['installed_at']);
+    $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');
 
     $date_time = new DateTime();
     $data['current_date'] = $date_time->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
