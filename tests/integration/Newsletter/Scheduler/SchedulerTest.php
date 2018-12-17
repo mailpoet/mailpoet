@@ -697,7 +697,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
-    $hook = new Hooks(ContainerWrapper::getInstance());
+    $hook = ContainerWrapper::getInstance()->get(Hooks::class);
 
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_NOTIFICATION);
 

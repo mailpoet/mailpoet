@@ -3,15 +3,15 @@
 namespace MailPoet\Config;
 
 use MailPoet\Models\Setting;
-use MailPoetVendor\Psr\Container\ContainerInterface;
+use MailPoet\Subscription\Form;
 
 class Hooks {
 
-  /** @var ContainerInterface */
-  private $container;
+  /** @var Form */
+  private $subscription_form;
 
-  function __construct(ContainerInterface $container) {
-    $this->container = $container;
+  function __construct(Form $subscription_form) {
+    $this->subscription_form = $subscription_form;
   }
 
   function init() {
@@ -101,11 +101,11 @@ class Hooks {
     // Subscription form
     add_action(
       'admin_post_mailpoet_subscription_form',
-      [$this, 'subscriptionFormOnSubmit']
+      [$this->subscription_form, 'onSubmit']
     );
     add_action(
       'admin_post_nopriv_mailpoet_subscription_form',
-      [$this, 'subscriptionFormOnSubmit']
+      [$this->subscription_form, 'onSubmit']
     );
   }
 
@@ -180,10 +180,5 @@ class Hooks {
       '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook',
       10, 3
     );
-  }
-
-  // Callbacks
-  function subscriptionFormOnSubmit($data = false) {
-    $this->container->get(\MailPoet\Subscription\Form::class)->onSubmit($data);
   }
 }
