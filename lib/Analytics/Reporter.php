@@ -21,6 +21,16 @@ class Reporter {
     $checker = new ServicesChecker();
     $bounceAddress = Setting::getValue('bounce.address');
     $segments = Segment::getAnalytics();
+    $has_wc = class_exists('WooCommerce');
+    $wc_customers_count = 0;
+    if($has_wc) {
+      $wc_customers_count = (int)Newsletter::rawQuery(
+        "SELECT COUNT(DISTINCT m.meta_value) as count FROM ".$wpdb->prefix."posts p ".
+        "JOIN ".$wpdb->prefix."postmeta m ON m.post_id = p.id ".
+        "WHERE p.post_type = 'shop_order' ".
+        "AND m.meta_key = '_customer_user' AND m.meta_value <> 0"
+      )->findOne()->count;
+    }
 
     return array(
       'PHP version' => PHP_VERSION,
@@ -49,7 +59,8 @@ class Reporter {
       'Open and click tracking' => (boolean)Setting::getValue('tracking.enabled', false),
       'Premium key valid' => $checker->isPremiumKeyValid(),
       'New subscriber notifications' => NewSubscriberNotificationMailer::isDisabled(Setting::getValue(NewSubscriberNotificationMailer::SETTINGS_KEY)),
-      'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters'],
+      'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters_3_months'],
+      'Number of standard newsletters sent in last 30 days' => $newsletters['sent_newsletters_30_days'],
       'Number of active post notifications' => $newsletters['notifications_count'],
       'Number of active welcome emails' => $newsletters['welcome_newsletters_count'],
       'Number of segments' => isset($segments['dynamic']) ? (int)$segments['dynamic'] : 0,
@@ -59,7 +70,7 @@ class Reporter {
       'Plugin > Bloom' => is_plugin_active('bloom-for-publishers/bloom.php'),
       'Plugin > WP Holler' => is_plugin_active('holler-box/holler-box.php'),
       'Plugin > WP-SMTP' => is_plugin_active('wp-mail-smtp/wp_mail_smtp.php'),
-      'Plugin > WooCommerce' => is_plugin_active('woocommerce/woocommerce.php'),
+      'Plugin > WooCommerce' => $has_wc,
       'Plugin > WooCommerce Subscription' => is_plugin_active('woocommerce-subscriptions/woocommerce-subscriptions.php'),
       'Plugin > WooCommerce Follow Up Emails' => is_plugin_active('woocommerce-follow-up-emails/woocommerce-follow-up-emails.php'),
       'Plugin > WooCommerce Email Customizer' => is_plugin_active('woocommerce-email-customizer/woocommerce-email-customizer.php'),
@@ -73,6 +84,8 @@ class Reporter {
       'Plugin > Formidable Forms' => is_plugin_active('formidable/formidable.php'),
       'Plugin > Contact Form 7' => is_plugin_active('contact-form-7/wp-contact-form-7.php'),
       'Plugin > Easy Digital Downloads' => is_plugin_active('easy-digital-downloads/easy-digital-downloads.php'),
+      'Web host' => Setting::getValue('mta_group') == 'website' ? Setting::getValue('web_host') : null,
+      'Number of WooCommerce subscribers' => $wc_customers_count,
     );
   }
 

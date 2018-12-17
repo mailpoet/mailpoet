@@ -4,6 +4,7 @@ namespace MailPoet\Analytics;
 
 use Carbon\Carbon;
 use MailPoet\Models\Setting;
+use MailPoet\WP\Hooks as WPHooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -11,6 +12,7 @@ class Analytics {
 
   const SETTINGS_LAST_SENT_KEY = 'analytics_last_sent';
   const SEND_AFTER_DAYS = 7;
+  const ANALYTICS_FILTER = 'mailpoet_analytics';
 
   /** @var Reporter */
   private $reporter;
@@ -22,7 +24,7 @@ class Analytics {
   /** @return array */
   function generateAnalytics() {
     if($this->shouldSend()) {
-      $data = $this->reporter->getData();
+      $data = WPHooks::applyFilters(self::ANALYTICS_FILTER, $this->reporter->getData());
       $this->recordDataSent();
       return $data;
     }

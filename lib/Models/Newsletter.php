@@ -577,6 +577,7 @@ class Newsletter extends Model {
     return $count > 0;
   }
 
+
   static function getAnalytics() {
     $welcome_newsletters_count = Newsletter::getPublished()
       ->filter('filterType', self::TYPE_WELCOME)
@@ -588,7 +589,19 @@ class Newsletter extends Model {
       ->filter('filterStatus', self::STATUS_ACTIVE)
       ->count();
 
-    $sent_newsletters = static::table_alias('newsletters')
+    $sent_newsletters_3_months = self::sentAfter(Carbon::now()->subMonths(3));
+    $sent_newsletters_30_days = self::sentAfter(Carbon::now()->subDays(30));
+
+    return array(
+      'welcome_newsletters_count' => $welcome_newsletters_count,
+      'notifications_count' => $notifications_count,
+      'sent_newsletters_3_months' => $sent_newsletters_3_months,
+      'sent_newsletters_30_days' => $sent_newsletters_30_days,
+    );
+  }
+
+  static function sentAfter($date) {
+    return static::table_alias('newsletters')
       ->where('newsletters.type', self::TYPE_STANDARD)
       ->where('newsletters.status', self::STATUS_SENT)
       ->join(
@@ -602,14 +615,8 @@ class Newsletter extends Model {
         'tasks'
       )
       ->where('tasks.status', SendingQueue::STATUS_COMPLETED)
-      ->whereGte('tasks.processed_at', Carbon::now()->subMonths(3))
+      ->whereGte('tasks.processed_at', $date)
       ->count();
-
-    return array(
-      'welcome_newsletters_count' => $welcome_newsletters_count,
-      'notifications_count' => $notifications_count,
-      'sent_newsletters' => $sent_newsletters,
-    );
   }
 
   static function search($orm, $search = '') {
