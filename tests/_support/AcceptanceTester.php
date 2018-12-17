@@ -113,4 +113,9 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->seeNoJSErrors();
   }
 
+  public function waitForListingItemsToLoad() {
+    $I = $this;
+    $I->waitForElementNotVisible('.mailpoet_listing_loading');
+  }
+
 }
