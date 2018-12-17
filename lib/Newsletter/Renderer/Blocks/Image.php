@@ -22,9 +22,8 @@ class Image {
       $element = self::adjustImageDimensions($element, $column_base_width);
     }
 
-    $max_width = is_numeric($element['width']) ? ($element['width'] . 'px') : '100%';
     $image_template = '
-      <img style="max-width:' . $max_width . ';" src="' . $element['src'] . '"
+      <img src="' . $element['src'] . '"
       width="' . $element['width'] . '" alt="' . $element['alt'] . '"/>
       ';
     if(!empty($element['link'])) {
