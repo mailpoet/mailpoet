@@ -34,7 +34,7 @@ if(!defined('ABSPATH')) exit;
 
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
-  const LAST_ANNOUNCEMENT_DATE = '2018-12-05 10:00:00';
+  const LAST_ANNOUNCEMENT_DATE = '2018-12-18 10:00:00';
 
   public $renderer;
   private $access_control;
