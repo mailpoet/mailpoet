@@ -40,6 +40,9 @@ class ContainerWrapper implements ContainerInterface {
    * @return ContainerInterface|null
    */
   function getPremiumContainer() {
+    if(!$this->premium_container && class_exists(\MailPoet\Premium\DI\ContainerConfigurator::class)) {
+      $this->premium_container = self::createPremiumContainer($this->free_container);
+    }
     return $this->premium_container;
   }
 
@@ -51,12 +54,17 @@ class ContainerWrapper implements ContainerInterface {
     $free_container = $free_container_factory->getContainer();
     $premium_container = null;
     if(class_exists(\MailPoet\Premium\DI\ContainerConfigurator::class)) {
-      $premium_container_factory =  new ContainerFactory(new \MailPoet\Premium\DI\ContainerConfigurator($free_container), $debug);
-      $premium_container = $premium_container_factory->getContainer();
-      $premium_container->set(IContainerConfigurator::FREE_CONTAINER_SERVICE_SLUG, $free_container);
-      $free_container->set(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG, $premium_container);
+      $premium_container = self::createPremiumContainer($free_container, $debug);
     }
     self::$instance = new ContainerWrapper($free_container, $premium_container);
     return self::$instance;
+  }
+
+  private static function createPremiumContainer(ContainerInterface $free_container, $debug = false) {
+    $premium_container_factory =  new ContainerFactory(new \MailPoet\Premium\DI\ContainerConfigurator($free_container), $debug);
+    $premium_container = $premium_container_factory->getContainer();
+    $premium_container->set(IContainerConfigurator::FREE_CONTAINER_SERVICE_SLUG, $free_container);
+    $free_container->set(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG, $premium_container);
+    return $premium_container;
   }
 }
