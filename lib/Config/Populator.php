@@ -78,6 +78,16 @@ class Populator {
       'Fitness',
       'KidsClothing',
       'Avocado',
+      
+      'FashionBlogA',
+      'FashionShop',
+      'LifestyleBlogA',
+      'LifestyleBlogB',
+      'NewspaperTraditional',
+      'ClearNews',
+      'IndustryConference',
+      'BookStoreWithCoupon',
+      'FlowersWithCoupon',
     );
   }
 
