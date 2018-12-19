@@ -46,7 +46,7 @@ class ManageSubscriptionLinkCest {
   function manageSubscriptionLink(\AcceptanceTester $I) {
     $I->wantTo('Verify that "manage subscription" link works and subscriber status can be updated');
 
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->click(Locator::contains('span.subject', $this->newsletter_title));
     $I->switchToIframe('preview-html');
     $I->waitForElementChange(
@@ -79,7 +79,7 @@ class ManageSubscriptionLinkCest {
 
     $form_status_element = '[data-automation-id="form_status"]';
 
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->click(Locator::contains('span.subject', $this->newsletter_title));
     $I->switchToIframe('preview-html');
     $I->waitForElementChange(

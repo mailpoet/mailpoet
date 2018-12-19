@@ -30,7 +30,7 @@ class SubscribeToMultipleListsCest {
     //Add this form to a widget
     $I->createFormAndSubscribe($form);
     //Subscribe via that form
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->click(Locator::contains('span.subject', 'Confirm your subscription'));
     $I->switchToIframe('preview-html');
     $I->click('Click here to confirm your subscription');

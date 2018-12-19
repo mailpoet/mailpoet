@@ -27,6 +27,7 @@ class DuplicatePostNotificationCest {
     $I->waitForText($newsletter_title, 10);
     $I->clickItemRowActionByItemName($newsletter_title, 'Duplicate');
     $I->waitForText('Copy of ' . $newsletter_title);
+    $I->waitForListingItemsToLoad();
 
     // step 5 - Open Editor
     $I->clickItemRowActionByItemName('Copy of ' . $newsletter_title, 'Edit');

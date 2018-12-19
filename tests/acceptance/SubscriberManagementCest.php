@@ -45,8 +45,7 @@ class SubscriberManagementCest {
   function viewSubscriberList(\AcceptanceTester $I) {
     $I->wantTo('View list of subscribers');
     $this->generateWPUsersList($I);
-    $I->fillField('#search_input', 'Alec Saunders');
-    $I->click('Search');
+    $I->searchFor('Alec Saunders', 2);
     $I->waitForText('Alec Saunders', 10);
     $I->seeNoJSErrors();
   }
@@ -61,10 +60,9 @@ class SubscriberManagementCest {
     $I->fillField(['name' => 'first_name'], 'New');
     $I->fillField(['name' => 'last_name'], 'GlobalUser');
     $I->selectOptionInSelect2($this->segment->get('name'));
-    $I->click('Save');
+    $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->amOnMailPoetPage ('Subscribers');
-    $I->fillField('#search_input', 'newglobaluser99@fakemail.fake');
-    $I->click('Search');
+    $I->searchFor('newglobaluser99@fakemail.fake', 2);
     $I->waitForText('newglobaluser99@fakemail.fake', 10);
     $I->seeNoJSErrors();
   }
@@ -74,7 +72,8 @@ class SubscriberManagementCest {
     $new_subscriber_email = 'deleteglobaluser99@fakemail.fake';
     $this->generateSingleSubscriber('deleteglobaluser99@fakemail.fake', 'Delete', 'ThisGlobalUser');
     $I->login();
-    $I->amOnMailPoetPage ('Subscribers');
+    $I->amOnMailPoetPage('Subscribers');
+    $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Move to trash');
     $I->waitForElement('[data-automation-id="filters_trash"]');
     $I->click('[data-automation-id="filters_trash"]');
@@ -86,17 +85,19 @@ class SubscriberManagementCest {
   }
 
   function addSubscriberToList(\AcceptanceTester $I) {
-    $I->wantTo('Add a subsciber to a list');
+    $I->wantTo('Add a subscriber to a list');
     $new_subscriber_email = 'addtolistuser99@fakemail.fake';
     $this->generateMultipleLists();
     $this->generateSingleSubscriber('addtolistuser99@fakemail.fake', 'Add', 'ToAList');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
+    $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 30);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
+    $I->waitForElementNotVisible('.mailpoet_form_loading');
     $I->selectOptionInSelect2('Cooking');
-    $I->click('Save');
+    $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->seeNoJSErrors();
   }
 
@@ -106,12 +107,14 @@ class SubscriberManagementCest {
     $this->generateSingleSubscriber('deletefromlistuser99@fakemail.fake', 'Delete', 'FromAList');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
+    $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
+    $I->waitForElementNotVisible('.mailpoet_form_loading');
     $I->selectOptionInSelect2('Cooking');
     $I->click('.select2-selection__choice__remove');
-    $I->click('Save');
+    $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->waitForText('Subscriber was updated', 10);
   }
 
@@ -121,6 +124,7 @@ class SubscriberManagementCest {
     $this->generateSingleSubscriber('editglobaluser99@fakemail.fake', 'Edit', 'ThisGlobalUser');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
+    $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber', 10);
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');

@@ -84,17 +84,17 @@ class Pages {
 
     if($this->subscriber->getErrors() === false) {
       // send welcome notification
-      $subsciber_segments = $this->subscriber->segments()->findMany();
-      if($subsciber_segments) {
+      $subscriber_segments = $this->subscriber->segments()->findMany();
+      if($subscriber_segments) {
         Scheduler::scheduleSubscriberWelcomeNotification(
           $this->subscriber->id,
           array_map(function ($segment) {
             return $segment->get('id');
-          }, $subsciber_segments)
+          }, $subscriber_segments)
         );
       }
 
-      $this->new_subscriber_notification_sender->send($this->subscriber, $subsciber_segments);
+      $this->new_subscriber_notification_sender->send($this->subscriber, $subscriber_segments);
 
       // update subscriber from stored data after confirmation
       if(!empty($subscriber_data)) {

@@ -24,7 +24,7 @@ class NewslettersExporter {
 
     $result = array();
 
-    $statistics = StatisticsNewsletters::getAllForSubsciber($subscriber)
+    $statistics = StatisticsNewsletters::getAllForSubscriber($subscriber)
       ->limit(self::LIMIT)
       ->offset(self::LIMIT * ($page - 1))
       ->findArray();

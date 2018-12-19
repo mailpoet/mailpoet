@@ -8,7 +8,6 @@ class ReceiveStandardEmailCest {
 
   function receiveStandardEmail(\AcceptanceTester $I) {
     $newsletter_title = 'Receive Test';
-    $search_field_element = 'input.select2-search__field';
     $standard_template = '[data-automation-id=\'select_template_0\']';
     $title_element = '[data-automation-id=\'newsletter_title\']';
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
@@ -33,13 +32,11 @@ class ReceiveStandardEmailCest {
     //Choose list and send
     $I->waitForElement($send_form_element, 30);
     $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
-    $I->waitForElement($search_field_element, 30);
-    $I->fillField($search_field_element, 'WordPress Users');
-    $I->pressKey($search_field_element, \WebDriverKeys::ENTER);
+    $I->selectOptionInSelect2('WordPress Users');
     $I->click('Send');
     $I->waitForElement('.mailpoet_progress_label', 90);
     //confirm newsletter is received
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->waitForText($newsletter_title, 90);
     $I->click(Locator::contains('span.subject', $newsletter_title));
   }

@@ -66,6 +66,16 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->waitForText($page, 5);
   }
 
+  /**
+   * Navigate to Mailhog page and wait for angular to load
+   */
+  public function amOnMailboxAppPage() {
+    $I = $this;
+    $I->amOnUrl(self::MAIL_URL);
+    // ensure that angular is loaded by checking angular specific class
+    $I->waitForElement('.messages.ng-scope');
+  }
+
   public function clickItemRowActionByItemName($item_name, $link) {
     $I = $this;
     $I->moveMouseOver(['xpath' => '//*[text()="' . $item_name . '"]//ancestor::tr']);
@@ -80,6 +90,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function selectOptionInSelect2($value, $element = 'input.select2-search__field') {
     $I = $this;
+    $I->waitForElement($element);
     $I->fillField($element, $value);
     $I->pressKey($element, \WebDriverKeys::ENTER);
   }
@@ -106,11 +117,26 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->cli('widget add mailpoet_form sidebar-1 2 --form=' . $form->id . ' --title="Subscribe to Our Newsletter" --allow-root');
 
     // subscribe
-    $I->amOnUrl(\AcceptanceTester::WP_URL);
+    $I->amOnUrl(self::WP_URL);
     $I->fillField('[data-automation-id="form_email"]', 'subscriber@example.com');
     $I->click('[data-automation-id="subscribe-submit-button"]');
     $I->waitForText('Check your inbox or spam folder to confirm your subscription.', 30, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
+  }
+
+  public function waitForListingItemsToLoad() {
+    $I = $this;
+    $I->waitForElementNotVisible('.mailpoet_listing_loading');
+  }
+
+  public function searchFor($query, $delay = 0, $element = '#search_input', $button = 'Search') {
+    $I = $this;
+    $I->waitForElement($element);
+    if ($delay) {
+      $I->wait($delay);
+    }
+    $I->fillField($element, $query);
+    $I->click($button);
   }
 
 }

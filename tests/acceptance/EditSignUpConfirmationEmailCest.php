@@ -29,7 +29,7 @@ class EditSignUpConfirmationEmailCest {
     $I->createFormAndSubscribe();
 
     // check the received email
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->waitForText('Confirmation email subject');
     $I->click(Locator::contains('span.subject', 'Confirmation email subject'));
 
