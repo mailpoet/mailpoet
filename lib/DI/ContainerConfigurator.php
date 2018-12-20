@@ -50,9 +50,13 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\v1\Subscribers::class)->setPublic(true);
     // Config
     $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\Hooks::class)->setPublic(true);
     // Cron
     $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
+    // Listing
+    $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
+    $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);
     // Router
     $container->autowire(\MailPoet\Router\Endpoints\CronDaemon::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\Subscription::class)->setPublic(true);
@@ -62,6 +66,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
+    // Segments
+    $container->autowire(\MailPoet\Segments\SubscribersListings::class)->setPublic(true);
+    // Subscription
+    $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);
     // Newsletter
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
     return $container;

@@ -4,6 +4,7 @@ namespace MailPoet\Test\Newsletter\Scheduler;
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Mailpoet\Config\Hooks;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -696,7 +697,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
-    $hook = new Hooks;
+    $hook = ContainerWrapper::getInstance()->get(Hooks::class);
 
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_NOTIFICATION);
 
