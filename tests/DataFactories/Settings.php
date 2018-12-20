@@ -27,6 +27,11 @@ class Settings {
     return $this;
   }
 
+  function withConfirmationEmailFrom($name, $address) {
+    Setting::setValue('signup_confirmation.from', ['name' => $name, 'address' => $address]);
+    return $this;
+  }
+
   function withConfirmationEmailDisabled() {
     Setting::setValue('signup_confirmation.enabled', '');
     return $this;
