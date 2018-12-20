@@ -3,20 +3,24 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Settings;
+
+require_once __DIR__ . '/../DataFactories/Settings.php';
 
 class EditSignUpConfirmationEmailCest {
 
   function edit(\AcceptanceTester $I) {
     $I->wantTo('Edit sign up confirmation email');
 
+    // make sure sign up confirmation is enabled
+    $settings = new Settings();
+    $settings
+      ->withConfirmationEmailEnabled();
+
     $I->login();
     $I->amOnMailPoetPage('Settings');
     $I->click('[data-automation-id="signup_settings_tab"]');
     $I->waitForText('Enable sign-up confirmation');
-
-    // make sure sign up confirmation is enabled
-    $I->click('[data-automation-id="enable_signup_confirmation"]');
-    $I->acceptPopup();
 
     // edit confirmation email
     $I->fillField('[data-automation-id="signup_confirmation_email_from_name"]', 'Confirmation Test From');
@@ -41,12 +45,5 @@ class EditSignUpConfirmationEmailCest {
 
   function _after(\AcceptanceTester $I) {
     $I->cli('widget reset sidebar-1 --allow-root');
-    $I->amOnUrl(\AcceptanceTester::WP_URL);
-    $I->amOnMailPoetPage('Settings');
-    $I->click('[data-automation-id="signup_settings_tab"]');
-    $I->waitForText('Enable sign-up confirmation');
-    $I->fillField('[data-automation-id="signup_confirmation_email_subject"]', sprintf('Confirm your subscription to %1$s', get_option('blogname')));
-    $I->fillField('[data-automation-id="signup_confirmation_email_body"]', "Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team");
-    $I->click('[data-automation-id="settings-submit-button"]');
   }
 }

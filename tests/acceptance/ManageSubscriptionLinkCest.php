@@ -3,11 +3,19 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Settings;
+
+require_once __DIR__ . '/../DataFactories/Settings.php';
 
 class ManageSubscriptionLinkCest {
 
   function __construct() {
     $this->newsletter_title = 'Subscription links Email ' . \MailPoet\Util\Security::generateRandomString();
+  }
+
+  function _before() {
+    $settings = new Settings();
+    $settings->withConfirmationEmailEnabled();
   }
 
   function sendEmail(\AcceptanceTester $I) {
