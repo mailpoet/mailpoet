@@ -3,6 +3,8 @@ namespace MailPoet\Test\DataFactories;
 
 use Carbon\Carbon;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class Newsletter {
 
@@ -24,6 +26,7 @@ class Newsletter {
       ];
     $this->options = [];
     $this->segments = [];
+    $this->queue_options = [];
     $this->loadBodyFrom('newsletterWithALC.json');
   }
 
@@ -45,6 +48,11 @@ class Newsletter {
 
   public function withActiveStatus() {
     $this->data['status'] = 'active';
+    return $this;
+  }
+
+  public function withSentStatus() {
+    $this->data['status'] = 'sent';
     return $this;
   }
 
@@ -120,6 +128,16 @@ class Newsletter {
     return $this;
   }
 
+  public function withSendingQueue(array $options = []) {
+    $this->queue_options = [
+      'status' => ScheduledTask::STATUS_COMPLETED,
+      'count_processed' => 1,
+      'count_total' => 1,
+    ];
+    $this->queue_options = array_merge($this->queue_options, $options);
+    return $this;
+  }
+
   /**
    * @return \MailPoet\Models\Newsletter
    */
@@ -139,6 +157,14 @@ class Newsletter {
         'newsletter_id' => $newsletter->id,
         'segment_id' => $segment_id,
       ]);
+    }
+    if($this->queue_options) {
+      $sending_task = SendingTask::create();
+      $sending_task->newsletter_id = $newsletter->id;
+      $sending_task->status = $this->queue_options['status'];
+      $sending_task->count_processed = $this->queue_options['count_processed'];
+      $sending_task->count_total = $this->queue_options['count_total'];
+      $sending_task->save();
     }
     return $newsletter;
   }
