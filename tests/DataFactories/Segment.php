@@ -6,7 +6,7 @@ use Carbon\Carbon;
 
 class Segment {
 
-  private $data;
+  protected $data;
 
   public function __construct() {
     $this->data = [
