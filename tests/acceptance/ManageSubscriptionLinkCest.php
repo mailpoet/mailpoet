@@ -3,11 +3,19 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Settings;
+
+require_once __DIR__ . '/../DataFactories/Settings.php';
 
 class ManageSubscriptionLinkCest {
 
   function __construct() {
     $this->newsletter_title = 'Subscription links Email ' . \MailPoet\Util\Security::generateRandomString();
+  }
+
+  function _before() {
+    $settings = new Settings();
+    $settings->withConfirmationEmailEnabled();
   }
 
   function sendEmail(\AcceptanceTester $I) {
@@ -46,7 +54,7 @@ class ManageSubscriptionLinkCest {
   function manageSubscriptionLink(\AcceptanceTester $I) {
     $I->wantTo('Verify that "manage subscription" link works and subscriber status can be updated');
 
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->click(Locator::contains('span.subject', $this->newsletter_title));
     $I->switchToIframe('preview-html');
     $I->waitForElementChange(
@@ -79,7 +87,7 @@ class ManageSubscriptionLinkCest {
 
     $form_status_element = '[data-automation-id="form_status"]';
 
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->click(Locator::contains('span.subject', $this->newsletter_title));
     $I->switchToIframe('preview-html');
     $I->waitForElementChange(

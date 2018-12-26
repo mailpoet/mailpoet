@@ -30,8 +30,7 @@ class CreateWelcomeEmailCest {
     $I->seeInCurrentUrl('mailpoet-newsletters');
     $I->click('Welcome Emails');
     $I->seeInCurrentUrl('mailpoet-newsletters#/welcome');
-    $I->fillField('#search_input', $newsletter_title);
-    $I->click('Search');
+    $I->searchFor($newsletter_title, 2);
     $I->waitForText($newsletter_title, 10);
     $I->seeNoJSErrors();
   }

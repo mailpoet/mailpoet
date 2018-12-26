@@ -162,4 +162,4 @@ WelcomeScheduling.propTypes = {
   onValueChange: PropTypes.func.isRequired,
 };
 
-module.exports = withRouter(WelcomeScheduling);
+export default withRouter(WelcomeScheduling);

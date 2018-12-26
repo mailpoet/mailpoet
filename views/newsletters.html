@@ -5,13 +5,14 @@
 
   <script type="text/javascript">
     var mailpoet_listing_per_page = <%= items_per_page %>;
-    var mailpoet_display_nps_poll = location.hash === '#/standard';
-    var mailpoet_listing_per_page = <%= items_per_page %>;
+    var mailpoet_display_nps_poll = <%= settings.display_nps_poll ? 'true' : 'false' %>;
     var mailpoet_segments = <%= json_encode(segments) %>;
     var mailpoet_settings = <%= json_encode(settings) %>;
     var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
     var mailpoet_installed_at_isoFormat = "<%= settings['installed_at'] | date('c') %>";
+    var mailpoet_installed_days_ago = <%= installed_days_ago %>;
     var mailpoet_current_wp_user = <%= json_encode(current_wp_user) %>;
+    var mailpoet_current_wp_user_firstname = '<%= current_wp_user_firstname %>';
     var mailpoet_lists = <%= json_encode(lists) %>;
     var mailpoet_roles = <%= json_encode(roles) %>;
     var mailpoet_current_date = <%= json_encode(current_date) %>;
@@ -24,11 +25,15 @@
     var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
     var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
     var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
+    var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
+    var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
+    var mailpoet_user_locale = '<%= get_locale() %>';
     var mailpoet_in_app_announcements = mailpoet_settings.in_app_announcements;
     var mailpoet_free_welcome_emails_image = '<%= cdn_url('in-app-announcements/hello-illustration-for-welcome-emails.20181121-1440.png') %>';
     var mailpoet_congratulations_success_image = '<%= cdn_url('newsletter/congrat-illu-success.20181121-1440.png') %>';
     var mailpoet_congratulations_loading_image = '<%= cdn_url('newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png') %>';
     var mailpoet_main_page = '<%= mailpoet_main_page %>';
+    var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20181207-1345.png') %>';
     <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     var mailpoet_is_new_user = <%= newUser %>;
   </script>
@@ -315,6 +320,8 @@
     'freeWelcomeEmailsHeading': __('Welcome Emails are now free for everyone'),
     'freeWelcomeEmailsParagraph': __('Say “Hello!” automatically to all your new subscribers. They’ll appreciate the extra touch.'),
 
+    'whatsNew': __("What’s new"),
+
     'congratulationsSendSuccessHeader': __('Congratulations, your newsletter is being sent!'),
     'congratulationsScheduleSuccessHeader': __('Congratulations, your newsletter is scheduled to be sent.'),
     'congratulationsWooSuccessHeader': __('Congratulations, your WooCommerce email has been activated.'),
@@ -323,6 +330,13 @@
     'congratulationsSendFailHeader': __('Oops! We can’t send your newsletter 😕'),
     'congratulationsSendFailExplain': __('Rest assured, this is fairly common and is usually fixed quickly. [link]See our quick guide[/link] to help you solve this and get your website sending.'),
     'congratulationsLoadingHeader': __('Congrats, you’re sending your first newsletter! We’re doing a quick verification to make sure everything works fine.'),
+
+    'reviewRequestHeading': _x('Thank you! Time to tell the world?', 'After a user gives us positive feedback via the NPS poll, we ask them to review our plugin on WordPress.org.'),
+    'reviewRequestDidYouKnow': __('[username], did you know that hundreds of WordPress users read the reviews on the plugin repository? They’re also a source of inspiration for our team.'),
+    'reviewRequestUsingForDays': _n('You’ve been using MailPoet for [days] day now, and we would love to read your own review.', 'You’ve been using MailPoet for [days] days now, and we would love to read your own review.', installed_days_ago),
+    'reviewRequestUsingForMonths': _n('You’ve been using MailPoet for [months] month now, and we would love to read your own review.', 'You’ve been using MailPoet for [months] months now, and we would love to read your own review.', (installed_days_ago / 30) | round),
+    'reviewRequestRateUsNow': _x('Rate us now', 'Review our plugin on WordPress.org.'),
+    'reviewRequestNotNow': __('Not now'),
   }) %>
 <% endblock %>
 

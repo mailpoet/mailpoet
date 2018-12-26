@@ -9,6 +9,7 @@ import confirmAlert from 'common/confirm_alert.jsx';
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
+import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
 import {
   QueueMixin,
@@ -227,6 +228,8 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
       <div>
         <ListingHeading />
 
+        <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+
         <ListingTabs tab="standard" />
 
         <Listing
@@ -251,4 +254,4 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
   },
 });
 
-module.exports = NewsletterListStandard;
+export default NewsletterListStandard;

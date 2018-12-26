@@ -29,4 +29,4 @@ Loading.propTypes = {
   showRichLoadingScreen: PropTypes.bool.isRequired,
 };
 
-module.exports = Loading;
+export default Loading;

@@ -136,6 +136,13 @@ var baseConfig = {
         ]
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/announcements/feature_announcement.jsx'),
+        use: [
+          'expose-loader?' + globalPrefix + '.FeatureAnnouncement',
+          'babel-loader',
+        ]
+      },
+      {
         include: path.resolve(__dirname, 'assets/js/src/form/fields/selection.jsx'),
         use: [
           'expose-loader?' + globalPrefix + '.FormFieldSelection',
@@ -235,6 +242,7 @@ var adminConfig = {
       'newsletters/listings/tabs.jsx',
       'newsletters/listings/mixins.jsx',
       'newsletters/listings/heading.jsx',
+      'announcements/feature_announcement.jsx',
       'newsletters/types/automatic_emails/events_list.jsx',
       'newsletters/types/automatic_emails/breadcrumb.jsx',
       'newsletters/types/welcome/scheduling.jsx',

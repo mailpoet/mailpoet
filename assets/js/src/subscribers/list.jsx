@@ -381,4 +381,4 @@ SubscriberList.propTypes = {
   }).isRequired,
 };
 
-module.exports = SubscriberList;
+export default SubscriberList;

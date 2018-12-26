@@ -2,6 +2,7 @@
 namespace MailPoet\Test\Subscription;
 
 use AspectMock\Test as Mock;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Segment as SegmentModel;
@@ -12,6 +13,10 @@ use MailPoet\Subscription\Form;
 use MailPoet\Util\Security;
 
 class FormTest extends \MailPoetTest {
+
+  /** @var Form */
+  private $form_controller;
+
   function _before() {
     Setting::setValue('sender', array(
       'name' => 'John Doe',
@@ -58,6 +63,7 @@ class FormTest extends \MailPoetTest {
       )
     );
     SettingModel::setValue('signup_confirmation.enabled', false);
+    $this->form_controller = ContainerWrapper::getInstance()->get(Form::class);
   }
 
   function testItSubscribesAndRedirectsBackWithSuccessResponse() {
@@ -66,7 +72,7 @@ class FormTest extends \MailPoetTest {
         return $params;
       }
     ]);
-    $result = Form::onSubmit($this->request_data);
+    $result = $this->form_controller->onSubmit($this->request_data);
     expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
     $mock->verifyInvoked('redirectBack');
     expect($result['mailpoet_success'])->equals($this->form->id);
@@ -89,7 +95,7 @@ class FormTest extends \MailPoetTest {
         return $params;
       }
     ]);
-    $result = Form::onSubmit($this->request_data);
+    $result = $this->form_controller->onSubmit($this->request_data);
     expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
     $mock->verifyInvoked('redirectTo');
     expect($result)->regExp('/http.*?sample-post/i');
@@ -104,7 +110,7 @@ class FormTest extends \MailPoetTest {
         return $params;
       }
     ]);
-    $result = Form::onSubmit($request_data);
+    $result = $this->form_controller->onSubmit($request_data);
     expect(SubscriberModel::findMany())->isEmpty();
     $mock->verifyInvoked('redirectBack');
     expect($result['mailpoet_error'])->equals($this->form->id);

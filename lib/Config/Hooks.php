@@ -3,9 +3,17 @@
 namespace MailPoet\Config;
 
 use MailPoet\Models\Setting;
-use MailPoet\WP\Posts as WPPosts;
+use MailPoet\Subscription\Form;
 
 class Hooks {
+
+  /** @var Form */
+  private $subscription_form;
+
+  function __construct(Form $subscription_form) {
+    $this->subscription_form = $subscription_form;
+  }
+
   function init() {
     $this->setupWPUsers();
     $this->setupImageSize();
@@ -93,11 +101,11 @@ class Hooks {
     // Subscription form
     add_action(
       'admin_post_mailpoet_subscription_form',
-      '\MailPoet\Subscription\Form::onSubmit'
+      [$this->subscription_form, 'onSubmit']
     );
     add_action(
       'admin_post_nopriv_mailpoet_subscription_form',
-      '\MailPoet\Subscription\Form::onSubmit'
+      [$this->subscription_form, 'onSubmit']
     );
   }
 

@@ -12,6 +12,7 @@ use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\APITestNamespacedEndpointStubV1;
 use MailPoet\API\JSON\v2\APITestNamespacedEndpointStubV2;
 use MailPoet\Config\AccessControl;
+use MailPoet\DI\ContainerConfigurator;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\WP\Hooks;
@@ -35,12 +36,12 @@ class APITest extends \MailPoetTest {
     } else {
       $this->wp_user_id = $wp_user_id;
     }
-    $container_factory = new ContainerFactory();
-    $this->container = $container_factory->createContainer();
+    $container_factory = new ContainerFactory(new ContainerConfigurator());
+    $this->container = $container_factory->getConfiguredContainer();
     $this->container->autowire(APITestNamespacedEndpointStubV1::class)->setPublic(true);
     $this->container->autowire(APITestNamespacedEndpointStubV2::class)->setPublic(true);
     $this->container->compile();
-    $this->api = $this->container->get(\MailPoet\API\JSON\API::class);
+    $this->api = new \MailPoet\API\JSON\API($this->container, $this->container->get(AccessControl::class));
   }
 
   function testItCallsAPISetupAction() {

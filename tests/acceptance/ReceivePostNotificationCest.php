@@ -5,19 +5,24 @@ namespace MailPoet\Test\Acceptance;
 use Codeception\Util\Locator;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\Test\DataFactories\Settings;
 
+require_once __DIR__ . '/../DataFactories/Settings.php';
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 require_once __DIR__ . '/../DataFactories/Segment.php';
 require_once __DIR__ . '/../DataFactories/Subscriber.php';
 
 class ReceivePostNotificationCest {
 
+  function _before() {
+    $settings = new Settings();
+    $settings->withTrackingDisabled();
+  }
+
   function receivePostNotification(\AcceptanceTester $I) {
-    Setting::setValue('tracking.enabled', false); // tracking makes this test very slow for some reason
     $I->wantTo('Receive a post notification email');
     $newsletter_subject = 'Post Notification Receive Test';
     $post_title = 'A post ' . \MailPoet\Util\Security::generateRandomString();
@@ -62,7 +67,7 @@ class ReceivePostNotificationCest {
     $I->waitForText('Sent to 1 of 1', 90);
 
     // confirm newsletter is received
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $I->amOnMailboxAppPage();
     $I->waitForText($newsletter_subject, 90);
     $I->click(Locator::contains('span.subject', $newsletter_subject));
     $I->switchToIframe('preview-html');

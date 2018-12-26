@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.16.3
+Stable tag: 3.17.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,15 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.17.1 - 2018-12-19 =
+* Fixed: premium plugin crash; Thanks, Sebastian!
+
+= 3.17.0 - 2018-12-18 =
+* Added: new in-app announcements sidebar. Click the carrot to see;
+* Added: option to toggle between desktop and mobile in Preview in Browser;
+* Improved: minor changes and fixes;
+* Fixed: images in ALC blocks set to display with padding may not render correctly on mobile.
 
 = 3.16.3 - 2018-12-13 =
 * Fixed: select all once again selects all;

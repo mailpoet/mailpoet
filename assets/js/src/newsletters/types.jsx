@@ -28,7 +28,9 @@ class NewsletterTypes extends React.Component {
 
     return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
       const email = automaticEmail;
-      const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
+      const onClick = window.mailpoet_premium_active
+        ? _.partial(this.setupNewsletter, automaticEmail.slug)
+        : undefined;
       email.action = (() => (
         <div>
           <a
@@ -36,6 +38,7 @@ class NewsletterTypes extends React.Component {
             onClick={onClick}
             role="button"
             tabIndex={0}
+            disabled={!window.mailpoet_premium_active}
           >
             { MailPoet.I18n.t('setUp') }
           </a>
@@ -179,4 +182,4 @@ class NewsletterTypes extends React.Component {
   }
 }
 
-module.exports = withRouter(NewsletterTypes);
+export default withRouter(NewsletterTypes);

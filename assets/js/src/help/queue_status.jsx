@@ -90,4 +90,4 @@ QueueStatus.defaultProps = {
   },
 };
 
-module.exports = QueueStatus;
+export default QueueStatus;

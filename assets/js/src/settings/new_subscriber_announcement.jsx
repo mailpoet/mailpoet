@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import moment from 'moment';
-import InAppAnnouncement from 'in_app_announcements/in_app_announcement.jsx';
+import InAppAnnouncement from 'announcements/in_app_announcement.jsx';
 
 const NewSubscriberNotificationAnnouncement = props => (
   <InAppAnnouncement
@@ -27,4 +27,4 @@ NewSubscriberNotificationAnnouncement.propTypes = {
   imageUrl: PropTypes.string.isRequired,
 };
 
-module.exports = NewSubscriberNotificationAnnouncement;
+export default NewSubscriberNotificationAnnouncement;

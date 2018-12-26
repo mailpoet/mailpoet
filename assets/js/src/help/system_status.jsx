@@ -72,4 +72,4 @@ function SystemStatus() {
     </div>
   );
 }
-module.exports = SystemStatus;
+export default SystemStatus;

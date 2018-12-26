@@ -90,4 +90,4 @@ DateTime.defaultProps = {
   timeValidation: undefined,
 };
 
-module.exports = DateTime;
+export default DateTime;

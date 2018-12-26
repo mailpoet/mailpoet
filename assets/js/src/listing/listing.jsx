@@ -727,4 +727,4 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
   },
 });
 
-module.exports = withRouter(Listing);
+export default withRouter(Listing);

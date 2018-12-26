@@ -35,4 +35,4 @@ Success.propTypes = {
 };
 
 
-module.exports = Success;
+export default Success;

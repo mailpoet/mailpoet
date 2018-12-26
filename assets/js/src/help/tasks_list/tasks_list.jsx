@@ -39,4 +39,4 @@ TasksList.defaultProps = {
   show_scheduled_at: false,
 };
 
-module.exports = TasksList;
+export default TasksList;

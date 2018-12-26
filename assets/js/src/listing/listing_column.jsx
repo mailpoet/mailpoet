@@ -65,4 +65,4 @@ ListingColumn.defaultProps = {
   sort_by: undefined,
 };
 
-module.exports = ListingColumn;
+export default ListingColumn;

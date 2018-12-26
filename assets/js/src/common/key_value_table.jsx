@@ -29,4 +29,4 @@ KeyValueTable.defaultProps = {
   max_width: 'auto',
 };
 
-module.exports = KeyValueTable;
+export default KeyValueTable;

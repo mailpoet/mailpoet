@@ -6,15 +6,120 @@ if(!defined('ABSPATH')) exit;
 class Handler {
   const DEFAULT_LIMIT_PER_PAGE = 20;
 
-  private $data = array();
-  private $model = null;
-  private $model_class = null;
+  function getSelection($model_class, array $data) {
+    $data = $this->processData($data);
+    $table_name = $model_class::$_table;
+    $model = \Model::factory($model_class);
 
-  function __construct($model_class, $data = array()) {
-    $this->table_name = $model_class::$_table;
-    $this->model_class = $model_class;
-    $this->model = \Model::factory($this->model_class);
+    if(method_exists($model_class, 'listingQuery')) {
+      $custom_query = call_user_func_array(
+        [$model_class, 'listingQuery'],
+        [$data]
+      );
+      if(!empty($data['selection'])) {
+        $custom_query->whereIn($table_name.'.id', $data['selection']);
+      }
+      return $custom_query;
+    } else {
+      $model = $this->setFilter($model, $data);
+      $this->setGroup($model, $data);
+      $this->setSearch($model, $data);
 
+      if(!empty($data['selection'])) {
+        $model->whereIn($table_name.'.id', $data['selection']);
+      }
+      return $model;
+    }
+  }
+
+  function get($model_class, array $data) {
+    $data = $this->processData($data);
+    $table_name = $model_class::$_table;
+    $model = \Model::factory($model_class);
+    // get groups
+    $groups = array();
+    if(method_exists($model_class, 'groups')) {
+      $groups = call_user_func_array(
+        array($model_class, 'groups'),
+        array($data)
+      );
+    }
+
+    // get filters
+    $filters = array();
+    if(method_exists($model_class, 'filters')) {
+      $filters = call_user_func_array(
+        array($model_class, 'filters'),
+        array($data)
+      );
+    }
+
+    // get items and total count
+    if(method_exists($model_class, 'listingQuery')) {
+      $custom_query = call_user_func_array(
+        array($model_class, 'listingQuery'),
+        array($data)
+      );
+
+      $count = $custom_query->count();
+
+      $items = $custom_query
+        ->offset($data['offset'])
+        ->limit($data['limit'])
+        ->{'order_by_'.$data['sort_order']}(
+          $table_name.'.'.$data['sort_by']
+        )
+        ->findMany();
+    } else {
+      $model = $this->setFilter($model, $data);
+      $this->setGroup($model, $data);
+      $this->setSearch($model, $data);
+      $this->setOrder($model, $data, $table_name);
+
+      $count = $model->count();
+
+      $items = $model
+        ->offset($data['offset'])
+        ->limit($data['limit'])
+        ->findMany();
+    }
+
+    return array(
+      'count' => $count,
+      'filters' => $filters,
+      'groups' => $groups,
+      'items' => $items
+    );
+  }
+
+  private function setSearch(\ORMWrapper $model, array $data) {
+    if(empty($data['search'])) {
+      return;
+    }
+    return $model->filter('search', $data['search']);
+  }
+
+  private function setOrder(\ORMWrapper $model, array $data, $table_name) {
+    return $model
+      ->{'order_by_'.$data['sort_order']}(
+        $table_name.'.'.$data['sort_by']);
+  }
+
+  private function setGroup(\ORMWrapper $model, array $data) {
+    if($data['group'] === null) {
+      return;
+    }
+    $model->filter('groupBy', $data['group']);
+  }
+
+  private function setFilter(\ORMWrapper $model, array $data) {
+    if($data['filter'] === null) {
+      return $model;
+    }
+    return $model->filter('filterBy', $data['filter']);
+  }
+
+  private function processData(array $data) {
     // check if sort order was specified or default to "asc"
     $sort_order = (!empty($data['sort_order'])) ? $data['sort_order'] : 'asc';
     // constrain sort order value to either be "asc" or "desc"
@@ -29,9 +134,9 @@ class Handler {
       $sort_by = 'id';
     }
 
-    $this->data = array(
+    $data = [
       // extra parameters
-      'params' => (isset($data['params']) ? $data['params'] : array()),
+      'params' => (isset($data['params']) ? $data['params'] : []),
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
       'limit' => (isset($data['limit'])
@@ -49,112 +154,8 @@ class Handler {
       'filter' => (isset($data['filter']) ? $data['filter'] : null),
       // selection
       'selection' => (isset($data['selection']) ? $data['selection'] : null)
-    );
-  }
+    ];
 
-  private function setSearch() {
-    if(empty($this->data['search'])) {
-      return;
-    }
-    return $this->model->filter('search', $this->data['search']);
-  }
-
-  private function setOrder() {
-    return $this->model
-      ->{'order_by_'.$this->data['sort_order']}(
-        $this->table_name.'.'.$this->data['sort_by']);
-  }
-
-  private function setGroup() {
-    if($this->data['group'] === null) {
-      return;
-    }
-    return $this->model->filter('groupBy', $this->data['group']);
-  }
-
-  private function setFilter() {
-    if($this->data['filter'] === null) {
-      return;
-    }
-    $this->model = $this->model->filter('filterBy', $this->data['filter']);
-  }
-
-  function getSelection() {
-    if(method_exists($this->model_class, 'listingQuery')) {
-      $custom_query = call_user_func_array(
-        array($this->model_class, 'listingQuery'),
-        array($this->data)
-      );
-      if(!empty($this->data['selection'])) {
-        $custom_query->whereIn($this->table_name.'.id', $this->data['selection']);
-      }
-      return $custom_query;
-    } else {
-      $this->setFilter();
-      $this->setGroup();
-      $this->setSearch();
-
-      if(!empty($this->data['selection'])) {
-        $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
-      }
-      return $this->model;
-    }
-  }
-
-  function get() {
-    // get groups
-    $groups = array();
-    if(method_exists($this->model_class, 'groups')) {
-      $groups = call_user_func_array(
-        array($this->model_class, 'groups'),
-        array($this->data)
-      );
-    }
-
-    // get filters
-    $filters = array();
-    if(method_exists($this->model_class, 'filters')) {
-      $filters = call_user_func_array(
-        array($this->model_class, 'filters'),
-        array($this->data)
-      );
-    }
-
-    // get items and total count
-    if(method_exists($this->model_class, 'listingQuery')) {
-      $custom_query = call_user_func_array(
-        array($this->model_class, 'listingQuery'),
-        array($this->data)
-      );
-
-      $count = $custom_query->count();
-
-      $items = $custom_query
-        ->offset($this->data['offset'])
-        ->limit($this->data['limit'])
-        ->{'order_by_'.$this->data['sort_order']}(
-          $this->table_name.'.'.$this->data['sort_by']
-        )
-        ->findMany();
-    } else {
-      $this->setFilter();
-      $this->setGroup();
-      $this->setSearch();
-      $this->setOrder();
-
-      $count = $this->model->count();
-
-      $items = $this->model
-        ->offset($this->data['offset'])
-        ->limit($this->data['limit'])
-        ->findMany();
-    }
-
-    return array(
-      'count' => $count,
-      'filters' => $filters,
-      'groups' => $groups,
-      'items' => $items
-    );
+    return $data;
   }
 }

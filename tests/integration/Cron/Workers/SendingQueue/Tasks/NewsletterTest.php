@@ -235,6 +235,15 @@ class NewsletterTest extends \MailPoetTest {
       ->contains(date_i18n('dS', Functions::currentTime('timestamp')));
   }
 
+  function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {
+    $newsletter = $this->newsletter;
+    $newsletter->subject = '  [custom_shortcode:should_render_empty]  ';
+    $queue = $this->queue;
+    $newsletter = $this->newsletter_task->preProcessNewsletter($newsletter, $queue);
+    $queue = SendingTask::getByNewsletterId($newsletter->id);
+    expect($queue->newsletter_rendered_subject)
+      ->equals('No subject');
+  }
 
   function testItUsesRenderedNewsletterBodyAndSubjectFromQueueObjectWhenPreparingNewsletterForSending() {
     $queue = $this->queue;

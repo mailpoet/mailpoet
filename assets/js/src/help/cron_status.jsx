@@ -66,4 +66,4 @@ CronStatus.defaultProps = {
   },
 };
 
-module.exports = CronStatus;
+export default CronStatus;

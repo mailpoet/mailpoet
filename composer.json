@@ -48,7 +48,9 @@
     ],
     "psr-4": {
       "MailPoet\\": "lib/",
-      "Sudzy\\": "lib/Util/Sudzy"
+      "MailPoetVendor\\": "vendor-prefixed/",
+      "Sudzy\\": "lib/Util/Sudzy",
+      "MailPoetGenerated\\": "generated/"
     }
   },
   "scripts": {

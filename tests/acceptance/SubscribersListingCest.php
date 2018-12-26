@@ -9,8 +9,7 @@ class SubscribersListingCest {
 
     $I->login();
     $I->amOnMailpoetPage('Subscribers');
-    $I->fillField('#search_input', 'wp@example.com');
-    $I->click('Search');
+    $I->searchFor('wp@example.com', 2);
     $I->waitForText('wp@example.com', 10);
   }
 

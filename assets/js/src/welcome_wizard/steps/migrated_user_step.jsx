@@ -16,4 +16,4 @@ WelcomeWizardMigratedUserStep.propTypes = {
   next: PropTypes.func.isRequired,
 };
 
-module.exports = WelcomeWizardMigratedUserStep;
+export default WelcomeWizardMigratedUserStep;

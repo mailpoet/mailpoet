@@ -5,6 +5,7 @@ namespace MailPoet\Test\Router;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
+use MailPoet\DI\ContainerConfigurator;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\Router\Endpoints\RouterTestMockEndpoint;
@@ -26,8 +27,8 @@ class RouterTest extends \MailPoetTest {
       'data' => base64_encode(json_encode(array('data' => 'dummy data')))
     );
     $this->access_control = new AccessControl();
-    $container_factory = new ContainerFactory(true);
-    $this->container = $container_factory->createContainer();
+    $container_factory = new ContainerFactory(new ContainerConfigurator());
+    $this->container = $container_factory->getConfiguredContainer();
     $this->container->register(RouterTestMockEndpoint::class)->setPublic(true);
     $this->container->compile();
     $this->router = new Router($this->access_control, $this->container, $this->router_data);

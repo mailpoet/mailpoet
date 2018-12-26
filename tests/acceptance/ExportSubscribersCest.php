@@ -9,9 +9,6 @@ require_once __DIR__ . '/../DataFactories/Segment.php';
 require_once __DIR__ . '/../DataFactories/Subscriber.php';
 
 class ExportSubscribersCest {
-  function __construct() {
-    $this->search_field_element = 'input.select2-search__field';
-  }
   function exportSubscribers(\AcceptanceTester $I) {
     $segment_factory = new Segment();
     $segment_name = 'Hobbyists';

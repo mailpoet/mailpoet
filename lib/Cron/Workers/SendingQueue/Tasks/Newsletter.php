@@ -101,6 +101,11 @@ class Newsletter {
       null,
       $queue
     );
+    // if the rendered subject is empty, use a default subject,
+    // having no subject in a newsletter is considered spammy
+    if(empty(trim($queue->newsletter_rendered_subject))) {
+      $queue->newsletter_rendered_subject = __('No subject', 'mailpoet');
+    }
     $queue->newsletter_rendered_body = $rendered_newsletter;
     $queue->save();
     // catch DB errors
@@ -172,7 +177,7 @@ class Newsletter {
   function stopNewsletterPreProcessing($error_code = null) {
     MailerLog::processError(
       'queue_save',
-      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.'),
+      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.', 'mailpoet'),
       $error_code
     );
   }

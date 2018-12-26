@@ -232,7 +232,6 @@ class RendererTest extends \MailPoetTest {
     $DOM = $this->DOM_parser->parseStr(Image::render($template, self::COLUMN_BASE_WIDTH));
     // element should be properly nested, it's width set and style applied
     expect($DOM('tr > td > img', 0)->attr('width'))->equals(620);
-    expect($DOM('tr > td > img', 0)->attr('style'))->notEmpty();
   }
 
   function testItRendersAlignedImage() {
@@ -345,7 +344,6 @@ class RendererTest extends \MailPoetTest {
     );
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     expect($rendered_image)->contains('width="auto"');
-    expect($rendered_image)->contains('max-width:100%');
   }
 
   function testItAdjustImageDimensionsWithPx() {
@@ -359,7 +357,6 @@ class RendererTest extends \MailPoetTest {
     );
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     expect($rendered_image)->contains('width="620"');
-    expect($rendered_image)->contains('max-width:620px');
   }
 
   function testItAdjustImageDimensionsWithoutPx() {
@@ -373,7 +370,6 @@ class RendererTest extends \MailPoetTest {
     );
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     expect($rendered_image)->contains('width="620"');
-    expect($rendered_image)->contains('max-width:620px');
   }
 
   function testItRendersText() {
