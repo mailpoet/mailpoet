@@ -82,7 +82,8 @@ class CronHelper {
     );
     $result = self::queryCronUrl($url);
     if(is_wp_error($result)) return $result->get_error_message();
-    $response = WPFunctions::wpRemoteRetrieveBody($result);
+    $wp = new WPFunctions();
+    $response = $wp->wpRemoteRetrieveBody($result);
     $response = substr(trim($response), -strlen(DaemonHttpRunner::PING_SUCCESS_RESPONSE)) === DaemonHttpRunner::PING_SUCCESS_RESPONSE ?
       DaemonHttpRunner::PING_SUCCESS_RESPONSE :
       $response;
@@ -104,7 +105,8 @@ class CronHelper {
     $daemon['run_accessed_at'] = time();
     self::saveDaemon($daemon);
     $result = self::queryCronUrl($url);
-    return WPFunctions::wpRemoteRetrieveBody($result);
+    $wp = new WPFunctions();
+    return $wp->wpRemoteRetrieveBody($result);
   }
 
   /**
@@ -127,7 +129,7 @@ class CronHelper {
     return null;
   }
 
-  static function queryCronUrl($url) {
+  static function queryCronUrl($url, $wp = null) {
     $args = WPHooks::applyFilters(
       'mailpoet_cron_request_args',
       array(
@@ -137,7 +139,10 @@ class CronHelper {
         'user-agent' => 'MailPoet Cron'
       )
     );
-    return WPFunctions::wpRemotePost($url, $args);
+    if(is_null($wp)) {
+      $wp = new WPFunctions();
+    }
+    return $wp->wpRemotePost($url, $args);
   }
 
   static function getCronUrl($action, $data = false) {

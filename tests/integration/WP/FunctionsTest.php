@@ -50,7 +50,8 @@ class FunctionsTest extends \MailPoetTest {
     $id = $this->makeAttachment($upload);
     expect($id)->notEmpty();
 
-    $image = WPFunctions::getImageInfo($id);
+    $wp = new WPFunctions();
+    $image = $wp->getImageInfo($id);
     expect($image[1])->equals(Env::NEWSLETTER_CONTENT_WIDTH);
 
     wp_delete_attachment($id, $force_delete = true);

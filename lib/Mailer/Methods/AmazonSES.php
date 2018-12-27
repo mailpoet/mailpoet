@@ -32,6 +32,8 @@ class AmazonSES {
   /** @var AmazonSESMapper */
   private $error_mapper;
 
+  private $wp;
+
   function __construct(
     $region,
     $access_key,
@@ -61,11 +63,12 @@ class AmazonSES {
     $this->date = gmdate('Ymd\THis\Z');
     $this->date_without_time = gmdate('Ymd');
     $this->error_mapper = $error_mapper;
+    $this->wp = new WPFunctions();
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
     try {
-      $result = WPFunctions::wpRemotePost(
+      $result = $this->wp->wpRemotePost(
         $this->url,
         $this->request($newsletter, $subscriber, $extra_params)
       );
@@ -77,8 +80,8 @@ class AmazonSES {
       $error = $this->error_mapper->getConnectionError($result->get_error_message());
       return Mailer::formatMailerErrorResult($error);
     }
-    if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
-      $response = simplexml_load_string(WPFunctions::wpRemoteRetrieveBody($result));
+    if($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
+      $response = simplexml_load_string($this->wp->wpRemoteRetrieveBody($result));
       $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
       return Mailer::formatMailerErrorResult($error);
     }

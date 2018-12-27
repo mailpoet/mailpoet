@@ -10,7 +10,10 @@ class DateTime {
   const DEFAULT_TIME_FORMAT = 'H:i:s';
   const DEFAULT_DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
+  private $wp;
+
   function __construct() {
+    $this->wp = new WPFunctions();
   }
 
   function getTimeFormat() {
@@ -27,7 +30,7 @@ class DateTime {
 
   function getCurrentTime($format=false) {
     if (empty($format)) $format = $this->getTimeFormat();
-    return WPFunctions::currentTime($format);
+    return $this->wp->currentTime($format);
   }
 
   function getCurrentDate($format=false) {

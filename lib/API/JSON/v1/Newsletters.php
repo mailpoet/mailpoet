@@ -36,6 +36,11 @@ class Newsletters extends APIEndpoint {
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS
   );
+  private $wp;
+
+  function __construct() {
+    $this->wp = new WPFunctions;
+  }
 
   function __construct(
     Listing\BulkActionController $bulk_action,
@@ -198,7 +203,7 @@ class Newsletters extends APIEndpoint {
       $queue = $newsletter->queue()->findOne();
       if($queue) {
         $queue->task()
-          ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
+          ->whereLte('scheduled_at', Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))
           ->where('status', SendingQueue::STATUS_SCHEDULED)
           ->findResultSet()
           ->set('scheduled_at', $next_run_date)
@@ -443,7 +448,7 @@ class Newsletters extends APIEndpoint {
       'mta_log' => Setting::getValue('mta_log'),
       'mta_method' => Setting::getValue('mta.method'),
       'cron_accessible' => CronHelper::isDaemonAccessible(),
-      'current_time' => WPFunctions::currentTime('mysql')
+      'current_time' => $this->wp->currentTime('mysql')
     ));
   }
 

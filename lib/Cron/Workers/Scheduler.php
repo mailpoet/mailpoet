@@ -19,6 +19,7 @@ if(!defined('ABSPATH')) exit;
 
 class Scheduler {
   public $timer;
+  private $wp;
   const UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT = 5;
   const TASK_BATCH_SIZE = 5;
 
@@ -26,6 +27,7 @@ class Scheduler {
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
+    $this->wp = new WPFunctions();
   }
 
   function process() {
@@ -172,7 +174,7 @@ class Scheduler {
     // check if subscriber is confirmed (subscribed)
     if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
       // reschedule delivery in 5 minutes
-      $scheduled_at = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
       $queue->scheduled_at = $scheduled_at->addMinutes(
         self::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT
       );

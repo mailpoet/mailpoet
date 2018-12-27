@@ -2,12 +2,13 @@
 
 namespace MailPoet\Test\Cron;
 
+use Codeception\Stub;
 use AspectMock\Test as Mock;
-use Helper\WordPress as WPHelper;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Models\Setting;
 use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelperTest extends \MailPoetTest {
   function _before() {
@@ -272,13 +273,14 @@ class CronHelperTest extends \MailPoetTest {
       expect($args)->notEmpty();
       return $request_args;
     };
-    $wp_remote_get_args = array();
-    WPHelper::interceptFunction('wp_remote_post', function() use (&$wp_remote_get_args) {
-      $wp_remote_get_args = func_get_args();
-    });
+    $wp_remote_get_args = [];
+    $wp = Stub::make(new WPFunctions(), [
+      'wpRemotePost' => function() use (&$wp_remote_get_args) {
+        return $wp_remote_get_args = func_get_args();
+      }
+    ]);
     WPHooks::addFilter('mailpoet_cron_request_args', $filter);
-
-    CronHelper::queryCronUrl('test');
+    CronHelper::queryCronUrl('test', $wp);
     expect($wp_remote_get_args[1])->equals($request_args);
 
     WPHooks::removeFilter('mailpoet_cron_request_args', $filter);
@@ -300,7 +302,6 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHelper::releaseAllFunctions();
     Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }

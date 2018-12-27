@@ -1,8 +1,9 @@
 <?php
 namespace MailPoet\Test\Cron\Workers;
 
+
 use Carbon\Carbon;
-use Helper\WordPress as WordPressHelper;
+use Codeception\Stub;
 use MailPoet\Cron\Workers\SendingQueue\Migration;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
@@ -11,6 +12,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 class MigrationTest extends \MailPoetTest {
   function _before() {
@@ -111,14 +113,15 @@ class MigrationTest extends \MailPoetTest {
   function testItUsesWPTimeToReturnNextRunDate() {
     $timestamp = 1514801410;
 
-    WordPressHelper::interceptFunction('current_time', function($time) use($timestamp) {
-      // "timestamp" string is passed as an argument
-      expect($time)->equals('timestamp');
+    $wp = Stub::make(new WPFunctions, [
+      'currentTime' => function($time) use($timestamp) {
+        // "timestamp" string is passed as an argument
+        expect($time)->equals('timestamp');
+        return $timestamp;
+      }
+    ]);
 
-      return $timestamp;
-    });
-
-    $next_run_date = Migration::getNextRunDate();
+    $next_run_date = Migration::getNextRunDate($wp);
     expect($next_run_date->timestamp)->equals($timestamp);
   }
 
@@ -200,7 +203,5 @@ class MigrationTest extends \MailPoetTest {
       $this->restoreTable();
       $this->altered = false;
     }
-
-    WordPressHelper::releaseAllFunctions();
   }
 }

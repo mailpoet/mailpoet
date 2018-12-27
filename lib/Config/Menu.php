@@ -39,10 +39,12 @@ class Menu {
   public $renderer;
   private $access_control;
   private $subscribers_over_limit;
+  private $wp;
 
   function __construct($renderer, AccessControl $access_control) {
     $this->renderer = $renderer;
     $this->access_control = $access_control;
+    $this->wp = new WPFunctions;
   }
 
   function init() {
@@ -373,7 +375,7 @@ class Menu {
     $data['is_old_user'] = false;
     if(!empty($data['settings']['installed_at'])) {
       $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
-      $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
       $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
       $data['is_old_user'] = $current_time->diffInMonths($installed_at) >= 6;
       $data['stop_call_for_rating'] = isset($data['settings']['stop_call_for_rating']) ? $data['settings']['stop_call_for_rating'] : false;
@@ -826,7 +828,7 @@ class Menu {
       return true;
     }
     $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));
-    $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     return $current_time->diffInDays($installed_at) <= 30;
   }
 }

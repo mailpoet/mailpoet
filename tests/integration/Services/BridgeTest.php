@@ -3,13 +3,13 @@
 namespace MailPoet\Test\Services;
 
 use Codeception\Util\Stub;
-use Helper\WordPress as WPHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
 use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once('BridgeTestMockAPI.php');
 
@@ -257,10 +257,12 @@ class BridgeTest extends \MailPoetTest {
 
   function testItAllowsChangingRequestTimeout() {
     $wp_remote_post_args = array();
-    WPHelper::interceptFunction('wp_remote_post', function() use (&$wp_remote_post_args) {
-      $wp_remote_post_args = func_get_args();
-    });
-    $api = new API('test_key');
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemotePost' => function() use (&$wp_remote_post_args) {
+        $wp_remote_post_args = func_get_args();
+      }
+    ]);
+    $api = new API('test_key', $wp);
 
     // test default request value
     $api->sendMessages('test');
@@ -311,7 +313,6 @@ class BridgeTest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHelper::releaseAllFunctions();
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

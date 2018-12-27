@@ -23,6 +23,7 @@ class API {
   const RESPONSE_CODE_BANNED_ACCOUNT = 403;
 
   private $api_key;
+  private $wp;
 
   public $url_me = 'https://bridge.mailpoet.com/api/v0/me';
   public $url_premium = 'https://bridge.mailpoet.com/api/v0/premium';
@@ -30,8 +31,13 @@ class API {
   public $url_bounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
   public $url_stats = 'https://bridge.mailpoet.com/api/v0/stats';
 
-  function __construct($api_key) {
+  function __construct($api_key, $wp = null) {
     $this->setKey($api_key);
+    if(is_null($wp)) {
+      $this->wp = new WPFunctions();
+    } else {
+      $this->wp = $wp;
+    }
   }
 
   function checkMSSKey() {
@@ -40,10 +46,10 @@ class API {
       array('site' => home_url())
     );
 
-    $code = WPFunctions::wpRemoteRetrieveResponseCode($result);
+    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
     switch($code) {
       case 200:
-        $body = json_decode(WPFunctions::wpRemoteRetrieveBody($result), true);
+        $body = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
         break;
       default:
         $body = null;
@@ -59,10 +65,10 @@ class API {
       array('site' => home_url())
     );
 
-    $code = WPFunctions::wpRemoteRetrieveResponseCode($result);
+    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
     switch($code) {
       case 200:
-        if($body = WPFunctions::wpRemoteRetrieveBody($result)) {
+        if($body = $this->wp->wpRemoteRetrieveBody($result)) {
           $body = json_decode($body, true);
         }
         break;
@@ -87,11 +93,11 @@ class API {
       );
     }
 
-    $response_code = WPFunctions::wpRemoteRetrieveResponseCode($result);
+    $response_code = $this->wp->wpRemoteRetrieveResponseCode($result);
     if($response_code !== 201) {
-      $response = (WPFunctions::wpRemoteRetrieveBody($result)) ?
-        WPFunctions::wpRemoteRetrieveBody($result) :
-        WPFunctions::wpRemoteRetrieveResponseMessage($result);
+      $response = ($this->wp->wpRemoteRetrieveBody($result)) ?
+        $this->wp->wpRemoteRetrieveBody($result) :
+        $this->wp->wpRemoteRetrieveResponseMessage($result);
       return array(
         'status' => self::SENDING_STATUS_SEND_ERROR,
         'message' => $response,
@@ -106,8 +112,8 @@ class API {
       $this->url_bounces,
       $emails
     );
-    if(WPFunctions::wpRemoteRetrieveResponseCode($result) === 200) {
-      return json_decode(WPFunctions::wpRemoteRetrieveBody($result), true);
+    if($this->wp->wpRemoteRetrieveResponseCode($result) === 200) {
+      return json_decode($this->wp->wpRemoteRetrieveBody($result), true);
     }
     return false;
   }
@@ -118,7 +124,7 @@ class API {
       array('subscriber_count' => (int)$count),
       'PUT'
     );
-    return WPFunctions::wpRemoteRetrieveResponseCode($result) === self::RESPONSE_CODE_STATS_SAVED;
+    return $this->wp->wpRemoteRetrieveResponseCode($result) === self::RESPONSE_CODE_STATS_SAVED;
   }
 
   function setKey($api_key) {
@@ -144,6 +150,6 @@ class API {
       ),
       'body' => json_encode($body)
     );
-    return WPFunctions::wpRemotePost($url, $params);
+    return $this->wp->wpRemotePost($url, $params);
   }
 }
