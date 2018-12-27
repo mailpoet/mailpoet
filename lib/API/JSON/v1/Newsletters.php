@@ -38,16 +38,13 @@ class Newsletters extends APIEndpoint {
   );
   private $wp;
 
-  function __construct() {
-    $this->wp = new WPFunctions;
-  }
-
   function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
+    $this->wp = new WPFunctions;
   }
 
   function get($data = array()) {
