@@ -100,6 +100,20 @@ class Newsletter {
   }
 
   /**
+   * @return Newsletter
+   */
+  public function withWcAutomaticType($event = 'woocommerce_first_purchase') {
+    $this->data['type'] = 'automatic';
+    $this->withOptions([
+      14 => 'woocommerce', // group
+      15 => $event,
+      16 => 'user', // sendTo
+      19 => 'immediate', // afterTimeType
+    ]);
+    return $this;
+  }
+
+  /**
    * @param array $options
    *
    * @return Newsletter
