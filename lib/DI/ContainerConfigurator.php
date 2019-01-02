@@ -72,6 +72,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);
     // Newsletter
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
+    // WordPress
+    $container->autowire(\MailPoet\WP\Functions::class)->setPublic(true);
     return $container;
   }
 

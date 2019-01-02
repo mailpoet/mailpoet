@@ -33,21 +33,21 @@ class Newsletters extends APIEndpoint {
   /** @var Listing\Handler */
   private $listing_handler;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS
   );
-  private $wp;
-
-  function __construct() {
-    $this->wp = new WPFunctions;
-  }
 
   function __construct(
     Listing\BulkActionController $bulk_action,
-    Listing\Handler $listing_handler
+    Listing\Handler $listing_handler,
+    WPFunctions $wp
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
+    $this->wp = $wp;
   }
 
   function get($data = array()) {
