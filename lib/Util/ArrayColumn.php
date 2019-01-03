@@ -8,11 +8,12 @@ namespace MailPoet\Util;
  * @author Ben Ramsey (http://benramsey.com)
  */
 function array_column($input = null, $column_key = null, $index_key = null) {
+  $argc = func_num_args();
+  $params = func_get_args();
+
   if(!empty(\array_column([['id' => '4']], 'id'))) {
     return \array_column($input, $column_key, $index_key);
   }
-  $argc = func_num_args();
-  $params = func_get_args();
   if($argc < 2) {
     trigger_error("array_column() expects at least 2 parameters, {$argc} given", E_USER_WARNING);
     return null;
