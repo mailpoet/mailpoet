@@ -21,7 +21,7 @@ class PHPVersionWarnings {
   }
 
   function display($php_version) {
-    $error_string = __('Your website is running on PHP %s. This is an old version that is slower and less safe. Read our [link]simple PHP upgrade guide[/link] or let MailPoet\'s support team upgrade it for you for free.', 'mailpoet');
+    $error_string = __('Your website is running on PHP %s which will not be supported by WordPress starting in April 2019. Read our [link]simple PHP upgrade guide[/link] or let MailPoet\'s support team upgrade it for you for free.', 'mailpoet');
     $error_string = sprintf($error_string, $php_version);
     $get_in_touch_string = _x('[link]Get in touch.[/link]', 'A link with an offer to upgrade PHP version for free', 'mailpoet');
     $error = Helpers::replaceLinkTags($error_string, 'https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
@@ -29,7 +29,7 @@ class PHPVersionWarnings {
 
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
 
-    return \MailPoet\WP\Notice::displayError($error, $extra_classes, self::OPTION_NAME);
+    return \MailPoet\WP\Notice::displayWarning($error, $extra_classes, self::OPTION_NAME);
   }
 
   function disable() {
