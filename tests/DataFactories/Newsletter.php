@@ -102,13 +102,41 @@ class Newsletter {
   /**
    * @return Newsletter
    */
-  public function withWooCommerceAutomaticType($event = 'woocommerce_first_purchase') {
+  public function withAutomaticTypeWooCommerceFirstPurchase() {
     $this->data['type'] = 'automatic';
     $this->withOptions([
       14 => 'woocommerce', // group
-      15 => $event,
+      15 => 'woocommerce_first_purchase',
       16 => 'user', // sendTo
       19 => 'immediate', // afterTimeType
+    ]);
+    return $this;
+  }
+
+  /**
+   * @param array $products Array of products.
+   *  $products = [
+   *    [
+   *      'id' => (int) Product Id,
+   *      'name' => (string) Product name,
+   *    ], ...
+   *  ]
+   *  You can pass an array of products created by WooCommerceProduct factory
+   * @return Newsletter
+   */
+  public function withAutomaticTypeWooCommerceProductPurchased(array $products = []) {
+    $this->data['type'] = 'automatic';
+
+    $products_option = array_map(function ($product) {
+      return ['id' => $product['id'], 'name' => $product['name']];
+    }, $products);
+
+    $this->withOptions([
+      14 => 'woocommerce', // group
+      15 => 'woocommerce_product_purchased',
+      16 => 'user', // sendTo
+      19 => 'immediate', // afterTimeType
+      20 => json_encode(['option' => $products_option])
     ]);
     return $this;
   }
