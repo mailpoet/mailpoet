@@ -3,7 +3,6 @@ import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import BackgroundImageAnnouncement from './background_image_announcement.jsx';
 import displayTutorial from './tutorial.jsx';
 
 const renderBreadcrumb = (newsletterType) => {
@@ -16,16 +15,6 @@ const renderBreadcrumb = (newsletterType) => {
   );
 
   ReactDOM.render(breadcrumb, breadcrumbContainer);
-};
-
-const renderAnnouncement = () => {
-  const container = document.getElementById('mailpoet_editor_announcement');
-  ReactDOM.render(
-    <BackgroundImageAnnouncement
-      username={window.config.currentUserFirstName || window.config.currentUserUsername}
-      videoUrl={window.config.backgroundImageDemoUrl}
-    />, container
-  );
 };
 
 const initializeEditor = (config) => {
@@ -62,7 +51,6 @@ const initializeEditor = (config) => {
       });
 
       renderBreadcrumb(newsletter.type);
-      renderAnnouncement();
 
       if (newsletter.status === 'sending' && newsletter.queue && newsletter.queue.status === null) {
         MailPoet.Ajax.post({
