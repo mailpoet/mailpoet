@@ -54,6 +54,7 @@ class Changelog {
           }
         }
         Setting::setValue('show_congratulate_after_first_newsletter', true);
+        Setting::setValue('show_poll_success_delivery_preview', true);
       }
     }
 

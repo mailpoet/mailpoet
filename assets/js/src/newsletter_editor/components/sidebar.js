@@ -323,6 +323,7 @@ define([
         CommunicationComponent.previewNewsletter(data).always(function () {
           MailPoet.Modal.loading(false);
         }).done(function () {
+          var showSuccessDeliveryPoll;
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterPreviewSent'),
             { scroll: true }
@@ -331,6 +332,11 @@ define([
             'MailPoet Free version': window.mailpoet_version,
             'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1)
           });
+          showSuccessDeliveryPoll = MailPoet.Poll.successDelivery.canShow('preview');
+          if (showSuccessDeliveryPoll) {
+            MailPoet.Poll.successDelivery.showModal('preview', 'IHedf1');
+            MailPoet.Poll.successDelivery.setPollShown('preview');
+          }
         }).fail(function (response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(

@@ -730,6 +730,12 @@
             { scroll: true }
           );
           trackTestEmailSent(mailer, true);
+
+          const showSuccessDeliveryPoll = MailPoet.Poll.successDelivery.canShow('preview', true) && $('#mailpoet_smtp_method').val() === 'server';
+          if (showSuccessDeliveryPoll) {
+            MailPoet.Poll.successDelivery.showModal('preview', 'IHedf1');
+            MailPoet.Poll.successDelivery.setPollShown('preview');
+          }
         }).fail(function(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
