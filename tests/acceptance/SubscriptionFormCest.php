@@ -50,6 +50,7 @@ class SubscriptionFormCest {
 
     $I->amOnPage('/form-test');
     $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
+    $I->scrollTo('.mailpoet_submit');
     $I->click('.mailpoet_submit');
     $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();

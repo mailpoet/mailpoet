@@ -28,7 +28,7 @@ class SubscriptionFormEditCest {
     $I->selectOptionInSelect2('My First List');
     $I->click('[data-automation-id="save_form"]');
     //Step three - assertions
-    $I->waitForText('Saved! Add this form to a widget.', 10);
+    $I->waitForText('Saved!', 10);
     $I->amOnMailpoetPage('Forms');
     $I->waitForText($form_edited_name);
   }

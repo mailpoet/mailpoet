@@ -21,7 +21,7 @@ class SearchForNotificationCest {
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText('Post notification', 5);
+    $I->waitForListingItemsToLoad();
     $I->searchFor($failure_condition_newsletter, 2);
     $I->wait(5);
     $I->waitForElement('tr.no-items', 10);

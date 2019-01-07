@@ -29,16 +29,17 @@ class AcceptanceTester extends \Codeception\Actor {
    * Define custom actions here
    */
   public function login() {
-    $this->amOnPage('/wp-login.php');
-    if ($this->loadSessionSnapshot('login')) {
+    $I = $this;
+    $I->amOnPage('/wp-login.php');
+    if ($I->loadSessionSnapshot('login')) {
       return;
     }
-    $this->wait(1);// this needs to be here, Username is not filled properly without this line
-    $this->fillField('Username', 'admin');
-    $this->fillField('Password', 'password');
-    $this->click('Log In');
-    $this->waitForText('MailPoet', 10);
-    $this->saveSessionSnapshot('login');
+    $I->wait(1);// this needs to be here, Username is not filled properly without this line
+    $I->fillField('Username', 'admin');
+    $I->fillField('Password', 'password');
+    $I->click('Log In');
+    $I->waitForText('MailPoet', 10);
+    $I->saveSessionSnapshot('login');
   }
 
   /**
@@ -49,6 +50,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->amOnPage('/wp-login.php?action=logout');
     $I->click('log out');
     $I->wait(1);
+    $I->deleteSessionSnapshot('login');
   }
 
   /**

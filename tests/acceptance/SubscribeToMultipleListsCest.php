@@ -12,20 +12,12 @@ require_once __DIR__ . '/../DataFactories/Form.php';
 require_once __DIR__ . '/../DataFactories/Segment.php';
 
 class SubscribeToMultipleListsCest {
-  const CONFIRMATION_MESSAGE_TIMEOUT = 20;
-
-  private $subscriber_email;
-
-  function __construct() {
-    $this->subscriber_email = 'multiple-test-form@example.com';
-  }
-
-  function subsrcibeToMultipleLists(\AcceptanceTester $I) {
+  function subscribeToMultipleLists(\AcceptanceTester $I) {
     //Step one - create form with three lists
     $segment_factory = new Segment();
-    $seg1= 'Cats';
-    $seg2= 'Dogs';
-    $seg3= 'Fish';
+    $seg1 = 'Cats';
+    $seg2 = 'Dogs';
+    $seg3 = 'Fish';
     $segment1 = $segment_factory->withName($seg1)->create();
     $segment2 = $segment_factory->withName($seg2)->create();
     $segment3 = $segment_factory->withName($seg3)->create();
