@@ -14,7 +14,6 @@ require_once __DIR__ . '/../DataFactories/Newsletter.php';
 require_once __DIR__ . '/../DataFactories/Segment.php';
 require_once __DIR__ . '/../DataFactories/Subscriber.php';
 
-// This test should run last, because it removes all test data
 class ReinstallFromScratchCest {
 
   function reinstallFromScratch(\AcceptanceTester $I) {
