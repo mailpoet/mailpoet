@@ -41,19 +41,12 @@ class StructureTransformer {
   private function transformTagsToBlocks($root, $image_full_width) {
     return array_map(function($item) use ($image_full_width) {
       if($item->tag === 'img' || $item->tag === 'a' && $item->query('img')) {
-        if($item->tag === 'a') {
-          $link = $item->getAttribute('href');
-          $image = $item->children[0];
-        } else {
-          $link = '';
-          $image = $item;
-        }
-
+        $image = $item->tag === 'img' ? $item : $item->children[0];
         $width = $image->getAttribute('width');
         $height = $image->getAttribute('height');
         return array(
           'type' => 'image',
-          'link' => $link,
+          'link' => $item->getAttribute('href') ?: '',
           'src' => $image->getAttribute('src'),
           'alt' => $image->getAttribute('alt'),
           'fullWidth' => $image_full_width,
