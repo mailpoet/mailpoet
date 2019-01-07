@@ -37,11 +37,11 @@ class ReinstallFromScratchCest {
 
     // Step 2 - reinstall from scratch
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet-settings#advanced');
-    $I->waitForElement('#mailpoet_reinstall', 5);
+    $I->waitForElement('#mailpoet_reinstall', 30);
     $I->click('Reinstall now...');
     $I->acceptPopup();
-    $I->waitForElement('#mailpoet_loading', 5);
-    $I->waitForElementNotVisible('#mailpoet_loading', 10);
+    $I->waitForElement('#mailpoet_loading', 30);
+    $I->waitForElementNotVisible('#mailpoet_loading', 30);
 
     // Step 3 - skip all tutorials, which could interfere with other tests
     $settings = new Settings();
@@ -50,20 +50,20 @@ class ReinstallFromScratchCest {
     // Step 4 - check if data are emptied and repopulated
     // Check emails
     $I->amOnMailpoetPage('Emails');
-    $I->waitForText('Nothing here yet!', 5);
+    $I->waitForText('Nothing here yet!', 30);
     $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 0);
     // Check forms
     $I->amOnMailpoetPage('Forms');
-    $I->waitForText('A GDPR friendly form', 5, '[data-automation-id="listing_item_1"]');
+    $I->waitForText('A GDPR friendly form', 30, '[data-automation-id="listing_item_1"]');
     $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 1);
     // Check lists
     $I->amOnMailpoetPage('Lists');
-    $I->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
+    $I->waitForText('WordPress Users', 30, '[data-automation-id="listing_item_1"]');
     $I->see('My First List', '[data-automation-id="listing_item_2"]');
     $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 2);
     // Check subscribers
     $I->amOnMailPoetPage('Subscribers');
-    $I->waitForText('admin', 5, '[data-automation-id="listing_item_1"]');
+    $I->waitForText('admin', 30, '[data-automation-id="listing_item_1"]');
     $wp_users_count = count_users();
     $subscribers_count = (int)$I->grabTextFrom('.displaying-num');
     Asserts::assertEquals($wp_users_count['total_users'], $subscribers_count);
