@@ -41,4 +41,12 @@ class Settings {
     Setting::setValue('tracking.enabled', false);
     return $this;
   }
+
+  function withSkippedTutorials() {
+    Setting::setValue('show_intro', 0);
+    Setting::setValue('display_nps_poll', 0);
+    Setting::setValue('user_seen_editor_tutorial1', 1);
+    Setting::setValue('show_congratulate_after_first_newsletter', 0);
+    return $this;
+  }
 }

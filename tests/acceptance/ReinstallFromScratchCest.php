@@ -2,16 +2,17 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Models\Setting;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 use PHPUnit_Framework_Assert as Asserts;
 
 require_once __DIR__ . '/../DataFactories/Form.php';
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 require_once __DIR__ . '/../DataFactories/Segment.php';
+require_once __DIR__ . '/../DataFactories/Settings.php';
 require_once __DIR__ . '/../DataFactories/Subscriber.php';
 
 class ReinstallFromScratchCest {
@@ -43,9 +44,8 @@ class ReinstallFromScratchCest {
     $I->waitForElementNotVisible('#mailpoet_loading', 10);
 
     // Step 3 - skip all tutorials, which could interfere with other tests
-    Setting::setValue('show_intro', 0);
-    Setting::setValue('user_seen_editor_tutorial1', 1);
-    Setting::setValue('show_congratulate_after_first_newsletter', 0);
+    $settings = new Settings();
+    $settings->withSkippedTutorials();
 
     // Step 4 - check if data are emptied and repopulated
     // Check emails
