@@ -28,8 +28,6 @@
     var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
     var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
     var mailpoet_user_locale = '<%= get_locale() %>';
-    var mailpoet_in_app_announcements = mailpoet_settings.in_app_announcements;
-    var mailpoet_free_welcome_emails_image = '<%= cdn_url('in-app-announcements/hello-illustration-for-welcome-emails.20181121-1440.png') %>';
     var mailpoet_congratulations_success_image = '<%= cdn_url('newsletter/congrat-illu-success.20181121-1440.png') %>';
     var mailpoet_congratulations_loading_image = '<%= cdn_url('newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png') %>';
     var mailpoet_main_page = '<%= mailpoet_main_page %>';
@@ -316,9 +314,6 @@
     'introBack': _x('Back', 'A label on a button'),
     'introSkip': _x('Skip', 'A label on a button'),
     'introDone': _x('Done', 'A label on a button'),
-
-    'freeWelcomeEmailsHeading': __('Welcome Emails are now free for everyone'),
-    'freeWelcomeEmailsParagraph': __('Say “Hello!” automatically to all your new subscribers. They’ll appreciate the extra touch.'),
 
     'whatsNew': __("What’s new"),
 

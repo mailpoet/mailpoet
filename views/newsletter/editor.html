@@ -248,7 +248,6 @@
 <h1 style="display:none"><%= __('Newsletter Editor') %></h1>
 <div id="mailpoet_editor">
   <div id="mailpoet_editor_breadcrumb" class="mailpoet_breadcrumbs"></div>
-  <div id="mailpoet_editor_announcement" class="mailpoet_editor_announcement"></div>
   <div id="mailpoet_editor_top"></div>
   <div id="mailpoet_editor_heading"></div>
   <div class="clearfix"></div>
@@ -367,8 +366,6 @@
     'cancelColorSelection': _x('Cancel', 'cancel color selection'),
     'newsletterIsPaused': __('Email sending has been paused.'),
     'tutorialVideoTitle': __('Before you start, this is how you drag and drop in MailPoet'),
-    'announcementBackgroundImagesHeading': __('Hey %username%, you can now put text over any image.'),
-    'announcementBackgroundImagesMessage': __('Simply edit any column block to add a background image. It works in pretty much every email client, even on mobile.'),
     'selectType': __('Select type'),
     'events': __('Events'),
     'conditions': _x('Conditions', 'Configuration options for automatic email events'),
@@ -1342,14 +1339,10 @@
         ) %>',
       },
       dragDemoUrl: '<%= cdn_url('newsletter-editor/editor-drag-demo.20181121-1440.mp4') %>',
-      backgroundImageDemoUrl: '<%= cdn_url('newsletter-editor/background-image-demo.20181121-1440.mp4') %>',
       currentUserId: '<%= current_wp_user.wp_user_id %>',
-      currentUserFirstName: '<%= current_wp_user.first_name %>',
-      currentUserUsername: '<%= current_wp_user.login %>',
       dragDemoUrlSettings: '<%= settings["user_seen_editor_tutorial" ~ current_wp_user.wp_user_id] %>',
       installedAt: '<%= settings["installed_at"] %>',
     };
-    var mailpoet_in_app_announcements = <%= json_encode(settings.in_app_announcements) %>;
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
 
   </script>

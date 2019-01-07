@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
-import InAppAnnoucement from 'announcements/in_app_announcement.jsx';
 
 const ListingHeading = () => (
   <h1 className="title">
@@ -18,23 +17,6 @@ const ListingHeading = () => (
     >
       {MailPoet.I18n.t('new')}
     </Link>
-    <InAppAnnoucement
-      className="mailpoet_in_app_announcement_free_welcome_emails_dot"
-      showToNewUser={false}
-      showToPremiumUser={false}
-      showOnlyOnceSlug="free_welcome_emails"
-      height="650px"
-      validUntil={new Date('2018-10-31')}
-    >
-      <div className="mailpoet_in_app_announcement_free_welcome_emails">
-        <h2>{MailPoet.I18n.t('freeWelcomeEmailsHeading')}</h2>
-        <img
-          src={window.mailpoet_free_welcome_emails_image}
-          alt={MailPoet.I18n.t('freeWelcomeEmailsHeading')}
-        />
-        <p>{MailPoet.I18n.t('freeWelcomeEmailsParagraph')}</p>
-      </div>
-    </InAppAnnoucement>
   </h1>
 );
 
