@@ -102,7 +102,7 @@ class Newsletter {
   /**
    * @return Newsletter
    */
-  public function withWcAutomaticType($event = 'woocommerce_first_purchase') {
+  public function withWooCommerceAutomaticType($event = 'woocommerce_first_purchase') {
     $this->data['type'] = 'automatic';
     $this->withOptions([
       14 => 'woocommerce', // group
