@@ -20,7 +20,8 @@ var baseConfig = {
   output: {
     path: path.join(__dirname, 'assets/js'),
     filename: (PRODUCTION_ENV) ? '[name].[hash:8].js' : '[name].js',
-    chunkFilename: (PRODUCTION_ENV) ? '[name].[hash:8].chunk.js' : '[name].chunk.js'
+    chunkFilename: (PRODUCTION_ENV) ? '[name].[hash:8].chunk.js' : '[name].chunk.js',
+    jsonpFunction: 'mailpoetJsonp'
   },
   resolve: {
     modules: [
