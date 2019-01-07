@@ -147,6 +147,11 @@ class NewsletterTemplates extends React.Component {
       emailType = response.data.type;
       if (_.findWhere(templatesCategories, { name: response.data.type })) {
         selectedTab = response.data.type;
+      } else if (
+        response.data.type === 'automatic'
+        && _.findWhere(templatesCategories, { name: response.data.options.group })
+      ) {
+        selectedTab = response.data.options.group;
       }
     }).fail((response) => {
       if (response.errors.length > 0) {
