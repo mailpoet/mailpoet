@@ -26,7 +26,7 @@ class StructureTransformer {
       $top_ancestor = DOMUtil::findTopAncestor($item);
       $offset = $top_ancestor->index();
 
-      if($item->hasParent('a')) {
+      if($item->hasParent('a') || $item->hasParent('figure')) {
         $item = $item->parent;
       }
 
@@ -40,8 +40,21 @@ class StructureTransformer {
    */
   private function transformTagsToBlocks($root, $image_full_width) {
     return array_map(function($item) use ($image_full_width) {
-      if($item->tag === 'img' || $item->tag === 'a' && $item->query('img')) {
+      if($item->tag === 'img' || in_array($item->tag, ['a', 'figure'], true) && $item->query('img')) {
         $image = $item->tag === 'img' ? $item : $item->query('img')[0];
+
+        // when <figure> exist, it carries align class, otherwise it's on <img>
+        $alignItem = $item->tag === 'figure' ? $item : $image;
+        if($alignItem->hasClass('aligncenter')) {
+          $align = 'center';
+        } elseif($alignItem->hasClass('alignleft')) {
+          $align = 'left';
+        } elseif($alignItem->hasClass('alignright')) {
+          $align = 'right';
+        } else {
+          $align = 'left';
+        }
+
         $width = $image->getAttribute('width');
         $height = $image->getAttribute('height');
         return array(
@@ -54,7 +67,7 @@ class StructureTransformer {
           'height' => $height === null ? 'auto' : $height,
           'styles' => array(
             'block' => array(
-              'textAlign' => 'center',
+              'textAlign' => $align,
             ),
           ),
         );
