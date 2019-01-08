@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.17.1
+Stable tag: 3.17.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,10 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.17.2 - 2019-01-08 =
+* Fixed: possible conflict with other plugins using webpack. Thanks, Julien;
+* Fixed: creating a new WooCommerce email now defaults to the Woo template page tab instead of standard templates tab;
 
 = 3.17.1 - 2018-12-19 =
 * Fixed: premium plugin crash; Thanks, Sebastian!
