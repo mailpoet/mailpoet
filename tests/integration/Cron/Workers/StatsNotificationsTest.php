@@ -7,6 +7,7 @@ use MailPoet\Cron\Workers\StatsNotifications;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
+use MailPoet\Models\StatsNotification;
 
 class StatsNotificationsTest extends \MailPoetTest {
 
@@ -24,9 +25,9 @@ class StatsNotificationsTest extends \MailPoetTest {
   function testShouldSchedule() {
     $newsletter_id = 5;
     $this->stats_notifications->schedule($newsletter_id);
-    $queue = SendingQueue::where('newsletter_id', $newsletter_id)->findOne();
-    expect($queue)->isInstanceOf(SendingQueue::class);
-    $task = ScheduledTask::where('id', $queue->task_id)->findOne();
+    $notification = StatsNotification::where('newsletter_id', $newsletter_id)->findOne();
+    expect($notification)->isInstanceOf(StatsNotification::class);
+    $task = ScheduledTask::where('id', $notification->task_id)->findOne();
     expect($task)->isInstanceOf(ScheduledTask::class);
   }
 

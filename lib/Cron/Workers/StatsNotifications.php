@@ -6,13 +6,12 @@ use Carbon\Carbon;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
+use MailPoet\Models\StatsNotification;
 
 
 /**
  * TODO:
  * - finish stats_notifications table, test if it is working and the migration is creating the table
- * - remove all the SendingQueue from here
- * - in schedule method add a row to stats_notifications table
  * - when sending of post notification or a standard newsletter is finished call schedule
  * - add processing of this task to Daemon
  * - check JIRA what to do next and how to send the newsletter
@@ -41,10 +40,10 @@ class StatsNotifications {
     $task->scheduled_at = $this->getNextRunDate();
     $task->save();
 
-    $queue = SendingQueue::create();
-    $queue->newsletter_id = $newsletter_id;
-    $queue->task_id = $task->id;
-    $queue->save();
+    $stats_notifications = StatsNotification::create();
+    $stats_notifications->newsletter_id = $newsletter_id;
+    $stats_notifications->task_id = $task->id;
+    $stats_notifications->save();
   }
 
   function process() {
@@ -80,9 +79,9 @@ class StatsNotifications {
 
   private function isTaskScheduled($newsletter_id) {
     $existing = ScheduledTask::table_alias('tasks')
-      ->join(SendingQueue::$_table, 'tasks.id = queues.task_id', 'queues')
+      ->join(StatsNotification::$_table, 'tasks.id = notification.task_id', 'notification')
       ->where('tasks.type', self::TASK_TYPE)
-      ->where('queues.newsletter_id', $newsletter_id)
+      ->where('notification.newsletter_id', $newsletter_id)
       ->findMany();
     return (bool) $existing;
   }

@@ -98,8 +98,6 @@
           } else {
             $('#settings_subscriber_email_notification_error').hide();
           }
-          console.log("whatever");
-          // if new subscriber notification is enabled but sender is empty, show error
           var stats_notifications_enabled = $('input[name="stats_notifications[enabled]"]:checked').val(),
             stats_notifications_address = $('input[name="stats_notifications[address]"]').val().trim();
           if (stats_notifications_enabled && stats_notifications_address == '') {
