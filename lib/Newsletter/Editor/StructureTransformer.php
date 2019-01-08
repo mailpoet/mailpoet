@@ -39,6 +39,13 @@ class StructureTransformer {
    * turns other root children into text blocks
    */
   private function transformTagsToBlocks($root, $image_full_width) {
+    $children = array_filter($root->children, function ($item) {
+      if($item->tag === 'figure' && !$item->query('img')) {
+        return false; // filter out figures without images
+      }
+      return true;
+    });
+
     return array_map(function($item) use ($image_full_width) {
       if($item->tag === 'img' || in_array($item->tag, ['a', 'figure'], true) && $item->query('img')) {
         $image = $item->tag === 'img' ? $item : $item->query('img')[0];
@@ -78,7 +85,7 @@ class StructureTransformer {
         );
       }
 
-    }, $root->children);
+    }, $children);
   }
 
   /**
