@@ -9,10 +9,8 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatsNotification;
 
-
 /**
  * TODO:
- * - only schedule for post notification and standard, need to do check here
  * - add processing of this task to Daemon
  * - check JIRA what to do next and how to send the newsletter
  * - see \MailPoet\Subscribers\NewSubscriberNotificationMailer how to send an email, now with DI everything should be easy
@@ -57,6 +55,9 @@ class StatsNotifications {
     if($this->isTaskScheduled($newsletter->id)) {
       return false;
     }
+    if(($newsletter->type !== Newsletter::TYPE_NOTIFICATION) && ($newsletter->type !== Newsletter::TYPE_STANDARD)) {
+      return false;
+    }
     return true;
   }
 
@@ -83,7 +84,7 @@ class StatsNotifications {
       ->where('tasks.type', self::TASK_TYPE)
       ->where('notification.newsletter_id', $newsletter_id)
       ->findMany();
-    return (bool) $existing;
+    return (bool)$existing;
   }
 
   private function getNextRunDate() {

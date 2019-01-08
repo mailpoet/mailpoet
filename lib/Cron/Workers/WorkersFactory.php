@@ -26,7 +26,11 @@ class WorkersFactory {
 
   /** @return SendingQueueWorker */
   function createQueueWorker($timer) {
-    return new SendingQueueWorker($this->sending_error_handler, $timer);
+    return new SendingQueueWorker($this->sending_error_handler, $this->createStatsNotificationsWorker(), $timer);
+  }
+
+  function createStatsNotificationsWorker() {
+    return new StatsNotifications();
   }
 
   /** @return SendingServiceKeyCheckWorker */
