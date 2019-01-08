@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Editor;
 
 use pQuery;
+use pQuery\DomNode;
 use MailPoet\Util\DOM as DOMUtil;
 
 if(!defined('ABSPATH')) exit;
@@ -21,12 +22,12 @@ class StructureTransformer {
    * Hoists images to root level, preserves order by splitting neighboring
    * elements and inserts tags as children of top ancestor
    */
-  protected function hoistImagesToRoot($root) {
+  protected function hoistImagesToRoot(DomNode $root) {
     foreach($root->query('img') as $item) {
       $top_ancestor = DOMUtil::findTopAncestor($item);
       $offset = $top_ancestor->index();
 
-      if($item->hasParent('a')) {
+      if($item->hasParent('a') || $item->hasParent('figure')) {
         $item = $item->parent;
       }
 
@@ -38,22 +39,16 @@ class StructureTransformer {
    * Transforms HTML tags into their respective JSON objects,
    * turns other root children into text blocks
    */
-  private function transformTagsToBlocks($root, $image_full_width) {
+  private function transformTagsToBlocks(DomNode $root, $image_full_width) {
+    $children = $this->filterOutFiguresWithoutImages($root->children);
     return array_map(function($item) use ($image_full_width) {
-      if($item->tag === 'img' || $item->tag === 'a' && $item->query('img')) {
-        if($item->tag === 'a') {
-          $link = $item->getAttribute('href');
-          $image = $item->children[0];
-        } else {
-          $link = '';
-          $image = $item;
-        }
-
+      if($this->isImageElement($item)) {
+        $image = $item->tag === 'img' ? $item : $item->query('img')[0];
         $width = $image->getAttribute('width');
         $height = $image->getAttribute('height');
         return array(
           'type' => 'image',
-          'link' => $link,
+          'link' => $item->getAttribute('href') ?: '',
           'src' => $image->getAttribute('src'),
           'alt' => $image->getAttribute('alt'),
           'fullWidth' => $image_full_width,
@@ -61,7 +56,7 @@ class StructureTransformer {
           'height' => $height === null ? 'auto' : $height,
           'styles' => array(
             'block' => array(
-              'textAlign' => 'center',
+              'textAlign' => $this->getImageAlignment($image),
             ),
           ),
         );
@@ -72,14 +67,42 @@ class StructureTransformer {
         );
       }
 
-    }, $root->children);
+    }, $children);
+  }
+
+  private function filterOutFiguresWithoutImages(array $items) {
+    $items = array_filter($items, function (DomNode $item) {
+      if($item->tag === 'figure' && !$item->query('img')) {
+        return false;
+      }
+      return true;
+    });
+    return array_values($items);
+  }
+
+  private function isImageElement(DomNode $item) {
+    return $item->tag === 'img' || (in_array($item->tag, ['a', 'figure'], true) && $item->query('img'));
+  }
+
+  private function getImageAlignment(DomNode $image) {
+    $alignItem = $image->hasParent('figure') ? $image->parent : $image;
+    if($alignItem->hasClass('aligncenter')) {
+      $align = 'center';
+    } elseif($alignItem->hasClass('alignleft')) {
+      $align = 'left';
+    } elseif($alignItem->hasClass('alignright')) {
+      $align = 'right';
+    } else {
+      $align = 'left';
+    }
+    return $align;
   }
 
   /**
    * Merges neighboring blocks when possible.
    * E.g. 2 adjacent text blocks may be combined into one.
    */
-  private function mergeNeighboringBlocks($structure) {
+  private function mergeNeighboringBlocks(array $structure) {
     $updated_structure = array();
     $text_accumulator = '';
     foreach($structure as $item) {
