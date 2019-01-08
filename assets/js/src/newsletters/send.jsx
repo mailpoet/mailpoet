@@ -295,7 +295,8 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
         MailPoet.I18n.t('newsletterUpdated')
       );
     }).done(() => {
-      this.props.history.push(`/${this.state.item.type || ''}`);
+      const path = this.state.item.type === 'automatic' ? this.state.item.options.group : this.state.item.type;
+      this.props.history.push(`/${path || ''}`);
     }).fail((err) => {
       this.showError(err);
     });
