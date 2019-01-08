@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Editor;
 
 use pQuery;
+use pQuery\DomNode;
 use MailPoet\Util\DOM as DOMUtil;
 
 if(!defined('ABSPATH')) exit;
@@ -39,29 +40,10 @@ class StructureTransformer {
    * turns other root children into text blocks
    */
   private function transformTagsToBlocks($root, $image_full_width) {
-    $children = array_filter($root->children, function ($item) {
-      if($item->tag === 'figure' && !$item->query('img')) {
-        return false; // filter out figures without images
-      }
-      return true;
-    });
-
+    $children = $this->filterOutFiguresWithoutImages($root->children);
     return array_map(function($item) use ($image_full_width) {
-      if($item->tag === 'img' || in_array($item->tag, ['a', 'figure'], true) && $item->query('img')) {
+      if($this->isImageElement($item)) {
         $image = $item->tag === 'img' ? $item : $item->query('img')[0];
-
-        // when <figure> exist, it carries align class, otherwise it's on <img>
-        $alignItem = $item->tag === 'figure' ? $item : $image;
-        if($alignItem->hasClass('aligncenter')) {
-          $align = 'center';
-        } elseif($alignItem->hasClass('alignleft')) {
-          $align = 'left';
-        } elseif($alignItem->hasClass('alignright')) {
-          $align = 'right';
-        } else {
-          $align = 'left';
-        }
-
         $width = $image->getAttribute('width');
         $height = $image->getAttribute('height');
         return array(
@@ -74,7 +56,7 @@ class StructureTransformer {
           'height' => $height === null ? 'auto' : $height,
           'styles' => array(
             'block' => array(
-              'textAlign' => $align,
+              'textAlign' => $this->getImageAlignment($image),
             ),
           ),
         );
@@ -86,6 +68,34 @@ class StructureTransformer {
       }
 
     }, $children);
+  }
+
+  private function filterOutFiguresWithoutImages(array $items) {
+    $items = array_filter($items, function (DomNode $item) {
+      if($item->tag === 'figure' && !$item->query('img')) {
+        return false;
+      }
+      return true;
+    });
+    return array_values($items);
+  }
+
+  private function isImageElement(DomNode $item) {
+    return $item->tag === 'img' || (in_array($item->tag, ['a', 'figure'], true) && $item->query('img'));
+  }
+
+  private function getImageAlignment(DomNode $image) {
+    $alignItem = $image->hasParent('figure') ? $image->parent : $image;
+    if($alignItem->hasClass('aligncenter')) {
+      $align = 'center';
+    } elseif($alignItem->hasClass('alignleft')) {
+      $align = 'left';
+    } elseif($alignItem->hasClass('alignright')) {
+      $align = 'right';
+    } else {
+      $align = 'left';
+    }
+    return $align;
   }
 
   /**
