@@ -22,7 +22,7 @@ class StructureTransformer {
    * Hoists images to root level, preserves order by splitting neighboring
    * elements and inserts tags as children of top ancestor
    */
-  protected function hoistImagesToRoot($root) {
+  protected function hoistImagesToRoot(DomNode $root) {
     foreach($root->query('img') as $item) {
       $top_ancestor = DOMUtil::findTopAncestor($item);
       $offset = $top_ancestor->index();
@@ -39,7 +39,7 @@ class StructureTransformer {
    * Transforms HTML tags into their respective JSON objects,
    * turns other root children into text blocks
    */
-  private function transformTagsToBlocks($root, $image_full_width) {
+  private function transformTagsToBlocks(DomNode $root, $image_full_width) {
     $children = $this->filterOutFiguresWithoutImages($root->children);
     return array_map(function($item) use ($image_full_width) {
       if($this->isImageElement($item)) {
@@ -102,7 +102,7 @@ class StructureTransformer {
    * Merges neighboring blocks when possible.
    * E.g. 2 adjacent text blocks may be combined into one.
    */
-  private function mergeNeighboringBlocks($structure) {
+  private function mergeNeighboringBlocks(array $structure) {
     $updated_structure = array();
     $text_accumulator = '';
     foreach($structure as $item) {
