@@ -54,6 +54,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Cron
     $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\WorkersFactory::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler::class)->setPublic(true);
     // Listing
     $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);

@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
@@ -11,8 +12,7 @@ use MailPoet\Models\StatsNotification;
 
 /**
  * TODO:
- * - finish stats_notifications table, test if it is working and the migration is creating the table
- * - when sending of post notification or a standard newsletter is finished call schedule
+ * - only schedule for post notification and standard, need to do check here
  * - add processing of this task to Daemon
  * - check JIRA what to do next and how to send the newsletter
  * - see \MailPoet\Subscribers\NewSubscriberNotificationMailer how to send an email, now with DI everything should be easy
@@ -29,8 +29,8 @@ class StatsNotifications {
    */
   const HOURS_TO_SEND_AFTER_NEWSLETTER = 24;
 
-  function schedule($newsletter_id) {
-    if(!$this->shouldSchedule($newsletter_id)) {
+  function schedule(Newsletter $newsletter) {
+    if(!$this->shouldSchedule($newsletter)) {
       return false;
     }
 
@@ -41,7 +41,7 @@ class StatsNotifications {
     $task->save();
 
     $stats_notifications = StatsNotification::create();
-    $stats_notifications->newsletter_id = $newsletter_id;
+    $stats_notifications->newsletter_id = $newsletter->id;
     $stats_notifications->task_id = $task->id;
     $stats_notifications->save();
   }
@@ -50,11 +50,11 @@ class StatsNotifications {
 
   }
 
-  private function shouldSchedule($newsletter_id) {
+  private function shouldSchedule(Newsletter $newsletter) {
     if($this->isDisabled()) {
       return false;
     }
-    if($this->isTaskScheduled($newsletter_id)) {
+    if($this->isTaskScheduled($newsletter->id)) {
       return false;
     }
     return true;

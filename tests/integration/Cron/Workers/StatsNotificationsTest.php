@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
-use Carbon\Carbon;
 use MailPoet\Cron\Workers\StatsNotifications;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
@@ -24,7 +24,8 @@ class StatsNotificationsTest extends \MailPoetTest {
 
   function testShouldSchedule() {
     $newsletter_id = 5;
-    $this->stats_notifications->schedule($newsletter_id);
+    $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id]);
+    $this->stats_notifications->schedule($newsletter);
     $notification = StatsNotification::where('newsletter_id', $newsletter_id)->findOne();
     expect($notification)->isInstanceOf(StatsNotification::class);
     $task = ScheduledTask::where('id', $notification->task_id)->findOne();
@@ -37,7 +38,8 @@ class StatsNotificationsTest extends \MailPoetTest {
       'enabled' => false,
       'address' => 'email@example.com'
     ]);
-    $this->stats_notifications->schedule($newsletter_id);
+    $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id]);
+    $this->stats_notifications->schedule($newsletter);
     $queue = SendingQueue::where('newsletter_id', $newsletter_id)->findOne();
     expect($queue)->isEmpty();
   }
@@ -45,7 +47,8 @@ class StatsNotificationsTest extends \MailPoetTest {
   function testShouldNotScheduleIfSettingsMissing() {
     $newsletter_id = 7;
     Setting::setValue(StatsNotifications::SETTINGS_KEY, []);
-    $this->stats_notifications->schedule($newsletter_id);
+    $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id]);
+    $this->stats_notifications->schedule($newsletter);
     $queue = SendingQueue::where('newsletter_id', $newsletter_id)->findOne();
     expect($queue)->isEmpty();
   }
@@ -55,7 +58,8 @@ class StatsNotificationsTest extends \MailPoetTest {
     Setting::setValue(StatsNotifications::SETTINGS_KEY, [
       'enabled' => true,
     ]);
-    $this->stats_notifications->schedule($newsletter_id);
+    $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id]);
+    $this->stats_notifications->schedule($newsletter);
     $queue = SendingQueue::where('newsletter_id', $newsletter_id)->findOne();
     expect($queue)->isEmpty();
   }
@@ -66,7 +70,8 @@ class StatsNotificationsTest extends \MailPoetTest {
       'enabled' => true,
       'address' => ' '
     ]);
-    $this->stats_notifications->schedule($newsletter_id);
+    $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id]);
+    $this->stats_notifications->schedule($newsletter);
     $queue = SendingQueue::where('newsletter_id', $newsletter_id)->findOne();
     expect($queue)->isEmpty();
   }
@@ -82,7 +87,8 @@ class StatsNotificationsTest extends \MailPoetTest {
       'newsletter_id' => $newsletter_id,
       'task_id' => $existing_task->id,
     ]);
-    $this->stats_notifications->schedule($newsletter_id);
+    $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id]);
+    $this->stats_notifications->schedule($newsletter);
     $queues = SendingQueue::where('newsletter_id', $newsletter_id)->findMany();
     expect($queues)->count(1);
     $tasks = ScheduledTask::where('id', $queues[0]->task_id)->findMany();
