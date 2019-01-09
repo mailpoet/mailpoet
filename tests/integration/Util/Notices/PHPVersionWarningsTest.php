@@ -33,12 +33,12 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   function testItPrintsWarningFor56() {
     $mock = Mock::double('MailPoet\WP\Notice', [
-      'displayError' => function($message, $classes, $data_notice_name) {
+      'displayWarning' => function($message, $classes, $data_notice_name) {
         return $message;
       }
     ]);
     $warning = $this->phpVersionWarning->init('5.6.3', true);
-    $mock->verifyInvoked('displayError');
+    $mock->verifyInvoked('displayWarning');
     expect($warning)->contains('Your website is running on PHP 5.6.3');
     expect($warning)->contains('https://www.mailpoet.com/let-us-handle-your-php-upgrade/');
   }
