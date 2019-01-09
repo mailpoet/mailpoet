@@ -1,14 +1,14 @@
-var webpack = require('webpack');
-var webpackManifestPlugin = require('webpack-manifest-plugin');
-var webpackCleanPlugin = require('clean-webpack-plugin');
-var webpackTerserPlugin = require('terser-webpack-plugin');
-var path = require('path');
-var globalPrefix = 'MailPoetLib';
-var PRODUCTION_ENV = process.env.NODE_ENV === 'production';
-var manifestSeed = {};
+const webpack = require('webpack');
+const webpackManifestPlugin = require('webpack-manifest-plugin');
+const webpackCleanPlugin = require('clean-webpack-plugin');
+const webpackTerserPlugin = require('terser-webpack-plugin');
+const path = require('path');
+const globalPrefix = 'MailPoetLib';
+const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
+const manifestSeed = {};
 
 // Base config
-var baseConfig = {
+const baseConfig = {
   mode: PRODUCTION_ENV ? 'production' : 'development',
   cache: true,
   context: __dirname,
@@ -232,7 +232,7 @@ var baseConfig = {
 };
 
 // Admin config
-var adminConfig = {
+const adminConfig = {
   name: 'admin',
   entry: {
     vendor: 'webpack_vendor_index.jsx',
@@ -291,7 +291,7 @@ var adminConfig = {
 };
 
 // Public config
-var publicConfig = {
+const publicConfig = {
   name: 'public',
   entry: {
     public: 'webpack_public_index.jsx',
@@ -311,7 +311,7 @@ var publicConfig = {
 };
 
 // Migrator config
-var migratorConfig = {
+const migratorConfig = {
   name: 'mp2migrator',
   entry: {
     mp2migrator: [
@@ -325,7 +325,7 @@ var migratorConfig = {
 };
 
 // Test config
-var testConfig = {
+const testConfig = {
   name: 'test',
   entry: {
     vendor: 'webpack_vendor_index.jsx',
