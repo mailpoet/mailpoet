@@ -5,7 +5,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
-use MailPoet\Cron\Workers\StatsNotifications;
+use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
 use MailPoet\Logging\Logger;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
@@ -26,15 +26,15 @@ class SendingQueue {
   const BATCH_SIZE = 20;
   const TASK_BATCH_SIZE = 5;
 
-  /** @var StatsNotifications */
-  public $stats_notifications_worker;
+  /** @var StatsNotificationsScheduler */
+  public $stats_notifications_scheduler;
 
   /** @var SendingErrorHandler */
   private $error_handler;
 
-  function __construct(SendingErrorHandler $error_handler, StatsNotifications $stats_notifications_worker, $timer = false, $mailer_task = false, $newsletter_task = false) {
+  function __construct(SendingErrorHandler $error_handler, StatsNotificationsScheduler $stats_notifications_scheduler, $timer = false, $mailer_task = false, $newsletter_task = false) {
     $this->error_handler = $error_handler;
-    $this->stats_notifications_worker = $stats_notifications_worker;
+    $this->stats_notifications_scheduler = $stats_notifications_scheduler;
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
     $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -103,7 +103,7 @@ class SendingQueue {
         );
         if($queue->status === ScheduledTaskModel::STATUS_COMPLETED) {
           $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
-          $this->stats_notifications_worker->schedule($newsletter);
+          $this->stats_notifications_scheduler->schedule($newsletter);
         }
         $this->enforceSendingAndExecutionLimits();
       }

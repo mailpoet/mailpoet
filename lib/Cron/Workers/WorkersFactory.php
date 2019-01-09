@@ -2,9 +2,11 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
+use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
@@ -26,11 +28,17 @@ class WorkersFactory {
 
   /** @return SendingQueueWorker */
   function createQueueWorker($timer) {
-    return new SendingQueueWorker($this->sending_error_handler, $this->createStatsNotificationsWorker(), $timer);
+    return new SendingQueueWorker($this->sending_error_handler, $this->createStatsNotificationsWorker($timer), $timer);
   }
 
-  function createStatsNotificationsWorker() {
-    return new StatsNotifications();
+  function createStatsNotificationsWorker($timer) {
+    //TODO get those from DI
+    $caching = !WP_DEBUG;
+    $debugging = WP_DEBUG;
+    $this->renderer = new Renderer($caching, $debugging);
+    $this->mailer = new \MailPoet\Mailer\Mailer();
+
+    return new StatsNotificationsWorker($this->mailer, $this->renderer, $timer);
   }
 
   /** @return SendingServiceKeyCheckWorker */

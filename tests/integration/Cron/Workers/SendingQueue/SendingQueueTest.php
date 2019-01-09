@@ -12,7 +12,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
-use MailPoet\Cron\Workers\StatsNotifications;
+use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -37,7 +37,7 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var SendingErrorHandler */
   private $sending_error_handler;
 
-  /** @var StatsNotifications */
+  /** @var Scheduler */
   private $stats_notifications_worker;
 
   function _before() {
@@ -80,7 +80,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter_link->hash = 'abcde';
     $this->newsletter_link->save();
     $this->sending_error_handler = new SendingErrorHandler();
-    $this->stats_notifications_worker = new StatsNotifications();
+    $this->stats_notifications_worker = new StatsNotificationsScheduler();
     $this->sending_queue_worker = new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker);
   }
 

@@ -23,6 +23,7 @@ class Daemon {
       $this->executeMigrationWorker();
       $this->executeScheduleWorker();
       $this->executeQueueWorker();
+      $this->executeStatsNotificationsWorker();
       $this->executeSendingServiceKeyCheckWorker();
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
@@ -41,6 +42,11 @@ class Daemon {
   function executeQueueWorker() {
     $queue = $this->workers_factory->createQueueWorker($this->timer);
     return $queue->process();
+  }
+
+  function executeStatsNotificationsWorker() {
+    $worker = $this->workers_factory->createStatsNotificationsWorker($this->timer);
+    return $worker->process();
   }
 
   function executeSendingServiceKeyCheckWorker() {

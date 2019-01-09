@@ -1,25 +1,14 @@
 <?php
 
-namespace MailPoet\Cron\Workers;
+namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatsNotification;
 
-/**
- * TODO:
- * - add processing of this task to Daemon
- * - check JIRA what to do next and how to send the newsletter
- * - see \MailPoet\Subscribers\NewSubscriberNotificationMailer how to send an email, now with DI everything should be easy
- */
-
-class StatsNotifications {
-
-  const TASK_TYPE = 'stats_notification';
-  const SETTINGS_KEY = 'stats_notifications';
+class Scheduler {
 
   /**
    * How many hours after the newsletter will be the stats notification sent
@@ -33,7 +22,7 @@ class StatsNotifications {
     }
 
     $task = ScheduledTask::create();
-    $task->type = self::TASK_TYPE;
+    $task->type = Worker::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->scheduled_at = $this->getNextRunDate();
     $task->save();
@@ -42,10 +31,6 @@ class StatsNotifications {
     $stats_notifications->newsletter_id = $newsletter->id;
     $stats_notifications->task_id = $task->id;
     $stats_notifications->save();
-  }
-
-  function process() {
-
   }
 
   private function shouldSchedule(Newsletter $newsletter) {
@@ -62,7 +47,7 @@ class StatsNotifications {
   }
 
   private function isDisabled() {
-    $settings = Setting::getValue(self::SETTINGS_KEY);
+    $settings = Setting::getValue(Worker::SETTINGS_KEY);
     if(!is_array($settings)) {
       return true;
     }
@@ -81,7 +66,7 @@ class StatsNotifications {
   private function isTaskScheduled($newsletter_id) {
     $existing = ScheduledTask::table_alias('tasks')
       ->join(StatsNotification::$_table, 'tasks.id = notification.task_id', 'notification')
-      ->where('tasks.type', self::TASK_TYPE)
+      ->where('tasks.type', Worker::TASK_TYPE)
       ->where('notification.newsletter_id', $newsletter_id)
       ->findMany();
     return (bool)$existing;
