@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 var webpackManifestPlugin = require('webpack-manifest-plugin');
 var webpackCleanPlugin = require('clean-webpack-plugin');
-var webpackUglifyJsPlugin = require('uglifyjs-webpack-plugin');
+var webpackTerserPlugin = require('terser-webpack-plugin');
 var _ = require('underscore');
 var path = require('path');
 var globalPrefix = 'MailPoetLib';
@@ -19,8 +19,8 @@ var baseConfig = {
   },
   optimization: {
     minimizer: [
-      new webpackUglifyJsPlugin({
-        uglifyOptions: {
+      new webpackTerserPlugin({
+        terserOptions: {
           mangle: false,
         },
       }),
