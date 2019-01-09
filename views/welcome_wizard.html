@@ -3,6 +3,7 @@
 <% block content %>
 <script>
   var mailpoet_logo_url = '<%= cdn_url('welcome-wizard/mailpoet-logo.20190109-1400.png') %>';
+  var email_course_illustration = '<%= cdn_url('welcome-wizard/wizard-email-course.20190109-1400.png') %>';
   var woocommerce_screenshot_url = '<%= cdn_url('welcome-wizard/woocommerce-auto-emails-tilted.20181121-1440.png') %>';
   var is_mp2_migration_complete = <%=  json_encode(is_mp2_migration_complete) %>;
   var is_woocommerce_active = <%= json_encode(is_woocommerce_active)  %>;
@@ -25,12 +26,11 @@
 'welcomeWizardSenderMigratedUserText': __('We have a few things to tell you before you begin to ensure you have a good experience.'),
 'welcomeWizardUsageTrackingStepTitle': __('Help MailPoet improve with usage tracking.'),
 'welcomeWizardWooCommerceStepTitle': __('Automate your WooCommerce emails.'),
-'welcomeWizardYouCanContactText': _x('You can [strong]contact[/strong] our team and search our documentation thanks to the blue icon in the bottom right corner.', 'Don’t translate [strong] placeholder'),
-'welcomeWizardAboutVideosText': _x('You’ll find brief [strong]instructional videos[/strong] in English throughout our interface.', 'Don’t translate [strong] placeholder'),
-'welcomeWizardAboutCourseText': _x('Sign up to our 4-part [strong]email course[/strong]. A must for every beginner.', 'Don’t translate [strong] placeholder'),
 'welcomeWizardTrackingText': __('Gathering usage data allows us to make MailPoet better — the way you use MailPoet will be considered as we evaluate new features, judge the quality of an update, or determine if an improvement makes sense. [link]Read more about what we collect[/link].'),
 'welcomeWizardHelpingShopOwnersText': __('We’re making it easier for shop owners to send emails to their customers and make more money.'),
 'welcomeWizardWooCommerceEmailsText': __('Create a new email to find the WooCommerce type of emails:'),
+'welcomeWizardEmailCourseTitle': __('Sign up to our 4-part email course'),
+'welcomeWizardEmailCourseText': __('A must for every beginner (in English only)'),
 'seeVideoGuide': _x('See video guide', 'A label on a button'),
 'skip': _x('Skip', 'A label on a skip button'),
 'noThanksSkip': _x('No thanks. Skip.', 'A label on a skip button'),

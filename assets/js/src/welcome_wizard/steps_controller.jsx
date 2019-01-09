@@ -4,7 +4,7 @@ import MailPoet from 'mailpoet';
 import WelcomeWizardHeader from './header.jsx';
 import WelcomeWizardSenderStep from './steps/sender_step.jsx';
 import WelcomeWizardMigratedUserStep from './steps/migrated_user_step.jsx';
-import WelcomeWizardHelpInfoStep from './steps/help_info_step.jsx';
+import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
 import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
 import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
 
@@ -109,8 +109,9 @@ class WelcomeWizardStepsController extends React.Component {
         }
 
         { step === 2 ?
-          <WelcomeWizardHelpInfoStep
+          <WelcomeWizardEmailCourseStep
             next={() => this.props.history.push('/steps/3')}
+            illustration_url={window.email_course_illustration}
           /> : null
         }
 
