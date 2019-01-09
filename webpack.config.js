@@ -2,7 +2,6 @@ var webpack = require('webpack');
 var webpackManifestPlugin = require('webpack-manifest-plugin');
 var webpackCleanPlugin = require('clean-webpack-plugin');
 var webpackTerserPlugin = require('terser-webpack-plugin');
-var _ = require('underscore');
 var path = require('path');
 var globalPrefix = 'MailPoetLib';
 var PRODUCTION_ENV = process.env.NODE_ENV === 'production';
@@ -395,7 +394,7 @@ var testConfig = {
   }
 };
 
-module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], (config) => {
+module.exports = [adminConfig, publicConfig, migratorConfig, testConfig].map((config) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
@@ -404,5 +403,5 @@ module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], 
       })
     );
   }
-  return _.extend({}, baseConfig, config);
+  return Object.assign({}, baseConfig, config);
 });
