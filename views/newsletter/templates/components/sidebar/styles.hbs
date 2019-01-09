@@ -2,7 +2,7 @@
 <h3><%= __('Styles') %></h3>
 <div class="mailpoet_region_content">
     <form id="mailpoet_newsletter_styles" action="" method="post" accept-charset="utf-8">
-        <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field mailpoet_form_narrow_select2">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="text-color" value="{{ model.text.fontColor }}" id="mailpoet_text_font_color"></span>
             </span>
@@ -24,7 +24,7 @@
             {{/each}}
             </select> <%= __('Text') %>
         </div>
-        <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field mailpoet_form_narrow_select2">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="h1-color" value="{{ model.h1.fontColor }}" id="mailpoet_h1_font_color"></span>
             </span>
@@ -46,7 +46,7 @@
             {{/each}}
             </select> <%= __('Heading 1') %>
         </div>
-        <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field mailpoet_form_narrow_select2">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="h2-color" value="{{ model.h2.fontColor }}" id="mailpoet_h2_font_color"></span>
             </span>
@@ -68,7 +68,7 @@
             {{/each}}
             </select> <%= __('Heading 2') %>
         </div>
-        <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field mailpoet_form_narrow_select2">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="h3-color" value="{{ model.h3.fontColor }}" id="mailpoet_h3_font_color"></span>
             </span>
@@ -90,7 +90,7 @@
             {{/each}}
             </select> <%= __('Heading 3') %>
         </div>
-        <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field mailpoet_form_narrow_select2">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="link-color" value="{{ model.link.fontColor }}" id="mailpoet_a_font_color"></span>
             </span><%= __('Links') %> <label><input type="checkbox" name="underline" value="underline" id="mailpoet_a_font_underline" {{#ifCond model.link.textDecoration '==' 'underline'}}CHECKED{{/ifCond}} class="mailpoet_option_offset_left_small"/> <%= __('Underline') %></label>
