@@ -1,21 +1,30 @@
 var webpack = require('webpack');
 var webpackManifestPlugin = require('webpack-manifest-plugin');
-var webpackMD5HashPlugin = require('webpack-md5-hash');
 var webpackCleanPlugin = require('clean-webpack-plugin');
 var webpackUglifyJsPlugin = require('uglifyjs-webpack-plugin');
 var _ = require('underscore');
 var path = require('path');
 var globalPrefix = 'MailPoetLib';
 var PRODUCTION_ENV = process.env.NODE_ENV === 'production';
-var manifestCache = {};
+var manifestSeed = {};
 
 // Base config
 var baseConfig = {
+  mode: PRODUCTION_ENV ? 'production' : 'development',
   cache: true,
   context: __dirname,
   watchOptions: {
     aggregateTimeout: 300,
     poll: true
+  },
+  optimization: {
+    minimizer: [
+      new webpackUglifyJsPlugin({
+        uglifyOptions: {
+          mangle: false,
+        },
+      }),
+    ],
   },
   output: {
     path: path.join(__dirname, 'assets/js'),
@@ -49,7 +58,7 @@ var baseConfig = {
   plugins: [
     new webpackCleanPlugin([
       './assets/js/*.*',
-    ])
+    ]),
   ],
   module: {
     rules: [
@@ -252,20 +261,30 @@ var adminConfig = {
     form_editor: 'form_editor/webpack_index.jsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
   },
-  plugins: [
-    ...baseConfig.plugins,
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'admin_vendor',
-      fileName: 'admin_vendor.js',
-      chunks: ['admin', 'form_editor', 'newsletter_editor'],
-      minChunks: 2
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
+  optimization: {
+    runtimeChunk: {
       name: 'vendor',
-      fileName: 'vendor.js',
-      minChunks: Infinity
-    })
-  ],
+    },
+    splitChunks: {
+      cacheGroups: {
+        chunks: 'all',
+        default: false,
+        vendors: false,
+        vendor: {
+          name: 'vendor',
+          chunks: (chunk) => chunk.name === 'vendor',
+          priority: 1,
+          enforce: true,
+        },
+        admin_vendor: {
+          name: 'admin_vendor',
+          chunks: (chunk) => ['admin_vendor', 'admin', 'form_editor', 'newsletter_editor'].includes(chunk.name),
+          minChunks: 2,
+          priority: 0,
+        },
+      }
+    }
+  },
   externals: {
     'jquery': 'jQuery',
     'tinymce': 'tinymce'
@@ -305,6 +324,7 @@ var migratorConfig = {
     'mailpoet': 'MailPoet'
   }
 };
+
 // Test config
 var testConfig = {
   name: 'test',
@@ -370,23 +390,12 @@ var testConfig = {
   }
 };
 
-module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], function (config) {
+module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], (config) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
-    if (PRODUCTION_ENV) {
-      config.plugins.push(
-        new webpackUglifyJsPlugin({
-          mangle: false,
-        }),
-        new webpack.DefinePlugin({
-          'process.env.NODE_ENV': JSON.stringify('production')
-        }),
-      );
-    }
     config.plugins.push(
-      new webpackMD5HashPlugin(),
       new webpackManifestPlugin({
-        cache: manifestCache
+        seed: manifestSeed,
       })
     );
   }
