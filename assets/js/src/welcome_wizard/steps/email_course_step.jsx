@@ -23,7 +23,6 @@ const WelcomeWizardEmailCourseStep = props => (
         className="mailpoet_form_iframe"
         marginWidth="0"
         marginHeight="0"
-        allowtransparency="true" // eslint-disable-line react/no-unknown-property
       />
     </div>
     <button className="button button-primary" onClick={props.next}>{MailPoet.I18n.t('next')}</button>
