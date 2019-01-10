@@ -21,9 +21,9 @@ class Daemon {
     CronHelper::saveDaemon($settings_daemon_data);
     try {
       $this->executeMigrationWorker();
+      $this->executeStatsNotificationsWorker();
       $this->executeScheduleWorker();
       $this->executeQueueWorker();
-      $this->executeStatsNotificationsWorker();
       $this->executeSendingServiceKeyCheckWorker();
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();

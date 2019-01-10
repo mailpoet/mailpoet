@@ -5,6 +5,15 @@ namespace MailPoet\Models;
 class StatsNotification extends Model {
   public static $_table = MP_STATS_NOTIFICATIONS_TABLE;
 
+  /** @return Newsletter */
+  public function newsletter() {
+    return $this->hasOne(
+      Newsletter::class,
+      'id',
+      'newsletter_id'
+    );
+  }
+
   /** @return StatsNotification */
   static function createOrUpdate($data = array()) {
     $model = null;
