@@ -275,10 +275,22 @@ const adminConfig = {
           priority: 1,
           enforce: true,
         },
-        admin_vendor: {
-          name: 'admin_vendor',
+        admin_vendor_chunk: {
+          name: 'admin_vendor_chunk',
+          test: (module, chunks) => {
+            // add all modules from 'admin_vendor' entrypoint
+            if (chunks.some((chunk) => chunk.name === 'admin_vendor')) {
+              return true;
+            }
+
+            // add admin/form_editor/newsletter_editor shared modules
+            const filteredChunks = chunks.filter((chunk) => {
+              return ['admin', 'form_editor', 'newsletter_editor'].includes(chunk.name);
+            });
+            return filteredChunks.length > 1;
+          },
+          enforce: true,
           chunks: (chunk) => ['admin_vendor', 'admin', 'form_editor', 'newsletter_editor'].includes(chunk.name),
-          minChunks: 2,
           priority: 0,
         },
       }
