@@ -382,6 +382,11 @@ var testConfig = {
       'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
     },
   },
+  resolveLoader: {
+    alias: {
+      'amd-inject-loader': path.join(__dirname, 'assets/js/src/amd-inject-loader-fixed.js'),
+    }
+  },
   externals: {
     'jquery': 'jQuery',
     'tinymce': 'tinymce',
