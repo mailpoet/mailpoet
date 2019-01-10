@@ -129,6 +129,41 @@ define([
         expect(view.$('.mailpoet_content')).to.have.length(1);
       });
 
+      describe('render', function () {
+        it('sets sizes to model from rendered image when they are null', function () {
+          const model = new (ImageBlock.ImageBlockModel)({ width: null, height: null });
+          const view = new (ImageBlock.ImageBlockView)({ model: model });
+          view.render();
+          view.$('.mailpoet_content img').get(0).width = 100;
+          view.$('.mailpoet_content img').get(0).height = 200;
+          view.$('.mailpoet_content img').trigger('load');
+          expect(view.model.get('width')).to.equal(100);
+          expect(view.model.get('height')).to.equal(200);
+        });
+
+        it('sets sizes to model from rendered image when they are set to auto', function () {
+          const model = new (ImageBlock.ImageBlockModel)({ width: 'auto', height: 'auto' });
+          const view = new (ImageBlock.ImageBlockView)({ model: model });
+          view.render();
+          view.$('.mailpoet_content img').get(0).width = 100;
+          view.$('.mailpoet_content img').get(0).height = 200;
+          view.$('.mailpoet_content img').trigger('load');
+          expect(view.model.get('width')).to.equal(100);
+          expect(view.model.get('height')).to.equal(200);
+        });
+
+        it('keeps sizes when they are already set', function () {
+          const model = new (ImageBlock.ImageBlockModel)({ width: 300, height: 400 });
+          const view = new (ImageBlock.ImageBlockView)({ model: model });
+          view.render();
+          view.$('.mailpoet_content img').get(0).width = 100;
+          view.$('.mailpoet_content img').get(0).height = 200;
+          view.$('.mailpoet_content img').trigger('load');
+          expect(view.model.get('width')).to.equal(300);
+          expect(view.model.get('height')).to.equal(400);
+        });
+      });
+
       describe('once rendered', function () {
         var model;
         var view;
