@@ -101,6 +101,11 @@ class Functions extends \Twig_Extension {
         'number_format_i18n',
         array('is_safe' => array('all'))
       ),
+      new \Twig_SimpleFunction(
+        'mailpoet_locale',
+        array($this, 'getTwoLettersLocale'),
+        array('is_safe' => array('all'))
+      ),
     );
   }
 
@@ -185,5 +190,9 @@ class Functions extends \Twig_Extension {
 
   function isRtl() {
     return is_rtl();
+  }
+
+  function getTwoLettersLocale() {
+    return explode('_', get_locale())[0];
   }
 }

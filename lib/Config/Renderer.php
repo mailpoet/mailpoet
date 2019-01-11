@@ -41,6 +41,7 @@ class Renderer {
     $this->setupHandlebars();
     $this->setupHelpscout();
     $this->setupAnalytics();
+    $this->setupPolls();
     $this->setupGlobalVariables();
     $this->setupSyntax();
   }
@@ -67,6 +68,10 @@ class Renderer {
 
   function setupAnalytics() {
     $this->renderer->addExtension(new Twig\Analytics());
+  }
+
+  function setupPolls() {
+    $this->renderer->addExtension(new Twig\Polls());
   }
 
   function setupGlobalVariables() {
