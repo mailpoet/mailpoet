@@ -18,5 +18,6 @@ class SettingsArchivePageCest {
     //see live page with shortcode output
     $I->click('View page');
     $I->waitForText($page_title);
+    $I->waitForElementVisible('.mailpoet_archive');
   }
 }
