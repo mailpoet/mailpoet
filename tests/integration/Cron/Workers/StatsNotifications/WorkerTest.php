@@ -170,7 +170,7 @@ class WorkerTest extends \MailPoetTest {
         $this->stringContains('statsNotification.html'),
         $this->callback(function($context){
           return ($context['topLink'] === 'Link url2')
-            && ($context['topLinkClicks'] === '2');
+            && ($context['topLinkClicks'] === 2);
         }));
 
     $this->stats_notifications->process();

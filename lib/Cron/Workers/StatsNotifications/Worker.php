@@ -42,9 +42,9 @@ class Worker {
       try {
         $this->mailer->send($this->constructNewsletter($task), $settings['address']);
       } catch(\Exception $e) {
-        //if(WP_DEBUG) {
+        if(WP_DEBUG) {
           throw $e;
-        //}
+        }
       } finally {
         $this->markTaskAsFinished($task);
       }
@@ -99,19 +99,24 @@ class Worker {
   }
 
   private function prepareContext(Newsletter $newsletter, NewsletterLink $link) {
+    $clicked = ($newsletter->statistics['clicked'] * 100) / $newsletter->total_sent;
+    $opened = ($newsletter->statistics['opened'] * 100) / $newsletter->total_sent;
+    $unsubscribed = ($newsletter->statistics['unsubscribed'] * 100) / $newsletter->total_sent;
     return [
       'subject' => $newsletter->subject,
       'preheader' => sprintf(_x(
         '%1$s%% opens, %2$s%% clicks, %3$s%% unsubscribes in a nutshell.', 'newsletter open rate, click rate and unsubscribe rate', 'mailpoet'),
-        number_format(($newsletter->statistics['clicked'] * 100) / $newsletter->total_sent, 2),
-        number_format(($newsletter->statistics['opened'] * 100) / $newsletter->total_sent,2),
-        number_format(($newsletter->statistics['unsubscribed'] * 100) / $newsletter->total_sent,2)
+        number_format($clicked, 2),
+        number_format($opened, 2),
+        number_format($unsubscribed, 2)
       ),
-      'topLinkClicks' => $link->clicksCount,
+      'topLinkClicks' => (int)$link->clicksCount,
       'topLink' => $link->url,
       'linkSettings' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-settings#basics'),
       'linkStats' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->id()),
       'premiumPluginActive' => is_plugin_active('mailpoet-premium/mailpoet-premium.php'),
+      'clicked' => $clicked,
+      'opened' => $opened,
     ];
   }
 
