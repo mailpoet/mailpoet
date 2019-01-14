@@ -59,12 +59,20 @@ define([
       }
     }),
     onRender: function () {
+      var that = this;
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       if (this.model.get('fullWidth')) {
         this.$el.addClass('mailpoet_full_image');
       } else {
         this.$el.removeClass('mailpoet_full_image');
+      }
+      // Ensure size values for images unknown size data (e.g. added via Gutenberg edited post/page)
+      if (!this.model.get('width') || this.model.get('width') === 'auto') {
+        this.$el.find('img').on('load', function () {
+          that.model.set('width', this.width);
+          that.model.set('height', this.height);
+        });
       }
       this.$('.mailpoet_content').css('width', this.model.get('width'));
     }
