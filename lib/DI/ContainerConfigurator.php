@@ -51,11 +51,13 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Config
     $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Hooks::class)->setPublic(true);
+    $container->register(\MailPoet\Config\Renderer::class)->setFactory([__CLASS__, 'createRenderer']);
     // Cron
     $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\WorkersFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\Scheduler::class);
     // Listing
     $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);
@@ -64,6 +66,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Router\Endpoints\Subscription::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class)->setPublic(true);
+    // Mailer
+    $container->autowire(\MailPoet\Mailer\Mailer::class);
     // Subscribers
     $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
@@ -95,5 +99,11 @@ class ContainerConfigurator implements IContainerConfigurator {
       return null;
     }
     return $container->get(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)->get($id);
+  }
+
+  static function createRenderer() {
+    $caching = !WP_DEBUG;
+    $debugging = WP_DEBUG;
+    return new \MailPoet\Config\Renderer($caching, $debugging);
   }
 }
