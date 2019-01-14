@@ -20,6 +20,7 @@ const baseConfig = {
     minimizer: [
       new webpackTerserPlugin({
         terserOptions: {
+          // preserve identifier names for easier debugging & support
           mangle: false,
         },
       }),
@@ -395,6 +396,7 @@ const testConfig = {
   },
   resolveLoader: {
     alias: {
+      // replace 'amd-inject-loader' with a wrapper fixed for Webpack 4
       'amd-inject-loader': path.join(__dirname, 'assets/js/src/amd-inject-loader-fixed.js'),
     }
   },
@@ -411,6 +413,7 @@ module.exports = [adminConfig, publicConfig, migratorConfig, testConfig].map((co
     config.plugins = config.plugins || [];
     config.plugins.push(
       new webpackManifestPlugin({
+        // create single manifest file for all Webpack configs
         seed: manifestSeed,
       })
     );
