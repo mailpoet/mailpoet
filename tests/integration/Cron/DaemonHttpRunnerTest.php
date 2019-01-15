@@ -22,27 +22,25 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function testItDoesNotRunWithoutRequestData() {
-    $daemon = Stub::construct(
-      new DaemonHttpRunner(new Daemon(new WorkersFactory(new SendingErrorHandler()))),
-      array(),
-      array(
+    $daemon = Stub::make(
+      DaemonHttpRunner::class,
+      [
         'abortWithError' => function($message) {
           return $message;
         }
-      )
+      ]
     );
     expect($daemon->run(false))->equals('Invalid or missing request data.');
   }
 
   function testItDoesNotRunWhenThereIsInvalidOrMissingToken() {
-    $daemon = Stub::construct(
-      new DaemonHttpRunner(new Daemon(new WorkersFactory(new SendingErrorHandler()))),
-      array(),
-      array(
+    $daemon = Stub::make(
+      DaemonHttpRunner::class,
+      [
         'abortWithError' => function($message) {
           return $message;
         }
-      )
+      ]
     );
     $daemon->settings_daemon_data = array(
       'token' => 123
@@ -54,14 +52,19 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    $daemon = Stub::construct(Daemon::class, [new WorkersFactory(new SendingErrorHandler())], array(
-      'executeScheduleWorker' => function() {
-        throw new \Exception('Message');
-      },
-      'executeQueueWorker' => function() {
-        throw new \Exception();
-      },
-    ), $this);
+    $daemon = Stub::make(
+      Daemon::class,
+      [
+        'executeScheduleWorker' => function() {
+          throw new \Exception('Message');
+        },
+        'executeQueueWorker' => function() {
+          throw new \Exception();
+        },
+        'executeMigrationWorker' => null,
+        'executeStatsNotificationsWorker' => null,
+      ]
+    );
     $daemon_http_runner = Stub::make(new DaemonHttpRunner($daemon), array(
       'pauseExecution' => null,
       'callSelf' => null
@@ -74,16 +77,14 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function testItCanPauseExecution() {
-    $daemon = Stub::construct(Daemon::class, [new WorkersFactory(new SendingErrorHandler())], array(
-      'executeScheduleWorker' => null,
-      'executeQueueWorker' => null,
-    ), $this);
-    $daemon_http_runner = Stub::make(new DaemonHttpRunner($daemon), array(
+    $daemon = Stub::makeEmpty(Daemon::class);
+    $daemon_http_runner = Stub::make(DaemonHttpRunner::class, array(
       'pauseExecution' => Expected::exactly(1, function($pause_delay) {
         expect($pause_delay)->lessThan(CronHelper::DAEMON_EXECUTION_LIMIT);
         expect($pause_delay)->greaterThan(CronHelper::DAEMON_EXECUTION_LIMIT - 1);
       }),
-      'callSelf' => null
+      'callSelf' => null,
+      'terminateRequest' => null,
     ), $this);
     $data = array(
       'token' => 123
@@ -107,7 +108,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123
     );
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon(new WorkersFactory(new SendingErrorHandler())));
+    $daemon->__construct(Stub::makeEmpty(Daemon::class));
     $daemon->run($data);
   }
 
@@ -127,7 +128,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123
     );
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon(new WorkersFactory(new SendingErrorHandler())));
+    $daemon->__construct(Stub::makeEmpty(Daemon::class));
     $daemon->run($data);
     $data_after_run = Setting::getValue(CronHelper::DAEMON_SETTING);
     expect($data_after_run['token'], 567);
@@ -145,7 +146,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'status' => CronHelper::DAEMON_STATUS_INACTIVE,
     ];
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon(new WorkersFactory(new SendingErrorHandler())));
+    $daemon->__construct(Stub::makeEmpty(Daemon::class));
     $daemon->run($data);
   }
 
@@ -154,25 +155,31 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'executeScheduleWorker' => null,
       'executeQueueWorker' => null,
       'pauseExecution' => null,
-      'callSelf' => null
+      'callSelf' => null,
+      'terminateRequest' => null,
     ), $this);
     $data = array(
       'token' => 123
     );
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
-    $daemon_http_runner->__construct(new Daemon(new WorkersFactory(new SendingErrorHandler())));
+    $daemon_http_runner->__construct(Stub::makeEmptyExcept(Daemon::class, 'run'));
     $daemon_http_runner->run($data);
     $updated_daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['token'])->equals($daemon_http_runner->token);
   }
 
   function testItUpdatesTimestampsDuringExecution() {
-    $daemon = Stub::construct(Daemon::class, [new WorkersFactory(new SendingErrorHandler())], array(
-      'executeScheduleWorker' => function() {
-        sleep(2);
-      },
-      'executeQueueWorker' => null,
-    ), $this);
+    $daemon = Stub::make(Daemon::class, [
+        'executeScheduleWorker' => function() {
+          sleep(2);
+        },
+        'executeQueueWorker' => function() {
+          throw new \Exception();
+        },
+        'executeMigrationWorker' => null,
+        'executeStatsNotificationsWorker' => null,
+      ]
+    );
     $daemon_http_runner = Stub::make(new DaemonHttpRunner($daemon), array(
       'pauseExecution' => null,
       'callSelf' => null
@@ -201,12 +208,13 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'executeQueueWorker' => Expected::exactly(1),
       // daemon should call itself
       'callSelf' => Expected::exactly(1),
+      'terminateRequest' => null,
     ), $this);
     $data = array(
       'token' => 123
     );
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon(new WorkersFactory(new SendingErrorHandler())));
+    $daemon->__construct(Stub::makeEmptyExcept(Daemon::class, 'run'));
     $daemon->run($data);
     expect(ignore_user_abort())->equals(1);
   }

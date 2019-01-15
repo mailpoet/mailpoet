@@ -8,6 +8,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\WP\Functions;
 
 class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
@@ -85,7 +86,6 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
   function testItRemovesWwwFromSenderAddress() {
     Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true,'address' => 'a@b.c']);
-    update_option( 'home', 'http://www.example.com/xyz' );
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'getSenderNameAndAddress' =>
@@ -96,7 +96,14 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $service = new NewSubscriberNotificationMailer($mailer);
+    $functions = Stub::makeEmpty(Functions::class, [
+      'homeUrl' =>
+        Expected::once(function() {
+          return 'http://www.example.com/xyz';
+        }),
+    ], $this);
+
+    $service = new NewSubscriberNotificationMailer($mailer, null, $functions);
     $service->send($this->subscriber, $this->segments);
   }
 }

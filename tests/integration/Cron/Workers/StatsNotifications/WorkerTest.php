@@ -17,7 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class WorkerTest extends \MailPoetTest {
 
-  /** @var Scheduler */
+  /** @var Worker */
   private $stats_notifications;
 
   /** @var MockObject */
@@ -27,6 +27,9 @@ class WorkerTest extends \MailPoetTest {
   private $renderer;
 
   function _before() {
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->stats_notifications = new Worker($this->mailer, $this->renderer);

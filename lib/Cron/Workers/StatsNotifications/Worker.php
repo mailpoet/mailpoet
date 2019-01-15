@@ -90,9 +90,11 @@ class Worker {
 
   private function getNewsletter(ScheduledTask $task) {
     $statsNotificationModel = $task->statsNotification()->findOne();
-    return $statsNotificationModel
-      ->newsletter()
-      ->findOne()
+    $newsletter = $statsNotificationModel->newsletter()->findOne();
+    if(!$newsletter) {
+      throw new \Exception('Newsletter not found');
+    }
+    return $newsletter
       ->withSendingQueue()
       ->withTotalSent()
       ->withStatistics();

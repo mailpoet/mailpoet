@@ -13,11 +13,14 @@ use MailPoet\Models\Setting;
 class DaemonTest extends \MailPoetTest {
 
   function testItCanExecuteWorkers() {
-    $daemon = Stub::construct(Daemon::class, [new WorkersFactory(new SendingErrorHandler())], array(
+    $daemon = Stub::make(Daemon::class, array(
       'executeScheduleWorker' => Expected::exactly(1),
       'executeQueueWorker' => Expected::exactly(1),
-      'pauseExecution' => null,
-      'callSelf' => null
+      'executeMigrationWorker' => null,
+      'executeStatsNotificationsWorker' => null,
+      'executeSendingServiceKeyCheckWorker' => null,
+      'executePremiumKeyCheckWorker' => null,
+      'executeBounceWorker' => null,
     ), $this);
     $data = array(
       'token' => 123
@@ -27,13 +30,15 @@ class DaemonTest extends \MailPoetTest {
   }
 
   function testItCanRun() {
-    $daemon = Stub::construct(Daemon::class, [new WorkersFactory(new SendingErrorHandler())], array(
-      'pauseExecution' => null,
+    $daemon = Stub::make(Daemon::class, array(
       // workers should be executed
       'executeScheduleWorker' => Expected::exactly(1),
       'executeQueueWorker' => Expected::exactly(1),
-      // daemon should call itself
-      'callSelf' => Expected::exactly(1),
+      'executeMigrationWorker' => Expected::exactly(1),
+      'executeStatsNotificationsWorker' => Expected::exactly(1),
+      'executeSendingServiceKeyCheckWorker' => Expected::exactly(1),
+      'executePremiumKeyCheckWorker' => Expected::exactly(1),
+      'executeBounceWorker' => Expected::exactly(1)
     ), $this);
     $data = array(
       'token' => 123
