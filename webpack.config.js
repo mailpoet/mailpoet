@@ -1,21 +1,30 @@
-var webpack = require('webpack');
-var webpackManifestPlugin = require('webpack-manifest-plugin');
-var webpackMD5HashPlugin = require('webpack-md5-hash');
-var webpackCleanPlugin = require('clean-webpack-plugin');
-var webpackUglifyJsPlugin = require('uglifyjs-webpack-plugin');
-var _ = require('underscore');
-var path = require('path');
-var globalPrefix = 'MailPoetLib';
-var PRODUCTION_ENV = process.env.NODE_ENV === 'production';
-var manifestCache = {};
+const webpack = require('webpack');
+const webpackManifestPlugin = require('webpack-manifest-plugin');
+const webpackCleanPlugin = require('clean-webpack-plugin');
+const webpackTerserPlugin = require('terser-webpack-plugin');
+const path = require('path');
+const globalPrefix = 'MailPoetLib';
+const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
+const manifestSeed = {};
 
 // Base config
-var baseConfig = {
+const baseConfig = {
+  mode: PRODUCTION_ENV ? 'production' : 'development',
   cache: true,
   context: __dirname,
   watchOptions: {
     aggregateTimeout: 300,
     poll: true
+  },
+  optimization: {
+    minimizer: [
+      new webpackTerserPlugin({
+        terserOptions: {
+          // preserve identifier names for easier debugging & support
+          mangle: false,
+        },
+      }),
+    ],
   },
   output: {
     path: path.join(__dirname, 'assets/js'),
@@ -49,7 +58,7 @@ var baseConfig = {
   plugins: [
     new webpackCleanPlugin([
       './assets/js/*.*',
-    ])
+    ]),
   ],
   module: {
     rules: [
@@ -224,7 +233,7 @@ var baseConfig = {
 };
 
 // Admin config
-var adminConfig = {
+const adminConfig = {
   name: 'admin',
   entry: {
     vendor: 'webpack_vendor_index.jsx',
@@ -252,20 +261,42 @@ var adminConfig = {
     form_editor: 'form_editor/webpack_index.jsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
   },
-  plugins: [
-    ...baseConfig.plugins,
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'admin_vendor',
-      fileName: 'admin_vendor.js',
-      chunks: ['admin', 'form_editor', 'newsletter_editor'],
-      minChunks: 2
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
+  optimization: {
+    runtimeChunk: {
       name: 'vendor',
-      fileName: 'vendor.js',
-      minChunks: Infinity
-    })
-  ],
+    },
+    splitChunks: {
+      cacheGroups: {
+        chunks: 'all',
+        default: false,
+        vendors: false,
+        vendor: {
+          name: 'vendor',
+          chunks: (chunk) => chunk.name === 'vendor',
+          priority: 1,
+          enforce: true,
+        },
+        admin_vendor_chunk: {
+          name: 'admin_vendor_chunk',
+          test: (module, chunks) => {
+            // add all modules from 'admin_vendor' entrypoint
+            if (chunks.some((chunk) => chunk.name === 'admin_vendor')) {
+              return true;
+            }
+
+            // add admin/form_editor/newsletter_editor shared modules
+            const filteredChunks = chunks.filter((chunk) => {
+              return ['admin', 'form_editor', 'newsletter_editor'].includes(chunk.name);
+            });
+            return filteredChunks.length > 1;
+          },
+          enforce: true,
+          chunks: (chunk) => ['admin_vendor', 'admin', 'form_editor', 'newsletter_editor'].includes(chunk.name),
+          priority: 0,
+        },
+      }
+    }
+  },
   externals: {
     'jquery': 'jQuery',
     'tinymce': 'tinymce'
@@ -273,7 +304,7 @@ var adminConfig = {
 };
 
 // Public config
-var publicConfig = {
+const publicConfig = {
   name: 'public',
   entry: {
     public: 'webpack_public_index.jsx',
@@ -293,7 +324,7 @@ var publicConfig = {
 };
 
 // Migrator config
-var migratorConfig = {
+const migratorConfig = {
   name: 'mp2migrator',
   entry: {
     mp2migrator: [
@@ -305,8 +336,9 @@ var migratorConfig = {
     'mailpoet': 'MailPoet'
   }
 };
+
 // Test config
-var testConfig = {
+const testConfig = {
   name: 'test',
   entry: {
     vendor: 'webpack_vendor_index.jsx',
@@ -362,6 +394,12 @@ var testConfig = {
       'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
     },
   },
+  resolveLoader: {
+    alias: {
+      // replace 'amd-inject-loader' with a wrapper fixed for Webpack 4
+      'amd-inject-loader': path.join(__dirname, 'assets/js/src/amd-inject-loader-fixed.js'),
+    }
+  },
   externals: {
     'jquery': 'jQuery',
     'tinymce': 'tinymce',
@@ -370,25 +408,15 @@ var testConfig = {
   }
 };
 
-module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], function (config) {
+module.exports = [adminConfig, publicConfig, migratorConfig, testConfig].map((config) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
-    if (PRODUCTION_ENV) {
-      config.plugins.push(
-        new webpackUglifyJsPlugin({
-          mangle: false,
-        }),
-        new webpack.DefinePlugin({
-          'process.env.NODE_ENV': JSON.stringify('production')
-        }),
-      );
-    }
     config.plugins.push(
-      new webpackMD5HashPlugin(),
       new webpackManifestPlugin({
-        cache: manifestCache
+        // create single manifest file for all Webpack configs
+        seed: manifestSeed,
       })
     );
   }
-  return _.extend({}, baseConfig, config);
+  return Object.assign({}, baseConfig, config);
 });
