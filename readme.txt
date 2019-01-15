@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.17.2
+Stable tag: 3.18.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.18.0 - 2019-01-15 =
+* Fixed: CSS issues in widget settings;
+* Fixed: CSS for Beamer icon on mobile;
+* Fixed: size slider issue for images without defined dimensions;
+* Fixed: images defaulted to centered in ALC blocks displaying full posts;
+* Added: poll to check status of user's first send;
 
 = 3.17.2 - 2019-01-08 =
 * Fixed: possible conflict with other plugins using webpack. Thanks, Julien;
