@@ -4,6 +4,11 @@ define('modal', ['mailpoet', 'jquery'],
     'use strict';
 
     var MailPoet = mp;
+    var closeModalImage =
+      '<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M21.454 1.546L1.546 21.454M1.546 1.546L21.454 21.454" stroke-width="3" stroke-linecap="round" />' +
+      '</svg>';
+
     /** *************************************************************************
     MailPoet Modal:
 
@@ -82,7 +87,7 @@ define('modal', ['mailpoet', 'jquery'],
         overlay: '<div id="mailpoet_modal_overlay" class="mailpoet_modal_overlay" style="display:none;"></div>',
         popup: '<div id="mailpoet_popup" class="mailpoet_popup" tabindex="-1">' +
         '<div class="mailpoet_popup_wrapper">' +
-        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close"></a>' +
+        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close">' + closeModalImage + '</a>' +
         '<div id="mailpoet_popup_title" class="mailpoet_popup_title"><h2></h2></div>' +
         '<div class="mailpoet_popup_body clearfix"></div>' +
         '</div>' +
@@ -93,7 +98,7 @@ define('modal', ['mailpoet', 'jquery'],
         '<div id="mailpoet_modal_loading_3" class="mailpoet_modal_loading mailpoet_modal_loading_3"></div>' +
         '</div>',
         panel: '<div id="mailpoet_panel" class="mailpoet_panel">' +
-        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close"></a>' +
+        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close">' + closeModalImage + '</a>' +
         '<div class="mailpoet_panel_wrapper" tabindex="-1">' +
         '<div class="mailpoet_panel_body clearfix"></div>' +
         '</div>' +
