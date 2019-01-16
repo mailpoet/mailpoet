@@ -1,8 +1,7 @@
 modal_title_color = #cfcfcf
-modal_title_background_color = #222
 modal_highlight_background_color = #f1f1f1
-modal_content_background_color = #f0f0f0
-overlay_background_color = alpha(#000, 60%)
+modal_background_color = #fff
+overlay_background_color = rgba(0, 0, 0, 0.6)
 
 // hide scrollbars on background when a modal window opened
 body.mailpoet_modal_opened
@@ -48,12 +47,14 @@ body.mailpoet_modal_opened
   margin: auto
 
 .mailpoet_popup_wrapper
-  background-color: modal_content_background_color
+  background-color: modal_background_color
   overflow: hidden
   position: relative
   width: 100%
   z-index: 0
   height: 96%
+  border-radius: 4px
+  box-shadow: 1px 2px 4px #343434
 
 .mailpoet_overlay_hidden .mailpoet_popup_wrapper
   border: 1px solid #333
@@ -115,7 +116,6 @@ body.mailpoet_modal_opened
 
 .mailpoet_panel_title h2
   color: modal_title_color
-  background-color: modal_title_background_color
   border-left: 1px solid #444
   border-right: 1px solid #444
   font-size: 1em
