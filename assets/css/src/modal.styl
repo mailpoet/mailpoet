@@ -53,6 +53,13 @@ body.mailpoet_modal_opened
   z-index: 25
   max-width: 100%
   margin: auto
+  animation: mailpoet_popup_fadein .5s
+
+@keyframes mailpoet_popup_fadein
+  from
+    opacity: 0
+  to
+    opacity: 1
 
 .mailpoet_popup_wrapper
   background-color: modal_background_color
