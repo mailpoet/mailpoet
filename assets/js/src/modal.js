@@ -312,14 +312,21 @@ define('modal', ['mailpoet', 'jquery'],
         switch (this.options.type) {
           case 'popup':
             // set popup dimensions
-            jQuery('#mailpoet_popup').css({
-              width: this.options.width,
-              height: this.options.height
-            });
-            // set popup wrapper height
-            jQuery('#mailpoet_popup_wrapper').css({
-              height: this.options.height
-            });
+            if (this.options.width && this.options.width !== 'auto') {
+              jQuery('#mailpoet_popup').css({
+                width: this.options.width
+              });
+            }
+
+            if (this.options.height && this.options.height !== 'auto') {
+              jQuery('#mailpoet_popup_wrapper').css({
+                height: this.options.height
+              });
+              jQuery('#mailpoet_popup').css({
+                height: this.options.height
+              });
+            }
+
             if (this.options.minWidth) {
               jQuery('#mailpoet_popup').css({ minWidth: this.options.minWidth });
             }

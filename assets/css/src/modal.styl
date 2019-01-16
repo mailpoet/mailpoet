@@ -1,6 +1,10 @@
 modal_title_color = #cfcfcf
 modal_highlight_background_color = #f1f1f1
 modal_background_color = #fff
+modal_popup_margin = 30px
+modal_popup_margin_mobile = 10px
+modal_popup_padding = 30px
+modal_popup_padding_mobile = 12px
 overlay_background_color = rgba(0, 0, 0, 0.6)
 
 // hide scrollbars on background when a modal window opened
@@ -21,6 +25,8 @@ body.mailpoet_modal_opened
   display: flex
   align-items: center
   justify-content: center
+  padding: modal_popup_margin
+  box-sizing: border-box
 
 .mailpoet_modal_highlight
   pointer-events: none
@@ -44,6 +50,7 @@ body.mailpoet_modal_opened
 // modal popup
 .mailpoet_popup
   z-index: 25
+  max-width: 100%
   margin: auto
 
 .mailpoet_popup_wrapper
@@ -55,6 +62,8 @@ body.mailpoet_modal_opened
   height: 96%
   border-radius: 4px
   box-shadow: 1px 2px 4px #343434
+  box-sizing: border-box
+  padding: modal_popup_padding
 
 .mailpoet_overlay_hidden .mailpoet_popup_wrapper
   border: 1px solid #333
@@ -75,7 +84,6 @@ body.mailpoet_modal_opened
   font-family: "Lucida Grande", Verdana, Arial, sans-serif
 
 .mailpoet_popup_body
-  padding: 10px 10px 10px 10px
   height: 92%
 
   .button + .button
@@ -166,6 +174,15 @@ body.mailpoet_modal_opened
   text-align: right
 
 @media screen and (max-width: 782px)
+  .mailpoet_modal_overlay
+    padding: modal_popup_margin_mobile
+
+  .mailpoet_popup
+    width: 100%
+
+  .mailpoet_popup_wrapper
+    padding: modal_popup_padding_mobile
+
   .mailpoet_modal_overlay.mailpoet_panel_overlay
     top: 46px
 
