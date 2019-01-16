@@ -147,6 +147,8 @@ define('modal', ['mailpoet', 'jquery'],
             jQuery('#mailpoet_modal_overlay')
               .append(modal(this.options));
             // set title
+            jQuery('#mailpoet_popup')
+              .toggleClass('mailpoet_popup_has_title', Boolean(this.options.title));
             jQuery('#mailpoet_popup_title h2')
               .html(this.options.title);
           } else if (this.options.type === 'panel') {
