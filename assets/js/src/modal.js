@@ -412,6 +412,9 @@ define('modal', ['mailpoet', 'jquery'],
           this.focus();
         }
 
+        // reset any possible scroll from previous modal
+        jQuery('#mailpoet_modal_overlay').scrollTop(0);
+
         // set popup as opened
         this.opened = true;
 
