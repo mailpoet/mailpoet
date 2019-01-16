@@ -458,10 +458,12 @@ define('modal', ['mailpoet', 'jquery'],
       },
       showOverlay: function () {
         jQuery('#mailpoet_modal_overlay').show();
+        jQuery('body').addClass('mailpoet_modal_opened');
         return this;
       },
       hideOverlay: function () {
         jQuery('#mailpoet_modal_overlay').hide();
+        jQuery('body').removeClass('mailpoet_modal_opened');
         return this;
       },
       popup: function (opts) {
