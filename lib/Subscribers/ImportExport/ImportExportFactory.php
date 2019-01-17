@@ -150,6 +150,7 @@ class ImportExportFactory {
       $data['maxPostSizeBytes'] = Helpers::getMaxPostSize('bytes');
       $data['maxPostSize'] = Helpers::getMaxPostSize();
     }
+    $data['zipExtensionLoaded'] = extension_loaded('zip');
     return $data;
   }
 }
