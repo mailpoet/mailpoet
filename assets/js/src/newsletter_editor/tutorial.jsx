@@ -10,7 +10,8 @@ const displayTutorial = () => {
     return;
   }
   MailPoet.Modal.popup({
-    template: `<div class="mailpoet_drag_and_drop_tutorial"><h2>${MailPoet.I18n.t('tutorialVideoTitle')}</h2><video style="height:640px;" src="${window.config.dragDemoUrl}" controls autoplay></video></div>`,
+    title: MailPoet.I18n.t('tutorialVideoTitle'),
+    template: `<div class="mailpoet_drag_and_drop_tutorial"><video style="height:640px;" src="${window.config.dragDemoUrl}" controls autoplay></video></div>`,
     onCancel: () => {
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
