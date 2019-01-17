@@ -398,6 +398,21 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  function svnPushTemplates() {
+    $collection = $this->collectionBuilder();
+    $this->svnCheckout();
+    $awkCmd = '{print " --force \""$2"\""}';
+    $xargsFlag = (stripos(PHP_OS, 'Darwin') !== false) ? '' : '-r';
+    return $collection->taskExecStack()
+      ->stopOnFail()
+      ->dir('.mp_svn')
+      ->exec('cp -R ../plugin_repository/assets/newsletter-templates/* assets/newsletter-templates')
+      ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm")
+      ->exec('svn add --force * --auto-props --parents --depth infinity -q')
+      ->exec('svn commit -m "Push Templates for test"')
+      ->run();
+  }
+
   function svnPublish($opts = ['force' => false]) {
     $this->loadEnv();
 
