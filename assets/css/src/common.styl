@@ -71,3 +71,14 @@ progress::-webkit-progress-value
 progress::-moz-progress-bar
   background-color: progress-foreground
   border-radius: progress-border-radius
+
+/* double class is intentional here, we need to be very specific here to
+   something wrapping our warning message could override its style */
+p.sender_email_address_warning.sender_email_address_warning,
+  p.sender_email_address_warning.sender_email_address_warning a
+  color: #990000
+  text-align: left
+  align-self: flex-start;
+
+p.sender_email_address_warning:first-child
+  margin-top: 1em
