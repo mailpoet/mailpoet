@@ -551,6 +551,7 @@ class SubscriberTest extends \MailPoetTest {
         // the fields below should NOT be taken into account
         'id' => 1337,
         'wp_user_id' => 7331,
+        'is_woocommerce_user' => 1,
         'status' => Subscriber::STATUS_SUBSCRIBED,
         'created_at' => '1984-03-09 00:00:01',
         'updated_at' => '1984-03-09 00:00:02',
@@ -567,6 +568,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->last_name)->equals('Trump');
 
     expect($subscriber->wp_user_id)->equals(null);
+    expect($subscriber->is_woocommerce_user)->equals(0);
     expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     expect($subscriber->created_at)->notEquals('1984-03-09 00:00:01');
     expect($subscriber->updated_at)->notEquals('1984-03-09 00:00:02');
@@ -815,6 +817,33 @@ class SubscriberTest extends \MailPoetTest {
       'first_name' => 'Some',
       'last_name' => 'WP User',
       'wp_user_id' => 1
+    ));
+    expect($wp_subscriber->delete())->equals(false);
+
+    $subscriber = Subscriber::findOne($wp_subscriber->id);
+    expect($subscriber)->notEquals(false);
+  }
+
+  function testItCannotTrashWooCommerceCustomer() {
+    $wp_subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'some.woocommerce.customer@mailpoet.com',
+      'first_name' => 'Some',
+      'last_name' => 'WooCommerce Customer',
+      'is_woocommerce_user' => 1
+    ));
+    expect($wp_subscriber->trash())->equals(false);
+
+    $subscriber = Subscriber::findOne($wp_subscriber->id);
+    expect($subscriber)->notEquals(false);
+    expect($subscriber->deleted_at)->equals(null);
+  }
+
+  function testItCannotDeleteWooCommerceCustomer() {
+    $wp_subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'some.woocommerce.customer@mailpoet.com',
+      'first_name' => 'Some',
+      'last_name' => 'WooCommerce Customer',
+      'is_woocommerce_user' => 1
     ));
     expect($wp_subscriber->delete())->equals(false);
 

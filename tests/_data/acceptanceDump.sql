@@ -323,7 +323,8 @@ CREATE TABLE `mp_mailpoet_segments` (
 
 INSERT INTO `mp_mailpoet_segments` (`id`, `name`, `type`, `description`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'WordPress Users',	'wp_users',	'This list contains all of your WordPress users.',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL),
-(2,	'My First List',	'default',	'This list is automatically created when you install MailPoet.',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL);
+(2,	'WooCommerce Customers',	'woocommerce_users',	'This list contains all of your WooCommerce customers.',	'2019-01-17 00:57:39',	'2019-01-17 00:57:39',	NULL),
+(3,	'My First List',	'default',	'This list is automatically created when you install MailPoet.',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL);
 
 DROP TABLE IF EXISTS `mp_mailpoet_sending_queues`;
 CREATE TABLE `mp_mailpoet_sending_queues` (

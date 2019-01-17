@@ -6,6 +6,7 @@ if(!defined('ABSPATH')) exit;
 class Segment extends Model {
   static $_table = MP_SEGMENTS_TABLE;
   const TYPE_WP_USERS = 'wp_users';
+  const TYPE_WC_USERS = 'woocommerce_users';
   const TYPE_DEFAULT = 'default';
 
   function __construct() {
@@ -114,12 +115,30 @@ class Segment extends Model {
         'name' => __('WordPress Users', 'mailpoet'),
         'description' =>
           __('This list contains all of your WordPress users.', 'mailpoet'),
-        'type' => 'wp_users'
+        'type' => self::TYPE_WP_USERS
       ));
       $wp_segment->save();
     }
 
     return $wp_segment;
+  }
+
+  static function getWooCommerceSegment() {
+    $wc_segment = self::where('type', self::TYPE_WC_USERS)->findOne();
+
+    if($wc_segment === false) {
+      // create the WooCommerce customers segment
+      $wc_segment = Segment::create();
+      $wc_segment->hydrate(array(
+        'name' => __('WooCommerce Customers', 'mailpoet'),
+        'description' =>
+          __('This list contains all of your WooCommerce customers.', 'mailpoet'),
+        'type' => self::TYPE_WC_USERS
+      ));
+      $wc_segment->save();
+    }
+
+    return $wc_segment;
   }
 
   static function search($orm, $search = '') {
@@ -152,7 +171,7 @@ class Segment extends Model {
 
   static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
     $query = self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
-      ->whereIn('type', array(Segment::TYPE_WP_USERS, Segment::TYPE_DEFAULT))
+      ->whereIn('type', array(Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS))
       ->selectExpr(
         self::$_table.'.*, ' .
         'COUNT(IF('.
@@ -182,7 +201,10 @@ class Segment extends Model {
   }
 
   static function getSegmentsForImport() {
-    return self::getSegmentsWithSubscriberCount($type = false);
+    $segments = self::getSegmentsWithSubscriberCount($type = false);
+    return array_values(array_filter($segments, function($segment) {
+      return $segment['type'] !== Segment::TYPE_WC_USERS;
+    }));
   }
 
   static function getSegmentsForExport() {
@@ -207,7 +229,7 @@ class Segment extends Model {
 
   static function listingQuery(array $data = array()) {
     $query = self::select('*');
-    $query->whereIn('type', array(Segment::TYPE_WP_USERS, Segment::TYPE_DEFAULT));
+    $query->whereIn('type', array(Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS));
     if(isset($data['group'])) {
       $query->filter('groupBy', $data['group']);
     }

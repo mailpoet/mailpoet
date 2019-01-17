@@ -18,6 +18,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
 
     $this->wp_segment = Segment::getWPSegment();
+    $this->wc_segment = Segment::getWooCommerceSegment();
   }
 
   function testItCanSubscribeToSegments() {
@@ -77,12 +78,13 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribed_segments[0]['name'])->equals($this->segment_2->name);
   }
 
-  function testItDoesNotUnsubscribeFromWPSegment() {
+  function testItDoesNotUnsubscribeFromWPAndWooCommerceSegments() {
     $subscriber = $this->subscriber;
     $segment_1 = $this->segment_1;
     $segment_1->type = Segment::TYPE_WP_USERS;
     $segment_1->save();
     $segment_2 = $this->segment_2;
+    $segment_3 = $this->wc_segment;
     $subscriber_segment = SubscriberSegment::createOrUpdate(
       array(
         'subscriber_id' => $subscriber->id,
@@ -97,22 +99,33 @@ class SubscriberSegmentTest extends \MailPoetTest {
         'status' => Subscriber::STATUS_SUBSCRIBED
       )
     );
+    $subscriber_segment = SubscriberSegment::createOrUpdate(
+      array(
+        'subscriber_id' => $subscriber->id,
+        'segment_id' => $this->wc_segment->id,
+        'status' => Subscriber::STATUS_SUBSCRIBED
+      )
+    );
 
-    // verify that subscriber is subscribed to 2 segments
+    // verify that subscriber is subscribed to 3 segments
     $subscriber = Subscriber::findOne($subscriber->id)->withSubscriptions();
     expect($subscriber->subscriptions[0]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($subscriber->subscriptions[0]['segment_id'])->equals($segment_1->id);
     expect($subscriber->subscriptions[1]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($subscriber->subscriptions[1]['segment_id'])->equals($segment_2->id);
+    expect($subscriber->subscriptions[2]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber->subscriptions[2]['segment_id'])->equals($segment_3->id);
 
     // verify that subscriber is not subscribed only to the non-WP segment (#2)
-    SubscriberSegment::unsubscribeFromSegments($subscriber, array($segment_1->id, $segment_2->id));
+    SubscriberSegment::unsubscribeFromSegments($subscriber, array($segment_1->id, $segment_2->id, $segment_3->id));
     $subscriber = Subscriber::findOne($subscriber->id)->withSubscriptions();
 
     expect($subscriber->subscriptions[0]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($subscriber->subscriptions[0]['segment_id'])->equals($segment_1->id);
     expect($subscriber->subscriptions[1]['status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
     expect($subscriber->subscriptions[1]['segment_id'])->equals($segment_2->id);
+    expect($subscriber->subscriptions[2]['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber->subscriptions[2]['segment_id'])->equals($segment_3->id);
   }
 
   function testItCanUnsubscribeFromAllSegments() {
@@ -271,11 +284,12 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriptions_count)->equals(1);
   }
 
-  function testItCannotUnsubscribeFromWPSegment() {
-    // subscribe to a segment and the WP segment
+  function testItCannotUnsubscribeFromWPAndWooCommerceSegments() {
+    // subscribe to a segment, the WP segment, the WooCommerce segment
     $result = SubscriberSegment::subscribeToSegments($this->subscriber, array(
         $this->segment_1->id,
-        $this->wp_segment->id
+        $this->wp_segment->id,
+        $this->wc_segment->id
     ));
     expect($result)->true();
 
@@ -285,15 +299,17 @@ class SubscriberSegmentTest extends \MailPoetTest {
 
     // the subscriber should still be subscribed to the WP segment
     $subscribed_segments = $this->subscriber->segments()->findArray();
-    expect($subscribed_segments)->count(1);
+    expect($subscribed_segments)->count(2);
     expect($subscribed_segments[0]['name'])->equals($this->wp_segment->name);
+    expect($subscribed_segments[1]['name'])->equals($this->wc_segment->name);
   }
 
-  function testItCannotDeleteSubscriptionToWPSegment() {
-    // subscribe to a segment and the WP segment
+  function testItCannotDeleteSubscriptionToWPAndWooCommerceSegments() {
+    // subscribe to a segment, the WP segment, the WooCommerce segment
     $result = SubscriberSegment::subscribeToSegments($this->subscriber, array(
         $this->segment_1->id,
-        $this->wp_segment->id
+        $this->wp_segment->id,
+        $this->wc_segment->id
     ));
     expect($result)->true();
 
@@ -303,8 +319,9 @@ class SubscriberSegmentTest extends \MailPoetTest {
 
     // the subscriber should still be subscribed to the WP segment
     $subscribed_segments = $this->subscriber->segments()->findArray();
-    expect($subscribed_segments)->count(1);
+    expect($subscribed_segments)->count(2);
     expect($subscribed_segments[0]['name'])->equals($this->wp_segment->name);
+    expect($subscribed_segments[1]['name'])->equals($this->wc_segment->name);
   }
 
   function _after() {

@@ -238,7 +238,7 @@ const itemActions = [
   {
     name: 'trash',
     display: function display(subscriber) {
-      return Number(subscriber.wp_user_id) === 0;
+      return Number(subscriber.wp_user_id) === 0 && Number(subscriber.is_woocommerce_user) === 0;
     },
   },
 ];

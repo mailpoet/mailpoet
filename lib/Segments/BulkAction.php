@@ -36,7 +36,9 @@ class BulkAction {
    * @throws \Exception
    */
   private function applySegment($segment) {
-    if(!$segment || $segment['type'] === Segment::TYPE_DEFAULT || $segment['type'] === Segment::TYPE_WP_USERS) {
+    if(!$segment
+      || in_array($segment['type'], [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS], true)
+    ) {
       $bulk_action = new \MailPoet\Listing\BulkActionController(new Handler());
       return $bulk_action->apply('\MailPoet\Models\Subscriber', $this->data);
     } else {

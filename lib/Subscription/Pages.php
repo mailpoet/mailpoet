@@ -294,7 +294,7 @@ class Pages {
         'params' => array(
           'label' => __('First name', 'mailpoet'),
           'value' => $subscriber->first_name,
-          'disabled' => ($subscriber->isWPUser())
+          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser())
         )
       ),
       array(
@@ -303,7 +303,7 @@ class Pages {
         'params' => array(
           'label' => __('Last name', 'mailpoet'),
           'value' => $subscriber->last_name,
-          'disabled' => ($subscriber->isWPUser())
+          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser())
         )
       ),
       array(
@@ -387,7 +387,7 @@ class Pages {
     $form_html .= '<label>Email *<br /><strong>'.$subscriber->email.'</strong></label>';
     $form_html .= '<br /><span style="font-size:85%;">';
     // special case for WP users as they cannot edit their subscriber's email
-    if($subscriber->isWPUser()) {
+    if($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
       // check if subscriber's associated WP user is the currently logged in WP user
       $wp_current_user = wp_get_current_user();
       if($wp_current_user->user_email === $subscriber->email) {

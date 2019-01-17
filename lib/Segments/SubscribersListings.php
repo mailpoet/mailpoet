@@ -25,8 +25,9 @@ class SubscribersListings {
   }
 
   private function getListings($data, Segment $segment = null) {
-    if(!$segment || $segment->type === Segment::TYPE_DEFAULT || $segment->type === Segment::TYPE_WP_USERS) {
-
+    if(!$segment
+      || in_array($segment->type, [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS], true)
+    ) {
       return $listing_data = $this->handler->get('\MailPoet\Models\Subscriber', $data);
     }
     $handlers = Hooks::applyFilters('mailpoet_get_subscribers_listings_in_segment_handlers', array());

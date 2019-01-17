@@ -55,7 +55,7 @@ class Subscriber extends Model {
 
   function delete() {
     // WP Users cannot be deleted
-    if($this->isWPUser()) {
+    if($this->isWPUser() || $this->isWooCommerceUser()) {
       return false;
     } else {
       // delete all relations to segments
@@ -68,7 +68,7 @@ class Subscriber extends Model {
 
   function trash() {
     // WP Users cannot be trashed
-    if($this->isWPUser()) {
+    if($this->isWPUser() || $this->isWooCommerceUser()) {
       return false;
     } else {
       return parent::trash();
@@ -77,6 +77,10 @@ class Subscriber extends Model {
 
   function isWPUser() {
     return ($this->wp_user_id !== null);
+  }
+
+  function isWooCommerceUser() {
+    return $this->is_woocommerce_user == true;
   }
 
   static function getCurrentWPUser() {
@@ -173,6 +177,7 @@ class Subscriber extends Model {
     $reserved_columns = array(
       'id',
       'wp_user_id',
+      'is_woocommerce_user',
       'status',
       'subscribed_ip',
       'confirmed_ip',
@@ -205,7 +210,7 @@ class Subscriber extends Model {
 
     $segments = Segment::orderByAsc('name')
       ->whereNull('deleted_at')
-      ->whereIn('type', array(Segment::TYPE_WP_USERS, Segment::TYPE_DEFAULT))
+      ->whereIn('type', array(Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS))
       ->findMany();
     $segment_list = array();
     $segment_list[] = array(
@@ -659,7 +664,8 @@ class Subscriber extends Model {
           'WHERE `id` IN ('.
             rtrim(str_repeat('?,', count($subscriber_ids)), ',')
           .')',
-          'AND `wp_user_id` IS NULL'
+          'AND `wp_user_id` IS NULL',
+          'AND `is_woocommerce_user` = 0'
         )),
         $subscriber_ids
       );
@@ -677,6 +683,7 @@ class Subscriber extends Model {
       // delete subscribers (except WP Users)
       Subscriber::whereIn('id', $subscriber_ids)
         ->whereNull('wp_user_id')
+        ->whereEqual('is_woocommerce_user', 0)
         ->deleteMany();
     });
 
@@ -738,6 +745,7 @@ class Subscriber extends Model {
   static function updateMultiple($columns, $subscribers, $updated_at = false) {
     $ignore_columns_on_update = array(
       'wp_user_id',
+      'is_woocommerce_user',
       'email',
       'created_at',
       'status'

@@ -121,7 +121,7 @@ class MP2MigratorTest extends \MailPoetTest {
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
-    expect(Segment::count())->equals(3);
+    expect(Segment::count())->equals(4); // two regular lists, WP users list, WooCommerce customers list (not imported)
 
     // Check a segment data
     $this->initImport();

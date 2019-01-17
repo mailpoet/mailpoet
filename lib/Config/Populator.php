@@ -191,6 +191,8 @@ class Populator {
   private function createDefaultSegments() {
     // WP Users segment
     Segment::getWPSegment();
+    // WooCommerce customers segment
+    Segment::getWooCommerceSegment();
 
     // Synchronize WP Users
     WP::synchronizeUsers();
@@ -398,6 +400,12 @@ class Populator {
       ' SET `source` = "' . Source::WORDPRESS_USER . '"' .
       ' WHERE `source` = "' . Source::UNKNOWN . '"' .
       ' AND `wp_user_id` IS NOT NULL'
+    );
+    Subscriber::rawExecute(
+      'UPDATE LOW_PRIORITY `' . Subscriber::$_table . '`' .
+      ' SET `source` = "' . Source::WOOCOMMERCE_USER . '"' .
+      ' WHERE `source` = "' . Source::UNKNOWN . '"' .
+      ' AND `is_woocommerce_user` = 1'
     );
   }
 

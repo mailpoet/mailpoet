@@ -11,7 +11,7 @@ const fields = [
     label: MailPoet.I18n.t('email'),
     type: 'text',
     disabled: function disabled(subscriber) {
-      return Number(subscriber.wp_user_id > 0);
+      return Number(subscriber.wp_user_id > 0) || Number(subscriber.is_woocommerce_user) === 1;
     },
   },
   {
@@ -19,7 +19,7 @@ const fields = [
     label: MailPoet.I18n.t('firstname'),
     type: 'text',
     disabled: function disabled(subscriber) {
-      return Number(subscriber.wp_user_id > 0);
+      return Number(subscriber.wp_user_id > 0) || Number(subscriber.is_woocommerce_user) === 1;
     },
   },
   {
@@ -27,7 +27,7 @@ const fields = [
     label: MailPoet.I18n.t('lastname'),
     type: 'text',
     disabled: function disabled(subscriber) {
-      return Number(subscriber.wp_user_id > 0);
+      return Number(subscriber.wp_user_id > 0) || Number(subscriber.is_woocommerce_user) === 1;
     },
   },
   {
@@ -41,7 +41,7 @@ const fields = [
       bounced: MailPoet.I18n.t('bounced'),
     },
     filter: function filter(subscriber, value) {
-      if (Number(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
+      if ((Number(subscriber.wp_user_id) > 0 || Number(subscriber.is_woocommerce_user) === 1) && value === 'unconfirmed') {
         return false;
       }
       return true;

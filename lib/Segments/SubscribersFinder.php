@@ -36,7 +36,7 @@ class SubscribersFinder {
   }
 
   private function isStaticSegment(Segment $segment) {
-    return $segment->type === Segment::TYPE_DEFAULT || $segment->type === Segment::TYPE_WP_USERS;
+    return in_array($segment->type, [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS], true);
   }
 
   function addSubscribersToTaskFromSegments(ScheduledTask $task, array $segments) {
