@@ -76,6 +76,18 @@ class Populator {
       'WideStoryLayout',
       'ScienceWeekly',
 
+      'BrandingAgencyNews',
+      'CityNews',
+      'College',
+      'ComputerRepair',
+      'Engineering',
+      'FarmersMarket',
+      'HealthyFoodBlog',
+      'PrimarySchool',
+      'RenewableEnergy',
+      'Software',
+      'WordpressTheme',
+
       'WineCity',
       'DogFood',
       'Fitness',
