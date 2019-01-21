@@ -10,34 +10,13 @@
         </p>
       </th>
       <td>
-        <!-- default from name & email -->
-        <p>
-          <label for="settings[from_name]"><%= __('From') %></label>
-          <input type="text"
-            id="settings[from_name]"
-            name="sender[name]"
-            value="<%= settings.sender.name %>"
-            placeholder="<%= __('Your name') %>" />
-          <input type="email"
-            id="settings[from_email]"
-            name="sender[address]"
-            value="<%= settings.sender.address %>"
-            placeholder="from@mydomain.com" />
-        </p>
-        <!-- default reply_to name & email -->
-        <p>
-          <label for="settings[reply_name]"><%= __('Reply-to') %></label>
-          <input type="text"
-            id="settings[reply_name]"
-            name="reply_to[name]"
-            value="<%= settings.reply_to.name %>"
-            placeholder="<%= __('Your name') %>" />
-          <input type="email"
-            id="settings[reply_email]"
-            name="reply_to[address]"
-            value="<%= settings.reply_to.address %>"
-            placeholder="reply_to@mydomain.com" />
-        </p>
+        <div id="settings_sender_container"></div>
+        <script type="text/javascript">
+          var mailpoet_settings_sender_name = "<%= settings.sender.name %>";
+          var mailpoet_settings_sender_adddress = "<%= settings.sender.address %>";
+          var mailpoet_settings_reply_to_name = "<%= settings.reply_to.name %>";
+          var mailpoet_settings_reply_to_address = "<%= settings.reply_to.address %>";
+        </script>
       </td>
     </tr>
     <!-- email addresses receiving notifications -->
