@@ -43,7 +43,7 @@ class Assets extends \Twig_Extension {
 
     foreach($stylesheets as $stylesheet) {
       $output[] = sprintf(
-        '<link rel="stylesheet" type="text/css" href="%s/css/%s" />',
+        '<link rel="stylesheet" type="text/css" href="%s/dist/css/%s" />',
         $this->_globals['assets_url'],
         $this->getAssetFilename($this->_globals['assets_manifest_css'], $stylesheet)
       );

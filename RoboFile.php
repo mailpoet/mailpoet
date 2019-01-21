@@ -86,7 +86,7 @@ class RoboFile extends \Robo\Tasks {
 
   function compileCss($opts = ['env' => null]) {
     // Clean up folder from previous files
-    array_map('unlink', glob("assets/css/*.*"));
+    array_map('unlink', glob("assets/dist/css/*.*"));
 
     $css_files = array(
       'assets/css/src/admin.styl',
@@ -103,12 +103,12 @@ class RoboFile extends \Robo\Tasks {
       '--include-css',
       '-u nib',
       join(' ', $css_files),
-      '-o assets/css/'
+      '-o assets/dist/css/'
     )));
 
     // Create manifest file
     $manifest = [];
-    foreach(glob('assets/css/*.css') as $style) {
+    foreach(glob('assets/dist/css/*.css') as $style) {
       // Hash and rename styles if production environment
       if($opts['env'] === 'production') {
         $hashed_style = sprintf(
@@ -122,7 +122,7 @@ class RoboFile extends \Robo\Tasks {
         $manifest[basename($style)] = basename($style);
       }
     }
-    file_put_contents('assets/css/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT));
+    file_put_contents('assets/dist/css/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT));
     return $compilation_result;
   }
 

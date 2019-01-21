@@ -93,7 +93,7 @@ class Widget extends \WP_Widget {
   function setupDependencies() {
     wp_enqueue_style(
       'mailpoet_public',
-      Env::$assets_url . '/css/' . $this->renderer->getCssAsset('public.css')
+      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('public.css')
     );
 
     wp_enqueue_script(
