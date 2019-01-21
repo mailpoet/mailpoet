@@ -3,7 +3,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 
-import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx'
+import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
 
 const WelcomeWizardSenderStep = props => (
   <div className="mailpoet_welcome_wizard_step_content mailpoet_welcome_wizard_centered_column">
