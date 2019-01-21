@@ -6,11 +6,6 @@
     <%= __('Export') %>
     <a class="page-title-action" href="?page=mailpoet-subscribers#/"><%= __('Back to Subscribers') %></a>
   </h1>
-  <%if not zipExtensionLoaded %>
-    <div class="error">
-      <p><%= __('ZIP extension is required to create Excel files. Please refer to the [link]official PHP ZIP installation guide[/link] or contact your hosting provider’s technical support for instructions on how to install and load the ZIP extension.' | replaceLinkTags('http://php.net/manual/en/zip.installation.php')) %></p>
-    </div>
-  <%endif%>
   <% if segments is empty %>
   <div class="error">
     <p><%= __("Yikes! Couldn't find any subscribers") %></p>
@@ -79,6 +74,11 @@
           <input type="radio" name="option_format"
            value="xlsx" <%if not zipExtensionLoaded %> disabled="disabled" <%endif%>><%= __('Excel file') %>
         </label>
+        <%if not zipExtensionLoaded %>
+          <div class="inline notice notice-warning">
+            <p><%= __('ZIP extension is required to create Excel files. Please refer to the [link]official PHP ZIP installation guide[/link] or contact your hosting provider’s technical support for instructions on how to install and load the ZIP extension.' | replaceLinkTags('http://php.net/manual/en/zip.installation.php')) %></p>
+          </div>
+        <%endif%>
       </td>
     </tr>
     <tr class="mailpoet_export_process">
