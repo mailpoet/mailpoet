@@ -11,7 +11,6 @@ class RequirementsChecker {
   const TEST_PDO_EXTENSION = 'PDOExtension';
   const TEST_MBSTRING_EXTENSION = 'MbstringExtension';
   const TEST_XML_EXTENSION = 'XmlExtension';
-  const TEST_ZIP_EXTENSION = 'ZipExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
   const TWIG_SUPPORTED_VERSIONS = '1.26.0-1.34.4';
 
@@ -48,7 +47,6 @@ class RequirementsChecker {
       self::TEST_FOLDER_PERMISSIONS,
       self::TEST_MBSTRING_EXTENSION,
       self::TEST_XML_EXTENSION,
-      self::TEST_ZIP_EXTENSION,
       self::TEST_VENDOR_SOURCE
     );
     $results = array();
@@ -104,16 +102,6 @@ class RequirementsChecker {
     if(extension_loaded('xml')) return true;
     $error = Helpers::replaceLinkTags(
       __('MailPoet requires an XML PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
-      '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension',
-      array('target' => '_blank')
-    );
-    return $this->processError($error);
-  }
-
-  function checkZipExtension() {
-    if(extension_loaded('zip')) return true;
-    $error = Helpers::replaceLinkTags(
-      __('MailPoet requires a ZIP PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension',
       array('target' => '_blank')
     );

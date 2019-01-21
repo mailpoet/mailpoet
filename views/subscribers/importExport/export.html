@@ -72,8 +72,13 @@
         &nbsp;
         <label>
           <input type="radio" name="option_format"
-           value="xlsx"><%= __('Excel file') %>
+           value="xlsx" <%if not zipExtensionLoaded %> disabled="disabled" <%endif%>><%= __('Excel file') %>
         </label>
+        <%if not zipExtensionLoaded %>
+          <div class="inline notice notice-warning">
+            <p><%= __('ZIP extension is required to create Excel files. Please refer to the [link]official PHP ZIP installation guide[/link] or contact your hosting provider’s technical support for instructions on how to install and load the ZIP extension.' | replaceLinkTags('http://php.net/manual/en/zip.installation.php')) %></p>
+          </div>
+        <%endif%>
       </td>
     </tr>
     <tr class="mailpoet_export_process">
