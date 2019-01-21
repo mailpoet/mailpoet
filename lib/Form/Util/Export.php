@@ -71,10 +71,10 @@ class Export {
 
         // JS
         $output[] = '<script type="text/javascript" src="'.
-          Env::$assets_url.'/js/vendor.js?mp_ver='.MAILPOET_VERSION.
+          Env::$assets_url.'/dist/js/vendor.js?mp_ver='.MAILPOET_VERSION.
         '"></script>';
         $output[] = '<script type="text/javascript" src="'.
-          Env::$assets_url.'/js/public.js?mp_ver='.MAILPOET_VERSION.
+          Env::$assets_url.'/dist/js/public.js?mp_ver='.MAILPOET_VERSION.
         '"></script>';
 
         // (JS) variables...

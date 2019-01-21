@@ -17,9 +17,7 @@ temp
 .idea
 mailpoet.zip
 tests/javascript/testBundles
-assets/dist/css/*
-assets/js/*.js
-assets/js/*.json
+assets/dist
 .vagrant
 lang
 .mp_svn

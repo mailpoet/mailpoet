@@ -57,8 +57,9 @@ class Assets extends \Twig_Extension {
     $output = array();
 
     foreach($scripts as $script) {
+      $dir = substr($script, 0, 4) == 'lib/' ? 'js' : 'dist/js';
       $output[] = sprintf(
-        '<script type="text/javascript" src="%s/js/%s"></script>',
+        '<script type="text/javascript" src="%s/'.$dir.'/%s"></script>',
         $this->_globals['assets_url'],
         $this->getAssetFilename($this->_globals['assets_manifest_js'], $script)
       );

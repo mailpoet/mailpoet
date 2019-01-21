@@ -27,7 +27,7 @@ const baseConfig = {
     ],
   },
   output: {
-    path: path.join(__dirname, 'assets/js'),
+    path: path.join(__dirname, 'assets/dist/js'),
     filename: (PRODUCTION_ENV) ? '[name].[hash:8].js' : '[name].js',
     chunkFilename: (PRODUCTION_ENV) ? '[name].[hash:8].chunk.js' : '[name].chunk.js',
     jsonpFunction: 'mailpoetJsonp'
@@ -57,7 +57,7 @@ const baseConfig = {
   },
   plugins: [
     new webpackCleanPlugin([
-      './assets/js/*.*',
+      './assets/dist/js/*.*',
     ]),
   ],
   module: {

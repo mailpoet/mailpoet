@@ -78,6 +78,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileJs($opts = ['env' => null]) {
+    if(!is_dir('assets/dist/js')) {
+      mkdir('assets/dist/js', 0777, true);
+    }
     $env = ($opts['env']) ?
       sprintf('./node_modules/cross-env/dist/bin/cross-env.js NODE_ENV="%s"', $opts['env']) :
       null;
@@ -85,6 +88,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileCss($opts = ['env' => null]) {
+    if(!is_dir('assets/dist/css')) {
+      mkdir('assets/dist/css', 0777, true);
+    }
     // Clean up folder from previous files
     array_map('unlink', glob("assets/dist/css/*.*"));
 
