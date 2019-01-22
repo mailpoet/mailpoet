@@ -54,6 +54,7 @@ function ( // eslint-disable-line func-names
             formData.data.recaptcha = window.grecaptcha.getResponse(formData.recaptcha);
           }
 
+          form.addClass('mailpoet_form_sending');
           // ajax request
           MailPoet.Ajax.post({
             url: window.MailPoetForm.ajax_url,
@@ -106,6 +107,9 @@ function ( // eslint-disable-line func-names
               ) {
                 MailPoet.Iframe.autoSize(window.frameElement);
               }
+            })
+            .always(function subscribeFormAlways() {
+              form.removeClass('mailpoet_form_sending');
             });
           return false;
         });
