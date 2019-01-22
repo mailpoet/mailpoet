@@ -18,6 +18,7 @@ class SchedulerTest extends \MailPoetTest {
       'enabled' => true,
       'address' => 'email@example.com'
     ]);
+    Setting::setValue('tracking.enabled', true);
   }
 
   function testShouldSchedule() {
@@ -28,6 +29,15 @@ class SchedulerTest extends \MailPoetTest {
     expect($notification)->isInstanceOf(StatsNotification::class);
     $task = ScheduledTask::where('id', $notification->task_id)->findOne();
     expect($task)->isInstanceOf(ScheduledTask::class);
+  }
+
+  function testShouldNotScheduleIfTrackingIsDisabled() {
+    Setting::setValue('tracking.enabled', false);
+    $newsletter_id = 13;
+    $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id, 'type' => Newsletter::TYPE_STANDARD]);
+    $this->stats_notifications->schedule($newsletter);
+    $notification = StatsNotification::where('newsletter_id', $newsletter_id)->findOne();
+    expect($notification)->isEmpty();
   }
 
   function testShouldNotScheduleIfDisabled() {

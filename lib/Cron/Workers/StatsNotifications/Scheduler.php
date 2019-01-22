@@ -60,6 +60,9 @@ class Scheduler {
     if(empty(trim($settings['address']))) {
       return true;
     }
+    if(!(bool)Setting::getValue('tracking.enabled')) {
+      return true;
+    }
     return !(bool)$settings['enabled'];
   }
 
