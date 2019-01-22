@@ -343,7 +343,8 @@ class Menu {
       'is_mp2_migration_complete' => (bool)Setting::getValue('mailpoet_migration_complete'),
       'is_woocommerce_active' => class_exists('WooCommerce'),
       'finish_wizard_url' => admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG),
-      'sender' => Setting::getValue('sender')
+      'sender' => Setting::getValue('sender'),
+      'reply_to' => Setting::getValue('reply_to'),
     ];
     $this->displayPage('welcome_wizard.html', $data);
   }
