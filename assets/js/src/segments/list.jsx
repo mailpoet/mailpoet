@@ -108,7 +108,7 @@ const itemActions = [
       );
     },
     display: function display(segment) {
-      return isWPUsersSegment(segment);
+      return !isSpecialSegment(segment);
     },
   },
   {

@@ -621,7 +621,7 @@ class APITest extends \MailPoetTest {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id));
       $this->fail('WP Users segment exception should have been thrown.');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->id}.");
+      expect($e->getMessage())->equals("Can't unsubscribe from a WordPress Users list with ID {$segment->id}.");
     }
   }
 
@@ -639,7 +639,7 @@ class APITest extends \MailPoetTest {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id));
       $this->fail('WooCommerce Customers segment exception should have been thrown.');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals("Can't subscribe to a WooCommerce Customers list with ID {$segment->id}.");
+      expect($e->getMessage())->equals("Can't unsubscribe from a WooCommerce Customers list with ID {$segment->id}.");
     }
   }
 

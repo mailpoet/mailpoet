@@ -80,7 +80,7 @@ class Subscriber extends Model {
   }
 
   function isWooCommerceUser() {
-    return $this->is_woocommerce_user == true;
+    return (bool)$this->is_woocommerce_user;
   }
 
   static function getCurrentWPUser() {

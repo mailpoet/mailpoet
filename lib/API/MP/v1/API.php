@@ -144,10 +144,10 @@ class API {
     $found_segments_ids = array();
     foreach($found_segments as $segment) {
       if($segment->type === Segment::TYPE_WP_USERS) {
-        throw new \Exception(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
+        throw new \Exception(__(sprintf("Can't unsubscribe from a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
       }
       if($segment->type === Segment::TYPE_WC_USERS) {
-        throw new \Exception(__(sprintf("Can't subscribe to a WooCommerce Customers list with ID %d.", $segment->id), 'mailpoet'));
+        throw new \Exception(__(sprintf("Can't unsubscribe from a WooCommerce Customers list with ID %d.", $segment->id), 'mailpoet'));
       }
       $found_segments_ids[] = $segment->id;
     }
@@ -168,7 +168,7 @@ class API {
 
   function getLists() {
     return Segment::whereNotIn('type', [Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS])
-    ->findArray();
+      ->findArray();
   }
 
   function addSubscriber(array $subscriber, $segments = array(), $options = array()) {
