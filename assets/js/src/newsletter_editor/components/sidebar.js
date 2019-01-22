@@ -274,8 +274,8 @@ define([
         MailPoet.Modal.popup({
           template: '',
           element: this.previewView.$el,
-          width: '95%',
-          height: '94%',
+          minWidth: '95%',
+          height: '100%',
           title: MailPoet.I18n.t('newsletterPreview'),
           onCancel: function () {
             this.previewView.destroy();
