@@ -33,6 +33,7 @@ class AutomaticEmailEvent extends React.PureComponent {
           className="button button-primary"
           disabled={disabled}
           onClick={!disabled ? _.partial(this.props.eventsConfigurator, event.slug) : null}
+          data-automation-id={`create_${event.slug}`}
         >
           {event.actionButtonTitle || MailPoet.I18n.t('setUp')}
         </a>
