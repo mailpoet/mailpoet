@@ -7,5 +7,7 @@
   </label>
 </div>
 <div class="mailpoet_browser_preview_container {{#ifCond previewType '==' 'mobile'}}mailpoet_browser_preview_container_mobile{{else}}mailpoet_browser_preview_container_desktop{{/ifCond}}">
-  <iframe class="mailpoet_browser_preview_iframe" src="{{ previewUrl }}" width="{{ width }}" height="{{ height }}"></iframe>
+  <div class="mailpoet_browser_preview_border">
+    <iframe class="mailpoet_browser_preview_iframe" src="{{ previewUrl }}" width="{{ width }}" height="{{ height }}"></iframe>
+  </div>
 </div>

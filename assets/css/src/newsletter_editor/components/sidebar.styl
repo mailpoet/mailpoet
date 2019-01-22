@@ -166,7 +166,15 @@ $widget-icon-width = 30px
 .mailpoet_browser_preview_container_mobile
   width: 350px
 
-.mailpoet_browser_preview_iframe
+// fix for https://bugs.chromium.org/p/chromium/issues/detail?id=765138
+// causing border on iframe to sometimes disappear when resizing
+.mailpoet_browser_preview_border
+  width: 100%
+  height: 100%
   box-sizing: border-box
   border: 1px solid #c3c3c3
-  flex: 1 1 auto
+
+.mailpoet_browser_preview_iframe
+  width: calc(100% - 1px)
+  margin: auto
+  display: block
