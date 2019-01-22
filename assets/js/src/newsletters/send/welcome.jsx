@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import Scheduling from 'newsletters/types/welcome/scheduling.jsx';
+import SenderField from 'newsletters/send/sender_address_field.jsx';
 
 let fields = [
   {
@@ -34,7 +35,8 @@ let fields = [
       },
       {
         name: 'sender_address',
-        type: 'text',
+        type: 'reactComponent',
+        component: SenderField,
         placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
         validation: {
           'data-parsley-required': true,
