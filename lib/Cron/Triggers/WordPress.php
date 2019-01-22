@@ -8,6 +8,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
+use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
@@ -44,6 +45,8 @@ class WordPress {
     $premium_key_specified = Bridge::isPremiumKeySpecified();
     $premium_keycheck_due_tasks = PremiumKeyCheckWorker::getDueTasks();
     $premium_keycheck_future_tasks = PremiumKeyCheckWorker::getFutureTasks();
+    // stats notifications
+    $stats_notifications_tasks = (bool)Worker::getDueTasks();
     // check requirements for each worker
     $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);
     $bounce_sync_active = ($mp_sending_enabled && ($bounce_due_tasks || !$bounce_future_tasks));
@@ -57,6 +60,7 @@ class WordPress {
       || $bounce_sync_active
       || $sending_service_key_check_active
       || $premium_key_check_active
+      || $stats_notifications_tasks
     );
   }
 

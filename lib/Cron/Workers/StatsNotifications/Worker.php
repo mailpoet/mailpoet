@@ -38,7 +38,7 @@ class Worker {
   function process() {
     $settings = Setting::getValue(self::SETTINGS_KEY);
     $this->mailer->sender = $this->mailer->getSenderNameAndAddress($this->constructSenderEmail());
-    foreach($this->getTasks() as $task) {
+    foreach(self::getDueTasks() as $task) {
       try {
         $this->mailer->send($this->constructNewsletter($task), $settings['address']);
       } catch(\Exception $e) {
@@ -64,7 +64,7 @@ class Worker {
     ];
   }
 
-  private function getTasks() {
+  public static function getDueTasks() {
     $date = new Carbon();
     return ScheduledTask::orderByAsc('priority')
       ->orderByAsc('updated_at')
