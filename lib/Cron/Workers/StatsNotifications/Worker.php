@@ -100,11 +100,11 @@ class Worker {
       ->withStatistics();
   }
 
-  private function prepareContext(Newsletter $newsletter, NewsletterLink $link) {
+  private function prepareContext(Newsletter $newsletter, NewsletterLink $link = null) {
     $clicked = ($newsletter->statistics['clicked'] * 100) / $newsletter->total_sent;
     $opened = ($newsletter->statistics['opened'] * 100) / $newsletter->total_sent;
     $unsubscribed = ($newsletter->statistics['unsubscribed'] * 100) / $newsletter->total_sent;
-    return [
+    $context =  [
       'subject' => $newsletter->subject,
       'preheader' => sprintf(_x(
         '%1$s%% opens, %2$s%% clicks, %3$s%% unsubscribes in a nutshell.', 'newsletter open rate, click rate and unsubscribe rate', 'mailpoet'),
@@ -112,14 +112,18 @@ class Worker {
         number_format($opened, 2),
         number_format($unsubscribed, 2)
       ),
-      'topLinkClicks' => (int)$link->clicksCount,
-      'topLink' => $link->url,
+      $context['topLinkClicks'] = 0,
       'linkSettings' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-settings#basics'),
       'linkStats' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->id()),
       'premiumPluginActive' => is_plugin_active('mailpoet-premium/mailpoet-premium.php'),
       'clicked' => $clicked,
       'opened' => $opened,
     ];
+    if($link) {
+      $context['topLinkClicks'] = (int)$link->clicksCount;
+      $context['topLink'] = $link->url;
+    }
+    return $context;
   }
 
   private function markTaskAsFinished(ScheduledTask $task) {

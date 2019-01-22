@@ -7,7 +7,7 @@ class NewsletterLink extends Model {
   public static $_table = MP_NEWSLETTER_LINKS_TABLE;
 
   static function findTopLinkForNewsletter(Newsletter $newsletter) {
-    return self::selectExpr('links.*')
+    $link = self::selectExpr('links.*')
       ->selectExpr('count(*)', 'clicksCount')
       ->tableAlias('links')
       ->innerJoin(StatisticsClicks::$_table,
@@ -18,6 +18,10 @@ class NewsletterLink extends Model {
       ->orderByDesc('clicksCount')
       ->limit(1)
       ->findOne();
+    if(!$link) {
+      return null;
+    }
+    return $link;
   }
 
 }

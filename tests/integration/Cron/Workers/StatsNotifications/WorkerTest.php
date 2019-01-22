@@ -186,4 +186,36 @@ class WorkerTest extends \MailPoetTest {
     $this->stats_notifications->process();
   }
 
+  function testItWorksForNewsletterWithNoStats() {
+    $newsletter = Newsletter::createOrUpdate([
+      'subject' => 'Email Subject2',
+      'type' => Newsletter::TYPE_STANDARD,
+    ]);
+    $sending_task = ScheduledTask::createOrUpdate([
+      'type' => 'sending',
+      'status' => ScheduledTask::STATUS_COMPLETED,
+    ]);
+    $stats_notifications_task = ScheduledTask::createOrUpdate([
+      'type' => Worker::TASK_TYPE,
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => '2016-01-02 12:13:14',
+      'processed_at' => null,
+    ]);
+    StatsNotification::createOrUpdate([
+      'newsletter_id' => $newsletter->id(),
+      'task_id' => $stats_notifications_task->id(),
+    ]);
+    SendingQueue::createOrUpdate([
+      'newsletter_rendered_subject' => 'Email Subject2',
+      'task_id' => $sending_task->id(),
+      'newsletter_id' => $newsletter->id(),
+      'count_processed' => 15,
+    ]);
+
+    $this->mailer->expects($this->once())
+      ->method('send');
+
+    $this->stats_notifications->process();
+  }
+
 }
