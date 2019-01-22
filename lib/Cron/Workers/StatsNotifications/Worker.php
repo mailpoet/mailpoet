@@ -112,9 +112,10 @@ class Worker {
         number_format($opened, 2),
         number_format($unsubscribed, 2)
       ),
-      $context['topLinkClicks'] = 0,
+      'topLinkClicks' => 0,
       'linkSettings' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-settings#basics'),
       'linkStats' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->id()),
+      'premiumPage' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-premium'),
       'premiumPluginActive' => is_plugin_active('mailpoet-premium/mailpoet-premium.php'),
       'clicked' => $clicked,
       'opened' => $opened,

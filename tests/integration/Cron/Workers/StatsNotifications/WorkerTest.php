@@ -30,6 +30,7 @@ class WorkerTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . StatsNotification::$_table);
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->stats_notifications = new Worker($this->mailer, $this->renderer);
@@ -212,7 +213,7 @@ class WorkerTest extends \MailPoetTest {
       'count_processed' => 15,
     ]);
 
-    $this->mailer->expects($this->once())
+    $this->mailer->expects($this->exactly(2))
       ->method('send');
 
     $this->stats_notifications->process();
