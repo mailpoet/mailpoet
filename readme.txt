@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.18.0
+Stable tag: 3.18.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.18.1 - 2019-01-22 =
+* Added: new assets for WP plugin repo page;
+* Added: nine shiny and new templates for standard, post notification, and WooCommerce emails;
+* Fixed: button's settings font display fits nicely again;
+* Changed: removed the requirement of having the ZIP PHP extension to use MailPoet 3;
 
 = 3.18.0 - 2019-01-15 =
 * Fixed: CSS issues in widget settings;
