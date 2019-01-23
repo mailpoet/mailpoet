@@ -28,7 +28,6 @@
 
 
     "no-restricted-globals": 0, // todo
-    "max-len": 0, // todo
     "prefer-destructuring": 0, // todo
     "react/default-props-match-prop-types": 0, // todo
     "react/no-access-state-in-setstate": 0, // todo

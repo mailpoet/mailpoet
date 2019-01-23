@@ -141,11 +141,17 @@ class Selection extends React.Component {
             };
           },
           processResults: function processResults(response) {
-            return {
-              results: (!_.has(response, 'data'))
-                ? []
-                : response.data.map(item => ({ id: item.id || item.value, text: item.name || item.text })),
-            };
+            let results;
+            if (!_.has(response, 'data')) {
+              results = [];
+            } else {
+              results = response.data.map((item) => {
+                const id = item.id || item.value;
+                const text = item.name || item.text;
+                return { id, text };
+              });
+            }
+            return { results };
           },
         },
         minimumInputLength: remoteQuery.minimumInputLength || 2,
