@@ -18,6 +18,7 @@
     // Exceptions
     "comma-dangle": ["error", "always-multiline"],
     "no-script-url": 0,
-    "import/extensions": 0 // we wouldn't be able to import jQuery without this line
+    "import/extensions": 0, // we wouldn't be able to import jQuery without this line
+    "react/destructuring-assignment": 0 // that would be too many changes to fix this one
   }
 }
