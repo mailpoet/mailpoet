@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 
 class ListingTabs extends React.Component {
   state = {
-    tab: null,
     tabs: Hooks.applyFilters('mailpoet_newsletters_listings_tabs', [
       {
         name: 'standard',

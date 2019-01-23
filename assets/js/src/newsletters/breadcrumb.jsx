@@ -26,7 +26,6 @@ class Breadcrumb extends React.Component {
     ];
 
     this.state = {
-      step: null,
       steps,
     };
   }

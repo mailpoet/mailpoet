@@ -64,7 +64,6 @@ class Congratulate extends React.Component {
     super(props);
     this.state = {
       loading: true,
-      fail: false,
       newsletter: null,
       testingPassed: false,
       timeStart: moment(),

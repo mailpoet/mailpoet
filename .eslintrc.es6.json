@@ -33,8 +33,7 @@
     "react/no-access-state-in-setstate": 0, // todo
     "react/jsx-closing-tag-location": 0, // todo
     "react/require-default-props": 0, // todo
-    "react/jsx-no-target-blank": 0, // todo
-    "react/no-unused-state": 0 // todo
+    "react/jsx-no-target-blank": 0 // todo
   }
 }
 
