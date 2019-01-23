@@ -5,6 +5,10 @@ use MailPoet\Form\Block\Date;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property string $type
+ * @property string|array $params
+ */
 class CustomField extends Model {
   public static $_table = MP_CUSTOM_FIELDS_TABLE;
   const TYPE_DATE = 'date';

@@ -6,6 +6,11 @@ use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $id
+ * @property string $processed_at
+ * @property int $priority
+ */
 class ScheduledTask extends Model {
   public static $_table = MP_SCHEDULED_TASKS_TABLE;
   const STATUS_COMPLETED = 'completed';

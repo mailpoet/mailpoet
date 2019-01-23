@@ -10,6 +10,14 @@ use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $id
+ * @property string $email
+ * @property int $wp_user_id
+ * @property array $segments
+ * @property array $subscriptions
+ * @property string $unconfirmed_data
+ */
 class Subscriber extends Model {
   public static $_table = MP_SUBSCRIBERS_TABLE;
 
@@ -373,7 +381,7 @@ class Subscriber extends Model {
   }
 
   static function getSubscribedInSegments($segment_ids) {
-    $subscribers = SubscriberSegment::table_alias('relation')
+    $subscribers = SubscriberSegment::tableAlias('relation')
       ->whereIn('relation.segment_id', $segment_ids)
       ->where('relation.status', 'subscribed')
       ->join(
@@ -830,7 +838,7 @@ class Subscriber extends Model {
   }
 
   public function getAllSegmentNamesWithStatus() {
-    return Segment::table_alias('segment')
+    return Segment::tableAlias('segment')
       ->select('name')
       ->select('subscriber_segment.segment_id', 'segment_id')
       ->select('subscriber_segment.status', 'status')

@@ -29,13 +29,14 @@ if(!defined('ABSPATH')) exit;
  * @method $this rawQuery($query, $parameters = array())
  * @method static $this rawQuery($query, $parameters = array())
  * @method $this tableAlias($alias)
+ * @method static $this tableAlias($alias)
  * @method int countNullIdColumns()
  * @method $this select($column, $alias=null)
  * @method static $this select($column, $alias=null)
  * @method $this selectExpr($expr, $alias=null)
  * @method static $this selectExpr($expr, $alias=null)
- * @method \ORM selectMany($values,...)
- * @method static \ORM selectMany($values,...)
+ * @method \ORM selectMany(...$values)
+ * @method static \ORM selectMany(...$values)
  * @method \ORM selectManyExpr($values)
  * @method $this rawJoin($table, $constraint, $table_alias, $parameters = array())
  * @method $this innerJoin($table, $constraint, $table_alias=null)
@@ -92,8 +93,16 @@ if(!defined('ABSPATH')) exit;
  * @method static $this clearCache($table_name = null, $connection_name = self::DEFAULT_CONNECTION)
  * @method bool setExpr($key, $value = null)
  * @method bool isDirty($key)
- * @method $this table_alias($alias)
- * @method static $this table_alias($alias)
+ * @method static ORMWrapper filter(...$args)
+ * @method \ORMWrapper hasMany($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
+ * @method \ORMWrapper hasManyThrough($associated_class_name, $join_class_name=null, $key_to_base_table=null, $key_to_associated_table=null,  $key_in_base_table=null, $key_in_associated_table=null, $connection_name=null)
+ * @method \ORMWrapper hasOne($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
+ * @method \ORMWrapper|bool create($data=null)
+ * @method static \ORMWrapper|bool create($data=null)
+ * @method int count()
+ * @method static int count()
+ *
+ * @property string|null $created_at
  */
 class Model extends \Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;
