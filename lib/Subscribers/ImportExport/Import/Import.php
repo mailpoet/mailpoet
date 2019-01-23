@@ -194,6 +194,7 @@ class Import {
   }
 
   function transformSubscribersData($subscribers, $columns) {
+    $transformed_subscribers = [];
     foreach($columns as $column => $data) {
       $transformed_subscribers[$column] = array_column($subscribers, $data['index']);
     }
@@ -227,6 +228,7 @@ class Import {
     $wp_users = array_filter(array_column($temp_existing_subscribers, 'wp_user_id'));
     // create a new two-dimensional associative array with existing subscribers ($existing_subscribers)
     // and reduce $subscribers_data to only new subscribers by removing existing subscribers
+    $existing_subscribers = [];
     $subscribers_emails = array_flip($subscribers_data['email']);
     foreach($temp_existing_subscribers as $temp_existing_subscriber) {
       $existing_subscriber_key = $subscribers_emails[$temp_existing_subscriber['email']];

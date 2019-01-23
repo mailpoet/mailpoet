@@ -45,6 +45,7 @@ class MailChimp {
       return $this->throwException('API');
     }
 
+    $lists = [];
     foreach($response->data as $list) {
       $lists[] = array(
         'id' => $list->id,
@@ -65,6 +66,8 @@ class MailChimp {
     }
 
     $bytes_fetched = 0;
+    $subscribers = [];
+    $header = [];
     foreach($lists as $list) {
       $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
       $connection = @fopen($url, 'r');
@@ -72,7 +75,6 @@ class MailChimp {
         return $this->throwException('connection');
       }
       $i = 0;
-      $header = array();
       while(!feof($connection)) {
         $buffer = fgets($connection, 4096);
         if(trim($buffer) !== '') {
@@ -124,6 +126,7 @@ class MailChimp {
   }
 
   function throwException($error) {
+    $errorMessage = __('Unknown MailChimp error message.', 'mailpoet');
     switch($error) {
       case 'API':
         $errorMessage = __('Invalid API Key.', 'mailpoet');

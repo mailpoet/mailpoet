@@ -172,6 +172,7 @@ class Forms extends APIEndpoint {
     // check if the user gets to pick his own lists
     // or if it's selected by the admin
     $has_segment_selection = false;
+    $list_selection = [];
     foreach($body as $i => $block) {
       if($block['type'] === 'segment') {
         $has_segment_selection = true;

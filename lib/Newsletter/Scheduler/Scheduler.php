@@ -147,7 +147,7 @@ class Scheduler {
   }
 
   static function createPostNotificationSendingTask($newsletter) {
-    $existing_notification_history = Newsletter::table_alias('newsletters')
+    $existing_notification_history = Newsletter::tableAlias('newsletters')
       ->where('newsletters.parent_id', $newsletter->id)
       ->where('newsletters.type', Newsletter::TYPE_NOTIFICATION_HISTORY)
       ->where('newsletters.status', Newsletter::STATUS_SENDING)
@@ -194,9 +194,6 @@ class Scheduler {
       $newsletter->nthWeekDay :
       '#' . $newsletter->nthWeekDay;
     switch($interval_type) {
-      case self::INTERVAL_IMMEDIATELY:
-        $schedule = '* * * * *';
-        break;
       case self::INTERVAL_IMMEDIATE:
       case self::INTERVAL_DAILY:
         $schedule = sprintf('0 %s * * *', $hour);
@@ -209,6 +206,10 @@ class Scheduler {
         break;
       case self::INTERVAL_MONTHLY:
         $schedule = sprintf('0 %s %s * *', $hour, $month_day);
+        break;
+      case self::INTERVAL_IMMEDIATELY:
+      default:
+        $schedule = '* * * * *';
         break;
     }
     $option_field = NewsletterOptionField::where('name', 'schedule')->findOne();
