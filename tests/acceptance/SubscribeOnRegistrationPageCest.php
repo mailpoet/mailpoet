@@ -15,7 +15,14 @@ class SubscribeOnRegistrationPageCest {
     $I->click('[data-automation-id="settings-submit-button"]');
     $I->logOut();
     $I->amOnPage('/wp-login.php?action=register');
-    $I->waitForElement(['css'=>'.registration-form-mailpoet'], 10);
+    $I->waitForElement(['css'=>'.registration-form-mailpoet']);
+    $I->fillField(['name' => 'user_login'], 'registerpagesignup');
+    $I->fillField(['name' => 'user_email'], 'registerpagesignup@fake.fake');
+    $I->checkOption('#mailpoet_subscribe_on_register');
+    $I->click('#wp-submit');
+    $I->waitForText('Registration complete. Please check your email.');
     $I->login();
+    $I->amOnMailPoetPage('Subscribers');
+    $I->waitForText('registerpagesignup@fake.fake');
   }
 }
