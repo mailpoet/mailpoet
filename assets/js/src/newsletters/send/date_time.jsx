@@ -5,6 +5,8 @@ import DateText from 'newsletters/send/date_text.jsx';
 import TimeSelect from 'newsletters/send/time_select.jsx';
 
 class DateTime extends React.Component {
+  DATE_TIME_SEPARATOR = ' ';
+
   constructor(props) {
     super(props);
 
@@ -16,8 +18,6 @@ class DateTime extends React.Component {
   }
 
   getDateTime = () => [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
-
-  DATE_TIME_SEPARATOR = ' ';
 
   buildStateFromProps = (props) => {
     const value = props.value || this.props.defaultDateTime;
