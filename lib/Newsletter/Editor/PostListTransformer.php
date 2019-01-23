@@ -7,6 +7,9 @@ if(!defined('ABSPATH')) exit;
 
 class PostListTransformer {
 
+  private $args;
+  private $transformer;
+
   function __construct($args) {
     $this->args = $args;
     $this->transformer = new PostTransformer($args);

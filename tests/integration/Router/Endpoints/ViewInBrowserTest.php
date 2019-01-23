@@ -147,12 +147,12 @@ class ViewInBrowserTest extends \MailPoetTest {
     $wp_user = wp_set_current_user(0);
     // when WP user does not have 'manage options' permission, false should be returned
     $wp_user->remove_role('administrator');
-    $view_in_browser->access_control = new AccessControl();
+    $view_in_browser = new ViewInBrowser(new AccessControl());
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
 
     // when WP has 'manage options' permission, data should be returned
     $wp_user->add_role('administrator');
-    $view_in_browser->access_control = new AccessControl();
+    $view_in_browser = new ViewInBrowser(new AccessControl());
     expect($view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
@@ -168,7 +168,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     );
     $data->preview = true;
     wp_set_current_user(1);
-    $view_in_browser->access_control = new AccessControl();
+    $view_in_browser = new ViewInBrowser(new AccessControl());
     $result = $view_in_browser->_validateBrowserPreviewData($data);
     expect($result->subscriber->id)->equals(1);
   }

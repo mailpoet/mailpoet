@@ -13,6 +13,8 @@ class Router {
   public $endpoint;
   public $action;
   public $data;
+  public $endpoint_action;
+  public $access_control;
   /** @var ContainerInterface */
   private $container;
   const NAME = 'mailpoet_router';

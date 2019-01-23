@@ -66,6 +66,7 @@ class Styles {
   color:#B94A48;
 }
 EOL;
+  private $stylesheet;
 
   function __construct($stylesheet = null) {
     $this->stylesheet = $stylesheet;

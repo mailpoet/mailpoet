@@ -18,6 +18,7 @@ class SMTP {
   public $reply_to;
   public $return_path;
   public $mailer;
+  private $mailer_logger;
   const SMTP_CONNECTION_TIMEOUT = 15; // seconds
 
   /** @var SMTPMapper */

@@ -77,6 +77,7 @@ if(!defined('ABSPATH')) exit;
 class Model extends \Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;
 
+  public static $_table;
   protected $_errors;
   protected $_new_record;
 

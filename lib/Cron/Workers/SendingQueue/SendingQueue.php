@@ -22,6 +22,7 @@ class SendingQueue {
   public $mailer_task;
   public $newsletter_task;
   public $timer;
+  public $batch_size;
   const BATCH_SIZE = 20;
   const TASK_BATCH_SIZE = 5;
 

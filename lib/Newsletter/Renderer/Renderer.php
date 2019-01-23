@@ -15,6 +15,9 @@ class Renderer {
   public $CSS_inliner;
   public $newsletter;
   public $preview;
+  public $premium_activated;
+  public $mss_activated;
+  private $template;
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 

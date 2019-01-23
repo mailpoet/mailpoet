@@ -10,6 +10,8 @@ class Notice {
 
   private $type;
   private $message;
+  private $classes;
+  private $data_notice_name;
 
   function __construct($type, $message, $classes = '', $data_notice_name = '') {
     $this->type = $type;

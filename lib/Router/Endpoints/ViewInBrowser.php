@@ -18,6 +18,7 @@ class ViewInBrowser {
   public $permissions = array(
     'global' => AccessControl::NO_ACCESS_RESTRICTION
   );
+  private $access_control;
 
   function __construct(AccessControl $access_control) {
     $this->access_control = $access_control;

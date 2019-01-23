@@ -10,6 +10,11 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 class Migrator {
+
+  public $prefix;
+  private $charset_collate;
+  private $models;
+
   function __construct() {
     $this->prefix = Env::$db_prefix;
     $this->charset_collate = Env::$db_charset_collate;
