@@ -2,6 +2,5 @@ parameters:
 	tmpDir: ../../temp/phpstan
 	bootstrap: bootstrap.php
 	ignoreErrors:
-		- '#Static call to instance method MailPoet\\Models\\Model::#'
 		- '#Function members_register_.+ not found#'
 		- '#MailPoet\\Premium\\DI\\ContainerConfigurator not found#' # this class is not available when premium is not active

@@ -513,7 +513,7 @@ class Subscriber extends Model {
     $custom_field_ids = array_keys($custom_fields_data);
 
     // get custom fields
-    $custom_fields = CustomField::findMany($custom_field_ids);
+    $custom_fields = CustomField::whereIdIn($custom_field_ids)->findMany();
 
     foreach($custom_fields as $custom_field) {
       $value = (isset($custom_fields_data[$custom_field->id])
