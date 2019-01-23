@@ -23,6 +23,7 @@ class AutomaticEmailEvent extends React.PureComponent {
         <a
           href={event.actionButtonLink}
           target="_blank"
+          rel="noopener noreferrer"
         >
           {event.actionButtonTitle}
         </a>

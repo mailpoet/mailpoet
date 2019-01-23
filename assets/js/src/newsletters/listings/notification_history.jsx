@@ -49,7 +49,7 @@ let newsletterActions = [
     name: 'view',
     link: function link(newsletter) {
       return (
-        <a href={newsletter.preview_url} target="_blank">
+        <a href={newsletter.preview_url} target="_blank" rel="noopener noreferrer">
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -88,6 +88,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
             <a
               href={newsletter.preview_url}
               target="_blank"
+              rel="noopener noreferrer"
             >
               { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
             </a>

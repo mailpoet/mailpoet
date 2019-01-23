@@ -310,6 +310,7 @@ const StatisticsMixin = {
           <a
             href={improveStatsKBLink}
             target="_blank"
+            rel="noopener noreferrer"
             className="mailpoet_stat_link_small"
           >
             {MailPoet.I18n.t('improveThisLinkText')}

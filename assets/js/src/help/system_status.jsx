@@ -36,7 +36,7 @@ function renderCronSection(data) {
     <div>
       <h2>{MailPoet.I18n.t('systemStatusCronTitle')}</h2>
       <p>
-        <a href={url} target="_blank">{url}</a>
+        <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
       </p>
       {renderStatusMessage(status, MailPoet.I18n.t('systemStatusCronConnectionUnsuccessfulInfo'), '//beta.docs.mailpoet.com/article/231-sending-does-not-work')}
     </div>

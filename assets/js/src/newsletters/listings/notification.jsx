@@ -111,7 +111,7 @@ const newsletterActions = [
     name: 'view',
     link: function link(newsletter) {
       return (
-        <a href={newsletter.preview_url} target="_blank">
+        <a href={newsletter.preview_url} target="_blank" rel="noopener noreferrer">
           {MailPoet.I18n.t('preview')}
         </a>
       );

@@ -189,7 +189,7 @@ class NewsletterTypes extends React.Component {
                   </h3>
                   <p>{type.description}</p>
                   { type.videoGuide && (
-                    <a className={badgeClassName} href={type.videoGuide} target="_blank">
+                    <a className={badgeClassName} href={type.videoGuide} target="_blank" rel="noopener noreferrer">
                       <span className="dashicons dashicons-format-video" />
                       {MailPoet.I18n.t('seeVideoGuide')}
                     </a>
