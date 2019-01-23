@@ -93,8 +93,8 @@ const QueueMixin = {
         </span>
       );
     } else {
-      const resumeSendingClick = _.partial(this.resumeSending, newsletter);
-      const pauseSendingClick = _.partial(this.pauseSending, newsletter);
+      const resumeSendingClick = _.partial(QueueMixin.resumeSending, newsletter);
+      const pauseSendingClick = _.partial(QueueMixin.pauseSending, newsletter);
       label = (
         <span>
           { parseInt(newsletter.queue.count_processed, 10).toLocaleString() }
@@ -180,7 +180,7 @@ const StatisticsMixin = {
     }
 
     let params = {};
-    Hooks.addFilter('mailpoet_newsletters_listing_stats_before', this.addStatsCTALink);
+    Hooks.addFilter('mailpoet_newsletters_listing_stats_before', StatisticsMixin.addStatsCTALink);
     params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
 
     // welcome emails provide explicit total_sent value
@@ -391,14 +391,14 @@ const StatisticsMixin = {
 const MailerMixin = {
   checkMailerStatus: function checkMailerStatus(state) {
     if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
-      const errorType = this.getMailerErrorType(state);
+      const errorType = MailerMixin.getMailerErrorType(state);
       MailPoet.Notice[errorType](
         '',
         { static: true, id: 'mailpoet_mailer_error' }
       );
 
       ReactDOM.render(
-        this.getMailerError(state),
+        MailerMixin.getMailerError(state),
         jQuery('[data-id="mailpoet_mailer_error"]')[0]
       );
     } else {
@@ -444,7 +444,7 @@ const MailerMixin = {
           <a
             href="javascript:;"
             className="button"
-            onClick={this.resumeMailerSending}
+            onClick={MailerMixin.resumeMailerSending}
           >
             { MailPoet.I18n.t('mailerResumeSendingButton') }
           </a>
