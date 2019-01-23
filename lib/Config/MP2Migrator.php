@@ -15,6 +15,15 @@ use MailPoet\Util\ProgressBar;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property string $mp2_campaign_table
+ * @property string $mp2_custom_field_table
+ * @property string $mp2_email_table
+ * @property string $mp2_form_table
+ * @property string $mp2_list_table
+ * @property string $mp2_user_table
+ * @property string $mp2_user_list_table
+ */
 class MP2Migrator {
   const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours
   const CHUNK_SIZE = 10; // To import the data by batch
@@ -37,27 +46,33 @@ class MP2Migrator {
   private function defineMP2Tables() {
     global $wpdb;
 
-    if(!defined('MP2_CAMPAIGN_TABLE')) {
-      define('MP2_CAMPAIGN_TABLE', $wpdb->prefix . 'wysija_campaign');
-    }
-    if(!defined('MP2_CUSTOM_FIELD_TABLE')) {
-      define('MP2_CUSTOM_FIELD_TABLE', $wpdb->prefix . 'wysija_custom_field');
-    }
-    if(!defined('MP2_EMAIL_TABLE')) {
-      define('MP2_EMAIL_TABLE', $wpdb->prefix . 'wysija_email');
-    }
-    if(!defined('MP2_FORM_TABLE')) {
-      define('MP2_FORM_TABLE', $wpdb->prefix . 'wysija_form');
-    }
-    if(!defined('MP2_LIST_TABLE')) {
-      define('MP2_LIST_TABLE', $wpdb->prefix . 'wysija_list');
-    }
-    if(!defined('MP2_USER_TABLE')) {
-      define('MP2_USER_TABLE', $wpdb->prefix . 'wysija_user');
-    }
-    if(!defined('MP2_USER_LIST_TABLE')) {
-      define('MP2_USER_LIST_TABLE', $wpdb->prefix . 'wysija_user_list');
-    }
+    $this->mp2_campaign_table = defined('MP2_CAMPAIGN_TABLE')
+      ? MP2_CAMPAIGN_TABLE
+      : $wpdb->prefix . 'wysija_campaign';
+
+    $this->mp2_custom_field_table = defined('MP2_CUSTOM_FIELD_TABLE')
+      ? MP2_CUSTOM_FIELD_TABLE
+      : $wpdb->prefix . 'wysija_custom_field';
+
+    $this->mp2_email_table = defined('MP2_EMAIL_TABLE')
+      ? MP2_EMAIL_TABLE
+      : $wpdb->prefix . 'wysija_email';
+
+    $this->mp2_form_table = defined('MP2_FORM_TABLE')
+      ? MP2_FORM_TABLE
+      : $wpdb->prefix . 'wysija_form';
+
+    $this->mp2_list_table = defined('MP2_LIST_TABLE')
+      ? MP2_LIST_TABLE
+      : $wpdb->prefix . 'wysija_list';
+
+    $this->mp2_user_table = defined('MP2_USER_TABLE')
+      ? MP2_USER_TABLE
+      : $wpdb->prefix . 'wysija_user';
+
+    $this->mp2_user_list_table = defined('MP2_USER_LIST_TABLE')
+      ? MP2_USER_LIST_TABLE
+      : $wpdb->prefix . 'wysija_user_list';
   }
 
   /**
@@ -78,7 +93,7 @@ class MP2Migrator {
     if(Setting::getValue('mailpoet_migration_complete')) {
       return false;
     } else {
-      return $this->tableExists(MP2_CAMPAIGN_TABLE); // Check if the MailPoet 2 tables exist
+      return $this->tableExists($this->mp2_campaign_table); // Check if the MailPoet 2 tables exist
     }
   }
 
@@ -272,17 +287,17 @@ class MP2Migrator {
     $result .= __('MailPoet 2 data found:', 'mailpoet') . "\n";
 
     // User Lists
-    $users_lists_count = \ORM::for_table(MP2_LIST_TABLE)->count();
+    $users_lists_count = \ORM::for_table($this->mp2_list_table)->count();
     $total_count += $users_lists_count;
     $result .= sprintf(_n('%d subscribers list', '%d subscribers lists', $users_lists_count, 'mailpoet'), $users_lists_count) . "\n";
 
     // Users
-    $users_count = \ORM::for_table(MP2_USER_TABLE)->count();
+    $users_count = \ORM::for_table($this->mp2_user_table)->count();
     $total_count += $users_count;
     $result .= sprintf(_n('%d subscriber', '%d subscribers', $users_count, 'mailpoet'), $users_count) . "\n";
 
     // Forms
-    $forms_count = \ORM::for_table(MP2_FORM_TABLE)->count();
+    $forms_count = \ORM::for_table($this->mp2_form_table)->count();
     $total_count += $forms_count;
     $result .= sprintf(_n('%d form', '%d forms', $forms_count, 'mailpoet'), $forms_count) . "\n";
 
@@ -337,7 +352,7 @@ class MP2Migrator {
     $lists = array();
 
     $last_id = Setting::getValue('last_imported_list_id', 0);
-    $table = MP2_LIST_TABLE;
+    $table = $this->mp2_list_table;
     $sql = "
       SELECT l.list_id, l.name, l.description, l.is_enabled, l.created_at
       FROM `$table` l
@@ -414,7 +429,7 @@ class MP2Migrator {
     global $wpdb;
     $custom_fields = array();
 
-    $table = MP2_CUSTOM_FIELD_TABLE;
+    $table = $this->mp2_custom_field_table;
     $sql = "
       SELECT cf.id, cf.name, cf.type, cf.required, cf.settings
       FROM `$table` cf
@@ -576,7 +591,7 @@ class MP2Migrator {
     $users = array();
 
     $last_id = Setting::getValue('last_imported_user_id', 0);
-    $table = MP2_USER_TABLE;
+    $table = $this->mp2_user_table;
     $sql = "
       SELECT u.*
       FROM `$table` u
@@ -674,7 +689,7 @@ class MP2Migrator {
     global $wpdb;
     $user_lists = array();
 
-    $table = MP2_USER_LIST_TABLE;
+    $table = $this->mp2_user_list_table;
     $sql = "
       SELECT ul.list_id, ul.sub_date, ul.unsub_date
       FROM `$table` ul
@@ -721,9 +736,7 @@ class MP2Migrator {
     $imported_custom_fields = $this->getImportedCustomFields();
     foreach($imported_custom_fields as $custom_field) {
       $custom_field_column = 'cf_' . $custom_field['id'];
-      if(isset($custom_field_column)) {
-        $this->importSubscriberCustomField($subscriber->id, $custom_field, $user[$custom_field_column]);
-      }
+      $this->importSubscriberCustomField($subscriber->id, $custom_field, $user[$custom_field_column]);
     }
   }
 
@@ -828,7 +841,7 @@ class MP2Migrator {
     $forms = array();
 
     $last_id = Setting::getValue('last_imported_form_id', 0);
-    $table = MP2_FORM_TABLE;
+    $table = $this->mp2_form_table;
     $sql = "
       SELECT f.*
       FROM `$table` f
@@ -962,7 +975,7 @@ class MP2Migrator {
           $segment_id = $this->segments_mapping[$item_value];
           $mp3_value['id'] = $segment_id;
           $segment = Segment::findOne($segment_id);
-          if(isset($segment)) {
+          if($segment) {
             $mp3_value['name'] = $segment->get('name');
           }
         } else {
@@ -1091,7 +1104,7 @@ class MP2Migrator {
     global $wpdb;
     $email = array();
 
-    $table = MP2_EMAIL_TABLE;
+    $table = $this->mp2_email_table;
     $sql = "
       SELECT e.*
       FROM `$table` e
