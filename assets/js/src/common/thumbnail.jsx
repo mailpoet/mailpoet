@@ -20,7 +20,7 @@ export const fromDom = element => html2canvas(element, {
  */
 export const fromUrl = url => new Promise((resolve, reject) => {
   const iframe = document.createElement('iframe');
-  const protocol = location.href.startsWith('https://') ? 'https:' : 'http:';
+  const protocol = document.location.href.startsWith('https://') ? 'https:' : 'http:';
   iframe.src = protocol + url.replace(/^https?:/, '');
   iframe.style.opacity = 0;
   iframe.scrolling = 'no';

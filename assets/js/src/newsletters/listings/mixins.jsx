@@ -131,7 +131,7 @@ const QueueMixin = {
 
     let progressBarWidth = 0;
 
-    if (isNaN(percentage)) {
+    if (percentage) {
       percentage = MailPoet.I18n.t('noSubscribers');
     } else {
       progressBarWidth = percentage;

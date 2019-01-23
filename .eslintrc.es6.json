@@ -20,16 +20,11 @@
     "no-script-url": 0,
     "import/extensions": 0, // we wouldn't be able to import jQuery without this line
     "react/destructuring-assignment": 0, // that would be too many changes to fix this one
+    "prefer-destructuring": 0, // that would be too many changes to fix this one
     "jsx-a11y/label-has-for": [2, {
       "required": {"some": ["nesting", "id"]} // some of our labels are hidden and we cannot nest those
     }],
-    "jsx-a11y/anchor-is-valid": 0, // cannot fix this one, it would break wprdpress themes
-
-
-
-    "no-restricted-globals": 0, // todo
-    "prefer-destructuring": 0, // todo
-    "react/default-props-match-prop-types": 0 // todo
+    "jsx-a11y/anchor-is-valid": 0 // cannot fix this one, it would break wprdpress themes
   }
 }
 

@@ -158,8 +158,7 @@ class FormFieldDate extends React.Component {
     let property = null;
 
     if (matches !== null && matches.length === 3) {
-      field = matches[1];
-      property = matches[2];
+      [, field, property] = matches;
 
       const value = Number(e.target.value);
 
