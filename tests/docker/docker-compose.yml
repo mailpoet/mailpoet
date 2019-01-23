@@ -2,16 +2,18 @@ version: '2.1'
 
 services:
   codeception:
-    build: .
+    build:
+      context: ../..
+      dockerfile: tests/docker/codeception/Dockerfile
     depends_on:
       mailhog:
         condition: service_started
       wordpress:
         condition: service_healthy
     volumes:
-      - ./:/project
+      - ../..:/project
       - wp-core:/wp-core
-      - ./:/wp-core/wp-content/plugins/mailpoet
+      - ../..:/wp-core/wp-content/plugins/mailpoet
     entrypoint: /docker-entrypoint.sh
 
   mailhog:
@@ -21,8 +23,9 @@ services:
       - 8025:8025
 
   wordpress:
-    build: ./tests/wordpressDockerfile
-    image: wordpress:latest
+    build:
+      context: ../..
+      dockerfile: tests/docker/wordpress/Dockerfile
     depends_on:
       mysql:
         condition: service_healthy
@@ -30,7 +33,7 @@ services:
         condition: service_started
     volumes:
       - wp-core:/var/www/html
-      - ./:/var/www/html/wp-content/plugins/mailpoet
+      - ../..:/var/www/html/wp-content/plugins/mailpoet
       - /tmp:/var/www/html/wp-content/uploads/mailpoet/cache
     ports:
       - 8080:80
