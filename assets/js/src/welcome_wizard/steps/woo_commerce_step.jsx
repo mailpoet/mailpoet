@@ -23,6 +23,7 @@ const WelcomeWizardWooCommerceStep = props => (
       }
     >
       <button
+        type="button"
         className="button button-primary"
         onClick={props.next}
         disabled={props.loading}

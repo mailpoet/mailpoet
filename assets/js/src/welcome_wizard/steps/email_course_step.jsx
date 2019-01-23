@@ -25,7 +25,7 @@ const WelcomeWizardEmailCourseStep = props => (
         marginHeight="0"
       />
     </div>
-    <button className="button button-primary" onClick={props.next}>{MailPoet.I18n.t('next')}</button>
+    <button type="button" className="button button-primary" onClick={props.next}>{MailPoet.I18n.t('next')}</button>
   </div>
 );
 

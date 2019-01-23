@@ -38,7 +38,7 @@ function Success(props) {
         />
         )
       }
-      <button className="button" onClick={props.successClicked}>{MailPoet.I18n.t('close')}</button>
+      <button type="button" className="button" onClick={props.successClicked}>{MailPoet.I18n.t('close')}</button>
     </div>
   );
 }

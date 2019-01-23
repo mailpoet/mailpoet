@@ -39,6 +39,13 @@ class NewsletterTypes extends React.Component {
             role="button"
             tabIndex={0}
             disabled={!window.mailpoet_premium_active}
+            onKeyDown={(event) => {
+              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              ) {
+                event.preventDefault();
+                this.onClick();
+              }
+            }}
           >
             { MailPoet.I18n.t('setUp') }
           </a>
@@ -91,6 +98,13 @@ class NewsletterTypes extends React.Component {
               onClick={createStandardNewsletter}
               role="button"
               tabIndex={0}
+              onKeyDown={(event) => {
+                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                ) {
+                  event.preventDefault();
+                  createStandardNewsletter();
+                }
+              }}
             >
               {MailPoet.I18n.t('create')}
             </a>
@@ -136,6 +150,13 @@ class NewsletterTypes extends React.Component {
               onClick={createNotificationNewsletter}
               role="button"
               tabIndex={0}
+              onKeyDown={(event) => {
+                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                ) {
+                  event.preventDefault();
+                  createNotificationNewsletter();
+                }
+              }}
             >
               {MailPoet.I18n.t('setUp')}
             </a>

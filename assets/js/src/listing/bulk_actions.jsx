@@ -88,7 +88,7 @@ class ListingBulkActions extends React.Component {
       <div className="alignleft actions bulkactions">
         <label
           className="screen-reader-text"
-          htmlFor="bulk-action-selector-top"
+          htmlFor="bulk_actions"
         >
           {MailPoet.I18n.t('selectBulkAction')}
         </label>

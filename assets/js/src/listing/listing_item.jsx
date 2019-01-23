@@ -74,6 +74,7 @@ class ListingItem extends React.Component {
               <span key={`action-${action.name}`} className="trash">
                 {(!isFirst) ? ' | ' : ''}
                 <a
+                  type="button"
                   href="javascript:;"
                   onClick={() => this.handleTrashItem(this.props.item.id)}
                 >
@@ -89,6 +90,13 @@ class ListingItem extends React.Component {
                 className={action.name}
                 role="button"
                 tabIndex={index}
+                onKeyDown={(event) => {
+                  if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                  ) {
+                    event.preventDefault();
+                    this.props.onRefreshItems();
+                  }
+                }}
               >
                 {(!isFirst) ? ' | ' : ''}
                 { action.link(this.props.item) }

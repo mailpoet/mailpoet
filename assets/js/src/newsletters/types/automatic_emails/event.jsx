@@ -28,12 +28,21 @@ class AutomaticEmailEvent extends React.PureComponent {
         </a>
       );
     } else {
+      const onClick = !disabled ? _.partial(this.props.eventsConfigurator, event.slug) : null;
       action = (
         <a
           className="button button-primary"
           disabled={disabled}
-          onClick={!disabled ? _.partial(this.props.eventsConfigurator, event.slug) : null}
+          onClick={onClick}
+          role="button"
           data-automation-id={`create_${event.slug}`}
+          onKeyDown={(keyEvent) => {
+            if ((['keydown', 'keypress'].includes(keyEvent.type) && ['Enter', ' '].includes(keyEvent.key))
+            ) {
+              keyEvent.preventDefault();
+              onClick();
+            }
+          }}
         >
           {event.actionButtonTitle || MailPoet.I18n.t('setUp')}
         </a>

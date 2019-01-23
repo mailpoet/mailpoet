@@ -189,14 +189,15 @@ class FormList extends React.Component {
         <h1 className="title">
           {MailPoet.I18n.t('pageTitle')}
           {' '}
-          <a
+          <button
             className="page-title-action"
             href="javascript:;"
             onClick={this.createForm}
             data-automation-id="create_new_form"
+            type="button"
           >
             {MailPoet.I18n.t('new')}
-          </a>
+          </button>
         </h1>
 
         <Listing

@@ -131,6 +131,13 @@ class TemplateBox extends React.Component {
             onClick={this.onSelect}
             role="button"
             tabIndex={0}
+            onKeyDown={(event) => {
+              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              ) {
+                event.preventDefault();
+                this.onSelect();
+              }
+            }}
           >
             {' '}
             {MailPoet.I18n.t('select')}

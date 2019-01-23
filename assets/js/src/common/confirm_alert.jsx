@@ -48,7 +48,7 @@ class ConfirmAlert extends React.Component {
       <div className="mailpoet_modal_overlay">
         <div className="mailpoet_popup" tabIndex="-1">
           <div className="mailpoet_popup_wrapper">
-            <button className="mailpoet_modal_close" onClick={this.onClose} />
+            <button className="mailpoet_modal_close" onClick={this.onClose} type="button" />
             {title
               && (
               <div className="mailpoet_popup_title">
@@ -58,10 +58,10 @@ class ConfirmAlert extends React.Component {
             }
             <div className="mailpoet_popup_body clearfix">
               <p className="mailpoet_hp_email_label">{message}</p>
-              <button className="button button-secondary" onClick={this.onClose}>
+              <button className="button button-secondary" onClick={this.onClose} type="button">
                 {cancelLabel}
               </button>
-              <button className="button button-primary" onClick={this.onConfirm}>
+              <button className="button button-primary" onClick={this.onConfirm} type="submit">
                 {confirmLabel}
               </button>
             </div>
