@@ -257,28 +257,30 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testAcceptance($opts=['file' => null, 'skip-deps' => false, 'timeout' => null]) {
-    return $this->_exec(
+    return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
       ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
       ($opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
       'codeception --steps --debug -vvv ' .
       '-f ' . ($opts['file'] ? $opts['file'] : '')
-    );
+    )->dir(__DIR__ . '/tests/docker')->run();
   }
 
   function testAcceptanceMultisite($opts=['file' => null, 'skip-deps' => false, 'timeout' => null]) {
-    return $this->_exec(
+    return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
       ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
       ($opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
       '-e MULTISITE=1 ' .
       'codeception --steps --debug -vvv' .
       '-f ' . ($opts['file'] ? $opts['file'] : '')
-    );
+    )->dir(__DIR__ . '/tests/docker')->run();
   }
 
   function deleteDocker() {
-    return $this->_exec('docker-compose down -v --remove-orphans --rmi all');
+    return $this->taskExec(
+      'docker-compose down -v --remove-orphans --rmi all'
+    )->dir(__DIR__ . '/tests/docker')->run();
   }
 
   function testFailedUnit() {

@@ -148,6 +148,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              cd tests/docker
               docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_1 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
@@ -165,6 +166,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              cd tests/docker
               docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_2 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
@@ -182,6 +184,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              cd tests/docker
               docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_3 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
@@ -199,6 +202,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              cd tests/docker
               docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_4 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
@@ -216,6 +220,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              cd tests/docker
               docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_1 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
@@ -233,6 +238,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              cd tests/docker
               docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_2 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
@@ -250,6 +256,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              cd tests/docker
               docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_3 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
@@ -267,6 +274,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              cd tests/docker
               docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_4 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
