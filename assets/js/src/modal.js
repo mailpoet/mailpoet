@@ -297,8 +297,7 @@ define('modal', ['mailpoet', 'jquery'],
               this.loadTemplate();
               // show modal window
               this.showModal();
-            }.bind(this)
-          );
+            }.bind(this));
         } else if (this.options.method === 'post') {
           // make ajax request
           jQuery.post(this.options.url, JSON.stringify(this.options.params),
@@ -309,8 +308,7 @@ define('modal', ['mailpoet', 'jquery'],
               // show modal window
               this.showModal();
             }.bind(this),
-            'json'
-          );
+            'json');
         }
 
         return this;
@@ -646,6 +644,4 @@ define('modal', ['mailpoet', 'jquery'],
         return this;
       }
     };
-  }
-);
-
+  });

@@ -7,7 +7,7 @@ define(
   ) {
     var element;
     function eventHandler() {
-      if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) { // eslint-disable-line no-alert
+      if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) { // eslint-disable-line
         MailPoet.trackEvent(
           'User has reinstalled MailPoet via Settings',
           { 'MailPoet Free version': window.mailpoet_version }
@@ -40,4 +40,5 @@ define(
     if (element) {
       element.addEventListener('click', eventHandler, false);
     }
-  });
+  }
+);

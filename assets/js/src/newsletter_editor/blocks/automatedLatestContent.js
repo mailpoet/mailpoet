@@ -146,7 +146,8 @@ define([
       _.omit(base.BlockView.prototype.modelEvents, 'change'),
       {
         postsChanged: 'render'
-      }),
+      }
+    ),
     events: _.extend(base.BlockView.prototype.events, {
       'click .mailpoet_automated_latest_content_block_overlay': 'showSettings'
     }),

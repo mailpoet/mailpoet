@@ -57,7 +57,7 @@ define(
 
         // Coerce values.
         if (coerce) {
-          if (val && !isNaN(val)) { // number
+          if (val && !Number.isNaN(val)) { // number
             val = +val;
           } else if (val === 'undefined') { // undefined
             val = undefined;
@@ -79,7 +79,7 @@ define(
           for (; i <= keysLast; i += 1) {
             key = keys[i] === '' ? cur.length : keys[i];
             cur[key] = i < keysLast
-              ? cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ? {} : [])
+              ? cur[key] || (keys[i + 1] && Number.isNaN(keys[i + 1]) ? {} : [])
               : val;
             cur = cur[key];
           }
