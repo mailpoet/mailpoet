@@ -4,3 +4,5 @@ parameters:
 	ignoreErrors:
 		- '#Function members_register_.+ not found#'
 		- '#MailPoet\\Premium\\DI\\ContainerConfigurator not found#' # this class is not available when premium is not active
+		- '#Class MailPoet\\Premium\\DI\\ContainerConfigurator does not have a constructor#'
+	reportUnmatchedIgnoredErrors: false
