@@ -16,22 +16,22 @@ class SubscribeOnRegistrationPageCest {
     $I->logOut();
     $I->amOnPage('/wp-login.php?action=register');
     $I->waitForElement(['css'=>'.registration-form-mailpoet']);
-  if (! getenv('MULTISITE')) {
-    $I->fillField(['name' => 'user_login'], 'registerpagesignup');
-    $I->fillField(['name' => 'user_email'], 'registerpagesignup@fake.fake');
-    $I->checkOption('#mailpoet_subscribe_on_register');
-    $I->click('#wp-submit');
-    $I->waitForText('Registration complete. Please check your email.');
-  }
-  else {
-    $I->fillField(['name' => 'user_name'], 'muregisterpagesignup');
-    $I->fillField(['name' => 'user_email'], 'registerpagesignup@fake.fake');
-    $I->checkOption('#mailpoet_subscribe_on_register');
-    $I->click('.submit');
-    $I->waitForText('muregisterpagesignup is your new username');
-  }
+    if(! getenv('MULTISITE')) {
+      $I->fillField(['name' => 'user_login'], 'registerpagesignup');
+      $I->fillField(['name' => 'user_email'], 'registerpagesignup@fake.fake');
+      $I->checkOption('#mailpoet_subscribe_on_register');
+      $I->click('#wp-submit');
+      $I->waitForText('Registration complete. Please check your email.');
+    } else {
+      $I->fillField(['name' => 'user_name'], 'muregisterpagesignup');
+      $I->fillField(['name' => 'user_email'], 'registerpagesignup@fake.fake');
+      $I->checkOption('#mailpoet_subscribe_on_register');
+      $I->click('.submit');
+      $I->waitForText('muregisterpagesignup is your new username');
+    }
     $I->login();
     $I->amOnMailPoetPage('Subscribers');
     $I->waitForText('registerpagesignup@fake.fake');
   }
 }
+
