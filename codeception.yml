@@ -14,6 +14,7 @@ settings:
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+        - Codeception\Extension\Teststatistics
 groups:
     acceptance_group_*: tests/acceptance/_groups/group_*
 coverage:

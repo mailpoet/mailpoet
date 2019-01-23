@@ -21,7 +21,8 @@
     "soundasleep/html2text": "dev-master",
     "sabberworm/php-css-parser": "^8.1",
     "symfony/polyfill-php72": "^1.9",
-    "symfony/polyfill-mbstring": "^1.9"
+    "symfony/polyfill-mbstring": "^1.9",
+    "redcomponent/teststatistics": "^2.2"
   },
   "require-dev": {
     "codeception/aspect-mock": "2.0.1",
