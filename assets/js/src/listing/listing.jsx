@@ -463,24 +463,26 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
   },
 
   handleSelectItem: function handleSelectItem(id, isChecked) {
-    let selectedIds = this.state.selected_ids;
-    let selection = false;
+    this.setState((prevState) => {
+      let selectedIds = prevState.selected_ids;
+      let selection = false;
 
-    if (isChecked) {
-      selectedIds = jQuery.merge(selectedIds, [id]);
-      // check whether all items on the page are selected
-      if (
-        jQuery('tbody .mailpoet-check-column :checkbox:not(:checked)').length === 0
-      ) {
-        selection = 'page';
+      if (isChecked) {
+        selectedIds = jQuery.merge(selectedIds, [id]);
+        // check whether all items on the page are selected
+        if (
+          jQuery('tbody .mailpoet-check-column :checkbox:not(:checked)').length === 0
+        ) {
+          selection = 'page';
+        }
+      } else {
+        selectedIds.splice(selectedIds.indexOf(id), 1);
       }
-    } else {
-      selectedIds.splice(selectedIds.indexOf(id), 1);
-    }
 
-    this.setState({
-      selection,
-      selected_ids: selectedIds,
+      return {
+        selection,
+        selected_ids: selectedIds,
+      };
     });
   },
 
@@ -488,11 +490,13 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     if (isChecked === false) {
       this.clearSelection();
     } else {
-      const selectedIds = this.state.items.map(item => Number(item.id));
+      this.setState((prevState) => {
+        const selectedIds = prevState.items.map(item => Number(item.id));
 
-      this.setState({
-        selected_ids: selectedIds,
-        selection: 'page',
+        return {
+          selected_ids: selectedIds,
+          selection: 'page',
+        };
       });
     }
   },

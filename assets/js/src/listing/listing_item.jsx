@@ -31,7 +31,9 @@ class ListingItem extends React.Component {
   };
 
   handleToggleItem = () => {
-    this.setState({ expanded: !this.state.expanded });
+    this.setState(prevState => ({
+      expanded: !prevState.expanded,
+    }));
   };
 
   render() {

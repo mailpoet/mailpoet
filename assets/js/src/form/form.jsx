@@ -154,14 +154,15 @@ class Form extends React.Component {
     if (this.props.onChange) {
       return this.props.onChange(e);
     }
-    const item = this.state.item;
-    const field = e.target.name;
+    this.setState((prevState) => {
+      const item = prevState.item;
+      const field = e.target.name;
 
-    item[field] = e.target.value;
+      item[field] = e.target.value;
 
-    this.setState({
-      item,
+      return { item };
     });
+
     return true;
   };
 
