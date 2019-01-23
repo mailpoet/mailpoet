@@ -25,8 +25,9 @@ class SubscribeOnRegistrationPageCest {
     } else {
       $I->fillField(['name' => 'user_name'], 'muregisterpagesignup');
       $I->fillField(['name' => 'user_email'], 'registerpagesignup@fake.fake');
+      $I->scrollTo(['css' =>'#mailpoet_subscribe_on_register']);
       $I->checkOption('#mailpoet_subscribe_on_register');
-      $I->click('.submit');
+      $I->click('Next');
       $I->waitForText('muregisterpagesignup is your new username');
     }
     $I->login();
