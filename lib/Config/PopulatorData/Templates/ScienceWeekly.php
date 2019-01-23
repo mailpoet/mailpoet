@@ -9,7 +9,7 @@ class ScienceWeekly {
 
   function __construct($assets_url) {
      $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/science_weekly';
-    $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
+     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
   function get() {
