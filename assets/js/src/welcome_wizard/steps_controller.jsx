@@ -57,8 +57,7 @@ class WelcomeWizardStepsController extends React.Component {
       endpoint: 'settings',
       action: 'set',
       data,
-    }).then(() => this.setState({ loading: false })
-    ).fail((response) => {
+    }).then(() => this.setState({ loading: false })).fail((response) => {
       this.setState({ loading: false });
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -71,8 +70,7 @@ class WelcomeWizardStepsController extends React.Component {
 
   activateTracking() {
     this.updateSettings({ analytics: { enabled: true } }).then(() => (
-      this.showWooCommerceStepOrFinish())
-    );
+      this.showWooCommerceStepOrFinish()));
   }
 
   updateSender(data) {
@@ -103,47 +101,57 @@ class WelcomeWizardStepsController extends React.Component {
           steps_count={this.state.stepsCount}
           logo_src={window.mailpoet_logo_url}
         />
-        { step === 1 && this.state.shouldSetSender ?
-          <WelcomeWizardSenderStep
-            update_sender={this.updateSender}
-            submit_sender={this.submitSender}
-            update_reply_to={this.updateReplyTo}
-            finish={this.finishWizard}
-            loading={this.state.loading}
-            sender={this.state.sender}
-            reply_to={this.state.replyTo}
-          /> : null
+        { step === 1 && this.state.shouldSetSender
+          ? (
+            <WelcomeWizardSenderStep
+              update_sender={this.updateSender}
+              submit_sender={this.submitSender}
+              update_reply_to={this.updateReplyTo}
+              finish={this.finishWizard}
+              loading={this.state.loading}
+              sender={this.state.sender}
+              reply_to={this.state.replyTo}
+            />
+          ) : null
         }
 
-        { step === 1 && !this.state.shouldSetSender ?
-          <WelcomeWizardMigratedUserStep
-            next={() => this.props.history.push('/steps/2')}
-          /> : null
+        { step === 1 && !this.state.shouldSetSender
+          ? (
+            <WelcomeWizardMigratedUserStep
+              next={() => this.props.history.push('/steps/2')}
+            />
+          ) : null
         }
 
-        { step === 2 ?
-          <WelcomeWizardEmailCourseStep
-            next={() => this.props.history.push('/steps/3')}
-            illustration_url={window.email_course_illustration}
-          /> : null
+        { step === 2
+          ? (
+            <WelcomeWizardEmailCourseStep
+              next={() => this.props.history.push('/steps/3')}
+              illustration_url={window.email_course_illustration}
+            />
+          ) : null
         }
 
-        { step === 3 ?
-          <WelcomeWizardUsageTrackingStep
-            skip_action={this.showWooCommerceStepOrFinish}
-            allow_action={this.activateTracking}
-            allow_text={this.state.stepsCount === 4 ?
-              MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
-            loading={this.state.loading}
-          /> : null
+        { step === 3
+          ? (
+            <WelcomeWizardUsageTrackingStep
+              skip_action={this.showWooCommerceStepOrFinish}
+              allow_action={this.activateTracking}
+              allow_text={this.state.stepsCount === 4
+                ? MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
+              loading={this.state.loading}
+            />
+          ) : null
         }
 
-        { step === 4 ?
-          <WelcomeWizardWooCommerceStep
-            next={this.finishWizard}
-            screenshot_src={window.woocommerce_screenshot_url}
-            loading={this.state.loading}
-          /> : null
+        { step === 4
+          ? (
+            <WelcomeWizardWooCommerceStep
+              next={this.finishWizard}
+              screenshot_src={window.woocommerce_screenshot_url}
+              loading={this.state.loading}
+            />
+          ) : null
         }
       </div>
     );

@@ -39,7 +39,9 @@ function Tabs(props) {
         key={`tab-${tab.name}`}
         className={tabClasses}
         to={tab.link}
-      >{ tab.label }</Link>
+      >
+        { tab.label }
+      </Link>
     );
   });
 

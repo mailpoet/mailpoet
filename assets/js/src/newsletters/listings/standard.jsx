@@ -201,7 +201,9 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
               className="row-title"
               href="javascript:;"
               onClick={() => confirmEdit(newsletter)}
-            >{ newsletter.queue.newsletter_rendered_subject || newsletter.subject }</a>
+            >
+              { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
+            </a>
           </strong>
           { actions }
         </td>

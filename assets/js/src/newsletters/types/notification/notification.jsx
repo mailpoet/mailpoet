@@ -88,4 +88,3 @@ class NewsletterNotification extends React.Component {
 }
 
 export default withRouter(NewsletterNotification);
-

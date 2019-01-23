@@ -17,7 +17,9 @@ function Fail(props) {
               target="_blank"
               rel="noopener noreferrer"
               href="https://kb.mailpoet.com/article/231-sending-does-not-work"
-            >{ match }</a>
+            >
+              { match }
+            </a>
           )
         )
         }

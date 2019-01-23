@@ -144,7 +144,9 @@ const itemActions = [
           href="http://docs.mailpoet.com/article/133-the-wordpress-users-list"
           target="_blank"
           rel="noopener noreferrer"
-        >{MailPoet.I18n.t('readMore')}</a>
+        >
+          {MailPoet.I18n.t('readMore')}
+        </a>
       );
     },
     display: function display(segment) {
@@ -222,7 +224,9 @@ class SegmentList extends React.Component {
         <Link
           className="row-title"
           to={`/edit/${segment.id}`}
-        >{ segment.name }</Link>
+        >
+          { segment.name }
+        </Link>
       );
     }
 
@@ -260,7 +264,9 @@ class SegmentList extends React.Component {
     return (
       <div>
         <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
+          {MailPoet.I18n.t('pageTitle')}
+          {' '}
+          <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
         </h1>
 
         <Listing

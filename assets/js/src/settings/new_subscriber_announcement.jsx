@@ -15,7 +15,8 @@ const NewSubscriberNotificationAnnouncement = props => (
       <h1>{MailPoet.I18n.t('announcementHeader')}</h1>
       <img src={props.imageUrl} width="600px" height="460px" alt="" />
       <p>
-        {MailPoet.I18n.t('announcementParagraph1')}<br />
+        {MailPoet.I18n.t('announcementParagraph1')}
+        <br />
         {MailPoet.I18n.t('announcementParagraph2')}
       </p>
     </div>

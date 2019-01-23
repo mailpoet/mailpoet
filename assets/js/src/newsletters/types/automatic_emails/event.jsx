@@ -48,7 +48,11 @@ class AutomaticEmailEvent extends React.PureComponent {
           </div>
           <div className="mailpoet_description">
             <div className="title_and_badge">
-              <h3>{event.title} {event.soon ? `(${MailPoet.I18n.t('soon')})` : ''}</h3>
+              <h3>
+                {event.title}
+                {' '}
+                {event.soon ? `(${MailPoet.I18n.t('soon')})` : ''}
+              </h3>
               {event.badge ? (
                 <span className={`mailpoet_badge mailpoet_badge_${event.badge.style}`}>
                   {event.badge.text}

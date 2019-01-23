@@ -56,7 +56,7 @@ const QueueMixin = {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
-    } else if (mailerLog.status === 'paused' && newsletter.queue.status !== 'completed') {
+    } if (mailerLog.status === 'paused' && newsletter.queue.status !== 'completed') {
       return (
         <span>{MailPoet.I18n.t('paused')}</span>
       );
@@ -64,7 +64,9 @@ const QueueMixin = {
     if (newsletter.queue.status === 'scheduled') {
       return (
         <span>
-          { MailPoet.I18n.t('scheduledFor') } { MailPoet.Date.format(newsletter.queue.scheduled_at) }
+          { MailPoet.I18n.t('scheduledFor') }
+          {' '}
+          { MailPoet.Date.format(newsletter.queue.scheduled_at) }
         </span>
       );
     }
@@ -73,7 +75,7 @@ const QueueMixin = {
       { mailpoet_progress_complete: newsletter.queue.status === 'completed' }
     );
 
-      // calculate percentage done
+    // calculate percentage done
     let percentage = Math.round(
       (newsletter.queue.count_processed * 100) / (newsletter.queue.count_total)
     );
@@ -102,19 +104,27 @@ const QueueMixin = {
           <a
             id={`resume_${newsletter.id}`}
             className="button"
-            style={{ display: (newsletter.queue.status === 'paused')
-              ? 'inline-block' : 'none' }}
+            style={{
+              display: (newsletter.queue.status === 'paused')
+                ? 'inline-block' : 'none',
+            }}
             href="javascript:;"
             onClick={resumeSendingClick}
-          >{MailPoet.I18n.t('resume')}</a>
+          >
+            {MailPoet.I18n.t('resume')}
+          </a>
           <a
             id={`pause_${newsletter.id}`}
             className="button mailpoet_pause"
-            style={{ display: (newsletter.queue.status === null)
-              ? 'inline-block' : 'none' }}
+            style={{
+              display: (newsletter.queue.status === null)
+                ? 'inline-block' : 'none',
+            }}
             href="javascript:;"
             onClick={pauseSendingClick}
-          >{MailPoet.I18n.t('pause')}</a>
+          >
+            {MailPoet.I18n.t('pause')}
+          </a>
         </span>
       );
     }
@@ -225,7 +235,11 @@ const StatisticsMixin = {
       content = (
         <div className="mailpoet_stats_text">
           <div>
-            <span>{ percentageOpenedDisplay }% </span>
+            <span>
+              { percentageOpenedDisplay }
+%
+              {' '}
+            </span>
             <StatsBadge
               stat="opened"
               rate={percentageOpened}
@@ -233,7 +247,11 @@ const StatisticsMixin = {
             />
           </div>
           <div>
-            <span>{ percentageClickedDisplay }% </span>
+            <span>
+              { percentageClickedDisplay }
+%
+              {' '}
+            </span>
             <StatsBadge
               stat="clicked"
               rate={percentageClicked}
@@ -241,7 +259,10 @@ const StatisticsMixin = {
             />
           </div>
           <div>
-            <span className="mailpoet_stat_hidden">{ percentageUnsubscribedDisplay }%</span>
+            <span className="mailpoet_stat_hidden">
+              { percentageUnsubscribedDisplay }
+%
+            </span>
           </div>
         </div>
       );
@@ -250,11 +271,16 @@ const StatisticsMixin = {
       content = (
         <div>
           <span className="mailpoet_stats_text">
-            { percentageOpenedDisplay }%,
+            { percentageOpenedDisplay }
+%,
             { ' ' }
-            { percentageClickedDisplay }%
+            { percentageClickedDisplay }
+%
             <span className="mailpoet_stat_hidden">
-              , { percentageUnsubscribedDisplay }%
+              ,
+              {' '}
+              { percentageUnsubscribedDisplay }
+%
             </span>
           </span>
           { tooEarlyForStats && (
@@ -337,7 +363,7 @@ const StatisticsMixin = {
       name: 'stats',
       link: function link() {
         return (
-          <a href={'admin.php?page=mailpoet-premium'} onClick={trackStatsCTAClicked}>
+          <a href="admin.php?page=mailpoet-premium" onClick={trackStatsCTAClicked}>
             {MailPoet.I18n.t('statsListingActionTitle')}
           </a>
         );
@@ -393,18 +419,16 @@ const MailerMixin = {
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
       match => (
-        <a href={'?page=mailpoet-settings#mta'} key="check-sending">{ match }</a>
+        <a href="?page=mailpoet-settings#mta" key="check-sending">{ match }</a>
       )
     );
     if (state.meta.mta_log.error.operation === 'send') {
-      mailerErrorNotice =
-        MailPoet.I18n.t('mailerSendErrorNotice')
-          .replace('%$1s', state.meta.mta_method)
-          .replace('%$2s', state.meta.mta_log.error.error_message);
+      mailerErrorNotice = MailPoet.I18n.t('mailerSendErrorNotice')
+        .replace('%$1s', state.meta.mta_method)
+        .replace('%$2s', state.meta.mta_log.error.error_message);
     } else {
-      mailerErrorNotice =
-        MailPoet.I18n.t('mailerConnectionErrorNotice')
-          .replace('%$1s', state.meta.mta_log.error.error_message);
+      mailerErrorNotice = MailPoet.I18n.t('mailerConnectionErrorNotice')
+        .replace('%$1s', state.meta.mta_log.error.error_message);
     }
     if (state.meta.mta_log.error.error_code) {
       mailerErrorNotice += ` ${MailPoet.I18n.t('mailerErrorCode')
@@ -421,7 +445,9 @@ const MailerMixin = {
             href="javascript:;"
             className="button"
             onClick={this.resumeMailerSending}
-          >{ MailPoet.I18n.t('mailerResumeSendingButton') }</a>
+          >
+            { MailPoet.I18n.t('mailerResumeSendingButton') }
+          </a>
         </p>
       </div>
     );

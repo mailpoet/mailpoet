@@ -156,7 +156,9 @@ function beforeFormContent(subscriber) {
             <a
               key={i}
               href={`user-edit.php?user_id=${subscriber.wp_user_id}`}
-            >{ match }</a>
+            >
+              { match }
+            </a>
           )
         )
         }
@@ -171,7 +173,9 @@ function afterFormContent() {
     <p className="description">
       <strong>
         { MailPoet.I18n.t('tip') }
-      </strong> { MailPoet.I18n.t('customFieldsTip') }
+      </strong>
+      {' '}
+      { MailPoet.I18n.t('customFieldsTip') }
     </p>
   );
 }

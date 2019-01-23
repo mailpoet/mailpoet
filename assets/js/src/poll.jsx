@@ -29,9 +29,9 @@ const setPollShown = (pollType) => {
 const Poll = {
   successDelivery: {
     canShow: (pollType, skipMtaMethod) => (
-      window.mailpoet_locale === 'en' &&
-      window.mailpoet_polls_visibility[getSettingsKey(pollType)] === '1' &&
-      (skipMtaMethod || window.mailpoet_polls_data.mta_method === 'PHPMail')
+      window.mailpoet_locale === 'en'
+      && window.mailpoet_polls_visibility[getSettingsKey(pollType)] === '1'
+      && (skipMtaMethod || window.mailpoet_polls_data.mta_method === 'PHPMail')
     ),
     initTypeformScript,
     setPollShown,

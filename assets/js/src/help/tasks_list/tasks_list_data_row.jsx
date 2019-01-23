@@ -19,7 +19,8 @@ const TasksListDataRow = props => (
           target="_blank"
         >
           {props.task.newsletter.subject || MailPoet.I18n.t('preview')}
-        </a>) : MailPoet.I18n.t('none')
+        </a>
+      ) : MailPoet.I18n.t('none')
       }
     </td>
     <td className="column">

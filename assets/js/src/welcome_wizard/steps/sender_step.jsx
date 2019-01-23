@@ -21,7 +21,8 @@ const WelcomeWizardSenderStep = props => (
       }}
     >
       <label htmlFor="senderName">
-        {MailPoet.I18n.t('senderName')}:
+        {MailPoet.I18n.t('senderName')}
+:
         <input
           name="senderName"
           type="text"
@@ -32,7 +33,8 @@ const WelcomeWizardSenderStep = props => (
         />
       </label>
       <label htmlFor="senderAddress">
-        {MailPoet.I18n.t('senderAddress')}:
+        {MailPoet.I18n.t('senderAddress')}
+:
         <input
           name="senderAddress"
           type="text"

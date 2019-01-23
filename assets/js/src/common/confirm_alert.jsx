@@ -39,17 +39,22 @@ class ConfirmAlert extends React.Component {
   }
 
   render() {
-    const { title, message, confirmLabel, cancelLabel } = this.props;
+    const {
+      title, message, confirmLabel, cancelLabel,
+    } = this.props;
 
-    return (this.state.show &&
+    return (this.state.show
+      && (
       <div className="mailpoet_modal_overlay">
         <div className="mailpoet_popup" tabIndex="-1">
           <div className="mailpoet_popup_wrapper">
             <button className="mailpoet_modal_close" onClick={this.onClose} />
-            {title &&
+            {title
+              && (
               <div className="mailpoet_popup_title">
                 <h2>{title}</h2>
               </div>
+              )
             }
             <div className="mailpoet_popup_body clearfix">
               <p className="mailpoet_hp_email_label">{message}</p>
@@ -63,6 +68,7 @@ class ConfirmAlert extends React.Component {
           </div>
         </div>
       </div>
+      )
     );
   }
 }

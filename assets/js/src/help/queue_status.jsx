@@ -11,7 +11,7 @@ const QueueStatus = (props) => {
     <div>
       <h2>{MailPoet.I18n.t('systemStatusQueueTitle')}</h2>
       <KeyValueTable
-        max_width={'400px'}
+        max_width="400px"
         rows={[
           {
             key: MailPoet.I18n.t('status'),

@@ -67,9 +67,13 @@ class WelcomeScheduling extends React.Component {
   };
 
   handleEventChange = event => this.handleValueChange('event', event.target.value);
+
   handleSegmentChange = event => this.handleValueChange('segment', event.target.value);
+
   handleRoleChange = event => this.handleValueChange('role', event.target.value);
+
   handleAfterTimeNumberChange = event => this.handleValueChange('afterTimeNumber', event.target.value);
+
   handleAfterTimeTypeChange = event => this.handleValueChange('afterTimeType', event.target.value);
 
   handleNext = () => {

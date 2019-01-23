@@ -10,7 +10,7 @@ if (container) {
     <HashRouter>
       <div>
         <Route exact path="/" render={() => <Redirect to="/steps/1" />} />
-        <Route path={'/steps/:step'} component={WelcomeWizardStepsController} />
+        <Route path="/steps/:step" component={WelcomeWizardStepsController} />
       </div>
     </HashRouter>
   ), container);

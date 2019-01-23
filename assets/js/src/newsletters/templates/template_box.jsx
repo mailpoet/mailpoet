@@ -17,8 +17,11 @@ class TemplateBox extends React.Component {
     this.onDelete = this.onDelete.bind(this);
     this.onSelect = this.onSelect.bind(this);
   }
+
   onDelete() {
-    const { id, name, beforeDelete, afterDelete } = this.props;
+    const {
+      id, name, beforeDelete, afterDelete,
+    } = this.props;
     const onConfirm = () => {
       beforeDelete();
       MailPoet.Ajax.post({
@@ -55,7 +58,9 @@ class TemplateBox extends React.Component {
   }
 
   onSelect() {
-    const { newsletterId, name, beforeSelect, afterSelect } = this.props;
+    const {
+      newsletterId, name, beforeSelect, afterSelect,
+    } = this.props;
 
     beforeSelect();
 
@@ -86,7 +91,9 @@ class TemplateBox extends React.Component {
   }
 
   render() {
-    const { index, name, thumbnail, readonly } = this.props;
+    const {
+      index, name, thumbnail, readonly,
+    } = this.props;
 
     const deleteLink = (
       <div className="mailpoet_delete button button-secondary">
@@ -124,7 +131,12 @@ class TemplateBox extends React.Component {
             onClick={this.onSelect}
             role="button"
             tabIndex={0}
-          > {MailPoet.I18n.t('select')} </a>
+          >
+            {' '}
+            {MailPoet.I18n.t('select')}
+            {' '}
+
+          </a>
         </div>
       </li>
     );

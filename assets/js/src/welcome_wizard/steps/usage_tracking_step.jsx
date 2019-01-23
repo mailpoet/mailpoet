@@ -17,7 +17,9 @@ const WelcomeWizardUsageTrackingStep = props => (
               href="https://beta.docs.mailpoet.com/article/130-sharing-your-data-with-us"
               target="_blank"
               rel="noopener noreferrer"
-            >{ match }</a>
+            >
+              { match }
+            </a>
           )
         )
       }

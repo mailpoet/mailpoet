@@ -12,15 +12,17 @@ function Tooltip(props) {
   }
 
   if (typeof props.tooltip === 'string') {
-    tooltip = (<span
-      style={{
-        pointerEvents: 'all',
-        maxWidth: '400px',
-        display: 'inline-block',
-      }}
-    >
-      {ReactHtmlParser(props.tooltip)}
-    </span>);
+    tooltip = (
+      <span
+        style={{
+          pointerEvents: 'all',
+          maxWidth: '400px',
+          display: 'inline-block',
+        }}
+      >
+        {ReactHtmlParser(props.tooltip)}
+      </span>
+    );
   }
 
   return (

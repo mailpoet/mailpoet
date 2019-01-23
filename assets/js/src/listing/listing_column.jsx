@@ -40,7 +40,9 @@ class ListingColumn extends React.Component {
         id={this.props.column.name}
         scope="col"
         width={this.props.column.width || null}
-      >{label}</th>
+      >
+        {label}
+      </th>
     );
   }
 }

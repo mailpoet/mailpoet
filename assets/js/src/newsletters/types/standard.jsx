@@ -47,4 +47,3 @@ class NewsletterStandard extends React.Component {
 }
 
 export default withRouter(NewsletterStandard);
-

@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
+import {
+  HashRouter, Switch, Route, Redirect,
+} from 'react-router-dom';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import PropTypes from 'prop-types';

@@ -36,10 +36,11 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
     }
     const selectAllClasses = classNames(
       'mailpoet_select_all',
-      { mailpoet_hidden: (
-        this.props.selection === false
+      {
+        mailpoet_hidden: (
+          this.props.selection === false
             || (this.props.count <= this.props.limit)
-      ),
+        ),
       }
     );
 
@@ -63,11 +64,13 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
             <a
               onClick={this.props.onSelectAll}
               href="javascript:;"
-            >{
+            >
+              {
                 (this.props.selection !== 'all')
                   ? MailPoet.I18n.t('selectAllLink')
                   : MailPoet.I18n.t('clearSelection')
-              }</a>
+              }
+            </a>
           </td>
         </tr>
 

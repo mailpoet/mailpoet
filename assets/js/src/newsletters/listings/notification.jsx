@@ -277,7 +277,9 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
 
     return (
       <span>
-        { sendingFrequency } { sendingToSegments }
+        { sendingFrequency }
+        {' '}
+        { sendingToSegments }
       </span>
     );
   },
@@ -293,7 +295,9 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
       <Link
         data-automation-id={`history-${newsletter.id}`}
         to={`/notification/history/${newsletter.id}`}
-      >{ MailPoet.I18n.t('viewHistory') }</Link>
+      >
+        { MailPoet.I18n.t('viewHistory') }
+      </Link>
     );
   },
 
@@ -311,7 +315,9 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
             <a
               className="row-title"
               href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
-            >{ newsletter.subject }</a>
+            >
+              { newsletter.subject }
+            </a>
           </strong>
           { actions }
         </td>

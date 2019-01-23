@@ -89,7 +89,7 @@ const messages = {
         <div>
           <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
           <p>
-            <a href={'admin.php?page=mailpoet-premium'} className="button-primary">
+            <a href="admin.php?page=mailpoet-premium" className="button-primary">
               {MailPoet.I18n.t('bouncedSubscribersPremiumButtonText')}
             </a>
           </p>
@@ -314,10 +314,14 @@ class SubscriberList extends React.Component {
             <Link
               className="row-title"
               to={`/edit/${subscriber.id}`}
-            >{ subscriber.email }</Link>
+            >
+              { subscriber.email }
+            </Link>
           </strong>
           <p style={{ margin: 0 }}>
-            { subscriber.first_name } { subscriber.last_name }
+            { subscriber.first_name }
+            {' '}
+            { subscriber.last_name }
           </p>
           { actions }
         </td>
@@ -341,19 +345,27 @@ class SubscriberList extends React.Component {
     return (
       <div>
         <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link
+          {MailPoet.I18n.t('pageTitle')}
+          {' '}
+          <Link
             className="page-title-action"
             to="/new"
-          >{MailPoet.I18n.t('new')}</Link>
+          >
+            {MailPoet.I18n.t('new')}
+          </Link>
           <a
             className="page-title-action"
             href="?page=mailpoet-import#step1"
-          >{MailPoet.I18n.t('import')}</a>
+          >
+            {MailPoet.I18n.t('import')}
+          </a>
           <a
             id="mailpoet_export_button"
             className="page-title-action"
             href="?page=mailpoet-export"
-          >{MailPoet.I18n.t('export')}</a>
+          >
+            {MailPoet.I18n.t('export')}
+          </a>
         </h1>
 
         <Listing
@@ -366,8 +378,8 @@ class SubscriberList extends React.Component {
           bulk_actions={bulkActions}
           item_actions={itemActions}
           messages={messages}
-          sort_by={'created_at'}
-          sort_order={'desc'}
+          sort_by="created_at"
+          sort_order="desc"
         />
       </div>
     );

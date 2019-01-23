@@ -7,9 +7,9 @@ import Tabs from './tabs.jsx';
 
 function renderStatusMessage(status, error, link) {
   const noticeType = (status) ? 'success' : 'error';
-  let noticeMessage = (status) ?
-    MailPoet.I18n.t('systemStatusConnectionSuccessful') :
-    `${MailPoet.I18n.t('systemStatusConnectionUnsuccessful')} ${error}`;
+  let noticeMessage = (status)
+    ? MailPoet.I18n.t('systemStatusConnectionSuccessful')
+    : `${MailPoet.I18n.t('systemStatusConnectionUnsuccessful')} ${error}`;
 
   if (link) {
     noticeMessage = ReactStringReplace(

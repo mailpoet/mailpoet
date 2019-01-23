@@ -104,7 +104,9 @@ class ListingBulkActions extends React.Component {
             <option
               value={action.name}
               key={`action-${action.name}`}
-            >{ action.label }</option>
+            >
+              { action.label }
+            </option>
           )) }
         </select>
         <input

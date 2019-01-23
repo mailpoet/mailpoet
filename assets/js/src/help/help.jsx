@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter, Route, Redirect, Switch } from 'react-router-dom';
+import {
+  HashRouter, Route, Redirect, Switch,
+} from 'react-router-dom';
 
 import KnowledgeBase from 'help/knowledge_base.jsx';
 import SystemInfo from 'help/system_info.jsx';

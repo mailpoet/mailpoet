@@ -30,14 +30,13 @@ class FormFieldSelect extends React.Component {
     if (sortBy) {
       // Extract keys from sorted [key, value] select value pairs, sorted by
       // provided sorting order.
-      keys =
-        _.map(
-          _.sortBy(
-            _.pairs(this.props.field.values),
-            item => sortBy(item[0], item[1])
-          ),
-          item => item[0]
-        );
+      keys = _.map(
+        _.sortBy(
+          _.pairs(this.props.field.values),
+          item => sortBy(item[0], item[1])
+        ),
+        item => item[0]
+      );
     } else {
       keys = Object.keys(this.props.field.values);
     }

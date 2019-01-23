@@ -25,8 +25,8 @@ class InAppAnnouncement extends React.Component {
   }
 
   render() {
-    if (this.props.showToNewUser !== null &&
-      window.mailpoet_is_new_user !== this.props.showToNewUser
+    if (this.props.showToNewUser !== null
+      && window.mailpoet_is_new_user !== this.props.showToNewUser
     ) {
       return null;
     }
@@ -37,14 +37,14 @@ class InAppAnnouncement extends React.Component {
       return null;
     }
 
-    if (this.props.showToPremiumUser !== null &&
-      window.mailpoet_premium_active !== this.props.showToPremiumUser
+    if (this.props.showToPremiumUser !== null
+      && window.mailpoet_premium_active !== this.props.showToPremiumUser
     ) {
       return null;
     }
 
-    if (this.props.showOnlyOnceSlug &&
-      this.state.announcementsSettings.displayed.includes(this.props.showOnlyOnceSlug)
+    if (this.props.showOnlyOnceSlug
+      && this.state.announcementsSettings.displayed.includes(this.props.showOnlyOnceSlug)
     ) {
       return null;
     }

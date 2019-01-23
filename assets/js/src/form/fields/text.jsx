@@ -11,8 +11,8 @@ class FormFieldText extends React.Component { // eslint-disable-line react/prefe
     if (this.props.onValueChange instanceof Function) {
       value = item[this.props.field.name];
       // set value to defaultValue if available
-      value = (value === undefined) ?
-        (this.props.field.defaultValue || '') : value;
+      value = (value === undefined)
+        ? (this.props.field.defaultValue || '') : value;
     }
     // defaultValue should only be set only when value is not set
     if (!value && this.props.field.defaultValue) {

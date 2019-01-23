@@ -161,11 +161,16 @@ class NewsletterTypes extends React.Component {
                   {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
                 </div>
                 <div className="mailpoet_description">
-                  <h3>{type.title} {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}</h3>
+                  <h3>
+                    {type.title}
+                    {' '}
+                    {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
+                  </h3>
                   <p>{type.description}</p>
                   { type.videoGuide && (
                     <a className={badgeClassName} href={type.videoGuide} target="_blank">
-                      <span className="dashicons dashicons-format-video" />{MailPoet.I18n.t('seeVideoGuide')}
+                      <span className="dashicons dashicons-format-video" />
+                      {MailPoet.I18n.t('seeVideoGuide')}
                     </a>
                   ) }
                 </div>

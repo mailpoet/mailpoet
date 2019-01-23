@@ -88,7 +88,9 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
             <a
               href={newsletter.preview_url}
               target="_blank"
-            >{ newsletter.queue.newsletter_rendered_subject || newsletter.subject }</a>
+            >
+              { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
+            </a>
           </strong>
           { actions }
         </td>
@@ -122,7 +124,9 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
         <Link
           className="page-title-action"
           to="/notification"
-        >{MailPoet.I18n.t('backToPostNotifications')}</Link>
+        >
+          {MailPoet.I18n.t('backToPostNotifications')}
+        </Link>
 
         <Listing
           limit={window.mailpoet_listing_per_page}

@@ -31,9 +31,9 @@ class ImportTemplate extends React.Component {
     }
 
     if (
-      template.categories.indexOf('standard') === -1 &&
-      template.categories.indexOf('welcome') === -1 &&
-      template.categories.indexOf('notification') === -1
+      template.categories.indexOf('standard') === -1
+      && template.categories.indexOf('welcome') === -1
+      && template.categories.indexOf('notification') === -1
     ) {
       template.categories.push('standard');
     }
@@ -84,6 +84,7 @@ class ImportTemplate extends React.Component {
     reader.readAsText(file);
     return true;
   }
+
   render() {
     return (
       <div>
