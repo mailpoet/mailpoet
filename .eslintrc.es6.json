@@ -31,8 +31,7 @@
     "prefer-destructuring": 0, // todo
     "react/default-props-match-prop-types": 0, // todo
     "react/no-access-state-in-setstate": 0, // todo
-    "react/jsx-closing-tag-location": 0, // todo
-    "react/require-default-props": 0 // todo
+    "react/jsx-closing-tag-location": 0 // todo
   }
 }
 

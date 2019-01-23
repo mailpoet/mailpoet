@@ -56,14 +56,4 @@ CronStatus.propTypes = {
   }).isRequired,
 };
 
-CronStatus.defaultProps = {
-  status_data: {
-    accessible: null,
-    status: null,
-    updated_at: null,
-    run_accessed_at: null,
-    run_completed_at: null,
-  },
-};
-
 export default CronStatus;

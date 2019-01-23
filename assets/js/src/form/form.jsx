@@ -8,7 +8,6 @@ import { withRouter } from 'react-router-dom';
 
 class Form extends React.Component {
   static defaultProps = {
-    params: {},
     errors: undefined,
     fields: undefined,
     item: undefined,
@@ -23,10 +22,6 @@ class Form extends React.Component {
     id: '',
     onSubmit: undefined,
     automationId: '',
-    messages: {
-      onUpdate: () => { /* no-op */ },
-      onCreate: () => { /* no-op */ },
-    },
     endpoint: undefined,
   };
 

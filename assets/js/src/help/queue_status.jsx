@@ -79,15 +79,4 @@ QueueStatus.propTypes = {
   }).isRequired,
 };
 
-QueueStatus.defaultProps = {
-  status_data: {
-    status: null,
-    started: null,
-    sent: null,
-    retry_attempt: null,
-    retry_at: null,
-    error: null,
-  },
-};
-
 export default QueueStatus;

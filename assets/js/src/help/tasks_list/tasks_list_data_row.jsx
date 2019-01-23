@@ -58,9 +58,6 @@ TasksListDataRow.propTypes = {
 
 TasksListDataRow.defaultProps = {
   show_scheduled_at: false,
-  task: {
-    newsletter: null,
-  },
 };
 
 export default TasksListDataRow;
