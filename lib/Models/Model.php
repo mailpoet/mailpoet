@@ -26,6 +26,7 @@ if(!defined('ABSPATH')) exit;
  * @method $this rawQuery($query, $parameters = array())
  * @method $this tableAlias($alias)
  * @method int countNullIdColumns()
+ * @method $this select($column, $alias=null)
  * @method $this selectExpr($expr, $alias=null)
  * @method \ORM selectMany($values)
  * @method \ORM selectManyExpr($values)
@@ -34,6 +35,7 @@ if(!defined('ABSPATH')) exit;
  * @method $this leftOuterJoin($table, $constraint, $table_alias=null)
  * @method $this rightOuterJoin($table, $constraint, $table_alias=null)
  * @method $this fullOuterJoin($table, $constraint, $table_alias=null)
+ * @method $this where($column_name, $value=null)
  * @method $this whereEqual($column_name, $value=null)
  * @method $this whereNotEqual($column_name, $value=null)
  * @method $this whereIdIs($id)
@@ -73,6 +75,7 @@ if(!defined('ABSPATH')) exit;
  * @method static $this clearCache($table_name = null, $connection_name = self::DEFAULT_CONNECTION)
  * @method bool setExpr($key, $value = null)
  * @method bool isDirty($key)
+ * @method $this table_alias($alias)
  */
 class Model extends \Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;
