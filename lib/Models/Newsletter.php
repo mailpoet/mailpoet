@@ -41,11 +41,14 @@ class Newsletter extends Model {
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
 
+  private $emoji;
+
   function __construct() {
     parent::__construct();
     $this->addValidations('type', array(
       'required' => __('Please specify a type.', 'mailpoet')
     ));
+    $this->emoji = new Emoji();
   }
 
   function queue() {
@@ -105,7 +108,7 @@ class Newsletter extends Model {
       }
       $this->set(
         'body',
-        Emoji::encodeForUTF8Column(self::$_table, 'body', $this->body)
+        $this->emoji->encodeForUTF8Column(self::$_table, 'body', $this->body)
       );
     }
 

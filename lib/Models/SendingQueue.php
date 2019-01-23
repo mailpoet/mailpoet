@@ -24,12 +24,15 @@ class SendingQueue extends Model {
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
 
+  private $emoji;
+  
   function __construct() {
     parent::__construct();
 
     $this->addValidations('newsletter_rendered_body', array(
       'validRenderedNewsletterBody' => __('Rendered newsletter body is invalid!', 'mailpoet')
     ));
+    $this->emoji = new Emoji();
   }
 
   function task() {
@@ -107,7 +110,7 @@ class SendingQueue extends Model {
   function encodeEmojisInBody($newsletter_rendered_body) {
     if(is_array($newsletter_rendered_body)) {
       foreach($newsletter_rendered_body as $key => $value) {
-        $newsletter_rendered_body[$key] = Emoji::encodeForUTF8Column(
+        $newsletter_rendered_body[$key] = $this->emoji->encodeForUTF8Column(
           self::$_table,
           'newsletter_rendered_body',
           $value
@@ -120,7 +123,7 @@ class SendingQueue extends Model {
   function decodeEmojisInBody($newsletter_rendered_body) {
     if(is_array($newsletter_rendered_body)) {
       foreach($newsletter_rendered_body as $key => $value) {
-        $newsletter_rendered_body[$key] = Emoji::decodeEntities($value);
+        $newsletter_rendered_body[$key] = $this->emoji->decodeEntities($value);
       }
     }
     return $newsletter_rendered_body;
