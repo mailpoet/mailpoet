@@ -6,7 +6,10 @@ import FormList from './list.jsx';
 const container = document.getElementById('forms_container');
 
 if (container) {
-  ReactDOM.render(<HashRouter>
-    <Route path="*" component={FormList} />
-  </HashRouter>, container);
+  ReactDOM.render(
+    <HashRouter>
+      <Route path="*" component={FormList} />
+    </HashRouter>,
+    container
+  );
 }
