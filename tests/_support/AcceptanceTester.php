@@ -69,12 +69,16 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function amOnMailpoetPage($page) {
     $I = $this;
-    $I->amOnPage('/wp-admin');
-    $I->waitForText('MailPoet', 10);
-    $I->click('MailPoet');
-    $I->waitForText($page, 5);
-    $I->click($page);
-    $I->waitForText($page, 5);
+    if($page === 'Emails') {
+      $path = 'newsletters';
+    } elseif($page === 'Lists') {
+      $path = 'segments';
+    } elseif($page === 'Segments') {
+      $path = 'dynamic-segments';
+    } else {
+      $path = strtolower($page);
+    }
+    $I->amOnPage("/wp-admin/admin.php?page=mailpoet-$path");
   }
 
   /**
