@@ -15,15 +15,6 @@ use MailPoet\Util\ProgressBar;
 
 if(!defined('ABSPATH')) exit;
 
-/**
- * @property string $mp2_campaign_table
- * @property string $mp2_custom_field_table
- * @property string $mp2_email_table
- * @property string $mp2_form_table
- * @property string $mp2_list_table
- * @property string $mp2_user_table
- * @property string $mp2_user_list_table
- */
 class MP2Migrator {
   const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours
   const CHUNK_SIZE = 10; // To import the data by batch
@@ -34,6 +25,14 @@ class MP2Migrator {
   private $segments_mapping = array(); // Mapping between old and new segment IDs
   private $wp_users_segment;
   private $double_optin_enabled = true;
+  private $mp2_campaign_table;
+  private $mp2_custom_field_table;
+  private $mp2_email_table;
+  private $mp2_form_table;
+  private $mp2_list_table;
+  private $mp2_user_table;
+  private $mp2_user_list_table;
+
 
   public function __construct() {
     $this->defineMP2Tables();
