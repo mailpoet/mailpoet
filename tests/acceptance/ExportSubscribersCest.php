@@ -26,7 +26,7 @@ class ExportSubscribersCest {
     $I->selectOptionInSelect2($segment_name);
     //export
     $I->click('.button-primary.mailpoet_export_process');
-    $I->waitForText('3 subscribers were exported. Get the exported file here.', 20);
+    $I->waitForText('3 subscribers were exported. Get the exported file here.');
     $I->seeNoJSErrors();
   }
 }

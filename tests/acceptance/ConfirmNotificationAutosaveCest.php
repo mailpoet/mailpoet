@@ -24,7 +24,7 @@ class ConfirmNotificationAutosaveCest {
     $I->waitForElement($title_element);
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->fillField($title_element, $newsletter_title);
-    $I->waitForText('Autosaved', 20);
+    $I->waitForText('Autosaved');
   }
 
 }

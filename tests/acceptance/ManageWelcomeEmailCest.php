@@ -31,23 +31,23 @@ class ManageWelcomeEmailCest {
     $I->click('[data-automation-id="new_email"]');
     $I->seeInCurrentUrl('#/new');
     $I->click('[data-automation-id="create_welcome"]');
-    $I->waitForText('Welcome Email', 20);
+    $I->waitForText('Welcome Email');
     $I->seeInCurrentUrl('mailpoet-newsletters#/new/welcome');
     $I->click('Next');
-    $I->waitForElement($this->welcome_template, 20);
+    $I->waitForElement($this->welcome_template);
     $I->see('Welcome Emails', ['css' => 'a.current']);
     $I->seeInCurrentUrl('#/template');
     $I->click($this->welcome_template);
-    $I->waitForElement($this->title_element, 20);
+    $I->waitForElement($this->title_element);
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->fillField($this->title_element, $newsletter_title);
     $I->click('Next');
-    $I->waitForText('Reply-to', 20);
+    $I->waitForText('Reply-to');
     $I->click('Save as draft and close');
-    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]', 20);
+    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $I->seeInCurrentUrl('mailpoet-newsletters');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title, 20);
+    $I->waitForText($newsletter_title);
   }
 
   function editWelcomeEmail(\AcceptanceTester $I) {
@@ -57,19 +57,19 @@ class ManageWelcomeEmailCest {
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title, 20);
+    $I->waitForText($newsletter_title);
     $I->clickItemRowActionByItemName($newsletter_title, 'Edit');
-    $I->waitForElement($this->title_element, 10);
+    $I->waitForElement($this->title_element);
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->fillField($this->title_element, 'Edit Test Welcome Edited');
     $I->click('Next');
-    $I->waitForText('Reply-to', 20);
+    $I->waitForText('Reply-to');
     $I->click('Save as draft and close');
     $I->amOnMailpoetPage('Emails');
-    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]', 20);
+    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $I->seeInCurrentUrl('mailpoet-newsletters');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText('Edit Test Welcome Edited', 20);
+    $I->waitForText('Edit Test Welcome Edited');
   }
 
   function deleteWelcomeEmail(\AcceptanceTester $I) {
@@ -79,7 +79,7 @@ class ManageWelcomeEmailCest {
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title, 20);
+    $I->waitForText($newsletter_title);
     $I->clickItemRowActionByItemName($newsletter_title, 'Move to trash');
     $I->waitForElement('[data-automation-id="filters_trash"]');
     $I->click('[data-automation-id="filters_trash"]');
@@ -87,7 +87,7 @@ class ManageWelcomeEmailCest {
     $I->clickItemRowActionByItemName($newsletter_title, 'Restore');
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title, 15);
+    $I->waitForText($newsletter_title);
   }
 
   function duplicateWelcomeEmail (\AcceptanceTester $I) {
@@ -97,9 +97,9 @@ class ManageWelcomeEmailCest {
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title, 20);
+    $I->waitForText($newsletter_title);
     $I->clickItemRowActionByItemName($newsletter_title, 'Duplicate');
-    $I->waitForText('Copy of ' . $newsletter_title, 10);
+    $I->waitForText('Copy of ' . $newsletter_title);
   }
 
   function searchForWelcomeEmail (\AcceptanceTester $I) {
@@ -110,12 +110,12 @@ class ManageWelcomeEmailCest {
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title, 20);
+    $I->waitForText($newsletter_title);
     $I->searchFor($failure_condition_newsletter, 2);
     $I->wait(5);
-    $I->waitForElement('tr.no-items', 10);
+    $I->waitForElement('tr.no-items');
     $I->searchFor($newsletter_title);
-    $I->waitForText($newsletter_title, 10);
+    $I->waitForText($newsletter_title);
   }
 
   function saveWelcomeEmailAsTemplate (\AcceptanceTester $I) {
@@ -131,25 +131,25 @@ class ManageWelcomeEmailCest {
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title, 20);
+    $I->waitForText($newsletter_title);
     $I->clickItemRowActionByItemName($newsletter_title, 'Edit');
-    $I->waitForElement($this->title_element, 10);
+    $I->waitForElement($this->title_element);
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->click('[data-automation-id="newsletter_save_options_toggle"]');
-    $I->waitForElement($save_template_option, 10);
+    $I->waitForElement($save_template_option);
     $I->click($save_template_option);
-    $I->waitForElement($save_template_button, 10);
+    $I->waitForElement($save_template_button);
     $I->fillField('template_name', $template_title);
     $I->fillField('template_description', $template_descr);
     $I->click($save_template_button);
-    $I->waitForText('Template has been saved.', 20);
+    $I->waitForText('Template has been saved.');
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id="new_email"]');
     $I->seeInCurrentUrl('#/new');
     $I->click('[data-automation-id="create_welcome"]');
     $I->seeInCurrentUrl('#/new/welcome');
     $I->click('Next');
-    $I->waitForElement($this->welcome_template, 20);
+    $I->waitForElement($this->welcome_template);
     $I->see('Welcome Emails', ['css' => 'a.current']);
     $I->seeInCurrentUrl('#/template');
     $I->see($template_title);

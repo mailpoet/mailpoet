@@ -37,11 +37,11 @@ class ReinstallFromScratchCest {
 
     // Step 2 - reinstall from scratch
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet-settings#advanced');
-    $I->waitForElement('#mailpoet_reinstall', 30);
+    $I->waitForElement('#mailpoet_reinstall');
     $I->click('Reinstall now...');
     $I->acceptPopup();
-    $I->waitForElement('#mailpoet_loading', 30);
-    $I->waitForElementNotVisible('#mailpoet_loading', 30);
+    $I->waitForElement('#mailpoet_loading');
+    $I->waitForElementNotVisible('#mailpoet_loading');
 
     // Step 3 - skip all tutorials, which could interfere with other tests
     $settings = new Settings();
@@ -50,7 +50,7 @@ class ReinstallFromScratchCest {
     // Step 4 - check if data are emptied and repopulated
     // Check emails
     $I->amOnMailpoetPage('Emails');
-    $I->waitForText('Nothing here yet!', 30);
+    $I->waitForText('Nothing here yet!');
     $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 0);
     // Check forms
     $I->amOnMailpoetPage('Forms');

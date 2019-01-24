@@ -33,7 +33,7 @@ class NewslettersListingCest {
     $I->click('[data-automation-id="settings-submit-button"]');
 
     $I->amOnMailpoetPage('Emails');
-    $I->waitForText('Subject', 5);
+    $I->waitForText('Subject');
     $I->dontSee('Opened, Clicked');
 
     // column is visible when tracking is enabled
@@ -43,7 +43,7 @@ class NewslettersListingCest {
     $I->click('[data-automation-id="settings-submit-button"]');
 
     $I->amOnMailpoetPage('Emails');
-    $I->waitForText('Subject', 5);
+    $I->waitForText('Subject');
     $I->see('Opened, Clicked');
     $I->seeNoJSErrors();
   }

@@ -19,16 +19,16 @@ class SubscriptionFormEditCest {
     $I->wantTo('Edit a form');
     $I->login();
     $I->amOnMailpoetPage('Forms');
-    $I->waitForText($form_name, 10);
+    $I->waitForText($form_name);
     $I->clickItemRowActionByItemName($form_name, 'Edit');
     $title_element = '[data-automation-id="mailpoet_form_name_input"]';
-    $I->waitForElement($title_element, 10);
+    $I->waitForElement($title_element);
     $I->seeInCurrentUrl('mailpoet-form-editor');
     $I->fillField($title_element, $form_edited_name);
     $I->selectOptionInSelect2('My First List');
     $I->click('[data-automation-id="save_form"]');
     //Step three - assertions
-    $I->waitForText('Saved!', 10);
+    $I->waitForText('Saved!');
     $I->amOnMailpoetPage('Forms');
     $I->waitForText($form_edited_name);
   }

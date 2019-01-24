@@ -26,7 +26,7 @@ class SaveNotificationAsDraftCest {
     $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
     $I->selectOptionInSelect2('WordPress Users');
     $I->click('Save as draft and close');
-    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]', 10);
+    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $I->seeInCurrentUrl('/wp-admin/admin.php?page=mailpoet-newsletters#/notification');
     $I->waitForText('Draft Test Post Notification');
   }

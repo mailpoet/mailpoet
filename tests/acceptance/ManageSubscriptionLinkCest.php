@@ -48,7 +48,7 @@ class ManageSubscriptionLinkCest {
     $I->seeInCurrentUrl('#/send');
     $I->selectOptionInSelect2('WordPress Users');
     $I->click('Send');
-    $I->waitForText('Sent to 1 of 1', 60);
+    $I->waitForText('Sent to 1 of 1');
   }
 
   function manageSubscriptionLink(\AcceptanceTester $I) {

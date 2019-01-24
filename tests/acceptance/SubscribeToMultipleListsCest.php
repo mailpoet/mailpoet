@@ -46,9 +46,9 @@ class SubscribeToMultipleListsCest {
     $I->click('Click here to confirm your subscription');
     $I->switchToNextTab();
     $I->see('You have subscribed');
-    $I->waitForText($seg1, 10);
-    $I->waitForText($seg2, 10);
-    $I->waitForText($seg3, 10);
+    $I->waitForText($seg1);
+    $I->waitForText($seg2);
+    $I->waitForText($seg3);
     $I->seeNoJSErrors();
     //reset widget for other tests
     $I->cli('widget reset sidebar-1 --allow-root');
