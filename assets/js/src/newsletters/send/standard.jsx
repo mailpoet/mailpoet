@@ -5,6 +5,7 @@ import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 
 import DateTime from 'newsletters/send/date_time.jsx';
+import SenderField from 'newsletters/send/sender_address_field.jsx';
 
 const currentTime = window.mailpoet_current_time || '00:00';
 const defaultDateTime = `${window.mailpoet_current_date} 00:00:00`;
@@ -156,7 +157,8 @@ let fields = [
       },
       {
         name: 'sender_address',
-        type: 'text',
+        type: 'reactComponent',
+        component: SenderField,
         placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
         validation: {
           'data-parsley-required': true,

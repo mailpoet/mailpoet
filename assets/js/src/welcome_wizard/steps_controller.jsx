@@ -17,12 +17,14 @@ class WelcomeWizardStepsController extends React.Component {
       shouldSetSender: !window.is_mp2_migration_complete,
       loading: false,
       sender: window.sender_data,
+      replyTo: window.reply_to_data,
     };
 
     this.finishWizard = this.finishWizard.bind(this);
     this.updateSettings = this.updateSettings.bind(this);
     this.activateTracking = this.activateTracking.bind(this);
     this.updateSender = this.updateSender.bind(this);
+    this.updateReplyTo = this.updateReplyTo.bind(this);
     this.submitSender = this.submitSender.bind(this);
     this.showWooCommerceStepOrFinish = this.showWooCommerceStepOrFinish.bind(this);
     this.componentDidUpdate();
@@ -79,8 +81,17 @@ class WelcomeWizardStepsController extends React.Component {
     });
   }
 
+  updateReplyTo(data) {
+    this.setState({
+      replyTo: Object.assign({}, this.state.replyTo, data),
+    });
+  }
+
   submitSender() {
-    this.updateSettings({ sender: this.state.sender }).then(() => (this.props.history.push('/steps/2')));
+    this.updateSettings({
+      sender: this.state.sender,
+      reply_to: this.state.replyTo,
+    }).then(() => (this.props.history.push('/steps/2')));
   }
 
   render() {
@@ -96,9 +107,11 @@ class WelcomeWizardStepsController extends React.Component {
           <WelcomeWizardSenderStep
             update_sender={this.updateSender}
             submit_sender={this.submitSender}
+            update_reply_to={this.updateReplyTo}
             finish={this.finishWizard}
             loading={this.state.loading}
             sender={this.state.sender}
+            reply_to={this.state.replyTo}
           /> : null
         }
 
