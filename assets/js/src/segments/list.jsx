@@ -6,6 +6,10 @@ import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 
+const isWPUsersSegment = segment => segment.type === 'wp_users';
+const isWooCommerceCustomersSegment = segment => segment.type === 'woocommerce_users';
+const isSpecialSegment = segmt => isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
+
 const columns = [
   {
     name: 'name',
@@ -104,7 +108,7 @@ const itemActions = [
       );
     },
     display: function display(segment) {
-      return (segment.type !== 'wp_users');
+      return !isSpecialSegment(segment);
     },
   },
   {
@@ -129,7 +133,7 @@ const itemActions = [
       );
     }),
     display: function display(segment) {
-      return (segment.type !== 'wp_users');
+      return !isSpecialSegment(segment);
     },
   },
   {
@@ -144,7 +148,7 @@ const itemActions = [
       );
     },
     display: function display(segment) {
-      return (segment.type === 'wp_users');
+      return isWPUsersSegment(segment);
     },
   },
   {
@@ -173,7 +177,7 @@ const itemActions = [
       });
     },
     display: function display(segment) {
-      return (segment.type === 'wp_users');
+      return isWPUsersSegment(segment);
     },
   },
   {
@@ -187,7 +191,7 @@ const itemActions = [
   {
     name: 'trash',
     display: function display(segment) {
-      return (segment.type !== 'wp_users');
+      return !isSpecialSegment(segment);
     },
   },
 ];
@@ -207,8 +211,9 @@ class SegmentList extends React.Component {
 
     let segmentName;
 
-    if (segment.type === 'wp_users') {
-      // the WP users segment is not editable so just display its name
+    if (isSpecialSegment(segment)) {
+      // the WP users and WooCommerce customers segments
+      // are not editable so just display their names
       segmentName = (
         <span className="row-title">{ segment.name }</span>
       );

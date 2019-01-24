@@ -221,14 +221,14 @@ class MP2Migrator {
   }
 
   /**
-   * Delete the existing segments except the wp_users segment
+   * Delete the existing segments except the wp_users and woocommerce_users segments
    *
    */
   private function deleteSegments() {
     global $wpdb;
 
     $table = MP_SEGMENTS_TABLE;
-    $wpdb->query("DELETE FROM {$table} WHERE type != '" . Segment::TYPE_WP_USERS . "'");
+    $wpdb->query("DELETE FROM {$table} WHERE type != '" . Segment::TYPE_WP_USERS . "' AND type != '" . Segment::TYPE_WC_USERS ."'");
   }
 
   /**

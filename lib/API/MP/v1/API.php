@@ -86,11 +86,14 @@ class API {
       throw new \Exception($exception);
     }
 
-    // throw exception when trying to subscribe to a WP Users segment
+    // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
     $found_segments_ids = array();
     foreach($found_segments as $found_segment) {
       if($found_segment->type === Segment::TYPE_WP_USERS) {
         throw new \Exception(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $found_segment->id), 'mailpoet'));
+      }
+      if($found_segment->type === Segment::TYPE_WC_USERS) {
+        throw new \Exception(__(sprintf("Can't subscribe to a WooCommerce Customers list with ID %d.", $found_segment->id), 'mailpoet'));
       }
       $found_segments_ids[] = $found_segment->id;
     }
@@ -137,11 +140,14 @@ class API {
       throw new \Exception($exception);
     }
 
-    // throw exception when trying to subscribe to a WP Users segment
+    // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
     $found_segments_ids = array();
     foreach($found_segments as $segment) {
       if($segment->type === Segment::TYPE_WP_USERS) {
-        throw new \Exception(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
+        throw new \Exception(__(sprintf("Can't unsubscribe from a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
+      }
+      if($segment->type === Segment::TYPE_WC_USERS) {
+        throw new \Exception(__(sprintf("Can't unsubscribe from a WooCommerce Customers list with ID %d.", $segment->id), 'mailpoet'));
       }
       $found_segments_ids[] = $segment->id;
     }
@@ -161,7 +167,8 @@ class API {
   }
 
   function getLists() {
-    return Segment::whereNotEqual('type', Segment::TYPE_WP_USERS)->findArray();
+    return Segment::whereNotIn('type', [Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS])
+      ->findArray();
   }
 
   function addSubscriber(array $subscriber, $segments = array(), $options = array()) {

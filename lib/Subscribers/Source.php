@@ -11,6 +11,7 @@ class Source {
   const ADMINISTRATOR = 'administrator';
   const API = 'api';
   const WORDPRESS_USER = 'wordpress_user';
+  const WOOCOMMERCE_USER = 'woocommerce_user';
   const UNKNOWN = 'unknown';
 
   private static $allowed_sources = array(
@@ -19,6 +20,7 @@ class Source {
     Source::ADMINISTRATOR,
     Source::API,
     Source::WORDPRESS_USER,
+    Source::WOOCOMMERCE_USER,
     Source::UNKNOWN,
   );
 

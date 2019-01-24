@@ -104,6 +104,24 @@ class APITest extends \MailPoetTest {
     }
   }
 
+  function testItDoesNotSubscribeSubscriberToWooCommerceCustomersList() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_WC_USERS
+      )
+    );
+    try {
+      $this->getApi()->subscribeToLists($subscriber->id, array($segment->id));
+      $this->fail('WooCommerce Customers segment exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals("Can't subscribe to a WooCommerce Customers list with ID {$segment->id}.");
+    }
+  }
+
   function testItDoesNotSubscribeSubscriberToListsWhenOneOrMoreListsAreMissing() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -261,7 +279,7 @@ class APITest extends \MailPoetTest {
     expect($result[0]['id'])->equals($segment->id);
   }
 
-  function testItExcludesWPUsersSegmentWhenGettingSegments() {
+  function testItExcludesWPUsersAndWooCommerceCustomersSegmentsWhenGettingSegments() {
     $default_segment = Segment::createOrUpdate(
       array(
         'name' => 'Default',
@@ -272,6 +290,12 @@ class APITest extends \MailPoetTest {
       array(
         'name' => 'Default',
         'type' => Segment::TYPE_WP_USERS
+      )
+    );
+    $wc_segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_WC_USERS
       )
     );
     $result = $this->getApi()->getLists();
@@ -597,7 +621,25 @@ class APITest extends \MailPoetTest {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id));
       $this->fail('WP Users segment exception should have been thrown.');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->id}.");
+      expect($e->getMessage())->equals("Can't unsubscribe from a WordPress Users list with ID {$segment->id}.");
+    }
+  }
+
+  function testItDoesNotUnsubscribeSubscriberFromWooCommerceCustomersList() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_WC_USERS
+      )
+    );
+    try {
+      $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id));
+      $this->fail('WooCommerce Customers segment exception should have been thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals("Can't unsubscribe from a WooCommerce Customers list with ID {$segment->id}.");
     }
   }
 
