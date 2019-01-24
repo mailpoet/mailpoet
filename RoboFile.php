@@ -256,19 +256,21 @@ class RoboFile extends \Robo\Tasks {
     return $this->testIntegration($opts);
   }
 
-  function testAcceptance($opts=['file' => null, 'skip-deps' => false]) {
+  function testAcceptance($opts=['file' => null, 'skip-deps' => false, 'timeout' => null]) {
     return $this->_exec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
       ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
+      ($opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
       'codeception --steps --debug -vvv ' .
       '-f ' . ($opts['file'] ? $opts['file'] : '')
     );
   }
 
-  function testAcceptanceMultisite($opts=['file' => null, 'skip-deps' => false]) {
+  function testAcceptanceMultisite($opts=['file' => null, 'skip-deps' => false, 'timeout' => null]) {
     return $this->_exec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
       ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
+      ($opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
       '-e MULTISITE=1 ' .
       'codeception --steps --debug -vvv' .
       '-f ' . ($opts['file'] ? $opts['file'] : '')
