@@ -1,0 +1,19 @@
+version: '2.1'
+
+services:
+  codeception:
+    volumes:
+      - nfs-mailpoet:/project
+      - nfs-mailpoet:/wp-core/wp-content/plugins/mailpoet
+
+  wordpress:
+    volumes:
+      - nfs-mailpoet:/var/www/html/wp-content/plugins/mailpoet
+
+volumes:
+  nfs-mailpoet:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,lock
+      device: ":${PWD}/../.."
