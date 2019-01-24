@@ -126,7 +126,7 @@ class MailChimp {
   }
 
   function throwException($error) {
-    $errorMessage = __('Unknown MailChimp error message.', 'mailpoet');
+    $errorMessage = __('Unknown MailChimp error.', 'mailpoet');
     switch($error) {
       case 'API':
         $errorMessage = __('Invalid API Key.', 'mailpoet');
