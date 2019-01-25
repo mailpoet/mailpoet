@@ -14,6 +14,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 
 class ViewInBrowserTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->newsletter =
       array(
         'body' => json_decode(

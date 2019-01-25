@@ -6,6 +6,7 @@ use MailPoet\Models\Setting;
 
 class MailerTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->available_mailer_methods = array(
       array(
         'method' => 'AmazonSES',

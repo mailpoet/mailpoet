@@ -18,6 +18,7 @@ class FormTest extends \MailPoetTest {
   private $form_controller;
 
   function _before() {
+    parent::_before();
     Setting::setValue('sender', array(
       'name' => 'John Doe',
       'address' => 'john.doe@example.com'

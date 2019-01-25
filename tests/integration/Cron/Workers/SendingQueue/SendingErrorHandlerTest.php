@@ -14,6 +14,7 @@ class SendingErrorHandlerTest extends \MailPoetTest {
   private $error_handler;
 
   function _before() {
+    parent::_before();
     $this->error_handler = new SendingErrorHandler();
   }
 

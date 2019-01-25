@@ -10,6 +10,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
@@ -18,10 +19,14 @@ class ShortcodesTest extends \MailPoetTest {
   public $rendered_newsletter;
   public $newsletter;
   public $subscriber;
+  /** @var SettingsController */
+  private $settings;
 
   function _before() {
+    parent::_before();
     $populator = new Populator();
     $populator->up();
+    $this->settings = new SettingsController();
     $this->WP_user = $this->_createWPUser();
     $this->WP_post = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();
@@ -30,7 +35,7 @@ class ShortcodesTest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    Setting::setValue('tracking.enabled', false);
+    $this->settings->set('tracking.enabled', false);
   }
 
   function testItCanExtractShortcodes() {

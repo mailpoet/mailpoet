@@ -7,6 +7,7 @@ use MailPoet\Models\Setting;
 
 class SupervisorTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     // cron trigger is by default set to 'WordPress'; when it runs and does not
     // detect any queues to process, it deletes the daemon setting, so Supervisor and
     // CronHelper's getDaemon() methods do not work. for that matter, we need to set

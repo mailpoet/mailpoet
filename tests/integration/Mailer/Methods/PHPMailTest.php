@@ -6,6 +6,7 @@ use MailPoet\Mailer\Methods\PHPMail;
 
 class PHPMailTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->sender = array(
       'from_name' => 'Sender',
       'from_email' => 'staff@mailpoet.com',

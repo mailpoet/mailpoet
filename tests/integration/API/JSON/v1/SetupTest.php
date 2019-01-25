@@ -10,6 +10,7 @@ use MailPoet\API\JSON\Response as APIResponse;
 
 class SetupTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     Setting::setValue('signup_confirmation.enabled', false);
   }
 

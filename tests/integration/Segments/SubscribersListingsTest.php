@@ -17,6 +17,7 @@ class SubscribersListingsTest extends \MailPoetTest {
   private $finder;
 
   function _before() {
+    parent::_before();
     $this->finder = ContainerWrapper::getInstance()->get(SubscribersListings::class);
     $this->cleanData();
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1', 'type' => 'default'));

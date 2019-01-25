@@ -15,6 +15,7 @@ use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 
 class WordPressTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     // cron trigger is by default set to 'WordPress'; when it runs and does not
     // detect any queues to process, it deletes the daemon setting, so Supervisor that's
     // called by the MailPoet cron trigger does not work. for that matter, we need to set

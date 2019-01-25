@@ -8,6 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class PostContentManagerTest extends \MailPoetTest {
 
   function _before() {
+    parent::_before();
     $this->post_content = new PostContentManager();
   }
 

@@ -15,6 +15,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   private $image_mock;
 
   function _before() {
+    parent::_before();
     $this->content_mock = array(
       array(
         'type' => 'button',

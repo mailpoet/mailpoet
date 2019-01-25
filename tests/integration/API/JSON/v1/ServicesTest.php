@@ -11,6 +11,7 @@ use MailPoet\Services\Bridge;
 
 class ServicesTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->services_endpoint = new Services();
     $this->data = array('key' => '1234567890abcdef');
   }

@@ -8,6 +8,7 @@ use MailPoet\Models\Setting;
 
 class SettingsTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     Setting::setValue('some.setting.key', true);
   }
 

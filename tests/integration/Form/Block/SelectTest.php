@@ -6,6 +6,7 @@ use MailPoet\Models\Subscriber;
 
 class SelectTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->block = array(
       'id' => 'status',
       'type' => 'select',

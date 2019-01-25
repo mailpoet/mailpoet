@@ -14,6 +14,7 @@ class MailPoetMapperTest extends \MailPoetTest {
   private $subscribers;
 
   function _before() {
+    parent::_before();
     $this->mapper = new MailPoetMapper();
     $this->subscribers = ['a@example.com', 'c d <b@example.com>'];
   }

@@ -13,6 +13,7 @@ class SendGridMapperTest extends \MailPoetTest {
   private $response = [];
 
   function _before() {
+    parent::_before();
     $this->mapper = new SendGridMapper();
     $this->response = [
       'errors' => [

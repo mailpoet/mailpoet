@@ -7,6 +7,7 @@ use MailPoet\Config\Updater;
 
 class UpdaterTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->plugin_name = 'some-plugin/some-plugin.php';
     $this->slug = 'some-plugin';
     $this->version = '0.1';

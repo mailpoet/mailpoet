@@ -20,6 +20,7 @@ class RouterTest extends \MailPoetTest {
   private $container;
 
   function _before() {
+    parent::_before();
     $this->router_data = array(
       Router::NAME => '',
       'endpoint' => 'router_test_mock_endpoint',

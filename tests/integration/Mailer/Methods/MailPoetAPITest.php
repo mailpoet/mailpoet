@@ -10,6 +10,7 @@ use MailPoet\Services\Bridge\API;
 
 class MailPoetAPITest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->settings = array(
       'method' => 'MailPoet',
       'api_key' => getenv('WP_TEST_MAILER_MAILPOET_API') ?

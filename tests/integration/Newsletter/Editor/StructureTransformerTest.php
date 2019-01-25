@@ -7,6 +7,7 @@ use MailPoet\Newsletter\Editor\StructureTransformer;
 class StructureTransformerTest extends \MailPoetTest {
 
   function _before() {
+    parent::_before();
     $this->transformer = new StructureTransformer();
   }
 

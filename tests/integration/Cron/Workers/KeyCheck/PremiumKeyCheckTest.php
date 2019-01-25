@@ -8,6 +8,7 @@ use MailPoet\Services\Bridge;
 
 class PremiumKeyCheckTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->premium_key = '123457890abcdef';
     $this->worker = new PremiumKeyCheck(microtime(true));
   }

@@ -8,6 +8,7 @@ use MailPoet\Models\Subscriber;
 
 class ScheduledTaskSubscriberTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $task = ScheduledTask::create();
     $task->hydrate(array(
       'status' => ScheduledTask::STATUS_SCHEDULED

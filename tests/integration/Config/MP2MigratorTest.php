@@ -14,6 +14,7 @@ use Helper\Database;
 class MP2MigratorTest extends \MailPoetTest {
 
   public function _before() {
+    parent::_before();
     $this->MP2Migrator = new MP2Migrator();
   }
 

@@ -11,6 +11,7 @@ class SMTPMapperTest extends \MailPoetTest {
   private $mapper;
 
   function _before() {
+    parent::_before();
     $this->mapper = new SMTPMapper();
   }
 

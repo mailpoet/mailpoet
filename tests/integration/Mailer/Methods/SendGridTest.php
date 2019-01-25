@@ -6,6 +6,7 @@ use MailPoet\Mailer\Methods\SendGrid;
 
 class SendGridTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->settings = array(
       'method' => 'SendGrid',
       'api_key' => getenv('WP_TEST_MAILER_SENDGRID_API') ?

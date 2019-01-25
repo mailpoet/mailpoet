@@ -9,6 +9,7 @@ require_once('CronTriggerMockMethodWithException.php');
 
 class CronTriggerTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->cron_trigger = new CronTrigger();
   }
 

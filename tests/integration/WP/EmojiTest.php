@@ -6,6 +6,7 @@ use MailPoet\WP\Emoji;
 
 class EmojiTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->data_encoded = "Emojis: &#x1f603;&#x1f635;&#x1f4aa;, not emojis: &#046;&#0142;";
     $this->data_decoded = "Emojis: 😃😵💪, not emojis: &#046;&#0142;";
 

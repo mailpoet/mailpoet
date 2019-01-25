@@ -14,6 +14,7 @@ require_once('BridgeTestMockAPI.php');
 
 class BridgeTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->valid_key = 'abcdefghijklmnopqrstuvwxyz';
     $this->invalid_key = '401' . $this->valid_key;
     $this->expiring_key = 'expiring' . $this->valid_key;

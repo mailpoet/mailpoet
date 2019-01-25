@@ -31,6 +31,7 @@ class NewslettersTest extends \MailPoetTest {
   private $endpoint;
 
   function _before() {
+    parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Newsletters::class);
     $this->newsletter = Newsletter::createOrUpdate(
       array(

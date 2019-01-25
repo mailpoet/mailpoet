@@ -16,6 +16,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class SubscribersFinderTest extends \MailPoetTest {
 
   function _before() {
+    parent::_before();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);

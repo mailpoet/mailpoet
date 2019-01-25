@@ -9,6 +9,7 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
   private $custom_field;
 
   function _before() {
+    parent::_before();
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     $this->custom_field = CustomField::createOrUpdate([
       'name' => 'custom field',

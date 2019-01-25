@@ -21,6 +21,7 @@ class SubscriberTest extends \MailPoetTest {
   private $test_data;
 
   function _before() {
+    parent::_before();
     $this->test_data = array(
       'first_name' => 'John',
       'last_name' => 'Mailer',

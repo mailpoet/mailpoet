@@ -27,6 +27,7 @@ class APITest extends \MailPoetTest {
   private $container;
 
   function _before() {
+    parent::_before();
     // create WP user
     $this->wp_user_id = null;
     $wp_user_id = wp_create_user('WP User', 'pass', 'wp_user@mailpoet.com');

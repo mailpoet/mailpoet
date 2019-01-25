@@ -26,6 +26,7 @@ class SubscribersTest extends \MailPoetTest {
   private $endpoint;
 
   function _before() {
+    parent::_before();
     $this->cleanup();
     $this->endpoint = ContainerWrapper::getInstance()->get(Subscribers::class);
     $obfuscator = new FieldNameObfuscator();

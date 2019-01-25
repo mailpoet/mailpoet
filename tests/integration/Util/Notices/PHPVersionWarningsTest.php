@@ -10,6 +10,7 @@ class PHPVersionWarningsTest extends \MailPoetTest {
   private $phpVersionWarning;
 
   function _before() {
+    parent::_before();
     $this->phpVersionWarning = new PHPVersionWarnings();
     delete_transient('dismissed-php-version-outdated-notice');
   }

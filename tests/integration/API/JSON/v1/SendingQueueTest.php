@@ -14,6 +14,7 @@ use MailPoet\Tasks\Sending;
 
 class SendingQueueTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->newsletter = Newsletter::createOrUpdate(
       array(
         'subject' => 'My Standard Newsletter',

@@ -9,6 +9,7 @@ use MailPoet\Models\SubscriberSegment;
 
 class SegmentTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->segment_data = array(
       'name' => 'some name',
       'description' => 'some description'

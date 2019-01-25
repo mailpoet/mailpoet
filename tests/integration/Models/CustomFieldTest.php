@@ -7,6 +7,7 @@ use MailPoet\Models\SubscriberCustomField;
 
 class CustomFieldTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->data = array(
       'name' => 'City',
       'type' => CustomField::TYPE_TEXT,

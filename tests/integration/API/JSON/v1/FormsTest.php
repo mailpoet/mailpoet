@@ -13,6 +13,7 @@ class FormsTest extends \MailPoetTest {
   private $endpoint;
 
   function _before() {
+    parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Forms::class);
     $this->form_1 = Form::createOrUpdate(array('name' => 'Form 1'));
     $this->form_2 = Form::createOrUpdate(array('name' => 'Form 2'));

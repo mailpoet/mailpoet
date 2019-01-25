@@ -9,6 +9,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class BeaconTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     // create 4 users (1 confirmed, 1 subscribed, 1 unsubscribed, 1 bounced)
     Subscriber::createOrUpdate(array(
       'email' => 'user1@mailpoet.com',

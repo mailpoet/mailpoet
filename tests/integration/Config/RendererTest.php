@@ -8,6 +8,7 @@ use MailPoet\Config\Renderer;
 
 class RendererTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->renderer = new Renderer($caching = false, $debugging = false);
   }
 

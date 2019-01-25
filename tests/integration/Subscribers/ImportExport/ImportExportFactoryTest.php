@@ -9,6 +9,7 @@ use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 
 class ImportExportFactoryTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $segment_1 = Segment::createOrUpdate(array('name' => 'Unconfirmed Segment'));
     $segment_2 = Segment::createOrUpdate(array('name' => 'Confirmed Segment'));
 

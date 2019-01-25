@@ -14,6 +14,7 @@ class StateTest extends \MailPoetTest {
   private $tasks_state;
 
   function _before() {
+    parent::_before();
     $this->tasks_state = new State();
   }
 

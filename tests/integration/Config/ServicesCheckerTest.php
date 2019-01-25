@@ -8,6 +8,7 @@ use MailPoet\Services\Bridge;
 
 class ServicesCheckerTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->setMailPoetSendingMethod();
     $this->fillPremiumKey();
     $this->services_checker = new ServicesChecker();

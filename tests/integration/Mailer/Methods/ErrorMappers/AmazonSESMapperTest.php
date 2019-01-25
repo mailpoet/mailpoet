@@ -14,6 +14,7 @@ class AmazonSESMapperTest extends \MailPoetTest {
   private $response_data = [];
 
   function _before() {
+    parent::_before();
     $this->mapper = new AmazonSESMapper();
     $this->response_data = [
       'Error' => [

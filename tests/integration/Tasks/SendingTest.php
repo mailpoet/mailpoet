@@ -11,6 +11,7 @@ use MailPoet\Tasks\Subscribers;
 
 class SendingTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->newsletter = $this->createNewNewsletter();
     $this->task = $this->createNewScheduledTask();
     $this->queue = $this->createNewSendingQueue([

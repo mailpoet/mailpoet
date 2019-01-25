@@ -245,6 +245,7 @@ class WPTest extends \MailPoetTest  {
   }
 
   function _before() {
+    parent::_before();
     $this->cleanData();
   }
 

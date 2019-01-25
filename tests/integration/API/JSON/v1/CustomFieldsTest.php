@@ -52,6 +52,7 @@ class CustomFieldsTest extends \MailPoetTest {
   );
 
   function _before() {
+    parent::_before();
     foreach($this->custom_fields as $custom_field) {
       CustomField::createOrUpdate($custom_field);
     }

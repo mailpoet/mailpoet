@@ -9,6 +9,7 @@ use MailPoet\Config\Populator;
 
 class UrlTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $populator = new Populator();
     $populator->up();
   }

@@ -15,6 +15,7 @@ use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
 
 class BounceTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->emails = array(
       'soft_bounce@example.com',
       'hard_bounce@example.com',

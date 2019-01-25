@@ -17,6 +17,7 @@ class MailerTest extends \MailPoetTest {
   public $sender;
 
   function _before() {
+    parent::_before();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
     $populator = new Populator();

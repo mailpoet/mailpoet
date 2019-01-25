@@ -127,6 +127,10 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $preserveGlobalState = false;
   protected $inIsolation = false;
 
+  function _before() {
+    \MailPoet\Settings\SettingsController::resetCache();
+  }
+
   /**
    * Call protected/private method of a class.
    *

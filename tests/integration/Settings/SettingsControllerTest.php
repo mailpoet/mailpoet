@@ -11,6 +11,7 @@ class SettingsControllerTest extends \MailPoetTest {
   private $controller;
 
   function _before() {
+    parent::_before();
     $this->controller = new SettingsController();
   }
 

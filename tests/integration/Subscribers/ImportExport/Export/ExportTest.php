@@ -13,6 +13,7 @@ use MailPoet\Subscribers\ImportExport\Export\DefaultSubscribersGetter;
 
 class ExportTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->JSON_data = json_decode(file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
     $this->subscriber_fields = array(
       'first_name' => 'First name',

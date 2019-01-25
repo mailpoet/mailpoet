@@ -5,6 +5,7 @@ use MailPoet\Models\NewsletterTemplate;
 
 class NewsletterTemplateTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->data = array(
       'name' => 'Some template',
       'body' => '{}',
