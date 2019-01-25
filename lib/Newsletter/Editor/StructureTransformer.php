@@ -72,7 +72,7 @@ class StructureTransformer {
 
   private function filterOutFiguresWithoutImages(array $items) {
     $items = array_filter($items, function (DomNode $item) {
-      if($item->tag === 'figure' && !$item->query('img')) {
+      if($item->tag === 'figure' && $item->query('img')->count() === 0) {
         return false;
       }
       return true;
@@ -81,7 +81,7 @@ class StructureTransformer {
   }
 
   private function isImageElement(DomNode $item) {
-    return $item->tag === 'img' || (in_array($item->tag, ['a', 'figure'], true) && $item->query('img'));
+    return $item->tag === 'img' || (in_array($item->tag, ['a', 'figure'], true) && $item->query('img')->count() > 0);
   }
 
   private function getImageAlignment(DomNode $image) {
