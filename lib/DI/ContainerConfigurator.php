@@ -74,6 +74,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
     // Segments
     $container->autowire(\MailPoet\Segments\SubscribersListings::class)->setPublic(true);
+    // Settings
+    $container->autowire(\MailPoet\Settings\SettingsController::class)->setPublic(true);
     // Subscription
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);
     // Newsletter
