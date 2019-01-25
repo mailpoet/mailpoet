@@ -4,6 +4,11 @@ define('modal', ['mailpoet', 'jquery'],
     'use strict';
 
     var MailPoet = mp;
+    var closeModalImage =
+      '<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M21.454 1.546L1.546 21.454M1.546 1.546L21.454 21.454" stroke-width="3" stroke-linecap="round" />' +
+      '</svg>';
+
     /** *************************************************************************
     MailPoet Modal:
 
@@ -82,7 +87,7 @@ define('modal', ['mailpoet', 'jquery'],
         overlay: '<div id="mailpoet_modal_overlay" class="mailpoet_modal_overlay" style="display:none;"></div>',
         popup: '<div id="mailpoet_popup" class="mailpoet_popup" tabindex="-1">' +
         '<div class="mailpoet_popup_wrapper">' +
-        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close"></a>' +
+        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close">' + closeModalImage + '</a>' +
         '<div id="mailpoet_popup_title" class="mailpoet_popup_title"><h2></h2></div>' +
         '<div class="mailpoet_popup_body clearfix"></div>' +
         '</div>' +
@@ -93,7 +98,7 @@ define('modal', ['mailpoet', 'jquery'],
         '<div id="mailpoet_modal_loading_3" class="mailpoet_modal_loading mailpoet_modal_loading_3"></div>' +
         '</div>',
         panel: '<div id="mailpoet_panel" class="mailpoet_panel">' +
-        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close"></a>' +
+        '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close">' + closeModalImage + '</a>' +
         '<div class="mailpoet_panel_wrapper" tabindex="-1">' +
         '<div class="mailpoet_panel_body clearfix"></div>' +
         '</div>' +
@@ -142,6 +147,8 @@ define('modal', ['mailpoet', 'jquery'],
             jQuery('#mailpoet_modal_overlay')
               .append(modal(this.options));
             // set title
+            jQuery('#mailpoet_popup')
+              .toggleClass('mailpoet_popup_has_title', Boolean(this.options.title));
             jQuery('#mailpoet_popup_title h2')
               .html(this.options.title);
           } else if (this.options.type === 'panel') {
@@ -312,14 +319,21 @@ define('modal', ['mailpoet', 'jquery'],
         switch (this.options.type) {
           case 'popup':
             // set popup dimensions
-            jQuery('#mailpoet_popup').css({
-              width: this.options.width,
-              height: this.options.height
-            });
-            // set popup wrapper height
-            jQuery('#mailpoet_popup_wrapper').css({
-              height: this.options.height
-            });
+            if (this.options.width && this.options.width !== 'auto') {
+              jQuery('#mailpoet_popup').css({
+                width: this.options.width
+              });
+            }
+
+            if (this.options.height && this.options.height !== 'auto') {
+              jQuery('#mailpoet_popup_wrapper').css({
+                height: this.options.height
+              });
+              jQuery('#mailpoet_popup').css({
+                height: this.options.height
+              });
+            }
+
             if (this.options.minWidth) {
               jQuery('#mailpoet_popup').css({ minWidth: this.options.minWidth });
             }
@@ -398,6 +412,9 @@ define('modal', ['mailpoet', 'jquery'],
           this.focus();
         }
 
+        // reset any possible scroll from previous modal
+        jQuery('#mailpoet_modal_overlay').scrollTop(0);
+
         // set popup as opened
         this.opened = true;
 
@@ -441,10 +458,12 @@ define('modal', ['mailpoet', 'jquery'],
       },
       showOverlay: function () {
         jQuery('#mailpoet_modal_overlay').show();
+        jQuery('body').addClass('mailpoet_modal_opened');
         return this;
       },
       hideOverlay: function () {
         jQuery('#mailpoet_modal_overlay').hide();
+        jQuery('body').removeClass('mailpoet_modal_opened');
         return this;
       },
       popup: function (opts) {

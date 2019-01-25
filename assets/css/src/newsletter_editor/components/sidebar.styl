@@ -128,24 +128,37 @@ $widget-icon-width = 30px
       display: none
 
 /* Browser preview modal */
+.mailpoet_browser_preview_wrapper
+  position: absolute
+  width: 100%
+  height: 100%
+  display: flex
+  flex-direction: column
+
 .mailpoet_browser_preview_toggle
+  flex: 0 1 auto
   height: 30px
   padding: 10px 0
   text-align: center
+  position: absolute
+  top: -30px
+  width: 100%
 
 .mailpoet_browser_preview_toggle > label
   display: inline-block
   margin: 0 5px
 
 .mailpoet_browser_preview_container
-  margin: auto
-  height: calc(100% - 60px)
+  flex: 1 1 auto
+  margin: 15px auto 0 auto
   transition: width 0.5s
-  border: 20px solid white
-  border-radius: 20px
   box-sizing: border-box
-  background: white
-  padding: 15px 0
+  height: 100%
+  padding: 20px
+  border: 1px solid #979797
+  border-radius: 20px
+  display: flex
+  flex-direction: column
 
 .mailpoet_browser_preview_container_desktop
   width: 100%
@@ -153,5 +166,15 @@ $widget-icon-width = 30px
 .mailpoet_browser_preview_container_mobile
   width: 350px
 
-.mailpoet_browser_preview_iframe
+// fix for https://bugs.chromium.org/p/chromium/issues/detail?id=765138
+// causing border on iframe to sometimes disappear when resizing
+.mailpoet_browser_preview_border
+  width: 100%
+  height: 100%
+  box-sizing: border-box
   border: 1px solid #c3c3c3
+
+.mailpoet_browser_preview_iframe
+  width: calc(100% - 1px)
+  margin: auto
+  display: block

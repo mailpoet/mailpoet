@@ -270,13 +270,12 @@ define([
         });
 
         this.previewView.render();
-        this.previewView.$el.css('height', '100%');
 
         MailPoet.Modal.popup({
           template: '',
           element: this.previewView.$el,
-          width: '95%',
-          height: '94%',
+          minWidth: '95%',
+          height: '100%',
           title: MailPoet.I18n.t('newsletterPreview'),
           onCancel: function () {
             this.previewView.destroy();
@@ -351,6 +350,7 @@ define([
   });
 
   Module.NewsletterPreviewView = Marionette.View.extend({
+    className: 'mailpoet_browser_preview_wrapper',
     getTemplate: function () { return window.templates.newsletterPreview; },
     events: function () {
       return {
