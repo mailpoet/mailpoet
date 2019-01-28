@@ -1,6 +1,9 @@
 <?php
 
 class RoboFile extends \Robo\Tasks {
+
+  use \Codeception\Task\SplitTestsByGroups;
+
   function install() {
     return $this->taskExecStack()
       ->stopOnFail()
@@ -531,5 +534,13 @@ class RoboFile extends \Robo\Tasks {
     $data = file_get_contents($file);
     preg_match('/^[ \t*]*Version:(.*)$/mi', $data, $m);
     return !empty($m[1]) ? trim($m[1]) : false;
+  }
+
+  public function testAcceptanceGroupTests() {
+    return $this->taskSplitTestFilesByGroups(4)
+      ->projectRoot('.')
+      ->testsFrom('tests/acceptance')
+      ->groupsTo('tests/acceptance/_groups/group_')
+      ->run();
   }
 }
