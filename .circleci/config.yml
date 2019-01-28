@@ -39,6 +39,10 @@ jobs:
           command: |
             ./do s:composer
       - run:
+          name: Group acceptance tests to run in parallel
+          command: |
+            ./do test:acceptance-group-tests
+      - run:
           name: "QA Scripts"
           command: ./do qa
       - persist_to_workspace:
@@ -132,7 +136,7 @@ jobs:
     - store_artifacts:
         path: /tmp/fake-mailer/
         destination: fake-mailer
-  acceptance_tests:
+  acceptance_tests_1:
     working_directory: /home/circleci/mailpoet
     machine: true
     steps:
@@ -142,21 +146,14 @@ jobs:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
-          name: "Set up test environment"
-          command: |
-              sudo apt-get update
-              sudo apt-get install circleci-php-5.6.23
-              sudo rm /usr/bin/php
-              sudo ln -s /opt/circleci/php/5.6.23/bin/php /usr/bin/php
-      - run:
           name: Run acceptance tests
           command: |
-              docker-compose run -e SKIP_DEPS=1 codeception --steps --debug -vvv --html --xml
+              docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_1 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
       - store_test_results:
           path: tests/_output
-  acceptance_tests_multisite:
+  acceptance_tests_2:
     working_directory: /home/circleci/mailpoet
     machine: true
     steps:
@@ -166,16 +163,111 @@ jobs:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
-          name: "Set up test environment"
+          name: Run acceptance tests
           command: |
-              sudo apt-get update
-              sudo apt-get install circleci-php-5.6.23
-              sudo rm /usr/bin/php
-              sudo ln -s /opt/circleci/php/5.6.23/bin/php /usr/bin/php
+              docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_2 --steps --debug -vvv --html --xml
+      - store_artifacts:
+          path: tests/_output
+      - store_test_results:
+          path: tests/_output
+  acceptance_tests_3:
+    working_directory: /home/circleci/mailpoet
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Set up virtual host"
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
           name: Run acceptance tests
           command: |
-              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception --steps --debug -vvv --html --xml
+              docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_3 --steps --debug -vvv --html --xml
+      - store_artifacts:
+          path: tests/_output
+      - store_test_results:
+          path: tests/_output
+  acceptance_tests_4:
+    working_directory: /home/circleci/mailpoet
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Set up virtual host"
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: Run acceptance tests
+          command: |
+              docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_4 --steps --debug -vvv --html --xml
+      - store_artifacts:
+          path: tests/_output
+      - store_test_results:
+          path: tests/_output
+  acceptance_tests_multisite_1:
+    working_directory: /home/circleci/mailpoet
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Set up virtual host"
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: Run acceptance tests
+          command: |
+              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_1 --steps --debug -vvv --html --xml
+      - store_artifacts:
+          path: tests/_output
+      - store_test_results:
+          path: tests/_output
+  acceptance_tests_multisite_2:
+    working_directory: /home/circleci/mailpoet
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Set up virtual host"
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: Run acceptance tests
+          command: |
+              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_2 --steps --debug -vvv --html --xml
+      - store_artifacts:
+          path: tests/_output
+      - store_test_results:
+          path: tests/_output
+  acceptance_tests_multisite_3:
+    working_directory: /home/circleci/mailpoet
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Set up virtual host"
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: Run acceptance tests
+          command: |
+              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_3 --steps --debug -vvv --html --xml
+      - store_artifacts:
+          path: tests/_output
+      - store_test_results:
+          path: tests/_output
+  acceptance_tests_multisite_4:
+    working_directory: /home/circleci/mailpoet
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Set up virtual host"
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: Run acceptance tests
+          command: |
+              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_4 --steps --debug -vvv --html --xml
       - store_artifacts:
           path: tests/_output
       - store_test_results:
@@ -273,32 +365,66 @@ jobs:
       - store_artifacts:
           path: /tmp/fake-mailer/
           destination: fake-mailer
+
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build_and_code_qa
-      - static_analysis:
-          requires:
-            - build_and_code_qa
       - php5_unit:
           requires:
             - build_and_code_qa
       - php7_unit:
           requires:
             - build_and_code_qa
+      - static_analysis:
+          requires:
+            - build_and_code_qa
+      - acceptance_tests_1:
+          requires:
+            - php5_unit
+      - acceptance_tests_2:
+          requires:
+            - php5_unit
+      - acceptance_tests_3:
+          requires:
+            - php5_unit
+      - acceptance_tests_4:
+          requires:
+            - php5_unit
       - php5_integration_and_js:
           requires:
             - php5_unit
       - php7_integration:
           requires:
             - php7_unit
+      - acceptance_tests_multisite_1:
+          requires:
+            - php5_unit
+          filters:
+            branches:
+              only: master
+      - acceptance_tests_multisite_2:
+          requires:
+            - php5_unit
+          filters:
+            branches:
+              only: master
+      - acceptance_tests_multisite_3:
+          requires:
+            - php5_unit
+          filters:
+            branches:
+              only: master
+      - acceptance_tests_multisite_4:
+          requires:
+            - php5_unit
+          filters:
+            branches:
+              only: master
       - php7_integration_multisite:
           requires:
             - php7_unit
-      - acceptance_tests:
-          requires:
-            - php5_unit
-      - acceptance_tests_multisite:
-          requires:
-            - php5_unit
+          filters:
+            branches:
+              only: master
