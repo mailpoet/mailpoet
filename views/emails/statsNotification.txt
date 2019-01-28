@@ -1,0 +1,40 @@
+<%= __('Your stats are in!') %>
+
+<%= subject %>
+
+<%= __('open rate') %>: <%= number_format_i18n(opened) %>%
+<% if opened > 30 %>
+  <%= __('EXCELLENT') %>
+<% elseif opened > 10 %>
+  <%= __('GOOD') %>
+<% else %>
+  <%= __('BAD') %>
+<% endif %>
+
+<%= __('click rate') %>: <%= number_format_i18n(clicked) %>%
+<% if clicked > 3 %>
+  <%= __('EXCELLENT') %>
+<% elseif clicked > 1 %>
+ <%= __('GOOD') %>
+<% else %>
+ <%= __('BAD') %>
+<% endif %>
+
+<% if topLinkClicks > 0 %>
+<%= __('Most clicked link') %>
+  <%= topLink %>
+
+  <%= __('%s unique clicks')|replace({'%s': topLinkClicks}) %>
+<% endif %>
+
+<% if premiumPluginActive %>
+<%= __('View all stats') %>
+  <%= linkStats %>
+<% else %>
+<%= __('See Premium features') %>
+  <%= premiumPage %>
+<% endif %>
+
+<%= __('How to improve my open rate?') %> https://mailpoet.com/how-to-improve-open-rates
+<%= __('And my click rate?') %> https://mailpoet.com/how-to-improve-click-rates
+<%= __('Disable these emails') %> <%= linkSettings %>

@@ -28,6 +28,10 @@ class Functions {
     return call_user_func_array('current_time', func_get_args());
   }
 
+  function homeUrl() {
+    return call_user_func_array('home_url', func_get_args());
+  }
+
   function getImageInfo($id) {
     /*
      * In some cases wp_get_attachment_image_src ignore the second parameter

@@ -23,6 +23,7 @@ class Migrator {
       'settings',
       'custom_fields',
       'scheduled_tasks',
+      'stats_notifications',
       'scheduled_task_subscribers',
       'sending_queues',
       'subscribers',
@@ -131,12 +132,26 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function scheduledTaskSubscribers() {
+  function statsNotifications() {
     $attributes = array(
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'task_id int(11) unsigned NOT NULL,',
+      'created_at TIMESTAMP NULL,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id),',
+      'UNIQUE KEY newsletter_id_task_id (newsletter_id, task_id),',
+      'KEY task_id (task_id)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function scheduledTaskSubscribers() {
+    $attributes = array (
       'task_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'processed int(1) NOT NULL,',
-      'failed int(1) NOT NULL DEFAULT 0,',
+      'failed SMALLINT(1) NOT NULL DEFAULT 0,',
       'error text NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (task_id, subscriber_id),',

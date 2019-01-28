@@ -17,6 +17,10 @@ class CronHelperTest extends \MailPoetTest {
     Setting::setValue('cron_trigger', array(
       'method' => 'none'
     ));
+    Setting::setValue('sender', array(
+      'name' => 'John Doe',
+      'address' => 'john.doe@example.com'
+    ));
   }
 
   function testItDefinesConstants() {

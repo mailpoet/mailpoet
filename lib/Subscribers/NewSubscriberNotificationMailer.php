@@ -6,6 +6,7 @@ use MailPoet\Config\Renderer;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\WP\Functions;
 
 class NewSubscriberNotificationMailer {
 
@@ -18,17 +19,26 @@ class NewSubscriberNotificationMailer {
   /** @var \MailPoet\Mailer\Mailer */
   private $mailer;
 
+  /** @var Functions */
+  private $wordpress_functions;
+
   /**
    * @param \MailPoet\Mailer\Mailer|null $mailer
    * @param Renderer|null $renderer
+   * @param Functions|null $wordpress_functions
    */
-  function __construct($mailer = null, $renderer = null) {
+  function __construct($mailer = null, $renderer = null, $wordpress_functions = null) {
     if($renderer) {
       $this->renderer = $renderer;
     } else {
       $caching = !WP_DEBUG;
       $debugging = WP_DEBUG;
       $this->renderer = new Renderer($caching, $debugging);
+    }
+    if($wordpress_functions) {
+      $this->wordpress_functions = $wordpress_functions;
+    } else {
+      $this->wordpress_functions = new Functions();
     }
     if($mailer) {
       $this->mailer = $mailer;
@@ -75,7 +85,7 @@ class NewSubscriberNotificationMailer {
   }
 
   private function constructSenderEmail() {
-    $url_parts = parse_url(home_url());
+    $url_parts = parse_url($this->wordpress_functions->homeUrl());
     $site_name = strtolower($url_parts['host']);
     if(substr($site_name, 0, 4) === 'www.') {
       $site_name = substr($site_name, 4);
