@@ -5,7 +5,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Premium\Models\DynamicSegment;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ImportExportFactory {
   const IMPORT_ACTION = 'import'; 
@@ -13,8 +13,11 @@ class ImportExportFactory {
 
   public $action;
 
+  private $wp;
+
   function __construct($action = null) {
     $this->action = $action;
+    $this->wp = new WPFunctions;
   }
 
   function getSegments() {
@@ -22,7 +25,7 @@ class ImportExportFactory {
       $segments = Segment::getSegmentsForImport();
     } else {
       $segments = Segment::getSegmentsForExport();
-      $segments = Hooks::applyFilters('mailpoet_segments_with_subscriber_count', $segments);
+      $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
       $segments = array_values(array_filter($segments, function($segment) {
         return $segment['subscribers'] > 0;
       }));

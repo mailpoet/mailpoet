@@ -145,4 +145,10 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
   }
 }
 
+function asCallable($fn) {
+  return function() use(&$fn) {
+    return call_user_func_array($fn, func_get_args());
+  };
+}
+
 include '_fixtures.php';

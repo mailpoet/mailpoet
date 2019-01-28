@@ -4,7 +4,7 @@ namespace MailPoet\Analytics;
 
 use Carbon\Carbon;
 use MailPoet\Models\Setting;
-use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -16,15 +16,17 @@ class Analytics {
 
   /** @var Reporter */
   private $reporter;
+  private $wp;
 
   public function __construct(Reporter $reporter) {
     $this->reporter = $reporter;
+    $this->wp = new WPFunctions;
   }
 
   /** @return array */
   function generateAnalytics() {
     if($this->shouldSend()) {
-      $data = WPHooks::applyFilters(self::ANALYTICS_FILTER, $this->reporter->getData());
+      $data = $this->wp->applyFilters(self::ANALYTICS_FILTER, $this->reporter->getData());
       $this->recordDataSent();
       return $data;
     }

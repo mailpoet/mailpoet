@@ -11,7 +11,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersFinderTest extends \MailPoetTest {
 
@@ -68,7 +68,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->will($this->returnValue(array($this->subscriber_3)));
 
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    Hooks::addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
+    (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
       return array($mock);
     });
 
@@ -86,7 +86,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->will($this->returnValue(array($this->subscriber_3)));
 
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    Hooks::addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
+    (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
       return array($mock);
     });
 
@@ -127,7 +127,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->will($this->returnValue(array(array('id' => $this->subscriber_1->id))));
 
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    Hooks::addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
+    (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
       return array($mock);
     });
 
@@ -151,7 +151,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('getSubscriberIdsInSegment')
       ->will($this->returnValue(array(array('id' => $this->subscriber_2->id))));
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    Hooks::addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
+    (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
       return array($mock);
     });
 

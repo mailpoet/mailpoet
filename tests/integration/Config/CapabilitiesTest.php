@@ -8,7 +8,7 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Capabilities;
 use MailPoet\Config\Renderer;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class CapabilitiesTest extends \MailPoetTest {
   function _before() {
@@ -60,7 +60,8 @@ class CapabilitiesTest extends \MailPoetTest {
     $filter = function() {
       return array('nonexistent_role');
     };
-    Hooks::addFilter('mailpoet_permission_access_plugin_admin', $filter);
+    $wp = new WPFunctions;
+    $wp->addFilter('mailpoet_permission_access_plugin_admin', $filter);
     $this->caps->setupWPCapabilities();
 
     // role does not exist
@@ -72,7 +73,7 @@ class CapabilitiesTest extends \MailPoetTest {
     expect($editor_role->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
 
     // Restore capabilities
-    Hooks::removeFilter('mailpoet_permission_access_plugin_admin', $filter);
+    $wp->removeFilter('mailpoet_permission_access_plugin_admin', $filter);
     $this->caps->setupWPCapabilities();
 
     $editor_role = get_role('editor');
@@ -81,7 +82,10 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
   function testItSetsUpMembersCapabilities() {
-    WPHooksHelper::interceptAddAction();
+    $wp = Stub::make(new WPFunctions, [
+      'addAction' => asCallable([WPHooksHelper::class, 'addAction'])
+    ]);
+    $this->caps = new Capabilities(new Renderer, $wp);
 
     $this->caps->setupMembersCapabilities();
 
@@ -113,7 +117,6 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHooksHelper::releaseAllHooks();
     Mock::clean();
   }
 }

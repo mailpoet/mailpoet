@@ -24,6 +24,34 @@ class Functions {
     return call_user_func_array('wp_remote_retrieve_response_message', func_get_args());
   }
 
+  function addFilter() {
+    return call_user_func_array('add_filter', func_get_args());
+  }
+
+  function applyFilters() {
+    return call_user_func_array('apply_filters', func_get_args());
+  }
+
+  function removeFilter() {
+    return call_user_func_array('remove_filter', func_get_args());
+  }
+
+  function addAction() {
+    return call_user_func_array('add_action', func_get_args());
+  }
+
+  function doAction() {
+    return call_user_func_array('do_action', func_get_args());
+  }
+
+  function removeAction() {
+    return call_user_func_array('remove_action', func_get_args());
+  }
+
+  function removeAllFilters() {
+    return call_user_func_array('remove_all_filters', func_get_args());
+  }
+
   function currentTime() {
     return call_user_func_array('current_time', func_get_args());
   }

@@ -3,7 +3,7 @@ namespace MailPoet\Test\Util;
 
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Util\ConflictResolver;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ConflictResolverTest extends \MailPoetTest {
   public $conflict_resolver;
@@ -47,7 +47,8 @@ class ConflictResolverTest extends \MailPoetTest {
 
   function testItWhitelistsStyles() {
     wp_enqueue_style('select2', '/wp-content/some/offending/plugin/select2.css');
-    Hooks::addFilter(
+    $wp = new WPFunctions;
+    $wp->addFilter(
       'mailpoet_conflict_resolver_whitelist_style',
       function($whitelisted_styles) {
         $whitelisted_styles[] = '^/wp-content/some/offending/plugin';
@@ -84,7 +85,8 @@ class ConflictResolverTest extends \MailPoetTest {
 
   function testItWhitelistsScripts() {
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
-    Hooks::addFilter(
+    $wp = new WPFunctions;
+    $wp->addFilter(
       'mailpoet_conflict_resolver_whitelist_script',
       function($whitelisted_scripts) {
         $whitelisted_scripts[] = '^/wp-content/some/offending/plugin';
@@ -100,6 +102,5 @@ class ConflictResolverTest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHooksHelper::releaseAllHooks();
   }
 }

@@ -4,14 +4,16 @@ namespace MailPoet\Segments;
 
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Segment;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class BulkAction {
 
   private $data = null;
+  private $wp;
 
   function __construct($data) {
     $this->data = $data;
+    $this->wp = new WPFunctions;
   }
 
   /**
@@ -42,7 +44,7 @@ class BulkAction {
       $bulk_action = new \MailPoet\Listing\BulkActionController(new Handler());
       return $bulk_action->apply('\MailPoet\Models\Subscriber', $this->data);
     } else {
-      $handlers = Hooks::applyFilters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers', array());
+      $handlers = $this->wp->applyFilters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers', array());
       foreach($handlers as $handler) {
         $meta = $handler->apply($segment, $this->data);
         if($meta) {

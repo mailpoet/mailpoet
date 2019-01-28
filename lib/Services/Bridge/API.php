@@ -2,7 +2,6 @@
 
 namespace MailPoet\Services\Bridge;
 
-use MailPoet\WP\Hooks as WPHooks;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
@@ -141,7 +140,7 @@ class API {
 
   private function request($url, $body, $method = 'POST') {
     $params = array(
-      'timeout' => WPHooks::applyFilters('mailpoet_bridge_api_request_timeout', self::REQUEST_TIMEOUT),
+      'timeout' => $this->wp->applyFilters('mailpoet_bridge_api_request_timeout', self::REQUEST_TIMEOUT),
       'httpversion' => '1.0',
       'method' => $method,
       'headers' => array(

@@ -2,7 +2,7 @@
 
 namespace MailPoet\Newsletter\Editor;
 
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -11,8 +11,10 @@ class PostContentManager {
 
   public $max_excerpt_length = 60;
 
+
   function __construct() {
-    $this->max_excerpt_length = Hooks::applyFilters('mailpoet_newsletter_post_excerpt_length', $this->max_excerpt_length);
+    $wp = new WPFunctions;
+    $this->max_excerpt_length = $wp->applyFilters('mailpoet_newsletter_post_excerpt_length', $this->max_excerpt_length);
   }
 
   function getContent($post, $displayType) {

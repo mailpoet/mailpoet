@@ -13,7 +13,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -21,8 +21,14 @@ class Newsletter {
   public $tracking_enabled;
   public $tracking_image_inserted;
 
-  function __construct() {
+  private $wp;
+
+  function __construct(WPFunctions $wp = null) {
     $this->tracking_enabled = (boolean)Setting::getValue('tracking.enabled');
+    if($wp == null) {
+      $wp = new WPFunctions;
+    }
+    $this->wp = $wp;
   }
 
   function getNewsletterFromQueue($queue) {
@@ -66,7 +72,7 @@ class Newsletter {
       $this->tracking_image_inserted = OpenTracking::addTrackingImage();
       // render newsletter
       $rendered_newsletter = $newsletter->render();
-      $rendered_newsletter = Hooks::applyFilters(
+      $rendered_newsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $rendered_newsletter,
         $newsletter
@@ -76,7 +82,7 @@ class Newsletter {
     } else {
       // render newsletter
       $rendered_newsletter = $newsletter->render();
-      $rendered_newsletter = Hooks::applyFilters(
+      $rendered_newsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $rendered_newsletter,
         $newsletter

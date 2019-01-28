@@ -7,7 +7,7 @@ use Codeception\Util\Stub;
 use Helper\WordPress as WPHelper;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\AccessControl;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AccessControlTest extends \MailPoetTest {
   function testItSetsDefaultPermissionsUponInitialization() {
@@ -38,37 +38,38 @@ class AccessControlTest extends \MailPoetTest {
   }
 
   function testItAllowsSettingCustomPermissions() {
-    Hooks::addFilter(
+    $wp = new WPFunctions;
+    $wp->addFilter(
       'mailpoet_permission_access_plugin_admin',
       function() {
         return array('custom_access_plugin_admin_role');
       }
     );
-    Hooks::addFilter(
+    $wp->addFilter(
       'mailpoet_permission_manage_settings',
       function() {
         return array('custom_manage_settings_role');
       }
     );
-    Hooks::addFilter(
+    $wp->addFilter(
       'mailpoet_permission_manage_emails',
       function() {
         return array('custom_manage_emails_role');
       }
     );
-    Hooks::addFilter(
+    $wp->addFilter(
       'mailpoet_permission_manage_subscribers',
       function() {
         return array('custom_manage_subscribers_role');
       }
     );
-    Hooks::addFilter(
+    $wp->addFilter(
       'mailpoet_permission_manage_forms',
       function() {
         return array('custom_manage_forms_role');
       }
     );
-    Hooks::addFilter(
+    $wp->addFilter(
       'mailpoet_permission_manage_segments',
       function() {
         return array('custom_manage_segments_role');

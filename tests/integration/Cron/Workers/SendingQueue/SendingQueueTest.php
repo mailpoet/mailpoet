@@ -31,7 +31,7 @@ use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Subscription\Url;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SendingQueueTest extends \MailPoetTest {
   /** @var SendingErrorHandler */
@@ -665,10 +665,11 @@ class SendingQueueTest extends \MailPoetTest {
     $filter = function() use ($custom_batch_size_value) {
       return $custom_batch_size_value;
     };
-    Hooks::addFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
+    $wp = new WPFunctions;
+    $wp->addFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
     $sending_queue_worker = new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker);
     expect($sending_queue_worker->batch_size)->equals($custom_batch_size_value);
-    Hooks::removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
+    $wp->removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
   }
 
   function _after() {

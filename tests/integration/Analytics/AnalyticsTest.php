@@ -69,7 +69,7 @@ class AnalyticsTest extends \MailPoetTest {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
       array(
-        'getData' => Expected::once(function() use ($data){
+        'getData' => Expected::once(function() use ($data) {
           return $data;
         }),
       ),
@@ -80,7 +80,7 @@ class AnalyticsTest extends \MailPoetTest {
 
     $analytics = new Analytics($reporter);
 
-    expect($analytics->generateAnalytics())->equals($data);
+    expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
   function testGetDataIfEnabledAndSentLongTimeAgo() {
@@ -99,7 +99,7 @@ class AnalyticsTest extends \MailPoetTest {
 
     $analytics = new Analytics($reporter);
 
-    expect($analytics->generateAnalytics())->equals($data);
+    expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
   function testSetPublicId() {

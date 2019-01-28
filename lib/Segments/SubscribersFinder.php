@@ -6,10 +6,16 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 use function MailPoet\Util\array_column;
 
 class SubscribersFinder {
+
+  private $wp;
+
+  function __construct() {
+    $this->wp = new WPFunctions;
+  }
 
   function findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids) {
     $result = array();
@@ -25,7 +31,7 @@ class SubscribersFinder {
       $subscribers = Subscriber::findSubscribersInSegments($subscribers_to_process_ids, array($segment->id))->findMany();
       return Subscriber::extractSubscribersIds($subscribers);
     }
-    $finders = Hooks::applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
+    $finders = $this->wp->applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
     foreach($finders as $finder) {
       $subscribers = $finder->findSubscribersInSegment($segment, $subscribers_to_process_ids);
       if($subscribers) {
@@ -93,7 +99,7 @@ class SubscribersFinder {
   }
 
   private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, Segment $segment) {
-    $finders = Hooks::applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
+    $finders = $this->wp->applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
     $count = 0;
     foreach($finders as $finder) {
       $subscribers = $finder->getSubscriberIdsInSegment($segment);

@@ -6,7 +6,6 @@ use MailPoet\Models\Setting;
 use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Util\Security;
-use MailPoet\WP\Hooks as WPHooks;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
@@ -130,7 +129,10 @@ class CronHelper {
   }
 
   static function queryCronUrl($url, $wp = null) {
-    $args = WPHooks::applyFilters(
+    if(is_null($wp)) {
+      $wp = new WPFunctions();
+    }
+    $args = $wp->applyFilters(
       'mailpoet_cron_request_args',
       array(
         'blocking' => true,
@@ -139,19 +141,19 @@ class CronHelper {
         'user-agent' => 'MailPoet Cron'
       )
     );
-    if(is_null($wp)) {
-      $wp = new WPFunctions();
-    }
     return $wp->wpRemotePost($url, $args);
   }
 
-  static function getCronUrl($action, $data = false) {
+  static function getCronUrl($action, $data = false, $wp = null) {
+    if(is_null($wp)) {
+      $wp = new WPFunctions();
+    }
     $url = Router::buildRequest(
       CronDaemonEndpoint::ENDPOINT,
       $action,
       $data
     );
-    $custom_cron_url = WPHooks::applyFilters('mailpoet_cron_request_url', $url);
+    $custom_cron_url = $wp->applyFilters('mailpoet_cron_request_url', $url);
     return ($custom_cron_url === $url) ?
       str_replace(home_url(), self::getSiteUrl(), $url) :
       $custom_cron_url;
