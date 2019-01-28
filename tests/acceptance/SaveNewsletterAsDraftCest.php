@@ -30,6 +30,7 @@ class SaveNewsletterAsDraftCest {
     $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->fillField($title_element, $newsletter_title);
     $I->click('Next');
+
     // step 4 - Choose list and send
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
     $I->waitForElement($send_form_element);
@@ -37,7 +38,7 @@ class SaveNewsletterAsDraftCest {
     $I->selectOptionInSelect2('WordPress Users');
 
     $I->click('Save as draft and close');
-    $I->waitForText($newsletter_title, 5, '[data-automation-id^="listing_item_"]');
+    $I->waitForText($newsletter_title);
   }
 
 }
