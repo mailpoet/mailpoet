@@ -1,6 +1,7 @@
 <?php
-
 namespace MailPoet\Config\PopulatorData\Templates;
+
+if(!defined('ABSPATH')) exit;
 
 class NewsDay {
 
@@ -9,7 +10,7 @@ class NewsDay {
 
   function __construct($assets_url) {
      $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/news_day';
-    $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
+     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
   function get() {

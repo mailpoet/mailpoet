@@ -5,6 +5,7 @@ class Html {
 
   static function render($block) {
     $html = '';
+    $text = '';
 
     if(isset($block['params']['text']) && $block['params']['text']) {
       $text = html_entity_decode($block['params']['text'], ENT_QUOTES);

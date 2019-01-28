@@ -31,7 +31,7 @@ class StatisticsNewsletters extends Model {
   }
 
   static function getAllForSubscriber(Subscriber $subscriber) {
-    return static::table_alias('statistics')
+    return static::tableAlias('statistics')
       ->select('statistics.newsletter_id', 'newsletter_id')
       ->select('newsletter_rendered_subject')
       ->select('opens.created_at', 'opened_at')

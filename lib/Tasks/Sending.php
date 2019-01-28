@@ -230,7 +230,7 @@ class Sending {
 
   static function getScheduledQueues($amount = self::RESULT_BATCH_SIZE) {
     $wp = new WPFunctions();
-    $tasks = ScheduledTask::table_alias('tasks')
+    $tasks = ScheduledTask::tableAlias('tasks')
       ->select('tasks.*')
       ->join(SendingQueue::$_table, 'tasks.id = queues.task_id', 'queues')
       ->whereNull('tasks.deleted_at')

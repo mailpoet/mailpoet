@@ -3,6 +3,10 @@ namespace MailPoet\Models;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $id
+ * @property array $subscribers_count
+ */
 class Segment extends Model {
   static $_table = MP_SEGMENTS_TABLE;
   const TYPE_WP_USERS = 'wp_users';
@@ -71,7 +75,7 @@ class Segment extends Model {
   }
 
   function withSubscribersCount() {
-    $this->subscribers_count = SubscriberSegment::table_alias('relation')
+    $this->subscribers_count = SubscriberSegment::tableAlias('relation')
       ->where('relation.segment_id', $this->id)
       ->join(
         MP_SUBSCRIBERS_TABLE,
@@ -208,7 +212,7 @@ class Segment extends Model {
   }
 
   static function getSegmentsForExport() {
-    return self::raw_query(
+    return self::rawQuery(
       '(SELECT segments.id, segments.name, COUNT(relation.subscriber_id) as subscribers ' .
       'FROM ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation ' .
       'LEFT JOIN ' . self::$_table . ' segments ON segments.id = relation.segment_id ' .
@@ -271,7 +275,7 @@ class Segment extends Model {
   }
 
   static function getAnalytics() {
-    $analytics = Segment::select_expr('type, count(*) as count')
+    $analytics = Segment::selectExpr('type, count(*) as count')
                         ->whereNull('deleted_at')
                         ->groupBy('type')
                         ->findArray();

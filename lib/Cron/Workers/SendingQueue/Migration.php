@@ -24,6 +24,9 @@ class Migration extends SimpleWorker {
 
   function prepareTask(ScheduledTask $task) {
     $unmigrated_columns = self::checkUnmigratedColumnsExist();
+    $unmigrated_queues_count = 0;
+    $unmigrated_queue_subscribers = [];
+
     if($unmigrated_columns) {
       $unmigrated_queues_count = $this->getUnmigratedQueues()->count();
       $unmigrated_queue_subscribers = $this->getTaskIdsForUnmigratedSubscribers();

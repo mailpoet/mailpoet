@@ -7,7 +7,8 @@ class MailChimp {
   public $api_key;
   public $max_post_size;
   public $data_center;
-  public $export_url;
+  private $export_url;
+  private $lists_url;
   const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/';
 
   function __construct($api_key) {
@@ -44,6 +45,7 @@ class MailChimp {
       return $this->throwException('API');
     }
 
+    $lists = [];
     foreach($response->data as $list) {
       $lists[] = array(
         'id' => $list->id,
@@ -64,6 +66,8 @@ class MailChimp {
     }
 
     $bytes_fetched = 0;
+    $subscribers = [];
+    $header = [];
     foreach($lists as $list) {
       $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
       $connection = @fopen($url, 'r');
@@ -71,7 +75,6 @@ class MailChimp {
         return $this->throwException('connection');
       }
       $i = 0;
-      $header = array();
       while(!feof($connection)) {
         $buffer = fgets($connection, 4096);
         if(trim($buffer) !== '') {
@@ -123,6 +126,7 @@ class MailChimp {
   }
 
   function throwException($error) {
+    $errorMessage = __('Unknown MailChimp error.', 'mailpoet');
     switch($error) {
       case 'API':
         $errorMessage = __('Invalid API Key.', 'mailpoet');

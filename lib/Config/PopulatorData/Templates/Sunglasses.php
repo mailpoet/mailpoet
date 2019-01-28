@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
-
 class Sunglasses {
 
   private $template_image_url;

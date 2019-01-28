@@ -5,6 +5,8 @@ if(!defined('ABSPATH')) exit;
 
 class TitleListTransformer {
 
+  private $args;
+
   function __construct($args) {
     $this->args = $args;
   }

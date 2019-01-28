@@ -61,7 +61,7 @@ class ContainerWrapper implements ContainerInterface {
   }
 
   private static function createPremiumContainer(ContainerInterface $free_container, $debug = false) {
-    $premium_container_factory =  new ContainerFactory(new \MailPoet\Premium\DI\ContainerConfigurator($free_container), $debug);
+    $premium_container_factory =  new ContainerFactory(new \MailPoet\Premium\DI\ContainerConfigurator(), $debug);
     $premium_container = $premium_container_factory->getContainer();
     $premium_container->set(IContainerConfigurator::FREE_CONTAINER_SERVICE_SLUG, $free_container);
     $free_container->set(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG, $premium_container);

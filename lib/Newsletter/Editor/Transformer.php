@@ -8,6 +8,8 @@ if(!defined('ABSPATH')) exit;
 
 class Transformer {
 
+  private $transformer;
+
   function __construct($args) {
     $title_list_only = $args['displayType'] === 'titleOnly' && $args['titleFormat'] === 'ul';
 

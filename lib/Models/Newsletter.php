@@ -10,6 +10,22 @@ use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $id
+ * @property string $type
+ * @property object $queue
+ * @property string $hash
+ * @property string $status
+ * @property string|object $meta
+ * @property array $options
+ * @property int $children_count
+ * @property bool|array $statistics
+ * @property string $deleted_at
+ * @property int $children_count
+ * @property int $total_sent
+ * @property int $total_scheduled
+ * @property array $segments
+ */
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
   const TYPE_AUTOMATIC = 'automatic';
@@ -601,7 +617,7 @@ class Newsletter extends Model {
   }
 
   static function sentAfter($date) {
-    return static::table_alias('newsletters')
+    return static::tableAlias('newsletters')
       ->where('newsletters.type', self::TYPE_STANDARD)
       ->where('newsletters.status', self::STATUS_SENT)
       ->join(
@@ -951,7 +967,7 @@ class Newsletter extends Model {
   }
 
   static function getWelcomeNotificationsForSegments($segments) {
-    return NewsletterOption::table_alias('options')
+    return NewsletterOption::tableAlias('options')
       ->select('options.newsletter_id')
       ->select('options.value', 'segment_id')
       ->join(
@@ -972,7 +988,7 @@ class Newsletter extends Model {
   }
 
   static function getArchives($segment_ids = array()) {
-    $orm = self::table_alias('newsletters')
+    $orm = self::tableAlias('newsletters')
       ->distinct()->select('newsletters.*')
       ->select('newsletter_rendered_subject')
       ->whereIn('newsletters.type', array(

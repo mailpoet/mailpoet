@@ -5,6 +5,11 @@ if(!defined('ABSPATH')) exit;
 
 class WelcomeBlank1Column {
 
+  private $assets_url;
+  private $external_template_image_url;
+  private $template_image_url;
+  private $social_icon_url;
+
   function __construct($assets_url) {
     $this->assets_url = $assets_url;
     $this->external_template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/welcome-email-blank-1-column';

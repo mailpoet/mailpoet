@@ -37,6 +37,8 @@ class Menu {
   const LAST_ANNOUNCEMENT_DATE = '2019-01-28 10:00:00';
 
   public $renderer;
+  public $mp_api_key_valid;
+  public $premium_key_valid;
   private $access_control;
   private $subscribers_over_limit;
   private $wp;

@@ -7,6 +7,14 @@ use MailPoet\Tasks\Subscribers as TaskSubscribers;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $count_processed
+ * @property int $count_total
+ * @property string $newsletter_rendered_body
+ * @property int $task_id
+ * @property string|object $meta
+ * @property string|array $subscribers
+ */
 class SendingQueue extends Model {
   public static $_table = MP_SENDING_QUEUES_TABLE;
   const STATUS_COMPLETED = 'completed';
@@ -151,7 +159,7 @@ class SendingQueue extends Model {
   }
 
   static function getTasks() {
-    return ScheduledTask::table_alias('tasks')
+    return ScheduledTask::tableAlias('tasks')
     ->selectExpr('tasks.*')
     ->join(
       MP_SENDING_QUEUES_TABLE,
@@ -161,7 +169,7 @@ class SendingQueue extends Model {
   }
 
   static function joinWithTasks() {
-    return static::table_alias('queues')
+    return static::tableAlias('queues')
     ->join(
       MP_SCHEDULED_TASKS_TABLE,
       'tasks.id = queues.task_id',

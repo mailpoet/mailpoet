@@ -14,7 +14,7 @@ class SubscribersFinder {
   function findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids) {
     $result = array();
     foreach($newsletter_segments_ids as $segment_id) {
-      $segment = Segment::find_one($segment_id);
+      $segment = Segment::findOne($segment_id);
       $result = array_merge($result, $this->findSubscribersInSegment($segment, $subscribers_to_process_ids));
     }
     return $this->unique($result);

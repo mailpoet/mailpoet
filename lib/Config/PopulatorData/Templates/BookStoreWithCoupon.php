@@ -1,6 +1,7 @@
 <?php
-
 namespace MailPoet\Config\PopulatorData\Templates;
+
+if(!defined('ABSPATH')) exit;
 
 class BookStoreWithCoupon {
 

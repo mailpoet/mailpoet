@@ -3,6 +3,9 @@ namespace Sudzy;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @method static ORMWrapper|bool create($data=null)
+ */
 abstract class ValidModel extends \Model {
   protected $_validator = null; // Reference to Sudzy validator object
   protected $_validations = array(); // Array of validations

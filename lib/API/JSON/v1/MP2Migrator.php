@@ -11,6 +11,7 @@ class MP2Migrator extends APIEndpoint {
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS
   );
+  private $MP2Migrator;
 
   public function __construct() {
     $this->MP2Migrator = new \MailPoet\Config\MP2Migrator();

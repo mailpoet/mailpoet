@@ -2,8 +2,6 @@ parameters:
 	tmpDir: ../../temp/phpstan
 	bootstrap: bootstrap.php
 	ignoreErrors:
-		- '#Access to an undefined property#' # current code suffers from this, it should be fixed & this line removed
-		- '#Static call to instance method MailPoet\\Models\\Model::#'
-		- '#Access to an undefined static property MailPoet\\Models\\Model::#'
 		- '#Function members_register_.+ not found#'
 		- '#MailPoet\\Premium\\DI\\ContainerConfigurator not found#' # this class is not available when premium is not active
+	reportUnmatchedIgnoredErrors: false
