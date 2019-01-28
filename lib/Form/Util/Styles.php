@@ -65,6 +65,18 @@ class Styles {
 .mailpoet_validate_error {
   color:#B94A48;
 }
+
+.mailpoet_form_loading {
+  width: 30px;
+  text-align: center;
+  line-height: normal;
+}
+
+.mailpoet_form_loading > span {
+  width: 5px;
+  height: 5px;
+  background-color: #5b5b5b;
+}
 EOL;
 
   function __construct($stylesheet = null) {
