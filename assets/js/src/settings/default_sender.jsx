@@ -29,6 +29,7 @@ class DefaultSender extends React.Component {
         <input
           type="text"
           id="settings[from_name]"
+          data-automation-id="settings-page-from-name-field"
           name="sender[name]"
           value={this.state.senderName}
           onChange={partial(this.onChange, 'senderName')}
@@ -37,6 +38,7 @@ class DefaultSender extends React.Component {
         <input
           type="email"
           id="settings[from_email]"
+          data-automation-id="settings-page-from-email-field"
           name="sender[address]"
           value={this.state.senderAddress}
           onChange={partial(this.onChange, 'senderAddress')}
