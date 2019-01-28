@@ -119,22 +119,24 @@ class WorkerTest extends \MailPoetTest {
   }
 
   function testRendersTemplate() {
-    $this->renderer->expects($this->once())
-       ->method('render')
-       ->with(
-         $this->stringContains('statsNotification.html'),
-         $this->callback(function($context){
-           return is_array($context);
-         }));
+    $this->renderer->expects($this->exactly(2))
+       ->method('render');
+    $this->renderer->expects($this->at(0))
+      ->method('render')
+      ->with($this->equalTo('emails/statsNotification.html'));
+
+    $this->renderer->expects($this->at(1))
+      ->method('render')
+      ->with($this->equalTo('emails/statsNotification.txt'));
 
     $this->stats_notifications->process();
   }
 
   function testAddsSubjectToContext() {
-    $this->renderer->expects($this->once())
+    $this->renderer->expects($this->exactly(2)) // html + text template
      ->method('render')
      ->with(
-       $this->stringContains('statsNotification.html'),
+       $this->anything(),
        $this->callback(function($context){
          return $context['subject'] === 'Email Subject1';
        }));
@@ -143,10 +145,10 @@ class WorkerTest extends \MailPoetTest {
   }
 
   function testAddsPreHeaderToContext() {
-    $this->renderer->expects($this->once())
+    $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
-       $this->stringContains('statsNotification.html'),
+       $this->anything(),
        $this->callback(function($context){
          return $context['preheader'] === '40.00% opens, 60.00% clicks, 20.00% unsubscribes in a nutshell.';
        }));
@@ -155,10 +157,10 @@ class WorkerTest extends \MailPoetTest {
   }
 
   function testAddsWPUrlsToContext() {
-    $this->renderer->expects($this->once())
+    $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
-        $this->stringContains('statsNotification.html'),
+        $this->anything(),
         $this->callback(function($context){
           return strpos($context['linkSettings'], 'mailpoet-settings')
             && strpos($context['linkStats'], 'mailpoet-newsletters#/stats');
@@ -168,10 +170,10 @@ class WorkerTest extends \MailPoetTest {
   }
 
   function testAddsLinksToContext() {
-    $this->renderer->expects($this->once())
+    $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
-        $this->stringContains('statsNotification.html'),
+        $this->anything(),
         $this->callback(function($context){
           return ($context['topLink'] === 'Link url2')
             && ($context['topLinkClicks'] === 2);

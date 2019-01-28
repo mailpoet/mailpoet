@@ -84,6 +84,7 @@ class Worker {
       'subject' => sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $newsletter->subject),
       'body' => [
         'html' => $this->renderer->render('emails/statsNotification.html', $context),
+        'text' => $this->renderer->render('emails/statsNotification.txt', $context),
       ],
     ];
   }
