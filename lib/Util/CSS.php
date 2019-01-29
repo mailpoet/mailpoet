@@ -236,10 +236,7 @@ class CSS {
 
         // Unserialize the style array, merge the rule's CSS into it...
         $nodeStyles = self::styleToArray($node->style);
-        $style = array_merge($nodeStyles, $rule['properties']);
-
-        // !important node styles should take precedence over other styles
-        $style = array_merge($style, preg_grep("/important/i", $nodeStyles));
+        $style = array_merge($rule['properties'], $nodeStyles);
 
         // And put the CSS back as a string!
         $node->style = self::arrayToStyle($style);
@@ -256,10 +253,12 @@ class CSS {
     // Now a tricky part: do a second pass with only stuff marked !important
     // because !important properties do not care about specificity, except when fighting
     // against another !important property
+    // We need to start with a rule with lowest specificity
+    $rules = array_reverse($rules);
     foreach ($rules as $rule) {
       foreach($rule['properties'] as $key => $value) {
         if(strpos($value, '!important') !== false) {
-          foreach($html->find($rule['selector']) as $node) {
+          foreach($html->query($rule['selector']) as $node) {
             $style = self::styleToArray($node->style);
             $style[$key] = $value;
             $node->style = self::arrayToStyle($style);
