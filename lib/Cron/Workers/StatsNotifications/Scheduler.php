@@ -67,7 +67,7 @@ class Scheduler {
   }
 
   private function isTaskScheduled($newsletter_id) {
-    $existing = ScheduledTask::table_alias('tasks')
+    $existing = ScheduledTask::tableAlias('tasks')
       ->join(StatsNotification::$_table, 'tasks.id = notification.task_id', 'notification')
       ->where('tasks.type', Worker::TASK_TYPE)
       ->where('notification.newsletter_id', $newsletter_id)
