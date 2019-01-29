@@ -24,6 +24,7 @@ class SubscriptionFormCest {
     $settings = new Settings();
     $settings
       ->withConfirmationEmailSubject()
+      ->withConfirmationEmailBody()
       ->withConfirmationEmailEnabled();
   }
 
