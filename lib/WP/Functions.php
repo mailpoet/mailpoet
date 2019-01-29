@@ -62,7 +62,8 @@ class Functions {
 
   function isUserLoggedIn() {
     return call_user_func_array('is_user_logged_in', func_get_args());
-
+  }
+  
   function getOption() {
     return call_user_func_array('get_option', func_get_args());
   }
