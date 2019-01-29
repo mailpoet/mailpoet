@@ -32,10 +32,7 @@ class API {
 
   const CURRENT_VERSION = 'v1';
 
-  function __construct(ContainerInterface $container, AccessControl $access_control, WPFunctions $wp = null) {
-    if($wp === null) {
-      $wp = new WPFunctions;
-    }
+  function __construct(ContainerInterface $container, AccessControl $access_control, WPFunctions $wp) {
     $this->wp = $wp;
     $this->container = $container;
     $this->access_control = $access_control;

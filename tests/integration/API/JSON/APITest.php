@@ -41,7 +41,7 @@ class APITest extends \MailPoetTest {
     $this->container->autowire(APITestNamespacedEndpointStubV1::class)->setPublic(true);
     $this->container->autowire(APITestNamespacedEndpointStubV2::class)->setPublic(true);
     $this->container->compile();
-    $this->api = new \MailPoet\API\JSON\API($this->container, $this->container->get(AccessControl::class));
+    $this->api = new \MailPoet\API\JSON\API($this->container, $this->container->get(AccessControl::class), new WPFunctions);
   }
 
   function testItCallsAPISetupAction() {
@@ -196,7 +196,7 @@ class APITest extends \MailPoetTest {
       new AccessControl(),
       array('validatePermission' => false)
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data);
     $response = $api->processRoute();
@@ -217,7 +217,7 @@ class APITest extends \MailPoetTest {
         })
       )
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->false();
 
     $access_control = Stub::make(
@@ -229,7 +229,7 @@ class APITest extends \MailPoetTest {
         })
       )
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->true();
   }
 
@@ -250,7 +250,7 @@ class APITest extends \MailPoetTest {
         })
       )
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->false();
 
     $access_control = Stub::make(
@@ -262,7 +262,7 @@ class APITest extends \MailPoetTest {
         })
       )
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->true();
   }
 
