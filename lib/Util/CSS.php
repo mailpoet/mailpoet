@@ -180,6 +180,15 @@ class CSS {
   }
 
   /*
+   * Merges two CSS inline styles strings into one.
+   * If both styles defines same property the property from second styles will be used.
+   */
+  public static function mergeInlineStyles($styles_1, $styles_2) {
+    $merged_styles = array_merge(self::styleToArray($styles_1), self::styleToArray($styles_2));
+    return self::arrayToStyle($merged_styles);
+  }
+
+  /*
   * The core of the algorithm, takes a URL and returns the HTML found there with the CSS inlined.
   * If you pass $contents then the original HTML is not downloaded and $contents is used instead.
   * $url is mandatory as it is used to resolve the links to the stylesheets found in the HTML.

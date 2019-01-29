@@ -69,6 +69,17 @@ class CSSTest extends \MailPoetUnitTest {
     $this->assertContains('<p style="color:red">', $result_html);
   }
 
+  public function testItMergesInlineStylesCorrectly() {
+    $styles = CSS::mergeInlineStyles('color: red', 'margin: 10px');
+    $this->assertEquals('color:red;margin:10px', $styles);
+    $styles = CSS::mergeInlineStyles('color: red', 'margin: 10px; color: blue');
+    $this->assertEquals('color:blue;margin:10px', $styles);
+    $styles = CSS::mergeInlineStyles('', 'margin: 10px; color: blue');
+    $this->assertEquals('margin:10px;color:blue', $styles);
+    $styles = CSS::mergeInlineStyles('margin:10px;color:blue', '');
+    $this->assertEquals('margin:10px;color:blue', $styles);
+  }
+
   private function buildHtml($styles, $content) {
     return "<html><style>{$styles}</style><body>{$content}</body></html>";
   }

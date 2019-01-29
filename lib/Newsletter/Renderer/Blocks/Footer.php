@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Renderer\StylesHelper;
+use MailPoet\Util\CSS;
 use MailPoet\Util\pQuery\pQuery;
 
 class Footer {
@@ -17,7 +18,8 @@ class Footer {
       $links = $DOM->query('a');
       if($links->count()) {
         foreach($links as $link) {
-          $link->style = StylesHelper::getStyles($element['styles'], 'link');
+          $element_link_styles = StylesHelper::getStyles($element['styles'], 'link');
+          $link->style = CSS::mergeInlineStyles($element_link_styles, $link->style);
         }
       }
     }
