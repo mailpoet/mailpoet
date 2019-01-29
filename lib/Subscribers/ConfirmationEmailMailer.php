@@ -10,6 +10,8 @@ use MailPoet\Util\Helpers;
 
 class ConfirmationEmailMailer {
 
+  const MAX_CONFIRMATION_EMAILS = 3;
+
   /** @var Mailer */
   private $mailer;
 
@@ -26,6 +28,12 @@ class ConfirmationEmailMailer {
     $signup_confirmation = Setting::getValue('signup_confirmation');
 
     if((bool)$signup_confirmation['enabled'] === false) {
+      return false;
+    }
+
+    $subscriber->count_confirmations++;
+    $subscriber->save();
+    if(!is_user_logged_in() && $subscriber->count_confirmations > self::MAX_CONFIRMATION_EMAILS) {
       return false;
     }
 

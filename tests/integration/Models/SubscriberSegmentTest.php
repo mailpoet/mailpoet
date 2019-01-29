@@ -117,6 +117,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriber->subscriptions[2]['segment_id'])->equals($segment_3->id);
 
     // verify that subscriber is not subscribed only to the non-WP segment (#2)
+    $subscriber = $this->subscriber;
     SubscriberSegment::unsubscribeFromSegments($subscriber, array($segment_1->id, $segment_2->id, $segment_3->id));
     $subscriber = Subscriber::findOne($subscriber->id)->withSubscriptions();
 

@@ -14,6 +14,10 @@ class SubscriberSegment extends Model {
   static function unsubscribeFromSegments($subscriber, $segment_ids = array()) {
     if($subscriber === false) return false;
 
+    // Reset confirmation emails count, so user can resubscribe
+    $subscriber->count_confirmations = 0;
+    $subscriber->save();
+
     $wp_segment = Segment::getWPSegment();
     $wc_segment = Segment::getWooCommerceSegment();
 
