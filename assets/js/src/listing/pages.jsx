@@ -158,7 +158,7 @@ class ListingPages extends React.Component {
               className="current-page"
             />
             {MailPoet.I18n.t('pageOutOf')}
-&nbsp;
+            &nbsp;
             <span className="total-pages">
               {Math.ceil(this.props.count / this.props.limit).toLocaleString()}
             </span>

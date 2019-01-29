@@ -34,9 +34,9 @@ class ListingGroups extends React.Component {
             {group.label}
             &nbsp;
             <span className="count">
-(
+            (
               { parseInt(group.count, 10).toLocaleString() }
-)
+            )
             </span>
           </a>
         </li>

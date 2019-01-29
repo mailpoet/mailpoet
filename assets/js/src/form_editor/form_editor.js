@@ -368,7 +368,8 @@ WysijaForm = {
         // skip lists
         if (setting.name === 'segments') {
           return true;
-        } if (setting.name === 'on_success') {
+        }
+        if (setting.name === 'on_success') {
           // if the input value is equal to the one stored in the settings
           if (setting.value === data.settings[setting.name]) {
             // check selected value
@@ -727,7 +728,8 @@ WysijaForm = {
     if (protocol === null) {
       // this is not a url so encode the whole thing
       return encodeURIComponent(str).replace(/[!'()*]/g, escape);
-    } if (protocol.length === 1) {
+    }
+    if (protocol.length === 1) {
       // this is a url, so do not encode the protocol
       return encodeURI(str).replace(/[!'()*]/g, escape);
     }

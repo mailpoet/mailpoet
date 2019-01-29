@@ -48,7 +48,8 @@ class Selection extends React.Component {
   getSelectedValues = () => {
     if (this.props.field.selected !== undefined) {
       return this.props.field.selected(this.props.item);
-    } if (this.props.item !== undefined && this.props.field.name !== undefined) {
+    }
+    if (this.props.item !== undefined && this.props.field.name !== undefined) {
       if (this.allowMultipleValues()) {
         if (_.isArray(this.props.item[this.props.field.name])) {
           return this.props.item[this.props.field.name].map(item => item.id);
@@ -113,7 +114,8 @@ class Selection extends React.Component {
       templateResult: function templateResult(item) {
         if (item.element && item.element.selected) {
           return null;
-        } if (item.title) {
+        }
+        if (item.title) {
           return item.title;
         }
         return item.text;

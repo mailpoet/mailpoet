@@ -56,7 +56,8 @@ const QueueMixin = {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
-    } if (mailerLog.status === 'paused' && newsletter.queue.status !== 'completed') {
+    }
+    if (mailerLog.status === 'paused' && newsletter.queue.status !== 'completed') {
       return (
         <span>{MailPoet.I18n.t('paused')}</span>
       );

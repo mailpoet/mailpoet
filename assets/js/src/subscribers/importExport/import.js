@@ -723,7 +723,8 @@ define(
           if (index === maxRowsToShow && subscribers.subscribersCount > (maxRowsToShow + 1)) {
             fillerPosition = index;
             return filler;
-          } if (index === (subscribers.subscribers.length - 1)) {
+          }
+          if (index === (subscribers.subscribers.length - 1)) {
             // if we're on the last line, show the total count of subscribers data
             return subscribers.subscribersCount.toLocaleString();
           }
