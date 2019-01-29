@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.18.1
+Stable tag: 3.18.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,14 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.18.2 - 2019-01-29 =
+* Added: by popular demand, new option to receive a summary email of a campaign's open and click rates;
+* Added: loading animation on subscription form submission;
+* Added: new modal design;
+* Added: first steps for a new WooCommerce customer list;
+* Improved: new warning before sending from a free address, like Gmail;
+* Fixed: issue with some Gutenberg blocks causing a 500 error in ALC with full posts.
 
 = 3.18.1 - 2019-01-22 =
 * Added: new assets for WP plugin repo page;
