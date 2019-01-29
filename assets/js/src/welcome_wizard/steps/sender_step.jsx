@@ -46,7 +46,8 @@ const WelcomeWizardSenderStep = props => (
         />
       </label>
       <label htmlFor="replyToAddress">
-        {MailPoet.I18n.t('replyToAddress')}:
+        {MailPoet.I18n.t('replyToAddress')}
+:
         <input
           name="replyToAddress"
           type="text"

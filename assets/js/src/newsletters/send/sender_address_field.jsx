@@ -18,15 +18,17 @@ class SenderField extends React.Component {
   }
 
   render() {
-    return (<React.Fragment>
-      <FormFieldText
-        {...this.props}
-        onValueChange={this.onChange}
-      />
-      <div className="regular-text">
-        <SenderEmailAddressWarning emailAddress={this.state.emailAddress} />
-      </div>
-    </React.Fragment>);
+    return (
+      <React.Fragment>
+        <FormFieldText
+          {...this.props}
+          onValueChange={this.onChange}
+        />
+        <div className="regular-text">
+          <SenderEmailAddressWarning emailAddress={this.state.emailAddress} />
+        </div>
+      </React.Fragment>
+    );
   }
 }
 

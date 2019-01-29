@@ -35,7 +35,7 @@ class AutomaticEmailEvent extends React.PureComponent {
           className="button button-primary"
           disabled={disabled}
           onClick={onClick}
-          role="button"
+          role="presentation"
           data-automation-id={`create_${event.slug}`}
           onKeyDown={(keyEvent) => {
             if ((['keydown', 'keypress'].includes(keyEvent.type) && ['Enter', ' '].includes(keyEvent.key))

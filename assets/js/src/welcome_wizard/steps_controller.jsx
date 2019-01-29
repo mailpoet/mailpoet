@@ -80,9 +80,9 @@ class WelcomeWizardStepsController extends React.Component {
   }
 
   updateReplyTo(data) {
-    this.setState({
-      replyTo: Object.assign({}, this.state.replyTo, data),
-    });
+    this.setState(prevState => ({
+      sender: Object.assign({}, prevState.replyTo, data),
+    }));
   }
 
   submitSender() {

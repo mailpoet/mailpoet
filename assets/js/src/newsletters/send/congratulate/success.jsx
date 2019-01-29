@@ -29,13 +29,13 @@ function Success(props) {
       <img src={props.illustrationImageUrl} alt="" width="750" height="250" />
       {showSuccessDeliveryPoll
         && (
-        <div
-          className="typeform-widget"
-          data-url="https://mailpoet.typeform.com/to/ciWID6"
-          data-transparency="100"
-          data-hide-headers="true"
-          data-hide-footer="true"
-        />
+          <div
+            className="typeform-widget"
+            data-url="https://mailpoet.typeform.com/to/ciWID6"
+            data-transparency="100"
+            data-hide-headers="true"
+            data-hide-footer="true"
+          />
         )
       }
       <button type="button" className="button" onClick={props.successClicked}>{MailPoet.I18n.t('close')}</button>

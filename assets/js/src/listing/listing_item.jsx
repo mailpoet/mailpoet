@@ -44,8 +44,8 @@ class ListingItem extends React.Component {
         <th className="mailpoet-check-column" scope="row">
           <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>
             {
-            `Select ${this.props.item[this.props.columns[0].name]}`
-          }
+              `Select ${this.props.item[this.props.columns[0].name]}`
+            }
           </label>
           <input
             type="checkbox"
