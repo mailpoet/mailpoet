@@ -17,9 +17,10 @@ class Footer {
     if(isset($element['styles']['link'])) {
       $links = $DOM->query('a');
       if($links->count()) {
+        $css = new CSS();
         foreach($links as $link) {
           $element_link_styles = StylesHelper::getStyles($element['styles'], 'link');
-          $link->style = CSS::mergeInlineStyles($element_link_styles, $link->style);
+          $link->style = $css->mergeInlineStyles($element_link_styles, $link->style);
         }
       }
     }
