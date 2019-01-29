@@ -62,6 +62,7 @@ if(!defined('ABSPATH')) exit;
  * @method $this whereIn($column_name, $values)
  * @method static $this whereIn($column_name, $values)
  * @method $this whereNotIn($column_name, $values)
+ * @method static $this whereNotIn($column_name, $values)
  * @method $this whereNull($column_name)
  * @method static $this whereNull($column_name)
  * @method $this whereNotNull($column_name)

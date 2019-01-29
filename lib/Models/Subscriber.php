@@ -17,6 +17,7 @@ if(!defined('ABSPATH')) exit;
  * @property array $segments
  * @property array $subscriptions
  * @property string $unconfirmed_data
+ * @property int $is_woocommerce_user
  */
 class Subscriber extends Model {
   public static $_table = MP_SUBSCRIBERS_TABLE;
