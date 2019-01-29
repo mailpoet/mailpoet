@@ -18,8 +18,8 @@ class RendererTest extends \MailPoetTest {
       })
     );
     $renderer->__construct();
-    expect($renderer->assets_manifest_js)->equals(Env::$assets_path . '/js/manifest.json');
-    expect($renderer->assets_manifest_css)->equals(Env::$assets_path . '/css/manifest.json');
+    expect($renderer->assets_manifest_js)->equals(Env::$assets_path . '/dist/js/manifest.json');
+    expect($renderer->assets_manifest_css)->equals(Env::$assets_path . '/dist/css/manifest.json');
   }
 
   function testItGetsAssetManifest() {

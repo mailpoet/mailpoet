@@ -81,6 +81,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileJs($opts = ['env' => null]) {
+    if(!is_dir('assets/dist/js')) {
+      mkdir('assets/dist/js', 0777, true);
+    }
     $env = ($opts['env']) ?
       sprintf('./node_modules/cross-env/dist/bin/cross-env.js NODE_ENV="%s"', $opts['env']) :
       null;
@@ -88,8 +91,11 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileCss($opts = ['env' => null]) {
+    if(!is_dir('assets/dist/css')) {
+      mkdir('assets/dist/css', 0777, true);
+    }
     // Clean up folder from previous files
-    array_map('unlink', glob("assets/css/*.*"));
+    array_map('unlink', glob("assets/dist/css/*.*"));
 
     $css_files = array(
       'assets/css/src/admin.styl',
@@ -106,12 +112,12 @@ class RoboFile extends \Robo\Tasks {
       '--include-css',
       '-u nib',
       join(' ', $css_files),
-      '-o assets/css/'
+      '-o assets/dist/css/'
     )));
 
     // Create manifest file
     $manifest = [];
-    foreach(glob('assets/css/*.css') as $style) {
+    foreach(glob('assets/dist/css/*.css') as $style) {
       // Hash and rename styles if production environment
       if($opts['env'] === 'production') {
         $hashed_style = sprintf(
@@ -125,7 +131,7 @@ class RoboFile extends \Robo\Tasks {
         $manifest[basename($style)] = basename($style);
       }
     }
-    file_put_contents('assets/css/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT));
+    file_put_contents('assets/dist/css/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT));
     return $compilation_result;
   }
 

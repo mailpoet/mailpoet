@@ -32,8 +32,8 @@ class Renderer {
       )
     );
 
-    $this->assets_manifest_js = $this->getAssetManifest(Env::$assets_path . '/js/manifest.json');
-    $this->assets_manifest_css = $this->getAssetManifest(Env::$assets_path . '/css/manifest.json');
+    $this->assets_manifest_js = $this->getAssetManifest(Env::$assets_path . '/dist/js/manifest.json');
+    $this->assets_manifest_css = $this->getAssetManifest(Env::$assets_path . '/dist/css/manifest.json');
     $this->setupDebug();
     $this->setupTranslations();
     $this->setupFunctions();

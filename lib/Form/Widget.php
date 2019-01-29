@@ -93,12 +93,12 @@ class Widget extends \WP_Widget {
   function setupDependencies() {
     wp_enqueue_style(
       'mailpoet_public',
-      Env::$assets_url . '/css/' . $this->renderer->getCssAsset('public.css')
+      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('public.css')
     );
 
     wp_enqueue_script(
       'mailpoet_vendor',
-      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('vendor.js'),
+      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
       array(),
       Env::$version,
       true
@@ -106,7 +106,7 @@ class Widget extends \WP_Widget {
 
     wp_enqueue_script(
       'mailpoet_public',
-      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('public.js'),
+      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
       array('jquery'),
       Env::$version,
       true
@@ -148,7 +148,7 @@ EOL;
   function setupAdminWidgetPageDependencies() {
     wp_enqueue_script(
       'mailpoet_vendor',
-      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('vendor.js'),
+      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
       array(),
       Env::$version,
       true
@@ -156,7 +156,7 @@ EOL;
 
     wp_enqueue_script(
       'mailpoet_admin',
-      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('mailpoet.js'),
+      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('mailpoet.js'),
       array(),
       Env::$version,
       true

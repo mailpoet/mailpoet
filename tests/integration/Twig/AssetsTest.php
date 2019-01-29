@@ -32,17 +32,17 @@ class AssetsTest extends \MailPoetTest {
     );
 
     expect($assets_extension->generateJavascript('script1.js', 'script2.js'))->equals(
-      '<script type="text/javascript" src="' . $this->assets_url . '/js/script1.hash.js"></script>'
+      '<script type="text/javascript" src="' . $this->assets_url . '/dist/js/script1.hash.js"></script>'
       . "\n"
-      . '<script type="text/javascript" src="' . $this->assets_url . '/js/script2.hash.js"></script>'
+      . '<script type="text/javascript" src="' . $this->assets_url . '/dist/js/script2.hash.js"></script>'
     );
   }
 
   function testItGeneratesJavascriptTagsForAssetsWhenManifestFileDoesNotExist() {
-    expect($this->assets_extension->generateJavascript('script1.js', 'script2.js'))->equals(
-      '<script type="text/javascript" src="' . $this->assets_url . '/js/script1.js"></script>'
+    expect($this->assets_extension->generateJavascript('lib/script1.js', 'script2.js'))->equals(
+      '<script type="text/javascript" src="' . $this->assets_url . '/js/lib/script1.js"></script>'
       . "\n"
-      . '<script type="text/javascript" src="' . $this->assets_url . '/js/script2.js"></script>'
+      . '<script type="text/javascript" src="' . $this->assets_url . '/dist/js/script2.js"></script>'
     );
   }
 
@@ -61,17 +61,17 @@ class AssetsTest extends \MailPoetTest {
     );
 
     expect($assets_extension->generateStylesheet('style1.css', 'style2.css'))->equals(
-      '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/css/style1.hash.css" />'
+      '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style1.hash.css" />'
       . "\n"
-      . '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/css/style2.hash.css" />'
+      . '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style2.hash.css" />'
     );
   }
 
   function testItGeneratesStylesheetTagsWhenManifestFileDoesNotExist() {
     expect($this->assets_extension->generateStylesheet('style1.css', 'style2.css'))->equals(
-      '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/css/style1.css" />'
+      '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style1.css" />'
       . "\n"
-      . '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/css/style2.css" />'
+      . '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style2.css" />'
     );
   }
 
