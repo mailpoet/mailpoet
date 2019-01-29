@@ -425,7 +425,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
             />
             &nbsp;
             {MailPoet.I18n.t('orSimply')}
-&nbsp;
+            &nbsp;
             <a
               href={
                 `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
@@ -434,7 +434,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
             >
               {MailPoet.I18n.t('goBackToDesign')}
             </a>
-.
+            .
           </p>
           { !isPaused && sendButtonOptions.disabled && sendButtonOptions.disabled === 'disabled' && (
             <HelpTooltip

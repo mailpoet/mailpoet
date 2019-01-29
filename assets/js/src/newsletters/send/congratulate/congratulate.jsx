@@ -121,7 +121,8 @@ class Congratulate extends React.Component {
   renderContent() {
     if (this.state.loading || !this.state.minimumLoadingTimePassed) {
       return renderLoading(!!this.state.newsletter);
-    } if (this.state.error) {
+    }
+    if (this.state.error) {
       return renderFail();
     }
     return renderSuccess(this.state.newsletter, this.state.testingPassed);

@@ -5,11 +5,14 @@ import MailPoet from 'mailpoet';
 function renderHeader(newsletter) {
   if (newsletter.type === 'welcome') {
     return MailPoet.I18n.t('congratulationsWelcomeEmailSuccessHeader');
-  } if (newsletter.type === 'notification') {
+  }
+  if (newsletter.type === 'notification') {
     return MailPoet.I18n.t('congratulationsPostNotificationSuccessHeader');
-  } if (newsletter.type === 'automatic') {
+  }
+  if (newsletter.type === 'automatic') {
     return MailPoet.I18n.t('congratulationsWooSuccessHeader');
-  } if (newsletter.status === 'scheduled') {
+  }
+  if (newsletter.status === 'scheduled') {
     return MailPoet.I18n.t('congratulationsScheduleSuccessHeader');
   }
   return MailPoet.I18n.t('congratulationsSendSuccessHeader');

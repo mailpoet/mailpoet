@@ -131,12 +131,11 @@ const QueueMixin = {
     }
 
     let progressBarWidth = 0;
-
-    if (percentage) {
-      percentage = MailPoet.I18n.t('noSubscribers');
-    } else {
+    if (Number.isFinite(percentage)) {
       progressBarWidth = percentage;
       percentage += '%';
+    } else {
+      percentage = MailPoet.I18n.t('noSubscribers');
     }
 
     return (
@@ -238,7 +237,7 @@ const StatisticsMixin = {
           <div>
             <span>
               { percentageOpenedDisplay }
-%
+              %
               {' '}
             </span>
             <StatsBadge
@@ -250,7 +249,7 @@ const StatisticsMixin = {
           <div>
             <span>
               { percentageClickedDisplay }
-%
+              %
               {' '}
             </span>
             <StatsBadge
@@ -262,7 +261,7 @@ const StatisticsMixin = {
           <div>
             <span className="mailpoet_stat_hidden">
               { percentageUnsubscribedDisplay }
-%
+              %
             </span>
           </div>
         </div>
@@ -273,15 +272,15 @@ const StatisticsMixin = {
         <div>
           <span className="mailpoet_stats_text">
             { percentageOpenedDisplay }
-%,
+            %,
             { ' ' }
             { percentageClickedDisplay }
-%
+            %
             <span className="mailpoet_stat_hidden">
               ,
               {' '}
               { percentageUnsubscribedDisplay }
-%
+              %
             </span>
           </span>
           { tooEarlyForStats && (
