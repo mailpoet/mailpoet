@@ -94,14 +94,14 @@ class CSS {
 
     usort($rules, function($a, $b) {
       if($a['specificity'] > $b['specificity']) {
-        return 1;
-      } else if($a['specificity'] < $b['specificity']) {
         return -1;
+      } else if($a['specificity'] < $b['specificity']) {
+        return 1;
       } else {
         if($a['position'] > $b['position']) {
-          return 1;
-        } else {
           return -1;
+        } else {
+          return 1;
         }
       }
     });
@@ -209,7 +209,7 @@ class CSS {
       $raw_css .= $css_blocks;
     }
 
-    // Get the CSS rules by decreasing order of specificity.
+    // Get the CSS rules by decreasing specificity (the most specific rule first).
     // This is an array with, amongst other things, the keys 'properties', which hold the CSS properties
     // and the 'selector', which holds the CSS selector
     $rules = $this->parseCSS($raw_css);
