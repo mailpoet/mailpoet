@@ -16,15 +16,23 @@ class Image {
 
     $element['width'] = str_replace('px', '', $element['width']);
     $element['height'] = str_replace('px', '', $element['height']);
+    $original_width = 0;
     if(is_numeric($element['width']) && is_numeric($element['height'])) {
       $element['width'] = (int)$element['width'];
       $element['height'] = (int)$element['height'];
+      $original_width = $element['width'];
       $element = self::adjustImageDimensions($element, $column_base_width);
+    }
+
+    // If image was downsized because of column width set width to aways fill full column (e.g. on mobile)
+    $style = '';
+    if($element['fullWidth'] === true && $original_width > $element['width']) {
+      $style = 'style="width:100%"';
     }
 
     $image_template = '
       <img src="' . $element['src'] . '"
-      width="' . $element['width'] . '" alt="' . $element['alt'] . '"/>
+      width="' . $element['width'] . '" alt="' . $element['alt'] . '"' . $style . '/>
       ';
     if(!empty($element['link'])) {
       $image_template = '<a href="' . $element['link'] . '">' . $image_template . '</a>';
@@ -33,9 +41,10 @@ class Image {
     if(!empty($element['styles']['block']['textAlign']) && in_array($element['styles']['block']['textAlign'], array('left', 'right'))) {
       $align = $element['styles']['block']['textAlign'];
     }
+
     $template = '
       <tr>
-        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_bottom mailpoet_padded_side' : 'mailpoet_full_width_image') . '" align="' . $align . '" valign="top">
+        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_bottom mailpoet_padded_side' : '') . '" align="' . $align . '" valign="top">
           ' . $image_template . '
         </td>
       </tr>';
