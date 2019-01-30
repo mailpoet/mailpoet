@@ -83,9 +83,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter_link->hash = 'abcde';
     $this->newsletter_link->save();
     $this->sending_error_handler = new SendingErrorHandler();
-    $this->stats_notifications_worker = new StatsNotificationsScheduler();
-    $this->sending_queue_worker = new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker);
     $this->settings = new SettingsController();
+    $this->stats_notifications_worker = new StatsNotificationsScheduler($this->settings);
+    $this->sending_queue_worker = new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker);
   }
 
   private function getDirectUnsubscribeURL() {

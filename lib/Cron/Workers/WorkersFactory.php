@@ -59,7 +59,7 @@ class WorkersFactory {
   }
 
   function createStatsNotificationsWorker($timer) {
-    return new StatsNotificationsWorker($this->mailer, $this->renderer, $timer);
+    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $timer);
   }
 
   /** @return SendingServiceKeyCheckWorker */

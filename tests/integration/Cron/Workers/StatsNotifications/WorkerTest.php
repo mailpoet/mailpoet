@@ -13,6 +13,7 @@ use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\StatsNotification;
+use MailPoet\Settings\SettingsController;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class WorkerTest extends \MailPoetTest {
@@ -26,15 +27,20 @@ class WorkerTest extends \MailPoetTest {
   /** @var MockObject */
   private $renderer;
 
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
+    parent::_before();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatsNotification::$_table);
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
-    $this->stats_notifications = new Worker($this->mailer, $this->renderer);
-    Setting::setValue(Worker::SETTINGS_KEY, [
+    $this->settings = new SettingsController();
+    $this->stats_notifications = new Worker($this->mailer, $this->renderer, $this->settings);
+    $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
       'address' => 'email@example.com'
     ]);
