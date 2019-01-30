@@ -4,12 +4,14 @@ namespace MailPoet\Twig;
 
 use MailPoet\Analytics\Reporter;
 use MailPoet\Analytics\Analytics as AnalyticsGenerator;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
 class Analytics extends \Twig_Extension {
   public function getFunctions() {
-    $analytics = new AnalyticsGenerator(new Reporter());
+    $settings = new SettingsController();
+    $analytics = new AnalyticsGenerator(new Reporter($settings), $settings);
     return array(
       new \Twig_SimpleFunction(
         'get_analytics_data',

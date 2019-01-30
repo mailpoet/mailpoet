@@ -13,13 +13,13 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\State;
@@ -36,17 +36,30 @@ class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
   const LAST_ANNOUNCEMENT_DATE = '2019-01-28 10:00:00';
 
+  /** @var Renderer */
   public $renderer;
   public $mp_api_key_valid;
   public $premium_key_valid;
+
+  /** @var AccessControl */
   private $access_control;
-  private $subscribers_over_limit;
+  /** @var SettingsController */
+  private $settings;
+  /** @var WPFunctions */
   private $wp;
 
-  function __construct($renderer, AccessControl $access_control) {
+  private $subscribers_over_limit;
+
+  function __construct(
+    Renderer $renderer,
+    AccessControl $access_control,
+    SettingsController $settings,
+    WPFunctions $wp
+  ) {
     $this->renderer = $renderer;
     $this->access_control = $access_control;
-    $this->wp = new WPFunctions;
+    $this->wp = $wp;
+    $this->settings = $settings;
   }
 
   function init() {
@@ -342,11 +355,11 @@ class Menu {
   function welcomeWizard() {
     if((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
-      'is_mp2_migration_complete' => (bool)Setting::getValue('mailpoet_migration_complete'),
+      'is_mp2_migration_complete' => (bool)$this->settings->get('mailpoet_migration_complete'),
       'is_woocommerce_active' => class_exists('WooCommerce'),
       'finish_wizard_url' => admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG),
-      'sender' => Setting::getValue('sender'),
-      'reply_to' => Setting::getValue('reply_to'),
+      'sender' => $this->settings->get('sender'),
+      'reply_to' => $this->settings->get('reply_to'),
     ];
     $this->displayPage('welcome_wizard.html', $data);
   }
@@ -368,7 +381,7 @@ class Menu {
     }
 
     $data = array(
-      'settings' => Setting::getAll(),
+      'settings' => $this->settings->getAll(),
       'current_user' => wp_get_current_user(),
       'redirect_url' => $redirect_url,
       'sub_menu' => self::MAIN_PAGE_SLUG,
@@ -407,7 +420,7 @@ class Menu {
 
 
   function settings() {
-    $settings = Setting::getAll();
+    $settings = $this->settings->getAll();
     $flags = $this->_getFlags();
 
     // force MSS key check even if the method isn't active
@@ -567,7 +580,7 @@ class Menu {
       return strcasecmp($a["name"], $b["name"]);
     });
     $data['segments'] = $segments;
-    $data['settings'] = Setting::getAll();
+    $data['settings'] = $this->settings->getAll();
     $data['current_wp_user'] = wp_get_current_user()->to_array();
     $data['current_wp_user_firstname'] = wp_get_current_user()->user_firstname;
     $data['site_url'] = site_url();
@@ -588,7 +601,7 @@ class Menu {
     $data['mailpoet_main_page'] = admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG);
     $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter'])?$data['settings']['show_congratulate_after_first_newsletter']:'false';
 
-    $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
+    $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = class_exists('WooCommerce');
 
@@ -662,7 +675,7 @@ class Menu {
     $subscriber_data = $subscriber ? $subscriber->asArray() : [];
     $data = array(
       'shortcodes' => ShortcodesHelper::getShortcodes(),
-      'settings' => Setting::getAll(),
+      'settings' => $this->settings->getAll(),
       'current_wp_user' => array_merge($subscriber_data, wp_get_current_user()->to_array()),
       'sub_menu' => self::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled()
@@ -826,7 +839,7 @@ class Menu {
   }
 
   function isNewUser() {
-    $installed_at = Setting::getValue('installed_at');
+    $installed_at = $this->settings->get('installed_at');
     if(is_null($installed_at)) {
       return true;
     }

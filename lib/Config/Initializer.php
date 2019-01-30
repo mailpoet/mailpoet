@@ -7,6 +7,7 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
@@ -106,7 +107,7 @@ class Initializer {
   }
 
   function runActivator() {
-    $activator = new Activator();
+    $activator = $this->container->get(Activator::class);
     return $activator->activate();
   }
 
@@ -125,9 +126,7 @@ class Initializer {
   }
 
   function setupRenderer() {
-    $caching = !WP_DEBUG;
-    $debugging = WP_DEBUG;
-    $this->renderer = new Renderer($caching, $debugging);
+    $this->renderer = $this->container->get(Renderer::class);
   }
 
   function setupWidget() {
@@ -168,7 +167,7 @@ class Initializer {
 
   function maybeDbUpdate() {
     try {
-      $current_db_version = Setting::getValue('db_version');
+      $current_db_version = $this->container->get(SettingsController::class)->get('db_version');
     } catch(\Exception $e) {
       $current_db_version = null;
     }
@@ -215,7 +214,7 @@ class Initializer {
   }
 
   function setupMenu() {
-    $menu = new Menu($this->renderer, $this->access_control);
+    $menu = $this->container->get(Menu::class);
     $menu->init();
   }
 
@@ -229,7 +228,7 @@ class Initializer {
   }
 
   function setupChangelog() {
-    $changelog = new Changelog();
+    $changelog = $this->container->get(Changelog::class);
     $changelog->init();
   }
 

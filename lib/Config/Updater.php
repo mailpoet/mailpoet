@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -12,10 +13,14 @@ class Updater {
   private $slug;
   private $version;
 
+  /** @var SettingsController */
+  private $settings;
+
   function __construct($plugin_name, $slug, $version) {
     $this->plugin = plugin_basename($plugin_name);
     $this->slug = $slug;
     $this->version = $version;
+    $this->settings = new SettingsController();
   }
 
   function init() {
@@ -41,7 +46,7 @@ class Updater {
   }
 
   function getLatestVersion() {
-    $key = Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME);
+    $key = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     $api = new API($key);
     $data = $api->getPluginInformation($this->slug . '/latest');
     return $data;

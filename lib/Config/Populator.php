@@ -10,8 +10,8 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Segments\WP;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\Pages;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
@@ -25,9 +25,12 @@ class Populator {
   public $models;
   public $templates;
   private $default_segment;
+  /** @var SettingsController */
+  private $settings;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
 
   function __construct() {
+    $this->settings = new SettingsController();
     $this->prefix = Env::$db_prefix;
     $this->models = array(
       'newsletter_option_fields',
@@ -127,9 +130,9 @@ class Populator {
       $mailpoet_page_id = (int)$page->ID;
     }
 
-    $subscription = Setting::getValue('subscription.pages', array());
+    $subscription = $this->settings->get('subscription.pages', array());
     if(empty($subscription)) {
-      Setting::setValue('subscription.pages', array(
+      $this->settings->set('subscription.pages', array(
         'unsubscribe' => $mailpoet_page_id,
         'manage' => $mailpoet_page_id,
         'confirmation' => $mailpoet_page_id
@@ -141,8 +144,8 @@ class Populator {
     $current_user = wp_get_current_user();
 
     // set cron trigger option to default method
-    if(!Setting::getValue(CronTrigger::SETTING_NAME)) {
-      Setting::setValue(CronTrigger::SETTING_NAME, array(
+    if(!$this->settings->fetch(CronTrigger::SETTING_NAME)) {
+      $this->settings->set(CronTrigger::SETTING_NAME, array(
         'method' => CronTrigger::DEFAULT_METHOD
       ));
     }
@@ -154,13 +157,13 @@ class Populator {
     );
 
     // set default from name & address
-    if(!Setting::getValue('sender')) {
-      Setting::setValue('sender', $sender);
+    if(!$this->settings->fetch('sender')) {
+      $this->settings->set('sender', $sender);
     }
 
     // enable signup confirmation by default
-    if(!Setting::getValue('signup_confirmation')) {
-      Setting::setValue('signup_confirmation', array(
+    if(!$this->settings->fetch('signup_confirmation')) {
+      $this->settings->set('signup_confirmation', array(
         'enabled' => true,
         'from' => array(
           'name' => get_option('blogname'),
@@ -171,33 +174,33 @@ class Populator {
     }
 
     // set installation date
-    if(!Setting::getValue('installed_at')) {
-      Setting::setValue('installed_at', date("Y-m-d H:i:s"));
+    if(!$this->settings->fetch('installed_at')) {
+      $this->settings->set('installed_at', date("Y-m-d H:i:s"));
     }
 
     // set reCaptcha settings
-    $re_captcha = Setting::getValue('re_captcha');
+    $re_captcha = $this->settings->fetch('re_captcha');
     if(empty($re_captcha)) {
-      Setting::setValue('re_captcha', array(
+      $this->settings->set('re_captcha', array(
         'enabled' => false,
         'site_token' => '',
         'secret_token' => ''
       ));
     }
 
-    $subscriber_email_notification = Setting::getValue(NewSubscriberNotificationMailer::SETTINGS_KEY);
+    $subscriber_email_notification = $this->settings->fetch(NewSubscriberNotificationMailer::SETTINGS_KEY);
     if(empty($subscriber_email_notification)) {
-      $sender = Setting::getValue('sender', []);
-      Setting::setValue('subscriber_email_notification', [
+      $sender = $this->settings->fetch('sender', []);
+      $this->settings->set('subscriber_email_notification', [
         'enabled' => true,
         'address' => isset($sender['address'])? $sender['address'] : null,
       ]);
     }
 
-    $stats_notifications = Setting::getValue('stats_notifications');
+    $stats_notifications = $this->settings->fetch('stats_notifications');
     if(empty($stats_notifications)) {
-      $sender = Setting::getValue('sender', []);
-      Setting::setValue('stats_notifications', [
+      $sender = $this->settings->fetch('sender', []);
+      $this->settings->set('stats_notifications', [
         'enabled' => true,
         'address' => isset($sender['address'])? $sender['address'] : null,
       ]);
@@ -431,7 +434,7 @@ class Populator {
   private function updateNewsletterCategories() {
     global $wpdb;
     // perform once for versions below or equal to 3.14.0
-    if(version_compare(Setting::getValue('db_version', '3.14.1'), '3.14.0', '>')) {
+    if(version_compare($this->settings->get('db_version', '3.14.1'), '3.14.0', '>')) {
       return false;
     }
     $query = "UPDATE `%s` SET categories = REPLACE(REPLACE(categories, ',\"blank\"', ''), ',\"sample\"', ',\"all\"')";

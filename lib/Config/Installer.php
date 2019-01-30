@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\License;
 
 if(!defined('ABSPATH')) exit;
@@ -13,8 +14,12 @@ class Installer {
 
   private $slug;
 
+  /** @var SettingsController */
+  private $settings;
+
   function __construct($slug) {
     $this->slug = $slug;
+    $this->settings = new SettingsController();
   }
 
   function init() {
@@ -99,7 +104,7 @@ class Installer {
   }
 
   function retrievePluginInformation() {
-    $key = Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME);
+    $key = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     $api = new API($key);
     $info = $api->getPluginInformation($this->slug);
     $info = $this->formatInformation($info);

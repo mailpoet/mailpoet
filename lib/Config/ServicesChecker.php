@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\License\License;
 use MailPoet\WP\DateTime;
@@ -12,13 +13,21 @@ use MailPoet\WP\Notice as WPNotice;
 if(!defined('ABSPATH')) exit;
 
 class ServicesChecker {
+
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct() {
+    $this->settings = new SettingsController();
+  }
+
   function isMailPoetAPIKeyValid($display_error_notice = true, $force_check = false) {
     if(!$force_check && !Bridge::isMPSendingServiceEnabled()) {
       return null;
     }
 
     $mss_key_specified = Bridge::isMSSKeySpecified();
-    $mss_key = Setting::getValue(Bridge::API_KEY_STATE_SETTING_NAME);
+    $mss_key = $this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME);
 
     if(!$mss_key_specified
       || empty($mss_key['state'])
@@ -58,7 +67,7 @@ class ServicesChecker {
   function isPremiumKeyValid($display_error_notice = true) {
     $premium_key_specified = Bridge::isPremiumKeySpecified();
     $premium_plugin_active = License::getLicense();
-    $premium_key = Setting::getValue(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
+    $premium_key = $this->settings->get(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
 
     if(!$premium_plugin_active) {
       $display_error_notice = false;

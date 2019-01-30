@@ -6,33 +6,39 @@ use Carbon\Carbon;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class AnalyticsTest extends \MailPoetTest {
 
   protected $backupGlobals = false;
 
+  /** @var Analytics */
+  private $analytics;
+
+  /** @var SettingsController */
+  private $settings;
+
+  function _before() {
+    parent::_before();
+    $this->settings = new SettingsController();
+    $this->analytics = new Analytics(new Reporter($this->settings), $this->settings);
+    // Remove premium plugin hooks so that tests pass also with premium active
+    remove_all_filters(Analytics::ANALYTICS_FILTER);
+  }
+
   function testIsEnabledReturnsTrueIfSettingEnabled() {
-
-    Setting::setValue('analytics', array('enabled' => '1'));
-
-    $analytics = new Analytics(new Reporter());
-    expect($analytics->isEnabled())->true();
+    $this->settings->set('analytics', array('enabled' => '1'));
+    expect($this->analytics->isEnabled())->true();
   }
 
   function testIsEnabledReturnsFalseIfEmptySettings() {
-
-    Setting::setValue('analytics', array());
-
-    $analytics = new Analytics(new Reporter());
-    expect($analytics->isEnabled())->false();
+    $this->settings->set('analytics', array());
+    expect($this->analytics->isEnabled())->false();
   }
 
   function testIsEnabledReturnsFalseIfNotEnabled() {
-
-    Setting::setValue('analytics', array('enabled' => ''));
-
-    $analytics = new Analytics(new Reporter());
-    expect($analytics->isEnabled())->false();
+    $this->settings->set('analytics', array('enabled' => ''));
+    expect($this->analytics->isEnabled())->false();
   }
 
   function testGetDataIfSettingsIsDisabled() {
@@ -43,8 +49,8 @@ class AnalyticsTest extends \MailPoetTest {
       ),
       $this
     );
-    Setting::setValue('analytics', array('enabled' => ''));
-    $analytics = new Analytics($reporter);
+    $this->settings->set('analytics', array('enabled' => ''));
+    $analytics = new Analytics($reporter, new SettingsController());
 
     expect($analytics->generateAnalytics())->null();
   }
@@ -57,9 +63,9 @@ class AnalyticsTest extends \MailPoetTest {
       ),
       $this
     );
-    Setting::setValue('analytics', array('enabled' => '1'));
-    Setting::setValue('analytics_last_sent', Carbon::now()->subHours(1));
-    $analytics = new Analytics($reporter);
+    $this->settings->set('analytics', array('enabled' => '1'));
+    $this->settings->set('analytics_last_sent', Carbon::now()->subHours(1));
+    $analytics = new Analytics($reporter, new SettingsController());
 
     expect($analytics->generateAnalytics())->null();
   }
@@ -75,11 +81,10 @@ class AnalyticsTest extends \MailPoetTest {
       ),
       $this
     );
-    Setting::setValue('analytics', array('enabled' => '1'));
-    Setting::setValue('analytics_last_sent', null);
+    $this->settings->set('analytics', array('enabled' => '1'));
+    $this->settings->set('analytics_last_sent', null);
 
-    $analytics = new Analytics($reporter);
-
+    $analytics = new Analytics($reporter, new SettingsController());
     expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
@@ -94,46 +99,44 @@ class AnalyticsTest extends \MailPoetTest {
       ),
       $this
     );
-    Setting::setValue('analytics', array('enabled' => '1'));
-    Setting::setValue('analytics_last_sent', Carbon::now()->subYear());
+    $this->settings->set('analytics', array('enabled' => '1'));
+    $this->settings->set('analytics_last_sent', Carbon::now()->subYear());
 
-    $analytics = new Analytics($reporter);
+    $analytics = new Analytics($reporter, new SettingsController());
 
     expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
   function testSetPublicId() {
-    $analytics = new Analytics(new Reporter());
     $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
 
-    Setting::setValue('public_id', 'old-fake-public-id');
-    Setting::setValue(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
+    $this->settings->set('public_id', 'old-fake-public-id');
+    $this->settings->set(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
 
-    $analytics->setPublicId($fakePublicId);
+    $this->analytics->setPublicId($fakePublicId);
 
-    expect(Setting::getValue('public_id'))->equals($fakePublicId);
-    expect(Setting::getValue('new_public_id'))->equals('true');
-    expect(Setting::getValue(Analytics::SETTINGS_LAST_SENT_KEY, null))->null();
+    expect($this->settings->get('public_id'))->equals($fakePublicId);
+    expect($this->settings->get('new_public_id'))->equals('true');
+    expect($this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY, null))->null();
   }
 
   function testIsPublicIdNew() {
-    $analytics = new Analytics(new Reporter());
     $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
 
-    Setting::setValue('public_id', 'old-fake-public-id');
-    Setting::setValue('new_public_id', 'false');
+    $this->settings->set('public_id', 'old-fake-public-id');
+    $this->settings->set('new_public_id', 'false');
 
-    $analytics->setPublicId($fakePublicId);
+    $this->analytics->setPublicId($fakePublicId);
     // When we update public_id it's marked as new
-    expect(Setting::getValue('new_public_id'))->equals('true');
-    expect($analytics->isPublicIdNew())->true();
-    expect(Setting::getValue('new_public_id'))->equals('false');
+    expect($this->settings->get('new_public_id'))->equals('true');
+    expect($this->analytics->isPublicIdNew())->true();
+    expect($this->settings->get('new_public_id'))->equals('false');
 
-    $analytics->setPublicId($fakePublicId);
+    $this->analytics->setPublicId($fakePublicId);
     // We tried to update public_id with the same value, so it's not marked as new
-    expect(Setting::getValue('new_public_id'))->equals('false');
-    expect($analytics->isPublicIdNew())->false();
-    expect(Setting::getValue('new_public_id'))->equals('false');
+    expect($this->settings->get('new_public_id'))->equals('false');
+    expect($this->analytics->isPublicIdNew())->false();
+    expect($this->settings->get('new_public_id'))->equals('false');
   }
 
 }
