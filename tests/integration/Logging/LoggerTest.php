@@ -2,9 +2,17 @@
 
 namespace MailPoet\Logging;
 
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class LoggerTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
+  function _before() {
+    parent::_before();
+    $this->settings = new SettingsController();
+  }
 
   public function testItCreatesLogger() {
     $logger = Logger::getLogger('logger-name');
@@ -38,31 +46,30 @@ class LoggerTest extends \MailPoetTest {
   }
 
   public function testItSetsDefaultLoggingLevel() {
-    Setting::setValue('logging', null);
+    $this->settings->set('logging', null);
     $logger1 = Logger::getLogger('logger-with-handler');
     $handlers = $logger1->getHandlers();
     expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::ERROR);
   }
 
   public function testItSetsLoggingLevelForNothing() {
-    Setting::setValue('logging', 'nothing');
+    $this->settings->set('logging', 'nothing');
     $logger1 = Logger::getLogger('logger-for-nothing');
     $handlers = $logger1->getHandlers();
     expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::EMERGENCY);
   }
 
   public function testItSetsLoggingLevelForErrors() {
-    Setting::setValue('logging', 'errors');
+    $this->settings->set('logging', 'errors');
     $logger1 = Logger::getLogger('logger-for-errors');
     $handlers = $logger1->getHandlers();
     expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::ERROR);
   }
 
   public function testItSetsLoggingLevelForEverything() {
-    Setting::setValue('logging', 'everything');
+    $this->settings->set('logging', 'everything');
     $logger1 = Logger::getLogger('logger-for-everything');
     $handlers = $logger1->getHandlers();
     expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::DEBUG);
   }
-
 }

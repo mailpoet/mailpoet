@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form;
 
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -41,13 +41,14 @@ class Renderer {
   }
 
   static function renderBlocks($blocks = array(), $honeypot_enabled = true) {
+    $settings = new SettingsController();
     // add honeypot for spambots
     $html = ($honeypot_enabled) ?
       '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
       '';
     foreach($blocks as $key => $block) {
-      if($block['type'] == 'submit' && Setting::getValue('re_captcha.enabled')) {
-        $site_key = Setting::getValue('re_captcha.site_token');
+      if($block['type'] == 'submit' && $settings->get('re_captcha.enabled')) {
+        $site_key = $settings->get('re_captcha.site_token');
         $html .= '<div class="mailpoet_recaptcha" data-sitekey="'. $site_key .'">
           <div class="mailpoet_recaptcha_container"></div>
           <noscript>

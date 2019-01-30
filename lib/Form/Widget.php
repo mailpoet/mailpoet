@@ -8,6 +8,7 @@ use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -16,6 +17,9 @@ if(!defined('ABSPATH')) exit;
 class Widget extends \WP_Widget {
   private $renderer;
   private $wp;
+
+  /** @var SettingsController  */
+  private $settings;
 
   const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit';
 
@@ -27,6 +31,7 @@ class Widget extends \WP_Widget {
     );
     $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
+    $this->settings = new SettingsController();
     if(!is_admin()) {
       $this->setupIframe();
     } else {
@@ -113,7 +118,7 @@ class Widget extends \WP_Widget {
       true
     );
 
-    $captcha = Setting::getValue('re_captcha');
+    $captcha = $this->settings->get('re_captcha');
     if(!empty($captcha['enabled'])) {
       wp_enqueue_script(
         'mailpoet_recaptcha',
