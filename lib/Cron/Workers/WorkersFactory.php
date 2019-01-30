@@ -11,7 +11,9 @@ use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
+use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
+use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
 
@@ -29,6 +31,9 @@ class WorkersFactory {
   /** @var SettingsController */
   private $settings;
 
+  /** @var WooCommerceSegment */
+  private $woocommerce_segment;
+
   /**
    * @var Renderer
    */
@@ -39,13 +44,15 @@ class WorkersFactory {
     StatsNotificationScheduler $scheduler,
     Mailer $mailer,
     Renderer $renderer,
-    SettingsController $settings
-   ) {
+    SettingsController $settings,
+    WooCommerceSegment $woocommerce_segment
+  ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->scheduler = $scheduler;
     $this->mailer = $mailer;
     $this->renderer = $renderer;
     $this->settings = $settings;
+    $this->woocommerce_segment = $woocommerce_segment;
   }
 
   /** @return SchedulerWorker */
@@ -80,6 +87,11 @@ class WorkersFactory {
   /** @return MigrationWorker */
   function createMigrationWorker($timer) {
     return new MigrationWorker($timer);
+  }
+
+  /** @return WooCommerceSyncWorker */
+  function createWooCommerceSyncWorker($timer) {
+    return new WooCommerceSyncWorker($this->woocommerce_segment, $timer);
   }
 
 }
