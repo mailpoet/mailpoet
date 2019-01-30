@@ -80,6 +80,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
     // Segments
     $container->autowire(\MailPoet\Segments\SubscribersListings::class)->setPublic(true);
+    $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
     // Settings
     $container->autowire(\MailPoet\Settings\SettingsController::class)->setPublic(true);
     // Subscription
