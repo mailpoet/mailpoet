@@ -14,6 +14,14 @@ class MigratorTest extends \MailPoetTest {
     expect($subscriber_sql)->contains($expected_table);
   }
 
+  function testItDoesNotMigrateWhenDatabaseIsUpToDate() {
+    $changes = $this->migrator->up();
+    $this->assertEmpty(
+      $changes,
+      "Expected no migrations. However, the following changes are planned:\n\t" . implode($changes, "\n\t")
+    );
+  }
+
   function _after() {
   }
 }

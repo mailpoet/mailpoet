@@ -51,13 +51,12 @@ class Migrator {
   function up() {
     global $wpdb;
 
-    $_this = $this;
-    $migrate = function($model) use($_this) {
+    $output = [];
+    foreach($this->models as $model) {
       $modelMethod = Helpers::underscoreToCamelCase($model);
-      dbDelta($_this->$modelMethod());
-    };
-
-    array_map($migrate, $this->models);
+      $output = array_merge(dbDelta($this->$modelMethod()), $output);
+    }
+    return $output;
   }
 
   function down() {
@@ -137,8 +136,8 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'task_id int(11) unsigned NOT NULL,',
-      'created_at TIMESTAMP NULL,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'created_at timestamp NULL,',
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'UNIQUE KEY newsletter_id_task_id (newsletter_id, task_id),',
       'KEY task_id (task_id)',
@@ -151,7 +150,7 @@ class Migrator {
       'task_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'processed int(1) NOT NULL,',
-      'failed SMALLINT(1) NOT NULL DEFAULT 0,',
+      'failed smallint(1) NOT NULL DEFAULT 0,',
       'error text NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (task_id, subscriber_id),',
