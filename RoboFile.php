@@ -564,4 +564,27 @@ class RoboFile extends \Robo\Tasks {
       ->groupsTo('tests/acceptance/_groups/group_')
       ->run();
   }
+
+  public function writeReleaseVersion($version) {
+    $version = trim($version);
+    if(!preg_match('/\d+\.\d+\.\d+/', $version)) {
+      $this->yell('Incorrect version format', 40, 'red');
+      exit(1);
+    }
+
+    $this->taskReplaceInFile(__DIR__ . '/readme.txt')
+      ->regex('/Stable tag:\s*\d+\.\d+\.\d+/i')
+      ->to('Stable tag: ' . $version)
+      ->run();
+
+    $this->taskReplaceInFile(__DIR__ . '/mailpoet.php')
+      ->regex('/Version:\s*\d+\.\d+\.\d+/i')
+      ->to('Version: ' . $version)
+      ->run();
+
+    $this->taskReplaceInFile(__DIR__ . '/mailpoet.php')
+      ->regex("/['\"]version['\"]\s*=>\s*['\"]\d+\.\d+\.\d+['\"],/i")
+      ->to(sprintf("'version' => '%s',", $version))
+      ->run();
+  }
 }
