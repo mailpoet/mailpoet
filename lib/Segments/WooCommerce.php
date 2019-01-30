@@ -30,7 +30,7 @@ class WooCommerce {
         $subscriber = Subscriber::where('wp_user_id', $wp_user_id)
           ->findOne();
 
-        if ($wp_user === false || $subscriber === false) {
+        if($wp_user === false || $subscriber === false) {
           // registered customers should exist as WP users and WP segment subscribers
           return false;
         }
@@ -38,7 +38,7 @@ class WooCommerce {
         $data = array(
           'is_woocommerce_user' => 1,
         );
-        if (!empty($new_customer)) {
+        if(!empty($new_customer)) {
           $data['status'] = Subscriber::STATUS_SUBSCRIBED;
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
@@ -71,7 +71,7 @@ class WooCommerce {
       case 'woocommerce_process_shop_order_meta':
       default:
         $inserted_emails = $this->insertSubscribersFromOrders($order_id);
-        if (empty($inserted_emails[0]['email'])) {
+        if(empty($inserted_emails[0]['email'])) {
           return false;
         }
         $subscriber = Subscriber::where('email', $inserted_emails[0]['email'])
@@ -109,10 +109,10 @@ class WooCommerce {
     // Mark WP users having a customer role as WooCommerce subscribers
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE %1$s mps
         JOIN %2$s wu ON mps.wp_user_id = wu.id
-        JOIN %3$s wpum ON wu.id = wpum.user_id AND wpum.meta_key = "wpdev_capabilities"
+        JOIN %3$s wpum ON wu.id = wpum.user_id AND wpum.meta_key = "' . $wpdb->prefix . 'capabilities"
       SET is_woocommerce_user = 1
         WHERE wpum.meta_value LIKE "%%\"customer\"%%"
     ', $subscribers_table, $wpdb->users, $wpdb->usermeta));
@@ -124,16 +124,16 @@ class WooCommerce {
     $order_id = !is_null($order_id) ? (int)$order_id : null;
 
     $inserted_users_emails = \ORM::for_table($wpdb->users)->raw_query(
-      'SELECT DISTINCT wppm.meta_value as email FROM `wpdev_postmeta` wppm
-        JOIN `wpdev_posts` p ON wppm.post_id = p.ID AND p.post_type = "shop_order"
+      'SELECT DISTINCT wppm.meta_value as email FROM `' . $wpdb->prefix . 'postmeta` wppm
+        JOIN `' . $wpdb->prefix . 'posts` p ON wppm.post_id = p.ID AND p.post_type = "shop_order"
         WHERE wppm.meta_key = "_billing_email" AND wppm.meta_value != ""
         ' . ($order_id ? ' AND p.ID = "' . $order_id . '"' : '') . '
       ')->findArray();
 
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       INSERT IGNORE INTO %1$s (is_woocommerce_user, email, status, created_at, source)
-      SELECT 1, wppm.meta_value, "%2$s", CURRENT_TIMESTAMP(), "%3$s" FROM `wpdev_postmeta` wppm
-        JOIN `wpdev_posts` p ON wppm.post_id = p.ID AND p.post_type = "shop_order"
+      SELECT 1, wppm.meta_value, "%2$s", CURRENT_TIMESTAMP(), "%3$s" FROM `' . $wpdb->prefix . 'postmeta` wppm
+        JOIN `' . $wpdb->prefix . 'posts` p ON wppm.post_id = p.ID AND p.post_type = "shop_order"
         WHERE wppm.meta_key = "_billing_email" AND wppm.meta_value != ""
         ' . ($order_id ? ' AND p.ID = "' . $order_id . '"' : '') . '
       ON DUPLICATE KEY UPDATE is_woocommerce_user = 1
@@ -163,7 +163,7 @@ class WooCommerce {
   private function updateFirstNames() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE %1$s mps
         JOIN %2$s wppm ON mps.email = wppm.meta_value AND wppm.meta_key = "_billing_email"
         JOIN %2$s wppm2 ON wppm2.post_id = wppm.post_id AND wppm2.meta_key = "_billing_first_name"
@@ -178,7 +178,7 @@ class WooCommerce {
   private function updateLastNames() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE %1$s mps
         JOIN %2$s wppm ON mps.email = wppm.meta_value AND wppm.meta_key = "_billing_email"
         JOIN %2$s wppm2 ON wppm2.post_id = wppm.post_id AND wppm2.meta_key = "_billing_last_name"
@@ -195,7 +195,7 @@ class WooCommerce {
     $subscribers_table = Subscriber::$_table;
     $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
     // Subscribe WC users to segment
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
      INSERT IGNORE INTO %s (subscriber_id, segment_id, created_at)
       SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM %s mps
         WHERE mps.is_woocommerce_user = 1
@@ -207,7 +207,7 @@ class WooCommerce {
     $subscribers_table = Subscriber::$_table;
     $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
     // Unsubscribe non-WC or invalid users from segment
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
      DELETE mpss FROM %s mpss
       LEFT JOIN %s mps ON mpss.subscriber_id = mps.id
         WHERE mpss.segment_id = %s AND (mps.is_woocommerce_user = 0 OR mps.email = "" OR mps.email IS NULL)
@@ -216,7 +216,7 @@ class WooCommerce {
 
   private function removeFromTrash() {
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE %1$s
       SET %1$s.deleted_at = NULL
         WHERE %1$s.is_woocommerce_user = 1
@@ -239,7 +239,7 @@ class WooCommerce {
         'wppm'
       )
       ->leftOuterJoin($wpdb->posts, 'wppm.post_id = wpp.ID AND wpp.post_type = "shop_order"', 'wpp')
-      ->join($wpdb->usermeta, 'wp_user_id = wpum.user_id AND wpum.meta_key = "wpdev_capabilities"', 'wpum')
+      ->join($wpdb->usermeta, 'wp_user_id = wpum.user_id AND wpum.meta_key = "' . $wpdb->prefix . 'capabilities"', 'wpum')
       ->whereRaw('(wppm.meta_value IS NULL AND wpum.meta_value NOT LIKE "%\"customer\"%")')
       ->whereNotNull('wp_user_id')
       ->findResultSet()

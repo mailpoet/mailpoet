@@ -257,17 +257,6 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->deleted_at)->null();
   }
 
-  /* function testItSynchronizesDeletedWPUsersUsingHooks() {
-    $user = $this->insertRegisteredCustomer();
-    $this->insertRegisteredCustomer();
-    $this->woocommerce_segment->synchronizeCustomers();
-    $subscribersCount = $this->getSubscribersCount();
-    expect($subscribersCount)->equals(2);
-    wp_delete_user($id);
-    $subscribersCount = $this->getSubscribersCount();
-    expect($subscribersCount)->equals(1);
-  } */
-
   function testItRemovesOrphanedSubscribers() {
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();
@@ -373,14 +362,14 @@ class WooCommerceTest extends \MailPoetTest  {
   }
 
   private function addCustomerRole() {
-    if (!get_role('customer')) {
+    if(!get_role('customer')) {
       add_role('customer', 'Customer');
       $this->customerRoleAdded = true;
     }
   }
 
   private function removeCustomerRole() {
-    if (!empty($this->customerRoleAdded)) {
+    if(!empty($this->customerRoleAdded)) {
       remove_role('customer');
     }
   }
@@ -475,9 +464,9 @@ class WooCommerceTest extends \MailPoetTest  {
     $number = !is_null($number) ? (int)$number : mt_rand();
     // add order
     $guest = array(
-      'email' => $data['email'] ?? 'user-sync-test' . $number . '@example.com',
-      'first_name' => $data['first_name'] ?? 'user-sync-test' . $number . ' first',
-      'last_name' => $data['last_name'] ?? 'user-sync-test' . $number . ' last',
+      'email' => isset($data['email']) ? $data['email'] : 'user-sync-test' . $number . '@example.com',
+      'first_name' => isset($data['first_name']) ? $data['first_name'] : 'user-sync-test' . $number . ' first',
+      'last_name' => isset($data['last_name']) ? $data['last_name'] : 'user-sync-test' . $number . ' last',
     );
     $guest['order_id'] = $this->createOrder($guest);
     $this->userEmails[] = $guest['email'];
@@ -498,12 +487,12 @@ class WooCommerceTest extends \MailPoetTest  {
     $order_data = array(
       'post_type' => 'shop_order',
       'meta_input' => array(
-        '_billing_email' => $data['email'] ?? '',
-        '_billing_first_name' => $data['first_name'] ?? '',
-        '_billing_last_name' => $data['last_name'] ?? '',
+        '_billing_email' => isset($data['email']) ? $data['email'] : '',
+        '_billing_first_name' => isset($data['first_name']) ? $data['first_name'] : '',
+        '_billing_last_name' => isset($data['last_name']) ? $data['last_name'] : '',
       )
     );
-    if (!empty($data['user_id'])) {
+    if(!empty($data['user_id'])) {
       $order_data['meta_input']['_customer_user'] = (int)$data['user_id'];
     }
     $id = wp_insert_post($order_data);
