@@ -9,8 +9,17 @@ use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class DaemonTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
+  public function _before() {
+    parent::_before();
+    $this->settings = new SettingsController();
+  }
 
   function testItCanExecuteWorkers() {
     $daemon = Stub::make(Daemon::class, array(
@@ -25,7 +34,7 @@ class DaemonTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon->run([]);
   }
 
@@ -43,7 +52,7 @@ class DaemonTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon->run($data);
   }
 

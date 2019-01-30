@@ -4,15 +4,20 @@ namespace MailPoet\Test\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class SupervisorTest extends \MailPoetTest {
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
     parent::_before();
     // cron trigger is by default set to 'WordPress'; when it runs and does not
     // detect any queues to process, it deletes the daemon setting, so Supervisor and
     // CronHelper's getDaemon() methods do not work. for that matter, we need to set
     // the trigger setting to anything but 'WordPress'.
-    Setting::setValue('cron_trigger', array(
+    $this->settings = new SettingsController();
+    $this->settings->set('cron_trigger', array(
       'method' => 'none'
     ));
   }
@@ -26,7 +31,7 @@ class SupervisorTest extends \MailPoetTest {
 
   function testItCreatesDaemonWhenOneDoesNotExist() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING))->null();
+    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $supervisor = new Supervisor();
     expect($supervisor->getDaemon())->notEmpty();
   }

@@ -3,14 +3,20 @@ namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 require_once('CronTriggerMockMethod.php');
 require_once('CronTriggerMockMethodWithException.php');
 
 class CronTriggerTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
     parent::_before();
-    $this->cron_trigger = new CronTrigger();
+    $this->settings = new SettingsController();
+    $this->cron_trigger = new CronTrigger($this->settings);
   }
 
   function testItCanDefineConstants() {
@@ -29,11 +35,6 @@ class CronTriggerTest extends \MailPoetTest {
   function testItCanConstruct() {
     expect($this->cron_trigger->current_method)
       ->equals(CronTrigger::DEFAULT_METHOD);
-  }
-
-  function testItCanGetCurrentMethod() {
-    Setting::setValue(CronTrigger::SETTING_NAME, array('method' => 'CronTriggerMockMethod'));
-    expect($this->cron_trigger->getCurrentMethod())->equals('CronTriggerMockMethod');
   }
 
   function testItCanReturnAvailableMethods() {

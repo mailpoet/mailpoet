@@ -9,9 +9,9 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
-use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -21,10 +21,12 @@ class Newsletter {
   public $tracking_enabled;
   public $tracking_image_inserted;
 
+  /** @var WPFunctions */
   private $wp;
 
   function __construct(WPFunctions $wp = null) {
-    $this->tracking_enabled = (boolean)Setting::getValue('tracking.enabled');
+    $settings = new SettingsController();
+    $this->tracking_enabled = (boolean)$settings->get('tracking.enabled');
     if($wp == null) {
       $wp = new WPFunctions;
     }

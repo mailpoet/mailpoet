@@ -235,7 +235,7 @@ class Initializer {
   function setupCronTrigger() {
     // setup cron trigger only outside of cli environment
     if(php_sapi_name() !== 'cli') {
-      $cron_trigger = new CronTrigger();
+      $cron_trigger = $this->container->get(CronTrigger::class);
       $cron_trigger->init();
     }
   }

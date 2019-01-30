@@ -29,6 +29,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -36,7 +37,8 @@ use MailPoet\WP\Functions as WPFunctions;
 class SendingQueueTest extends \MailPoetTest {
   /** @var SendingErrorHandler */
   private $sending_error_handler;
-
+  /** @var SettingsController */
+  private $settings;
   /** @var Scheduler */
   private $stats_notifications_worker;
 
@@ -83,6 +85,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->sending_error_handler = new SendingErrorHandler();
     $this->stats_notifications_worker = new StatsNotificationsScheduler();
     $this->sending_queue_worker = new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker);
+    $this->settings = new SettingsController();
   }
 
   private function getDirectUnsubscribeURL() {
@@ -229,7 +232,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function testItPassesExtraParametersToMailerWhenTrackingIsDisabled() {
-    Setting::setValue('tracking.enabled', false);
+    $this->settings->set('tracking.enabled', false);
     $directUnsubscribeURL = $this->getDirectUnsubscribeURL();
     $sending_queue_worker = new SendingQueueWorker(
       $this->sending_error_handler,
@@ -251,7 +254,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function testItPassesExtraParametersToMailerWhenTrackingIsEnabled() {
-    Setting::setValue('tracking.enabled', true);
+    $this->settings->set('tracking.enabled', true);
     $trackedUnsubscribeURL = $this->getTrackedUnsubscribeURL();
     $sending_queue_worker = new SendingQueueWorker(
       $this->sending_error_handler,
@@ -680,6 +683,7 @@ class SendingQueueTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);

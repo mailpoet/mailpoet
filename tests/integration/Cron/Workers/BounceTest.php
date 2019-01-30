@@ -12,6 +12,7 @@ use MailPoet\Services\Bridge\API;
 
 require_once('BounceTestMockAPI.php');
 use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
+use MailPoet\Settings\SettingsController;
 
 class BounceTest extends \MailPoetTest {
   function _before() {
@@ -98,7 +99,8 @@ class BounceTest extends \MailPoetTest {
   }
 
   private function setMailPoetSendingMethod() {
-    Setting::setValue(
+    $settings = new SettingsController();
+    $settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'MailPoet',

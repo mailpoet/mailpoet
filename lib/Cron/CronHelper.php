@@ -5,6 +5,7 @@ namespace MailPoet\Cron;
 use MailPoet\Models\Setting;
 use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -36,7 +37,8 @@ class CronHelper {
   }
 
   static function getDaemon() {
-    return Setting::getValue(self::DAEMON_SETTING);
+    $settings = new SettingsController();
+    return $settings->fetch(self::DAEMON_SETTING);
   }
 
   static function saveDaemonLastError($error) {
@@ -57,7 +59,8 @@ class CronHelper {
 
   static function saveDaemon($daemon) {
     $daemon['updated_at'] = time();
-    return Setting::setValue(
+    $settings = new SettingsController();
+    $settings->set(
       self::DAEMON_SETTING,
       $daemon
     );
@@ -65,7 +68,8 @@ class CronHelper {
 
   static function deactivateDaemon($daemon) {
     $daemon['status'] = self::DAEMON_STATUS_INACTIVE;
-    return Setting::setValue(
+    $settings = new SettingsController();
+    $settings->set(
       self::DAEMON_SETTING,
       $daemon
     );
