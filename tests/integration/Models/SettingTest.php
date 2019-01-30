@@ -2,6 +2,7 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class SettingTest extends \MailPoetTest {
   function testItCanBeCreated() {
@@ -128,21 +129,24 @@ class SettingTest extends \MailPoetTest {
   }
 
   function testSaveDefaultSenderIfNeededNotSaveEmptyValue() {
+    $settings_controller = new SettingsController();
     Setting::saveDefaultSenderIfNeeded('', null);
-    expect(Setting::getValue('sender'))->null();
+    expect($settings_controller->get('sender'))->null();
   }
 
   function testSaveDefaultSenderIfNeededDoesntOverride() {
-    Setting::setValue('sender', array('name' => 'sender1', 'address' => 'sender1address'));
+    $settings_controller = new SettingsController();
+    $settings_controller->set('sender', array('name' => 'sender1', 'address' => 'sender1address'));
     Setting::saveDefaultSenderIfNeeded('sender2address', 'sender1');
-    $settings = Setting::getValue('sender');
+    $settings = $settings_controller->get('sender');
     expect($settings['name'])->equals('sender1');
     expect($settings['address'])->equals('sender1address');
   }
 
   function testSaveDefaultSenderIfNeeded() {
+    $settings_controller = new SettingsController();
     Setting::saveDefaultSenderIfNeeded('senderAddress', 'sender');
-    $settings = Setting::getValue('sender');
+    $settings = $settings_controller->get('sender');
     expect($settings['name'])->equals('sender');
     expect($settings['address'])->equals('senderAddress');
   }

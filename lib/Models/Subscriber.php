@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
@@ -121,7 +122,8 @@ class Subscriber extends Model {
     // that should not be editable when subscribing
     $subscriber_data = self::filterOutReservedColumns($subscriber_data);
 
-    $signup_confirmation_enabled = (bool)Setting::getValue(
+    $settings = new SettingsController();
+    $signup_confirmation_enabled = (bool)$settings->get(
       'signup_confirmation.enabled'
     );
 
@@ -822,10 +824,11 @@ class Subscriber extends Model {
   }
 
   static function setRequiredFieldsDefaultValues($data) {
+    $settings = new SettingsController();
     $required_field_default_values = array(
       'first_name' => '',
       'last_name' => '',
-      'status' => (!Setting::getValue('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED
+      'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED
     );
     foreach($required_field_default_values as $field => $value) {
       if(!isset($data[$field])) {

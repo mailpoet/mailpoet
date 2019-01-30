@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -124,10 +125,11 @@ class Setting extends Model {
   }
 
   public static function saveDefaultSenderIfNeeded($sender_address, $sender_name) {
-    if(empty($sender_address) || empty($sender_name) || Setting::getValue('sender')) {
+    $settings = new SettingsController();
+    if(empty($sender_address) || empty($sender_name) || $settings->get('sender')) {
       return;
     }
-    Setting::setValue('sender', array(
+    $settings->set('sender', array(
       'address' => $sender_address,
       'name' => $sender_name
     ));
