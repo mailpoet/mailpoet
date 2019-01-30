@@ -25,6 +25,7 @@ use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\State;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Notice as WPNotice;
 use MailPoet\WP\Readme;
@@ -35,6 +36,9 @@ if(!defined('ABSPATH')) exit;
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
   const LAST_ANNOUNCEMENT_DATE = '2019-01-28 10:00:00';
+
+  /** @var WooCommerceHelper */
+  private $woocommerce_helper;
 
   /** @var Renderer */
   public $renderer;
@@ -54,12 +58,14 @@ class Menu {
     Renderer $renderer,
     AccessControl $access_control,
     SettingsController $settings,
-    WPFunctions $wp
+    WPFunctions $wp,
+    WooCommerceHelper $woocommerce_helper
   ) {
     $this->renderer = $renderer;
     $this->access_control = $access_control;
     $this->wp = $wp;
     $this->settings = $settings;
+    $this->woocommerce_helper = $woocommerce_helper;
   }
 
   function init() {
@@ -370,7 +376,7 @@ class Menu {
     if((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
       'is_mp2_migration_complete' => (bool)$this->settings->get('mailpoet_migration_complete'),
-      'is_woocommerce_active' => class_exists('WooCommerce'),
+      'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
       'finish_wizard_url' => admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG),
       'sender' => $this->settings->get('sender'),
       'reply_to' => $this->settings->get('reply_to'),
@@ -617,7 +623,7 @@ class Menu {
 
     $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
-    $data['is_woocommerce_active'] = class_exists('WooCommerce');
+    $data['is_woocommerce_active'] = $this->woocommerce_helper->isWooCommerceActive();
 
     $user_id = $data['current_wp_user']['ID'];
     $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'][$user_id])
