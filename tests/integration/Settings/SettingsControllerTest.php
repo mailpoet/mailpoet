@@ -41,7 +41,7 @@ class SettingsControllerTest extends \MailPoetTest {
 
   function testItReturnsDefaultValueAsFallback() {
     $settings = Stub::make($this->controller, [
-      'getDefaults' => function () {
+      'getAllDefaults' => function () {
         return ['default1' => ['default2' => 1]];
       }
     ]);

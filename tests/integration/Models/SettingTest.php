@@ -22,22 +22,7 @@ class SettingTest extends \MailPoetTest {
     expect($errors[0])->equals('Please specify a name.');
   }
 
-  function testItHasDefaultSettings() {
-    $default_settings = Setting::getDefaults();
-    expect($default_settings)->notEmpty();
-    expect($default_settings['signup_confirmation']['enabled'])->true();
-  }
-
-  function testItCanLoadDefaults() {
-    Setting::$defaults = null;
-    expect(Setting::$defaults)->null();
-
-    $default_settings = Setting::getDefaults();
-    expect(Setting::$defaults)->notEmpty();
-    expect($default_settings['signup_confirmation']['enabled'])->true();
-  }
-
-  function testItCanGetAllSettingsIncludingDefaults() {
+  function testItCanGetAllSettings() {
     Setting::setValue('key_1', 'value_1');
     Setting::setValue('key_2', 'value_2');
     Setting::setValue('key_3', array(
@@ -52,17 +37,12 @@ class SettingTest extends \MailPoetTest {
       'subkey_1' => 'subvalue_1',
       'subkey_2' => 'subvalue_2'
     ));
-
-    // default settings
-    $default_settings = Setting::getDefaults();
-    expect($settings['signup_confirmation'])
-      ->equals($default_settings['signup_confirmation']);
   }
 
   function testItCanSetAndGetValues() {
     // try to get an "unknown" key
-    $setting = Setting::getValue('unknown_key', 'default_value');
-    expect($setting)->equals('default_value');
+    $setting = Setting::getValue('unknown_key');
+    expect($setting)->equals(null);
 
     // setting a "known" key
     $setting = Setting::setValue('known_key', '  actual_value  ');
@@ -71,26 +51,6 @@ class SettingTest extends \MailPoetTest {
     // try to get a "known" key
     $setting = Setting::getValue('known_key', 'default_value');
     expect($setting)->equals('actual_value');
-  }
-
-  function testItShouldReturnDefaultsSetInModelIfNotSet() {
-    // model specified default settings
-    $default_settings = Setting::getDefaults();
-
-    // try to get the MTA settings (which don't exist in the database)
-    $mta_settings = Setting::getValue('mta');
-    expect($mta_settings)->equals($default_settings['mta']);
-  }
-
-  function testItShouldReturnCustomDefaultsInsteadOfDefaultsSetInModel() {
-    // try to get the MTA settings (which don't exist in the database)
-    // but specify a custom default value
-    $custom_mta_settings = Setting::getValue('mta', array(
-      'custom_default' => 'value'
-    ));
-    expect($custom_mta_settings)->equals(array(
-      'custom_default' => 'value'
-    ));
   }
 
   function testItCanCreateOrUpdate() {

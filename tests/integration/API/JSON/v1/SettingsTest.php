@@ -12,11 +12,14 @@ class SettingsTest extends \MailPoetTest {
   /** @var Settings */
   private $endpoint;
 
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
     parent::_before();
-    $settings = new SettingsController();
-    $settings->set('some.setting.key', true);
-    $this->endpoint = new Settings($settings);
+    $this->settings = new SettingsController();
+    $this->settings->set('some.setting.key', true);
+    $this->endpoint = new Settings($this->settings);
   }
 
   function testItCanGetSettings() {
@@ -30,7 +33,7 @@ class SettingsTest extends \MailPoetTest {
     SettingsController::resetCache();
     $response = $this->endpoint->get();
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(Setting::getDefaults());
+    expect($response->data)->equals($this->settings->getAllDefaults());
   }
 
   function testItCanSetSettings() {
