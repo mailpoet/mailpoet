@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 class Reporter {
   /** @var SettingsController */
@@ -26,7 +27,8 @@ class Reporter {
     $checker = new ServicesChecker();
     $bounceAddress = $this->settings->get('bounce.address');
     $segments = Segment::getAnalytics();
-    $has_wc = class_exists('WooCommerce');
+    $woocommerce_helper = new WooCommerceHelper;
+    $has_wc = $woocommerce_helper->isWooCommerceActive();
     $wc_customers_count = 0;
     if($has_wc) {
       $wc_customers_count = (int)Newsletter::rawQuery(
