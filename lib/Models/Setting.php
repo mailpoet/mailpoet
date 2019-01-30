@@ -63,81 +63,39 @@ class Setting extends Model {
   }
 
   public static function getValue($key, $default = null) {
-    $keys = explode('.', $key);
     $defaults = self::getDefaults();
-
-    if(count($keys) === 1) {
-      $setting = Setting::where('name', $key)->findOne();
-      if($setting === false) {
-        if($default === null && array_key_exists($key, $defaults)) {
-          return $defaults[$key];
-        } else {
-          return $default;
-        }
+    $setting = Setting::where('name', $key)->findOne();
+    if($setting === false) {
+      if($default === null && array_key_exists($key, $defaults)) {
+        return $defaults[$key];
       } else {
-        if(is_serialized($setting->value)) {
-          $value = unserialize($setting->value);
-        } else {
-          $value = $setting->value;
-        }
-        if(is_array($value) && array_key_exists($key, $defaults)) {
-          return array_replace_recursive($defaults[$key], $value);
-        } else {
-          return $value;
-        }
+        return $default;
       }
     } else {
-      $main_key = array_shift($keys);
-
-      $setting = static::getValue($main_key, $default);
-
-      if($setting !== $default) {
-        for($i = 0, $count = count($keys); $i < $count; $i++) {
-          if(!is_array($setting)) {
-            $setting = array();
-          }
-          if(array_key_exists($keys[$i], $setting)) {
-            $setting = $setting[$keys[$i]];
-          } else {
-            return $default;
-          }
-        }
+      if(is_serialized($setting->value)) {
+        $value = unserialize($setting->value);
+      } else {
+        $value = $setting->value;
       }
-      return $setting;
+      if(is_array($value) && array_key_exists($key, $defaults)) {
+        return array_replace_recursive($defaults[$key], $value);
+      } else {
+        return $value;
+      }
     }
   }
 
   public static function setValue($key, $value) {
     $value = Helpers::recursiveTrim($value);
-    $keys = explode('.', $key);
-
-    if(count($keys) === 1) {
-      if(is_array($value)) {
-        $value = serialize($value);
-      }
-
-      $setting = Setting::createOrUpdate(array(
-        'name' => $key,
-        'value' => $value
-      ));
-      return ($setting->id() > 0 && $setting->getErrors() === false);
-    } else {
-      $main_key = array_shift($keys);
-
-      $setting_value = static::getValue($main_key, array());
-      $current_value = &$setting_value;
-      $last_key = array_pop($keys);
-
-      foreach($keys as $key) {
-        $current_value =& $current_value[$key];
-      }
-      if(is_scalar($current_value)) {
-        $current_value = array();
-      }
-      $current_value[$last_key] = $value;
-
-      return static::setValue($main_key, $setting_value);
+    if(is_array($value)) {
+      $value = serialize($value);
     }
+
+    $setting = Setting::createOrUpdate(array(
+      'name' => $key,
+      'value' => $value
+    ));
+    return ($setting->id() > 0 && $setting->getErrors() === false);
   }
 
   public static function getAll() {

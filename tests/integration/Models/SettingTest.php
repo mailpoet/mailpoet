@@ -70,14 +70,6 @@ class SettingTest extends \MailPoetTest {
     // try to get a "known" key
     $setting = Setting::getValue('known_key', 'default_value');
     expect($setting)->equals('actual_value');
-
-    // try to get an "unknown" subkey of a "known" key
-    $setting = Setting::getValue('known_key.unknown_subkey', 'default_value');
-    expect($setting)->equals('default_value');
-
-    // try to get an "unknown" subkey of an "unknown" key
-    $setting = Setting::getValue('unknown_key.unknown_subkey', 'default_value');
-    expect($setting)->equals('default_value');
   }
 
   function testItShouldReturnDefaultsSetInModelIfNotSet() {
@@ -127,24 +119,12 @@ class SettingTest extends \MailPoetTest {
     expect(Setting::getValue('test'))->equals('123');
   }
 
-  function testItCanGetAndSetNestedValue() {
-    expect(Setting::setValue('test.key', '  123 '))->true();
-    expect(Setting::getValue('test.key'))->equals('123');
-
-    expect(Setting::setValue('test.key.subkey', ' 123'))->true();
-    expect(Setting::setValue('test.key.subkey2', '456  '))->true();
-
-    expect(Setting::getValue('test.key'))->notEmpty();
-    expect(Setting::getValue('test.key.subkey'))->equals('123');
-    expect(Setting::getValue('test.key.subkey2'))->equals('456');
-  }
-
   function testItCanSetValueToNull() {
-    expect(Setting::setValue('test.key', true))->true();
-    expect(Setting::getValue('test.key'))->equals(true);
+    expect(Setting::setValue('test_key', true))->true();
+    expect(Setting::getValue('test_key'))->equals(true);
 
-    expect(Setting::setValue('test.key', null))->true();
-    expect(Setting::getValue('test.key'))->null();
+    expect(Setting::setValue('test_key', null))->true();
+    expect(Setting::getValue('test_key'))->null();
   }
 
   function testSaveDefaultSenderIfNeededNotSaveEmptyValue() {
