@@ -7,6 +7,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Subscription\Url;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ConfirmationEmailMailer {
 
@@ -15,12 +16,18 @@ class ConfirmationEmailMailer {
   /** @var Mailer */
   private $mailer;
 
+  /** @var WPFunctions */
+  private $wp;
+
   /**
    * @param Mailer|null $mailer
    */
-  function __construct($mailer = null) {
+  function __construct($mailer = null, WPFunctions $wp = null) {
     if($mailer) {
       $this->mailer = $mailer;
+    }
+    if(!$wp) {
+      $this->wp = new WPFunctions;
     }
   }
 
@@ -33,7 +40,7 @@ class ConfirmationEmailMailer {
 
     $subscriber->count_confirmations++;
     $subscriber->save();
-    if(!is_user_logged_in() && $subscriber->count_confirmations > self::MAX_CONFIRMATION_EMAILS) {
+    if(!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations > self::MAX_CONFIRMATION_EMAILS) {
       return false;
     }
 

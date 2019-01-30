@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Models\Setting;
 use MailPoet\Subscription\Form;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Hooks {
 
@@ -24,13 +25,15 @@ class Hooks {
 
   function setupSubscriptionEvents() {
     $subscribe = Setting::getValue('subscribe', array());
+    $wp = new WPFunctions;
+
     // Subscribe in comments
     if(
       isset($subscribe['on_comment']['enabled'])
       &&
       (bool)$subscribe['on_comment']['enabled']
     ) {
-      if(is_user_logged_in()) {
+      if($wp->isUserLoggedIn()) {
         add_action(
           'comment_form_field_comment',
           '\MailPoet\Subscription\Comment::extendLoggedInForm'
