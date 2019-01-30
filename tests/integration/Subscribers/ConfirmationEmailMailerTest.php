@@ -8,6 +8,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ConfirmationEmailMailerTest extends \MailPoetTest {
 
@@ -66,6 +67,52 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $sender->sendConfirmationEmail($subscriber);
     // error is set on the subscriber model object
     expect($subscriber->getErrors()[0])->equals('send error');
+  }
+
+  function testItLimitsNumberOfConfirmationEmailsForNotLoggedInUser() {
+    wp_set_current_user(0);
+    expect((new WPFunctions)->isUserLoggedIn())->false();
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'first_name' => 'John',
+      'last_name' => 'Mailer',
+      'email' => 'john@mailpoet.com'
+    ]);
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => function() {
+        return true;
+      }
+    ], $this);
+    $sender = new ConfirmationEmailMailer($mailer);
+
+    for($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
+      expect($sender->sendConfirmationEmail($subscriber))->equals(true);
+    }
+    expect($sender->sendConfirmationEmail($subscriber))->equals(false);
+  }
+
+  function testItDoesNotLimitNumberOfConfirmationEmailsForLoggedInUser() {
+    wp_set_current_user(1);
+    expect((new WPFunctions)->isUserLoggedIn())->true();
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'first_name' => 'John',
+      'last_name' => 'Mailer',
+      'email' => 'john@mailpoet.com'
+    ]);
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => function() {
+        return true;
+      }
+    ], $this);
+    $sender = new ConfirmationEmailMailer($mailer);
+
+    for($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
+      expect($sender->sendConfirmationEmail($subscriber))->equals(true);
+    }
+    expect($sender->sendConfirmationEmail($subscriber))->equals(true);
   }
 
   function _after() {
