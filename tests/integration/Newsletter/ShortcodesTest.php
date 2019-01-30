@@ -257,7 +257,7 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodes_object->process(array($shortcode));
     expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
-    Setting::setValue('tracking.enabled', true);
+    $this->settings->set('tracking.enabled', true);
     $initial_shortcodes = array(
       '[link:subscription_unsubscribe_url]',
       '[link:subscription_manage_url]',
@@ -313,7 +313,7 @@ class ShortcodesTest extends \MailPoetTest {
     }, 10, 4);
     $result = $shortcodes_object->process(array($shortcode));
     expect($result[0])->equals('success');
-    Setting::setValue('tracking.enabled', true);
+    $this->settings->set('tracking.enabled', true);
     // tracking function only works during sending, so queue object must not be false
     $shortcodes_object->queue = true;
     $result = $shortcodes_object->process(array($shortcode));

@@ -5,11 +5,11 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\ViewInBrowser;
 use MailPoet\Router\Router;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class ViewInBrowserTest extends \MailPoetTest {
@@ -71,7 +71,7 @@ class ViewInBrowserTest extends \MailPoetTest {
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="' . Links::DATA_TAG_CLICK . '-90e56">Unsubscribe</a> or visit <a href="' . Links::DATA_TAG_CLICK . '-i1893">Google</a><img alt="" class="" src="' . Links::DATA_TAG_OPEN . '"></p>',
       'text' => 'test'
     );
-    $this->view_in_browser = new ViewInBrowser();
+    $this->view_in_browser = new ViewInBrowser(false);
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->hydrate($this->newsletter);
@@ -124,7 +124,8 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function testItConvertsShortcodes() {
-    Setting::setValue('tracking.enabled', false);
+    $settings = new SettingsController();
+    $settings->set('tracking.enabled', false);
     $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
@@ -136,10 +137,12 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
-    Setting::setValue('tracking.enabled', true);
+    $settings = new SettingsController();
+    $settings->set('tracking.enabled', true);
+    $view_in_browser = new ViewInBrowser(true);
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
-    $rendered_body = $this->view_in_browser->renderNewsletter(
+    $rendered_body = $view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $queue,

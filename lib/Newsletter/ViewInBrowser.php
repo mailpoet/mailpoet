@@ -2,12 +2,19 @@
 namespace MailPoet\Newsletter;
 
 use MailPoet\Models\Setting;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 
 class ViewInBrowser {
+
+  /** @var bool */
+  private $is_tracking_enabled;
+
+  function __construct($is_tracking_enabled) {
+    $this->is_tracking_enabled = $is_tracking_enabled;
+  }
+
   function view($data) {
     $wp_user_preview = (
       ($data->subscriber && $data->subscriber->isWPUser() && $data->preview) ||
@@ -48,7 +55,7 @@ class ViewInBrowser {
       $wp_user_preview
     );
     $rendered_newsletter = $shortcodes->replace($newsletter_body);
-    if(!$wp_user_preview && $queue && $subscriber && (boolean)Setting::getValue('tracking.enabled')) {
+    if(!$wp_user_preview && $queue && $subscriber && $this->is_tracking_enabled) {
       $rendered_newsletter = Links::replaceSubscriberData(
         $subscriber->id,
         $queue->id,
