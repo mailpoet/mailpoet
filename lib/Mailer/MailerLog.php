@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Mailer;
 
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -13,7 +13,8 @@ class MailerLog {
 
   static function getMailerLog($mailer_log = false) {
     if($mailer_log) return $mailer_log;
-    $mailer_log = Setting::getValue(self::SETTING_NAME);
+    $settings = new SettingsController();
+    $mailer_log = $settings->get(self::SETTING_NAME);
     if(!$mailer_log) {
       $mailer_log = self::createMailerLog();
     }
@@ -29,7 +30,8 @@ class MailerLog {
       'retry_at' => null,
       'error' => null
     );
-    Setting::setValue(self::SETTING_NAME, $mailer_log);
+    $settings = new SettingsController();
+    $settings->set(self::SETTING_NAME, $mailer_log);
     return $mailer_log;
   }
 
@@ -38,7 +40,8 @@ class MailerLog {
   }
 
   static function updateMailerLog($mailer_log) {
-    Setting::setValue(self::SETTING_NAME, $mailer_log);
+    $settings = new SettingsController();
+    $settings->set(self::SETTING_NAME, $mailer_log);
     return $mailer_log;
   }
 

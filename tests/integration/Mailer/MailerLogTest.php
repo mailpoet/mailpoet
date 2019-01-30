@@ -4,14 +4,24 @@ namespace MailPoet\Test\Mailer;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class MailerLogTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
+  function _before() {
+    parent::_before();
+    $this->settings = new SettingsController();
+  }
+
   function testItGetsMailerLogWhenOneExists() {
     $mailer_log = array(
       'sent' => 0,
       'started' => time()
     );
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
     expect(MailerLog::getMailerLog())->equals($mailer_log);
   }
 
@@ -32,9 +42,9 @@ class MailerLogTest extends \MailPoetTest {
       'sent' => 1,
       'started' => time() - 10
     );
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
     MailerLog::resetMailerLog();
-    $updated_mailer_log = Setting::getValue(MailerLog::SETTING_NAME);
+    $updated_mailer_log = $this->settings->get(MailerLog::SETTING_NAME);
     expect($updated_mailer_log['sent'])->equals(0);
     expect($updated_mailer_log['started'])->greaterThan($mailer_log['started']);
   }
@@ -45,7 +55,7 @@ class MailerLogTest extends \MailPoetTest {
       'started' => time() - 10
     );
     MailerLog::updateMailerLog($mailer_log);
-    $updated_mailer_log = Setting::getValue(MailerLog::SETTING_NAME);
+    $updated_mailer_log = $this->settings->get(MailerLog::SETTING_NAME);
     expect($updated_mailer_log)->equals($mailer_log);
   }
 
@@ -55,9 +65,9 @@ class MailerLogTest extends \MailPoetTest {
       'started' => time(),
       'error' => null
     );
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
     MailerLog::incrementSentCount();
-    $updated_mailer_log = Setting::getValue(MailerLog::SETTING_NAME);
+    $updated_mailer_log = $this->settings->get(MailerLog::SETTING_NAME);
     expect($updated_mailer_log['sent'])->equals(2);
   }
 
@@ -68,14 +78,14 @@ class MailerLogTest extends \MailPoetTest {
         'interval' => 1
       )
     );
-    Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
 
     // limit is not reached
     $mailer_log = array(
       'sent' => 1,
       'started' => time()
     );
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
     expect(MailerLog::isSendingLimitReached())->false();
 
     // limit is reached
@@ -83,7 +93,7 @@ class MailerLogTest extends \MailPoetTest {
       'sent' => 2,
       'started' => time()
     );
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
     expect(MailerLog::isSendingLimitReached())->true();
   }
 
@@ -106,13 +116,13 @@ class MailerLogTest extends \MailPoetTest {
       // (mailer config's interval * 60 seconds) + 1 second
       'started' => time() - 61
     );
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
-    Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
 
     // limit is not reached
     expect(MailerLog::isSendingLimitReached())->false();
     // mailer log is reset
-    $updated_mailer_log = Setting::getValue(MailerLog::SETTING_NAME);
+    $updated_mailer_log = $this->settings->get(MailerLog::SETTING_NAME);
     expect($updated_mailer_log['sent'])->equals(0);
   }
 
@@ -211,8 +221,8 @@ class MailerLogTest extends \MailPoetTest {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['sent'] = 2;
     $mailer_log['started'] = time();
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
-    Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
 
     // exception is thrown when sending limit is reached
     try {
@@ -227,14 +237,14 @@ class MailerLogTest extends \MailPoetTest {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['sent'] = 10;
     $mailer_log['started'] = time();
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
     $mailer_config = array(
       'frequency' => array(
         'emails' => 2, // frequency is less than the sent count
         'interval' => 1
       )
     );
-    Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
 
     // exception is thrown when sending limit is reached
     try {
@@ -249,14 +259,14 @@ class MailerLogTest extends \MailPoetTest {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['sent'] = 10;
     $mailer_log['started'] = time();
-    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $this->settings->set(MailerLog::SETTING_NAME, $mailer_log);
     $mailer_config = array(
       'frequency' => array(
         'emails' => 20, // frequency is greater than the sent count
         'interval' => 1
       )
     );
-    Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
 
     // sending limit exception should not be thrown
     try {

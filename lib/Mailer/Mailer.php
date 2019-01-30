@@ -7,6 +7,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -16,6 +17,8 @@ class Mailer {
   public $reply_to;
   public $return_path;
   public $mailer_instance;
+  /** @var SettingsController */
+  private $settings;
   const MAILER_CONFIG_SETTING_NAME = 'mta';
   const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
   const METHOD_MAILPOET = 'MailPoet';
@@ -25,6 +28,7 @@ class Mailer {
   const METHOD_SMTP = 'SMTP';
 
   function __construct($mailer = false, $sender = false, $reply_to = false, $return_path = false) {
+    $this->settings = new SettingsController();
     $this->mailer_config = self::getMailerConfig($mailer);
     $this->sender = $this->getSenderNameAndAddress($sender);
     $this->reply_to = $this->getReplyToNameAndAddress($reply_to);
@@ -95,12 +99,13 @@ class Mailer {
   }
 
   static function getMailerConfig($mailer = false) {
+    $settings = new SettingsController();
     if(!$mailer) {
-      $mailer = Setting::getValue(self::MAILER_CONFIG_SETTING_NAME);
+      $mailer = $settings->get(self::MAILER_CONFIG_SETTING_NAME);
       if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.', 'mailpoet'));
     }
     if(empty($mailer['frequency'])) {
-      $default_settings = Setting::getDefaults();
+      $default_settings = $settings->getDefaults();
       $mailer['frequency'] = $default_settings['mta']['frequency'];
     }
     // add additional variables to the mailer object
@@ -113,7 +118,7 @@ class Mailer {
 
   function getSenderNameAndAddress($sender = false) {
     if(empty($sender)) {
-      $sender = Setting::getValue('sender', array());
+      $sender = $this->settings->get('sender', []);
       if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured.', 'mailpoet'));
     }
     $from_name = $this->encodeAddressNamePart($sender['name']);
@@ -126,7 +131,7 @@ class Mailer {
 
   function getReplyToNameAndAddress($reply_to = array()) {
     if(!$reply_to) {
-      $reply_to = Setting::getValue('reply_to');
+      $reply_to = $this->settings->get('reply_to');
       $reply_to['name'] = (!empty($reply_to['name'])) ?
         $reply_to['name'] :
         $this->sender['from_name'];
@@ -148,7 +153,7 @@ class Mailer {
   function getReturnPathAddress($return_path) {
     return ($return_path) ?
       $return_path :
-      Setting::getValue('bounce.address');
+      $this->settings->get('bounce.address');
   }
 
   function formatSubscriberNameAndEmailAddress($subscriber) {
