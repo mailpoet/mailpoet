@@ -23,12 +23,12 @@ class SettingTest extends \MailPoetTest {
   }
 
   function testItCanGetAllSettings() {
-    Setting::setValue('key_1', 'value_1');
-    Setting::setValue('key_2', 'value_2');
-    Setting::setValue('key_3', array(
+    Setting::createOrUpdate(['name' => 'key_1', 'value' => 'value_1']);
+    Setting::createOrUpdate(['name' => 'key_2', 'value' => 'value_2']);
+    Setting::createOrUpdate(['name' => 'key_3', 'value' => serialize([
       'subkey_1' => 'subvalue_1',
       'subkey_2' => 'subvalue_2'
-    ));
+    ])]);
 
     $settings = Setting::getAll();
     expect($settings['key_1'])->equals('value_1');
@@ -37,20 +37,6 @@ class SettingTest extends \MailPoetTest {
       'subkey_1' => 'subvalue_1',
       'subkey_2' => 'subvalue_2'
     ));
-  }
-
-  function testItCanSetAndGetValues() {
-    // try to get an "unknown" key
-    $setting = Setting::getValue('unknown_key');
-    expect($setting)->equals(null);
-
-    // setting a "known" key
-    $setting = Setting::setValue('known_key', '  actual_value  ');
-    expect($setting)->equals(true);
-
-    // try to get a "known" key
-    $setting = Setting::getValue('known_key', 'default_value');
-    expect($setting)->equals('actual_value');
   }
 
   function testItCanCreateOrUpdate() {
@@ -73,19 +59,6 @@ class SettingTest extends \MailPoetTest {
 
     $setting = Setting::where('name', $data['name'])->findOne();
     expect($setting->value)->equals('new data');
-  }
-
-  function testItCanGetAndSetValue() {
-    expect(Setting::setValue('test', '  123  '))->true();
-    expect(Setting::getValue('test'))->equals('123');
-  }
-
-  function testItCanSetValueToNull() {
-    expect(Setting::setValue('test_key', true))->true();
-    expect(Setting::getValue('test_key'))->equals(true);
-
-    expect(Setting::setValue('test_key', null))->true();
-    expect(Setting::getValue('test_key'))->null();
   }
 
   function testSaveDefaultSenderIfNeededNotSaveEmptyValue() {

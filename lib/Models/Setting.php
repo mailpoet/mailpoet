@@ -1,9 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-use MailPoet\Cron\CronTrigger;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -21,31 +19,6 @@ class Setting extends Model {
     $this->addValidations('name', array(
       'required' => __('Please specify a name.', 'mailpoet')
     ));
-  }
-
-  public static function getValue($key) {
-    $setting = Setting::where('name', $key)->findOne();
-    if($setting === false) {
-        return null;
-    }
-    if(is_serialized($setting->value)) {
-      return unserialize($setting->value);
-    } else {
-      return $setting->value;
-    }
-  }
-
-  public static function setValue($key, $value) {
-    $value = Helpers::recursiveTrim($value);
-    if(is_array($value)) {
-      $value = serialize($value);
-    }
-
-    $setting = Setting::createOrUpdate(array(
-      'name' => $key,
-      'value' => $value
-    ));
-    return ($setting->id() > 0 && $setting->getErrors() === false);
   }
 
   public static function getAll() {

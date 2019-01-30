@@ -3,6 +3,7 @@ namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Setting;
+use MailPoet\Util\Helpers;
 
 class SettingsController {
 
@@ -78,7 +79,7 @@ class SettingsController {
   function fetch($key, $default = null) {
     $keys = explode('.', $key);
     $main_key = $keys[0];
-    self::$settings[$main_key] = Setting::getValue($main_key);
+    self::$settings[$main_key] = $this->fetchValue($main_key);
     return $this->get($key, $default);
   }
 
@@ -100,7 +101,7 @@ class SettingsController {
       }
     }
     $setting[$last_key] = $value;
-    Setting::setValue($main_key, self::$settings[$main_key]);
+    $this->saveValue($main_key, self::$settings[$main_key]);
   }
 
   function delete($key) {
@@ -126,6 +127,31 @@ class SettingsController {
       }
     }
     return $default;
+  }
+
+  private function fetchValue($key) {
+    $setting = Setting::where('name', $key)->findOne();
+    if($setting === false) {
+      return null;
+    }
+    if(is_serialized($setting->value)) {
+      return unserialize($setting->value);
+    } else {
+      return $setting->value;
+    }
+  }
+
+  private function saveValue($key, $value) {
+    $value = Helpers::recursiveTrim($value);
+    if(is_array($value)) {
+      $value = serialize($value);
+    }
+
+    $setting = Setting::createOrUpdate([
+      'name' => $key,
+      'value' => $value,
+    ]);
+    return ($setting->id() > 0 && $setting->getErrors() === false);
   }
 
   /**

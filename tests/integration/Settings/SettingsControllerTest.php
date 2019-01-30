@@ -16,26 +16,26 @@ class SettingsControllerTest extends \MailPoetTest {
   }
 
   function testItReturnsStoredValue() {
-    Setting::setValue('test_key', 1);
+    Setting::createOrUpdate(['name' => 'test_key', 'value' => 1]);
     $this->assertEquals(1, $this->controller->get('test_key'));
   }
 
   function testItReturnsStoredNestedValue() {
-    Setting::setValue('test_key', ['sub_key' => 'value']);
+    Setting::createOrUpdate(['name' => 'test_key', 'value' => serialize(['sub_key' => 'value'])]);
     $this->assertEquals('value', $this->controller->get('test_key.sub_key'));
   }
 
   function testItReturnsNullForUnknownSetting() {
     $this->assertEquals(null, $this->controller->get('test_key'));
     $this->assertEquals(null, $this->controller->get('test_key.sub_key'));
-    Setting::setValue('test_key', ['sub_key' => 'value']);
+    Setting::createOrUpdate(['name' => 'test_key', 'value' => serialize(['sub_key' => 'value'])]);
     $this->assertEquals(null, $this->controller->get('test_key.wrong_subkey'));
   }
 
   function testItReturnsDefaultValueForUnknownSetting() {
     $this->assertEquals('default', $this->controller->get('test_key', 'default'));
     $this->assertEquals('default', $this->controller->get('test_key.sub_key', 'default'));
-    Setting::setValue('test_key', ['sub_key' => 'value']);
+    Setting::createOrUpdate(['name' => 'test_key', 'value' => serialize(['sub_key' => 'value'])]);
     $this->assertEquals('default', $this->controller->get('test_key.wrong_subkey', 'default'));
   }
 
@@ -52,8 +52,8 @@ class SettingsControllerTest extends \MailPoetTest {
   }
 
   function testItCanReturnAllSettings() {
-    Setting::setValue('test_key1', 1);
-    Setting::setValue('test_key2', 2);
+    Setting::createOrUpdate(['name' => 'test_key1', 'value' => 1]);
+    Setting::createOrUpdate(['name' => 'test_key2', 'value' => 2]);
     $all = $this->controller->getAll();
     $this->assertEquals(1, $all['test_key1']);
     $this->assertEquals(2, $all['test_key2']);
@@ -62,14 +62,14 @@ class SettingsControllerTest extends \MailPoetTest {
   function testItCanSetAtTopLevel() {
     $this->controller->set('test_key', 1);
     $this->assertEquals(1, $this->controller->get('test_key'));
-    $db_value = Setting::getValue('test_key');
-    $this->assertEquals(1, $db_value);
+    $db_value = Setting::where('name', 'test_key')->findOne();
+    $this->assertEquals(1, $db_value->value);
   }
 
   function testItCanSetAtNestedLevel() {
     $this->controller->set('test_key.key1.key2', 1);
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
-    $db_value = Setting::getValue('test_key');
+    $db_value = unserialize(Setting::where('name', 'test_key')->findOne()->value);
     $this->assertEquals(1, $db_value['key1']['key2']);
   }
 
@@ -78,7 +78,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
     $this->controller->set('test_key.key1.key2', null);
     $this->assertNull(null, $this->controller->get('test_key.key1.key2'));
-    $db_value = Setting::getValue('test_key');
+    $db_value = unserialize(Setting::where('name', 'test_key')->findOne()->value);
     $this->assertNull($db_value['key1']['key2']);
   }
 
@@ -86,14 +86,14 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->controller->set('test_key.key1', 1);
     $this->controller->set('test_key.key1.key2', 1);
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
-    $db_value = Setting::getValue('test_key');
+    $db_value = unserialize(Setting::where('name', 'test_key')->findOne()->value);
     $this->assertEquals(1, $db_value['key1']['key2']);
   }
 
   function testItLoadsFromDbOnlyOnce() {
-    Setting::setValue('test_key', 1);
+    Setting::createOrUpdate(['name' => 'test_key', 'value' => 1]);
     $this->assertEquals(1, $this->controller->get('test_key'));
-    Setting::setValue('test_key', 2);
+    Setting::createOrUpdate(['name' => 'test_key', 'value' => 2]);
     $this->assertEquals(1, $this->controller->get('test_key'));
     $this->assertEquals(true, true);
   }
