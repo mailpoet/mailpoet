@@ -18,12 +18,16 @@ use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 
 class SubscribersTest extends \MailPoetTest {
 
   /** @var Subscribers */
   private $endpoint;
+
+  /** @var SettingsController */
+  private $settings;
 
   function _before() {
     parent::_before();
@@ -66,8 +70,9 @@ class SubscribersTest extends \MailPoetTest {
       )
     ));
 
+    $this->settings = new SettingsController();
     // setup mailer
-    Setting::setValue('sender', array(
+    $this->settings->set('sender', array(
       'address' => 'sender@mailpoet.com',
       'name' => 'Sender'
     ));
@@ -451,7 +456,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCannotSubscribeWithoutCaptchaWhenEnabled() {
-    Setting::setValue('re_captcha', array('enabled' => true));
+    $this->settings->set('re_captcha', array('enabled' => true));
     $response = $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
@@ -459,7 +464,7 @@ class SubscribersTest extends \MailPoetTest {
     ));
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
-    Setting::setValue('re_captcha', array());
+    $this->settings->set('re_captcha', array());
   }
 
   function testItCannotSubscribeWithoutMandatoryCustomField() {
@@ -639,5 +644,6 @@ class SubscribersTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberIP::$_table);
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

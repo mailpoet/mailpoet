@@ -22,6 +22,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -108,7 +109,8 @@ class NewslettersTest extends \MailPoetTest {
     $this->endpoint = new Newsletters(
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
-      $wp
+      $wp,
+      new SettingsController()
     );
     $response = $this->endpoint->get(array('id' => $this->newsletter->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -145,7 +147,8 @@ class NewslettersTest extends \MailPoetTest {
     $this->endpoint = new Newsletters(
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
-      $wp
+      $wp,
+      new SettingsController()
     );
 
     $response = $this->endpoint->save($valid_data);
@@ -509,7 +512,8 @@ class NewslettersTest extends \MailPoetTest {
     $this->endpoint = new Newsletters(
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
-      $wp
+      $wp,
+      new SettingsController()
     );
 
     $response = $this->endpoint->duplicate(array('id' => $this->newsletter->id));

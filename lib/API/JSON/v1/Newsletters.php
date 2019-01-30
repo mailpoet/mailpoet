@@ -20,6 +20,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
@@ -35,6 +36,9 @@ class Newsletters extends APIEndpoint {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var SettingsController */
+  private $settings;
+
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS
   );
@@ -42,11 +46,13 @@ class Newsletters extends APIEndpoint {
   function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SettingsController $settings
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
     $this->wp = $wp;
+    $this->settings = $settings;
   }
 
   function get($data = array()) {
@@ -444,8 +450,8 @@ class Newsletters extends APIEndpoint {
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
       'groups' => $listing_data['groups'],
-      'mta_log' => Setting::getValue('mta_log'),
-      'mta_method' => Setting::getValue('mta.method'),
+      'mta_log' => $this->settings->get('mta_log'),
+      'mta_method' => $this->settings->get('mta.method'),
       'cron_accessible' => CronHelper::isDaemonAccessible(),
       'current_time' => $this->wp->currentTime('mysql')
     ));

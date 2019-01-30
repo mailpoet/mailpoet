@@ -5,24 +5,30 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class SettingsTest extends \MailPoetTest {
+
+  /** @var Settings */
+  private $endpoint;
+
   function _before() {
     parent::_before();
-    Setting::setValue('some.setting.key', true);
+    $settings = new SettingsController();
+    $settings->set('some.setting.key', true);
+    $this->endpoint = new Settings($settings);
   }
 
   function testItCanGetSettings() {
-    $router = new Settings();
-
-    $response = $router->get();
+    $response = $this->endpoint->get();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     expect($response->data)->notEmpty();
     expect($response->data['some']['setting']['key'])->true();
 
     Setting::deleteMany();
-    $response = $router->get();
+    SettingsController::resetCache();
+    $response = $this->endpoint->get();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(Setting::getDefaults());
   }
@@ -37,16 +43,14 @@ class SettingsTest extends \MailPoetTest {
       )
     );
 
-    $router = new Settings();
-
-    $response = $router->set(/* missing data */);
+    $response = $this->endpoint->set(/* missing data */);
     expect($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
-    $response = $router->set($new_settings);
+    $response = $this->endpoint->set($new_settings);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $response = $router->get();
+    $response = $this->endpoint->get();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['some']['setting'])->hasntKey('key');
     expect($response->data['some']['setting']['new_key'])->true();

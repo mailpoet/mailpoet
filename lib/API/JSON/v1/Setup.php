@@ -6,6 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Activator;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -21,7 +22,7 @@ class Setup extends APIEndpoint {
 
   function reset() {
     try {
-      $activator = new Activator();
+      $activator = new Activator(new SettingsController());
       $activator->deactivate();
       $activator->activate();
       $this->wp->doAction('mailpoet_setup_reset');
