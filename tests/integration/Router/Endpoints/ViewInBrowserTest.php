@@ -10,6 +10,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\ViewInBrowser;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class ViewInBrowserTest extends \MailPoetTest {
@@ -40,7 +41,7 @@ class ViewInBrowserTest extends \MailPoetTest {
       'preview' => false
     );
     // instantiate class
-    $this->view_in_browser = new ViewInBrowser(new AccessControl());
+    $this->view_in_browser = new ViewInBrowser(new AccessControl(), new SettingsController());
   }
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
@@ -148,12 +149,12 @@ class ViewInBrowserTest extends \MailPoetTest {
     $wp_user = wp_set_current_user(0);
     // when WP user does not have 'manage options' permission, false should be returned
     $wp_user->remove_role('administrator');
-    $view_in_browser = new ViewInBrowser(new AccessControl());
-    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
+    $view_in_browser = new ViewInBrowser(new AccessControl(), new SettingsController());
+    expect($view_in_browser->_validateBrowserPreviewData($data))->false();
 
     // when WP has 'manage options' permission, data should be returned
     $wp_user->add_role('administrator');
-    $view_in_browser = new ViewInBrowser(new AccessControl());
+    $view_in_browser = new ViewInBrowser(new AccessControl(), new SettingsController());
     expect($view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
@@ -169,7 +170,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     );
     $data->preview = true;
     wp_set_current_user(1);
-    $view_in_browser = new ViewInBrowser(new AccessControl());
+    $view_in_browser = new ViewInBrowser(new AccessControl(), new SettingsController());
     $result = $view_in_browser->_validateBrowserPreviewData($data);
     expect($result->subscriber->id)->equals(1);
   }
@@ -202,7 +203,8 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   function testItReturnsViewActionResult() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_displayNewsletter' => Expected::exactly(1)
+      '_displayNewsletter' => Expected::exactly(1),
+      'settings' => new SettingsController()
     ), $this);
     $view_in_browser->view($this->browser_preview_data);
   }
