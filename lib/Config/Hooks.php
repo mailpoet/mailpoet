@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Form;
+use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Hooks {
@@ -17,18 +18,24 @@ class Hooks {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var WooCommerceSegment */
+  private $woocommerce_segment;
+
   function __construct(
     Form $subscription_form,
     SettingsController $settings,
-    WPFunctions $wp
+    WPFunctions $wp,
+    WooCommerceSegment $woocommerce_segment
   ) {
     $this->subscription_form = $subscription_form;
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->woocommerce_segment = $woocommerce_segment;
   }
 
   function init() {
     $this->setupWPUsers();
+    $this->setupWooCommerceUsers();
     $this->setupImageSize();
     $this->setupListing();
     $this->setupSubscriptionEvents();
@@ -155,6 +162,35 @@ class Hooks {
       'remove_user_from_blog',
       '\MailPoet\Segments\WP::synchronizeUser',
       1
+    );
+  }
+
+  function setupWooCommerceUsers() {
+    // WooCommerce Customers synchronization
+    add_action(
+      'woocommerce_new_customer',
+      [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
+      7
+    );
+    add_action(
+      'woocommerce_update_customer',
+      [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
+      7
+    );
+    add_action(
+      'woocommerce_delete_customer',
+      [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
+      7
+    );
+    add_action(
+      'woocommerce_checkout_update_order_meta',
+      [$this->woocommerce_segment, 'synchronizeGuestCustomer'],
+      7
+    );
+    add_action(
+      'woocommerce_process_shop_order_meta',
+      [$this->woocommerce_segment, 'synchronizeGuestCustomer'],
+      7
     );
   }
 
