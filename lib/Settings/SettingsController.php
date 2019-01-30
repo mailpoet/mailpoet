@@ -1,24 +1,32 @@
 <?php
 namespace MailPoet\Settings;
 
-use Composer\Package\Package;
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Setting;
 
 class SettingsController {
+
+  const DEFAULT_SENDING_METHOD_GROUP = 'website';
+  const DEFAULT_SENDING_METHOD = 'PHPMail';
+  const DEFAULT_SENDING_FREQUENCY_EMAILS = 25;
+  const DEFAULT_SENDING_FREQUENCY_INTERVAL = 5; // in minutes
+
   private static $loaded = false;
 
   private static $settings = [];
 
+  private $defaults = null;
+
   function get($key, $default = null) {
     $this->ensureLoaded();
-    $keys = explode('.', $key);
+    $key_parts = explode('.', $key);
     $setting = self::$settings;
     if($default === null) {
-      $default = $this->getDefault($keys);
+      $default = $this->getDefaultValue($key_parts);
     }
-    foreach($keys as $key) {
-      if(array_key_exists($key, $setting)) {
-        $setting = $setting[$key];
+    foreach($key_parts as $key_part) {
+      if(array_key_exists($key_part, $setting)) {
+        $setting = $setting[$key_part];
       } else {
         return $default;
       }
@@ -29,8 +37,38 @@ class SettingsController {
     return $setting;
   }
 
-  function getDefaults() {
-    return Setting::getDefaults();
+  function getAllDefaults() {
+    if($this->defaults === null) {
+      $this->defaults = [
+        'mta_group' => self::DEFAULT_SENDING_METHOD_GROUP,
+        'mta' => array(
+          'method' => self::DEFAULT_SENDING_METHOD,
+          'frequency' => array(
+            'emails' => self::DEFAULT_SENDING_FREQUENCY_EMAILS,
+            'interval' => self::DEFAULT_SENDING_FREQUENCY_INTERVAL
+          )
+        ),
+        CronTrigger::SETTING_NAME => [
+          'method' => CronTrigger::DEFAULT_METHOD
+        ],
+        'signup_confirmation' => [
+          'enabled' => true,
+          'subject' => sprintf(__('Confirm your subscription to %1$s', 'mailpoet'), get_option('blogname')),
+          'body' => __("Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team", 'mailpoet')
+        ],
+        'tracking' => [
+          'enabled' => true
+        ],
+        'analytics' => [
+          'enabled' => false,
+        ],
+        'in_app_announcements' => [
+          'displayed' => []
+        ],
+        'display_nps_poll' => true,
+      ];
+    }
+    return $this->defaults;
   }
 
   /**
@@ -46,25 +84,23 @@ class SettingsController {
 
   function getAll() {
     $this->ensureLoaded();
-    return self::$settings;
+    return array_replace_recursive($this->getAllDefaults(), self::$settings);
   }
 
   function set($key, $value) {
     $this->ensureLoaded();
-    $keys = explode('.', $key);
-    $main_key = $keys[0];
-    $last_key = array_pop($keys);
-    $settings = self::$settings;
-    $setting =& $settings;
-    foreach($keys as $key) {
-      $setting =& $setting[$key];
+    $key_parts = explode('.', $key);
+    $main_key = $key_parts[0];
+    $last_key = array_pop($key_parts);
+    $setting =& self::$settings;
+    foreach($key_parts as $key_part) {
+      $setting =& $setting[$key_part];
       if(!is_array($setting)) {
         $setting = [];
       }
     }
     $setting[$last_key] = $value;
-    Setting::setValue($main_key, $settings[$main_key]);
-    self::$settings = $settings;
+    Setting::setValue($main_key, self::$settings[$main_key]);
   }
 
   function delete($key) {
@@ -80,8 +116,8 @@ class SettingsController {
     self::$loaded = true;
   }
 
-  private function getDefault($keys) {
-    $default = $this->getDefaults();
+  private function getDefaultValue($keys) {
+    $default = $this->getAllDefaults();
     foreach($keys as $key) {
       if(array_key_exists($key, $default)) {
         $default = $default[$key];

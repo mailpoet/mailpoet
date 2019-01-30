@@ -105,7 +105,7 @@ class Mailer {
       if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.', 'mailpoet'));
     }
     if(empty($mailer['frequency'])) {
-      $default_settings = $settings->getDefaults();
+      $default_settings = $settings->getAllDefaults();
       $mailer['frequency'] = $default_settings['mta']['frequency'];
     }
     // add additional variables to the mailer object
