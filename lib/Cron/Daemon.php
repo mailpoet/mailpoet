@@ -27,6 +27,7 @@ class Daemon {
       $this->executeSendingServiceKeyCheckWorker();
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
+      //$this->executeWooCommerceSyncWorker();
     } catch(\Exception $e) {
       CronHelper::saveDaemonLastError($e->getMessage());
     }
@@ -62,6 +63,11 @@ class Daemon {
   function executeBounceWorker() {
     $bounce = $this->workers_factory->createBounceWorker($this->timer);
     return $bounce->process();
+  }
+
+  function executeWooCommerceSyncWorker() {
+    $worker = $this->workers_factory->createWooCommerceSyncWorker($this->timer);
+    return $worker->process();
   }
 
   function executeMigrationWorker() {
