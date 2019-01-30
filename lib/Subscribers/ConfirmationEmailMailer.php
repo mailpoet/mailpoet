@@ -3,8 +3,8 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Mailer\Mailer;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
@@ -18,6 +18,8 @@ class ConfirmationEmailMailer {
 
   /** @var WPFunctions */
   private $wp;
+  /** @var SettingsController */
+  private $settings;
 
   /**
    * @param Mailer|null $mailer
@@ -29,10 +31,11 @@ class ConfirmationEmailMailer {
     if(!$wp) {
       $this->wp = new WPFunctions;
     }
+    $this->settings = new SettingsController();
   }
 
   function sendConfirmationEmail(Subscriber $subscriber) {
-    $signup_confirmation = Setting::getValue('signup_confirmation');
+    $signup_confirmation = $this->settings->get('signup_confirmation');
 
     if((bool)$signup_confirmation['enabled'] === false) {
       return false;

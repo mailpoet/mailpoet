@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Subscription;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsController;
 
 class Comment {
   const SPAM = 'spam';
@@ -18,7 +18,8 @@ class Comment {
   }
 
   static function getSubscriptionField() {
-    $label = Setting::getValue(
+    $settings = new SettingsController();
+    $label = $settings->get(
       'subscribe.on_comment.label',
       __('Yes, please add me to your mailing list.', 'mailpoet')
     );
@@ -77,7 +78,8 @@ class Comment {
   }
 
   private static function subscribeAuthorOfComment($comment_id) {
-    $segment_ids = Setting::getValue('subscribe.on_comment.segments', array());
+    $settings = new SettingsController();
+    $segment_ids = $settings->get('subscribe.on_comment.segments', array());
 
     if(!empty($segment_ids)) {
       $comment = get_comment($comment_id);

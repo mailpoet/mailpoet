@@ -9,7 +9,9 @@ use MailPoet\Models\Segment as SegmentModel;
 use MailPoet\Models\Setting as SettingModel;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Form;
+use MailPoet\Test\Cron\Workers\SendingErrorHandlerTest;
 use MailPoet\Util\Security;
 
 class FormTest extends \MailPoetTest {
@@ -19,7 +21,8 @@ class FormTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    Setting::setValue('sender', array(
+    $settings = new SettingsController();
+    $settings->set('sender', array(
       'name' => 'John Doe',
       'address' => 'john.doe@example.com'
     ));
