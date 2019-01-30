@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Util\Notices;
 
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Notice as WPNotice;
 
@@ -9,17 +9,24 @@ class DiscountsAnnouncement {
 
   const OPTION_NAME = 'mailpoet_display_discounts_announcement_q4_2018';
 
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct() {
+    $this->settings = new SettingsController();
+  }
+
   function enable() {
-    Setting::setValue(self::OPTION_NAME, true);
+    $this->settings->set(self::OPTION_NAME, true);
   }
 
   function disable() {
-    Setting::setValue(self::OPTION_NAME, false);
+    $this->settings->set(self::OPTION_NAME, false);
   }
 
   function init($should_display) {
     $should_display = $should_display && (time() <= strtotime('2018-11-30 23:59:59'));
-    if($should_display && Setting::getValue(self::OPTION_NAME, true)) {
+    if($should_display && $this->settings->get(self::OPTION_NAME, true)) {
       return $this->display();
     }
   }
