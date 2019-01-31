@@ -23,6 +23,8 @@ jobs:
             chmod 755 php-scoper.phar
             mkdir -p vendor-prefixed
             curl -sS https://getcomposer.org/installer | php
+            ./composer.phar validate --no-check-all --no-check-publish
+            ./composer.phar validate --no-check-all --no-check-publish --working-dir=prefixer
             ./composer.phar install
             ./do install
             ./do compile:all --env production
