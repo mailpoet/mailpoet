@@ -6,7 +6,7 @@ define([
   'newsletter_editor/blocks/social',
   'backbone'
 ], function (EditorApplication, SocialBlock, Backbone) {
-  describe('Social', function () {
+  describe.only('Social', function () {
     describe('block model', function () {
       var model;
       var sandbox;
@@ -159,6 +159,11 @@ define([
           model = new (SocialBlock.SocialBlockModel)({
             type: 'social',
             iconSet: 'default',
+            styles: {
+              block: {
+                textAlign: 'right'
+              }
+            },
             icons: [
               {
                 type: 'socialIcon',
@@ -188,6 +193,10 @@ define([
           expect(view.$('.mailpoet_social a').eq(1).prop('href')).to.equal('http://facebook.com/');
           expect(view.$('.mailpoet_social img').eq(1).prop('src')).to.equal('http://facebook.com/icon.png');
           expect(view.$('.mailpoet_social img').eq(1).prop('alt')).to.equal('Facebook icon');
+        });
+
+        it('is aligned properly', function () {
+          expect(view.$('.mailpoet_social').css('text-align')).to.equal('right');
         });
       });
     });
@@ -260,6 +269,11 @@ define([
           model = new (SocialBlock.SocialBlockModel)({
             type: 'social',
             iconSet: 'default',
+            styles: {
+              block: {
+                textAlign: 'center'
+              }
+            },
             icons: [
               {
                 type: 'socialIcon',
@@ -290,6 +304,15 @@ define([
         it('adds another icon when "Add another social network" is pressed', function () {
           view.$('.mailpoet_add_social_icon').click();
           expect(model.get('icons').length).to.equal(2);
+        });
+
+        it('updates alignment when it changes', function () {
+          view.$('.mailpoet_social_block_alignment').eq(0).click();
+          expect(model.get('styles.block.textAlign')).to.equal('left');
+          view.$('.mailpoet_social_block_alignment').eq(1).click();
+          expect(model.get('styles.block.textAlign')).to.equal('center');
+          view.$('.mailpoet_social_block_alignment').eq(2).click();
+          expect(model.get('styles.block.textAlign')).to.equal('right');
         });
 
         it.skip('closes the sidepanel after "Done" is clicked', function () {

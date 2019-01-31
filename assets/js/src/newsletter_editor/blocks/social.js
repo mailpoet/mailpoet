@@ -60,6 +60,11 @@ define([
       return this._getDefaults({
         type: 'social',
         iconSet: 'default',
+        styles: {
+          block: {
+            textAlign: 'center'
+          }
+        },
         icons: new Module.SocialIconCollectionModel()
       }, App.getConfig().get('blockDefaults.social'));
     },
@@ -141,7 +146,8 @@ define([
     },
     events: function () {
       return {
-        'click .mailpoet_done_editing': 'close'
+        'click .mailpoet_done_editing': 'close',
+        'change .mailpoet_social_block_alignment': _.partial(this.changeField, 'styles.block.textAlign')
       };
     },
     initialize: function () {
