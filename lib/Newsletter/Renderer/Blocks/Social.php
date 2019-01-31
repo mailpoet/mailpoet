@@ -16,10 +16,11 @@ class Social {
         </a>';
       }
     }
+    $alignment = isset($element['styles']['block']['textAlign']) ? $element['styles']['block']['textAlign'] : 'center';
     if(!empty($icons_block)) {
       $template = '
       <tr>
-        <td class="mailpoet_padded_side mailpoet_padded_bottom" valign="top" align="center">
+        <td class="mailpoet_padded_side mailpoet_padded_bottom" valign="top" align="'. $alignment . '">
           ' . $icons_block . '
         </td>
       </tr>';
