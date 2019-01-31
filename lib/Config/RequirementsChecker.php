@@ -34,7 +34,6 @@ class RequirementsChecker {
     '\Cron\CronExpression',
     '\Html2Text\Html2Text',
     '\csstidy',
-    '\Sabberworm\CSS\Parser'
   );
 
   function __construct($display_error_notice = true) {
