@@ -34,8 +34,6 @@ class AcceptanceTester extends \Codeception\Actor {
   const WP_URL = 'http://wordpress';
   const MAIL_URL = 'http://mailhog:8025';
 
-  const DEFAULT_WAIT_TIMEOUT = null;
-
   /**
    * Define custom actions here
    */
@@ -191,9 +189,7 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   private function getDefaultTimeout($timeout) {
-    return (int)getenv('WAIT_TIMEOUT')
-      ?: self::DEFAULT_WAIT_TIMEOUT
-      ?: $timeout;
+    return (int)getenv('WAIT_TIMEOUT') ?: $timeout;
   }
 
 }
