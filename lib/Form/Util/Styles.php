@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Util;
 
-use Sabberworm\CSS\Parser as CSSParser;
+use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {
   public $styles;
