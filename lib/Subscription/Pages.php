@@ -8,6 +8,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Url as UrlHelper;
@@ -25,6 +26,8 @@ class Pages {
   private $subscriber;
   /** @var NewSubscriberNotificationMailer */
   private $new_subscriber_notification_sender;
+  /** @var SettingsController */
+  private $settings;
 
   function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false, $new_subscriber_notification_sender = null) {
     $this->action = $action;
@@ -37,6 +40,7 @@ class Pages {
     } else {
       $this->new_subscriber_notification_sender = new NewSubscriberNotificationMailer();
     }
+    $this->settings = new SettingsController();
   }
 
   private function isPreview() {
@@ -260,7 +264,7 @@ class Pages {
       return $custom_field;
     }, CustomField::findMany());
 
-    $segment_ids = Setting::getValue('subscription.segments', array());
+    $segment_ids = $this->settings->get('subscription.segments', []);
     if(!empty($segment_ids)) {
       $segments = Segment::getPublic()
         ->whereIn('id', $segment_ids)

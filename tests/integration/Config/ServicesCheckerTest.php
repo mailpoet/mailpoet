@@ -3,11 +3,20 @@ namespace MailPoet\Test\Config;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 
 class ServicesCheckerTest extends \MailPoetTest {
+
+  /** @var ServicesChecker */
+  private $services_checker;
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
+    parent::_before();
+    $this->settings = new SettingsController();
     $this->setMailPoetSendingMethod();
     $this->fillPremiumKey();
     $this->services_checker = new ServicesChecker();
@@ -26,13 +35,13 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsFalseIfMSSKeyIsNotSpecified() {
-    Setting::setValue(Bridge::API_KEY_SETTING_NAME, '');
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, '');
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
   }
 
   function testItReturnsTrueIfMSSKeyIsValid() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::KEY_VALID)
     );
@@ -41,7 +50,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsFalseIfMSSKeyIsInvalid() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::KEY_INVALID)
     );
@@ -50,7 +59,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsTrueIfMSSKeyIsExpiring() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array(
         'state' => Bridge::KEY_EXPIRING,
@@ -62,7 +71,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsFalseIfMSSKeyStateIsUnexpected() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array(
         'state' => 'unexpected'
@@ -73,7 +82,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsFalseIfMSSKeyStateIsEmpty() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array(
         'state' => ''
@@ -90,7 +99,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsTrueIfPremiumKeyIsValid() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::KEY_VALID)
     );
@@ -99,7 +108,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsFalseIfPremiumKeyIsInvalid() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::KEY_INVALID)
     );
@@ -108,7 +117,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsFalseIfPremiumKeyIsAlreadyUsed() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::KEY_ALREADY_USED)
     );
@@ -117,7 +126,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsTrueIfPremiumKeyIsExpiring() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array(
         'state' => Bridge::KEY_EXPIRING,
@@ -129,7 +138,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsFalseIfPremiumKeyStateIsUnexpected() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array(
         'state' => 'unexpected'
@@ -140,7 +149,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   function testItReturnsFalseIfPremiumKeyStateIsEmpty() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array(
         'state' => ''
@@ -151,7 +160,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   private function setMailPoetSendingMethod() {
-    Setting::setValue(
+    $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'MailPoet',
@@ -161,7 +170,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   private function disableMailPoetSendingMethod() {
-    Setting::setValue(
+    $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'PHPMail',
@@ -170,10 +179,10 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   private function clearPremiumKey() {
-    Setting::setValue(Bridge::PREMIUM_KEY_SETTING_NAME, '');
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, '');
   }
 
   private function fillPremiumKey() {
-    Setting::setValue(Bridge::PREMIUM_KEY_SETTING_NAME, '123457890abcdef');
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, '123457890abcdef');
   }
 }

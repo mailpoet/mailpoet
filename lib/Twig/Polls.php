@@ -2,11 +2,19 @@
 
 namespace MailPoet\Twig;
 
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
 class Polls extends \Twig_Extension {
+
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct() {
+    $this->settings = new SettingsController();
+  }
+
   public function getFunctions() {
     return array(
       new \Twig_SimpleFunction(
@@ -24,13 +32,13 @@ class Polls extends \Twig_Extension {
 
   function getPollsData() {
     return [
-      'mta_method' => Setting::getValue('mta.method'),
+      'mta_method' => $this->settings->get('mta.method'),
     ];
   }
 
   function getPollsVisibility() {
     return [
-      'show_poll_success_delivery_preview' => Setting::getValue('show_poll_success_delivery_preview'),
+      'show_poll_success_delivery_preview' => $this->settings->get('show_poll_success_delivery_preview'),
     ];
   }
 }

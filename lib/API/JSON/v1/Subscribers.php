@@ -8,12 +8,12 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
@@ -41,20 +41,26 @@ class Subscribers extends APIEndpoint {
   /** @var Listing\Handler */
   private $listing_handler;
 
+  /** @var WPFunctions */
   private $wp;
+
+  /** @var SettingsController */
+  private $settings;
 
   public function __construct(
     Listing\BulkActionController $bulk_action_controller,
     SubscribersListings $subscribers_listings,
     RequiredCustomFieldValidator $required_custom_field_validator,
     Listing\Handler $listing_handler,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SettingsController $settings
   ) {
     $this->bulk_action_controller = $bulk_action_controller;
     $this->subscribers_listings = $subscribers_listings;
     $this->required_custom_field_validator = $required_custom_field_validator;
     $this->listing_handler = $listing_handler;
     $this->wp = $wp;
+    $this->settings = $settings;
   }
 
   function get($data = array()) {
@@ -105,7 +111,7 @@ class Subscribers extends APIEndpoint {
     $form = Form::findOne($form_id);
     unset($data['form_id']);
 
-    $recaptcha = Setting::getValue('re_captcha');
+    $recaptcha = $this->settings->get('re_captcha');
 
     if(!$form) {
       return $this->badRequest(array(

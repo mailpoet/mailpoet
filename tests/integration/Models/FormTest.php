@@ -5,6 +5,7 @@ use MailPoet\Models\Form;
 
 class FormTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->form = Form::createOrUpdate(array(
       'name' => 'My Form'
     ));

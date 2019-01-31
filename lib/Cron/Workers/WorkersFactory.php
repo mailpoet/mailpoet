@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Settings\SettingsController;
 
 class WorkersFactory {
 
@@ -25,16 +26,26 @@ class WorkersFactory {
   /** @var Mailer */
   private $mailer;
 
+  /** @var SettingsController */
+  private $settings;
+
   /**
    * @var Renderer
    */
   private $renderer;
 
-  public function __construct(SendingErrorHandler $sending_error_handler, StatsNotificationScheduler $scheduler, Mailer $mailer, Renderer $renderer) {
+  public function __construct(
+    SendingErrorHandler $sending_error_handler,
+    StatsNotificationScheduler $scheduler,
+    Mailer $mailer,
+    Renderer $renderer,
+    SettingsController $settings
+   ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->scheduler = $scheduler;
     $this->mailer = $mailer;
     $this->renderer = $renderer;
+    $this->settings = $settings;
   }
 
   /** @return SchedulerWorker */
@@ -48,7 +59,7 @@ class WorkersFactory {
   }
 
   function createStatsNotificationsWorker($timer) {
-    return new StatsNotificationsWorker($this->mailer, $this->renderer, $timer);
+    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $timer);
   }
 
   /** @return SendingServiceKeyCheckWorker */
@@ -58,7 +69,7 @@ class WorkersFactory {
 
   /** @return PremiumKeyCheckWorker */
   function createPremiumKeyCheckWorker($timer) {
-    return new PremiumKeyCheckWorker($timer);
+    return new PremiumKeyCheckWorker($this->settings, $timer);
   }
 
   /** @return BounceWorker */

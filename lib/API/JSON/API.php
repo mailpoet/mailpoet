@@ -2,8 +2,8 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Psr\Container\ContainerInterface;
-use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -30,12 +30,22 @@ class API {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var SettingsController */
+  private $settings;
+
   const CURRENT_VERSION = 'v1';
 
-  function __construct(ContainerInterface $container, AccessControl $access_control, WPFunctions $wp) {
-    $this->wp = $wp;
+
+  function __construct(
+    ContainerInterface $container,
+    AccessControl $access_control,
+    SettingsController $settings,
+    WPFunctions $wp
+  ) {
     $this->container = $container;
     $this->access_control = $access_control;
+    $this->settings = $settings;
+    $this->wp = $wp;
     foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
         sprintf('%s\%s', __NAMESPACE__, $available_api_version),
@@ -69,7 +79,7 @@ class API {
     $this->setRequestData($_POST);
 
     $ignoreToken = (
-      Setting::getValue('re_captcha.enabled') &&
+      $this->settings->get('re_captcha.enabled') &&
       $this->_request_endpoint === 'subscribers' &&
       $this->_request_method === 'subscribe'
     );

@@ -14,6 +14,7 @@ use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 
 class SimpleWorkerTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->worker = new MockSimpleWorker();
   }
 

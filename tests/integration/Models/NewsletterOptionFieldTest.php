@@ -7,6 +7,7 @@ use MailPoet\Models\NewsletterOptionField;
 
 class NewsletterOptionFieldTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->data = array(
       'name' => 'event',
       'newsletter_type' => 'welcome'

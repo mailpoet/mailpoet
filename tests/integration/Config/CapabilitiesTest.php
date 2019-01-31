@@ -12,6 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class CapabilitiesTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $renderer = new Renderer();
     $this->caps = new Capabilities($renderer);
   }

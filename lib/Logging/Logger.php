@@ -2,6 +2,7 @@
 
 namespace MailPoet\Logging;
 
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Monolog\Processor\IntrospectionProcessor;
 use MailPoetVendor\Monolog\Processor\MemoryUsageProcessor;
 use MailPoetVendor\Monolog\Processor\WebProcessor;
@@ -52,8 +53,9 @@ class Logger {
   }
 
   private static function getDefaultLogLevel() {
-    $settings = Setting::getValue('logging', 'errors');
-    switch ($settings) {
+    $settings = new SettingsController();
+    $log_level = $settings->get('logging', 'errors');
+    switch ($log_level) {
       case 'everything':
         return \MailPoetVendor\Monolog\Logger::DEBUG;
       case 'nothing':

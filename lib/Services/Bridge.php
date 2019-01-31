@@ -3,8 +3,8 @@
 namespace MailPoet\Services;
 
 use MailPoet\Mailer\Mailer;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
@@ -31,6 +31,13 @@ class Bridge {
 
   public $api;
 
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct() {
+    $this->settings = new SettingsController();
+  }
+
   static function isMPSendingServiceEnabled() {
     try {
       $mailer_config = Mailer::getMailerConfig();
@@ -42,12 +49,14 @@ class Bridge {
   }
 
   static function isMSSKeySpecified() {
-    $key = Setting::getValue(self::API_KEY_SETTING_NAME);
+    $settings = new SettingsController();
+    $key = $settings->get(self::API_KEY_SETTING_NAME);
     return !empty($key);
   }
 
   static function isPremiumKeySpecified() {
-    $key = Setting::getValue(self::PREMIUM_KEY_SETTING_NAME);
+    $settings = new SettingsController();
+    $key = $settings->get(self::PREMIUM_KEY_SETTING_NAME);
     return !empty($key);
   }
 
@@ -83,13 +92,13 @@ class Bridge {
     }
 
     // store the key itself
-    Setting::setValue(
+    $this->settings->set(
       self::API_KEY_SETTING_NAME,
       $key
     );
 
     // store the key state
-    Setting::setValue(
+    $this->settings->set(
       self::API_KEY_STATE_SETTING_NAME,
       $state
     );
@@ -135,13 +144,13 @@ class Bridge {
     }
 
     // store the key itself
-    Setting::setValue(
+    $this->settings->set(
       self::PREMIUM_KEY_SETTING_NAME,
       $key
     );
 
     // store the key state
-    Setting::setValue(
+    $this->settings->set(
       self::PREMIUM_KEY_STATE_SETTING_NAME,
       $state
     );
@@ -168,7 +177,8 @@ class Bridge {
   }
 
   static function invalidateKey() {
-    Setting::setValue(
+    $settings = new SettingsController();
+    $settings->set(
       self::API_KEY_STATE_SETTING_NAME,
       array('state' => self::KEY_INVALID)
     );

@@ -7,19 +7,26 @@ use AspectMock\Test as Mock;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelperTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
-    Setting::setValue('db_version', MAILPOET_VERSION);
+    parent::_before();
+    $this->settings = new SettingsController();
+    $this->settings->set('db_version', MAILPOET_VERSION);
     // Disable cron trigger to not run tasks like migration when pinging the daemon
-    Setting::setValue('cron_trigger', array(
+    $this->settings->set('cron_trigger', array(
       'method' => 'none'
     ));
-    Setting::setValue('sender', array(
+    $this->settings->set('sender', [
       'name' => 'John Doe',
       'address' => 'john.doe@example.com'
-    ));
+    ]);
   }
 
   function testItDefinesConstants() {
@@ -33,7 +40,7 @@ class CronHelperTest extends \MailPoetTest {
     $token = 'create_token';
     $time = time();
     CronHelper::createDaemon($token);
-    $daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
+    $daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($daemon)->equals(
       array(
         'token' => $token,
@@ -51,7 +58,7 @@ class CronHelperTest extends \MailPoetTest {
     $token = 'restart_token';
     $time = time();
     CronHelper::restartDaemon($token);
-    $daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
+    $daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($daemon)->equals(
       array(
         'token' => $token,
@@ -67,7 +74,7 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItLoadsDaemon() {
     $daemon = $this->getDeamonTestData();
-    Setting::setValue(
+    $this->settings->set(
       CronHelper::DAEMON_SETTING,
       $daemon
     );
@@ -77,7 +84,7 @@ class CronHelperTest extends \MailPoetTest {
   function testItSavesDaemon() {
     // when saving daemon, 'updated_at' value should change
     $daemon = $this->getDeamonTestData();
-    Setting::setValue(
+    $this->settings->set(
       CronHelper::DAEMON_SETTING,
       $daemon
     );
@@ -89,7 +96,7 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItUpdatesDaemonAccessedAt() {
     $daemon = $this->getDeamonTestData();
-    Setting::setValue(
+    $this->settings->set(
       CronHelper::DAEMON_SETTING,
       $daemon
     );
@@ -117,7 +124,7 @@ class CronHelperTest extends \MailPoetTest {
       $daemon = $this->getDeamonTestData();
       $daemon['run_accessed_at'] = $time - 10;
       $daemon['run_started_at'] = $run_start;
-      Setting::setValue(
+      $this->settings->set(
         CronHelper::DAEMON_SETTING,
         $daemon
       );
@@ -130,7 +137,7 @@ class CronHelperTest extends \MailPoetTest {
     $daemon = $this->getDeamonTestData();
     $daemon['run_accessed_at'] = $time - 5;
     $daemon['run_started_at'] = $time - 4;
-    Setting::setValue(
+    $this->settings->set(
       CronHelper::DAEMON_SETTING,
       $daemon
     );
@@ -158,7 +165,7 @@ class CronHelperTest extends \MailPoetTest {
       $daemon = $this->getDeamonTestData();
       $daemon['run_accessed_at'] = $test_input['run_access'];
       $daemon['run_started_at'] = $test_input['run_start'];
-      Setting::setValue(
+      $this->settings->set(
         CronHelper::DAEMON_SETTING,
         $daemon
       );
@@ -168,7 +175,7 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItDeactivatesDaemon() {
     $daemon = $this->getDeamonTestData();
-    Setting::setValue(
+    $this->settings->set(
       CronHelper::DAEMON_SETTING,
       $daemon
     );
@@ -180,7 +187,7 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItSavesLastError() {
     $daemon = $this->getDeamonTestData();
-    Setting::setValue(
+    $this->settings->set(
       CronHelper::DAEMON_SETTING,
       $daemon
     );
@@ -193,7 +200,7 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItSavesRunCompletedAt() {
     $daemon = $this->getDeamonTestData();
-    Setting::setValue(
+    $this->settings->set(
       CronHelper::DAEMON_SETTING,
       $daemon
     );

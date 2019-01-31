@@ -7,6 +7,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatsNotification;
+use MailPoet\Settings\SettingsController;
 
 class Scheduler {
 
@@ -15,6 +16,13 @@ class Scheduler {
    * @var int
    */
   const HOURS_TO_SEND_AFTER_NEWSLETTER = 24;
+
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(SettingsController $settings) {
+    $this->settings = $settings;
+  }
 
   function schedule(Newsletter $newsletter) {
     if(!$this->shouldSchedule($newsletter)) {
@@ -47,7 +55,7 @@ class Scheduler {
   }
 
   private function isDisabled() {
-    $settings = Setting::getValue(Worker::SETTINGS_KEY);
+    $settings = $this->settings->get(Worker::SETTINGS_KEY);
     if(!is_array($settings)) {
       return true;
     }
@@ -60,7 +68,7 @@ class Scheduler {
     if(empty(trim($settings['address']))) {
       return true;
     }
-    if(!(bool)Setting::getValue('tracking.enabled')) {
+    if(!(bool)$this->settings->get('tracking.enabled')) {
       return true;
     }
     return !(bool)$settings['enabled'];

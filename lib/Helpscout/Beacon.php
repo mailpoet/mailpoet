@@ -3,21 +3,22 @@
 namespace MailPoet\Helpscout;
 
 use MailPoet\Cron\CronHelper;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
 class Beacon {
   static function getData() {
     global $wpdb;
+    $settings = new SettingsController();
     $db_version = $wpdb->get_var('SELECT @@VERSION');
-    $mta = Setting::getValue('mta');
+    $mta = $settings->get('mta');
     $current_theme = wp_get_theme();
     $current_user = wp_get_current_user();
-    $premium_key = Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME) ?: Setting::getValue(Bridge::API_KEY_SETTING_NAME);
+    $premium_key = $settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $settings->get(Bridge::API_KEY_SETTING_NAME);
     return array(
       'name' => $current_user->display_name,
       'email' => $current_user->user_email,
@@ -46,15 +47,15 @@ class Beacon {
         $mta['frequency']['emails'],
         $mta['frequency']['interval']
       ),
-      'Task Scheduler method' => Setting::getValue('cron_trigger.method'),
+      'Task Scheduler method' => $settings->get('cron_trigger.method'),
       'Cron ping URL' => CronHelper::getCronUrl(
         CronDaemon::ACTION_PING
       ),
-      'Default FROM address' => Setting::getValue('sender.address'),
-      'Default Reply-To address' => Setting::getValue('reply_to.address'),
-      'Bounce Email Address' => Setting::getValue('bounce.address'),
+      'Default FROM address' => $settings->get('sender.address'),
+      'Default Reply-To address' => $settings->get('reply_to.address'),
+      'Bounce Email Address' => $settings->get('bounce.address'),
       'Total number of subscribers' =>  Subscriber::getTotalSubscribers(),
-      'Plugin installed at' => Setting::getValue('installed_at')
+      'Plugin installed at' => $settings->get('installed_at')
     );
   }
 }

@@ -50,14 +50,21 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\v1\Subscribers::class)->setPublic(true);
     // Config
     $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\Activator::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\Changelog::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Hooks::class)->setPublic(true);
-    $container->register(\MailPoet\Config\Renderer::class)->setFactory([__CLASS__, 'createRenderer']);
+    $container->autowire(\MailPoet\Config\Menu::class)->setPublic(true);
+    $container->register(\MailPoet\Config\Renderer::class)
+      ->setPublic(true)
+      ->setArgument('$caching_enabled', !WP_DEBUG)
+      ->setArgument('$debugging_enabled', WP_DEBUG);
     // Cron
     $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\WorkersFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\Scheduler::class);
+    $container->autowire(\MailPoet\Cron\CronTrigger::class)->setPublic(true);
     // Listing
     $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);
@@ -74,6 +81,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
     // Segments
     $container->autowire(\MailPoet\Segments\SubscribersListings::class)->setPublic(true);
+    // Settings
+    $container->autowire(\MailPoet\Settings\SettingsController::class)->setPublic(true);
     // Subscription
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);
     // Newsletter
@@ -99,11 +108,5 @@ class ContainerConfigurator implements IContainerConfigurator {
       return null;
     }
     return $container->get(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)->get($id);
-  }
-
-  static function createRenderer() {
-    $caching = !WP_DEBUG;
-    $debugging = WP_DEBUG;
-    return new \MailPoet\Config\Renderer($caching, $debugging);
   }
 }

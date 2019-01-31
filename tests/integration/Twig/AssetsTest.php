@@ -5,6 +5,7 @@ use MailPoet\Twig\Assets;
 
 class AssetsTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->assets_url = 'https://www.testing.com/wp-content/plugins/mailpoet/assets';
     $this->version = '1.2.3';
     $this->assets_extension = new Assets(

@@ -5,11 +5,18 @@ use Codeception\Util\Stub;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 
 class PremiumKeyCheckTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
+    parent::_before();
+    $this->settings = new SettingsController();
     $this->premium_key = '123457890abcdef';
-    $this->worker = new PremiumKeyCheck(microtime(true));
+    $this->worker = new PremiumKeyCheck($this->settings, microtime(true));
   }
 
   function testItRequiresPremiumKeyToBeSpecified() {
@@ -42,7 +49,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
   }
 
   private function fillPremiumKey() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::PREMIUM_KEY_SETTING_NAME,
       $this->premium_key
     );

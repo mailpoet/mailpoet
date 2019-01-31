@@ -2,18 +2,26 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
 class Activator {
+
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(SettingsController $settings) {
+    $this->settings = $settings;
+  }
+
   function activate() {
     $migrator = new Migrator();
     $migrator->up();
 
     $populator = new Populator();
     $populator->up();
-    Setting::setValue('db_version', Env::$version);
+    $this->settings->set('db_version', Env::$version);
 
     $caps = new Capabilities();
     $caps->setupWPCapabilities();

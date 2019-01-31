@@ -4,9 +4,9 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions;
+use MailPoet\Settings\SettingsController;
 
 class NewSubscriberNotificationMailer {
 
@@ -21,6 +21,9 @@ class NewSubscriberNotificationMailer {
 
   /** @var Functions */
   private $wordpress_functions;
+
+  /** @var SettingsController */
+  private $settings;
 
   /**
    * @param \MailPoet\Mailer\Mailer|null $mailer
@@ -45,6 +48,7 @@ class NewSubscriberNotificationMailer {
     } else {
       $this->mailer = new \MailPoet\Mailer\Mailer(false, $this->constructSenderEmail());
     }
+    $this->settings = new SettingsController();
   }
 
   /**
@@ -54,7 +58,7 @@ class NewSubscriberNotificationMailer {
    * @throws \Exception
    */
   function send(Subscriber $subscriber, array $segments) {
-    $settings = Setting::getValue(NewSubscriberNotificationMailer::SETTINGS_KEY);
+    $settings = $this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY);
     if($this->isDisabled($settings)) {
       return;
     }

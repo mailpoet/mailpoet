@@ -7,6 +7,8 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions;
 
 class MenuTest extends \MailPoetTest {
   function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
@@ -40,7 +42,7 @@ class MenuTest extends \MailPoetTest {
 
   function testItChecksMailpoetAPIKey() {
     $renderer = Stub::make(new Renderer());
-    $menu = new Menu($renderer, new AccessControl());
+    $menu = new Menu($renderer, new AccessControl(), new SettingsController(), new Functions());
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
@@ -62,7 +64,7 @@ class MenuTest extends \MailPoetTest {
 
   function testItChecksPremiumKey() {
     $renderer = Stub::make(new Renderer());
-    $menu = new Menu($renderer, new AccessControl());
+    $menu = new Menu($renderer, new AccessControl(), new SettingsController(), new Functions());
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(

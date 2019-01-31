@@ -9,10 +9,20 @@ use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class DaemonHttpRunnerTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
+  function _before() {
+    parent::_before();
+    $this->settings = new SettingsController();
+  }
+
   function testItConstructs() {
-    Setting::setValue(
+    $this->settings->set(
       CronHelper::DAEMON_SETTING,
       []
     );
@@ -69,10 +79,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'pauseExecution' => null,
       'callSelf' => null
     ), $this);
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon_http_runner->__construct($daemon);
     $daemon_http_runner->run($data);
-    $updated_daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
+    $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['last_error'])->greaterOrEquals('Message');
   }
 
@@ -89,7 +99,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon_http_runner->__construct($daemon);
     $daemon_http_runner->run($data);
   }
@@ -98,7 +108,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   function testItTerminatesExecutionWhenDaemonIsDeleted() {
     $daemon = Stub::make(DaemonHttpRunner::class, array(
       'executeScheduleWorker' => function() {
-        Setting::deleteValue(CronHelper::DAEMON_SETTING);
+        $this->settings->delete(CronHelper::DAEMON_SETTING);
       },
       'executeQueueWorker' => null,
       'pauseExecution' => null,
@@ -107,7 +117,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon->__construct(Stub::makeEmpty(Daemon::class));
     $daemon->run($data);
   }
@@ -115,7 +125,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   function testItTerminatesExecutionWhenDaemonTokenChangesAndKeepsChangedToken() {
     $daemon = Stub::make(DaemonHttpRunner::class, array(
       'executeScheduleWorker' => function() {
-        Setting::setValue(
+        $this->settings->set(
           CronHelper::DAEMON_SETTING,
           array('token' => 567)
         );
@@ -127,10 +137,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon->__construct(Stub::makeEmpty(Daemon::class));
     $daemon->run($data);
-    $data_after_run = Setting::getValue(CronHelper::DAEMON_SETTING);
+    $data_after_run = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($data_after_run['token'], 567);
   }
 
@@ -145,7 +155,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
       'status' => CronHelper::DAEMON_STATUS_INACTIVE,
     ];
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon->__construct(Stub::makeEmpty(Daemon::class));
     $daemon->run($data);
   }
@@ -161,10 +171,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon_http_runner->__construct(Stub::makeEmptyExcept(Daemon::class, 'run'));
     $daemon_http_runner->run($data);
-    $updated_daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
+    $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['token'])->equals($daemon_http_runner->token);
   }
 
@@ -188,10 +198,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
     );
     $now = time();
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon_http_runner->__construct($daemon);
     $daemon_http_runner->run($data);
-    $updated_daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
+    $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['run_started_at'])->greaterOrEquals($now);
     expect($updated_daemon['run_started_at'])->lessThan($now + 2);
     expect($updated_daemon['run_completed_at'])->greaterOrEquals($now + 2);
@@ -213,7 +223,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    Setting::setValue(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon->__construct(Stub::makeEmptyExcept(Daemon::class, 'run'));
     $daemon->run($data);
     expect(ignore_user_abort())->equals(1);

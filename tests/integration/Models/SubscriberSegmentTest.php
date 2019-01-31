@@ -8,6 +8,7 @@ use MailPoet\Models\SubscriberSegment;
 class SubscriberSegmentTest extends \MailPoetTest {
 
   function _before() {
+    parent::_before();
     $this->subscriber = Subscriber::createOrUpdate(array(
       'email' => 'john.doe@mailpoet.com',
       'first_name' => 'John',

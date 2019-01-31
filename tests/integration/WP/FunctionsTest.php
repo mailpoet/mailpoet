@@ -6,6 +6,7 @@ use MailPoet\Config\Env;
 
 class FunctionsTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     global $content_width;
     $this->_content_width = $content_width;
     $content_width = 150;

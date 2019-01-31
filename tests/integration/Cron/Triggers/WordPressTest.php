@@ -10,16 +10,23 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 
 class WordPressTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
+    parent::_before();
     // cron trigger is by default set to 'WordPress'; when it runs and does not
     // detect any queues to process, it deletes the daemon setting, so Supervisor that's
     // called by the MailPoet cron trigger does not work. for that matter, we need to set
     // the trigger setting to anything but 'WordPress'.
-    Setting::setValue('cron_trigger', array(
+    $this->settings = new SettingsController();
+    $this->settings->set('cron_trigger', array(
       'method' => 'none'
     ));
   }
@@ -78,26 +85,26 @@ class WordPressTest extends \MailPoetTest {
   }
 
   function testItCanDeactivateRunningDaemon() {
-    Setting::setValue(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
+    $this->settings->set(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
+    expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
     WordPress::stop();
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
+    expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
   function testItRunsWhenExecutionRequirementsAreMet() {
     // status of 'null' indicates that queue is running
     $this->_addQueue($status = null);
     // check that cron daemon does not exist
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING))->null();
+    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     WordPress::run();
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING))->notNull();
+    expect($this->settings->get(CronHelper::DAEMON_SETTING))->notNull();
   }
 
   function testItDeactivatesCronDaemonWhenExecutionRequirementsAreNotMet() {
-    Setting::setValue(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
+    $this->settings->set(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
+    expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
     WordPress::run();
-    expect(Setting::getValue(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
+    expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
   function _addMTAConfigAndLog($sent, $status = null) {
@@ -107,7 +114,7 @@ class WordPressTest extends \MailPoetTest {
         'interval' => 1
       )
     );
-    Setting::setValue(
+    $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       $mta_config
     );
@@ -116,7 +123,7 @@ class WordPressTest extends \MailPoetTest {
       'started' => time(),
       'status' => $status
     );
-    Setting::setValue(
+    $this->settings->set(
       MailerLog::SETTING_NAME,
       $mta_log
     );
@@ -153,7 +160,7 @@ class WordPressTest extends \MailPoetTest {
   function _enableMigration() {
     // Migration can be triggered only if cron execution method is selected
     // and is not "none"
-    Setting::setValue('cron_trigger', array(
+    $this->settings->set('cron_trigger', array(
       'method' => 'WordPress'
     ));
   }

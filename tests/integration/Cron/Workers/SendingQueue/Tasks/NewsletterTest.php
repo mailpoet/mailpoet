@@ -23,6 +23,7 @@ if(!defined('ABSPATH')) exit;
 
 class NewsletterTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->newsletter_task = new NewsletterTask();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'test@example.com';

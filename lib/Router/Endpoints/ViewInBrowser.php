@@ -8,6 +8,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -18,15 +19,20 @@ class ViewInBrowser {
   public $permissions = array(
     'global' => AccessControl::NO_ACCESS_RESTRICTION
   );
+  /** @var AccessControl */
   private $access_control;
 
-  function __construct(AccessControl $access_control) {
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(AccessControl $access_control, SettingsController $settings) {
     $this->access_control = $access_control;
+    $this->settings = $settings;
   }
 
   function view($data) {
     $data = $this->_processBrowserPreviewData($data);
-    $view_in_browser = new NewsletterViewInBrowser();
+    $view_in_browser = new NewsletterViewInBrowser((bool)$this->settings->get('tracking.enabled'));
     return $this->_displayNewsletter($view_in_browser->view($data));
   }
 

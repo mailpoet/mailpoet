@@ -11,6 +11,7 @@ use MailPoet\Util\Helpers;
 
 class SendingQueueTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->queue = SendingQueue::create();
     $this->queue->task_id = 0;
     $this->queue->newsletter_id = 1;

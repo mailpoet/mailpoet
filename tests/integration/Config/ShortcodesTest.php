@@ -15,6 +15,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class ShortcodesTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->status = Newsletter::STATUS_SENT;

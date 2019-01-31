@@ -8,12 +8,18 @@ use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once('BridgeTestMockAPI.php');
 
 class BridgeTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
+    parent::_before();
     $this->valid_key = 'abcdefghijklmnopqrstuvwxyz';
     $this->invalid_key = '401' . $this->valid_key;
     $this->expiring_key = 'expiring' . $this->valid_key;
@@ -27,6 +33,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge = new Bridge();
 
     $this->bridge->api = new MockAPI('key');
+    $this->settings = new SettingsController();
   }
 
   function testItChecksIfCurrentSendingMethodIsMailpoet() {
@@ -36,7 +43,7 @@ class BridgeTest extends \MailPoetTest {
   }
 
   function testMPCheckReturnsFalseWhenMailerThrowsException() {
-    Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, '');
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, '');
     expect(Bridge::isMPSendingServiceEnabled())->false();
   }
 
@@ -199,7 +206,7 @@ class BridgeTest extends \MailPoetTest {
   }
 
   function testItInvalidatesMSSKey() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::KEY_VALID)
     );
@@ -280,7 +287,7 @@ class BridgeTest extends \MailPoetTest {
   }
 
   private function setMailPoetSendingMethod() {
-    Setting::setValue(
+    $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'MailPoet',
@@ -290,26 +297,26 @@ class BridgeTest extends \MailPoetTest {
   }
 
   private function getMSSKey() {
-    return Setting::getValue(Bridge::API_KEY_SETTING_NAME);
+    return $this->settings->get(Bridge::API_KEY_SETTING_NAME);
   }
 
   private function getMSSKeyState() {
-    return Setting::getValue(Bridge::API_KEY_STATE_SETTING_NAME);
+    return $this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME);
   }
 
   private function fillPremiumKey() {
-    Setting::setValue(
+    $this->settings->set(
       Bridge::PREMIUM_KEY_SETTING_NAME,
       '123457890abcdef'
     );
   }
 
   private function getPremiumKey() {
-    return Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME);
+    return $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
   }
 
   private function getPremiumKeyState() {
-    return Setting::getValue(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
+    return $this->settings->get(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
   }
 
   function _after() {

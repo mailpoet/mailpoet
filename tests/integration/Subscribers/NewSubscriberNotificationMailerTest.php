@@ -8,7 +8,9 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+
 use MailPoet\WP\Functions;
+use MailPoet\Settings\SettingsController;
 
 class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
@@ -18,23 +20,27 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
   /** @var Segment[] */
   private $segments;
 
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'subscriber@example.com';
     $this->segments = [Segment::create(), Segment::create()];
     $this->segments[0]->name = 'List1';
     $this->segments[1]->name = 'List2';
+    $this->settings = new SettingsController();
   }
 
   function testItDoesNotSendIfNoSettings() {
-    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, null);
+    $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, null);
     $mailer = Stub::makeEmpty(Mailer::class, ['getSenderNameAndAddress' => Expected::never()], $this);
     $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
   }
 
   function testItDoesNotSendIfSettingsDoesNotHaveEnabled() {
-    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, []);
+    $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, []);
     $mailer = Stub::makeEmpty(Mailer::class, ['getSenderNameAndAddress' => Expected::never()], $this);
     $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
@@ -42,21 +48,21 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
 
   function testItDoesNotSendIfSettingsDoesNotHaveAddress() {
-    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false]);
+    $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false]);
     $mailer = Stub::makeEmpty(Mailer::class, ['getSenderNameAndAddress' => Expected::never()], $this);
     $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
   }
 
   function testItDoesNotSendIfDisabled() {
-    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false, 'address' => 'a@b.c']);
+    $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false, 'address' => 'a@b.c']);
     $mailer = Stub::makeEmpty(Mailer::class, ['getSenderNameAndAddress' => Expected::never()], $this);
     $service = new NewSubscriberNotificationMailer($mailer);
     $service->send($this->subscriber, $this->segments);
   }
 
   function testItSends() {
-    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true, 'address' => 'a@b.c']);
+    $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true, 'address' => 'a@b.c']);
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'getSenderNameAndAddress' =>
@@ -85,7 +91,9 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
   }
 
   function testItRemovesWwwFromSenderAddress() {
-    Setting::setValue(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true,'address' => 'a@b.c']);
+    $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true,'address' => 'a@b.c']);
+    $home_backup = \MailPoet\WP\get_option('home');
+    update_option( 'home', 'http://www.example.com/xyz' );
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'getSenderNameAndAddress' =>
@@ -105,5 +113,10 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
     $service = new NewSubscriberNotificationMailer($mailer, null, $functions);
     $service->send($this->subscriber, $this->segments);
+    update_option('home', $home_backup);
+  }
+
+  function _after() {
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

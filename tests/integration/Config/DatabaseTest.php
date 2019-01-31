@@ -14,6 +14,7 @@ class DatabaseTest extends \MailPoetTest {
   }
 
   function _before() {
+    parent::_before();
     \ORM::set_db(null);
   }
 

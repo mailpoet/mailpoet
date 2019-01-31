@@ -10,6 +10,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
 
 class Worker {
@@ -28,15 +29,19 @@ class Worker {
   /** @var \MailPoet\Mailer\Mailer */
   private $mailer;
 
-  function __construct(Mailer $mailer, Renderer $renderer, $timer = false) {
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(Mailer $mailer, Renderer $renderer, SettingsController $settings, $timer = false) {
     $this->timer = $timer ?: microtime(true);
     $this->renderer = $renderer;
     $this->mailer = $mailer;
+    $this->settings = $settings;
   }
 
   /** @throws \Exception */
   function process() {
-    $settings = Setting::getValue(self::SETTINGS_KEY);
+    $settings = $this->settings->get(self::SETTINGS_KEY);
     $this->mailer->sender = $this->mailer->getSenderNameAndAddress($this->constructSenderEmail());
     foreach(self::getDueTasks() as $task) {
       try {

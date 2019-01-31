@@ -14,6 +14,7 @@ class SegmentsTest extends \MailPoetTest {
   private $endpoint;
 
   function _before() {
+    parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Segments::class);
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1', 'type' => 'default'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2', 'type' => 'default'));

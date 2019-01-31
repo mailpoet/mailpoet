@@ -12,6 +12,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
   private $eraser;
 
   function _before() {
+    parent::_before();
     $this->eraser = new SubscriberPersonalDataEraser();
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);

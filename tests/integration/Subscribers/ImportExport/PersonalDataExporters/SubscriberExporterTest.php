@@ -11,6 +11,7 @@ class SubscriberExporterTest extends \MailPoetTest {
   private $exporter;
 
   function _before() {
+    parent::_before();
     $this->exporter = new SubscriberExporter();
   }
 

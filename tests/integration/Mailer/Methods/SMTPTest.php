@@ -9,6 +9,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class SMTPTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->settings = array(
       'method' => 'SMTP',
       'host' => getenv('WP_TEST_MAILER_SMTP_HOST') ?

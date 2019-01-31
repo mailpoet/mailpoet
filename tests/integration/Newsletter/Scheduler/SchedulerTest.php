@@ -3,7 +3,7 @@ namespace MailPoet\Test\Newsletter\Scheduler;
 
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
-use Mailpoet\Config\Hooks;
+use MailPoet\Config\Hooks;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;

@@ -4,6 +4,7 @@ namespace MailPoet\Test\DataFactories;
 use Carbon\Carbon;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class Newsletter {
@@ -28,6 +29,7 @@ class Newsletter {
     $this->segments = [];
     $this->queue_options = [];
     $this->loadBodyFrom('newsletterWithALC.json');
+    SettingsController::resetCache(); // Newsletter model reads settings so we need to ensure it use fresh data
   }
 
   /**

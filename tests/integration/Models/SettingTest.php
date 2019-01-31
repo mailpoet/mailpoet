@@ -2,6 +2,7 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class SettingTest extends \MailPoetTest {
   function testItCanBeCreated() {
@@ -21,28 +22,13 @@ class SettingTest extends \MailPoetTest {
     expect($errors[0])->equals('Please specify a name.');
   }
 
-  function testItHasDefaultSettings() {
-    $default_settings = Setting::getDefaults();
-    expect($default_settings)->notEmpty();
-    expect($default_settings['signup_confirmation']['enabled'])->true();
-  }
-
-  function testItCanLoadDefaults() {
-    Setting::$defaults = null;
-    expect(Setting::$defaults)->null();
-
-    $default_settings = Setting::getDefaults();
-    expect(Setting::$defaults)->notEmpty();
-    expect($default_settings['signup_confirmation']['enabled'])->true();
-  }
-
-  function testItCanGetAllSettingsIncludingDefaults() {
-    Setting::setValue('key_1', 'value_1');
-    Setting::setValue('key_2', 'value_2');
-    Setting::setValue('key_3', array(
+  function testItCanGetAllSettings() {
+    Setting::createOrUpdate(['name' => 'key_1', 'value' => 'value_1']);
+    Setting::createOrUpdate(['name' => 'key_2', 'value' => 'value_2']);
+    Setting::createOrUpdate(['name' => 'key_3', 'value' => serialize([
       'subkey_1' => 'subvalue_1',
       'subkey_2' => 'subvalue_2'
-    ));
+    ])]);
 
     $settings = Setting::getAll();
     expect($settings['key_1'])->equals('value_1');
@@ -50,53 +36,6 @@ class SettingTest extends \MailPoetTest {
     expect($settings['key_3'])->equals(array(
       'subkey_1' => 'subvalue_1',
       'subkey_2' => 'subvalue_2'
-    ));
-
-    // default settings
-    $default_settings = Setting::getDefaults();
-    expect($settings['signup_confirmation'])
-      ->equals($default_settings['signup_confirmation']);
-  }
-
-  function testItCanSetAndGetValues() {
-    // try to get an "unknown" key
-    $setting = Setting::getValue('unknown_key', 'default_value');
-    expect($setting)->equals('default_value');
-
-    // setting a "known" key
-    $setting = Setting::setValue('known_key', '  actual_value  ');
-    expect($setting)->equals(true);
-
-    // try to get a "known" key
-    $setting = Setting::getValue('known_key', 'default_value');
-    expect($setting)->equals('actual_value');
-
-    // try to get an "unknown" subkey of a "known" key
-    $setting = Setting::getValue('known_key.unknown_subkey', 'default_value');
-    expect($setting)->equals('default_value');
-
-    // try to get an "unknown" subkey of an "unknown" key
-    $setting = Setting::getValue('unknown_key.unknown_subkey', 'default_value');
-    expect($setting)->equals('default_value');
-  }
-
-  function testItShouldReturnDefaultsSetInModelIfNotSet() {
-    // model specified default settings
-    $default_settings = Setting::getDefaults();
-
-    // try to get the MTA settings (which don't exist in the database)
-    $mta_settings = Setting::getValue('mta');
-    expect($mta_settings)->equals($default_settings['mta']);
-  }
-
-  function testItShouldReturnCustomDefaultsInsteadOfDefaultsSetInModel() {
-    // try to get the MTA settings (which don't exist in the database)
-    // but specify a custom default value
-    $custom_mta_settings = Setting::getValue('mta', array(
-      'custom_default' => 'value'
-    ));
-    expect($custom_mta_settings)->equals(array(
-      'custom_default' => 'value'
     ));
   }
 
@@ -122,47 +61,25 @@ class SettingTest extends \MailPoetTest {
     expect($setting->value)->equals('new data');
   }
 
-  function testItCanGetAndSetValue() {
-    expect(Setting::setValue('test', '  123  '))->true();
-    expect(Setting::getValue('test'))->equals('123');
-  }
-
-  function testItCanGetAndSetNestedValue() {
-    expect(Setting::setValue('test.key', '  123 '))->true();
-    expect(Setting::getValue('test.key'))->equals('123');
-
-    expect(Setting::setValue('test.key.subkey', ' 123'))->true();
-    expect(Setting::setValue('test.key.subkey2', '456  '))->true();
-
-    expect(Setting::getValue('test.key'))->notEmpty();
-    expect(Setting::getValue('test.key.subkey'))->equals('123');
-    expect(Setting::getValue('test.key.subkey2'))->equals('456');
-  }
-
-  function testItCanSetValueToNull() {
-    expect(Setting::setValue('test.key', true))->true();
-    expect(Setting::getValue('test.key'))->equals(true);
-
-    expect(Setting::setValue('test.key', null))->true();
-    expect(Setting::getValue('test.key'))->null();
-  }
-
   function testSaveDefaultSenderIfNeededNotSaveEmptyValue() {
+    $settings_controller = new SettingsController();
     Setting::saveDefaultSenderIfNeeded('', null);
-    expect(Setting::getValue('sender'))->null();
+    expect($settings_controller->get('sender'))->null();
   }
 
   function testSaveDefaultSenderIfNeededDoesntOverride() {
-    Setting::setValue('sender', array('name' => 'sender1', 'address' => 'sender1address'));
+    $settings_controller = new SettingsController();
+    $settings_controller->set('sender', array('name' => 'sender1', 'address' => 'sender1address'));
     Setting::saveDefaultSenderIfNeeded('sender2address', 'sender1');
-    $settings = Setting::getValue('sender');
+    $settings = $settings_controller->get('sender');
     expect($settings['name'])->equals('sender1');
     expect($settings['address'])->equals('sender1address');
   }
 
   function testSaveDefaultSenderIfNeeded() {
+    $settings_controller = new SettingsController();
     Setting::saveDefaultSenderIfNeeded('senderAddress', 'sender');
-    $settings = Setting::getValue('sender');
+    $settings = $settings_controller->get('sender');
     expect($settings['name'])->equals('sender');
     expect($settings['address'])->equals('senderAddress');
   }

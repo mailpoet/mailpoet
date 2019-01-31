@@ -7,9 +7,11 @@ use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 
 class SendingServiceKeyCheckTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->mss_key = 'some_key';
     $this->worker = new SendingServiceKeyCheck(microtime(true));
   }
@@ -45,7 +47,8 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   }
 
   private function setMailPoetSendingMethod() {
-    Setting::setValue(
+    $settings = new SettingsController();
+    $settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'MailPoet',

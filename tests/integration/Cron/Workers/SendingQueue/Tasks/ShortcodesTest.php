@@ -10,6 +10,7 @@ if(!defined('ABSPATH')) exit;
 
 class ShortcodesTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->WP_post = wp_insert_post(
       array(
         'post_title' => 'Sample Post',

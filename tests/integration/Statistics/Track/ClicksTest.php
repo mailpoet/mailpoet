@@ -19,6 +19,7 @@ class ClicksTest extends \MailPoetTest {
   private $clicks;
 
   function _before() {
+    parent::_before();
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->type = 'type';

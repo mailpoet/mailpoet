@@ -5,9 +5,6 @@ use MailPoet\Models\StatisticsForms;
 
 class StatisticsFormsTest extends \MailPoetTest {
 
-  function _before() {
-  }
-
   function testItCanRecordStats() {
     $record = StatisticsForms::record($form_id = 1, $subscriber_id = 2);
     expect($record->form_id)->equals(1);

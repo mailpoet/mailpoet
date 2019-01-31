@@ -6,13 +6,18 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\Installer;
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 
 class ServicesTest extends \MailPoetTest {
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
+    parent::_before();
     $this->services_endpoint = new Services();
     $this->data = array('key' => '1234567890abcdef');
+    $this->settings = new SettingsController();
   }
 
   function testItRespondsWithErrorIfNoMSSKeyIsGiven() {
@@ -267,8 +272,8 @@ class ServicesTest extends \MailPoetTest {
 
   function testItRespondsWithPublicIdForMSS() {
     $fake_public_id = 'a-fake-public_id';
-    Setting::deleteValue('public_id');
-    Setting::deleteValue('new_public_id');
+    $this->settings->delete('public_id');
+    $this->settings->delete('new_public_id');
 
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
@@ -283,13 +288,13 @@ class ServicesTest extends \MailPoetTest {
     );
     $response = $this->services_endpoint->checkMSSKey($this->data);
 
-    expect(Setting::getValue('public_id'))->equals($fake_public_id);
-    expect(Setting::getValue('new_public_id'))->equals('true');
+    expect($this->settings->get('public_id'))->equals($fake_public_id);
+    expect($this->settings->get('new_public_id'))->equals('true');
   }
 
   function testItRespondsWithoutPublicIdForMSS() {
-    Setting::deleteValue('public_id');
-    Setting::deleteValue('new_public_id');
+    $this->settings->delete('public_id');
+    $this->settings->delete('new_public_id');
 
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
@@ -301,14 +306,14 @@ class ServicesTest extends \MailPoetTest {
     );
     $response = $this->services_endpoint->checkMSSKey($this->data);
 
-    expect(Setting::getValue('public_id', null))->null();
-    expect(Setting::getValue('new_public_id', null))->null();
+    expect($this->settings->get('public_id', null))->null();
+    expect($this->settings->get('new_public_id', null))->null();
   }
 
   function testItRespondsWithPublicIdForPremium() {
     $fake_public_id = 'another-fake-public_id';
-    Setting::deleteValue('public_id');
-    Setting::deleteValue('new_public_id');
+    $this->settings->delete('public_id');
+    $this->settings->delete('new_public_id');
 
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
@@ -323,13 +328,13 @@ class ServicesTest extends \MailPoetTest {
     );
     $response = $this->services_endpoint->checkPremiumKey($this->data);
 
-    expect(Setting::getValue('public_id'))->equals($fake_public_id);
-    expect(Setting::getValue('new_public_id'))->equals('true');
+    expect($this->settings->get('public_id'))->equals($fake_public_id);
+    expect($this->settings->get('new_public_id'))->equals('true');
   }
 
   function testItRespondsWithoutPublicIdForPremium() {
-    Setting::deleteValue('public_id');
-    Setting::deleteValue('new_public_id');
+    $this->settings->delete('public_id');
+    $this->settings->delete('new_public_id');
 
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
@@ -341,7 +346,7 @@ class ServicesTest extends \MailPoetTest {
     );
     $response = $this->services_endpoint->checkPremiumKey($this->data);
 
-    expect(Setting::getValue('public_id', null))->null();
-    expect(Setting::getValue('new_public_id', null))->null();
+    expect($this->settings->get('public_id', null))->null();
+    expect($this->settings->get('new_public_id', null))->null();
   }
 }

@@ -6,9 +6,9 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Segment as SegmentModel;
-use MailPoet\Models\Setting as SettingModel;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Form;
 use MailPoet\Util\Security;
 
@@ -17,8 +17,13 @@ class FormTest extends \MailPoetTest {
   /** @var Form */
   private $form_controller;
 
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
-    Setting::setValue('sender', array(
+    parent::_before();
+    $this->settings = new SettingsController();
+    $this->settings->set('sender', array(
       'name' => 'John Doe',
       'address' => 'john.doe@example.com'
     ));
@@ -62,7 +67,7 @@ class FormTest extends \MailPoetTest {
         'post_status' => 'publish',
       )
     );
-    SettingModel::setValue('signup_confirmation.enabled', false);
+    $this->settings->set('signup_confirmation.enabled', false);
     $this->form_controller = ContainerWrapper::getInstance()->get(Form::class);
   }
 
@@ -123,6 +128,6 @@ class FormTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
     \ORM::raw_execute('TRUNCATE ' . FormModel::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SettingModel::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

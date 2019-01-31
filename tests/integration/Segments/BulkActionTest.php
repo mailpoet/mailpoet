@@ -13,6 +13,7 @@ require_once('SubscribersBulkActionHandlerMock.php');
 class BulkActionTest extends \MailPoetTest {
 
   function _before() {
+    parent::_before();
     $this->cleanData();
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1', 'type' => 'default'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 3', 'type' => 'not default'));

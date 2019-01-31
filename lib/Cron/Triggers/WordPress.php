@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -24,7 +25,8 @@ class WordPress {
 
   static function checkExecutionRequirements() {
     // migration
-    $migration_disabled = Setting::getValue('cron_trigger.method') === 'none';
+    $settings = new SettingsController();
+    $migration_disabled = $settings->get('cron_trigger.method') === 'none';
     $migration_due_tasks = MigrationWorker::getDueTasks();
     $migration_completed_tasks = MigrationWorker::getCompletedTasks();
     $migration_future_tasks = MigrationWorker::getFutureTasks();

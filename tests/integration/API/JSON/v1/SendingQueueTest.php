@@ -10,10 +10,12 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
 
 class SendingQueueTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->newsletter = Newsletter::createOrUpdate(
       array(
         'subject' => 'My Standard Newsletter',
@@ -21,7 +23,8 @@ class SendingQueueTest extends \MailPoetTest {
         'type' => Newsletter::TYPE_STANDARD
       )
     );
-    Setting::setValue('sender', array(
+    $settings = new SettingsController();
+    $settings->set('sender', array(
       'name' => 'John Doe',
       'address' => 'john.doe@example.com'
     ));

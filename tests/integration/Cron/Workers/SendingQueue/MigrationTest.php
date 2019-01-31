@@ -16,6 +16,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class MigrationTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     // Alter table to test migration
     if(!Migration::checkUnmigratedColumnsExist()) {
       $this->downgradeTable();

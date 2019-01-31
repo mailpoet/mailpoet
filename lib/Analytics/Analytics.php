@@ -3,8 +3,8 @@
 namespace MailPoet\Analytics;
 
 use Carbon\Carbon;
-use MailPoet\Models\Setting;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -16,10 +16,16 @@ class Analytics {
 
   /** @var Reporter */
   private $reporter;
+
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var WPFunctions */
   private $wp;
 
-  public function __construct(Reporter $reporter) {
+  public function __construct(Reporter $reporter, SettingsController $settingsController) {
     $this->reporter = $reporter;
+    $this->settings = $settingsController;
     $this->wp = new WPFunctions;
   }
 
@@ -34,29 +40,30 @@ class Analytics {
 
   /** @return boolean */
   function isEnabled() {
-    $analytics_settings = Setting::getValue('analytics', array());
+    $analytics_settings = $this->settings->get('analytics', array());
     return !empty($analytics_settings['enabled']) === true;
   }
 
   static function setPublicId($new_public_id) {
-    $current_public_id = Setting::getValue('public_id');
+    $settings = new SettingsController();
+    $current_public_id = $settings->get('public_id');
     if($current_public_id !== $new_public_id) {
-      Setting::setValue('public_id', $new_public_id);
-      Setting::setValue('new_public_id', 'true');
+      $settings->set('public_id', $new_public_id);
+      $settings->set('new_public_id', 'true');
       // Force user data to be resent
-      Setting::deleteValue(Analytics::SETTINGS_LAST_SENT_KEY);
+      $settings->delete(Analytics::SETTINGS_LAST_SENT_KEY);
     }
   }
 
   /** @return string */
   function getPublicId() {
-    $public_id = Setting::getValue('public_id', '');
+    $public_id = $this->settings->get('public_id', '');
     // if we didn't get the user public_id from the shop yet : we create one based on mixpanel distinct_id
     if(empty($public_id) && !empty($_COOKIE['mixpanel_distinct_id'])) {
       // the public id has to be diffent that mixpanel_distinct_id in order to be used on different browser
       $mixpanel_distinct_id = md5($_COOKIE['mixpanel_distinct_id']);
-      Setting::setValue('public_id', $mixpanel_distinct_id);
-      Setting::setValue('new_public_id', 'true');
+      $this->settings->set('public_id', $mixpanel_distinct_id);
+      $this->settings->set('new_public_id', 'true');
       return $mixpanel_distinct_id;
     }
     return $public_id;
@@ -67,9 +74,9 @@ class Analytics {
    * @return boolean
    */
   function isPublicIdNew() {
-    $new_public_id = Setting::getValue('new_public_id');
+    $new_public_id = $this->settings->get('new_public_id');
     if($new_public_id === 'true') {
-      Setting::setValue('new_public_id', 'false');
+      $this->settings->set('new_public_id', 'false');
       return true;
     }
     return false;
@@ -79,7 +86,7 @@ class Analytics {
     if(!$this->isEnabled()) {
       return false;
     }
-    $lastSent = Setting::getValue(Analytics::SETTINGS_LAST_SENT_KEY);
+    $lastSent = $this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY);
     if(!$lastSent) {
       return true;
     }
@@ -88,7 +95,7 @@ class Analytics {
   }
 
   private function recordDataSent() {
-    Setting::setValue(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
+    $this->settings->set(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
   }
 
 }

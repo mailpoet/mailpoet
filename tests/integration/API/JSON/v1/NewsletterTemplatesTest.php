@@ -7,6 +7,7 @@ use MailPoet\Models\NewsletterTemplate;
 
 class NewsletterTemplatesTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     NewsletterTemplate::deleteMany();
     NewsletterTemplate::createOrUpdate(array(
       'name' => 'Template #1',

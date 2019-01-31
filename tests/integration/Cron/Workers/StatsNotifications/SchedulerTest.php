@@ -6,19 +6,25 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatsNotification;
+use MailPoet\Settings\SettingsController;
 
 class SchedulerTest extends \MailPoetTest {
 
   /** @var Scheduler */
   private $stats_notifications;
 
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
-    $this->stats_notifications = new Scheduler();
-    Setting::setValue(Worker::SETTINGS_KEY, [
+    parent::_before();
+    $this->settings = new SettingsController();
+    $this->stats_notifications = new Scheduler($this->settings);
+    $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
       'address' => 'email@example.com'
     ]);
-    Setting::setValue('tracking.enabled', true);
+    $this->settings->set('tracking.enabled', true);
   }
 
   function testShouldSchedule() {
@@ -32,7 +38,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testShouldNotScheduleIfTrackingIsDisabled() {
-    Setting::setValue('tracking.enabled', false);
+    $this->settings->set('tracking.enabled', false);
     $newsletter_id = 13;
     $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id, 'type' => Newsletter::TYPE_STANDARD]);
     $this->stats_notifications->schedule($newsletter);
@@ -42,7 +48,7 @@ class SchedulerTest extends \MailPoetTest {
 
   function testShouldNotScheduleIfDisabled() {
     $newsletter_id = 6;
-    Setting::setValue(Worker::SETTINGS_KEY, [
+    $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => false,
       'address' => 'email@example.com'
     ]);
@@ -54,7 +60,7 @@ class SchedulerTest extends \MailPoetTest {
 
   function testShouldNotScheduleIfSettingsMissing() {
     $newsletter_id = 7;
-    Setting::setValue(Worker::SETTINGS_KEY, []);
+    $this->settings->set(Worker::SETTINGS_KEY, []);
     $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id, 'type' => Newsletter::TYPE_STANDARD]);
     $this->stats_notifications->schedule($newsletter);
     $notification = StatsNotification::where('newsletter_id', $newsletter_id)->findOne();
@@ -63,7 +69,7 @@ class SchedulerTest extends \MailPoetTest {
 
   function testShouldNotScheduleIfEmailIsMissing() {
     $newsletter_id = 8;
-    Setting::setValue(Worker::SETTINGS_KEY, [
+    $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
     ]);
     $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id, 'type' => Newsletter::TYPE_STANDARD]);
@@ -74,7 +80,7 @@ class SchedulerTest extends \MailPoetTest {
 
   function testShouldNotScheduleIfEmailIsEmpty() {
     $newsletter_id = 9;
-    Setting::setValue(Worker::SETTINGS_KEY, [
+    $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
       'address' => ' '
     ]);

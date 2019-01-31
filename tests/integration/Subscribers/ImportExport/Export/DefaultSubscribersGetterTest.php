@@ -11,6 +11,7 @@ use MailPoet\Subscribers\ImportExport\Export\DefaultSubscribersGetter;
 
 class DefaultSubscribersGetterTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->subscriber_fields = array(
       'first_name' => 'First name',
       'last_name' => 'Last name',

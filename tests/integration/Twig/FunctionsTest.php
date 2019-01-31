@@ -5,6 +5,7 @@ namespace MailPoet\Test\Twig;
 use AspectMock\Test as Mock;
 use Carbon\Carbon;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Twig\Functions;
 
 class FunctionsTest extends \MailPoetTest {
@@ -23,19 +24,20 @@ class FunctionsTest extends \MailPoetTest {
   }
 
   function testInstalledInLastTwoWeeksFunction() {
+    $settings = new SettingsController();
     $template = array('template' => '{% if mailpoet_installed_in_last_two_weeks() %}last_two_weeks{% endif %}');
     $twig = new \Twig_Environment(new \Twig_Loader_Array($template));
     $twig->addExtension(new Functions());
 
-    Setting::setValue('installed_at', Carbon::now());
+    $settings->set('installed_at', Carbon::now());
     $result = $twig->render('template');
     expect($result)->equals('last_two_weeks');
 
-    Setting::setValue('installed_at', Carbon::now()->subDays(13));
+    $settings->set('installed_at', Carbon::now()->subDays(13));
     $result = $twig->render('template');
     expect($result)->equals('last_two_weeks');
 
-    Setting::setValue('installed_at', Carbon::now()->subDays(14));
+    $settings->set('installed_at', Carbon::now()->subDays(14));
     $result = $twig->render('template');
     expect($result)->isEmpty();
   }

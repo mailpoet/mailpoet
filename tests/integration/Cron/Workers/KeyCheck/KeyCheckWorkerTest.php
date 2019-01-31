@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCh
 
 class KeyCheckWorkerTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->worker = new MockKeyCheckWorker();
   }
 

@@ -19,6 +19,7 @@ class PagesTest extends \MailPoetTest {
   private $test_data = [];
 
   function _before() {
+    parent::_before();
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate(Fixtures::get('subscriber_template'));
     $this->subscriber->status = Subscriber::STATUS_UNCONFIRMED;

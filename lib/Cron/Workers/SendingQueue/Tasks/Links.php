@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\Router\Router;
 use MailPoet\Models\Setting;
@@ -39,8 +40,8 @@ class Links {
 
   static function getUnsubscribeUrl($queue, $subscriber_id) {
     $subscriber = Subscriber::where('id', $subscriber_id)->findOne();
-    
-    if((boolean)Setting::getValue('tracking.enabled')) {
+    $settings = new SettingsController();
+    if((boolean)$settings->get('tracking.enabled')) {
       $link_hash = NewsletterLinkModel::where('queue_id', $queue->id)
         ->where('url', '[link:subscription_unsubscribe_url]')
         ->findOne()

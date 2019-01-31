@@ -3,9 +3,15 @@ namespace MailPoet\Test\Mailer;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 class MailerTest extends \MailPoetTest {
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
+    parent::_before();
     $this->available_mailer_methods = array(
       array(
         'method' => 'AmazonSES',
@@ -57,11 +63,12 @@ class MailerTest extends \MailPoetTest {
         'text' => 'TEXT body'
       )
     );
+    $this->settings = new SettingsController();
   }
 
   function testItRequiresMailerMethod() {
     // reset mta settings so that we have no default mailer
-    Setting::setValue('mta', null);
+    $this->settings->set('mta', null);
     try {
       $mailer = new Mailer();
       $this->fail('Mailer did not throw an exception');
@@ -117,7 +124,7 @@ class MailerTest extends \MailPoetTest {
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
     $return_path = $mailer->getReturnPathAddress('bounce@test.com');
     expect($return_path)->equals('bounce@test.com');
-    Setting::setValue('bounce', array('address' => 'settngs_bounce@test.com'));
+    $this->settings->set('bounce', array('address' => 'settngs_bounce@test.com'));
     $return_path = $mailer->getReturnPathAddress($return_path = false);
     expect($return_path)->equals('settngs_bounce@test.com');
   }
@@ -176,5 +183,9 @@ class MailerTest extends \MailPoetTest {
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
     $result = $mailer->send($this->newsletter, $this->subscriber);
     expect($result['response'])->true();
+  }
+
+  function _after() {
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

@@ -7,6 +7,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 
 class AmazonSESTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->settings = array(
       'method' => 'AmazonSES',
       'access_key' => getenv('WP_TEST_MAILER_AMAZON_ACCESS') ?

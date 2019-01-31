@@ -18,6 +18,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 
 class NewsletterTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->newsletter = Newsletter::createOrUpdate(array(
       'subject' => 'My Standard Newsletter',
       'preheader' => 'Pre Header',

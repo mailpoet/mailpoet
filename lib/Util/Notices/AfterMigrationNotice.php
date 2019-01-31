@@ -2,23 +2,30 @@
 
 namespace MailPoet\Util\Notices;
 
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 
 class AfterMigrationNotice {
 
   const OPTION_NAME = 'mailpoet_display_after_migration_notice';
 
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct() {
+    $this->settings = new SettingsController();
+  }
+
   function enable() {
-    Setting::setValue(self::OPTION_NAME, true);
+    $this->settings->set(self::OPTION_NAME, true);
   }
 
   function disable() {
-    Setting::setValue(self::OPTION_NAME, false);
+    $this->settings->set(self::OPTION_NAME, false);
   }
 
   function init($should_display) {
-    if($should_display && Setting::getValue(self::OPTION_NAME, false)) {
+    if($should_display && $this->settings->get(self::OPTION_NAME, false)) {
       return $this->display();
     }
   }

@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 use Carbon\Carbon;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -935,9 +936,10 @@ class Newsletter extends Model {
 
   static function createOrUpdate($data = array()) {
     return parent::_createOrUpdate($data, false, function($data) {
+      $settings = new SettingsController();
       // set default sender based on settings
       if(empty($data['sender'])) {
-        $sender = Setting::getValue('sender', array());
+        $sender = $settings->get('sender', []);
         $data['sender_name'] = (
           !empty($sender['name'])
           ? $sender['name']
@@ -952,7 +954,7 @@ class Newsletter extends Model {
 
       // set default reply_to based on settings
       if(empty($data['reply_to'])) {
-        $reply_to = Setting::getValue('reply_to', array());
+        $reply_to = $settings->get('reply_to', array());
         $data['reply_to_name'] = (
           !empty($reply_to['name'])
           ? $reply_to['name']

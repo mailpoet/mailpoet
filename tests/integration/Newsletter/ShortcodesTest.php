@@ -10,6 +10,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
@@ -18,10 +19,14 @@ class ShortcodesTest extends \MailPoetTest {
   public $rendered_newsletter;
   public $newsletter;
   public $subscriber;
+  /** @var SettingsController */
+  private $settings;
 
   function _before() {
+    parent::_before();
     $populator = new Populator();
     $populator->up();
+    $this->settings = new SettingsController();
     $this->WP_user = $this->_createWPUser();
     $this->WP_post = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();
@@ -30,7 +35,7 @@ class ShortcodesTest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    Setting::setValue('tracking.enabled', false);
+    $this->settings->set('tracking.enabled', false);
   }
 
   function testItCanExtractShortcodes() {
@@ -252,7 +257,7 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodes_object->process(array($shortcode));
     expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
-    Setting::setValue('tracking.enabled', true);
+    $this->settings->set('tracking.enabled', true);
     $initial_shortcodes = array(
       '[link:subscription_unsubscribe_url]',
       '[link:subscription_manage_url]',
@@ -308,7 +313,7 @@ class ShortcodesTest extends \MailPoetTest {
     }, 10, 4);
     $result = $shortcodes_object->process(array($shortcode));
     expect($result[0])->equals('success');
-    Setting::setValue('tracking.enabled', true);
+    $this->settings->set('tracking.enabled', true);
     // tracking function only works during sending, so queue object must not be false
     $shortcodes_object->queue = true;
     $result = $shortcodes_object->process(array($shortcode));

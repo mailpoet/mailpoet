@@ -8,6 +8,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
 
@@ -15,14 +16,18 @@ class MailerTest extends \MailPoetTest {
   /** @var MailerTask */
   public $mailer_task;
   public $sender;
+  /** @var SettingsController */
+  private $settings;
 
   function _before() {
+    parent::_before();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
     $populator = new Populator();
     $populator->up();
     $this->mailer_task = new MailerTask();
-    $this->sender = Setting::getValue('sender');
+    $this->settings = new SettingsController();
+    $this->sender = $this->settings->get('sender');
   }
 
   function testConfiguresMailerWhenItConstructs() {
@@ -67,7 +72,7 @@ class MailerTest extends \MailPoetTest {
 
   function testItGetsProcessingMethod() {
     // when using MailPoet method, newsletters should be processed in bulk
-    Setting::setValue(
+    $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'MailPoet',
@@ -78,7 +83,7 @@ class MailerTest extends \MailPoetTest {
     expect($mailer_task->getProcessingMethod())->equals('bulk');
 
     // when using other methods, newsletters should be processed individually
-    Setting::setValue(
+    $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'PHPMail'
@@ -100,7 +105,7 @@ class MailerTest extends \MailPoetTest {
 
   function testItCanSend() {
     $php_mail_class = 'MailPoet\Mailer\Methods\PHPMail';
-    Setting::setValue(
+    $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'PHPMail'

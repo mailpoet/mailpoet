@@ -7,10 +7,13 @@ use MailPoet\API\JSON\v1\Setup;
 use MailPoet\WP\Functions as WPFunctions;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\Settings\SettingsController;
 
 class SetupTest extends \MailPoetTest {
   function _before() {
-    Setting::setValue('signup_confirmation.enabled', false);
+    parent::_before();
+    $settings = new SettingsController();
+    $settings->set('signup_confirmation.enabled', false);
   }
 
   function testItCanReinstall() {
@@ -22,7 +25,8 @@ class SetupTest extends \MailPoetTest {
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $signup_confirmation = Setting::getValue('signup_confirmation.enabled');
+    $settings = new SettingsController();
+    $signup_confirmation = $settings->fetch('signup_confirmation.enabled');
     expect($signup_confirmation)->true();
 
     $hook_name = 'mailpoet_setup_reset';

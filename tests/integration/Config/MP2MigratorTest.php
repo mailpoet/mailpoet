@@ -10,10 +10,16 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\Form;
 use Helper\Database;
+use MailPoet\Settings\SettingsController;
 
 class MP2MigratorTest extends \MailPoetTest {
 
+  /** @var SettingsController */
+  private $settings;
+
   public function _before() {
+    parent::_before();
+    $this->settings = new SettingsController();
     $this->MP2Migrator = new MP2Migrator();
   }
 
@@ -72,11 +78,11 @@ class MP2MigratorTest extends \MailPoetTest {
     $this->invokeMethod($this->MP2Migrator, 'resetMigrationCounters');
 
     // Check if the last imported user ID is 0
-    $lastImportedUserID = Setting::getValue('last_imported_user_id', 0);
+    $lastImportedUserID = $this->settings->get('last_imported_user_id', 0);
     expect($lastImportedUserID)->equals(0);
 
     // Check if the last imported list ID is 0
-    $lastImportedListID = Setting::getValue('last_imported_list_id', 0);
+    $lastImportedListID = $this->settings->get('last_imported_list_id', 0);
     expect($lastImportedListID)->equals(0);
   }
 
@@ -87,7 +93,7 @@ class MP2MigratorTest extends \MailPoetTest {
   public function testStopImport() {
     delete_option('mailpoet_stopImport');
     $this->MP2Migrator->stopImport();
-    $value = Setting::getValue('import_stopped', false);
+    $value = $this->settings->get('import_stopped', false);
     $stopImport = !empty($value);
     expect($stopImport)->true();
   }
@@ -621,41 +627,41 @@ class MP2MigratorTest extends \MailPoetTest {
 
     $this->invokeMethod($this->MP2Migrator, 'importSettings');
 
-    $sender = Setting::getValue('sender');
+    $sender = $this->settings->get('sender');
     expect($sender['name'])->equals('Sender');
     expect($sender['address'])->equals('sender@email.com');
 
-    $reply_to = Setting::getValue('reply_to');
+    $reply_to = $this->settings->get('reply_to');
     expect($reply_to['name'])->equals('Reply');
     expect($reply_to['address'])->equals('reply@email.com');
 
-    $bounce = Setting::getValue('bounce');
+    $bounce = $this->settings->get('bounce');
     expect($bounce['address'])->equals('bounce@email.com');
 
-    $notification = Setting::getValue('notification');
+    $notification = $this->settings->get('notification');
     expect($notification['address'])->equals('notification@email.com');
 
-    $subscribe = Setting::getValue('subscribe');
+    $subscribe = $this->settings->get('subscribe');
     expect($subscribe['on_comment']['enabled'])->equals(1);
     expect($subscribe['on_comment']['label'])->equals('Oui, ajoutez moi à votre liste de diffusion !!!');
     expect($subscribe['on_register']['enabled'])->equals(1);
     expect($subscribe['on_register']['label'])->equals('Oui, ajoutez moi à votre liste de diffusion 2');
 
-    $subscription = Setting::getValue('subscription');
+    $subscription = $this->settings->get('subscription');
     expect($subscription['pages']['unsubscribe'])->equals(2);
     expect($subscription['pages']['confirmation'])->equals(4);
     expect($subscription['pages']['manage'])->equals(4);
 
-    $signup_confirmation = Setting::getValue('signup_confirmation');
+    $signup_confirmation = $this->settings->get('signup_confirmation');
     expect($signup_confirmation['enabled'])->equals(1);
 
-    $analytics = Setting::getValue('analytics');
+    $analytics = $this->settings->get('analytics');
     expect($analytics['enabled'])->equals(1);
 
-    $mta_group = Setting::getValue('mta_group');
+    $mta_group = $this->settings->get('mta_group');
     expect($mta_group)->equals('smtp');
 
-    $mta = Setting::getValue('mta');
+    $mta = $this->settings->get('mta');
     expect($mta['method'])->equals('SMTP');
     expect($mta['frequency']['emails'])->equals(25);
     expect($mta['frequency']['interval'])->equals(5);

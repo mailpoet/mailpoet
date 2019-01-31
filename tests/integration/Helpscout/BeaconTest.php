@@ -2,13 +2,14 @@
 namespace MailPoet\Test\Helpscout;
 
 use MailPoet\Helpscout\Beacon;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Settings\SettingsController;
 
 class BeaconTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     // create 4 users (1 confirmed, 1 subscribed, 1 unsubscribed, 1 bounced)
     Subscriber::createOrUpdate(array(
       'email' => 'user1@mailpoet.com',
@@ -28,6 +29,7 @@ class BeaconTest extends \MailPoetTest {
     ));
 
     $this->beacon_data = Beacon::getData();
+    $this->settings = new SettingsController();
   }
 
   function testItReturnsPhpVersion() {
@@ -95,18 +97,18 @@ class BeaconTest extends \MailPoetTest {
   }
 
   function testItReturnsSendingMethodDetails() {
-    $mta = Setting::getValue('mta');
+    $mta = $this->settings->get('mta');
     expect($this->beacon_data['Sending Method'])->equals($mta['method']);
     expect($this->beacon_data['Sending Frequency'])->contains($mta['frequency']['emails'].' emails');
     expect($this->beacon_data['Sending Frequency'])->contains($mta['frequency']['interval'].' minutes');
   }
 
   function testItReturnsSomeSettings() {
-    expect($this->beacon_data['Task Scheduler method'])->equals(Setting::getValue('cron_trigger.method'));
-    expect($this->beacon_data['Default FROM address'])->equals(Setting::getValue('sender.address'));
-    expect($this->beacon_data['Default Reply-To address'])->equals(Setting::getValue('reply_to.address'));
-    expect($this->beacon_data['Bounce Email Address'])->equals(Setting::getValue('bounce.address'));
-    expect($this->beacon_data['Plugin installed at'])->equals(Setting::getValue('installed_at'));
+    expect($this->beacon_data['Task Scheduler method'])->equals($this->settings->get('cron_trigger.method'));
+    expect($this->beacon_data['Default FROM address'])->equals($this->settings->get('sender.address'));
+    expect($this->beacon_data['Default Reply-To address'])->equals($this->settings->get('reply_to.address'));
+    expect($this->beacon_data['Bounce Email Address'])->equals($this->settings->get('bounce.address'));
+    expect($this->beacon_data['Plugin installed at'])->equals($this->settings->get('installed_at'));
   }
 
   function testItReturnsTotalNumberOfSubscribers() {
@@ -145,7 +147,7 @@ class BeaconTest extends \MailPoetTest {
 
   function testItReturnsPremiumKey() {
     expect($this->beacon_data['MailPoet Premium/MSS key'])->equals(
-      Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME) ?: Setting::getValue(Bridge::API_KEY_SETTING_NAME)
+      $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $this->settings->get(Bridge::API_KEY_SETTING_NAME)
     );
   }
 }

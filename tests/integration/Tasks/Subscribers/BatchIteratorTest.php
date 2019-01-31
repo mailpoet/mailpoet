@@ -6,6 +6,7 @@ use MailPoet\Tasks\Subscribers\BatchIterator;
 
 class BatchIteratorTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     $this->task_id = 123; // random ID
     $this->batch_size = 2;
     $this->subscriber_count = 10;

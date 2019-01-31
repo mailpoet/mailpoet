@@ -14,13 +14,18 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Settings\SettingsController;
 
 class SubscriberTest extends \MailPoetTest {
 
   /** @var array */
   private $test_data;
 
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
+    parent::_before();
     $this->test_data = array(
       'first_name' => 'John',
       'last_name' => 'Mailer',
@@ -29,7 +34,8 @@ class SubscriberTest extends \MailPoetTest {
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate($this->test_data);
     $this->saved = $this->subscriber->save();
-    Setting::setValue('sender', array(
+    $this->settings = new SettingsController();
+    $this->settings->set('sender', array(
       'name' => 'John Doe',
       'address' => 'john.doe@example.com'
     ));
@@ -481,7 +487,7 @@ class SubscriberTest extends \MailPoetTest {
       expect($newsletter_option->getErrors())->false();
     }
 
-    Setting::setValue('signup_confirmation.enabled', false);
+    $this->settings->set('signup_confirmation.enabled', false);
     $subscriber = Subscriber::subscribe($this->test_data, array($segment->id()));
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(1);
@@ -526,9 +532,7 @@ class SubscriberTest extends \MailPoetTest {
       expect($newsletter_option->getErrors())->false();
     }
 
-    $signup_confirmation_enabled = (bool)Setting::setValue(
-      'signup_confirmation.enabled', true
-    );
+    $this->settings->set('signup_confirmation.enabled', true);
     $subscriber = Subscriber::subscribe($this->test_data, array($segment->id()));
     expect($subscriber->id() > 0)->equals(true);
     expect($subscriber->segments()->count())->equals(1);
@@ -577,8 +581,8 @@ class SubscriberTest extends \MailPoetTest {
   }
 
   function testItOverwritesSubscriberDataWhenConfirmationIsDisabled() {
-    $original_setting_value = Setting::getValue('signup_confirmation.enabled');
-    Setting::setValue('signup_confirmation.enabled', false);
+    $original_setting_value = $this->settings->get('signup_confirmation.enabled');
+    $this->settings->set('signup_confirmation.enabled', false);
 
     $segment = Segment::create();
     $segment->hydrate(array('name' => 'List #1'));
@@ -620,12 +624,12 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->first_name)->equals($data2['first_name']);
     expect($subscriber->last_name)->equals($data2['last_name']);
 
-    Setting::setValue('signup_confirmation.enabled', $original_setting_value);
+    $this->settings->set('signup_confirmation.enabled', $original_setting_value);
   }
 
   function testItStoresUnconfirmedSubscriberDataWhenConfirmationIsEnabled() {
-    $original_setting_value = Setting::getValue('signup_confirmation.enabled');
-    Setting::setValue('signup_confirmation.enabled', true);
+    $original_setting_value = $this->settings->get('signup_confirmation.enabled');
+    $this->settings->set('signup_confirmation.enabled', true);
 
     $segment = Segment::create();
     $segment->hydrate(array('name' => 'List #1'));
@@ -689,7 +693,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber = Subscriber::where('email', $data2['email'])->findOne();
     expect($subscriber->unconfirmed_data)->isEmpty();
 
-    Setting::setValue('signup_confirmation.enabled', $original_setting_value);
+    $this->settings->set('signup_confirmation.enabled', $original_setting_value);
   }
 
   function testItCanBeUpdatedByEmail() {
@@ -1070,7 +1074,7 @@ class SubscriberTest extends \MailPoetTest {
 
   function testItSetsDefaultStatusDependingOnSingupConfirmationOption() {
     // when signup confirmation is disabled, status should be 'subscribed'
-    Setting::setValue('signup_confirmation.enabled', false);
+    $this->settings->set('signup_confirmation.enabled', false);
     expect(Subscriber::setRequiredFieldsDefaultValues(array()))->equals(
       array(
         'first_name' => '',
@@ -1079,7 +1083,7 @@ class SubscriberTest extends \MailPoetTest {
       )
     );
 
-    Setting::setValue('signup_confirmation.enabled', true);
+    $this->settings->set('signup_confirmation.enabled', true);
     // when signup confirmation is enabled, status should be 'unconfirmed'
     expect(Subscriber::setRequiredFieldsDefaultValues(array()))->equals(
       array(
@@ -1090,7 +1094,7 @@ class SubscriberTest extends \MailPoetTest {
     );
 
     // when status is specified, it should not change regardless of signup confirmation option
-    Setting::setValue('signup_confirmation.enabled', true);
+    $this->settings->set('signup_confirmation.enabled', true);
     expect(Subscriber::setRequiredFieldsDefaultValues(array('status' => Subscriber::STATUS_SUBSCRIBED)))->equals(
       array(
         'first_name' => '',

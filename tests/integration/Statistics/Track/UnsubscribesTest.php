@@ -11,6 +11,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 
 class UnsubscribesTest extends \MailPoetTest {
   function _before() {
+    parent::_before();
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->type = 'type';
