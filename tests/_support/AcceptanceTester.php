@@ -22,13 +22,13 @@ require_once __DIR__ . '/../DataFactories/Form.php';
 class AcceptanceTester extends \Codeception\Actor {
   use _generated\AcceptanceTesterActions {
     switchToNextTab as _switchToNextTab;
-    waitForElement            as _waitForElement;
-    waitForElementChange      as _waitForElementChange;
-    waitForElementClickable   as _waitForElementClickable;
-    waitForElementNotVisible  as _waitForElementNotVisible;
-    waitForElementVisible     as _waitForElementVisible;
-    waitForJS                 as _waitForJS;
-    waitForText               as _waitForText;
+    waitForElement as _waitForElement;
+    waitForElementChange as _waitForElementChange;
+    waitForElementClickable as _waitForElementClickable;
+    waitForElementNotVisible as _waitForElementNotVisible;
+    waitForElementVisible as _waitForElementVisible;
+    waitForJS as _waitForJS;
+    waitForText as _waitForText;
   }
 
   const WP_URL = 'http://wordpress';
