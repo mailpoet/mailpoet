@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Subscribers\ImportExport\Export;
 
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -85,9 +85,9 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     $entity->custom_field_id = 1;
     $entity->value = $this->subscribers_data[1][1];
     $entity->save();
-
-    Hooks::removeAllFilters('mailpoet_get_segment_filters');
-    Hooks::addAction(
+    $wp = new WPFunctions;
+    $wp->removeAllFilters('mailpoet_get_segment_filters');
+    $wp->addAction(
       'mailpoet_get_segment_filters',
       function($segment_id) {
         if($segment_id == 1) {

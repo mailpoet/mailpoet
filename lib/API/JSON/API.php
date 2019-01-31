@@ -6,7 +6,7 @@ use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -26,10 +26,14 @@ class API {
 
   /** @var AccessControl */
   private $access_control;
+  
+  /** @var WPFunctions */
+  private $wp;
 
   const CURRENT_VERSION = 'v1';
 
-  function __construct(ContainerInterface $container, AccessControl $access_control) {
+  function __construct(ContainerInterface $container, AccessControl $access_control, WPFunctions $wp) {
+    $this->wp = $wp;
     $this->container = $container;
     $this->access_control = $access_control;
     foreach($this->_available_api_versions as $available_api_version) {
@@ -61,7 +65,7 @@ class API {
   }
 
   function setupAjax() {
-    Hooks::doAction('mailpoet_api_setup', array($this));
+    $this->wp->doAction('mailpoet_api_setup', array($this));
     $this->setRequestData($_POST);
 
     $ignoreToken = (

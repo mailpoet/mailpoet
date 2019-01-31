@@ -9,12 +9,13 @@ use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
 class Widget extends \WP_Widget {
   private $renderer;
+  private $wp;
 
   const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit';
 
@@ -24,7 +25,7 @@ class Widget extends \WP_Widget {
       __('MailPoet 3 Form', 'mailpoet'),
       array('description' => __('Add a newsletter subscription form', 'mailpoet'))
     );
-
+    $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
     if(!is_admin()) {
       $this->setupIframe();
@@ -255,7 +256,7 @@ EOL;
       $instance = $args;
     }
 
-    $title = Hooks::applyFilters(
+    $title = $this->wp->applyFilters(
       'widget_title',
       !empty($instance['title']) ? $instance['title'] : '',
       $instance,
@@ -321,7 +322,7 @@ EOL;
       try {
         $output = $renderer->render('form/widget.html', $data);
         $output = do_shortcode($output);
-        $output = Hooks::applyFilters('mailpoet_form_widget_post_process', $output);
+        $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output);
       } catch(\Exception $e) {
         $output = $e->getMessage();
       }

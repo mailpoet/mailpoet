@@ -15,7 +15,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\DI\ContainerConfigurator;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 // required to be able to use wp_delete_user()
 require_once(ABSPATH . 'wp-admin/includes/user.php');
@@ -41,12 +41,12 @@ class APITest extends \MailPoetTest {
     $this->container->autowire(APITestNamespacedEndpointStubV1::class)->setPublic(true);
     $this->container->autowire(APITestNamespacedEndpointStubV2::class)->setPublic(true);
     $this->container->compile();
-    $this->api = new \MailPoet\API\JSON\API($this->container, $this->container->get(AccessControl::class));
+    $this->api = new \MailPoet\API\JSON\API($this->container, $this->container->get(AccessControl::class), new WPFunctions);
   }
 
   function testItCallsAPISetupAction() {
     $called = false;
-    Hooks::addAction(
+    (new WPFunctions)->addAction(
       'mailpoet_api_setup',
       function($api) use (&$called) {
         $called = true;
@@ -57,6 +57,7 @@ class APITest extends \MailPoetTest {
       $this->api,
       'setupAjax',
       array(
+        'wp' => new WPFunctions,
         'processRoute' => Stub::makeEmpty(new SuccessResponse)
       )
     );
@@ -195,7 +196,7 @@ class APITest extends \MailPoetTest {
       new AccessControl(),
       array('validatePermission' => false)
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data);
     $response = $api->processRoute();
@@ -216,7 +217,7 @@ class APITest extends \MailPoetTest {
         })
       )
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->false();
 
     $access_control = Stub::make(
@@ -228,7 +229,7 @@ class APITest extends \MailPoetTest {
         })
       )
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->true();
   }
 
@@ -249,7 +250,7 @@ class APITest extends \MailPoetTest {
         })
       )
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->false();
 
     $access_control = Stub::make(
@@ -261,7 +262,7 @@ class APITest extends \MailPoetTest {
         })
       )
     );
-    $api = new JSONAPI($this->container, $access_control);
+    $api = new JSONAPI($this->container, $access_control, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->true();
   }
 
@@ -285,7 +286,6 @@ class APITest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHooksHelper::releaseAllHooks();
     wp_delete_user($this->wp_user_id);
   }
 }

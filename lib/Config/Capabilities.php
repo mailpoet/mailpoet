@@ -2,17 +2,22 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Capabilities {
   const MEMBERS_CAP_GROUP_NAME = 'mailpoet';
 
   private $renderer = null;
+  private $wp;
 
-  function __construct($renderer = null) {
+  function __construct($renderer = null, WPFunctions $wp = null) {
     if($renderer !== null) {
       $this->renderer = $renderer;
     }
+    if($wp == null) {
+      $wp = new WPFunctions;
+    }
+    $this->wp = $wp;
   }
 
   function init() {
@@ -48,9 +53,9 @@ class Capabilities {
   }
 
   function setupMembersCapabilities() {
-    WPHooks::addAction('admin_enqueue_scripts', array($this, 'enqueueMembersStyles'));
-    WPHooks::addAction('members_register_cap_groups', array($this, 'registerMembersCapGroup'));
-    WPHooks::addAction('members_register_caps', array($this, 'registerMembersCapabilities'));
+    $this->wp->addAction('admin_enqueue_scripts', array($this, 'enqueueMembersStyles'));
+    $this->wp->addAction('members_register_cap_groups', array($this, 'registerMembersCapGroup'));
+    $this->wp->addAction('members_register_caps', array($this, 'registerMembersCapabilities'));
   }
 
   function enqueueMembersStyles() {

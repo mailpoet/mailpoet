@@ -4,9 +4,15 @@ namespace MailPoet\Config;
 
 use MailPoet\Models\Setting;
 use MailPoet\Util\Url;
-use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Changelog {
+  private $wp;
+  
+  function __construct() {
+    $this->wp = new WPFunctions;
+  }
+
   function init() {
     $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
 
@@ -45,7 +51,7 @@ class Changelog {
           // Migration from MP2
           $redirect_url = admin_url('admin.php?page=mailpoet-migration');
         } else {
-          $skip_wizard = WPHooks::applyFilters('mailpoet_skip_welcome_wizard', false);
+          $skip_wizard = $this->wp->applyFilters('mailpoet_skip_welcome_wizard', false);
           $redirect_url = $skip_wizard ? null : admin_url('admin.php?page=mailpoet-welcome-wizard');
 
           // ensure there was no MP2 migration (migration resets $version so it must be checked)

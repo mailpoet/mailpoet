@@ -20,7 +20,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\WP\Hooks;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
@@ -63,13 +62,13 @@ class Newsletters extends APIEndpoint {
         ->withOptions()
         ->withSendingQueue()
         ->asArray();
-      $newsletter = Hooks::applyFilters('mailpoet_api_newsletters_get_after', $newsletter);
+      $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter);
       return $this->successResponse($newsletter);
     }
   }
 
   function save($data = array()) {
-    $data = Hooks::applyFilters('mailpoet_api_newsletters_save_before', $data);
+    $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
 
     $segments = array();
     if(isset($data['segments'])) {
@@ -161,7 +160,7 @@ class Newsletters extends APIEndpoint {
       }
     }
 
-    Hooks::doAction('mailpoet_api_newsletters_save_after', $newsletter);
+    $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletter);
 
     $preview_url = NewsletterUrl::getViewInBrowserUrl(
       NewsletterUrl::TYPE_LISTING_EDITOR,
@@ -281,7 +280,7 @@ class Newsletters extends APIEndpoint {
       if(!empty($errors)) {
         return $this->errorResponse($errors);
       } else {
-        Hooks::doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
+        $this->wp->doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
         return $this->successResponse(
           Newsletter::findOne($duplicate->id)->asArray(),
           array('count' => 1)
@@ -438,7 +437,7 @@ class Newsletters extends APIEndpoint {
         $queue
       );
 
-      $data[] = Hooks::applyFilters('mailpoet_api_newsletters_listing_item', $newsletter->asArray());
+      $data[] = $this->wp->applyFilters('mailpoet_api_newsletters_listing_item', $newsletter->asArray());
     }
 
     return $this->successResponse($data, array(

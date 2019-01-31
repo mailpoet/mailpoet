@@ -7,9 +7,15 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Subscription\Pages;
-use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
+  private $wp;
+  
+  function __construct() {
+    $this->wp = new WPFunctions;
+  }
+
   function init() {
     // form widget shortcode
     add_shortcode('mailpoet_form', array($this, 'formWidget'));
@@ -27,10 +33,10 @@ class Shortcodes {
       $this, 'getArchive'
     ));
 
-    WPHooks::addFilter('mailpoet_archive_date', array(
+    $this->wp->addFilter('mailpoet_archive_date', array(
       $this, 'renderArchiveDate'
     ), 2);
-    WPHooks::addFilter('mailpoet_archive_subject', array(
+    $this->wp->addFilter('mailpoet_archive_subject', array(
       $this, 'renderArchiveSubject'
     ), 2, 3);
 
@@ -86,12 +92,12 @@ class Shortcodes {
     $subscriber = Subscriber::getCurrentWPUser();
 
     if(empty($newsletters)) {
-      return WPHooks::applyFilters(
+      return $this->wp->applyFilters(
         'mailpoet_archive_no_newsletters',
         __('Oops! There are no newsletters to display.', 'mailpoet')
       );
     } else {
-      $title = WPHooks::applyFilters('mailpoet_archive_title', '');
+      $title = $this->wp->applyFilters('mailpoet_archive_title', '');
       if(!empty($title)) {
         $html .= '<h3 class="mailpoet_archive_title">'.$title.'</h3>';
       }
@@ -100,10 +106,10 @@ class Shortcodes {
         $queue = $newsletter->queue()->findOne();
         $html .= '<li>'.
           '<span class="mailpoet_archive_date">'.
-            WPHooks::applyFilters('mailpoet_archive_date', $newsletter).
+            $this->wp->applyFilters('mailpoet_archive_date', $newsletter).
           '</span>
           <span class="mailpoet_archive_subject">'.
-            WPHooks::applyFilters('mailpoet_archive_subject', $newsletter, $subscriber, $queue).
+            $this->wp->applyFilters('mailpoet_archive_subject', $newsletter, $subscriber, $queue).
           '</span>
         </li>';
       }

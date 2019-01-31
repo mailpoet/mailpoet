@@ -5,7 +5,7 @@ namespace MailPoet\Test\Form;
 use MailPoet\Form\Widget;
 use MailPoet\Models\Form;
 use MailPoet\Util\pQuery\pQuery;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class WidgetTest extends \MailPoetTest {
   function testItAllowsModifyingRenderedFormWidgetViaHook() {
@@ -34,7 +34,7 @@ class WidgetTest extends \MailPoetTest {
     expect($DOM->query('form')->attr('target'))->equals('_self');
 
     // form target is modified to _top via hook
-    Hooks::addFilter(
+    (new WPFunctions)->addFilter(
       'mailpoet_form_widget_post_process',
       function($form) {
         $form = str_replace('target="_self"', 'target="_top"', $form);

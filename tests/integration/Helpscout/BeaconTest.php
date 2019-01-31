@@ -5,7 +5,7 @@ use MailPoet\Helpscout\Beacon;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class BeaconTest extends \MailPoetTest {
   function _before() {
@@ -130,10 +130,11 @@ class BeaconTest extends \MailPoetTest {
     $filter = function($url) {
       return str_replace(home_url(), 'http://custom_url/', $url);
     };
-    Hooks::addFilter('mailpoet_cron_request_url', $filter);
+    $wp = new WPFunctions;
+    $wp->addFilter('mailpoet_cron_request_url', $filter);
     $beacon_data = Beacon::getData();
     expect($beacon_data['Cron ping URL'])->regExp('!^http:\/\/custom_url\/!');
-    Hooks::removeFilter('mailpoet_cron_request_url', $filter);
+    $wp->removeFilter('mailpoet_cron_request_url', $filter);
   }
 
   function testItReturnsPremiumVersion() {

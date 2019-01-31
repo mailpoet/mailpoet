@@ -7,7 +7,6 @@ use AspectMock\Test as Mock;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Models\Setting;
-use MailPoet\WP\Hooks as WPHooks;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelperTest extends \MailPoetTest {
@@ -278,16 +277,16 @@ class CronHelperTest extends \MailPoetTest {
       return $request_args;
     };
     $wp_remote_get_args = [];
-    $wp = Stub::make(new WPFunctions(), [
+    $wp = Stub::make(new WPFunctions, [
       'wpRemotePost' => function() use (&$wp_remote_get_args) {
         return $wp_remote_get_args = func_get_args();
       }
     ]);
-    WPHooks::addFilter('mailpoet_cron_request_args', $filter);
+    $wp->addFilter('mailpoet_cron_request_args', $filter);
     CronHelper::queryCronUrl('test', $wp);
     expect($wp_remote_get_args[1])->equals($request_args);
 
-    WPHooks::removeFilter('mailpoet_cron_request_args', $filter);
+    $wp->removeFilter('mailpoet_cron_request_args', $filter);
   }
 
   function testItReturnsErrorMessageAsPingResponseWhenCronUrlCannotBeAccessed() {

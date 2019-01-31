@@ -4,7 +4,7 @@ namespace MailPoet\Subscribers\ImportExport\Export;
 
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * Gets batches of subscribers from dynamic segments.
@@ -12,6 +12,16 @@ use MailPoet\WP\Hooks;
 class DynamicSubscribersGetter extends SubscribersGetter {
 
   protected $segment_index = 0;
+
+  private $wp;
+
+  function __construct($segments_ids, $batch_size, WPFunctions $wp = null) {
+    parent::__construct($segments_ids, $batch_size);
+    if($wp == null) {
+      $wp = new WPFunctions;
+    }
+    $this->wp = $wp;
+  }
 
   public function reset() {
     parent::reset();
@@ -21,7 +31,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
   protected function filter($subscribers) {
     $segment_id = $this->segments_ids[$this->segment_index];
 
-    $filters = Hooks::applyFilters(
+    $filters = $this->wp->applyFilters(
       'mailpoet_get_segment_filters', 
       $segment_id
     );

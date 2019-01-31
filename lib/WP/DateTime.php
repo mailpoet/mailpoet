@@ -12,18 +12,21 @@ class DateTime {
 
   private $wp;
 
-  function __construct() {
-    $this->wp = new WPFunctions();
+  function __construct(WPFunctions $wp = null) {
+    if($wp === null) {
+      $wp = new WPFunctions();
+    }
+    $this->wp = $wp;
   }
 
   function getTimeFormat() {
-    $time_format = get_option('time_format');
+    $time_format = $this->wp->getOption('time_format');
     if (empty($time_format)) $time_format = self::DEFAULT_TIME_FORMAT;
     return $time_format;
   }
 
   function getDateFormat() {
-    $date_format = get_option('date_format');
+    $date_format = $this->wp->getOption('date_format');
     if (empty($date_format)) $date_format = self::DEFAULT_DATE_FORMAT;
     return $date_format;
   }

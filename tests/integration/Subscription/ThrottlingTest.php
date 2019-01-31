@@ -4,7 +4,7 @@ namespace MailPoet\Test\Subscription;
 use Carbon\Carbon;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Subscription\Throttling;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ThrottlingTest extends \MailPoetTest {
   function testItProgressivelyThrottlesSubscriptions() {
@@ -22,10 +22,11 @@ class ThrottlingTest extends \MailPoetTest {
 
   function testItDoesNotThrottleIfDisabledByAHook() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-    Hooks::addFilter('mailpoet_subscription_limit_enabled', '__return_false');
+    $wp = new WPFunctions;
+    $wp->addFilter('mailpoet_subscription_limit_enabled', '__return_false');
     expect(Throttling::throttle())->equals(false);
     expect(Throttling::throttle())->equals(false);
-    Hooks::removeFilter('mailpoet_subscription_limit_enabled', '__return_false');
+    $wp->removeFilter('mailpoet_subscription_limit_enabled', '__return_false');
     expect(Throttling::throttle())->greaterThan(0);
   }
 

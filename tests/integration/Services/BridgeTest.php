@@ -8,7 +8,6 @@ use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
-use MailPoet\WP\Hooks as WPHooks;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once('BridgeTestMockAPI.php');
@@ -273,10 +272,11 @@ class BridgeTest extends \MailPoetTest {
     $filter = function() use ($custom_request_value) {
       return $custom_request_value;
     };
-    WPHooks::addFilter('mailpoet_bridge_api_request_timeout', $filter);
+    $wp = new WPFunctions;
+    $wp->addFilter('mailpoet_bridge_api_request_timeout', $filter);
     $api->sendMessages('test');
     expect($wp_remote_post_args[1]['timeout'])->equals($custom_request_value);
-    WPHooks::removeFilter('mailpoet_bridge_api_request_timeout', $filter);
+    $wp->removeFilter('mailpoet_bridge_api_request_timeout', $filter);
   }
 
   private function setMailPoetSendingMethod() {

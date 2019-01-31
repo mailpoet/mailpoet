@@ -1,10 +1,12 @@
 <?php
 namespace MailPoet\Test\API\JSON\v1;
 
+use Codeception\Stub;
+use MailPoet\Models\Setting;
+use MailPoet\API\JSON\v1\Setup;
+use MailPoet\WP\Functions as WPFunctions;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
-use MailPoet\API\JSON\v1\Setup;
-use MailPoet\Models\Setting;
 
 class SetupTest extends \MailPoetTest {
   function _before() {
@@ -12,9 +14,11 @@ class SetupTest extends \MailPoetTest {
   }
 
   function testItCanReinstall() {
-    WPHooksHelper::interceptDoAction();
+    $wp = Stub::make(new WPFunctions, [
+      'doAction' => asCallable([WPHooksHelper::class, 'doAction'])
+    ]);
 
-    $router = new Setup();
+    $router = new Setup($wp);
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
@@ -26,7 +30,6 @@ class SetupTest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHooksHelper::releaseAllHooks();
     Setting::deleteMany();
   }
 }

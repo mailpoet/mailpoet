@@ -4,15 +4,18 @@ namespace MailPoet\Segments;
 
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Segment;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersListings {
 
   /** @var Handler */
   private $handler;
 
-  function __construct(Handler $handler) {
+  private $wp;
+
+  function __construct(Handler $handler, WPFunctions $wp) {
     $this->handler = $handler;
+    $this->wp = $wp;
   }
 
   function getListingsInSegment($data) {
@@ -30,7 +33,7 @@ class SubscribersListings {
     ) {
       return $listing_data = $this->handler->get('\MailPoet\Models\Subscriber', $data);
     }
-    $handlers = Hooks::applyFilters('mailpoet_get_subscribers_listings_in_segment_handlers', array());
+    $handlers = $this->wp->applyFilters('mailpoet_get_subscribers_listings_in_segment_handlers', array());
     foreach($handlers as $handler) {
       $listings = $handler->get($segment, $data);
       if($listings) {

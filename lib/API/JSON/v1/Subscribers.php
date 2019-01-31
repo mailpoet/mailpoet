@@ -17,7 +17,7 @@ use MailPoet\Segments\SubscribersListings;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -41,16 +41,20 @@ class Subscribers extends APIEndpoint {
   /** @var Listing\Handler */
   private $listing_handler;
 
+  private $wp;
+
   public function __construct(
     Listing\BulkActionController $bulk_action_controller,
     SubscribersListings $subscribers_listings,
     RequiredCustomFieldValidator $required_custom_field_validator,
-    Listing\Handler $listing_handler
+    Listing\Handler $listing_handler,
+    WPFunctions $wp
   ) {
     $this->bulk_action_controller = $bulk_action_controller;
     $this->subscribers_listings = $subscribers_listings;
     $this->required_custom_field_validator = $required_custom_field_validator;
     $this->listing_handler = $listing_handler;
+    $this->wp = $wp;
   }
 
   function get($data = array()) {
@@ -85,7 +89,7 @@ class Subscribers extends APIEndpoint {
         ->asArray();
     }
 
-    $listing_data['filters']['segment'] = Hooks::applyFilters(
+    $listing_data['filters']['segment'] = $this->wp->applyFilters(
       'mailpoet_subscribers_listings_filters_segments',
       $listing_data['filters']['segment']
     );

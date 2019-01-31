@@ -6,7 +6,7 @@ use Codeception\Util\Stub;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once('SubscribersBulkActionHandlerMock.php');
 
@@ -90,7 +90,7 @@ class BulkActionTest extends \MailPoetTest {
       ->will($this->returnValue('result'));
 
     remove_all_filters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers');
-    Hooks::addFilter('mailpoet_subscribers_in_segment_apply_bulk_action_handlers', function () use ($mock) {
+    (new WPFunctions)->addFilter('mailpoet_subscribers_in_segment_apply_bulk_action_handlers', function () use ($mock) {
       return array($mock);
     });
 

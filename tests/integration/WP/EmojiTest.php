@@ -10,13 +10,14 @@ class EmojiTest extends \MailPoetTest {
     $this->data_decoded = "Emojis: 😃😵💪, not emojis: &#046;&#0142;";
 
     $this->column = 'dummycol';
+    $this->emoji = new Emoji();
   }
 
   function testItCanEncodeForUTF8Column() {
     $table = Env::$db_prefix . 'dummytable_utf8';
     $this->createTable($table, 'utf8');
 
-    $result = Emoji::encodeForUTF8Column($table, $this->column, $this->data_decoded);
+    $result = $this->emoji->encodeForUTF8Column($table, $this->column, $this->data_decoded);
     expect($result)->equals($this->data_encoded);
 
     $this->dropTable($table);
@@ -26,14 +27,14 @@ class EmojiTest extends \MailPoetTest {
     $table = Env::$db_prefix . 'dummytable_utf8mb4';
     $this->createTable($table, 'utf8mb4');
 
-    $result = Emoji::encodeForUTF8Column($table, $this->column, $this->data_decoded);
+    $result = $this->emoji->encodeForUTF8Column($table, $this->column, $this->data_decoded);
     expect($result)->equals($this->data_decoded);
 
     $this->dropTable($table);
   }
 
   function testItCanDecodeEntities() {
-    $result = Emoji::decodeEntities($this->data_encoded);
+    $result = $this->emoji->decodeEntities($this->data_encoded);
     expect($result)->equals($this->data_decoded);
   }
 

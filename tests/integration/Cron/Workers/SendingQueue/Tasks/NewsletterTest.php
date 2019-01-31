@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
+use Codeception\Stub;
 use AspectMock\Test as Mock;
 use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
@@ -16,7 +17,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Router;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\WP\Functions;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -127,8 +128,10 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function testItHashesLinksAndInsertsTrackingImageWhenTrackingIsEnabled() {
-    WPHooksHelper::interceptApplyFilters();
-    $newsletter_task = $this->newsletter_task;
+    $wp = Stub::make(new WPFunctions, [
+      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters'])
+    ]);
+    $newsletter_task = new NewsletterTask($wp);
     $newsletter_task->tracking_enabled = true;
     $newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
@@ -147,8 +150,10 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function testItDoesNotHashLinksAndInsertTrackingCodeWhenTrackingIsDisabled() {
-    WPHooksHelper::interceptApplyFilters();
-    $newsletter_task = $this->newsletter_task;
+    $wp = Stub::make(new WPFunctions, [
+      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters'])
+    ]);
+    $newsletter_task = new NewsletterTask($wp);
     $newsletter_task->tracking_enabled = false;
     $newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
@@ -231,7 +236,7 @@ class NewsletterTest extends \MailPoetTest {
     $queue = $this->queue;
     $newsletter = $this->newsletter_task->preProcessNewsletter($newsletter, $queue);
     $queue = SendingTask::getByNewsletterId($newsletter->id);
-    $wp = new Functions();
+    $wp = new WPFunctions();
     expect($queue->newsletter_rendered_subject)
       ->contains(date_i18n('dS', $wp->currentTime('timestamp')));
   }
@@ -375,7 +380,6 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHooksHelper::releaseAllHooks();
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);

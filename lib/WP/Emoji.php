@@ -1,17 +1,27 @@
 <?php
 namespace MailPoet\WP;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Emoji {
-  static function encodeForUTF8Column($table, $field, $value) {
+  private $wp;
+
+  function __construct(WPFunctions $wp = null) {
+    if($wp === null) {
+      $wp = new WPFunctions();
+    }
+    $this->wp = $wp;
+  }
+
+  function encodeForUTF8Column($table, $field, $value) {
     global $wpdb;
     $charset = $wpdb->get_col_charset($table, $field);
     if($charset === 'utf8') {
-      $value = wp_encode_emoji($value);
+      $value = $this->wp->wpEncodeEmoji($value);
     }
     return $value;
   }
 
-  static function decodeEntities($content) {
+  function decodeEntities($content) {
     // Based on wp_staticize_emoji()
 
     // Loosely match the Emoji Unicode range.

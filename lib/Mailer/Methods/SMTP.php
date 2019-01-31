@@ -3,7 +3,7 @@ namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -24,9 +24,12 @@ class SMTP {
   /** @var SMTPMapper */
   private $error_mapper;
 
+  private $wp;
+
   function __construct(
     $host, $port, $authentication, $login = null, $password = null, $encryption,
     $sender, $reply_to, $return_path, SMTPMapper $error_mapper) {
+    $this->wp = new WPFunctions;
     $this->host = $host;
     $this->port = $port;
     $this->authentication = $authentication;
@@ -64,14 +67,14 @@ class SMTP {
   function buildMailer() {
     $transport = \Swift_SmtpTransport::newInstance(
       $this->host, $this->port, $this->encryption);
-    $connection_timeout = Hooks::applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
+    $connection_timeout = $this->wp->applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
     $transport->setTimeout($connection_timeout);
     if($this->authentication) {
       $transport
         ->setUsername($this->login)
         ->setPassword($this->password);
     }
-    $transport = Hooks::applyFilters('mailpoet_mailer_smtp_transport_agent', $transport);
+    $transport = $this->wp->applyFilters('mailpoet_mailer_smtp_transport_agent', $transport);
     return \Swift_Mailer::newInstance($transport);
   }
 

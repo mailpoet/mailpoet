@@ -5,7 +5,7 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Mailer\Methods\SMTP;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SMTPTest extends \MailPoetTest {
   function _before() {
@@ -134,7 +134,7 @@ class SMTPTest extends \MailPoetTest {
   function testItAppliesTransportFilter() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport()->getStreamOptions())->isEmpty();
-    Hooks::addFilter(
+    (new WPFunctions)->addFilter(
       'mailpoet_mailer_smtp_transport_agent',
       function($transport) {
         $transport->setStreamOptions(
@@ -162,7 +162,7 @@ class SMTPTest extends \MailPoetTest {
   function testItAppliesTimeoutFilter() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport()->getTimeout())->equals(\MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
-    Hooks::addFilter(
+    (new WPFunctions)->addFilter(
       'mailpoet_mailer_smtp_connection_timeout',
       function() {
         return 20;
@@ -182,6 +182,5 @@ class SMTPTest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHooksHelper::releaseAllHooks();
   }
 }

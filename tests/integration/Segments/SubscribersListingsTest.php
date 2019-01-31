@@ -9,7 +9,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersListingsTest extends \MailPoetTest {
 
@@ -76,7 +76,7 @@ class SubscribersListingsTest extends \MailPoetTest {
       ->will($this->returnValue('dynamic listings'));
 
     remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
-    Hooks::addFilter('mailpoet_get_subscribers_listings_in_segment_handlers', function () use ($mock) {
+    (new WPFunctions)->addFilter('mailpoet_get_subscribers_listings_in_segment_handlers', function () use ($mock) {
       return array($mock);
     });
 

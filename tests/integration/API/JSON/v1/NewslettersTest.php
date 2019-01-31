@@ -7,6 +7,8 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\Listing\BulkActionController;
+use MailPoet\Listing\Handler;
 use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
@@ -22,6 +24,7 @@ use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 class NewslettersTest extends \MailPoetTest {
   /** @var Newsletters */
@@ -98,8 +101,14 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])
       ->equals('This newsletter does not exist.');
 
-    WPHooksHelper::interceptApplyFilters();
-
+    $wp = Stub::make(new WPFunctions, [
+      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters'])
+    ]);
+    $this->endpoint = new Newsletters(
+      ContainerWrapper::getInstance()->get(BulkActionController::class),
+      ContainerWrapper::getInstance()->get(Handler::class),
+      $wp
+    );
     $response = $this->endpoint->get(array('id' => $this->newsletter->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -128,9 +137,15 @@ class NewslettersTest extends \MailPoetTest {
       )
     );
 
-    WPHooksHelper::interceptApplyFilters();
-    WPHooksHelper::interceptDoAction();
-
+    $wp = Stub::make(new WPFunctions, [
+      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
+      'doAction' => asCallable([WPHooksHelper::class, 'doAction'])
+    ]);
+    $this->endpoint = new Newsletters(
+      ContainerWrapper::getInstance()->get(BulkActionController::class),
+      ContainerWrapper::getInstance()->get(Handler::class),
+      $wp
+    );
 
     $response = $this->endpoint->save($valid_data);
     $saved_newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_STANDARD)
@@ -487,7 +502,14 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanDuplicateANewsletter() {
-    WPHooksHelper::interceptDoAction();
+    $wp = Stub::make(new WPFunctions, [
+      'doAction' => asCallable([WPHooksHelper::class, 'doAction'])
+    ]);
+    $this->endpoint = new Newsletters(
+      ContainerWrapper::getInstance()->get(BulkActionController::class),
+      ContainerWrapper::getInstance()->get(Handler::class),
+      $wp
+    );
 
     $response = $this->endpoint->duplicate(array('id' => $this->newsletter->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -846,7 +868,6 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function _after() {
-    WPHooksHelper::releaseAllHooks();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
