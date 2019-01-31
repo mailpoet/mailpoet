@@ -113,8 +113,10 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscribersCount)->equals(2);
     $subscriber = Subscriber::where('email', $user->user_email)->findOne();
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
     $subscriber = Subscriber::where('email', $guest['email'])->findOne();
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
   }
 
   function testItSynchronizesNewCustomers() {

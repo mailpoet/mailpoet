@@ -122,9 +122,9 @@ class WooCommerce {
       UPDATE %1$s mps
         JOIN %2$s wu ON mps.wp_user_id = wu.id
         JOIN %3$s wpum ON wu.id = wpum.user_id AND wpum.meta_key = "' . $wpdb->prefix . 'capabilities"
-      SET is_woocommerce_user = 1
+      SET is_woocommerce_user = 1, source = "%4$s"
         WHERE wpum.meta_value LIKE "%%\"customer\"%%"
-    ', $subscribers_table, $wpdb->users, $wpdb->usermeta));
+    ', $subscribers_table, $wpdb->users, $wpdb->usermeta, Source::WOOCOMMERCE_USER));
   }
 
   private function insertSubscribersFromOrders($order_id = null) {
