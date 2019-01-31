@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 
 class ListingTabs extends React.Component {
   state = {
-    tab: null,
     tabs: Hooks.applyFilters('mailpoet_newsletters_listings_tabs', [
       {
         name: 'standard',
@@ -41,9 +40,10 @@ class ListingTabs extends React.Component {
           data-automation-id={`tab-${tab.label}`}
           to={tab.link}
           onClick={() => MailPoet.trackEvent(`Tab Emails > ${tab.name} clicked`,
-            { 'MailPoet Free version': window.mailpoet_version }
-          )}
-        >{ tab.label }</Link>
+            { 'MailPoet Free version': window.mailpoet_version })}
+        >
+          { tab.label }
+        </Link>
       );
     });
 

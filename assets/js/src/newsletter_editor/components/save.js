@@ -274,16 +274,16 @@ define([
       if (jsonObject && jsonObject.body && jsonObject.body.content) {
         body = JSON.stringify(jsonObject.body.content);
       }
-      if (App.getConfig().get('validation.validateUnsubscribeLinkPresent') &&
-        body.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
-        body.indexOf('[link:subscription_unsubscribe]') < 0) {
+      if (App.getConfig().get('validation.validateUnsubscribeLinkPresent')
+        && body.indexOf('[link:subscription_unsubscribe_url]') < 0
+        && body.indexOf('[link:subscription_unsubscribe]') < 0) {
         this.showValidationError(MailPoet.I18n.t('unsubscribeLinkMissing'));
         return;
       }
 
-      if ((App.getNewsletter().get('type') === 'notification') &&
-        body.indexOf('"type":"automatedLatestContent"') < 0 &&
-        body.indexOf('"type":"automatedLatestContentLayout"') < 0
+      if ((App.getNewsletter().get('type') === 'notification')
+        && body.indexOf('"type":"automatedLatestContent"') < 0
+        && body.indexOf('"type":"automatedLatestContentLayout"') < 0
       ) {
         this.showValidationError(MailPoet.I18n.t('automatedLatestContentMissing'));
         return;

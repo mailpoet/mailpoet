@@ -54,7 +54,9 @@ class ListingFilters extends React.Component {
             <option
               value={option.value}
               key={`filter-option-${option.value}`}
-            >{ option.label }</option>
+            >
+              { option.label }
+            </option>
           )) }
         </select>
       ));

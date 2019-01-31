@@ -17,9 +17,11 @@ const TasksListDataRow = props => (
           data-newsletter-id={props.task.newsletter.newsletter_id}
           data-queue-id={props.task.newsletter.queue_id}
           target="_blank"
+          rel="noopener noreferrer"
         >
           {props.task.newsletter.subject || MailPoet.I18n.t('preview')}
-        </a>) : MailPoet.I18n.t('none')
+        </a>
+      ) : MailPoet.I18n.t('none')
       }
     </td>
     <td className="column">
@@ -56,9 +58,6 @@ TasksListDataRow.propTypes = {
 
 TasksListDataRow.defaultProps = {
   show_scheduled_at: false,
-  task: {
-    newsletter: null,
-  },
 };
 
 export default TasksListDataRow;

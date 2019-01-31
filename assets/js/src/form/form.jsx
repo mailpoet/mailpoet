@@ -156,17 +156,19 @@ class Form extends React.Component {
   };
 
   handleValueChange = (e) => {
+    const { name, value } = e.target;
     if (this.props.onChange) {
       return this.props.onChange(e);
     }
-    const item = this.state.item;
-    const field = e.target.name;
+    this.setState((prevState) => {
+      const item = prevState.item;
+      const field = name;
 
-    item[field] = e.target.value;
+      item[field] = value;
 
-    this.setState({
-      item,
+      return { item };
     });
+
     return true;
   };
 
@@ -263,7 +265,7 @@ class Form extends React.Component {
 Form.propTypes = {
   params: PropTypes.shape({
     id: PropTypes.string,
-  }).isRequired,
+  }),
   item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   errors: PropTypes.arrayOf(PropTypes.object),
   endpoint: PropTypes.string,
@@ -271,7 +273,7 @@ Form.propTypes = {
   messages: PropTypes.shape({
     onUpdate: PropTypes.func,
     onCreate: PropTypes.func,
-  }).isRequired,
+  }),
   loading: PropTypes.bool,
   children: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   id: PropTypes.string,

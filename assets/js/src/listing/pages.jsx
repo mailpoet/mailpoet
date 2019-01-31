@@ -26,14 +26,14 @@ class ListingPages extends React.Component {
 
   setPreviousPage = () => {
     this.setPage(this.constrainPage(
-      parseInt(this.props.page, 10) - 1)
-    );
+      parseInt(this.props.page, 10) - 1
+    ));
   };
 
   setNextPage = () => {
     this.setPage(this.constrainPage(
-      parseInt(this.props.page, 10) + 1)
-    );
+      parseInt(this.props.page, 10) + 1
+    ));
   };
 
   getLastPage = () => Math.ceil(this.props.count / this.props.limit);
@@ -142,7 +142,9 @@ class ListingPages extends React.Component {
             <label
               className="screen-reader-text"
               htmlFor="current-page-selector"
-            >{MailPoet.I18n.t('currentPage')}</label>
+            >
+              {MailPoet.I18n.t('currentPage')}
+            </label>
             <input
               type="text"
               onChange={this.handleChangeManualPage}
@@ -155,7 +157,8 @@ class ListingPages extends React.Component {
               id="current-page-selector"
               className="current-page"
             />
-            {MailPoet.I18n.t('pageOutOf')}&nbsp;
+            {MailPoet.I18n.t('pageOutOf')}
+            &nbsp;
             <span className="total-pages">
               {Math.ceil(this.props.count / this.props.limit).toLocaleString()}
             </span>

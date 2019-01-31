@@ -23,51 +23,53 @@ class DefaultSender extends React.Component {
   }
 
   render() {
-    return (<React.Fragment>
-      <p>
-        <label htmlFor="settings[from_name]">{MailPoet.I18n.t('from')}</label>
-        <input
-          type="text"
-          id="settings[from_name]"
-          data-automation-id="settings-page-from-name-field"
-          name="sender[name]"
-          value={this.state.senderName}
-          onChange={partial(this.onChange, 'senderName')}
-          placeholder={MailPoet.I18n.t('yourName')}
-        />
-        <input
-          type="email"
-          id="settings[from_email]"
-          data-automation-id="settings-page-from-email-field"
-          name="sender[address]"
-          value={this.state.senderAddress}
-          onChange={partial(this.onChange, 'senderAddress')}
-          placeholder="from@mydomain.com"
-        />
-      </p>
-      <p>
-        <label htmlFor="settings[reply_name]">{MailPoet.I18n.t('replyTo')}</label>
-        <input
-          type="text"
-          id="settings[reply_name]"
-          name="reply_to[name]"
-          value={this.state.replyToName}
-          onChange={partial(this.onChange, 'replyToName')}
-          placeholder={MailPoet.I18n.t('yourName')}
-        />
-        <input
-          type="email"
-          id="settings[reply_email]"
-          name="reply_to[address]"
-          value={this.state.replyToAddress}
-          onChange={partial(this.onChange, 'replyToAddress')}
-          placeholder="reply_to@mydomain.com"
-        />
-      </p>
-      <div className="regular-text">
-        <SenderEmailAddressWarning emailAddress={this.state.senderAddress} />
-      </div>
-    </React.Fragment>);
+    return (
+      <React.Fragment>
+        <p>
+          <label htmlFor="settings[from_name]">{MailPoet.I18n.t('from')}</label>
+          <input
+            type="text"
+            id="settings[from_name]"
+            data-automation-id="settings-page-from-name-field"
+            name="sender[name]"
+            value={this.state.senderName}
+            onChange={partial(this.onChange, 'senderName')}
+            placeholder={MailPoet.I18n.t('yourName')}
+          />
+          <input
+            type="email"
+            id="settings[from_email]"
+            name="sender[address]"
+            data-automation-id="settings-page-from-email-field"
+            value={this.state.senderAddress}
+            onChange={partial(this.onChange, 'senderAddress')}
+            placeholder="from@mydomain.com"
+          />
+        </p>
+        <p>
+          <label htmlFor="settings[reply_name]">{MailPoet.I18n.t('replyTo')}</label>
+          <input
+            type="text"
+            id="settings[reply_name]"
+            name="reply_to[name]"
+            value={this.state.replyToName}
+            onChange={partial(this.onChange, 'replyToName')}
+            placeholder={MailPoet.I18n.t('yourName')}
+          />
+          <input
+            type="email"
+            id="settings[reply_email]"
+            name="reply_to[address]"
+            value={this.state.replyToAddress}
+            onChange={partial(this.onChange, 'replyToAddress')}
+            placeholder="reply_to@mydomain.com"
+          />
+        </p>
+        <div className="regular-text">
+          <SenderEmailAddressWarning emailAddress={this.state.senderAddress} />
+        </div>
+      </React.Fragment>
+    );
   }
 }
 

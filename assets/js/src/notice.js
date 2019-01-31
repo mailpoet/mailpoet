@@ -124,8 +124,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disab
 
       if (
         this.options.id !== null
-        &&
-        jQuery('[data-id="' + this.options.id + '"]').length > 0
+        && jQuery('[data-id="' + this.options.id + '"]').length > 0
       ) {
         this.updateNotice();
       } else {

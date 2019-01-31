@@ -28,7 +28,7 @@ function Intro() {
   }
 
   // don't show on small screens
-  if (innerWidth <= 960) {
+  if (window.innerWidth <= 960) {
     return;
   }
 
@@ -61,8 +61,8 @@ function Intro() {
     if (getComputedStyle(targetElement).getPropertyValue('position') === 'fixed') {
       const helperLayer = document.querySelector('.introjs-helperLayer');
       const referenceLayer = document.querySelector('.introjs-tooltipReferenceLayer');
-      referenceLayer.style.top = `${parseInt(referenceLayer.style.top, 10) - pageYOffset}px`;
-      helperLayer.style.top = `${parseInt(helperLayer.style.top, 10) - pageYOffset}px`;
+      referenceLayer.style.top = `${parseInt(referenceLayer.style.top, 10) - window.pageYOffset}px`;
+      helperLayer.style.top = `${parseInt(helperLayer.style.top, 10) - window.pageYOffset}px`;
     }
   });
 

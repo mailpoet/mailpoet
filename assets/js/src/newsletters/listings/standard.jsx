@@ -125,7 +125,7 @@ let newsletterActions = [
     name: 'view',
     link: function link(newsletter) {
       return (
-        <a href={newsletter.preview_url} target="_blank">
+        <a href={newsletter.preview_url} target="_blank" rel="noopener noreferrer">
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -201,7 +201,9 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
               className="row-title"
               href="javascript:;"
               onClick={() => confirmEdit(newsletter)}
-            >{ newsletter.queue.newsletter_rendered_subject || newsletter.subject }</a>
+            >
+              { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
+            </a>
           </strong>
           { actions }
         </td>

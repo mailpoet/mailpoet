@@ -10,6 +10,7 @@ class Selection extends React.Component {
     super(props);
     this.selectRef = React.createRef();
   }
+
   componentDidMount() {
     if (this.isSelect2Component()) {
       this.setupSelect2();
@@ -25,9 +26,9 @@ class Selection extends React.Component {
         .trigger('change');
     }
 
-    if (this.isSelect2Initialized() &&
-      (this.getFieldId(this.props) !== this.getFieldId(prevProps)) &&
-      this.props.field.resetSelect2OnUpdate !== undefined
+    if (this.isSelect2Initialized()
+      && (this.getFieldId(this.props) !== this.getFieldId(prevProps))
+      && this.props.field.resetSelect2OnUpdate !== undefined
     ) {
       this.resetSelect2();
     }
@@ -47,7 +48,8 @@ class Selection extends React.Component {
   getSelectedValues = () => {
     if (this.props.field.selected !== undefined) {
       return this.props.field.selected(this.props.item);
-    } else if (this.props.item !== undefined && this.props.field.name !== undefined) {
+    }
+    if (this.props.item !== undefined && this.props.field.name !== undefined) {
       if (this.allowMultipleValues()) {
         if (_.isArray(this.props.item[this.props.field.name])) {
           return this.props.item[this.props.field.name].map(item => item.id);
@@ -112,7 +114,8 @@ class Selection extends React.Component {
       templateResult: function templateResult(item) {
         if (item.element && item.element.selected) {
           return null;
-        } else if (item.title) {
+        }
+        if (item.title) {
           return item.title;
         }
         return item.text;
@@ -140,12 +143,17 @@ class Selection extends React.Component {
             };
           },
           processResults: function processResults(response) {
-            return { results: (!_.has(response, 'data')) ?
-              [] :
-              response.data.map(item =>
-                ({ id: item.id || item.value, text: item.name || item.text })
-              ),
-            };
+            let results;
+            if (!_.has(response, 'data')) {
+              results = [];
+            } else {
+              results = response.data.map((item) => {
+                const id = item.id || item.value;
+                const text = item.name || item.text;
+                return { id, text };
+              });
+            }
+            return { results };
           },
         },
         minimumInputLength: remoteQuery.minimumInputLength || 2,

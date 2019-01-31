@@ -17,7 +17,9 @@ const WelcomeWizardUsageTrackingStep = props => (
               href="https://beta.docs.mailpoet.com/article/130-sharing-your-data-with-us"
               target="_blank"
               rel="noopener noreferrer"
-            >{ match }</a>
+            >
+              { match }
+            </a>
           )
         )
       }
@@ -29,6 +31,7 @@ const WelcomeWizardUsageTrackingStep = props => (
       }
     >
       <button
+        type="button"
         className="button"
         onClick={props.skip_action}
         disabled={props.loading}
@@ -36,6 +39,7 @@ const WelcomeWizardUsageTrackingStep = props => (
         {MailPoet.I18n.t('skip')}
       </button>
       <button
+        type="button"
         className="button button-primary"
         onClick={props.allow_action}
         disabled={props.loading}

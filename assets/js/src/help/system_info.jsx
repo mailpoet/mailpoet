@@ -11,15 +11,17 @@ function printData(data) {
   if (_.isObject(data)) {
     const printableData = Object.keys(data).map(key => `${key}: ${data[key]}`);
 
-    return (<textarea
-      readOnly
-      onFocus={handleFocus}
-      value={printableData.join('\n')}
-      style={{
-        width: '100%',
-        height: '400px',
-      }}
-    />);
+    return (
+      <textarea
+        readOnly
+        onFocus={handleFocus}
+        value={printableData.join('\n')}
+        style={{
+          width: '100%',
+          height: '400px',
+        }}
+      />
+    );
   }
   return (<p>{MailPoet.I18n.t('systemInfoDataError')}</p>);
 }

@@ -1,3 +1,4 @@
+/* eslint no-restricted-globals: 0 */
 define(
   [
     'jquery'
@@ -57,7 +58,7 @@ define(
 
         // Coerce values.
         if (coerce) {
-          if (val && !isNaN(val)) { // number
+          if (val && !Number.isNaN(val)) { // number
             val = +val;
           } else if (val === 'undefined') { // undefined
             val = undefined;

@@ -31,7 +31,9 @@ class ListingItem extends React.Component {
   };
 
   handleToggleItem = () => {
-    this.setState({ expanded: !this.state.expanded });
+    this.setState(prevState => ({
+      expanded: !prevState.expanded,
+    }));
   };
 
   render() {
@@ -40,9 +42,11 @@ class ListingItem extends React.Component {
     if (this.props.is_selectable === true) {
       checkbox = (
         <th className="mailpoet-check-column" scope="row">
-          <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>{
-            `Select ${this.props.item[this.props.columns[0].name]}`
-          }</label>
+          <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>
+            {
+              `Select ${this.props.item[this.props.columns[0].name]}`
+            }
+          </label>
           <input
             type="checkbox"
             value={this.props.item.id}
@@ -72,6 +76,7 @@ class ListingItem extends React.Component {
               <span key={`action-${action.name}`} className="trash">
                 {(!isFirst) ? ' | ' : ''}
                 <a
+                  type="button"
                   href="javascript:;"
                   onClick={() => this.handleTrashItem(this.props.item.id)}
                 >
@@ -87,6 +92,13 @@ class ListingItem extends React.Component {
                 className={action.name}
                 role="button"
                 tabIndex={index}
+                onKeyDown={(event) => {
+                  if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                  ) {
+                    event.preventDefault();
+                    this.props.onRefreshItems();
+                  }
+                }}
               >
                 {(!isFirst) ? ' | ' : ''}
                 { action.link(this.props.item) }
@@ -116,7 +128,9 @@ class ListingItem extends React.Component {
                       ? () => action.onClick(this.props.item, this.props.onRefreshItems)
                       : false
                   }
-                >{ action.label }</a>
+                >
+                  { action.label }
+                </a>
               </span>
             );
           }
@@ -145,7 +159,9 @@ class ListingItem extends React.Component {
               <a
                 href="javascript:;"
                 onClick={() => this.handleRestoreItem(this.props.item.id)}
-              >{MailPoet.I18n.t('restore')}</a>
+              >
+                {MailPoet.I18n.t('restore')}
+              </a>
             </span>
             { ' | ' }
             <span className="delete">
@@ -153,7 +169,9 @@ class ListingItem extends React.Component {
                 className="submitdelete"
                 href="javascript:;"
                 onClick={() => this.handleDeleteItem(this.props.item.id)}
-              >{MailPoet.I18n.t('deletePermanently')}</a>
+              >
+                {MailPoet.I18n.t('deletePermanently')}
+              </a>
             </span>
           </div>
           <button

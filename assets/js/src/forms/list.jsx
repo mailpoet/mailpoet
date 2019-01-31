@@ -164,7 +164,9 @@ class FormList extends React.Component {
             <a
               className="row-title"
               href={`admin.php?page=mailpoet-form-editor&id=${form.id}`}
-            >{ form.name }</a>
+            >
+              { form.name }
+            </a>
           </strong>
           { actions }
         </td>
@@ -185,12 +187,17 @@ class FormList extends React.Component {
     return (
       <div>
         <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')} <a
+          {MailPoet.I18n.t('pageTitle')}
+          {' '}
+          <button
             className="page-title-action"
             href="javascript:;"
             onClick={this.createForm}
             data-automation-id="create_new_form"
-          >{MailPoet.I18n.t('new')}</a>
+            type="button"
+          >
+            {MailPoet.I18n.t('new')}
+          </button>
         </h1>
 
         <Listing

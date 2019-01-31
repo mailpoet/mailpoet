@@ -19,7 +19,7 @@ const renderBreadcrumb = (newsletterType) => {
 
 const initializeEditor = (config) => {
   const editorContainer = document.getElementById('mailpoet_editor');
-  const getUrlParam = param => (location.search.split(`${param}=`)[1] || '').split('&')[0];
+  const getUrlParam = param => (document.location.search.split(`${param}=`)[1] || '').split('&')[0];
 
   if (!editorContainer || !window.EditorApplication) return;
 

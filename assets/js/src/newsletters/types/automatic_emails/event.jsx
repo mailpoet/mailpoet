@@ -23,17 +23,27 @@ class AutomaticEmailEvent extends React.PureComponent {
         <a
           href={event.actionButtonLink}
           target="_blank"
+          rel="noopener noreferrer"
         >
           {event.actionButtonTitle}
         </a>
       );
     } else {
+      const onClick = !disabled ? _.partial(this.props.eventsConfigurator, event.slug) : null;
       action = (
         <a
           className="button button-primary"
           disabled={disabled}
-          onClick={!disabled ? _.partial(this.props.eventsConfigurator, event.slug) : null}
+          onClick={onClick}
+          role="presentation"
           data-automation-id={`create_${event.slug}`}
+          onKeyDown={(keyEvent) => {
+            if ((['keydown', 'keypress'].includes(keyEvent.type) && ['Enter', ' '].includes(keyEvent.key))
+            ) {
+              keyEvent.preventDefault();
+              onClick();
+            }
+          }}
         >
           {event.actionButtonTitle || MailPoet.I18n.t('setUp')}
         </a>
@@ -48,7 +58,11 @@ class AutomaticEmailEvent extends React.PureComponent {
           </div>
           <div className="mailpoet_description">
             <div className="title_and_badge">
-              <h3>{event.title} {event.soon ? `(${MailPoet.I18n.t('soon')})` : ''}</h3>
+              <h3>
+                {event.title}
+                {' '}
+                {event.soon ? `(${MailPoet.I18n.t('soon')})` : ''}
+              </h3>
               {event.badge ? (
                 <span className={`mailpoet_badge mailpoet_badge_${event.badge.style}`}>
                   {event.badge.text}

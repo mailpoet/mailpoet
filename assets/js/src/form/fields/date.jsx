@@ -18,7 +18,9 @@ function FormFieldDateYear(props) {
       <option
         key={i}
         value={i}
-      >{ i }</option>
+      >
+        { i }
+      </option>
     ));
   }
   return (
@@ -56,7 +58,9 @@ function FormFieldDateMonth(props) {
       <option
         key={i}
         value={i}
-      >{ props.monthNames[i - 1] }</option>
+      >
+        { props.monthNames[i - 1] }
+      </option>
     ));
   }
   return (
@@ -95,7 +99,9 @@ function FormFieldDateDay(props) {
       <option
         key={i}
         value={i}
-      >{ i }</option>
+      >
+        { i }
+      </option>
     ));
   }
 
@@ -131,9 +137,11 @@ class FormFieldDate extends React.Component {
 
     this.onValueChange = this.onValueChange.bind(this);
   }
+
   componentDidMount() {
     this.extractDateParts();
   }
+
   componentDidUpdate(prevProps) {
     if (
       (this.props.item !== undefined && prevProps.item !== undefined)
@@ -142,6 +150,7 @@ class FormFieldDate extends React.Component {
       this.extractDateParts();
     }
   }
+
   onValueChange(e) {
     // extract property from name
     const matches = e.target.name.match(/(.*?)\[(.*?)\]/);
@@ -149,8 +158,7 @@ class FormFieldDate extends React.Component {
     let property = null;
 
     if (matches !== null && matches.length === 3) {
-      field = matches[1];
-      property = matches[2];
+      [, field, property] = matches;
 
       const value = Number(e.target.value);
 
@@ -166,6 +174,7 @@ class FormFieldDate extends React.Component {
       });
     }
   }
+
   formatValue() {
     const dateType = this.props.field.params.date_type;
 
@@ -207,6 +216,7 @@ class FormFieldDate extends React.Component {
 
     return value;
   }
+
   extractDateParts() {
     const value = (this.props.item[this.props.field.name] !== undefined)
       ? this.props.item[this.props.field.name].trim()
@@ -224,6 +234,7 @@ class FormFieldDate extends React.Component {
       day: dateTime.format('D'),
     });
   }
+
   render() {
     const monthNames = window.mailpoet_month_names || [];
     const dateFormats = window.mailpoet_date_formats || {};
@@ -233,32 +244,38 @@ class FormFieldDate extends React.Component {
     const fields = dateSelects.map((type) => {
       switch (type) {
         case 'YYYY':
-          return (<FormFieldDateYear
-            onValueChange={this.onValueChange}
-            key={'year'}
-            name={this.props.field.name}
-            year={this.state.year}
-            placeholder={this.props.field.year_placeholder}
-          />);
+          return (
+            <FormFieldDateYear
+              onValueChange={this.onValueChange}
+              key="year"
+              name={this.props.field.name}
+              year={this.state.year}
+              placeholder={this.props.field.year_placeholder}
+            />
+          );
 
         case 'MM':
-          return (<FormFieldDateMonth
-            onValueChange={this.onValueChange}
-            key={'month'}
-            name={this.props.field.name}
-            month={this.state.month}
-            monthNames={monthNames}
-            placeholder={this.props.field.month_placeholder}
-          />);
+          return (
+            <FormFieldDateMonth
+              onValueChange={this.onValueChange}
+              key="month"
+              name={this.props.field.name}
+              month={this.state.month}
+              monthNames={monthNames}
+              placeholder={this.props.field.month_placeholder}
+            />
+          );
 
         case 'DD':
-          return (<FormFieldDateDay
-            onValueChange={this.onValueChange}
-            key={'day'}
-            name={this.props.field.name}
-            day={this.state.day}
-            placeholder={this.props.field.day_placeholder}
-          />);
+          return (
+            <FormFieldDateDay
+              onValueChange={this.onValueChange}
+              key="day"
+              name={this.props.field.name}
+              day={this.state.day}
+              placeholder={this.props.field.day_placeholder}
+            />
+          );
 
         default:
           return <div>Invalid date type</div>;

@@ -17,12 +17,14 @@ function Fail(props) {
               target="_blank"
               rel="noopener noreferrer"
               href="https://kb.mailpoet.com/article/231-sending-does-not-work"
-            >{ match }</a>
+            >
+              { match }
+            </a>
           )
         )
         }
       </p>
-      <button className="button" onClick={props.failClicked}>{MailPoet.I18n.t('close')}</button>
+      <button type="button" className="button" onClick={props.failClicked}>{MailPoet.I18n.t('close')}</button>
     </div>
   );
 }

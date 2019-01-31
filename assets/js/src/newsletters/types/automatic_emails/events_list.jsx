@@ -31,8 +31,7 @@ class AutomaticEmailEventsList extends React.Component {
         key={index}
         eventsConfigurator={this.eventsConfigurator}
       />
-    )
-    );
+    ));
 
     return (
       <ul className="mailpoet_boxes woocommerce clearfix">

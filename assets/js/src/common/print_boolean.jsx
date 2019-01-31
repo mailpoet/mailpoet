@@ -4,9 +4,9 @@ import MailPoet from 'mailpoet';
 
 const PrintBoolean = props => (
   <span>
-    {(props.children === true && props.truthy) ||
-      (props.children === false && props.falsy) ||
-      (props.unknown)}
+    {(props.children === true && props.truthy)
+      || (props.children === false && props.falsy)
+      || (props.unknown)}
   </span>
 );
 

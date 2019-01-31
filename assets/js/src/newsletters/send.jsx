@@ -350,14 +350,15 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   handleFormChange: function handleFormChange(e) {
-    const item = this.state.item;
-    const field = e.target.name;
+    this.setState((prevState) => {
+      const item = prevState.item;
+      const field = e.target.name;
 
-    item[field] = e.target.value;
+      item[field] = e.target.value;
 
-    this.setState({
-      item,
+      return { item };
     });
+
     return true;
   },
 
@@ -397,21 +398,24 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
         >
           <p className="submit">
             {
-              isPaused ?
-                <input
-                  className="button button-primary"
-                  type="button"
-                  onClick={this.handleResume}
-                  value={MailPoet.I18n.t('resume')}
-                />
-                :
-                <input
-                  className="button button-primary"
-                  type="button"
-                  onClick={this.handleSend}
-                  value={MailPoet.I18n.t('send')}
-                  {...sendButtonOptions}
-                />
+              isPaused
+                ? (
+                  <input
+                    className="button button-primary"
+                    type="button"
+                    onClick={this.handleResume}
+                    value={MailPoet.I18n.t('resume')}
+                  />
+                )
+                : (
+                  <input
+                    className="button button-primary"
+                    type="button"
+                    onClick={this.handleSend}
+                    value={MailPoet.I18n.t('send')}
+                    {...sendButtonOptions}
+                  />
+                )
             }
             &nbsp;
             <input
@@ -419,7 +423,9 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
               type="submit"
               value={MailPoet.I18n.t('saveDraftAndClose')}
             />
-            &nbsp;{MailPoet.I18n.t('orSimply')}&nbsp;
+            &nbsp;
+            {MailPoet.I18n.t('orSimply')}
+            &nbsp;
             <a
               href={
                 `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
@@ -427,7 +433,8 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
               onClick={this.handleRedirectToDesign}
             >
               {MailPoet.I18n.t('goBackToDesign')}
-            </a>.
+            </a>
+            .
           </p>
           { !isPaused && sendButtonOptions.disabled && sendButtonOptions.disabled === 'disabled' && (
             <HelpTooltip

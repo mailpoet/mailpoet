@@ -56,15 +56,15 @@ class FeatureAnnouncement extends React.Component {
     );
     return (
       <div className="mailpoet_feature_announcement">
-        <a
-          href=""
+        <button
+          type="button"
           id="beamer-selector"
           onClick={this.loadBeamer}
           className={buttonClasses}
           title={MailPoet.I18n.t('whatsNew')}
         >
           <span className="mailpoet_feature_announcement_icon dashicons dashicons-carrot" />
-        </a>
+        </button>
       </div>
 
     );

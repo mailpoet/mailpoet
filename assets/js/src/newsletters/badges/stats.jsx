@@ -60,6 +60,7 @@ class StatsBadge extends React.Component {
     // rate must be zero at this point
     return stat.badgeTypes[len - 1];
   }
+
   render() {
     const stat = stats[this.props.stat] || null;
     if (!stat) {
@@ -94,7 +95,9 @@ class StatsBadge extends React.Component {
         <div>
           <span className={`mailpoet_stat_${badgeType}`}>
             {this.props.headline}
-          </span> {content}
+          </span>
+          {' '}
+          {content}
         </div>
       );
     }

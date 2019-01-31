@@ -71,7 +71,9 @@ class StandardScheduling extends React.Component {
           />
           &nbsp;
           <span>
-            {MailPoet.I18n.t('websiteTimeIs')} <code>{currentTime}</code>
+            {MailPoet.I18n.t('websiteTimeIs')}
+            {' '}
+            <code>{currentTime}</code>
           </span>
         </span>
       );

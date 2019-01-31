@@ -8,5 +8,4 @@ function admin(jQuery) {
 
     });
   });
-}
-);
+});

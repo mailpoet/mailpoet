@@ -25,6 +25,13 @@ class ListingColumn extends React.Component {
           onClick={this.handleSort}
           role="button"
           tabIndex={0}
+          onKeyDown={(event) => {
+            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+            ) {
+              event.preventDefault();
+              this.handleSort();
+            }
+          }}
         >
           <span>{ this.props.column.label }</span>
           <span className="sorting-indicator" />
@@ -40,7 +47,9 @@ class ListingColumn extends React.Component {
         id={this.props.column.name}
         scope="col"
         width={this.props.column.width || null}
-      >{label}</th>
+      >
+        {label}
+      </th>
     );
   }
 }

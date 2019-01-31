@@ -14,7 +14,7 @@ const CronStatus = (props) => {
     <div>
       <h2>{MailPoet.I18n.t('systemStatusCronStatusTitle')}</h2>
       <KeyValueTable
-        max_width={'400px'}
+        max_width="400px"
         rows={[
           {
             key: MailPoet.I18n.t('accessible'),
@@ -54,16 +54,6 @@ CronStatus.propTypes = {
     run_accessed_at: PropTypes.number,
     run_completed_at: PropTypes.number,
   }).isRequired,
-};
-
-CronStatus.defaultProps = {
-  status_data: {
-    accessible: null,
-    status: null,
-    updated_at: null,
-    run_accessed_at: null,
-    run_completed_at: null,
-  },
 };
 
 export default CronStatus;

@@ -368,7 +368,8 @@ WysijaForm = {
         // skip lists
         if (setting.name === 'segments') {
           return true;
-        } else if (setting.name === 'on_success') {
+        }
+        if (setting.name === 'on_success') {
           // if the input value is equal to the one stored in the settings
           if (setting.value === data.settings[setting.name]) {
             // check selected value
@@ -502,8 +503,7 @@ WysijaForm = {
       block = WysijaForm.get(segmentSelection).block.getData();
       return (
         (block.params.values !== undefined)
-        &&
-        (block.params.values.length > 0)
+        && (block.params.values.length > 0)
       );
     }
     return false;
@@ -577,8 +577,9 @@ WysijaForm = {
   },
   initToolbarPosition: function () {
     if (WysijaForm.toolbar.top === null) {
-      WysijaForm.toolbar.top =
-        parseInt(window.$(WysijaForm.options.container).positionedOffset().top, 10);
+      WysijaForm.toolbar.top = parseInt(
+        window.$(WysijaForm.options.container).positionedOffset().top, 10
+      );
     }
     if (WysijaForm.toolbar.y === null) {
       WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top, 10);
@@ -587,16 +588,17 @@ WysijaForm = {
     if (window.isRtl) {
       if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = 0;
     } else if (WysijaForm.toolbar.left === null) {
-      WysijaForm.toolbar.left =
-          parseInt(window.$(WysijaForm.options.container).positionedOffset().left, 10);
+      WysijaForm.toolbar.left = parseInt(
+        window.$(WysijaForm.options.container).positionedOffset().left, 10
+      );
     }
     if (WysijaForm.toolbar.x === null) {
-      WysijaForm.toolbar.x =
-        parseInt(
-          WysijaForm.toolbar.left
+      WysijaForm.toolbar.x = parseInt(
+        WysijaForm.toolbar.left
           + window.$(WysijaForm.options.container).getDimensions().width
-          + 15
-          , 10);
+          + 15,
+        10
+      );
     }
   },
   setToolbarPosition: function () {
@@ -726,7 +728,8 @@ WysijaForm = {
     if (protocol === null) {
       // this is not a url so encode the whole thing
       return encodeURIComponent(str).replace(/[!'()*]/g, escape);
-    } else if (protocol.length === 1) {
+    }
+    if (protocol.length === 1) {
       // this is a url, so do not encode the protocol
       return encodeURI(str).replace(/[!'()*]/g, escape);
     }

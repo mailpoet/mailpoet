@@ -11,7 +11,7 @@ const QueueStatus = (props) => {
     <div>
       <h2>{MailPoet.I18n.t('systemStatusQueueTitle')}</h2>
       <KeyValueTable
-        max_width={'400px'}
+        max_width="400px"
         rows={[
           {
             key: MailPoet.I18n.t('status'),
@@ -77,17 +77,6 @@ QueueStatus.propTypes = {
     }).isRequired,
     latestTasks: PropTypes.arrayOf(TasksListDataRow.propTypes.task).isRequired,
   }).isRequired,
-};
-
-QueueStatus.defaultProps = {
-  status_data: {
-    status: null,
-    started: null,
-    sent: null,
-    retry_attempt: null,
-    retry_at: null,
-    error: null,
-  },
 };
 
 export default QueueStatus;

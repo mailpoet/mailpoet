@@ -110,7 +110,7 @@ let newsletterActions = [
     name: 'view',
     link: function link(newsletter) {
       return (
-        <a href={newsletter.preview_url} target="_blank">
+        <a href={newsletter.preview_url} target="_blank" rel="noopener noreferrer">
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -214,7 +214,9 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
           </select>
         </p>
         <p>
-          { totalSentMessage } <br />
+          { totalSentMessage }
+          {' '}
+          <br />
           { totalScheduledMessage }
         </p>
       </div>
@@ -311,7 +313,9 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
             <a
               className="row-title"
               href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
-            >{ newsletter.subject }</a>
+            >
+              { newsletter.subject }
+            </a>
           </strong>
           { actions }
         </td>

@@ -39,6 +39,13 @@ class NewsletterTypes extends React.Component {
             role="button"
             tabIndex={0}
             disabled={!window.mailpoet_premium_active}
+            onKeyDown={(event) => {
+              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              ) {
+                event.preventDefault();
+                this.onClick();
+              }
+            }}
           >
             { MailPoet.I18n.t('setUp') }
           </a>
@@ -91,6 +98,13 @@ class NewsletterTypes extends React.Component {
               onClick={createStandardNewsletter}
               role="button"
               tabIndex={0}
+              onKeyDown={(event) => {
+                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                ) {
+                  event.preventDefault();
+                  createStandardNewsletter();
+                }
+              }}
             >
               {MailPoet.I18n.t('create')}
             </a>
@@ -136,6 +150,13 @@ class NewsletterTypes extends React.Component {
               onClick={createNotificationNewsletter}
               role="button"
               tabIndex={0}
+              onKeyDown={(event) => {
+                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                ) {
+                  event.preventDefault();
+                  createNotificationNewsletter();
+                }
+              }}
             >
               {MailPoet.I18n.t('setUp')}
             </a>
@@ -161,11 +182,16 @@ class NewsletterTypes extends React.Component {
                   {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
                 </div>
                 <div className="mailpoet_description">
-                  <h3>{type.title} {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}</h3>
+                  <h3>
+                    {type.title}
+                    {' '}
+                    {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
+                  </h3>
                   <p>{type.description}</p>
                   { type.videoGuide && (
-                    <a className={badgeClassName} href={type.videoGuide} target="_blank">
-                      <span className="dashicons dashicons-format-video" />{MailPoet.I18n.t('seeVideoGuide')}
+                    <a className={badgeClassName} href={type.videoGuide} target="_blank" rel="noopener noreferrer">
+                      <span className="dashicons dashicons-format-video" />
+                      {MailPoet.I18n.t('seeVideoGuide')}
                     </a>
                   ) }
                 </div>

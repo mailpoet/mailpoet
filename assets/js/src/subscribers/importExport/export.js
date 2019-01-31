@@ -23,8 +23,7 @@ define(
       if (!window.exportData.segments) {
         return;
       }
-      subscribersExportTemplate =
-      Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
+      subscribersExportTemplate = Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
 
       // render template
       jQuery('#mailpoet_subscribers_export > div.inside').html(subscribersExportTemplate(window.exportData));
@@ -89,8 +88,7 @@ define(
           })
           .on('change', function onChange() {
             if ((window.exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
-          ||
-          (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
+          || (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
             ) {
               toggleNextStepButton('on');
             } else {
@@ -153,4 +151,5 @@ define(
         });
       });
     });
-  });
+  }
+);

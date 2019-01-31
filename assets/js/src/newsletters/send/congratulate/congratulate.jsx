@@ -27,30 +27,36 @@ function renderSuccess(newsletter, testingPassed) {
       'Cron is working': 'true',
     });
   }
-  return (<Success
-    illustrationImageUrl={window.mailpoet_congratulations_success_image}
-    successClicked={successPageClosed}
-    newsletter={newsletter}
-  />);
+  return (
+    <Success
+      illustrationImageUrl={window.mailpoet_congratulations_success_image}
+      successClicked={successPageClosed}
+      newsletter={newsletter}
+    />
+  );
 }
 
 function renderFail() {
   MailPoet.trackEvent('Cron testing done', {
     'Cron is working': 'false',
   });
-  return (<Fail
-    failClicked={() => {
-      window.location = window.mailpoet_main_page;
-    }}
-  />);
+  return (
+    <Fail
+      failClicked={() => {
+        window.location = window.mailpoet_main_page;
+      }}
+    />
+  );
 }
 
 function renderLoading(showRichLoadingScreen) {
-  return (<Loading
-    illustrationImageUrl={window.mailpoet_congratulations_loading_image}
-    successClicked={successPageClosed}
-    showRichLoadingScreen={showRichLoadingScreen}
-  />);
+  return (
+    <Loading
+      illustrationImageUrl={window.mailpoet_congratulations_loading_image}
+      successClicked={successPageClosed}
+      showRichLoadingScreen={showRichLoadingScreen}
+    />
+  );
 }
 
 class Congratulate extends React.Component {
@@ -58,7 +64,6 @@ class Congratulate extends React.Component {
     super(props);
     this.state = {
       loading: true,
-      fail: false,
       newsletter: null,
       testingPassed: false,
       timeStart: moment(),
@@ -116,7 +121,8 @@ class Congratulate extends React.Component {
   renderContent() {
     if (this.state.loading || !this.state.minimumLoadingTimePassed) {
       return renderLoading(!!this.state.newsletter);
-    } else if (this.state.error) {
+    }
+    if (this.state.error) {
       return renderFail();
     }
     return renderSuccess(this.state.newsletter, this.state.testingPassed);

@@ -30,8 +30,8 @@ const timeOfDayValues = _.object(_.map(
     date.setSeconds(seconds);
     const timeLabel = MailPoet.Date.format(date, { format: timeFormat, offset: 0 });
     return [seconds, timeLabel];
-  })
-);
+  }
+));
 
 const weekDayValues = {
   0: MailPoet.I18n.t('sunday'),
