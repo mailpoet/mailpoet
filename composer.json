@@ -19,7 +19,6 @@
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
     "soundasleep/html2text": "dev-master",
-    "sabberworm/php-css-parser": "^8.1",
     "symfony/polyfill-php72": "^1.9",
     "symfony/polyfill-mbstring": "^1.9",
     "redcomponent/teststatistics": "^2.2"
