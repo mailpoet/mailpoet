@@ -11,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ShortcodesTest extends \MailPoetTest {
   function _before() {
@@ -56,7 +57,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
     $wp_user = wp_set_current_user(1);
-    expect(is_user_logged_in())->true();
+    expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->email = $wp_user->data->user_email;
@@ -72,7 +73,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
     $wp_user = wp_set_current_user(1);
-    expect(is_user_logged_in())->true();
+    expect((new WPFunctions)->isUserLoggedIn())->true();
     expect(Subscriber::findOne($wp_user->data->user_email))->false();
 
     $shortcodes = new Shortcodes();
@@ -83,7 +84,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItDoesNotDisplayManageSubscriptionFormForLoggedOutUsers() {
     wp_set_current_user(0);
-    expect(is_user_logged_in())->false();
+    expect((new WPFunctions)->isUserLoggedIn())->false();
 
     $shortcodes = new Shortcodes();
     $shortcodes->init();
@@ -93,7 +94,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
     $wp_user = wp_set_current_user(1);
-    expect(is_user_logged_in())->true();
+    expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->email = $wp_user->data->user_email;
@@ -108,7 +109,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
     $wp_user = wp_set_current_user(1);
-    expect(is_user_logged_in())->true();
+    expect((new WPFunctions)->isUserLoggedIn())->true();
     expect(Subscriber::findOne($wp_user->data->user_email))->false();
 
     $shortcodes = new Shortcodes();
@@ -119,7 +120,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItDoesNotDisplayManageSubscriptionPageForLoggedOutUsers() {
     wp_set_current_user(0);
-    expect(is_user_logged_in())->false();
+    expect((new WPFunctions)->isUserLoggedIn())->false();
 
     $shortcodes = new Shortcodes();
     $shortcodes->init();

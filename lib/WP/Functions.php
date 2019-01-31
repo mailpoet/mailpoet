@@ -32,6 +32,10 @@ class Functions {
     return call_user_func_array('home_url', func_get_args());
   }
 
+  function isUserLoggedIn() {
+    return call_user_func_array('is_user_logged_in', func_get_args());
+  }
+
   function getImageInfo($id) {
     /*
      * In some cases wp_get_attachment_image_src ignore the second parameter

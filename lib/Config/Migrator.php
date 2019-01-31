@@ -199,6 +199,7 @@ class Migrator {
       'deleted_at TIMESTAMP NULL,',
       'unconfirmed_data longtext,',
       'source ENUM("form", "imported", "administrator", "api", "wordpress_user", "unknown") DEFAULT "unknown",',
+      'count_confirmations int(11) unsigned NOT NULL DEFAULT 0,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'KEY wp_user_id (wp_user_id),',
