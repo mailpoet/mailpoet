@@ -20,7 +20,9 @@ require_once __DIR__ . '/../DataFactories/Form.php';
  * @SuppressWarnings(PHPMD)
  */
 class AcceptanceTester extends \Codeception\Actor {
-  use _generated\AcceptanceTesterActions;
+  use _generated\AcceptanceTesterActions {
+    switchToNextTab as _switchToNextTab;
+  }
 
   const WP_URL = 'http://wordpress';
   const MAIL_URL = 'http://mailhog:8025';
@@ -141,4 +143,10 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->click($button);
   }
 
+  public function switchToNextTab($offset = 1) {
+    $this->_switchToNextTab($offset);
+
+    // workaround for frozen tabs when opened by clicking on links
+    $this->wait(1);
+  }
 }
