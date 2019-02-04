@@ -35,5 +35,6 @@ if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
 }
 
 $data = \MailPoet\Cron\CronHelper::createDaemon(null);
-$trigger = new \MailPoet\Cron\Daemon();
+$container = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG);
+$trigger = $container->get(\MailPoet\Cron\Daemon::class);
 $trigger->run($data);
