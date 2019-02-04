@@ -186,36 +186,40 @@ class WooCommerceTest extends \MailPoetTest  {
     $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => '']);
     $this->woocommerce_segment->synchronizeCustomers();
     update_post_meta($user->order_id, '_billing_first_name', 'First name');
+    $this->createOrder(['email' => $user->user_email, 'first_name' => 'First name (newer)']);
     $this->woocommerce_segment->synchronizeCustomers();
     $subscriber = Subscriber::where('wp_user_id', $user->ID)->findOne();
-    expect($subscriber->first_name)->equals('First name');
+    expect($subscriber->first_name)->equals('First name (newer)');
   }
 
   function testItSynchronizesLastNamesForRegisteredCustomers() {
     $user = $this->insertRegisteredCustomerWithOrder(null, ['last_name' => '']);
     $this->woocommerce_segment->synchronizeCustomers();
     update_post_meta($user->order_id, '_billing_last_name', 'Last name');
+    $this->createOrder(['email' => $user->user_email, 'last_name' => 'Last name (newer)']);
     $this->woocommerce_segment->synchronizeCustomers();
     $subscriber = Subscriber::where('wp_user_id', $user->ID)->findOne();
-    expect($subscriber->last_name)->equals('Last name');
+    expect($subscriber->last_name)->equals('Last name (newer)');
   }
 
   function testItSynchronizesFirstNamesForGuestCustomers() {
     $guest = $this->insertGuestCustomer(null, ['first_name' => '']);
     $this->woocommerce_segment->synchronizeCustomers();
     update_post_meta($guest['order_id'], '_billing_first_name', 'First name');
+    $this->createOrder(['email' => $guest['email'], 'first_name' => 'First name (newer)']);
     $this->woocommerce_segment->synchronizeCustomers();
     $subscriber = Subscriber::where('email', $guest['email'])->findOne();
-    expect($subscriber->first_name)->equals('First name');
+    expect($subscriber->first_name)->equals('First name (newer)');
   }
 
   function testItSynchronizesLastNamesForGuestCustomers() {
     $guest = $this->insertGuestCustomer(null, ['last_name' => '']);
     $this->woocommerce_segment->synchronizeCustomers();
     update_post_meta($guest['order_id'], '_billing_last_name', 'Last name');
+    $this->createOrder(['email' => $guest['email'], 'last_name' => 'Last name (newer)']);
     $this->woocommerce_segment->synchronizeCustomers();
     $subscriber = Subscriber::where('email', $guest['email'])->findOne();
-    expect($subscriber->last_name)->equals('Last name');
+    expect($subscriber->last_name)->equals('Last name (newer)');
   }
 
   function testItSynchronizesSegment() {
