@@ -350,11 +350,12 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   handleFormChange: function handleFormChange(e) {
+    const name = e.target.name;
+    const value = e.target.value;
     this.setState((prevState) => {
       const item = prevState.item;
-      const field = e.target.name;
 
-      item[field] = e.target.value;
+      item[name] = value;
 
       return { item };
     });
