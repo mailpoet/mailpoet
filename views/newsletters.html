@@ -340,6 +340,7 @@
 <% if settings.show_intro %>
 <script>
   HS.beacon.ready(function () {
+    document.querySelector('#hs-beacon iframe').classList.add('mailpoet-chat');
     MailPoet.showIntro();
   });
 </script>
