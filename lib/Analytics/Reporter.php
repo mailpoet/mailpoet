@@ -15,8 +15,12 @@ class Reporter {
   /** @var SettingsController */
   private $settings;
 
+  /** @var WooCommerceHelper */
+  private $woocommerce_helper;
+
   public function __construct(SettingsController $settings) {
     $this->settings = $settings;
+    $this->woocommerce_helper = new WooCommerceHelper;
   }
 
   function getData() {
@@ -27,8 +31,7 @@ class Reporter {
     $checker = new ServicesChecker();
     $bounceAddress = $this->settings->get('bounce.address');
     $segments = Segment::getAnalytics();
-    $woocommerce_helper = new WooCommerceHelper;
-    $has_wc = $woocommerce_helper->isWooCommerceActive();
+    $has_wc = $this->woocommerce_helper->isWooCommerceActive();
     $wc_customers_count = 0;
     if($has_wc) {
       $wc_customers_count = (int)Newsletter::rawQuery(
