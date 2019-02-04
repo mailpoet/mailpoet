@@ -46,7 +46,7 @@ class SubscriberManagementCest {
     $I->wantTo('View list of subscribers');
     $this->generateWPUsersList($I);
     $I->searchFor('Alec Saunders', 2);
-    $I->waitForText('Alec Saunders', 10);
+    $I->waitForText('Alec Saunders');
     $I->seeNoJSErrors();
   }
 
@@ -63,7 +63,7 @@ class SubscriberManagementCest {
     $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
     $I->amOnMailPoetPage ('Subscribers');
     $I->searchFor('newglobaluser99@fakemail.fake', 2);
-    $I->waitForText('newglobaluser99@fakemail.fake', 10);
+    $I->waitForText('newglobaluser99@fakemail.fake');
     $I->seeNoJSErrors();
   }
 
@@ -93,7 +93,7 @@ class SubscriberManagementCest {
     $I->amOnMailPoetPage ('Subscribers');
     $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
-    $I->waitForText('Subscriber', 30);
+    $I->waitForText('Subscriber');
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
     $I->waitForElementNotVisible('.mailpoet_form_loading');
     $I->selectOptionInSelect2('Cooking');
@@ -109,13 +109,13 @@ class SubscriberManagementCest {
     $I->amOnMailPoetPage ('Subscribers');
     $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
-    $I->waitForText('Subscriber', 10);
+    $I->waitForText('Subscriber');
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
     $I->waitForElementNotVisible('.mailpoet_form_loading');
     $I->selectOptionInSelect2('Cooking');
     $I->click('.select2-selection__choice__remove');
     $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
-    $I->waitForText('Subscriber was updated', 10);
+    $I->waitForText('Subscriber was updated');
   }
 
   function editSubscriber(\AcceptanceTester $I) {
@@ -126,7 +126,7 @@ class SubscriberManagementCest {
     $I->amOnMailPoetPage ('Subscribers');
     $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
-    $I->waitForText('Subscriber', 10);
+    $I->waitForText('Subscriber');
     $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
   }
 

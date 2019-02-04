@@ -48,7 +48,7 @@ class DeleteNotificationCest {
     $I->clickItemRowActionByItemName($newsletter_name, 'Restore');
     $I->amOnMailpoetPage('Emails');
     $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_name, 5);
+    $I->waitForText($newsletter_name);
   }
 
   function deleteNotificationPermanently(\AcceptanceTester $I) {

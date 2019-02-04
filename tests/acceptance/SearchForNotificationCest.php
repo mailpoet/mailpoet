@@ -24,9 +24,9 @@ class SearchForNotificationCest {
     $I->waitForListingItemsToLoad();
     $I->searchFor($failure_condition_newsletter, 2);
     $I->wait(5);
-    $I->waitForElement('tr.no-items', 10);
+    $I->waitForElement('tr.no-items');
     $I->searchFor($newsletter_title);
-    $I->waitForText($newsletter_title, 10);
+    $I->waitForText($newsletter_title);
   }
 
 }

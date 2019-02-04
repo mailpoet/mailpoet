@@ -8,15 +8,15 @@ class SettingsPageBasicsCest {
     $I->login();
     $I->amOnMailPoetPage('Settings');
     //Basics Tab
-    $I->waitForText('Basics', 10);
+    $I->waitForText('Basics');
     $I->seeNoJSErrors();
     //Sign-up Confirmation Tab
     $I->click('[data-automation-id="signup_settings_tab"]');
-    $I->waitForText('Enable sign-up confirmation', 10);
+    $I->waitForText('Enable sign-up confirmation');
     $I->seeNoJSErrors();
     //Send With Tab
     $I->click('[data-automation-id="send_with_settings_tab"]');
-    $I->waitForText('MailPoet Sending Service', 10);
+    $I->waitForText('MailPoet Sending Service');
     $I->seeNoJSErrors();
     //Advanced Tab
     $I->click('[data-automation-id="settings-advanced-tab"]');
@@ -24,7 +24,7 @@ class SettingsPageBasicsCest {
     $I->seeNoJSErrors();
     //Activation Key Tab
     $I->click('[data-automation-id="activation_settings_tab"]');
-    $I->waitForText('Activation Key', 10);
+    $I->waitForText('Activation Key');
     $I->seeNoJSErrors();
   }
   function editDefaultSenderInformation(\AcceptanceTester $I) {
@@ -38,7 +38,7 @@ class SettingsPageBasicsCest {
     $I->fillField(['name' => 'reply_to[address]'], 'reply@fake.fake');
     //save settings
     $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved', 10);
+    $I->waitForText('Settings saved');
   }
   function allowSubscribeInComments(\AcceptanceTester $I) {
     $I->wantTo('Allow users to subscribe to lists in site comments');
@@ -51,9 +51,9 @@ class SettingsPageBasicsCest {
     //save settings
     $I->click('[data-automation-id="settings-submit-button"]');
     $I->amOnPage('/');
-    $I->waitForText($post_title, 10);
+    $I->waitForText($post_title);
     $I->click($post_title);
-    $I->waitForElement(['css'=>'.comment-form-mailpoet'], 10);
+    $I->waitForElement(['css'=>'.comment-form-mailpoet']);
     //clear checkbox to hide Select2 from next test
     $I->amOnMailPoetPage('Settings');
     $I->seeInCurrentUrl('page=mailpoet-settings');
@@ -62,7 +62,7 @@ class SettingsPageBasicsCest {
     $I->click('[data-automation-id="settings-submit-button"]');
     //check to make sure comment subscription form is gone
     $I->amOnPage('/');
-    $I->waitForText($post_title, 10);
+    $I->waitForText($post_title);
     $I->click($post_title);
     $I->dontSee("Yes, add me to your mailing list");    
   }

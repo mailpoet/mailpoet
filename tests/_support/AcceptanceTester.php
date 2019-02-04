@@ -22,6 +22,13 @@ require_once __DIR__ . '/../DataFactories/Form.php';
 class AcceptanceTester extends \Codeception\Actor {
   use _generated\AcceptanceTesterActions {
     switchToNextTab as _switchToNextTab;
+    waitForElement as _waitForElement;
+    waitForElementChange as _waitForElementChange;
+    waitForElementClickable as _waitForElementClickable;
+    waitForElementNotVisible as _waitForElementNotVisible;
+    waitForElementVisible as _waitForElementVisible;
+    waitForJS as _waitForJS;
+    waitForText as _waitForText;
   }
 
   const WP_URL = 'http://wordpress';
@@ -149,4 +156,40 @@ class AcceptanceTester extends \Codeception\Actor {
     // workaround for frozen tabs when opened by clicking on links
     $this->wait(1);
   }
+
+  /**
+   * Override waitFor* methods to have a common default timeout
+   */
+  public function waitForElement($element, $timeout = 10) {
+    return $this->_waitForElement($element, $this->getDefaultTimeout($timeout));
+  }
+
+  public function waitForElementChange($element, \Closure $callback, $timeout = 30) {
+    return $this->_waitForElementChange($element, $callback, $this->getDefaultTimeout($timeout));
+  }
+
+  public function waitForElementClickable($element, $timeout = 10) {
+    return $this->_waitForElementClickable($element, $this->getDefaultTimeout($timeout));
+  }
+
+  public function waitForElementNotVisible($element, $timeout = 10) {
+    return $this->_waitForElementNotVisible($element, $this->getDefaultTimeout($timeout));
+  }
+
+  public function waitForElementVisible($element, $timeout = 10) {
+    return $this->_waitForElementVisible($element, $this->getDefaultTimeout($timeout));
+  }
+
+  public function waitForJS($script, $timeout = 5) {
+    return $this->_waitForJS($script, $this->getDefaultTimeout($timeout));
+  }
+
+  public function waitForText($text, $timeout = 10, $selector = null) {
+    return $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
+  }
+
+  private function getDefaultTimeout($timeout) {
+    return (int)getenv('WAIT_TIMEOUT') ?: $timeout;
+  }
+
 }

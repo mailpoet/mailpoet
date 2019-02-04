@@ -26,7 +26,7 @@ class SearchForStandardNewsletterCest {
     $I->wait(5);
     $I->dontSee($newsletter_title);
     $I->searchFor($newsletter_title);
-    $I->waitForText($newsletter_title, 20);
+    $I->waitForText($newsletter_title);
   }
 
 }

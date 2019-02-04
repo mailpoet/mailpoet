@@ -35,7 +35,7 @@ class SavePostNotificationEmailAsTemplateCest {
     $I->fillField('template_name', $template_title);
     $I->fillField('template_description', $template_descr);
     $I->click($save_template_button);
-    $I->waitForText('Template has been saved.', 20);
+    $I->waitForText('Template has been saved.');
 
     // step 4 - Use the new template
     $I->amOnMailpoetPage('Emails');

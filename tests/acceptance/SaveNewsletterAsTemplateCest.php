@@ -29,7 +29,7 @@ class SaveNewsletterAsTemplateCest {
     $I->fillField(['name' => 'template_name'], $template_name);
     $I->fillField(['name' => 'template_description'], $template_description);
     $I->click('[data-automation-id="newsletter_save_as_template_button"]');
-    $I->waitForText('Template has been saved', 20);
+    $I->waitForText('Template has been saved');
 
     //step 4 - confirm template can be used
     $I->amOnMailpoetPage('Emails');

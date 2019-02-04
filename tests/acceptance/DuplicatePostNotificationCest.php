@@ -24,7 +24,7 @@ class DuplicatePostNotificationCest {
     $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 3 - Duplicate post notification
-    $I->waitForText($newsletter_title, 10);
+    $I->waitForText($newsletter_title);
     $I->clickItemRowActionByItemName($newsletter_title, 'Duplicate');
     $I->waitForText('Copy of ' . $newsletter_title);
     $I->waitForListingItemsToLoad();
