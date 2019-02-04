@@ -86,26 +86,19 @@ class WooCommerce {
 
     if($wc_order === false or $wc_segment === false) return;
 
-    $current_filter = $current_filter ?: $this->wp->currentFilter();
-    switch($current_filter) {
-      case 'woocommerce_checkout_update_order_meta':
-      case 'woocommerce_process_shop_order_meta':
-      default:
-        $inserted_emails = $this->insertSubscribersFromOrders($order_id);
-        if(empty($inserted_emails[0]['email'])) {
-          return false;
-        }
-        $subscriber = Subscriber::where('email', $inserted_emails[0]['email'])
-          ->findOne();
+    $inserted_emails = $this->insertSubscribersFromOrders($order_id);
+    if(empty($inserted_emails[0]['email'])) {
+      return false;
+    }
+    $subscriber = Subscriber::where('email', $inserted_emails[0]['email'])
+      ->findOne();
 
-        if($subscriber !== false) {
-          // add subscriber to the WooCommerce Customers segment
-          SubscriberSegment::subscribeToSegments(
-            $subscriber,
-            array($wc_segment->id)
-          );
-        }
-        break;
+    if($subscriber !== false) {
+      // add subscriber to the WooCommerce Customers segment
+      SubscriberSegment::subscribeToSegments(
+        $subscriber,
+        array($wc_segment->id)
+      );
     }
   }
 
