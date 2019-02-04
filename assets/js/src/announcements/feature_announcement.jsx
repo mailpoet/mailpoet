@@ -20,6 +20,7 @@ class FeatureAnnouncement extends React.Component {
   loadBeamer() {
     window.beamer_config = {
       product_id: 'VvHbhYWy7118',
+      selector: '#beamer-empty-element',
       language: window.mailpoet_user_locale,
       callback: this.beamerCallback,
     };
@@ -78,6 +79,7 @@ class FeatureAnnouncement extends React.Component {
         >
           <span className="mailpoet_feature_announcement_icon dashicons dashicons-carrot" />
         </button>
+        <span id="beamer-empty-element" />
       </div>
     );
   }
