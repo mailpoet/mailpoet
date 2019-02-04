@@ -5,6 +5,7 @@ namespace MailPoet\Test\Segments;
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 use Carbon\Carbon;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -16,7 +17,7 @@ class WooCommerceTest extends \MailPoetTest  {
   private $userEmails = array();
 
   function _before() {
-    $this->woocommerce_segment = new WooCommerceSegment;
+    $this->woocommerce_segment = ContainerWrapper::getInstance()->get(WooCommerceSegment::class);
     $this->cleanData();
     $this->addCustomerRole();
   }
