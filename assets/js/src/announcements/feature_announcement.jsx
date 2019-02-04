@@ -8,33 +8,48 @@ class FeatureAnnouncement extends React.Component {
     super(props);
     this.loadBeamer = this.loadBeamer.bind(this);
     this.beamerCallback = this.beamerCallback.bind(this);
+    this.showBeamer = this.showBeamer.bind(this);
 
     this.state = {
       showDot: props.hasNews,
       beamerLoaded: typeof window.Beamer !== 'undefined',
+      beamerInitialized: false,
     };
   }
 
-  loadBeamer(e) {
-    e.preventDefault();
-    if (!this.state.beamerLoaded) {
-      window.beamer_config = {
-        product_id: 'VvHbhYWy7118',
-        selector: 'beamer-selector',
-        language: window.mailpoet_user_locale,
-        callback: this.beamerCallback,
-      };
-      MailPoet.Modal.loading(true);
-      this.setState({ beamerLoaded: true });
-      window.mailpoet_feature_announcement_has_news = false;
-      const s = document.createElement('script');
-      s.type = 'text/javascript';
-      s.src = 'https://app.getbeamer.com/js/beamer-embed.js';
-      document.getElementsByTagName('body')[0].appendChild(s);
-    }
+  loadBeamer() {
+    window.beamer_config = {
+      product_id: 'VvHbhYWy7118',
+      selector: '#beamer-empty-element',
+      language: window.mailpoet_user_locale,
+      callback: this.beamerCallback,
+    };
+    MailPoet.Modal.loading(true);
+    window.mailpoet_feature_announcement_has_news = false;
+    this.setState({ beamerLoaded: true });
+    const s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.src = 'https://app.getbeamer.com/js/beamer-embed.js';
+    document.getElementsByTagName('body')[0].appendChild(s);
   }
 
   beamerCallback() {
+    // We show Beamer panel only on first callback after initialization
+    if (this.state.beamerInitialized) {
+      return;
+    }
+    this.showBeamer();
+    this.setState({ beamerInitialized: true });
+  }
+
+  showBeamer(event) {
+    if (event) {
+      event.preventDefault();
+    }
+    if (!this.state.beamerLoaded) {
+      this.loadBeamer();
+      return;
+    }
     this.setState({ showDot: false });
     MailPoet.Modal.loading(false);
     window.Beamer.show();
@@ -58,15 +73,14 @@ class FeatureAnnouncement extends React.Component {
       <div className="mailpoet_feature_announcement">
         <button
           type="button"
-          id="beamer-selector"
-          onClick={this.loadBeamer}
+          onClick={this.showBeamer}
           className={buttonClasses}
           title={MailPoet.I18n.t('whatsNew')}
         >
           <span className="mailpoet_feature_announcement_icon dashicons dashicons-carrot" />
         </button>
+        <span id="beamer-empty-element" />
       </div>
-
     );
   }
 }
