@@ -52,25 +52,25 @@ class Hooks {
       (bool)$subscribe['on_comment']['enabled']
     ) {
       if($this->wp->isUserLoggedIn()) {
-        add_action(
+        $this->wp->addAction(
           'comment_form_field_comment',
           '\MailPoet\Subscription\Comment::extendLoggedInForm'
         );
       } else {
-        add_action(
+        $this->wp->addAction(
           'comment_form_after_fields',
           '\MailPoet\Subscription\Comment::extendLoggedOutForm'
         );
       }
 
-      add_action(
+      $this->wp->addAction(
         'comment_post',
         '\MailPoet\Subscription\Comment::onSubmit',
         60,
         2
       );
 
-      add_action(
+      $this->wp->addAction(
         'wp_set_comment_status',
         '\MailPoet\Subscription\Comment::onStatusUpdate',
         60,
@@ -85,22 +85,22 @@ class Hooks {
       (bool)$subscribe['on_register']['enabled']
     ) {
       if(is_multisite()) {
-        add_action(
+        $this->wp->addAction(
           'signup_extra_fields',
           '\MailPoet\Subscription\Registration::extendForm'
         );
-        add_action(
+        $this->wp->addAction(
           'wpmu_validate_user_signup',
           '\MailPoet\Subscription\Registration::onMultiSiteRegister',
           60,
           1
         );
       } else {
-        add_action(
+        $this->wp->addAction(
           'register_form',
           '\MailPoet\Subscription\Registration::extendForm'
         );
-        add_action(
+        $this->wp->addAction(
           'register_post',
           '\MailPoet\Subscription\Registration::onRegister',
           60,
@@ -110,21 +110,21 @@ class Hooks {
     }
 
     // Manage subscription
-    add_action(
+    $this->wp->addAction(
       'admin_post_mailpoet_subscription_update',
       '\MailPoet\Subscription\Manage::onSave'
     );
-    add_action(
+    $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_update',
       '\MailPoet\Subscription\Manage::onSave'
     );
 
     // Subscription form
-    add_action(
+    $this->wp->addAction(
       'admin_post_mailpoet_subscription_form',
       [$this->subscription_form, 'onSubmit']
     );
-    add_action(
+    $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_form',
       [$this->subscription_form, 'onSubmit']
     );
@@ -132,33 +132,33 @@ class Hooks {
 
   function setupWPUsers() {
     // WP Users synchronization
-    add_action(
+    $this->wp->addAction(
       'user_register',
       '\MailPoet\Segments\WP::synchronizeUser',
       6
     );
-    add_action(
+    $this->wp->addAction(
       'added_existing_user',
       '\MailPoet\Segments\WP::synchronizeUser',
       6
     );
-    add_action(
+    $this->wp->addAction(
       'profile_update',
       '\MailPoet\Segments\WP::synchronizeUser',
       6, 2
     );
-    add_action(
+    $this->wp->addAction(
       'delete_user',
       '\MailPoet\Segments\WP::synchronizeUser',
       1
     );
     // multisite
-    add_action(
+    $this->wp->addAction(
       'deleted_user',
       '\MailPoet\Segments\WP::synchronizeUser',
       1
     );
-    add_action(
+    $this->wp->addAction(
       'remove_user_from_blog',
       '\MailPoet\Segments\WP::synchronizeUser',
       1
@@ -167,27 +167,27 @@ class Hooks {
 
   function setupWooCommerceUsers() {
     // WooCommerce Customers synchronization
-    add_action(
+    $this->wp->addAction(
       'woocommerce_new_customer',
       [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
       7
     );
-    add_action(
+    $this->wp->addAction(
       'woocommerce_update_customer',
       [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
       7
     );
-    add_action(
+    $this->wp->addAction(
       'woocommerce_delete_customer',
       [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
       7
     );
-    add_action(
+    $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
       [$this->woocommerce_segment, 'synchronizeGuestCustomer'],
       7
     );
-    add_action(
+    $this->wp->addAction(
       'woocommerce_process_shop_order_meta',
       [$this->woocommerce_segment, 'synchronizeGuestCustomer'],
       7
@@ -195,7 +195,7 @@ class Hooks {
   }
 
   function setupImageSize() {
-    add_filter(
+    $this->wp->addFilter(
       'image_size_names_choose',
       array($this, 'appendImageSize'),
       10, 1
@@ -209,7 +209,7 @@ class Hooks {
   }
 
   function setupListing() {
-    add_filter(
+    $this->wp->addFilter(
       'set-screen-option',
       array($this, 'setScreenOption'),
       10, 3
@@ -225,7 +225,7 @@ class Hooks {
   }
 
   function setupPostNotifications() {
-    add_action(
+    $this->wp->addAction(
       'transition_post_status',
       '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook',
       10, 3
