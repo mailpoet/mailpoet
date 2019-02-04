@@ -8,6 +8,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -15,8 +16,12 @@ class WooCommerce {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings) {
+  /** @var WPFunctions */
+  private $wp;
+
+  function __construct(SettingsController $settings, WPFunctions $wp) {
     $this->settings = $settings;
+    $this->wp = $wp;
   }
 
   function synchronizeRegisteredCustomer($wp_user_id, $current_filter = null) {
@@ -28,7 +33,7 @@ class WooCommerce {
 
     if($wc_segment === false) return;
 
-    $current_filter = $current_filter ?: current_filter();
+    $current_filter = $current_filter ?: $this->wp->currentFilter();
     switch($current_filter) {
       case 'woocommerce_delete_customer':
         // subscriber should be already deleted in WP users sync
@@ -38,7 +43,7 @@ class WooCommerce {
         $new_customer = true;
       case 'woocommerce_update_customer':
       default:
-        $wp_user = \get_userdata($wp_user_id);
+        $wp_user = $this->wp->getUserdata($wp_user_id);
         $subscriber = Subscriber::where('wp_user_id', $wp_user_id)
           ->findOne();
 
@@ -76,12 +81,12 @@ class WooCommerce {
       return false; // temporarily disable hooks (except for testing)
     }
 
-    $wc_order = \get_post($order_id);
+    $wc_order = $this->wp->getPost($order_id);
     $wc_segment = Segment::getWooCommerceSegment();
 
     if($wc_order === false or $wc_segment === false) return;
 
-    $current_filter = $current_filter ?: current_filter();
+    $current_filter = $current_filter ?: $this->wp->currentFilter();
     switch($current_filter) {
       case 'woocommerce_checkout_update_order_meta':
       case 'woocommerce_process_shop_order_meta':

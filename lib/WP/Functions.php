@@ -52,6 +52,10 @@ class Functions {
     return call_user_func_array('remove_all_filters', func_get_args());
   }
 
+  function currentFilter() {
+    return call_user_func_array('current_filter', func_get_args());
+  }
+
   function currentTime() {
     return call_user_func_array('current_time', func_get_args());
   }
@@ -63,9 +67,17 @@ class Functions {
   function isUserLoggedIn() {
     return call_user_func_array('is_user_logged_in', func_get_args());
   }
-  
+
   function getOption() {
     return call_user_func_array('get_option', func_get_args());
+  }
+
+  function getUserdata() {
+    return call_user_func_array('get_userdata', func_get_args());
+  }
+
+  function getPost() {
+    return call_user_func_array('get_post', func_get_args());
   }
 
   function wpEncodeEmoji() {
