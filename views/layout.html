@@ -114,19 +114,6 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
   }
 </script>
 
-<% if has_valid_premium_key == false and mailpoet_installed_in_last_two_weeks() %>
-  <script type="text/javascript" async>;(function(o,l,a,r,k,y){if(o.olark)return;r="script";y=l.createElement(r);r=l.getElementsByTagName(r)[0];y.async=1;y.src="//"+a;r.parentNode.insertBefore(y,r);y=o.olark=function(){k.s.push(arguments);k.t.push(+new Date)};y.extend=function(i,j){y("extend",i,j)};y.identify=function(i){y("identify",k.i=i)};y.configure=function(i,j){y("configure",i,j);k.c[i]=j};k=y._={s:[],t:[+new Date],c:{},l:a};})(window,document,"static.olark.com/jsclient/loader.js");olark.identify('2129-842-10-9194');</script>
-
-  <script type="text/javascript">
-    // we want to display Olark instead of HS beacon only if a supporter is active on Olark
-    // (this means that HS beacon is always initialized and Olark can replace it anytime)
-    olark('api.box.onShow', function() {
-      jQuery('#hs-beacon')
-        .addClass('hs-beacon-hidden')
-        .hide();
-    });
-  </script>
-<% endif %>
 
 <script>
   // SatisMeter for tracking NPS score

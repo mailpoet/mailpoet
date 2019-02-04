@@ -80,11 +80,6 @@ class Functions extends \Twig_Extension {
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
-        'mailpoet_installed_in_last_two_weeks',
-        array($this, 'installedInLastTwoWeeks'),
-        array('is_safe' => array('all'))
-      ),
-      new \Twig_SimpleFunction(
         'wp_time_format',
         array($this, 'getWPTimeFormat'),
         array('is_safe' => array('all'))

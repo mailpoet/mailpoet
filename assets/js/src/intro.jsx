@@ -11,7 +11,7 @@ const introSteps = [
     intro: MailPoet.I18n.t('introForms'),
   },
   {
-    element: '#hs-beacon:not(.hs-beacon-hidden) iframe, .olark-launch-button',
+    element: '.mailpoet-chat',
     intro: MailPoet.I18n.t('introChat'),
   },
   {
@@ -47,13 +47,6 @@ function Intro() {
     scrollToElement: false,
     showStepNumbers: false,
     tooltipPosition: 'auto',
-  });
-
-  intro.onbeforechange(() => {
-    // evaluate step selector again since DOM might have changed (HelpScout -> Olark)
-    const step = intro._currentStep; // eslint-disable-line no-underscore-dangle
-    const element = introSteps[step].element;
-    intro._introItems[step].element = typeof element === 'string' ? document.querySelector(element) : element; // eslint-disable-line no-underscore-dangle
   });
 
   intro.onafterchange((targetElement) => {
