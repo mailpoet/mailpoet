@@ -373,6 +373,30 @@ jobs:
       - store_artifacts:
           path: /tmp/fake-mailer/
           destination: fake-mailer
+  build_release_zip:
+    working_directory: /home/circleci/mailpoet
+    docker:
+      - image: mailpoet/wordpress:7.1_20181009.1
+      - image: circleci/mysql:5.7
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Set up environment"
+          command: |
+            source ./.circleci/setup.bash && setup php7
+            sudo apt-get update
+            sudo apt-get install python-pip gettext
+            sudo pip install transifex-client
+            mv wordpress ..
+            sed -i 's/^WP_ROOT=.*$/WP_ROOT=\/home\/circleci\/wordpress/g' .env
+      - run:
+          name: "Build"
+          command: ./build.sh
+      - store_artifacts:
+          path: /home/circleci/mailpoet/mailpoet.zip
 
 workflows:
   version: 2
@@ -436,3 +460,12 @@ workflows:
           filters:
             branches:
               only: master
+      - build_release_zip:
+          requires:
+            - build_and_code_qa
+            - acceptance_tests_1
+            - acceptance_tests_2
+            - acceptance_tests_3
+            - acceptance_tests_4
+            - php5_integration_and_js
+            - php7_integration
