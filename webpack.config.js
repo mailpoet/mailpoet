@@ -10,6 +10,7 @@ const manifestSeed = {};
 // Base config
 const baseConfig = {
   mode: PRODUCTION_ENV ? 'production' : 'development',
+  devtool: PRODUCTION_ENV ? undefined : 'eval-source-map',
   cache: true,
   context: __dirname,
   watchOptions: {
@@ -57,7 +58,7 @@ const baseConfig = {
   },
   plugins: [
     new webpackCleanPlugin([
-      './assets/dist/js/*.*',
+      './assets/dist/js/*',
     ]),
   ],
   module: {
