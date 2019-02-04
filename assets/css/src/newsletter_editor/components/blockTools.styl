@@ -10,41 +10,47 @@ $master-column-tool-width = 24px
 
 .mailpoet_tools
   position: absolute
-  top: 0
-  right: 0
+  bottom: 100%
+  left: 50%
   z-index: 20
-  padding: 2px
+  min-width: 200px
   text-align: right
   overflow: hidden
+  text-align: center
+  transform: translateX(-50%)
+  transition: visibility 0s linear 250ms
+  visibility: hidden
 
   .mailpoet_tool_slider
+    padding: 2px
     position: relative
-    right: -100%
+    transform: translateY(100%)
     transition: all 250ms cubic-bezier(0.420, 0.000, 0.580, 1.000)
-    opacity: 0
 
-  &.mailpoet_display_tools
-    .mailpoet_tool_slider
-      right: 0
-      opacity: 1
+  &.mailpoet_display_tools .mailpoet_tool_slider
+    transform: translateY(0)
+    transition: all 250ms cubic-bezier(0.420, 0.000, 0.580, 1.000), visibility 0s linear
+    visibility: visible
 
   a
     vertical-align: top
 
   .mailpoet_container_horizontal + &
+    bottom: auto
     left: 100%
-    right: initial
-    padding-left: 5px
+    top: 0
+    transform: none
+    min-width: 0
 
     .mailpoet_tool_slider
-      left: -100%
-      right: initial
+      padding-left: 5px
+      transform: translateY(0) translateX(-100%)
 
     &.mailpoet_display_tools
       z-index: 21
 
       .mailpoet_tool_slider
-        left: 0
+        transform: translateY(0) translateX(0)
 
     .mailpoet_tool
       width: $master-column-tool-width
