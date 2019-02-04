@@ -31,10 +31,11 @@ class EditExistingNewsletterCest {
     $I->fillField($title_element, $newsletter_title);
     $I->click('Next');
 
-    // step 4 - Choose list and save
+    // step 4 - Edit sender, choose list, and save
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
     $I->waitForElement($send_form_element);
     $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
+    $I->fillField('#field_sender_name', 'Test sender');
     $I->selectOptionInSelect2('WordPress Users');
     $I->click('Save as draft and close');
     $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
