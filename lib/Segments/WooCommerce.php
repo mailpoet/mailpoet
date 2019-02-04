@@ -4,16 +4,23 @@ namespace MailPoet\Segments;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Setting;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 
 if(!defined('ABSPATH')) exit;
 
 class WooCommerce {
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(SettingsController $settings) {
+    $this->settings = $settings;
+  }
+
   function synchronizeRegisteredCustomer($wp_user_id, $current_filter = null) {
-    if(!$current_filter && !Setting::getValue('enable_wc_hooks_testing')) {
+    if(!$current_filter && !$this->settings->get('enable_wc_hooks_testing')) {
       return false; // temporarily disable hooks (except for testing)
     }
 
@@ -65,7 +72,7 @@ class WooCommerce {
   }
 
   function synchronizeGuestCustomer($order_id, $current_filter = null) {
-    if(!$current_filter && !Setting::getValue('enable_wc_hooks_testing')) {
+    if(!$current_filter && !$this->settings->get('enable_wc_hooks_testing')) {
       return false; // temporarily disable hooks (except for testing)
     }
 
