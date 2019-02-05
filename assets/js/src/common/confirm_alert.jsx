@@ -1,78 +1,53 @@
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOMServer from 'react-dom/server';
 
-class ConfirmAlert extends React.Component {
-  static propTypes = {
-    title: PropTypes.string,
-    message: PropTypes.string.isRequired,
-    cancelLabel: PropTypes.string,
-    confirmLabel: PropTypes.string,
-    onConfirm: PropTypes.func.isRequired,
-  }
+const ConfirmAlert = (props) => {
+  MailPoet.Modal.popup({
+    title: props.title,
+    template: ReactDOMServer.renderToString(
+      <>
+        <p>{props.message}</p>
+        <button id="mailpoet_alert_cancel" className="button button-secondary" type="button">
+          {props.cancelLabel}
+        </button>
+        <button id="mailpoet_alert_confirm" className="button button-primary" type="submit">
+          {props.confirmLabel}
+        </button>
+      </>
+    ),
+    onInit: () => {
+      document
+        .getElementById('mailpoet_alert_confirm')
+        .addEventListener('click', () => {
+          MailPoet.Modal.close();
+          props.onConfirm();
+        });
 
-  static defaultProps = {
-    title: MailPoet.I18n.t('confirmTitle'),
-    cancelLabel: MailPoet.I18n.t('cancelLabel'),
-    confirmLabel: MailPoet.I18n.t('confirmLabel'),
-  }
+      document
+        .getElementById('mailpoet_alert_cancel')
+        .addEventListener('click', () => MailPoet.Modal.close());
+    },
+  });
+  return null;
+};
 
-  constructor(props) {
-    super(props);
-    this.state = { show: true };
-  }
+ConfirmAlert.propTypes = {
+  title: PropTypes.string,
+  message: PropTypes.string.isRequired,
+  cancelLabel: PropTypes.string,
+  confirmLabel: PropTypes.string,
+  onConfirm: PropTypes.func.isRequired,
+};
 
-  componentWillUpdate = () => {
-    if (!this.state.show) {
-      this.setState({ show: true });
-    }
-  }
-
-  onClose = () => {
-    this.setState({ show: false });
-  }
-
-  onConfirm = () => {
-    this.onClose();
-    this.props.onConfirm();
-  }
-
-  render() {
-    const {
-      title, message, confirmLabel, cancelLabel,
-    } = this.props;
-
-    return (this.state.show
-      && (
-        <div className="mailpoet_modal_overlay">
-          <div className="mailpoet_popup" tabIndex="-1">
-            <div className="mailpoet_popup_wrapper">
-              <button className="mailpoet_modal_close" onClick={this.onClose} type="button" />
-              {title
-              && (
-                <div className="mailpoet_popup_title">
-                  <h2>{title}</h2>
-                </div>
-              )
-              }
-              <div className="mailpoet_popup_body clearfix">
-                <p className="mailpoet_hp_email_label">{message}</p>
-                <button className="button button-secondary" onClick={this.onClose} type="button">
-                  {cancelLabel}
-                </button>
-                <button className="button button-primary" onClick={this.onConfirm} type="submit">
-                  {confirmLabel}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    );
-  }
-}
+ConfirmAlert.defaultProps = {
+  title: MailPoet.I18n.t('confirmTitle'),
+  cancelLabel: MailPoet.I18n.t('cancelLabel'),
+  confirmLabel: MailPoet.I18n.t('confirmLabel'),
+};
 
 export default function confirmAlert(props) {
-  ReactDOM.render(<ConfirmAlert {...props} />, document.getElementById('mailpoet_confirm_alert_holder'));
+  // the below render is only to invoke proptypes on ConfirmAlert
+  ReactDOMServer.renderToString(<ConfirmAlert {...props} />);
 }
