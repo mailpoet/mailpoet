@@ -96,9 +96,9 @@ class TemplateBox extends React.Component {
     } = this.props;
 
     const deleteLink = (
-      <div className="mailpoet_delete button button-secondary">
-        <a href="javascript:;" onClick={this.onDelete}>{MailPoet.I18n.t('delete')}</a>
-      </div>
+      <button className="mailpoet_delete button button-secondary" onClick={this.onDelete} type="button">
+        {MailPoet.I18n.t('delete')}
+      </button>
     );
 
     let preview = '';
