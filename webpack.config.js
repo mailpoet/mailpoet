@@ -24,6 +24,7 @@ const baseConfig = {
           // preserve identifier names for easier debugging & support
           mangle: false,
         },
+        parallel: false,
       }),
     ],
   },
