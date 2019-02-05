@@ -59,7 +59,6 @@ class FeatureAnnouncement extends React.Component {
         <a
           href=""
           id="beamer-selector"
-          data-automation-id="beamer-icon"
           onClick={this.loadBeamer}
           className={buttonClasses}
           title={MailPoet.I18n.t('whatsNew')}
