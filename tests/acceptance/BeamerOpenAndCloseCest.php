@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class BeamerOpenAndCloseCest {
-  function openAndCloseBeamer(\AcceptanceTester $I){
+  function openAndCloseBeamer(\AcceptanceTester $I) {
     $I->wantTo('Open and close Beamer sidebar');
     $I->login();
     $I->amOnMailPoetPage('Emails');
