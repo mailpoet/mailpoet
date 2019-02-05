@@ -222,6 +222,10 @@
     var mailpoet_installed_at = <%= json_encode(settings.installed_at) %>;
     <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     var mailpoet_is_new_user = <%= newUser %>;
+    var mailpoet_settings_sender_name = "<%= settings.sender.name %>";
+    var mailpoet_settings_sender_adddress = "<%= settings.sender.address %>";
+    var mailpoet_settings_reply_to_name = "<%= settings.reply_to.name %>";
+    var mailpoet_settings_reply_to_address = "<%= settings.reply_to.address %>";
   </script>
 <% endblock %>
 <% block translations %>
