@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.18.2
+Stable tag: 3.19.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,17 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.19.0 - 2019-02-05 =
+* Added: more clarity for image and column block settings. Thanks focus group testers!;
+* Added: further subscription limits to avoid subscription confirmation email abuse;
+* Updated: MailPoet's logo in footer of emails;
+* Fixed: Linux cron fatal error;
+* Fixed: JS error with WP 5.0 when adding new form;
+* Fixed: buttons in bold show as bold in settings;
+* Fixed: handling of small images with a "Full width" option enabled;
+* Fixed: link colors in text blocks are correctly shown in the inbox;
+* Fixed: announcement sidebar stays closed.
 
 = 3.18.2 - 2019-01-29 =
 * Added: by popular demand, new option to receive a summary email of a campaign's open and click rates;
