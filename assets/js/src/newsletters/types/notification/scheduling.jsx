@@ -52,7 +52,13 @@ class NotificationScheduling extends React.Component {
     });
   };
 
-  handleIntervalChange = event => this.handleValueChange('intervalType', event.target.value);
+  handleIntervalChange = (event) => {
+    const intervalType = event.target.value;
+    this.handleValueChange('intervalType', intervalType);
+    if (intervalType === 'monthly') {
+      this.handleValueChange('monthDay', '1');
+    }
+  }
 
   handleTimeOfDayChange = event => this.handleValueChange('timeOfDay', event.target.value);
 
