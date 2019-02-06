@@ -550,6 +550,22 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  function changelogUpdate($opts = ['version-name' => null]) {
+    $this->say("Updating changelog");
+    $outputs = $this->getChangelogController()->update($opts['version-name']);
+    if($opts['quiet']) {
+      return;
+    }
+    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n\n");
+    $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
+  }
+
+  function changelogGet($opts = ['version-name' => null]) {
+    $outputs = $this->getChangelogController()->get($opts['version-name']);
+    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n");
+    $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
+  }
+
   protected function loadEnv() {
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
@@ -559,6 +575,17 @@ class RoboFile extends \Robo\Tasks {
     $data = file_get_contents($file);
     preg_match('/^[ \t*]*Version:(.*)$/mi', $data, $m);
     return !empty($m[1]) ? trim($m[1]) : false;
+  }
+
+  protected function getChangelogController() {
+    require_once './tasks/release/ChangelogController.php';
+    $this->loadEnv();
+    return \MailPoetTasks\Release\ChangelogController::createWithJiraCredentials(
+      getenv('WP_JIRA_TOKEN'),
+      getenv('WP_JIRA_USER'),
+      \MailPoetTasks\Release\Jira::PROJECT_MAILPOET,
+      __DIR__ . '/readme.txt'
+    );
   }
 
   public function testAcceptanceGroupTests() {
