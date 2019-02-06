@@ -1,7 +1,6 @@
-/* eslint-disable func-names */
-define('handlebars_helpers', ['handlebars'], function (Handlebars) {
+define('handlebars_helpers', ['handlebars'], function handlebarsHelpers(Handlebars) {
   // Handlebars helpers
-  Handlebars.registerHelper('concat', function () {
+  Handlebars.registerHelper('concat', function concatHelper() {
     var size = (arguments.length - 1);
     var output = '';
     var i;
@@ -11,10 +10,10 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return output;
   });
 
-  Handlebars.registerHelper('number_format', function (value) {
+  Handlebars.registerHelper('number_format', function numberFormatHelper(value) {
     return Number(value).toLocaleString();
   });
-  Handlebars.registerHelper('date_format', function (timestamp, block) {
+  Handlebars.registerHelper('date_format', function dateFormatHelper(timestamp, block) {
     var f;
     if (window.moment) {
       if (timestamp === undefined || Number.isNaN(timestamp) || timestamp <= 0) {
@@ -32,12 +31,12 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return timestamp;
   });
 
-  Handlebars.registerHelper('cycle', function (value, block) {
+  Handlebars.registerHelper('cycle', function cycleHelper(value, block) {
     var values = value.split(' ');
     return values[block.data.index % (values.length + 1)];
   });
 
-  Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+  Handlebars.registerHelper('ifCond', function ifCondHelper(v1, operator, v2, options) {
     switch (operator) {
       case '==':
         return (v1 == v2) ? options.fn(this) : options.inverse(this); // eslint-disable-line eqeqeq
@@ -66,35 +65,35 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     }
   });
 
-  Handlebars.registerHelper('nl2br', function (value) {
+  Handlebars.registerHelper('nl2br', function nl2brHelper(value) {
     return value.gsub('\n', '<br />');
   });
 
-  Handlebars.registerHelper('json_encode', function (value) {
+  Handlebars.registerHelper('json_encode', function jsonEncodeHelper(value) {
     return JSON.stringify(value);
   });
 
-  Handlebars.registerHelper('json_decode', function (value) {
+  Handlebars.registerHelper('json_decode', function jsonDecodeHelper(value) {
     return JSON.parse(value);
   });
-  Handlebars.registerHelper('url', function (value) {
+  Handlebars.registerHelper('url', function urlHelper(value) {
     var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
     return url + value;
   });
-  Handlebars.registerHelper('emailFromMailto', function (value) {
+  Handlebars.registerHelper('emailFromMailto', function emailFromMailtoHelper(value) {
     var mailtoMatchingRegex = /^mailto:/i;
     if (typeof value === 'string' && value.match(mailtoMatchingRegex)) {
       return value.replace(mailtoMatchingRegex, '');
     }
     return value;
   });
-  Handlebars.registerHelper('lookup', function (obj, field) {
+  Handlebars.registerHelper('lookup', function lookupHelper(obj, field) {
     return obj && obj[field];
   });
 
 
-  Handlebars.registerHelper('rsa_key', function (value) {
+  Handlebars.registerHelper('rsa_key', function rsaKeyHelper(value) {
     var lines;
     // extract all lines into an array
     if (value === undefined) return '';
@@ -109,7 +108,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return lines.join('');
   });
 
-  Handlebars.registerHelper('trim', function (value) {
+  Handlebars.registerHelper('trim', function trimHelper(value) {
     if (value === null || value === undefined) return '';
     return value.trim();
   });
@@ -124,7 +123,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
    * @param  {String} append   The string to append if charaters are omitted.
    * @return {String}          The truncated string.
    */
-  Handlebars.registerHelper('ellipsis', function (str, limit, append) {
+  Handlebars.registerHelper('ellipsis', function ellipsisHelper(str, limit, append) {
     var strAppend = append;
     var sanitized = str.replace(/(<([^>]+)>)/g, '');
     if (strAppend === undefined) {
@@ -136,11 +135,11 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return sanitized;
   });
 
-  Handlebars.registerHelper('getNumber', function (string) {
+  Handlebars.registerHelper('getNumber', function getNumberHelper(string) {
     return parseInt(string, 10);
   });
 
-  Handlebars.registerHelper('fontWithFallback', function (font) {
+  Handlebars.registerHelper('fontWithFallback', function fontWithFallbackHelper(font) {
     switch (font) {
       case 'Arial': return new Handlebars.SafeString("Arial, 'Helvetica Neue', Helvetica, sans-serif");
       case 'Comic Sans MS': return new Handlebars.SafeString("'Comic Sans MS', 'Marker Felt-Thin', Arial, sans-serif");
@@ -161,6 +160,10 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       case 'Playfair Display': return new Handlebars.SafeString("playfair display, georgia, 'times new roman', serif");
       case 'Roboto': return new Handlebars.SafeString("roboto, 'helvetica neue', helvetica, arial, sans-serif");
       case 'Source Sans Pro': return new Handlebars.SafeString("'source sans pro', 'helvetica neue', helvetica, arial, sans-serif");
+      case 'Oswald': return new Handlebars.SafeString("Oswald, 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif");
+      case 'Raleway': return new Handlebars.SafeString("Raleway, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif");
+      case 'Permanent Marker': return new Handlebars.SafeString("'Permanent Marker', Tahoma, Verdana, Segoe, sans-serif");
+      case 'Pacifico': return new Handlebars.SafeString("Pacifico, 'Arial Narrow', Arial, sans-serif");
       default: return font;
     }
   });

@@ -36,6 +36,10 @@ class StylesHelper {
     'Playfair Display' => "'playfair display', georgia, 'times new roman', serif",
     'Roboto' => "roboto, 'helvetica neue', helvetica, arial, sans-serif",
     'Source Sans Pro' => "'source sans pro', 'helvetica neue', helvetica, arial, sans-serif",
+    'Oswald' => "Oswald, 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif",
+    'Raleway' => "Raleway, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif",
+    'Permanent Marker' => "'Permanent Marker', Tahoma, Verdana, Segoe, sans-serif",
+    'Pacifico' => "Pacifico, 'Arial Narrow', Arial, sans-serif",
   ];
   static $custom_fonts = [
     'Arvo',
@@ -48,6 +52,10 @@ class StylesHelper {
     'Playfair Display',
     'Roboto',
     'Source Sans Pro',
+    'Oswald',
+    'Raleway',
+    'Permanent Marker',
+    'Pacifico',
   ];
   static $line_height_multiplier = 1.6;
   static $heading_margin_multiplier = 0.3;
@@ -140,7 +148,7 @@ class StylesHelper {
     foreach(self::getCustomFontsNames($styles) as $name) {
       $links[] = urlencode($name) . ':400,400i,700,700i';
     }
-    if(!count($links)) { 
+    if(!count($links)) {
       return '';
     }
     return '<!--[if !mso]><link href="https://fonts.googleapis.com/css?family='

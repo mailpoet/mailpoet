@@ -87,7 +87,21 @@ class Menu {
         // Disable WP emojis to not interfere with the newsletter editor emoji handling
         $this->disableWPEmojis();
         add_action('admin_head', function() {
-          echo '<!--[if !mso]><link href="https://fonts.googleapis.com/css?family=Arvo:400,400i,700,700i|Lato:400,400i,700,700i|Lora:400,400i,700,700i|Merriweather:400,400i,700,700i|Merriweather+Sans:400,400i,700,700i|Noticia+Text:400,400i,700,700i|Open+Sans:400,400i,700,700i|Playfair+Display:400,400i,700,700i|Roboto:400,400i,700,700i|Source+Sans+Pro:400,400i,700,700i" rel="stylesheet"><![endif]-->';
+          $fonts = 'Arvo:400,400i,700,700i'
+           . '|Lato:400,400i,700,700i'
+           . '|Lora:400,400i,700,700i'
+           . '|Merriweather:400,400i,700,700i'
+           . '|Merriweather+Sans:400,400i,700,700i'
+           . '|Noticia+Text:400,400i,700,700i'
+           . '|Open+Sans:400,400i,700,700i'
+           . '|Playfair+Display:400,400i,700,700i'
+           . '|Roboto:400,400i,700,700i'
+           . '|Source+Sans+Pro:400,400i,700,700i'
+           . '|Oswald:400,400i,700,700i'
+           . '|Raleway:400,400i,700,700i'
+           . '|Permanent+Marker:400,400i,700,700i'
+           . '|Pacifico:400,400i,700,700i';
+          echo '<!--[if !mso]><link href="https://fonts.googleapis.com/css?family=' . $fonts . '" rel="stylesheet"><![endif]-->';
         });
       }
     }
