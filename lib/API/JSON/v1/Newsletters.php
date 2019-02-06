@@ -101,6 +101,9 @@ class Newsletters extends APIEndpoint {
     $errors = $newsletter->getErrors();
 
     if(!empty($errors)) return $this->badRequest($errors);
+    // Re-fetch newsletter to sync changes made by DB
+    // updated_at column use CURRENT_TIMESTAMP for update and this change is not updated automatically by ORM
+    $newsletter = Newsletter::findOne($newsletter->id);
 
     if(!empty($segments)) {
       NewsletterSegment::where('newsletter_id', $newsletter->id)
