@@ -101,6 +101,9 @@ $ ./do qa:lint:javascript  # JS code linter.
 $ ./do qa:phpstan          # PHP code static analysis using PHPStan.
 $ ./do qa                  # PHP and JS linters.
 
+$ ./do changelog:get  [--version-name=...]     # Prints out changelog and release notes for given version or for newest version.
+$ ./do changelog:update  [--version-name=...] [--quiet] # Updates changelog in readme.txt for given version or for newest version.
+
 $ ./do container:dump      # Generates DI container cache.
 ```
 
