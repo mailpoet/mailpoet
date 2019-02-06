@@ -31,6 +31,7 @@ class NewslettersListingCest {
     $I->click('[data-automation-id="settings-advanced-tab"]');
     $I->click('[data-automation-id="tracking-disabled-radio"]');
     $I->click('[data-automation-id="settings-submit-button"]');
+    $I->waitForText('Settings saved');
 
     $I->amOnMailpoetPage('Emails');
     $I->waitForText('Subject');
@@ -41,6 +42,7 @@ class NewslettersListingCest {
     $I->click('[data-automation-id="settings-advanced-tab"]');
     $I->click('[data-automation-id="tracking-enabled-radio"]');
     $I->click('[data-automation-id="settings-submit-button"]');
+    $I->waitForText('Settings saved');
 
     $I->amOnMailpoetPage('Emails');
     $I->waitForText('Subject');
