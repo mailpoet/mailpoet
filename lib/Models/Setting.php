@@ -21,6 +21,15 @@ class Setting extends Model {
     ));
   }
 
+  /**
+   * This method is here only for BC fix of 3rd party plugin hacky integration
+   * @deprecated
+   */
+  public static function getValue($key, $default = null) {
+    $settings = new SettingsController();
+    $settings->get($key, $default);
+  }
+
   public static function getAll() {
     $settingsCollection = self::findMany();
     $settings = array();
