@@ -15,5 +15,5 @@ volumes:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=host.docker.internal,lock
+      o: addr=host.docker.internal,nolock
       device: ":${PWD}/../.."
