@@ -5,6 +5,7 @@ import MailPoet from 'mailpoet';
 import Handlebars from 'handlebars';
 import Papa from 'papaparse';
 import Moment from 'moment';
+import sanitizeCSVData from './sanitize_csv_data.jsx';
 
 jQuery(document).ready(() => {
   if (!jQuery('#mailpoet_subscribers_import').length) {
@@ -96,138 +97,19 @@ jQuery(document).ready(() => {
       element.closest('table a').addClass(disabled);
     }
 
-    function parseCSV(isFile) {
-      let processedSubscribers = [];
-      const parsedEmails = [];
-      const duplicateEmails = [];
-      const invalidEmails = [];
-      let emailColumnPosition = null;
-      let columnCount = null;
-      let isHeaderFound = false;
-      const advancedOptionHeader = true;
-      const advancedOptionDelimiter = '';
-      const advancedOptionNewline = '';
-      const advancedOptionComments = false;
-      // trim spaces, commas, periods,
-      // single/double quotes and convert to lowercase
-      const detectAndCleanupEmail = (emailString) => {
-        let test;
-        // decode HTML entities
-        let email = jQuery('<div />').html(emailString).text();
-        email = email
-          .toLowerCase()
-          // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
-          // right trim non-printable characters (e.g., "email@email.com�")
-          .replace(/^["';.,\s]+|[^\x20-\x7E]+$|["';.,_\s]+$/g, '')
-          // remove spaces (e.g., "email @ email . com")
-          // remove urlencoded characters
-          .replace(/\s+|%\d+|,+/g, '');
-        // detect e-mails that will be otherwise rejected by email regex
-        test = /<(.*?)>/.exec(email);
-        if (test) {
-          // is the email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
-          email = test[1].trim();
-        }
-        test = /mailto:(?:\s+)?(.*)/.exec(email);
-        if (test) {
-          // is the email in 'mailto:email' format?
-          email = test[1].trim();
-        }
-
-        // validate email
-        if (!window.mailpoet_email_regex.test(email)) {
-          return false;
-        }
-        return email;
-      };
-
+    function papaParserConfig(isFile) {
       return {
         skipEmptyLines: true,
-        delimiter: advancedOptionDelimiter,
-        newline: advancedOptionNewline,
-        comments: advancedOptionComments,
         error() {
           MailPoet.Notice.hide();
           MailPoet.Notice.error(MailPoet.I18n.t('dataProcessingError'));
         },
         complete(CSV) {
-          let email;
-          let emailAddress;
-          let rowData;
-          let rowColumnCount;
-          let errorNotice;
-          Object.keys(CSV.data).forEach((rowCount) => {
-            rowData = CSV.data[rowCount].map(el => el.trim());
-            rowColumnCount = rowData.length;
-            // set the number of row elements based on the first non-empty row
-            if (columnCount === null) {
-              columnCount = rowColumnCount;
-            }
-            // Process the row with the following assumptions:
-            // 1. Each row should contain the same number of elements
-            // 2. There should be at least 1 valid (as per HTML5 e-mail regex)
-            // e-mail address on each row EXCEPT when the header option is set to true
-            // 3. Duplicate addresses are skipped
-            if (rowColumnCount === columnCount) {
-              // determine position of email address inside an array; this is
-              // done once and then email regex is run just on that element for each row
-              if (emailColumnPosition === null) {
-                Object.keys(rowData).forEach((column) => {
-                  emailAddress = detectAndCleanupEmail(rowData[column]);
-                  if (emailColumnPosition === null
-                    && window.mailpoet_email_regex.test(emailAddress)) {
-                    emailColumnPosition = column;
-                    // add current e-mail to an object index
-                    parsedEmails[emailAddress] = true;
-                    rowData[column] = emailAddress;
-                    processedSubscribers[emailAddress] = rowData;
-                  }
-                });
-                if (emailColumnPosition === null
-                  && advancedOptionHeader
-                  && parseInt(rowCount, 10) === 0) {
-                  isHeaderFound = true;
-                  processedSubscribers[0] = rowData;
-                }
-              } else if (rowData[emailColumnPosition] !== '') {
-                email = detectAndCleanupEmail(rowData[emailColumnPosition]);
-                if (_.has(parsedEmails, email)) {
-                  duplicateEmails.push(email);
-                } else if (!window.mailpoet_email_regex.test(email)) {
-                  invalidEmails.push(rowData[emailColumnPosition]);
-                } else {
-                  // if we haven't yet processed this e-mail and it passed
-                  // the regex test, then process the row
-                  parsedEmails[email] = true;
-                  rowData[emailColumnPosition] = email;
-                  processedSubscribers[email] = rowData;
-                }
-              }
-            }
-          });
-          // reindex array to avoid non-numeric indices
-          processedSubscribers = _.values(processedSubscribers);
-          // if the header options is set, there should be at least
-          // 2 data rows, otherwise at least 1 data row
-          if (
-            processedSubscribers
-            && (
-              (isHeaderFound && processedSubscribers.length >= 2)
-              || (!isHeaderFound && processedSubscribers.length >= 1)
-            )
-          ) {
+          const sanitizedData = sanitizeCSVData(CSV.data);
+          if (sanitizedData) {
             // since we assume that the header line is always present, we need
             // to detect the header by checking if it contains a valid e-mail address
-            window.importData.step1 = {
-              header: (!window.mailpoet_email_regex.test(
-                processedSubscribers[0][emailColumnPosition]
-              )
-              ) ? processedSubscribers.shift() : null,
-              subscribers: processedSubscribers,
-              subscribersCount: processedSubscribers.length,
-              duplicate: duplicateEmails,
-              invalid: invalidEmails,
-            };
+            window.importData.step1 = sanitizedData;
             MailPoet.trackEvent('Subscribers import started', {
               source: isFile ? 'file upload' : 'pasted data',
               'MailPoet Free version': window.mailpoet_version,
@@ -235,7 +117,7 @@ jQuery(document).ready(() => {
             router.navigate('step2', { trigger: true });
           } else {
             MailPoet.Modal.loading(false);
-            errorNotice = MailPoet.I18n.t('noValidRecords');
+            let errorNotice = MailPoet.I18n.t('noValidRecords');
             errorNotice = errorNotice.replace('[link]', MailPoet.I18n.t('csvKBLink'));
             errorNotice = errorNotice.replace('[/link]', '</a>');
             MailPoet.Notice.error(errorNotice);
@@ -306,13 +188,13 @@ jQuery(document).ready(() => {
       // delay loading indicator for 10ms or else it's just too fast :)
       MailPoet.Modal.loading(true);
       setTimeout(() => {
-        Papa.parse(pasteInputElement.val(), parseCSV(false));
+        Papa.parse(pasteInputElement.val(), papaParserConfig(false));
       }, 10);
     });
 
     /*
-       *  CSV file
-       */
+     *  CSV file
+     */
     uploadElement.change(() => {
       const ext = this.value.match(/[^.]+$/);
       MailPoet.Notice.hide();
@@ -333,15 +215,15 @@ jQuery(document).ready(() => {
         MailPoet.Modal.loading(true);
         setTimeout(() => {
           uploadElement.parse({
-            config: parseCSV(true),
+            config: papaParserConfig(true),
           });
         }, 10);
       }
     });
 
     /*
-       *  MailChimp
-       */
+     *  MailChimp
+     */
     mailChimpKeyInputElement.keyup(() => {
       if (this.value.trim() === ''
         || !/[a-zA-Z0-9]{32}-/.exec(this.value.trim())) {
