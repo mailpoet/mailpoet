@@ -21,13 +21,13 @@ $master-column-tool-width = 24px
   transition: visibility 0s linear 250ms
   visibility: hidden
 
-  .mailpoet_tool_slider
+  .mailpoet_tools_slider
     padding: 2px
     position: relative
     transform: translateY(100%)
     transition: all 250ms cubic-bezier(0.420, 0.000, 0.580, 1.000)
 
-  &.mailpoet_display_tools .mailpoet_tool_slider
+  &.mailpoet_display_tools .mailpoet_tools_slider
     transform: translateY(0)
     transition: all 250ms cubic-bezier(0.420, 0.000, 0.580, 1.000), visibility 0s linear
     visibility: visible
@@ -42,14 +42,14 @@ $master-column-tool-width = 24px
     transform: none
     min-width: 0
 
-    .mailpoet_tool_slider
+    .mailpoet_tools_slider
       padding-left: 5px
       transform: translateY(0) translateX(-100%)
 
     &.mailpoet_display_tools
       z-index: 21
 
-      .mailpoet_tool_slider
+      .mailpoet_tools_slider
         transform: translateY(0) translateX(0)
 
     .mailpoet_tool
