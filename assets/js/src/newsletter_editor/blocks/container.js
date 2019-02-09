@@ -196,12 +196,14 @@ define([
     showTools: function () {
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
         this.$(this.ui.tools).addClass('mailpoet_display_tools');
+        this.$el.addClass('mailpoet_highlight');
         this.toolsView.triggerMethod('showTools');
       }
     },
     hideTools: function () {
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
         this.$(this.ui.tools).removeClass('mailpoet_display_tools');
+        this.$el.removeClass('mailpoet_highlight');
         this.toolsView.triggerMethod('hideTools');
       }
     },
