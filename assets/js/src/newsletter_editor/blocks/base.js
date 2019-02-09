@@ -90,8 +90,7 @@ define([
           }
           return undefined;
         }
-      },
-      HighlightEditingBehavior: {}
+      }
     },
     templateContext: function templateContext() {
       return {
