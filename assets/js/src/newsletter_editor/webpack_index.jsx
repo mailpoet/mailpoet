@@ -26,8 +26,6 @@ import 'newsletter_editor/behaviors/BehaviorsLookup.js'; // side effect - assing
 import 'newsletter_editor/behaviors/ColorPickerBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/ContainerDropZoneBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/DraggableBehavior.js'; // side effect - assigns to BehaviorsLookup
-import 'newsletter_editor/behaviors/HighlightContainerBehavior.js'; // side effect - assigns to BehaviorsLookup
-import 'newsletter_editor/behaviors/HighlightEditingBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/MediaManagerBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/ResizableBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/SortableBehavior.js'; // side effect - assigns to BehaviorsLookup
