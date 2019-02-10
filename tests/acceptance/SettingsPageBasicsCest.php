@@ -53,6 +53,7 @@ class SettingsPageBasicsCest {
     $I->amOnPage('/');
     $I->waitForText($post_title);
     $I->click($post_title);
+    $I->scrollTo('.comment-form-mailpoet');
     $I->waitForElement(['css'=>'.comment-form-mailpoet']);
     //clear checkbox to hide Select2 from next test
     $I->amOnMailPoetPage('Settings');
