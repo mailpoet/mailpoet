@@ -31,7 +31,7 @@ class SettingsArchivePageCest {
     $segment2 = $segment_factory->withName('SentNewsletters')->create();
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment2])->create();
-    $pageTitle2='SentNewsletterArchive';
+    $pageTitle2 = 'SentNewsletterArchive';
     $pageContent2 = escapeshellarg("[mailpoet_archive segments=\"$segment2->id\"]");
     $I->cli("post create --allow-root --post_type=page --post_status=publish --post_title=$pageTitle2 --post_content=$pageContent2");
     $I->login();
