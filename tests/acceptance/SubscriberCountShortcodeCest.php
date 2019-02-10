@@ -15,17 +15,17 @@ class SubscriberCountShortcodeCest {
     $segment = $segment_factory->withName('SubscriberCount')->create();
     $subscriber_factory = new Subscriber();
     $subscriber_factory->withSegments([$segment])->create();
-    $pageTitle='OurSubscribers';
-    $pageContent='[mailpoet_subscribers_count\ segments="' . $segment->id . '"]';
-    $I->cli('post create --allow-root --post_type=page --post_title=' . $pageTitle . '  --post_content=' . $pageContent);
+    $pageTitle = 'OurSubscribers';
+    $pageText = 'Your subscriber count is';
+    $pageContent = escapeshellarg("$pageText [mailpoet_subscribers_count segments=\"$segment->id\"]");
+    $I->cli("post create --allow-root --post_type=page --post_status=publish --post_title=$pageTitle --post_content=$pageContent");
     $I->login();
     $I->amOnPage('/wp-admin/edit.php?post_type=page');
     $I->waitForText($pageTitle);
     $I->click($pageTitle);
-    $I->click('Publish');
     //see live page with shortcode output
-    $I->click('View page');
+    $I->click('View Page');
     $I->waitForText($pageTitle);
-    $I->waitForText('1');
+    $I->waitForText("$pageText 1");
   }
 } 
