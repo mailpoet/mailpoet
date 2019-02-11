@@ -18,6 +18,7 @@ class ConfirmationEmailMailer {
 
   /** @var WPFunctions */
   private $wp;
+
   /** @var SettingsController */
   private $settings;
 
@@ -28,7 +29,9 @@ class ConfirmationEmailMailer {
     if($mailer) {
       $this->mailer = $mailer;
     }
-    if(!$wp) {
+    if($wp) {
+      $this->wp = $wp;
+    } else {
       $this->wp = new WPFunctions;
     }
     $this->settings = new SettingsController();
