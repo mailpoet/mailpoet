@@ -8,11 +8,11 @@
     <a class="page-title-action" href="?page=mailpoet-subscribers#/"><%= __('Back to Subscribers') %></a>
   </h1>
   <!-- STEP 1: method selection -->
-  <% include 'subscribers/importExport/import/step1.html' %>
-  <!-- STEP 2: subscriber data manipulation -->
-  <% include 'subscribers/importExport/import/step2.html' %>
-  <!-- STEP 3: results -->
-  <% include 'subscribers/importExport/import/step3.html' %>
+  <% include 'subscribers/importExport/import/step_method_selection.html' %>
+  <!-- STEP 3: subscriber data manipulation -->
+  <% include 'subscribers/importExport/import/step_data_manipulation.html' %>
+  <!-- STEP 4: results -->
+  <% include 'subscribers/importExport/import/step_results.html' %>
 </div>
 
 <%= stylesheet('importExport.css') %>

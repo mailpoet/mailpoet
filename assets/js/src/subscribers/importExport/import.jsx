@@ -17,12 +17,12 @@ jQuery(document).ready(() => {
   const router = new (Backbone.Router.extend({
     routes: {
       '': 'home',
-      step1: 'step1',
-      step2: 'step2',
-      step3: 'step3',
+      step_method_selection: 'step_method_selection',
+      step_data_manipulation: 'step_data_manipulation',
+      step_results: 'step_results',
     },
     home() {
-      this.navigate('step1', { trigger: true });
+      this.navigate('step_method_selection', { trigger: true });
     },
   }))();
 
@@ -33,10 +33,7 @@ jQuery(document).ready(() => {
     jQuery(window.location.hash).show();
   }
 
-  /*
-     *  STEP 1 (upload or copy/paste)
-     */
-  router.on('route:step1', () => {
+  router.on('route:step_method_selection', () => {
     // set or reset temporary validation rule on all columns
     window.mailpoetColumns = jQuery.map(window.mailpoetColumns, (column) => {
       const col = column;
@@ -44,7 +41,7 @@ jQuery(document).ready(() => {
       return col;
     });
 
-    if (typeof (window.importData.step1) !== 'undefined') {
+    if (typeof (window.importData.step_method_selection) !== 'undefined') {
       showCurrentStep();
       return;
     }
@@ -110,12 +107,12 @@ jQuery(document).ready(() => {
           if (sanitizedData) {
             // since we assume that the header line is always present, we need
             // to detect the header by checking if it contains a valid e-mail address
-            window.importData.step1 = sanitizedData;
+            window.importData.step_method_selection = sanitizedData;
             MailPoet.trackEvent('Subscribers import started', {
               source: isFile ? 'file upload' : 'pasted data',
               'MailPoet Free version': window.mailpoet_version,
             });
-            router.navigate('step2', { trigger: true });
+            router.navigate('step_data_manipulation', { trigger: true });
           } else {
             MailPoet.Modal.loading(false);
             let errorNotice = MailPoet.I18n.t('noValidRecords');
@@ -170,6 +167,10 @@ jQuery(document).ready(() => {
         if (jQuery(event.currentTarget).val() === '') {
           jQuery(event.currentTarget).attr('value', pasteInputPlaceholderElement).css('color', '#999');
         }
+        toggleNextStepButton(
+          pasteProcessButtonElement,
+          (event.currentTarget.value.trim() !== '') ? 'on' : 'off'
+        );
       })
       .keyup((event) => {
         toggleNextStepButton(
@@ -285,12 +286,12 @@ jQuery(document).ready(() => {
       }).always(() => {
         MailPoet.Modal.loading(false);
       }).done((response) => {
-        window.importData.step1 = response.data;
+        window.importData.step_method_selection = response.data;
         MailPoet.trackEvent('Subscribers import started', {
           source: 'MailChimp',
           'MailPoet Free version': window.mailpoet_version,
         });
-        router.navigate('step2', { trigger: true });
+        router.navigate('step_data_manipulation', { trigger: true });
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
@@ -302,19 +303,19 @@ jQuery(document).ready(() => {
     });
   });
 
-  router.on('route:step2', () => {
+  router.on('route:step_data_manipulation', () => {
     let fillerPosition;
     let importResults;
     let duplicates;
-    if (typeof (window.importData.step1) === 'undefined') {
-      router.navigate('step1', { trigger: true });
+    if (typeof (window.importData.step_method_selection) === 'undefined') {
+      router.navigate('step_method_selection', { trigger: true });
       return;
     }
     // define reusable variables
-    const nextStepButton = jQuery('#step2_process');
-    const previousStepButton = jQuery('#return_to_step1');
+    const nextStepButton = jQuery('#next_step');
+    const previousStepButton = jQuery('#return_to_previous');
     // create a copy of subscribers object for further manipulation
-    const subscribers = jQuery.extend(true, {}, window.importData.step1);
+    const subscribers = jQuery.extend(true, {}, window.importData.step_method_selection);
     const subscribersDataTemplate = Handlebars.compile(jQuery('#subscribers_data_template').html());
     const subscribersDataTemplatePartial = Handlebars.compile(jQuery('#subscribers_data_template_partial').html());
     const subscribersDataParseResultsTemplate = Handlebars.compile(jQuery('#subscribers_data_parse_results_template').html());
@@ -818,7 +819,7 @@ jQuery(document).ready(() => {
       });
 
     previousStepButton.off().on('click', () => {
-      router.navigate('step1', { trigger: true });
+      router.navigate('step_method_selection', { trigger: true });
     });
 
     nextStepButton.off().on('click', (event) => {
@@ -847,7 +848,10 @@ jQuery(document).ready(() => {
           return res;
         }, [])
       );
-      const clickSubscribers = splitSubscribers(window.importData.step1.subscribers, batchSize);
+      const clickSubscribers = splitSubscribers(
+        window.importData.step_method_selection.subscribers,
+        batchSize
+      );
 
       _.each(jQuery('select.mailpoet_subscribers_column_data_match'),
         (column, columnIndex) => {
@@ -907,9 +911,9 @@ jQuery(document).ready(() => {
           window.mailpoetSegments = clickImportResults.segments;
           clickImportResults.segments = _.map(segmentSelectElement.select2('data'),
             data => data.name);
-          window.importData.step2 = clickImportResults;
+          window.importData.step_data_manipulation = clickImportResults;
           enableSegmentSelection(window.mailpoetSegments);
-          router.navigate('step3', { trigger: true });
+          router.navigate('step_results', { trigger: true });
         }
       });
     });
@@ -918,21 +922,21 @@ jQuery(document).ready(() => {
     enableSegmentSelection(window.mailpoetSegments);
   });
 
-  router.on('route:step3', () => {
-    if (typeof (window.importData.step2) === 'undefined') {
-      router.navigate('step2', { trigger: true });
+  router.on('route:step_results', () => {
+    if (typeof (window.importData.step_data_manipulation) === 'undefined') {
+      router.navigate('step_data_manipulation', { trigger: true });
       return;
     }
 
     showCurrentStep();
 
-    if (window.importData.step2.errors.length > 0) {
-      MailPoet.Notice.error(_.flatten(window.importData.step2.errors));
+    if (window.importData.step_data_manipulation.errors.length > 0) {
+      MailPoet.Notice.error(_.flatten(window.importData.step_data_manipulation.errors));
     }
 
     MailPoet.trackEvent('Subscribers import finished', {
-      'Subscribers created': window.importData.step2.created,
-      'Subscribers updated': window.importData.step2.updated,
+      'Subscribers created': window.importData.step_data_manipulation.created,
+      'Subscribers updated': window.importData.step_data_manipulation.updated,
       'MailPoet Free version': window.mailpoet_version,
     });
 
@@ -940,19 +944,22 @@ jQuery(document).ready(() => {
     const subscribersDataImportResultsTemplate = Handlebars.compile(jQuery('#subscribers_data_import_results_template').html());
     const exportMenuElement = jQuery('span.mailpoet_export');
     const importResults = {
-      created: (window.importData.step2.created)
+      created: (window.importData.step_data_manipulation.created)
         ? MailPoet.I18n.t('subscribersCreated')
-          .replace('%1$s', `<strong>${window.importData.step2.created.toLocaleString()}</strong>`)
-          .replace('%2$s', `"${window.importData.step2.segments.join('", "')}"`)
+          .replace('%1$s', `<strong>${window.importData.step_data_manipulation.created.toLocaleString()}</strong>`)
+          .replace('%2$s', `"${window.importData.step_data_manipulation.segments.join('", "')}"`)
         : false,
-      updated: (window.importData.step2.updated)
+      updated: (window.importData.step_data_manipulation.updated)
         ? MailPoet.I18n.t('subscribersUpdated')
-          .replace('%1$s', `<strong>${window.importData.step2.updated.toLocaleString()}</strong>`)
-          .replace('%2$s', `"${window.importData.step2.segments.join('", "')}"`)
+          .replace('%1$s', `<strong>${window.importData.step_data_manipulation.updated.toLocaleString()}</strong>`)
+          .replace('%2$s', `"${window.importData.step_data_manipulation.segments.join('", "')}"`)
         : false,
-      no_action: (!window.importData.step2.created && !window.importData.step2.updated),
+      no_action: (
+        !window.importData.step_data_manipulation.created
+        && !window.importData.step_data_manipulation.updated
+      ),
       added_to_segment_with_welcome_notification:
-      window.importData.step2.added_to_segment_with_welcome_notification,
+      window.importData.step_data_manipulation.added_to_segment_with_welcome_notification,
     };
 
     jQuery('#subscribers_data_import_results')
@@ -961,7 +968,7 @@ jQuery(document).ready(() => {
 
     jQuery('a.mailpoet_import_again').off().click(() => {
       jQuery('#subscribers_data_import_results').hide();
-      router.navigate('step1', { trigger: true });
+      router.navigate('step_method_selection', { trigger: true });
     });
 
     jQuery('a.mailpoet_view_subscribers').off().click(() => {
@@ -975,7 +982,8 @@ jQuery(document).ready(() => {
     }
 
     // reset previous step's data so that coming back to this step is prevented
-    window.importData.step2 = undefined;
+    window.importData.step_method_selection = undefined;
+    window.importData.step_data_manipulation = undefined;
   });
 
   if (!Backbone.History.started) {
