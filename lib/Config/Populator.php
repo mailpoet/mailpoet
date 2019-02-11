@@ -77,7 +77,7 @@ class Populator {
       'ScienceWeekly',
 
       'BrandingAgencyNews',
-      'CityNews',
+      'CityLocalNews',
       'College',
       'ComputerRepair',
       'Engineering',
@@ -86,7 +86,7 @@ class Populator {
       'PrimarySchool',
       'RenewableEnergy',
       'Software',
-      'WordpressTheme',
+      'WordPressTheme',
 
       'WineCity',
       'DogFood',

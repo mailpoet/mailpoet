@@ -2,19 +2,19 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
-class WordpressTheme {
+class WordPressTheme {
 
   private $template_image_url;
   private $social_icon_url;
 
   function __construct($assets_url) {
-    $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/wordpress-theme';
+    $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/word-press-theme';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
   function get() {
     return array(
-      'name' => __("Wordpress Theme", 'mailpoet'),
+      'name' => __("WordPress Theme", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -278,7 +278,7 @@ class WordpressTheme {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -288,7 +288,7 @@ class WordpressTheme {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -298,7 +298,7 @@ class WordpressTheme {
                         'type' => 'socialIcon',
                         'iconType' => 'website',
                         'link' => '',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Website.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Website.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Website',
@@ -308,7 +308,7 @@ class WordpressTheme {
                         'type' => 'socialIcon',
                         'iconType' => 'email',
                         'link' => '',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Email',
@@ -326,14 +326,14 @@ class WordpressTheme {
             'orientation' => 'horizontal',
             'image' => 
             array (
-              'src' => $this->template_image_url . '/Wordpress-Header.jpg',
+              'src' => $this->template_image_url . '/Wordpress-Header-b.jpg',
               'display' => 'scale',
             ),
             'styles' => 
             array (
               'block' => 
               array (
-                'backgroundColor' => 'transparent',
+                'backgroundColor' => '#2d557f',
               ),
             ),
             'blocks' => 
@@ -376,13 +376,18 @@ class WordpressTheme {
                   ),
                   2 => 
                   array (
-                    'type' => 'spacer',
+                    'type' => 'image',
+                    'link' => '',
+                    'src' => $this->template_image_url . '/Wordpress-Header-img.png',
+                    'alt' => 'Wordpress-Header-img',
+                    'fullWidth' => false,
+                    'width' => '1134px',
+                    'height' => '898px',
                     'styles' => 
                     array (
                       'block' => 
                       array (
-                        'backgroundColor' => 'transparent',
-                        'height' => '550px',
+                        'textAlign' => 'center',
                       ),
                     ),
                   ),
