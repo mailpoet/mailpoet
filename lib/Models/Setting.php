@@ -26,6 +26,7 @@ class Setting extends Model {
    * @deprecated
    */
   public static function getValue($key, $default = null) {
+    trigger_error('Calling Settings::getValue() is deprecated and will be removed. Use \MailPoet\Settings\SettingsController instead.', E_USER_DEPRECATED);
     $settings = new SettingsController();
     $settings->get($key, $default);
   }
