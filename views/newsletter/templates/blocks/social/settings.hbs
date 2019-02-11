@@ -4,19 +4,19 @@
     <div class="mailpoet_form_field_radio_option">
         <label>
             <input type="radio" name="alignment" class="mailpoet_social_block_alignment" value="left" {{#ifCond model.styles.block.textAlign '===' 'left'}}CHECKED{{/ifCond}}/>
-            <%= __('Left') %>
+            <%= _x('Left', 'Visual alignment settings') %>
         </label>
     </div>
     <div class="mailpoet_form_field_radio_option">
         <label>
             <input type="radio" name="alignment" class="mailpoet_social_block_alignment" value="center" {{#ifCond model.styles.block.textAlign '===' 'center'}}CHECKED{{/ifCond}}/>
-            <%= __('Center') %>
+            <%= _x('Center', 'Visual alignment settings') %>
         </label>
     </div>
     <div class="mailpoet_form_field_radio_option">
         <label>
             <input type="radio" name="alignment" class="mailpoet_social_block_alignment" value="right" {{#ifCond model.styles.block.textAlign '===' 'right'}}CHECKED{{/ifCond}}/>
-            <%= __('Right') %>
+            <%= _x('Right', 'Visual alignment settings') %>
         </label>
     </div>
 </div>
