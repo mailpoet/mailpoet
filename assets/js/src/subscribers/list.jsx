@@ -355,7 +355,7 @@ class SubscriberList extends React.Component {
           </Link>
           <a
             className="page-title-action"
-            href="?page=mailpoet-import#step1"
+            href="?page=mailpoet-import"
           >
             {MailPoet.I18n.t('import')}
           </a>
