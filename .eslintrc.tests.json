@@ -8,9 +8,11 @@
     "ecmaVersion": 6
   },
   "rules": {
+    "no-only-tests/no-only-tests": 2,
     // Exceptions
     "func-names": 0,
     // Temporary
     "no-underscore-dangle": 0
-  }
+  },
+  "plugins": ["no-only-tests"]
 }
