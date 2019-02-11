@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import _ from 'underscore';
 import jQuery from 'jquery';
+import 'asyncqueue';
 import MailPoet from 'mailpoet';
 import Handlebars from 'handlebars';
 import Papa from 'papaparse';
