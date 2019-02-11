@@ -144,8 +144,8 @@ jQuery(document).ready(() => {
               return item.name;
             },
           })
-          .change(() => {
-            if (jQuery(this).val() !== null) {
+          .change((event) => {
+            if (jQuery(event.currentTarget).val() !== null) {
               toggleNextStepButton(mailChimpProcessButtonElement, 'on');
             } else {
               toggleNextStepButton(mailChimpProcessButtonElement, 'off');
@@ -157,24 +157,24 @@ jQuery(document).ready(() => {
     }
 
     /*
-       *  Paste
-       */
+     *  Paste
+     */
     pasteInputElement
       .attr('value', pasteInputPlaceholderElement).css('color', '#999')
-      .focus(() => {
-        if (jQuery(this).val() === pasteInputPlaceholderElement) {
-          jQuery(this).attr('value', '').css('color', '#222');
+      .focus((event) => {
+        if (jQuery(event.currentTarget).val() === pasteInputPlaceholderElement) {
+          jQuery(event.currentTarget).attr('value', '').css('color', '#222');
         }
       })
-      .blur(() => {
-        if (jQuery(this).val() === '') {
-          jQuery(this).attr('value', pasteInputPlaceholderElement).css('color', '#999');
+      .blur((event) => {
+        if (jQuery(event.currentTarget).val() === '') {
+          jQuery(event.currentTarget).attr('value', pasteInputPlaceholderElement).css('color', '#999');
         }
       })
-      .keyup(() => {
+      .keyup((event) => {
         toggleNextStepButton(
           pasteProcessButtonElement,
-          (this.value.trim() !== '') ? 'on' : 'off'
+          (event.currentTarget.value.trim() !== '') ? 'on' : 'off'
         );
       });
 
@@ -196,17 +196,17 @@ jQuery(document).ready(() => {
     /*
      *  CSV file
      */
-    uploadElement.change(() => {
-      const ext = this.value.match(/[^.]+$/);
+    uploadElement.change((event) => {
+      const ext = event.currentTarget.value.match(/[^.]+$/);
       MailPoet.Notice.hide();
       if (ext === null || ext[0].toLowerCase() !== 'csv') {
-        this.value = '';
+        event.currentTarget.value.val('');
         MailPoet.Notice.error(MailPoet.I18n.t('wrongFileFormat'));
       }
 
       toggleNextStepButton(
         uploadProcessButtonElement,
-        (this.value.trim() !== '') ? 'on' : 'off'
+        (event.currentTarget.value.trim() !== '') ? 'on' : 'off'
       );
     });
 
@@ -225,9 +225,9 @@ jQuery(document).ready(() => {
     /*
      *  MailChimp
      */
-    mailChimpKeyInputElement.keyup(() => {
-      if (this.value.trim() === ''
-        || !/[a-zA-Z0-9]{32}-/.exec(this.value.trim())) {
+    mailChimpKeyInputElement.keyup((event) => {
+      if (event.currentTarget.value.trim() === ''
+        || !/[a-zA-Z0-9]{32}-/.exec(event.currentTarget.value.trim())) {
         mailChimpListsContainerElement.hide();
         jQuery('.mailpoet_mailchimp-key-status')
           .html('')
@@ -380,12 +380,12 @@ jQuery(document).ready(() => {
     }
 
     jQuery('.mailpoet_subscribers_data_parse_results_details_show')
-      .click(() => {
+      .click((event) => {
         const details = jQuery('.mailpoet_subscribers_data_parse_results_details');
         jQuery(details).toggle();
-        this.text = (jQuery(details).is(':visible'))
+        event.currentTarget.text((jQuery(details).is(':visible'))
           ? MailPoet.I18n.t('hideDetails')
-          : MailPoet.I18n.t('showDetails');
+          : MailPoet.I18n.t('showDetails'));
       });
 
     // show available segments
@@ -417,9 +417,9 @@ jQuery(document).ready(() => {
             return `${i.name} (${i.subscriberCount.toLocaleString()})`;
           },
         })
-        .change(() => {
+        .change((event) => {
           const segmentSelectionNotice = jQuery('[data-id="notice_segmentSelection"]');
-          if (!this.value) {
+          if (!event.currentTarget.value) {
             if (!segmentSelectionNotice.length) {
               MailPoet.Notice.error(MailPoet.I18n.t('segmentSelectionRequired'), {
                 static: true,
@@ -721,7 +721,7 @@ jQuery(document).ready(() => {
         },
       })
       .on('select2:selecting', (selectEvent) => {
-        const selectElement = this;
+        const selectElement = selectEvent.currentTarget;
         const selectedOptionId = selectEvent.params.args.data.id;
         // CREATE CUSTOM FIELD
         if (selectedOptionId === 'create') {
@@ -733,7 +733,7 @@ jQuery(document).ready(() => {
           });
           jQuery('#form_field_new').parsley().on('form:submit', () => {
             // get data
-            const data = jQuery(this.$element).mailpoetSerializeObject();
+            const data = jQuery(selectElement.$element).mailpoetSerializeObject();
 
             // save custom field
             MailPoet.Ajax.post({
@@ -760,7 +760,7 @@ jQuery(document).ready(() => {
               window.mailpoetColumns.push(newColumnData);
               jQuery('select.mailpoet_subscribers_column_data_match')
                 .each(() => {
-                  jQuery(this)
+                  jQuery(selectElement)
                     .html('')
                     .select2('destroy')
                     .select2({
@@ -794,7 +794,7 @@ jQuery(document).ready(() => {
           // check for duplicate values in all select options
           jQuery('select.mailpoet_subscribers_column_data_match')
             .each(() => {
-              const element = this;
+              const element = selectElement;
               const elementId = jQuery(element).val();
               // if another column has the same value and it's not an 'ignore',
               // prompt user
@@ -811,7 +811,7 @@ jQuery(document).ready(() => {
         }
       })
       .on('select2:select', (selectEvent) => {
-        const selectElement = this;
+        const selectElement = selectEvent.currentTarget;
         const selectedOptionId = selectEvent.params.data.id;
         jQuery(selectElement).data('column-id', selectedOptionId);
         filterSubscribers();
@@ -821,7 +821,7 @@ jQuery(document).ready(() => {
       router.navigate('step1', { trigger: true });
     });
 
-    nextStepButton.off().on('click', () => {
+    nextStepButton.off().on('click', (event) => {
       const columns = {};
       const queue = new jQuery.AsyncQueue();
       let batchNumber = 0;
@@ -834,7 +834,7 @@ jQuery(document).ready(() => {
         segments: [],
       };
 
-      if (jQuery(this).hasClass('button-disabled')) {
+      if (jQuery(event.currentTarget).hasClass('button-disabled')) {
         return;
       }
       MailPoet.Modal.loading(true);
