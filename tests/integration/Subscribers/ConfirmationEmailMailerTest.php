@@ -31,7 +31,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $sender = new ConfirmationEmailMailer($mailer);
+    $sender = new ConfirmationEmailMailer($mailer, new WPFunctions);
 
 
     $segment = Segment::createOrUpdate(
