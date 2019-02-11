@@ -62,22 +62,14 @@ define([
           });
 
           editor.on('click', function onClick(e) {
-            editor.focus();
-            if (that._isActivationClick) {
-              editor.selection.setRng(
-                window.tinymce.dom.RangeUtils.getCaretRangeFromPoint(
-                  e.clientX,
-                  e.clientY,
-                  editor.getDoc()
-                )
-              );
-              that._isActivationClick = false;
+            // if caret not in editor, place it there (triggers focus on editor)
+            if (document.activeElement !== editor.targetElm) {
+              editor.selection.placeCaretAt(e.clientX, e.clientY);
             }
           });
 
           editor.on('focus', function onFocus() {
             that.view.triggerMethod('text:editor:focus');
-            that._isActivationClick = true;
           });
 
           editor.on('blur', function onBlur() {
