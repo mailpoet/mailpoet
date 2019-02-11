@@ -2,19 +2,19 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
-class CityNews {
+class CityLocalNews {
 
   private $template_image_url;
   private $social_icon_url;
 
   function __construct($assets_url) {
-    $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/city-news';
+    $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/city-local-news';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
   function get() {
     return array(
-      'name' => __("City News", 'mailpoet'),
+      'name' => __("City / Local News", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -139,7 +139,7 @@ class CityNews {
             array (
               'block' => 
               array (
-                'backgroundColor' => '#ffffff',
+                'backgroundColor' => '#000000',
               ),
             ),
             'blocks' => 
@@ -209,7 +209,7 @@ class CityNews {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -219,7 +219,7 @@ class CityNews {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -229,7 +229,7 @@ class CityNews {
                         'type' => 'socialIcon',
                         'iconType' => 'email',
                         'link' => '',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Email',
@@ -239,7 +239,7 @@ class CityNews {
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Youtube.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Youtube.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Youtube',
@@ -1068,7 +1068,7 @@ class CityNews {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -1078,7 +1078,7 @@ class CityNews {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -1088,7 +1088,7 @@ class CityNews {
                         'type' => 'socialIcon',
                         'iconType' => 'email',
                         'link' => '',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Email',
@@ -1098,7 +1098,7 @@ class CityNews {
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Youtube.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Youtube.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Youtube',

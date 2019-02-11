@@ -384,7 +384,7 @@ class Engineering {
             'orientation' => 'horizontal',
             'image' => 
             array (
-              'src' => $this->template_image_url . '/Engineering-Footer-1.jpg',
+              'src' => NULL,
               'display' => 'scale',
             ),
             'styles' => 
@@ -434,13 +434,18 @@ class Engineering {
                   ),
                   2 => 
                   array (
-                    'type' => 'spacer',
+                    'type' => 'image',
+                    'link' => '',
+                    'src' => $this->template_image_url . '/Engineering-Footer-c.jpg',
+                    'alt' => 'Engineering-Footer-c',
+                    'fullWidth' => true,
+                    'width' => '928px',
+                    'height' => '661px',
                     'styles' => 
                     array (
                       'block' => 
                       array (
-                        'backgroundColor' => 'transparent',
-                        'height' => '350px',
+                        'textAlign' => 'center',
                       ),
                     ),
                   ),
@@ -700,7 +705,7 @@ class Engineering {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/03-circles/Facebook.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/03-circles/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -710,7 +715,7 @@ class Engineering {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/03-circles/Twitter.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/03-circles/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -720,7 +725,7 @@ class Engineering {
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
                         'link' => 'http://instagram.com',
-                        'image' => $this->social_icon_url . '/03-circles/Instagram.png?mailpoet_version=3.15.0',
+                        'image' => $this->social_icon_url . '/03-circles/Instagram.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Instagram',
