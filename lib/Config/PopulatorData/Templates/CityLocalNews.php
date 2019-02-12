@@ -14,7 +14,7 @@ class CityLocalNews {
 
   function get() {
     return array(
-      'name' => __("City / Local News", 'mailpoet'),
+      'name' => __("City News", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
