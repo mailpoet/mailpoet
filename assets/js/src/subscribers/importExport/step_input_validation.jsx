@@ -10,6 +10,7 @@ const renderServicesMessage = () => {
       href="https://www.briteverify.com"
       target="_blank"
       rel="noreferrer noopener"
+      key="BriteVerify"
     >
       BriteVerify
     </a>
@@ -19,6 +20,7 @@ const renderServicesMessage = () => {
       href="https://www.datavalidation.com/"
       target="_blank"
       rel="noreferrer noopener"
+      key="DataValidation"
     >
       DataValidation
     </a>
@@ -28,6 +30,7 @@ const renderServicesMessage = () => {
       href="https://neverbounce.com/"
       target="_blank"
       rel="noreferrer noopener"
+      key="NeverBounce"
     >
       NeverBounce
     </a>
@@ -59,7 +62,7 @@ class StepInputValidation extends Component {
       { 'button-disabled': !this.isFormValid() },
     );
     return (
-      <>
+      <div className="import_step_buttons">
         <button
           className="button-primary wysija button"
           type="button"
@@ -79,13 +82,13 @@ class StepInputValidation extends Component {
         >
           {MailPoet.I18n.t('nextStep')}
         </button>
-      </>
+      </div>
     );
   }
 
   render() {
     return (
-      <>
+      <div className="import_validation_step">
         <label htmlFor="subscribers_agreed">
           <input
             type="checkbox"
@@ -96,7 +99,7 @@ class StepInputValidation extends Component {
           />
           {MailPoet.I18n.t('subscribersAgreed')}
         </label>
-        <p>
+        <p className="description">
           {MailPoet.I18n.t('dontEmailSubscribers')}
           {' '}
           <a
@@ -117,10 +120,10 @@ class StepInputValidation extends Component {
           />
           {MailPoet.I18n.t('sentOnceYear')}
         </label>
-        <p>
+        <p className="description">
           {MailPoet.I18n.t('emailAddressesWillBounce')}
         </p>
-        <p>
+        <p className="description">
           {renderServicesMessage()}
         </p>
         <label htmlFor="understand">
@@ -133,11 +136,11 @@ class StepInputValidation extends Component {
           />
           {MailPoet.I18n.t('youUnderstand')}
         </label>
-        <p>
+        <p className="description">
           {MailPoet.I18n.t('weWillSuspend')}
         </p>
         {this.renderStepButtons()}
-      </>
+      </div>
     );
   }
 }
