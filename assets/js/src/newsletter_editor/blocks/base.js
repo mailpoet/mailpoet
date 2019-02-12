@@ -107,7 +107,11 @@ define([
       this.on('dom:refresh', this.showBlock, this);
       this._isFirstRender = true;
     },
-    showTools: function showTools() {
+    showTools: function showTools(mouseEvent) {
+      // Skip if user is dragging/resizing
+      if (mouseEvent && mouseEvent.buttons > 0) {
+        return;
+      }
       if (!this.showingToolsDisabled) {
         this.$('> .mailpoet_tools').addClass('mailpoet_display_tools');
         this.toolsView.triggerMethod('showTools');

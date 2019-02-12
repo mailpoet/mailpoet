@@ -192,7 +192,11 @@ define([
       this.$('> .mailpoet_container').attr('class',
         'mailpoet_container mailpoet_container_' + this.model.get('orientation') + ' ' + classIrregular);
     },
-    showTools: function () {
+    showTools: function (mouseEvent) {
+      // Skip if user is dragging/resizing
+      if (mouseEvent && mouseEvent.buttons > 0) {
+        return;
+      }
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
         this.$(this.ui.tools).addClass('mailpoet_display_tools');
         this.$el.addClass('mailpoet_highlight');

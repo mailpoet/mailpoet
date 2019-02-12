@@ -66,7 +66,11 @@ define([
           that.$el.removeClass('mailpoet_resize_active');
         });
     },
-    showResizeHandle: function () { // eslint-disable-line func-names
+    showResizeHandle: function (mouseEvent) { // eslint-disable-line func-names
+      // Skip if user is dragging/resizing
+      if (!this.isBeingResized && mouseEvent && mouseEvent.buttons > 0) {
+        return;
+      }
       if (typeof this.options.resizeHandleSelector === 'string') {
         this.view.$(this.options.resizeHandleSelector).removeClass('mailpoet_hidden');
       }
