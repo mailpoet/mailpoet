@@ -240,7 +240,6 @@ class Sending {
       ->where('tasks.status', ScheduledTask::STATUS_SCHEDULED)
       ->whereLte('tasks.scheduled_at', Carbon::createFromTimestamp($wp->currentTime('timestamp')))
       ->where('tasks.type', 'sending')
-      ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
       ->orderByAsc('tasks.updated_at')
       ->limit($amount)
       ->findMany();
