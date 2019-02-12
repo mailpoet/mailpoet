@@ -1,6 +1,39 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import ReactStringReplace from 'react-string-replace';
+import MailPoet from 'mailpoet';
+
+const renderServicesMessage = () => {
+  let message = ReactStringReplace(MailPoet.I18n.t('useServices'), '%1$s', () => (
+    <a
+      href="https://www.briteverify.com"
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      BriteVerify
+    </a>
+  ));
+  message = ReactStringReplace(message, '%2$s', () => (
+    <a
+      href="https://www.datavalidation.com/"
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      DataValidation
+    </a>
+  ));
+  message = ReactStringReplace(message, '%3$s', () => (
+    <a
+      href="https://neverbounce.com/"
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      NeverBounce
+    </a>
+  ));
+  return message;
+}
 
 class StepInputValidation extends Component {
 
@@ -32,7 +65,7 @@ class StepInputValidation extends Component {
           type="button"
           onClick={() => this.props.navigate('step_method_selection', { trigger: true })}
         >
-          Previous step
+          {MailPoet.I18n.t('previousStep')}
         </button>
         &nbsp;&nbsp;
         <button
@@ -44,7 +77,7 @@ class StepInputValidation extends Component {
             }
           }}
         >
-          Next step
+          {MailPoet.I18n.t('nextStep')}
         </button>
       </>
     );
@@ -60,11 +93,18 @@ class StepInputValidation extends Component {
             onChange={e => this.setState({ subscribersAgreed: e.target.checked })}
             name="subscribers_agreed"
           />
-          The subscribers on this list agreed to receive your emails
+          {MailPoet.I18n.t('subscribersAgreed')}
         </label>
         <p>
-          Don’t email subscribers who didn’t signup to your list.
-          If you do, consider yourself a spammer. Read the support article.
+          {MailPoet.I18n.t('dontEmailSubscribers')}
+          {' '}
+          <a
+            href="https://kb.mailpoet.com/article/127-checklist-before-importing-subscribers"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            {MailPoet.I18n.t('readSupportArticle')}
+          </a>
         </p>
         <label htmlFor="sent_once_last_year">
           <input
@@ -73,15 +113,13 @@ class StepInputValidation extends Component {
             onChange={e => this.setState({ sentOnceLastYear: e.target.checked })}
             name="sent_once_last_year"
           />
-          You have sent to this list at least once in the last year
+          {MailPoet.I18n.t('sentOnceYear')}
         </label>
         <p>
-          Email addresses that no longer exist will bounce.
-          Spam filters will be suspicious if 5% of your list bounces.
+          {MailPoet.I18n.t('emailAddressesWillBounce')}
         </p>
         <p>
-          Use services like BriteVerify, DataValidation or NeverBounce
-          to clean your lists before sending with MailPoet.
+          {renderServicesMessage()}
         </p>
         <label htmlFor="understand">
           <input
@@ -90,11 +128,10 @@ class StepInputValidation extends Component {
             onChange={e => this.setState({ understand: e.target.checked })}
             name="understand"
           />
-          You understand the risk of not respecting the above
+          {MailPoet.I18n.t('youUnderstand')}
         </label>
         <p>
-          If you send with the MailPoet Sending Service, we will automatically
-          suspend your account if our systems detect bad behavior.
+          {MailPoet.I18n.t('weWillSuspend')}
         </p>
         {this.renderStepButtons()}
       </>
