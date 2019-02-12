@@ -68,13 +68,28 @@ class Sending {
     return new self($task, $queue);
   }
 
-  static function createFromTask(ScheduledTask $task) {
-    $queue = SendingQueue::where('task_id', $task->id)->findOne();
-    if (!$queue) {
-      return false;
+  static function createManyFromTasks($tasks) {
+    if (empty($tasks)) {
+      return [];
     }
 
-    return self::create($task, $queue);
+    $tasks_ids = array_map(function($task) {
+      return $task->id;
+    }, $tasks);
+
+    $queues = SendingQueue::whereIn('task_id', $tasks_ids)->findMany();
+    $queues_index = [];
+    foreach ($queues as $queue) {
+      $queues_index[$queue->task_id] = $queue;
+    }
+
+    $result = [];
+    foreach ($tasks as $task) {
+      if (!empty($queues_index[$task->id])) {
+        $result[] = self::create($task, $queues_index[$task->id]);
+      }
+    }
+    return $result;
   }
 
   static function createFromQueue(SendingQueue $queue) {
@@ -243,11 +258,7 @@ class Sending {
       ->orderByAsc('tasks.updated_at')
       ->limit($amount)
       ->findMany();
-    $result = array();
-    foreach ($tasks as $task) {
-      $result[] = static::createFromTask($task);
-    }
-    return array_filter($result);
+    return static::createManyFromTasks($tasks);
   }
 
   static function getRunningQueues($amount = self::RESULT_BATCH_SIZE) {
@@ -258,10 +269,6 @@ class Sending {
       ->where('type', 'sending')
       ->limit($amount)
       ->findMany();
-    $result = array();
-    foreach ($tasks as $task) {
-      $result[] = static::createFromTask($task);
-    }
-    return array_filter($result);
+    return static::createManyFromTasks($tasks);
   }
 }
