@@ -71,6 +71,19 @@ $kernel->init(
 // the action is called in ConflictResolverTest
 remove_filter('admin_print_styles', 'wp_resource_hints', 1);
 
+// Unset filters, which woocommerce hooks onto and causes integration tests
+// to fail, because some WC's functions can't be serialized
+$woocommerceBlacklistFilters = [
+  'init',
+  'after_switch_theme',
+  'after_setup_theme',
+  'switch_blog',
+  'shutdown'
+];
+foreach($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
+  unset($GLOBALS['wp_filter'][$woocommerceBlacklistFilter]);
+};
+
 abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $backupGlobals = true;
   protected $backupGlobalsBlacklist = array(
@@ -120,7 +133,8 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
     'post_type',
     'allowedposttags',
     'allowedtags',
-    'menu'
+    'menu',
+    'woocommerce'
   );
   protected $backupStaticAttributes = false;
   protected $runTestInSeparateProcess = false;
