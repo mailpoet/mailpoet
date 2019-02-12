@@ -116,7 +116,7 @@ jQuery(document).ready(() => {
               source: isFile ? 'file upload' : 'pasted data',
               'MailPoet Free version': window.mailpoet_version,
             });
-            router.navigate('step_data_manipulation', { trigger: true });
+            router.navigate('step_input_validation', { trigger: true });
           } else {
             MailPoet.Modal.loading(false);
             let errorNotice = MailPoet.I18n.t('noValidRecords');
@@ -295,7 +295,7 @@ jQuery(document).ready(() => {
           source: 'MailChimp',
           'MailPoet Free version': window.mailpoet_version,
         });
-        router.navigate('step_data_manipulation', { trigger: true });
+        router.navigate('step_input_validation', { trigger: true });
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
@@ -308,10 +308,10 @@ jQuery(document).ready(() => {
   });
 
   router.on('route:step_input_validation', () => {
-    // if (typeof (window.importData.step_method_selection) === 'undefined') {
-    //   router.navigate('step_method_selection', { trigger: true });
-    //   return;
-    // }
+    if (typeof (window.importData.step_method_selection) === 'undefined') {
+      router.navigate('step_method_selection', { trigger: true });
+      return;
+    }
     showCurrentStep();
     const container = document.getElementById('step_input_validation');
 
@@ -841,7 +841,7 @@ jQuery(document).ready(() => {
       });
 
     previousStepButton.off().on('click', () => {
-      router.navigate('step_method_selection', { trigger: true });
+      router.navigate('step_input_validation', { trigger: true });
     });
 
     nextStepButton.off().on('click', (event) => {
