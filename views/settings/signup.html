@@ -138,6 +138,7 @@
         <p>
           <select
             class="mailpoet_page_selection"
+            data-automation-id="page_selection"
             name="subscription[pages][confirmation]"
           >
             <% for page in pages %>
@@ -152,6 +153,7 @@
           </select>
           <a
             class="mailpoet_page_preview"
+            data-automation-id="preview_page_link"
             href="javascript:;"
             title="<%= __('Preview page') %>"
           ><%= __('Preview') %></a>
