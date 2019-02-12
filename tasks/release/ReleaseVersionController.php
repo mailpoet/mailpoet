@@ -21,15 +21,13 @@ class ReleaseVersionController {
     return new self(new Jira($token, $user, $project), $project);
   }
 
-  function assignVersionToCompletedTickets($version) {
-    $output = [];
-    $output[] = "Checking version $version in $this->project";
-
-    if (!$this->checkVersion($version)) {
-      $output[] = "The version is invalid or already released";
-      return join("\n", $output);
+  function assignVersionToCompletedTickets($version = null) {
+    $version = $this->checkVersion($version);
+    if (!$version) {
+      throw new \Exception('The version is invalid or already released');
     }
 
+    $output = [];
     $output[] = "Setting version $version to completed tickets in $this->project...";
     $issues = $this->getDoneIssuesWithoutVersion();
     $result = array_map(function ($issue) use ($version) {
@@ -40,7 +38,7 @@ class ReleaseVersionController {
     return join("\n", $output);
   }
 
-  function getDoneIssuesWithoutVersion() {
+  private function getDoneIssuesWithoutVersion() {
     $jql = "project = $this->project AND status = Done AND (fixVersion = EMPTY OR fixVersion IN unreleasedVersions()) AND updated >= -52w";
     $result = $this->jira->search($jql, ['key']);
     return array_map(function ($issue) {
@@ -51,7 +49,7 @@ class ReleaseVersionController {
     }, $result['issues']);
   }
 
-  function checkVersion($version) {
+  private function checkVersion($version) {
     try {
       $version_data = $this->jira->getVersion($version);
     } catch (\Exception $e) {
@@ -63,12 +61,13 @@ class ReleaseVersionController {
     } else if (empty($version_data)) {
       // version does not exist
       $this->jira->createVersion($version);
+      return $version;
     }
     // version exists
-    return true;
+    return $version_data['name'];
   }
 
-  function setIssueFixVersion($issue_key, $version) {
+  private function setIssueFixVersion($issue_key, $version) {
     $data = [
       'update' => [
         'fixVersions' => [

@@ -553,9 +553,6 @@ class RoboFile extends \Robo\Tasks {
   function changelogUpdate($opts = ['version-name' => null]) {
     $this->say("Updating changelog");
     $outputs = $this->getChangelogController()->update($opts['version-name']);
-    if ($opts['quiet']) {
-      return;
-    }
     $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n\n");
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
@@ -588,13 +585,13 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  protected function getReleaseVersionController($project) {
+  protected function getReleaseVersionController() {
     require_once './tasks/release/ReleaseVersionController.php';
     $this->loadEnv();
     return \MailPoetTasks\Release\ReleaseVersionController::createWithJiraCredentials(
       getenv('WP_JIRA_TOKEN'),
       getenv('WP_JIRA_USER'),
-      $project
+      \MailPoetTasks\Release\Jira::PROJECT_MAILPOET
     );
   }
 
@@ -626,30 +623,21 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function jiraReleaseVersion($opts = ['free' => null, 'premium' => null]) {
-    require_once './tasks/release/Jira.php';
-    if (empty($opts['free']) && empty($opts['premium'])) {
-      $this->yell('No Free or Premium version specified', 40, 'red');
+  public function jiraReleaseVersion($version = null, $opts = []) {
+    if ($version) {
+      $this->validateVersion($version);
+    }
+    try {
+      $output = $this->getReleaseVersionController()
+        ->assignVersionToCompletedTickets($version);
+    } catch (\Exception $e) {
+      $this->yell($e->getMessage(), 40, 'red');
       exit(1);
     }
-    $output = [];
-    if (!empty($opts['free'])) {
-      $this->validateVersion($opts['free']);
-      $output[] = $this->getReleaseVersionController(\MailPoetTasks\Release\Jira::PROJECT_MAILPOET)
-        ->assignVersionToCompletedTickets($opts['free']);
-    }
-    if (!empty($opts['premium'])) {
-      $this->validateVersion($opts['premium']);
-      $output[] = $this->getReleaseVersionController(\MailPoetTasks\Release\Jira::PROJECT_PREMIUM)
-        ->assignVersionToCompletedTickets($opts['premium']);
-    }
-    if($opts['quiet']) {
-      return;
-    }
-    $this->say(join("\n", $output));
+    $this->say($output);
   }
 
-  private function validateVersion($version) {
+  protected function validateVersion($version) {
     if (!preg_match('/\d+\.\d+\.\d+/', $version)) {
       $this->yell('Incorrect version format', 40, 'red');
       exit(1);
