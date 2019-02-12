@@ -11,6 +11,7 @@ class BeamerAcceptanceCest {
     $I->waitForElement('#beamerNews');
     $I->switchToIframe('beamerNews');
     $I->click('.headerClose');
+    $I->switchToIframe();
     $I->dontSeeElement('#beamerNews');
     $I->dontSeeElement('#beamerSelector');
   }
