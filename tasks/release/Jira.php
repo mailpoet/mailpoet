@@ -11,6 +11,7 @@ class Jira {
   const PROJECT_PREMIUM = 'PREMIUM';
 
   const JIRA_DOMAIN = 'mailpoet.atlassian.net';
+  const JIRA_API_VERSION = '3';
 
   /** @var string */
   private $token;
@@ -31,7 +32,7 @@ class Jira {
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-project-projectIdOrKey-versions-get
    */
   function getVersion($version_name = null) {
-    $versions = $this->fetchFromJira("project/$this->project/versions");
+    $versions = $this->makeJiraRequest("project/$this->project/versions");
     if($version_name === null) {
       return end($versions);
     }
@@ -44,12 +45,22 @@ class Jira {
   }
 
   /**
-   * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-search-get
+   * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-version-post
    */
+  function createVersion($version_name) {
+    $data = [
+      'name' => $version_name,
+      'archived' => false,
+      'released' => false,
+      'project' => $this->project,
+    ];
+    return $this->makeJiraRequest('/version', 'POST', $data);
+  }
+
   function getIssuesDataForVersion($version) {
     $changelog_id = self::CHANGELOG_FIELD_ID;
     $release_note_id = self::RELEASENOTE_FIELD_ID;
-    $issues_data = $this->fetchFromJira("/search?fields=key,$changelog_id,$release_note_id,status&jql=fixVersion={$version['id']}");
+    $issues_data = $this->search("fixVersion={$version['id']}", ['key', $changelog_id, $release_note_id, 'status']);
     // Sort issues by importance of change (Added -> Updated -> Improved -> Changed -> Fixed -> Others)
     usort($issues_data['issues'], function($a, $b) use ($changelog_id) {
       $order = array_flip(['added', 'updat', 'impro', 'chang', 'fixed']);
@@ -62,16 +73,46 @@ class Jira {
     return $issues_data['issues'];
   }
 
-  private function fetchFromJira($path) {
+  /**
+   * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-search-get
+   */
+  function search($jql, array $fields = null) {
+    $params = ['jql' => $jql];
+    if($fields) {
+      $params['fields'] = join(',', $fields);
+    }
+    return $this->makeJiraRequest("/search?" . http_build_query($params));
+  }
+
+  /**
+   * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-issue-issueIdOrKey-put
+   */
+  function updateIssue($key, $data) {
+    return $this->makeJiraRequest("/issue/$key", 'PUT', $data);
+  }
+
+  private function makeJiraRequest($path, $method = 'GET', array $data = null) {
     $url_user = urlencode($this->user);
     $url_token = urlencode($this->token);
     $jira_domain = self::JIRA_DOMAIN;
-    $jira_url = "https://$url_user:$url_token@$jira_domain/rest/api/3/$path";
-    $data = file_get_contents($jira_url);
-    if($data === false) {
+    $jira_api_version = self::JIRA_API_VERSION;
+    $jira_url = "https://$url_user:$url_token@$jira_domain/rest/api/$jira_api_version/$path";
+    $options = [];
+    if($method === 'POST' || $method === 'PUT') {
+      $options = [
+        'http' => [
+          'method' => $method,
+          'header' => "Content-type: application/json\r\n",
+          'content' => json_encode($data),
+        ]
+      ];
+    }
+    $context  = stream_context_create($options);
+    $result = file_get_contents($jira_url, false, $context);
+    if($result === false) {
       $error = error_get_last();
       throw new \Exception('JIRA request error: ' . $error['message']);
     }
-    return json_decode($data, true);
+    return json_decode($result, true);
   }
 }
