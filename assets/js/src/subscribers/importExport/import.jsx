@@ -317,7 +317,9 @@ jQuery(document).ready(() => {
 
     if (container) {
       ReactDOM.render(
-        <StepInputValidation />,
+        <StepInputValidation
+          navigate={router.navigate}
+        />,
         container
       );
     }
