@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 class StepInputValidation extends Component {
 
@@ -12,28 +13,35 @@ class StepInputValidation extends Component {
     };
   }
 
+  isFormValid() {
+    return this.state.subscribersAgreed
+      && this.state.sentOnceLastYear
+      && this.state.understand;
+  }
 
   renderStepButtons() {
+    const nextStepClasses = classNames(
+      'button-primary',
+      'wysija',
+      { 'button-disabled': !this.isFormValid() },
+    );
     return (
       <>
         <button
           className="button-primary wysija button"
           type="button"
-          onClick={() => {
-            console.log('previous step');
-            this.props.navigate('step_method_selection', {trigger: true});
-          }}
+          onClick={() => this.props.navigate('step_method_selection', { trigger: true })}
         >
           Previous step
         </button>
         &nbsp;&nbsp;
         <button
           type="button"
-          className="button-primary wysija button-disabled"
+          className={nextStepClasses}
           onClick={() => {
-            // TODO only if all checkboxes are checked
-            console.log('next step');
-            this.props.navigate('step_data_manipulation', {trigger: true});
+            if (this.isFormValid()) {
+              this.props.navigate('step_data_manipulation', { trigger: true });
+            }
           }}
         >
           Next step
