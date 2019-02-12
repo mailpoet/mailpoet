@@ -175,6 +175,7 @@
             <input
               type="radio"
               name="analytics[enabled]"
+              data-automation-id="analytics-yes"
               value="1"
               <% if(settings.analytics.enabled) %>
                 checked="checked"
@@ -186,6 +187,7 @@
             <input
               type="radio"
               name="analytics[enabled]"
+              data-automation-id="analytics-no"
               value=""
               <% if not(settings.analytics.enabled) %>
                 checked="checked"
