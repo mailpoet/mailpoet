@@ -7,7 +7,7 @@ define([
   'backbone.marionette',
   'newsletter_editor/behaviors/BehaviorsLookup',
   'interact'
-], function (Marionette, BehaviorsLookup, interact) { // eslint-disable-line func-names
+], function ResizableBehavior(Marionette, BehaviorsLookup, interact) {
   var BL = BehaviorsLookup;
 
   BL.ResizableBehavior = Marionette.Behavior.extend({
@@ -19,7 +19,7 @@ define([
       minLength: 0,
       maxLength: Infinity,
       modelField: 'styles.block.height',
-      onResize: function (event) { // eslint-disable-line func-names
+      onResize: function onResize(event) {
         var currentLength = parseFloat(this.view.model.get(this.options.modelField));
         var newLength = currentLength + this.options.transformationFunction(event.dy);
         newLength = Math.min(this.options.maxLength, Math.max(this.options.minLength, newLength));
@@ -30,14 +30,14 @@ define([
       mouseenter: 'showResizeHandle',
       mouseleave: 'hideResizeHandle'
     },
-    onRender: function () { // eslint-disable-line func-names
+    onRender: function onRender() {
       this.attachResize();
 
       if (this.isBeingResized !== true) {
         this.hideResizeHandle();
       }
     },
-    attachResize: function () { // eslint-disable-line func-names
+    attachResize: function attachResize() {
       var domElement;
       var that = this;
       if (this.options.elementSelector === null) {
@@ -54,19 +54,19 @@ define([
           bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector
         }
       })
-        .on('resizestart', function () { // eslint-disable-line func-names
+        .on('resizestart', function resizestart() {
           that.isBeingResized = true;
           that.$el.addClass('mailpoet_resize_active');
-        }).on('resizemove', function (event) { // eslint-disable-line func-names
+        }).on('resizemove', function resizemove(event) {
           var onResize = that.options.onResize.bind(that);
           return onResize(event);
         })
-        .on('resizeend', function () { // eslint-disable-line func-names
+        .on('resizeend', function resizeend() {
           that.isBeingResized = null;
           that.$el.removeClass('mailpoet_resize_active');
         });
     },
-    showResizeHandle: function (mouseEvent) { // eslint-disable-line func-names
+    showResizeHandle: function showResizeHandle(mouseEvent) {
       // Skip if user is dragging/resizing
       if (!this.isBeingResized && mouseEvent && mouseEvent.buttons > 0) {
         return;
@@ -75,7 +75,7 @@ define([
         this.view.$(this.options.resizeHandleSelector).removeClass('mailpoet_hidden');
       }
     },
-    hideResizeHandle: function () { // eslint-disable-line func-names
+    hideResizeHandle: function hideResizeHandle() {
       if (typeof this.options.resizeHandleSelector === 'string') {
         this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden');
       }
