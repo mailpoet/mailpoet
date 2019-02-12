@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+import React from 'react';
 import Backbone from 'backbone';
 import _ from 'underscore';
 import jQuery from 'jquery';
@@ -7,6 +9,7 @@ import Handlebars from 'handlebars';
 import Papa from 'papaparse';
 import Moment from 'moment';
 import sanitizeCSVData from './sanitize_csv_data.jsx';
+import StepInputValidation from './step_input_validation.jsx';
 
 jQuery(document).ready(() => {
   if (!jQuery('#mailpoet_subscribers_import').length) {
@@ -18,6 +21,7 @@ jQuery(document).ready(() => {
     routes: {
       '': 'home',
       step_method_selection: 'step_method_selection',
+      step_input_validation: 'step_input_validation',
       step_data_manipulation: 'step_data_manipulation',
       step_results: 'step_results',
     },
@@ -301,6 +305,22 @@ jQuery(document).ready(() => {
         }
       });
     });
+  });
+
+  router.on('route:step_input_validation', () => {
+    // if (typeof (window.importData.step_method_selection) === 'undefined') {
+    //   router.navigate('step_method_selection', { trigger: true });
+    //   return;
+    // }
+    showCurrentStep();
+    const container = document.getElementById('step_input_validation');
+
+    if (container) {
+      ReactDOM.render(
+        <StepInputValidation />,
+        container
+      );
+    }
   });
 
   router.on('route:step_data_manipulation', () => {
