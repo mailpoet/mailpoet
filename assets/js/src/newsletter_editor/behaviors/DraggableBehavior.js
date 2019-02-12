@@ -9,8 +9,9 @@ define([
   'underscore',
   'jquery',
   'newsletter_editor/behaviors/BehaviorsLookup',
-  'interact'
-], function DraggableBehavior(Marionette, _, jQuery, BehaviorsLookup, interact) {
+  'interact',
+  'newsletter_editor/App'
+], function DraggableBehavior(Marionette, _, jQuery, BehaviorsLookup, interact, App) {
   var BL = BehaviorsLookup;
 
   BL.DraggableBehavior = Marionette.Behavior.extend({
@@ -85,6 +86,7 @@ define([
             if (that.options.hideOriginal === true) {
               that.view.$el.addClass('mailpoet_hidden');
             }
+            App.getChannel().trigger('dragStart');
           }
         },
         // call this function on every dragmove event

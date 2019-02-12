@@ -6,8 +6,9 @@
 define([
   'backbone.marionette',
   'underscore',
-  'newsletter_editor/behaviors/BehaviorsLookup'
-], function textEditorBehavior(Marionette, _, BehaviorsLookup) {
+  'newsletter_editor/behaviors/BehaviorsLookup',
+  'newsletter_editor/App'
+], function textEditorBehavior(Marionette, _, BehaviorsLookup, App) {
   var BL = BehaviorsLookup;
 
   BL.TextEditorBehavior = Marionette.Behavior.extend({
@@ -20,6 +21,14 @@ define([
       blockFormats: 'Paragraph=p',
       plugins: 'link textcolor colorpicker mailpoet_shortcodes',
       configurationFilter: function configurationFilter(originalConfig) { return originalConfig; }
+    },
+    initialize: function initialize() {
+      this.listenTo(App.getChannel(), 'dragStart', this.hideEditor);
+    },
+    hideEditor: function hideEditor() {
+      if (this.tinymceEditor) {
+        this.tinymceEditor.fire('blur');
+      }
     },
     onDomRefresh: function onDomRefresh() {
       var that = this;
@@ -57,6 +66,8 @@ define([
         plugins: this.options.plugins,
 
         setup: function setup(editor) {
+          // Store the editor instance
+          that.tinymceEditor = editor;
           editor.on('change', function onChange() {
             that.view.triggerMethod('text:editor:change', editor.getContent());
           });
