@@ -10,9 +10,12 @@ class BeamerAcceptanceCest {
     $I->click('.mailpoet_feature_announcement_icon');
     $I->waitForElement('#beamerNews');
     $I->switchToIframe('beamerNews');
+    $I->waitForElement('.headerClose');
     $I->click('.headerClose');
     $I->switchToIframe();
-    $I->dontSeeElement('.headerClose');
+    //necessary to avoid race condition with animation
+    $I->wait(2);
+    $I->dontSeeElement('#beamerNews');
     $I->dontSeeElement('#beamerSelector');
   }
 }
