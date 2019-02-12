@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.19.0
+Stable tag: 3.19.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,20 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.19.1 - 2019-02-12 =
+* Added: warning against using free email address in "from" fields;
+* Added: updated Instagram icons;
+* Added: new custom font choices;
+* Improved: new design for block controls;
+* Improved: updated width of image setting width input field for better display of 4-digit numbers;
+* Improved: wider vertical drag button for dividers;
+* Improved: align social icons left, center or right;
+* Improved: minor enhancement to controls of elements in editor;
+* Fixed: restored missing X to modal when deleting templates;
+* Fixed: minor adjustments to assist third-party plugins using MailPoet integrations incorrectly;
+* Fixed: when Post Notification send date/time are left as default, we now create a Post Notification with those settings;
+* Fixed: double click on text in TinyMCE keeps formatting.
 
 = 3.19.0 - 2019-02-05 =
 * Added: more clarity for image and column block settings. Thanks focus group testers!;
