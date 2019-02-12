@@ -21,12 +21,9 @@ class ConfirmConfirmationPageCest {
     $I->waitForText('Enable sign-up confirmation');
     $I->waitForText('MailPoet Page');
     $I->selectOption('[data-automation-id="page_selection"]', $pageTitle);
-    //$I->click('Save settings');
-    //$I->waitForElementClickable('[data-automation-id="preview_page_link"]');
     $I->click('[data-automation-id="preview_page_link"]');
     $I->switchToNextTab();
     $I->waitForText($postContent);
-
   }
 }
 
