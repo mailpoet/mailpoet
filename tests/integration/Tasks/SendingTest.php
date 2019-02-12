@@ -43,9 +43,10 @@ class SendingTest extends \MailPoetTest {
     }
   }
 
-  function testItCanBeCreatedFromTask() {
-    $sending = SendingTask::createFromTask($this->task);
-    $queue = $sending->queue();
+  function testItCanCreateManyFromTasks() {
+    $sendings = SendingTask::createManyFromTasks([$this->task]);
+    expect($sendings)->notEmpty();
+    $queue = $sendings[0]->queue();
     expect($queue->task_id)->equals($this->task->id);
   }
 
