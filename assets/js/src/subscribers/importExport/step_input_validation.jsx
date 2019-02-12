@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
+import PreviousNextStepButtons from './previous_next_step_buttons.jsx';
 
 const renderServicesMessage = () => {
   let message = ReactStringReplace(MailPoet.I18n.t('useServices'), '%1$s', () => (
@@ -36,10 +36,9 @@ const renderServicesMessage = () => {
     </a>
   ));
   return message;
-}
+};
 
 class StepInputValidation extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -53,37 +52,6 @@ class StepInputValidation extends Component {
     return this.state.subscribersAgreed
       && this.state.sentOnceLastYear
       && this.state.understand;
-  }
-
-  renderStepButtons() {
-    const nextStepClasses = classNames(
-      'button-primary',
-      'wysija',
-      { 'button-disabled': !this.isFormValid() },
-    );
-    return (
-      <div className="import_step_buttons">
-        <button
-          className="button-primary wysija button"
-          type="button"
-          onClick={() => this.props.navigate('step_method_selection', { trigger: true })}
-        >
-          {MailPoet.I18n.t('previousStep')}
-        </button>
-        &nbsp;&nbsp;
-        <button
-          type="button"
-          className={nextStepClasses}
-          onClick={() => {
-            if (this.isFormValid()) {
-              this.props.navigate('step_data_manipulation', { trigger: true });
-            }
-          }}
-        >
-          {MailPoet.I18n.t('nextStep')}
-        </button>
-      </div>
-    );
   }
 
   render() {
@@ -139,7 +107,11 @@ class StepInputValidation extends Component {
         <p className="description">
           {MailPoet.I18n.t('weWillSuspend')}
         </p>
-        {this.renderStepButtons()}
+        <PreviousNextStepButtons
+          canGoNext={this.isFormValid()}
+          onPreviousAction={() => this.props.navigate('step_method_selection', { trigger: true })}
+          onNextAction={() => this.props.navigate('step_data_manipulation', { trigger: true })}
+        />
       </div>
     );
   }
