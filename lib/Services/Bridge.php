@@ -43,7 +43,7 @@ class Bridge {
       $mailer_config = Mailer::getMailerConfig();
       return !empty($mailer_config['method'])
         && $mailer_config['method'] === Mailer::METHOD_MAILPOET;
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return false;
     }
   }

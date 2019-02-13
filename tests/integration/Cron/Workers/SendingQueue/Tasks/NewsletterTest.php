@@ -316,7 +316,7 @@ class NewsletterTest extends \MailPoetTest {
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue);
       self::fail('Sending error exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $mailer_log = MailerLog::getMailerLog();
       expect($mailer_log['error']['operation'])->equals('queue_save');
       expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
@@ -334,7 +334,7 @@ class NewsletterTest extends \MailPoetTest {
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock);
       self::fail('Sending error exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $mailer_log = MailerLog::getMailerLog();
       expect($mailer_log['error']['operation'])->equals('queue_save');
       expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
@@ -357,7 +357,7 @@ class NewsletterTest extends \MailPoetTest {
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock);
       self::fail('Sending error exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $mailer_log = MailerLog::getMailerLog();
       expect($mailer_log['error']['operation'])->equals('queue_save');
       expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');

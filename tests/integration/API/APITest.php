@@ -14,7 +14,7 @@ class APITest extends \MailPoetTest {
     try {
       API::MP('invalid_version');
       $this->fail('Incorrect API version exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Invalid API version.');
     }
   }

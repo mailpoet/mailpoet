@@ -534,7 +534,7 @@ class SubscribersTest extends \MailPoetTest {
         $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
       ));
       $this->fail('It should not be possible to subscribe a second time so soon');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('You need to wait 60 seconds before subscribing again.');
     }
   }
@@ -561,7 +561,7 @@ class SubscribersTest extends \MailPoetTest {
         $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
       ));
       $this->fail('It should not be possible to resubscribe a second time so soon');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('You need to wait 60 seconds before subscribing again.');
     }
   }

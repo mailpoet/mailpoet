@@ -233,7 +233,7 @@ class Scheduler {
       $schedule = \Cron\CronExpression::factory($schedule);
       $next_run_date = $schedule->getNextRunDate(Carbon::createFromTimestamp($from_timestamp))
         ->format('Y-m-d H:i:s');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $next_run_date = false;
     }
     return $next_run_date;
@@ -246,7 +246,7 @@ class Scheduler {
       $schedule = \Cron\CronExpression::factory($schedule);
       $previous_run_date = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($from_timestamp))
         ->format('Y-m-d H:i:s');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $previous_run_date = false;
     }
     return $previous_run_date;

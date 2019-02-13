@@ -28,7 +28,7 @@ class SimpleWorkerTest extends \MailPoetTest {
       $worker_class = get_class($worker);
       new $worker_class();
       $this->fail('SimpleWorker did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Constant TASK_TYPE is not defined on subclass ' . $worker_class);
     }
   }
@@ -43,7 +43,7 @@ class SimpleWorkerTest extends \MailPoetTest {
         microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT
       );
       self::fail('Maximum execution time limit exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
     }
   }

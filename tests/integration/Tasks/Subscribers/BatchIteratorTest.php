@@ -23,7 +23,7 @@ class BatchIteratorTest extends \MailPoetTest {
     try {
       $iterator = new BatchIterator(0, 0);
       $this->fail('Exception was not thrown');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       // No exception handling necessary
     }
   }

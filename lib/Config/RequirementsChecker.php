@@ -156,7 +156,7 @@ class RequirementsChecker {
     try {
       $reflector = new \ReflectionClass($namespaced_class);
       return $reflector->getFileName();
-    } catch(\ReflectionException $ex) {
+    } catch (\ReflectionException $ex) {
       return false;
     }
   }

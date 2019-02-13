@@ -103,7 +103,7 @@ class ScheduledTask extends Model {
       ScheduledTaskSubscriber::where('task_id', $this->id)->deleteMany();
       parent::delete();
       \ORM::get_db()->commit();
-    } catch(\Exception $error) {
+    } catch (\Exception $error) {
       \ORM::get_db()->rollBack();
       throw $error;
     }

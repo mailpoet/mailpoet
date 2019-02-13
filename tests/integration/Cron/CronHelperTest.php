@@ -240,7 +240,7 @@ class CronHelperTest extends \MailPoetTest {
     try {
       CronHelper::getSiteUrl($site_url);
       self::fail('Site URL is unreachable exception not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Site URL is unreachable.');
     }
   }
@@ -257,7 +257,7 @@ class CronHelperTest extends \MailPoetTest {
     try {
       CronHelper::enforceExecutionLimit($time - CronHelper::DAEMON_EXECUTION_LIMIT);
       self::fail('Execution limit exception not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
     }
   }

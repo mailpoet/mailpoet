@@ -89,7 +89,7 @@ class Widget extends \WP_Widget {
 
     try {
       echo $this->renderer->render('form/iframe.html', $data);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       echo $e->getMessage();
     }
 
@@ -328,7 +328,7 @@ EOL;
         $output = $renderer->render('form/widget.html', $data);
         $output = do_shortcode($output);
         $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output);
-      } catch(\Exception $e) {
+      } catch (\Exception $e) {
         $output = $e->getMessage();
       }
     }

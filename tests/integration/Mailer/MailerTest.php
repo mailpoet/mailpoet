@@ -72,7 +72,7 @@ class MailerTest extends \MailPoetTest {
     try {
       $mailer = new Mailer();
       $this->fail('Mailer did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Mailer is not configured.');
     }
   }
@@ -81,7 +81,7 @@ class MailerTest extends \MailPoetTest {
     try {
       $mailer = new Mailer($mailer = $this->mailer);
       $this->fail('Mailer did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sender name and email are not configured.');
     }
   }
@@ -108,7 +108,7 @@ class MailerTest extends \MailPoetTest {
     try {
       $mailer = new Mailer(array('method' => 'Unknown'), $this->sender);
       $this->fail('Mailer did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Mailing method does not exist.');
     }
   }

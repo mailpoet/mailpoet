@@ -196,7 +196,7 @@ class MailerLogTest extends \MailPoetTest {
     try {
       MailerLog::processError($operation = 'send', $error = 'email rejected - sending paused', $error_code = null, $pause_sending = true);
       $this->fail('Paused sending exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sending has been paused.');
     }
     $mailer_log = MailerLog::getMailerLog();
@@ -228,7 +228,7 @@ class MailerLogTest extends \MailPoetTest {
     try {
       MailerLog::enforceExecutionRequirements();
       self::fail('Sending frequency exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sending frequency limit has been reached.');
     }
   }
@@ -250,7 +250,7 @@ class MailerLogTest extends \MailPoetTest {
     try {
       MailerLog::enforceExecutionRequirements();
       self::fail('Sending frequency exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sending frequency limit has been reached.');
     }
   }
@@ -271,7 +271,7 @@ class MailerLogTest extends \MailPoetTest {
     // sending limit exception should not be thrown
     try {
       MailerLog::enforceExecutionRequirements();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       self::fail('Sending frequency exception was thrown.');
     }
   }
@@ -283,7 +283,7 @@ class MailerLogTest extends \MailPoetTest {
     try {
       MailerLog::enforceExecutionRequirements($mailer_log);
       self::fail('Sending waiting to be retried exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sending is waiting to be retried.');
     }
   }
@@ -298,7 +298,7 @@ class MailerLogTest extends \MailPoetTest {
     try {
       MailerLog::enforceExecutionRequirements($mailer_log);
       self::fail('Sending paused exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sending has been paused.');
     }
     $mailer_log = MailerLog::getMailerLog();
@@ -324,7 +324,7 @@ class MailerLogTest extends \MailPoetTest {
     try {
       MailerLog::enforceExecutionRequirements($mailer_log);
       self::fail('Sending paused exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sending has been paused.');
     }
   }

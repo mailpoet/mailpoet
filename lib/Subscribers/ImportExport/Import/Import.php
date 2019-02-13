@@ -129,7 +129,7 @@ class Import {
           $this->synchronizeWPUsers($wp_users);
         }
       }
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       throw new \Exception(__('Unable to save imported subscribers.', 'mailpoet'));
     }
 

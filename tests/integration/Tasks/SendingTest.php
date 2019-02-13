@@ -38,7 +38,7 @@ class SendingTest extends \MailPoetTest {
     try {
       $sending = SendingTask::create($this->task, $this->queue);
       $this->fail('Exception was not thrown');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       // No exception handling necessary
     }
   }

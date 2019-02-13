@@ -72,7 +72,7 @@ class AmazonSES {
         $this->url,
         $this->request($newsletter, $subscriber, $extra_params)
       );
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $error = $this->error_mapper->getErrorFromException($e, $subscriber);
       return Mailer::formatMailerErrorResult($error);
     }

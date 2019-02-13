@@ -103,7 +103,7 @@ class ConfirmationEmailMailer {
       $this->mailer->getSenderNameAndAddress($from);
       $this->mailer->getReplyToNameAndAddress($reply_to);
       return $this->mailer->send($email, $subscriber);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $subscriber->setError($e->getMessage());
       return false;
     }
