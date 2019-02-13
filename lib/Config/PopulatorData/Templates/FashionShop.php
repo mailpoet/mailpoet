@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class FashionShop {
 
@@ -29,105 +29,105 @@ class FashionShop {
 
   private function getBody() {
     return array (
-      'content' => 
+      'content' =>
       array (
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
+        'image' =>
         array (
           'src' => NULL,
           'display' => 'scale',
         ),
-        'styles' => 
+        'styles' =>
         array (
-          'block' => 
+          'block' =>
           array (
             'backgroundColor' => 'transparent',
           ),
         ),
-        'blocks' => 
+        'blocks' =>
         array (
-          0 => 
+          0 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'header',
                     'text' => '<p><a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a></p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'underline',
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -138,62 +138,62 @@ class FashionShop {
               ),
             ),
           ),
-          1 => 
+          1 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => $this->template_image_url . '/FashionKids-Header.jpg',
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#ffffff',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '60px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<p style="text-align: center; font-size: 11px; letter-spacing: 3px;"><strong>AUTUMN RANGE 2018</strong></p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -202,25 +202,25 @@ class FashionShop {
                     'fullWidth' => false,
                     'width' => '200px',
                     'height' => '64px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
                     ),
                   ),
-                  3 => 
+                  3 =>
                   array (
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center; font-size: 52px; line-height: 1.2;"><strong>IT\'S TIME&nbsp;</strong><strong>TO EXPLORE</strong></h1>',
                   ),
-                  4 => 
+                  4 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '403px',
@@ -231,45 +231,45 @@ class FashionShop {
               ),
             ),
           ),
-          2 => 
+          2 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#c6d4dd',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -278,53 +278,53 @@ class FashionShop {
                     'fullWidth' => true,
                     'width' => '400px',
                     'height' => '400px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '100px',
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;">Keep them warm this autumn with our whole new range just for your little ones</h3>',
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -333,9 +333,9 @@ class FashionShop {
                     'fullWidth' => true,
                     'width' => '400px',
                     'height' => '800px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -345,45 +345,45 @@ class FashionShop {
               ),
             ),
           ),
-          3 => 
+          3 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#c6d4dd',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -392,9 +392,9 @@ class FashionShop {
                     'fullWidth' => true,
                     'width' => '400px',
                     'height' => '400px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -402,38 +402,38 @@ class FashionShop {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '113px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;">All of our clothes are easy to wash and are ready for your little explorers</h3>',
@@ -442,57 +442,57 @@ class FashionShop {
               ),
             ),
           ),
-          4 => 
+          4 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -501,9 +501,9 @@ class FashionShop {
                     'fullWidth' => false,
                     'width' => '187px',
                     'height' => '30px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -511,44 +511,44 @@ class FashionShop {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '35px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'full-symbol-color',
-                    'icons' => 
+                    'icons' =>
                     array (
-                      0 => 
+                      0 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
@@ -558,7 +558,7 @@ class FashionShop {
                         'width' => '32px',
                         'text' => 'Facebook',
                       ),
-                      1 => 
+                      1 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
@@ -568,7 +568,7 @@ class FashionShop {
                         'width' => '32px',
                         'text' => 'Twitter',
                       ),
-                      2 => 
+                      2 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
@@ -578,7 +578,7 @@ class FashionShop {
                         'width' => '32px',
                         'text' => 'Instagram',
                       ),
-                      3 => 
+                      3 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
@@ -594,62 +594,62 @@ class FashionShop {
               ),
             ),
           ),
-          5 => 
+          5 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#ffffff',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'footer',
                     'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage your subscription</a><br />Add your postal address here!</p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#21759b',
                         'textDecoration' => 'none',
@@ -662,49 +662,49 @@ class FashionShop {
           ),
         ),
       ),
-      'globalStyles' => 
+      'globalStyles' =>
       array (
-        'text' => 
+        'text' =>
         array (
           'fontColor' => '#000000',
           'fontFamily' => 'Arial',
           'fontSize' => '15px',
         ),
-        'h1' => 
+        'h1' =>
         array (
           'fontColor' => '#111111',
           'fontFamily' => 'Georgia',
           'fontSize' => '30px',
         ),
-        'h2' => 
+        'h2' =>
         array (
           'fontColor' => '#222222',
           'fontFamily' => 'Georgia',
           'fontSize' => '26px',
         ),
-        'h3' => 
+        'h3' =>
         array (
           'fontColor' => '#333333',
           'fontFamily' => 'Georgia',
           'fontSize' => '24px',
         ),
-        'link' => 
+        'link' =>
         array (
           'fontColor' => '#21759B',
           'textDecoration' => 'underline',
         ),
-        'wrapper' => 
+        'wrapper' =>
         array (
           'backgroundColor' => '#ffffff',
         ),
-        'body' => 
+        'body' =>
         array (
           'backgroundColor' => '#ffffff',
         ),
       ),
-      'blockDefaults' => 
+      'blockDefaults' =>
       array (
-        'automatedLatestContent' => 
+        'automatedLatestContent' =>
         array (
           'amount' => '5',
           'withLayout' => false,
@@ -722,14 +722,14 @@ class FashionShop {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -748,12 +748,12 @@ class FashionShop {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -766,7 +766,7 @@ class FashionShop {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'automatedLatestContentLayout' => 
+        'automatedLatestContentLayout' =>
         array (
           'amount' => '5',
           'withLayout' => true,
@@ -784,14 +784,14 @@ class FashionShop {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -810,12 +810,12 @@ class FashionShop {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -828,13 +828,13 @@ class FashionShop {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'button' => 
+        'button' =>
         array (
           'text' => 'Button',
           'url' => '',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => '#2ea1cd',
               'borderColor' => '#0074a2',
@@ -851,11 +851,11 @@ class FashionShop {
             ),
           ),
         ),
-        'divider' => 
+        'divider' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
               'padding' => '13px',
@@ -865,23 +865,23 @@ class FashionShop {
             ),
           ),
         ),
-        'footer' => 
+        'footer' =>
         array (
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#21759b',
               'textDecoration' => 'none',
@@ -889,7 +889,7 @@ class FashionShop {
           ),
           'type' => 'footer',
         ),
-        'posts' => 
+        'posts' =>
         array (
           'amount' => '10',
           'withLayout' => true,
@@ -908,14 +908,14 @@ class FashionShop {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -934,12 +934,12 @@ class FashionShop {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'posts.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -952,12 +952,12 @@ class FashionShop {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'social' => 
+        'social' =>
         array (
           'iconSet' => 'full-symbol-color',
-          'icons' => 
+          'icons' =>
           array (
-            0 => 
+            0 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'facebook',
@@ -967,7 +967,7 @@ class FashionShop {
               'width' => '32px',
               'text' => 'Facebook',
             ),
-            1 => 
+            1 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'twitter',
@@ -977,7 +977,7 @@ class FashionShop {
               'width' => '32px',
               'text' => 'Twitter',
             ),
-            2 => 
+            2 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'instagram',
@@ -987,7 +987,7 @@ class FashionShop {
               'width' => '32px',
               'text' => 'Instagram',
             ),
-            3 => 
+            3 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'youtube',
@@ -1000,11 +1000,11 @@ class FashionShop {
           ),
           'type' => 'social',
         ),
-        'spacer' => 
+        'spacer' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
               'height' => '35px',
@@ -1012,23 +1012,23 @@ class FashionShop {
           ),
           'type' => 'spacer',
         ),
-        'header' => 
+        'header' =>
         array (
           'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'underline',

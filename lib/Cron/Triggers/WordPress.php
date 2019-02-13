@@ -14,7 +14,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class WordPress {
   static function run() {
@@ -68,7 +68,7 @@ class WordPress {
 
   static function stop() {
     $cron_daemon = CronHelper::getDaemon();
-    if($cron_daemon) {
+    if ($cron_daemon) {
       CronHelper::deactivateDaemon($cron_daemon);
     }
   }

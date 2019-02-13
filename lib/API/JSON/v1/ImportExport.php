@@ -7,7 +7,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Models\Segment;
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class ImportExport extends APIEndpoint {
   public $permissions = array(
@@ -42,7 +42,7 @@ class ImportExport extends APIEndpoint {
     $segment = Segment::createOrUpdate($data);
     $errors = $segment->getErrors();
 
-    if(!empty($errors)) {
+    if (!empty($errors)) {
       return $this->errorResponse($errors);
     } else {
       return $this->successResponse(

@@ -9,7 +9,7 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 use function MailPoet\Util\array_column;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * @property int $id
@@ -39,7 +39,7 @@ class Subscriber extends Model {
   }
 
   static function findOne($id = false) {
-    if(is_int($id) || (string)(int)$id === $id) {
+    if (is_int($id) || (string)(int)$id === $id) {
       return parent::findOne($id);
     } else if (strlen(trim($id)) > 0) {
       return parent::where('email', $id)->findOne();
@@ -65,7 +65,7 @@ class Subscriber extends Model {
 
   function delete() {
     // WP Users cannot be deleted
-    if($this->isWPUser() || $this->isWooCommerceUser()) {
+    if ($this->isWPUser() || $this->isWooCommerceUser()) {
       return false;
     } else {
       // delete all relations to segments
@@ -78,7 +78,7 @@ class Subscriber extends Model {
 
   function trash() {
     // WP Users cannot be trashed
-    if($this->isWPUser() || $this->isWooCommerceUser()) {
+    if ($this->isWPUser() || $this->isWooCommerceUser()) {
       return false;
     } else {
       return parent::trash();
@@ -99,9 +99,9 @@ class Subscriber extends Model {
   }
 
   static function generateToken($email = null) {
-    if($email !== null) {
+    if ($email !== null) {
       $auth_key = '';
-      if(defined('AUTH_KEY')) {
+      if (defined('AUTH_KEY')) {
         $auth_key = AUTH_KEY;
       }
       return substr(md5($auth_key . $email), 0, self::SUBSCRIBER_TOKEN_LENGTH);
@@ -131,10 +131,10 @@ class Subscriber extends Model {
 
     $subscriber = self::findOne($subscriber_data['email']);
 
-    if($subscriber === false || !$signup_confirmation_enabled) {
+    if ($subscriber === false || !$signup_confirmation_enabled) {
       // create new subscriber or update if no confirmation is required
       $subscriber = self::createOrUpdate($subscriber_data);
-      if($subscriber->getErrors() !== false) {
+      if ($subscriber->getErrors() !== false) {
         $subscriber = Source::setSource($subscriber, Source::FORM);
         $subscriber->save();
         return $subscriber;
@@ -148,13 +148,13 @@ class Subscriber extends Model {
     }
 
     // restore trashed subscriber
-    if($subscriber->deleted_at !== null) {
+    if ($subscriber->deleted_at !== null) {
       $subscriber->setExpr('deleted_at', 'NULL');
     }
 
     // set status depending on signup confirmation setting
-    if($subscriber->status !== self::STATUS_SUBSCRIBED) {
-      if($signup_confirmation_enabled === true) {
+    if ($subscriber->status !== self::STATUS_SUBSCRIBED) {
+      if ($signup_confirmation_enabled === true) {
         $subscriber->set('status', self::STATUS_UNCONFIRMED);
       } else {
         $subscriber->set('status', self::STATUS_SUBSCRIBED);
@@ -163,14 +163,14 @@ class Subscriber extends Model {
 
     $subscriber = Source::setSource($subscriber, Source::FORM);
 
-    if($subscriber->save()) {
+    if ($subscriber->save()) {
       // link subscriber to segments
       SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
 
       $sender = new ConfirmationEmailMailer();
       $sender->sendConfirmationEmail($subscriber);
 
-      if($subscriber->status === self::STATUS_SUBSCRIBED) {
+      if ($subscriber->status === self::STATUS_SUBSCRIBED) {
         $sender = new NewSubscriberNotificationMailer();
         $sender->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
 
@@ -206,7 +206,7 @@ class Subscriber extends Model {
   }
 
   static function search($orm, $search = '') {
-    if(strlen(trim($search) === 0)) {
+    if (strlen(trim($search) === 0)) {
       return $orm;
     }
 
@@ -267,16 +267,16 @@ class Subscriber extends Model {
   }
 
   static function filterBy($orm, $filters = null) {
-    if(empty($filters)) {
+    if (empty($filters)) {
       return $orm;
     }
     foreach ($filters as $key => $value) {
-      if($key === 'segment') {
-        if($value === 'none') {
+      if ($key === 'segment') {
+        if ($value === 'none') {
           return self::filter('withoutSegments');
         } else {
           $segment = Segment::findOne($value);
-          if($segment !== false) {
+          if ($segment !== false) {
             return $segment->subscribers();
           }
         }
@@ -321,7 +321,7 @@ class Subscriber extends Model {
   }
 
   static function groupBy($orm, $group = null) {
-    if($group === 'trash') {
+    if ($group === 'trash') {
       return $orm->whereNotNull('deleted_at');
     } else if ($group === 'all') {
       return $orm->whereNull('deleted_at');
@@ -415,31 +415,31 @@ class Subscriber extends Model {
 
   static function createOrUpdate($data = array()) {
     $subscriber = false;
-    if(is_array($data) && !empty($data)) {
+    if (is_array($data) && !empty($data)) {
       $data = stripslashes_deep($data);
     }
 
-    if(isset($data['id']) && (int)$data['id'] > 0) {
+    if (isset($data['id']) && (int)$data['id'] > 0) {
       $subscriber = self::findOne((int)$data['id']);
       unset($data['id']);
     }
 
-    if($subscriber === false && !empty($data['email'])) {
+    if ($subscriber === false && !empty($data['email'])) {
       $subscriber = self::where('email', $data['email'])->findOne();
-      if($subscriber !== false) {
+      if ($subscriber !== false) {
         unset($data['email']);
       }
     }
 
     // segments
     $segment_ids = false;
-    if(array_key_exists('segments', $data)) {
+    if (array_key_exists('segments', $data)) {
       $segment_ids = (array)$data['segments'];
       unset($data['segments']);
     }
 
     // if new subscriber, make sure that required fields are set
-    if(!$subscriber) {
+    if (!$subscriber) {
       $data = self::setRequiredFieldsDefaultValues($data);
     }
 
@@ -452,7 +452,7 @@ class Subscriber extends Model {
     $old_status = false;
     $new_status = false;
 
-    if($subscriber === false) {
+    if ($subscriber === false) {
       $subscriber = self::create();
       $subscriber->hydrate($data);
     } else {
@@ -461,13 +461,13 @@ class Subscriber extends Model {
       $new_status = $subscriber->status;
     }
 
-    if($subscriber->save()) {
-      if(!empty($custom_fields)) {
+    if ($subscriber->save()) {
+      if (!empty($custom_fields)) {
         $subscriber->saveCustomFields($custom_fields);
       }
 
       // check for status change
-      if(
+      if (
           ($old_status === self::STATUS_SUBSCRIBED)
           &&
           ($new_status === self::STATUS_UNSUBSCRIBED)
@@ -475,7 +475,7 @@ class Subscriber extends Model {
         // make sure we unsubscribe the user from all segments
         SubscriberSegment::unsubscribeFromSegments($subscriber);
       } else {
-        if($segment_ids !== false) {
+        if ($segment_ids !== false) {
           SubscriberSegment::resetSubscriptions($subscriber, $segment_ids);
         }
       }
@@ -485,7 +485,7 @@ class Subscriber extends Model {
 
   function withCustomFields() {
     $custom_fields = CustomField::select('id')->findArray();
-    if(empty($custom_fields)) return $this;
+    if (empty($custom_fields)) return $this;
 
     $custom_field_ids = array_column($custom_fields, 'id');
     $relations = SubscriberCustomField::select('custom_field_id')
@@ -517,7 +517,7 @@ class Subscriber extends Model {
       ->where('subscriber_id', $this->id())
       ->findOne();
 
-    if($custom_field === false) {
+    if ($custom_field === false) {
       return $default;
     } else {
       return $custom_field->value;
@@ -557,7 +557,7 @@ class Subscriber extends Model {
   }
 
   function getUnconfirmedData() {
-    if(!empty($this->unconfirmed_data)) {
+    if (!empty($this->unconfirmed_data)) {
       $subscriber_data = json_decode($this->unconfirmed_data, true);
       $subscriber_data = self::filterOutReservedColumns((array)$subscriber_data);
       return $subscriber_data;
@@ -569,7 +569,7 @@ class Subscriber extends Model {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if($segment === false) return false;
+    if ($segment === false) return false;
 
     $count = parent::bulkAction($orm,
       function($subscriber_ids) use($segment) {
@@ -589,7 +589,7 @@ class Subscriber extends Model {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if($segment === false) return false;
+    if ($segment === false) return false;
 
     $count = parent::bulkAction($orm,
       function($subscriber_ids) use($segment) {
@@ -610,7 +610,7 @@ class Subscriber extends Model {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if($segment === false) return false;
+    if ($segment === false) return false;
 
     $count = $orm->count();
 
@@ -644,10 +644,10 @@ class Subscriber extends Model {
       ->findMany();
 
     $emails_sent = 0;
-    if(!empty($subscribers)) {
+    if (!empty($subscribers)) {
       $sender = new ConfirmationEmailMailer();
       foreach ($subscribers as $subscriber) {
-        if($sender->sendConfirmationEmail($subscriber)) {
+        if ($sender->sendConfirmationEmail($subscriber)) {
           $emails_sent++;
         }
       }
@@ -762,7 +762,7 @@ class Subscriber extends Model {
       'status'
     );
     // check if there is anything to update after excluding ignored columns
-    if(!array_diff($columns, $ignore_columns_on_update)) return;
+    if (!array_diff($columns, $ignore_columns_on_update)) return;
     $subscribers = array_map('array_values', $subscribers);
     $email_position = array_search('email', $columns);
     $sql =
@@ -779,7 +779,7 @@ class Subscriber extends Model {
             $email_position,
             $ignore_columns_on_update
           ) {
-            if(in_array($column_name, $ignore_columns_on_update)) return;
+            if (in_array($column_name, $ignore_columns_on_update)) return;
             $query = array_map(
               function($subscriber) use ($type, $column_position, $email_position) {
                 return ($type === 'values') ?
@@ -831,7 +831,7 @@ class Subscriber extends Model {
       'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED
     );
     foreach ($required_field_default_values as $field => $value) {
-      if(!isset($data[$field])) {
+      if (!isset($data[$field])) {
         $data[$field] = $value;
       }
     }
@@ -841,7 +841,7 @@ class Subscriber extends Model {
   static function extractCustomFieldsFromFromObject($data) {
     $custom_fields = array();
     foreach ($data as $key => $value) {
-      if(strpos($key, 'cf_') === 0) {
+      if (strpos($key, 'cf_') === 0) {
         $custom_fields[(int)substr($key, 3)] = $value;
         unset($data[$key]);
       }

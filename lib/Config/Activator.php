@@ -4,7 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Activator {
 

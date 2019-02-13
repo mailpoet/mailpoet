@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Block;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Submit extends Base {
 

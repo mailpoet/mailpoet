@@ -202,7 +202,7 @@ class Newsletter {
         'segment_id' => $segment_id,
       ]);
     }
-    if($this->queue_options) {
+    if ($this->queue_options) {
       $sending_task = SendingTask::create();
       $sending_task->newsletter_id = $newsletter->id;
       $sending_task->status = $this->queue_options['status'];

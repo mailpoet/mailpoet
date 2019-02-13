@@ -10,7 +10,7 @@ class PHPMailMapper {
 
   function getErrorFromException(\Exception $e, $subscriber) {
     $level = MailerError::LEVEL_HARD;
-    if(strpos($e->getMessage(), 'Invalid address') === 0) {
+    if (strpos($e->getMessage(), 'Invalid address') === 0) {
       $level = MailerError::LEVEL_SOFT;
     }
 

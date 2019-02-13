@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * @property int $id
@@ -48,7 +48,7 @@ class Segment extends Model {
   function duplicate($data = array()) {
     $duplicate = parent::duplicate($data);
 
-    if($duplicate !== false) {
+    if ($duplicate !== false) {
       foreach ($this->subscribers()->findResultSet() as $relation) {
         $new_relation = SubscriberSegment::create();
         $new_relation->set('subscriber_id', $relation->id);
@@ -112,7 +112,7 @@ class Segment extends Model {
   static function getWPSegment() {
     $wp_segment = self::where('type', self::TYPE_WP_USERS)->findOne();
 
-    if($wp_segment === false) {
+    if ($wp_segment === false) {
       // create the wp users segment
       $wp_segment = Segment::create();
       $wp_segment->hydrate(array(
@@ -130,7 +130,7 @@ class Segment extends Model {
   static function getWooCommerceSegment() {
     $wc_segment = self::where('type', self::TYPE_WC_USERS)->findOne();
 
-    if($wc_segment === false) {
+    if ($wc_segment === false) {
       // create the WooCommerce customers segment
       $wc_segment = Segment::create();
       $wc_segment->hydrate(array(
@@ -165,7 +165,7 @@ class Segment extends Model {
   }
 
   static function groupBy($orm, $group = null) {
-    if($group === 'trash') {
+    if ($group === 'trash') {
       $orm->whereNotNull('deleted_at');
     } else {
       $orm->whereNull('deleted_at');
@@ -197,7 +197,7 @@ class Segment extends Model {
       ->orderByAsc(self::$_table.'.name')
       ->whereNull(self::$_table.'.deleted_at');
 
-    if(!empty($type)) {
+    if (!empty($type)) {
       $query->where(self::$_table.'.type', $type);
     }
 
@@ -234,7 +234,7 @@ class Segment extends Model {
   static function listingQuery(array $data = array()) {
     $query = self::select('*');
     $query->whereIn('type', array(Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS));
-    if(isset($data['group'])) {
+    if (isset($data['group'])) {
       $query->filter('groupBy', $data['group']);
     }
     return $query;

@@ -4,7 +4,7 @@ namespace MailPoet\Tasks;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Subscribers {
   private $task;
@@ -43,7 +43,7 @@ class Subscribers {
   }
 
   function updateProcessedSubscribers(array $processed_subscribers) {
-    if(!empty($processed_subscribers)) {
+    if (!empty($processed_subscribers)) {
       $this->getSubscribers()
         ->whereIn('subscriber_id', $processed_subscribers)
         ->findResultSet()
@@ -63,7 +63,7 @@ class Subscribers {
   }
 
   private function checkCompleted($count = null) {
-    if(!$count && !ScheduledTaskSubscriber::getUnprocessedCount($this->task->id)) {
+    if (!$count && !ScheduledTaskSubscriber::getUnprocessedCount($this->task->id)) {
       $this->task->complete();
     }
   }

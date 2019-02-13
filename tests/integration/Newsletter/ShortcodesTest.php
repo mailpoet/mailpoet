@@ -79,7 +79,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->false();
     add_filter('mailpoet_newsletter_shortcode', function(
       $shortcode, $newsletter, $subscriber, $queue, $content) {
-      if($shortcode === '[some:shortcode]') return 'success';
+      if ($shortcode === '[some:shortcode]') return 'success';
     }, 10, 5);
     $result = $shortcodes_object->process($shortcode);
     expect($result[0])->equals('success');
@@ -309,7 +309,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->false();
     add_filter('mailpoet_newsletter_shortcode_link', function(
       $shortcode, $newsletter, $subscriber, $queue) {
-      if($shortcode === '[link:shortcode]') return 'success';
+      if ($shortcode === '[link:shortcode]') return 'success';
     }, 10, 4);
     $result = $shortcodes_object->process(array($shortcode));
     expect($result[0])->equals('success');

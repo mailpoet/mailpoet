@@ -7,7 +7,7 @@ use MailPoet\Services\Bridge\API;
 use InvalidArgumentException;
 use MailPoet\Util\Helpers;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class MailPoetMapper {
   use ConnectionErrorMapperTrait;
@@ -35,7 +35,7 @@ class MailPoetMapper {
       case API::RESPONSE_CODE_PAYLOAD_ERROR:
         $result_parsed = json_decode($result['message'], true);
         $message = __('Error while sending.', 'mailpoet');
-        if(!is_array($result_parsed)) {
+        if (!is_array($result_parsed)) {
           $message .= ' ' . $result['message'];
           break;
         }
@@ -68,11 +68,11 @@ class MailPoetMapper {
   private function getSubscribersErrors($result_parsed, $subscribers) {
     $errors = [];
     foreach ($result_parsed as $result_error) {
-      if(!is_array($result_error) || !isset($result_error['index']) || !isset($subscribers[$result_error['index']])) {
+      if (!is_array($result_error) || !isset($result_error['index']) || !isset($subscribers[$result_error['index']])) {
         throw new InvalidArgumentException( __('Invalid MSS response format.', 'mailpoet'));
       }
       $subscriber_errors = [];
-      if(isset($result_error['errors']) && is_array($result_error['errors'])) {
+      if (isset($result_error['errors']) && is_array($result_error['errors'])) {
         array_walk_recursive($result_error['errors'], function($item) use (&$subscriber_errors) {
           $subscriber_errors[] = $item;
         });

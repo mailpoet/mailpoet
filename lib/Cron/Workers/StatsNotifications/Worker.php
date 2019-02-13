@@ -47,7 +47,7 @@ class Worker {
       try {
         $this->mailer->send($this->constructNewsletter($task), $settings['address']);
       } catch (\Exception $e) {
-        if(WP_DEBUG) {
+        if (WP_DEBUG) {
           throw $e;
         }
       } finally {
@@ -60,7 +60,7 @@ class Worker {
   private function constructSenderEmail() {
     $url_parts = parse_url(home_url());
     $site_name = strtolower($url_parts['host']);
-    if(strpos($site_name, 'www.') === 0) {
+    if (strpos($site_name, 'www.') === 0) {
       $site_name = substr($site_name, 4);
     }
     return [
@@ -97,7 +97,7 @@ class Worker {
   private function getNewsletter(ScheduledTask $task) {
     $statsNotificationModel = $task->statsNotification()->findOne();
     $newsletter = $statsNotificationModel->newsletter()->findOne();
-    if(!$newsletter) {
+    if (!$newsletter) {
       throw new \Exception('Newsletter not found');
     }
     return $newsletter
@@ -126,7 +126,7 @@ class Worker {
       'clicked' => $clicked,
       'opened' => $opened,
     ];
-    if($link) {
+    if ($link) {
       $context['topLinkClicks'] = (int)$link->clicksCount;
       $context['topLink'] = $link->url;
     }

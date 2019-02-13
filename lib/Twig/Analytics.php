@@ -6,7 +6,7 @@ use MailPoet\Analytics\Reporter;
 use MailPoet\Analytics\Analytics as AnalyticsGenerator;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Analytics extends \Twig_Extension {
   public function getFunctions() {

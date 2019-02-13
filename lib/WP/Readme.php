@@ -6,14 +6,14 @@ class Readme {
     // Extract changelog section of the readme.txt
     preg_match('/== Changelog ==(.*?)(\n==|$)/is', $readme_txt, $changelog);
 
-    if(empty($changelog[1])) {
+    if (empty($changelog[1])) {
       return false;
     }
 
     // Get changelog entries
     $entries = preg_split('/\n(?=\=)/', trim($changelog[1]), -1, PREG_SPLIT_NO_EMPTY);
 
-    if(empty($entries)) {
+    if (empty($entries)) {
       return false;
     }
 
@@ -24,7 +24,7 @@ class Readme {
       // Locate version header and changes list
       preg_match('/=(.*?)=(.*)/s', $entry, $parts);
 
-      if(empty($parts[1]) || empty($parts[2])) {
+      if (empty($parts[1]) || empty($parts[2])) {
         return false;
       }
 
@@ -39,7 +39,7 @@ class Readme {
         'changes' => $list,
       );
 
-      if(++$c == $limit) {
+      if (++$c == $limit) {
         break;
       }
     }

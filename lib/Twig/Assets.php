@@ -2,7 +2,7 @@
 
 namespace MailPoet\Twig;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Assets extends \Twig_Extension {
   const CDN_URL = 'https://ps.w.org/mailpoet/';

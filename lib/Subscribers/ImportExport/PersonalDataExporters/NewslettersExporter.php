@@ -20,7 +20,7 @@ class NewslettersExporter {
   }
 
   private function exportSubscriber($subscriber, $page) {
-    if(!$subscriber) return array();
+    if (!$subscriber) return array();
 
     $result = array();
 
@@ -48,7 +48,7 @@ class NewslettersExporter {
       'name' => __('Sent at', 'mailpoet'),
       'value' => $statistics_row['sent_at'],
     );
-    if(isset($statistics_row['opened_at'])) {
+    if (isset($statistics_row['opened_at'])) {
       $newsletter_data[] = array(
         'name' => __('Opened', 'mailpoet'),
         'value' => 'Yes',
@@ -63,7 +63,7 @@ class NewslettersExporter {
         'value' => __('No', 'mailpoet'),
       );
     }
-    if(isset($newsletters[$statistics_row['newsletter_id']])) {
+    if (isset($newsletters[$statistics_row['newsletter_id']])) {
       $newsletter_data[] = array(
         'name' => __('Email preview', 'mailpoet'),
         'value' => Url::getViewInBrowserUrl(
@@ -88,7 +88,7 @@ class NewslettersExporter {
       return $statistics_row['newsletter_id'];
     }, $statistics);
 
-    if(empty($newsletter_ids)) return array();
+    if (empty($newsletter_ids)) return array();
 
     $newsletters = Newsletter::whereIn('id', $newsletter_ids)->findMany();
 

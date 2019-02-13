@@ -3,7 +3,7 @@ namespace MailPoet\Models;
 
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Setting extends Model {
   public static $_table = MP_SETTINGS_TABLE;
@@ -33,7 +33,7 @@ class Setting extends Model {
   public static function getAll() {
     $settingsCollection = self::findMany();
     $settings = array();
-    if(!empty($settingsCollection)) {
+    if (!empty($settingsCollection)) {
       foreach ($settingsCollection as $setting) {
         $value = (is_serialized($setting->value)
           ? unserialize($setting->value)
@@ -57,7 +57,7 @@ class Setting extends Model {
 
   public static function saveDefaultSenderIfNeeded($sender_address, $sender_name) {
     $settings = new SettingsController();
-    if(empty($sender_address) || empty($sender_name) || $settings->get('sender')) {
+    if (empty($sender_address) || empty($sender_name) || $settings->get('sender')) {
       return;
     }
     $settings->set('sender', array(

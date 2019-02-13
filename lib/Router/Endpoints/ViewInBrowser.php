@@ -10,7 +10,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
@@ -45,18 +45,18 @@ class ViewInBrowser {
 
   function _validateBrowserPreviewData($data) {
     // either newsletter ID or hash must be defined, and newsletter must exist
-    if(empty($data->newsletter_id) && empty($data->newsletter_hash)) return false;
+    if (empty($data->newsletter_id) && empty($data->newsletter_hash)) return false;
     $data->newsletter = (!empty($data->newsletter_hash)) ?
       Newsletter::getByHash($data->newsletter_hash) :
       Newsletter::findOne($data->newsletter_id);
-    if(!$data->newsletter) return false;
+    if (!$data->newsletter) return false;
 
     // subscriber is optional; if exists, token must validate
     $data->subscriber = (!empty($data->subscriber_id)) ?
       Subscriber::findOne($data->subscriber_id) :
       false;
-    if($data->subscriber) {
-      if(empty($data->subscriber_token) ||
+    if ($data->subscriber) {
+      if (empty($data->subscriber_token) ||
          !Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token)
       ) return false;
     } else if (!$data->subscriber && !empty($data->preview)) {
@@ -66,10 +66,10 @@ class ViewInBrowser {
     }
 
     // if newsletter hash is not provided but newsletter ID is defined then subscriber must exist
-    if(empty($data->newsletter_hash) && $data->newsletter_id && !$data->subscriber) return false;
+    if (empty($data->newsletter_hash) && $data->newsletter_id && !$data->subscriber) return false;
 
     // queue is optional; try to find it if it's not defined and this is not a welcome email
-    if($data->newsletter->type !== Newsletter::TYPE_WELCOME) {
+    if ($data->newsletter->type !== Newsletter::TYPE_WELCOME) {
       $data->queue = (!empty($data->queue_id)) ?
         SendingQueue::findOne($data->queue_id) :
         SendingQueue::where('newsletter_id', $data->newsletter->id)
@@ -79,20 +79,20 @@ class ViewInBrowser {
     }
 
     // reset queue when automatic email is being previewed
-    if($data->newsletter->type === Newsletter::TYPE_AUTOMATIC && !empty($data->preview)) {
+    if ($data->newsletter->type === Newsletter::TYPE_AUTOMATIC && !empty($data->preview)) {
       $data->queue = false;
     }
 
     // allow users with permission to manage emails to preview any newsletter
-    if(!empty($data->preview) && $this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)
+    if (!empty($data->preview) && $this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)
     ) return $data;
 
     // allow others to preview newsletters only when newsletter hash is defined
-    if(!empty($data->preview) && empty($data->newsletter_hash)
+    if (!empty($data->preview) && empty($data->newsletter_hash)
     ) return false;
 
     // if queue and subscriber exist, subscriber must have received the newsletter
-    if($data->queue &&
+    if ($data->queue &&
        $data->subscriber &&
        !$data->queue->isSubscriberProcessed($data->subscriber->id)
     ) return false;

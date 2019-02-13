@@ -1,6 +1,6 @@
 <?php
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /*
  * Plugin Name: MailPoet 3 (New)
@@ -27,13 +27,13 @@ $mailpoet_plugin = array(
 
 function mailpoet_deactivate_plugin() {
   deactivate_plugins(plugin_basename(__FILE__));
-  if(!empty($_GET['activate'])) {
+  if (!empty($_GET['activate'])) {
     unset($_GET['activate']);
   }
 }
 
 // Check for minimum supported WP version
-if(version_compare(get_bloginfo('version'), '4.6', '<')) {
+if (version_compare(get_bloginfo('version'), '4.6', '<')) {
   add_action('admin_notices', 'mailpoet_wp_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -41,7 +41,7 @@ if(version_compare(get_bloginfo('version'), '4.6', '<')) {
 }
 
 // Check for minimum supported PHP version
-if(version_compare(phpversion(), '5.6.0', '<')) {
+if (version_compare(phpversion(), '5.6.0', '<')) {
   add_action('admin_notices', 'mailpoet_php_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -70,7 +70,7 @@ function mailpoet_php_version_notice() {
   printf('<div class="error"><p>%1$s</p></div>', $notice);
 }
 
-if(isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'microsoft-iis') !== false) {
+if (isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'microsoft-iis') !== false) {
   add_action('admin_notices', 'mailpoet_microsoft_iis_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -84,7 +84,7 @@ function mailpoet_microsoft_iis_notice() {
 }
 
 // Check for presence of core dependencies
-if(!file_exists($mailpoet_plugin['autoloader']) || !file_exists($mailpoet_plugin['initializer'])) {
+if (!file_exists($mailpoet_plugin['autoloader']) || !file_exists($mailpoet_plugin['initializer'])) {
   add_action('admin_notices', 'mailpoet_core_dependency_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');

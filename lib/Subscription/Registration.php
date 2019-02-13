@@ -26,8 +26,8 @@ class Registration {
   }
 
   static function onMultiSiteRegister($result) {
-    if(empty($result['errors']->errors)) {
-      if(
+    if (empty($result['errors']->errors)) {
+      if (
         isset($_POST['mailpoet']['subscribe_on_register'])
         && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
       ) {
@@ -45,7 +45,7 @@ class Registration {
     $user_email = null,
     $errors = null
   ) {
-    if(
+    if (
       empty($errors->errors)
       && isset($_POST['mailpoet']['subscribe_on_register'])
       && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
@@ -64,7 +64,7 @@ class Registration {
       []
     );
 
-    if(!empty($segment_ids)) {
+    if (!empty($segment_ids)) {
       Subscriber::subscribe(
         array(
           'email' => $email,

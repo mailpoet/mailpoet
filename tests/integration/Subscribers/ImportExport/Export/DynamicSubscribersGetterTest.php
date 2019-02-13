@@ -61,7 +61,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     );
 
     foreach ($this->subscribers_data as $subscriber) {
-      if(isset($subscriber[1])) {
+      if (isset($subscriber[1])) {
         unset($subscriber[1]);
       }
       $entity = Subscriber::create();
@@ -91,7 +91,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     $wp->addAction(
       'mailpoet_get_segment_filters',
       function($segment_id) {
-        if($segment_id == 1) {
+        if ($segment_id == 1) {
           return array(new \DynamicSegmentFilter([1, 2]));
         } else if ($segment_id == 2) {
           return array(new \DynamicSegmentFilter([1, 3, 4]));
@@ -105,7 +105,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     return array_map(function($subscriber) {
       $data = array();
       foreach ($subscriber as $key => $value) {
-        if(in_array($key, array(
+        if (in_array($key, array(
           'first_name', 'last_name', 'email', 'global_status',
           'status', 'list_status', 'segment_name', 1
         )))

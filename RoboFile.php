@@ -81,7 +81,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileJs($opts = ['env' => null]) {
-    if(!is_dir('assets/dist/js')) {
+    if (!is_dir('assets/dist/js')) {
       mkdir('assets/dist/js', 0777, true);
     }
     $env = ($opts['env']) ?
@@ -91,7 +91,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileCss($opts = ['env' => null]) {
-    if(!is_dir('assets/dist/css')) {
+    if (!is_dir('assets/dist/css')) {
       mkdir('assets/dist/css', 0777, true);
     }
     // Clean up folder from previous files
@@ -119,7 +119,7 @@ class RoboFile extends \Robo\Tasks {
     $manifest = [];
     foreach (glob('assets/dist/css/*.css') as $style) {
       // Hash and rename styles if production environment
-      if($opts['env'] === 'production') {
+      if ($opts['env'] === 'production') {
         $hashed_style = sprintf(
           '%s.%s.css',
           pathinfo($style)['filename'],
@@ -167,15 +167,15 @@ class RoboFile extends \Robo\Tasks {
 
     $command = 'vendor/bin/codecept run unit';
 
-    if($opts['file']) {
+    if ($opts['file']) {
       $command .= ' -f ' . $opts['file'];
     }
 
-    if($opts['xml']) {
+    if ($opts['xml']) {
       $command .= ' --xml';
     }
 
-    if($opts['debug']) {
+    if ($opts['debug']) {
       $command .= ' --debug';
     }
 
@@ -187,19 +187,19 @@ class RoboFile extends \Robo\Tasks {
 
     $command = 'vendor/bin/codecept run integration';
 
-    if($opts['multisite']) {
+    if ($opts['multisite']) {
       $command = 'MULTISITE=true ' . $command;
     }
 
-    if($opts['file']) {
+    if ($opts['file']) {
       $command .= ' -f ' . $opts['file'];
     }
 
-    if($opts['xml']) {
+    if ($opts['xml']) {
       $command .= ' --xml';
     }
 
-    if($opts['debug']) {
+    if ($opts['debug']) {
       $command .= ' --debug';
     }
 
@@ -219,7 +219,7 @@ class RoboFile extends \Robo\Tasks {
       ($opts['xml']) ? '--coverage-xml' : '--coverage-html'
     ));
 
-    if($opts['xml']) {
+    if ($opts['xml']) {
       $command .= ' --xml';
     }
     return $this->_exec($command);
@@ -234,7 +234,7 @@ class RoboFile extends \Robo\Tasks {
       'tests/javascript/testBundles/**/*.js'
     ));
 
-    if(!empty($xml_output_file)) {
+    if (!empty($xml_output_file)) {
       $command .= sprintf(
         ' --reporter xunit --reporter-options output="%s"',
         $xml_output_file
@@ -394,7 +394,7 @@ class RoboFile extends \Robo\Tasks {
     $collection = $this->collectionBuilder();
 
     // Clean up the SVN dir for faster shallow checkout
-    if(file_exists($svn_dir)) {
+    if (file_exists($svn_dir)) {
       $collection->taskExecStack()
         ->exec('rm -rf ' . $svn_dir);
     }
@@ -434,13 +434,13 @@ class RoboFile extends \Robo\Tasks {
     $plugin_dist_name = 'mailpoet';
     $plugin_dist_file = $plugin_dist_name . '.zip';
 
-    if(!$plugin_version) {
+    if (!$plugin_version) {
       throw new \Exception('Could not parse plugin version, check the plugin header');
     }
     $this->say('Publishing version: ' . $plugin_version);
 
     // Sanity checks
-    if(!is_readable($plugin_dist_file)) {
+    if (!is_readable($plugin_dist_file)) {
       $this->say("Failed to access " . $plugin_dist_file);
       return;
     } elseif (!file_exists($svn_dir . "/.svn/")) {
@@ -454,7 +454,7 @@ class RoboFile extends \Robo\Tasks {
     $collection = $this->collectionBuilder();
 
     // Clean up tmp dirs if the previous run was halted
-    if(file_exists("$svn_dir/trunk_new") || file_exists("$svn_dir/trunk_old")) {
+    if (file_exists("$svn_dir/trunk_new") || file_exists("$svn_dir/trunk_old")) {
       $collection->taskFileSystemStack()
         ->stopOnFail()
         ->remove(array("$svn_dir/trunk_new", "$svn_dir/trunk_old"));
@@ -466,7 +466,7 @@ class RoboFile extends \Robo\Tasks {
       ->preserveTopDirectory(false);
 
     // Rename current trunk
-    if(file_exists("$svn_dir/trunk")) {
+    if (file_exists("$svn_dir/trunk")) {
       $collection->taskFileSystemStack()
         ->rename("$svn_dir/trunk", "$svn_dir/trunk_old");
     }
@@ -482,7 +482,7 @@ class RoboFile extends \Robo\Tasks {
       ->mirror('./plugin_repository/assets', "$svn_dir/assets_new");
 
     // Rename current assets folder
-    if(file_exists("$svn_dir/assets")) {
+    if (file_exists("$svn_dir/assets")) {
       $collection->taskFileSystemStack()
         ->rename("$svn_dir/assets", "$svn_dir/assets_old");
     }
@@ -509,12 +509,12 @@ class RoboFile extends \Robo\Tasks {
 
     $result = $collection->run();
 
-    if($result->wasSuccessful()) {
+    if ($result->wasSuccessful()) {
       // Run or suggest release command depending on a flag
       $repo_url = "https://plugins.svn.wordpress.org/$plugin_dist_name";
       $release_cmd = "svn ci -m \"Release $plugin_version\"";
       $tag_cmd = "svn copy $repo_url/trunk $repo_url/tags/$plugin_version -m \"Tag $plugin_version\"";
-      if(!empty($opts['force'])) {
+      if (!empty($opts['force'])) {
         $svn_login = getenv('WP_SVN_USERNAME');
         $svn_password = getenv('WP_SVN_PASSWORD');
         if ($svn_login && $svn_password) {
@@ -553,7 +553,7 @@ class RoboFile extends \Robo\Tasks {
   function changelogUpdate($opts = ['version-name' => null]) {
     $this->say("Updating changelog");
     $outputs = $this->getChangelogController()->update($opts['version-name']);
-    if($opts['quiet']) {
+    if ($opts['quiet']) {
       return;
     }
     $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n\n");
@@ -598,7 +598,7 @@ class RoboFile extends \Robo\Tasks {
 
   public function writeReleaseVersion($version) {
     $version = trim($version);
-    if(!preg_match('/\d+\.\d+\.\d+/', $version)) {
+    if (!preg_match('/\d+\.\d+\.\d+/', $version)) {
       $this->yell('Incorrect version format', 40, 'red');
       exit(1);
     }

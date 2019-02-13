@@ -24,7 +24,7 @@ class SubscribeOnRegistrationPageCest {
     $I->logOut();
     $I->amOnPage('/wp-login.php?action=register');
     $I->waitForElement(['css'=>'.registration-form-mailpoet']);
-    if(!getenv('MULTISITE')) {
+    if (!getenv('MULTISITE')) {
       $I->fillField(['name' => 'user_login'], 'registerpagesignup');
       $I->fillField(['name' => 'user_email'], $regpageuseremail);
       $I->checkOption('#mailpoet_subscribe_on_register');

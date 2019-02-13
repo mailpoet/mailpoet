@@ -62,7 +62,7 @@ class Link {
   }
 
   static function processUrl($action, $url, $queue, $wp_user_preview = false) {
-    if($wp_user_preview) return $url;
+    if ($wp_user_preview) return $url;
     $settings = new SettingsController();
     return ($queue !== false && (boolean)$settings->get('tracking.enabled')) ?
       self::getFullShortcode($action) :
@@ -76,7 +76,7 @@ class Link {
       case 'subscription_unsubscribe_url':
         $settings = new SettingsController();
         // track unsubscribe event
-        if((boolean)$settings->get('tracking.enabled') && !$wp_user_preview) {
+        if ((boolean)$settings->get('tracking.enabled') && !$wp_user_preview) {
           $unsubscribe_event = new Unsubscribes();
           $unsubscribe_event->track($newsletter->id, $subscriber->id, $queue->id);
         }

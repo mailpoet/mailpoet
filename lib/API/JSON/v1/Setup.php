@@ -8,7 +8,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Config\Activator;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Setup extends APIEndpoint {
   private $wp;

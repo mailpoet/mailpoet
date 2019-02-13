@@ -41,7 +41,7 @@ class SendingErrorHandlerTest extends \MailPoetTest {
         'saveSubscriberError' => Expected::exactly(
           2,
           function($id, $message) {
-            if($id === 2) {
+            if ($id === 2) {
               expect($message)->equals('Error Message');
             } else {
               expect($message)->equals('Subscriber Message');

@@ -5,7 +5,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class AmazonSES {
   public $aws_access_key;
@@ -46,7 +46,7 @@ class AmazonSES {
     $this->aws_access_key = $access_key;
     $this->aws_secret_key = $secret_key;
     $this->aws_region = (in_array($region, $this->available_regions)) ? $region : false;
-    if(!$this->aws_region) {
+    if (!$this->aws_region) {
       throw new \Exception(__('Unsupported Amazon SES region', 'mailpoet'));
     }
     $this->aws_endpoint = sprintf('email.%s.amazonaws.com', $this->aws_region);
@@ -76,11 +76,11 @@ class AmazonSES {
       $error = $this->error_mapper->getErrorFromException($e, $subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
-    if(is_wp_error($result)) {
+    if (is_wp_error($result)) {
       $error = $this->error_mapper->getConnectionError($result->get_error_message());
       return Mailer::formatMailerErrorResult($error);
     }
-    if($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
+    if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = simplexml_load_string($this->wp->wpRemoteRetrieveBody($result));
       $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
       return Mailer::formatMailerErrorResult($error);
@@ -111,14 +111,14 @@ class AmazonSES {
         ))
       ->setReturnPath($this->return_path)
       ->setSubject($newsletter['subject']);
-    if(!empty($extra_params['unsubscribe_url'])) {
+    if (!empty($extra_params['unsubscribe_url'])) {
       $headers = $message->getHeaders();
       $headers->addTextHeader('List-Unsubscribe', '<' . $extra_params['unsubscribe_url'] . '>');
     }
-    if(!empty($newsletter['body']['html'])) {
+    if (!empty($newsletter['body']['html'])) {
       $message = $message->setBody($newsletter['body']['html'], 'text/html');
     }
-    if(!empty($newsletter['body']['text'])) {
+    if (!empty($newsletter['body']['text'])) {
       $message = $message->addPart($newsletter['body']['text'], 'text/plain');
     }
     return $message;
@@ -130,7 +130,7 @@ class AmazonSES {
 
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
-    if(!isset($subscriber_data['email'])) {
+    if (!isset($subscriber_data['email'])) {
       $subscriber_data = array(
         'email' => $subscriber,
       );

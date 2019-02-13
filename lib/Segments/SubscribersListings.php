@@ -19,7 +19,7 @@ class SubscribersListings {
   }
 
   function getListingsInSegment($data) {
-    if(!isset($data['filter']['segment'])) {
+    if (!isset($data['filter']['segment'])) {
       throw new \InvalidArgumentException('Missing segment id');
     }
     $segment = Segment::findOne($data['filter']['segment']);
@@ -28,7 +28,7 @@ class SubscribersListings {
   }
 
   private function getListings($data, Segment $segment = null) {
-    if(!$segment
+    if (!$segment
       || in_array($segment->type, [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS], true)
     ) {
       return $listing_data = $this->handler->get('\MailPoet\Models\Subscriber', $data);
@@ -36,7 +36,7 @@ class SubscribersListings {
     $handlers = $this->wp->applyFilters('mailpoet_get_subscribers_listings_in_segment_handlers', array());
     foreach ($handlers as $handler) {
       $listings = $handler->get($segment, $data);
-      if($listings) {
+      if ($listings) {
         return $listings;
       }
     }

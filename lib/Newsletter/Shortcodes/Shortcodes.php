@@ -64,7 +64,7 @@ class Shortcodes {
           false;
         $shortcode_class =
           Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . ucfirst($shortcode_details['category']);
-        if(!class_exists($shortcode_class)) {
+        if (!class_exists($shortcode_class)) {
           $custom_shortcode = apply_filters(
             'mailpoet_newsletter_shortcode',
             $shortcode,
@@ -92,7 +92,7 @@ class Shortcodes {
 
   function replace($content, $content_source = null, $categories = null) {
     $shortcodes = $this->extract($content, $categories);
-    if(!$shortcodes) {
+    if (!$shortcodes) {
       return $content;
     }
     // if content contains only shortcodes (e.g., [newsletter:post_title]) but their processing

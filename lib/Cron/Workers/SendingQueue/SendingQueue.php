@@ -17,7 +17,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class SendingQueue {
   public $mailer_task;
@@ -46,16 +46,16 @@ class SendingQueue {
   function process() {
     $this->enforceSendingAndExecutionLimits();
     foreach (self::getRunningQueues() as $queue) {
-      if(!$queue instanceof SendingTask) continue;
+      if (!$queue instanceof SendingTask) continue;
       ScheduledTaskModel::touchAllByIds(array($queue->task_id));
 
       $newsletter = $this->newsletter_task->getNewsletterFromQueue($queue);
-      if(!$newsletter) {
+      if (!$newsletter) {
         continue;
       }
       // pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->preProcessNewsletter($newsletter, $queue);
-      if(!$newsletter) {
+      if (!$newsletter) {
         Logger::getLogger('newsletters')->addInfo(
           'delete task in sending queue',
           ['task_id' => $queue->task_id]
@@ -72,7 +72,7 @@ class SendingQueue {
       // get subscribers
       $subscriber_batches = new BatchIterator($queue->task_id, $this->batch_size);
       foreach ($subscriber_batches as $subscribers_to_process_ids) {
-        if(!empty($newsletter_segments_ids[0])) {
+        if (!empty($newsletter_segments_ids[0])) {
           // Check that subscribers are in segments
           $finder = new SubscribersFinder();
           $found_subscribers_ids = $finder->findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids);
@@ -87,13 +87,13 @@ class SendingQueue {
           $found_subscribers_ids = SubscriberModel::extractSubscribersIds($found_subscribers);
         }
         // if some subscribers weren't found, remove them from the processing list
-        if(count($found_subscribers_ids) !== count($subscribers_to_process_ids)) {
+        if (count($found_subscribers_ids) !== count($subscribers_to_process_ids)) {
           $subscribers_to_remove = array_diff(
             $subscribers_to_process_ids,
             $found_subscribers_ids
           );
           $queue->removeSubscribers($subscribers_to_remove);
-          if(!$queue->count_to_process) {
+          if (!$queue->count_to_process) {
             $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
             continue;
           }
@@ -103,7 +103,7 @@ class SendingQueue {
           $_newsletter,
           $found_subscribers
         );
-        if($queue->status === ScheduledTaskModel::STATUS_COMPLETED) {
+        if ($queue->status === ScheduledTaskModel::STATUS_COMPLETED) {
           $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
           $this->stats_notifications_scheduler->schedule($newsletter);
         }
@@ -141,7 +141,7 @@ class SendingQueue {
         'subscriber_id' => $subscriber->id,
         'queue_id' => $queue->id
       );
-      if($processing_method === 'individual') {
+      if ($processing_method === 'individual') {
         $queue = $this->sendNewsletter(
           $queue,
           $prepared_subscribers_ids[0],
@@ -157,7 +157,7 @@ class SendingQueue {
         $statistics = array();
       }
     }
-    if($processing_method === 'bulk') {
+    if ($processing_method === 'bulk') {
       $queue = $this->sendNewsletters(
         $queue,
         $prepared_subscribers_ids,
@@ -216,7 +216,7 @@ class SendingQueue {
     array $statistics
   ) {
     // log error message and schedule retry/pause sending
-    if($send_result['response'] === false) {
+    if ($send_result['response'] === false) {
       $error = $send_result['error'];
       assert($error instanceof MailerError);
       // Always switch error level to hard until we implement UI for individual subscriber errors
@@ -224,7 +224,7 @@ class SendingQueue {
       $this->error_handler->processError($error, $sending_task, $prepared_subscribers_ids, $prepared_subscribers);
     }
     // update processed/to process list
-    if(!$sending_task->updateProcessedSubscribers($prepared_subscribers_ids)) {
+    if (!$sending_task->updateProcessedSubscribers($prepared_subscribers_ids)) {
       MailerLog::processError(
         'processed_list_update',
         sprintf('QUEUE-%d-PROCESSED-LIST-UPDATE', $sending_task->id),
@@ -237,7 +237,7 @@ class SendingQueue {
     // update the sent count
     $this->mailer_task->updateSentCount();
     // enforce execution limits if queue is still being processed
-    if($sending_task->status !== ScheduledTaskModel::STATUS_COMPLETED) {
+    if ($sending_task->status !== ScheduledTaskModel::STATUS_COMPLETED) {
       $this->enforceSendingAndExecutionLimits();
     }
     return $sending_task;

@@ -795,7 +795,7 @@ class SchedulerTest extends \MailPoetTest {
   function _createNewsletterOptions($newsletter_id, $newsletter_type, $options) {
     foreach ($options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
-      if(!$newsletter_option_field) {
+      if (!$newsletter_option_field) {
         $newsletter_option_field = NewsletterOptionField::create();
         $newsletter_option_field->name = $option;
         $newsletter_option_field->newsletter_type = $newsletter_type;

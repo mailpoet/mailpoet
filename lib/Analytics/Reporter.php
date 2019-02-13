@@ -33,7 +33,7 @@ class Reporter {
     $segments = Segment::getAnalytics();
     $has_wc = $this->woocommerce_helper->isWooCommerceActive();
     $wc_customers_count = 0;
-    if($has_wc) {
+    if ($has_wc) {
       $wc_customers_count = (int)Newsletter::rawQuery(
         "SELECT COUNT(DISTINCT m.meta_value) as count FROM ".$wpdb->prefix."posts p ".
         "JOIN ".$wpdb->prefix."postmeta m ON m.post_id = p.id ".

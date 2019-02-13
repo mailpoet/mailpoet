@@ -12,7 +12,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Widget extends \WP_Widget {
   private $renderer;
@@ -32,7 +32,7 @@ class Widget extends \WP_Widget {
     $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
     $this->settings = new SettingsController();
-    if(!is_admin()) {
+    if (!is_admin()) {
       $this->setupIframe();
     } else {
       add_action('widgets_admin_page', array(
@@ -44,7 +44,7 @@ class Widget extends \WP_Widget {
 
   function setupIframe() {
     $form_id = (isset($_GET['mailpoet_form_iframe']) ? (int)$_GET['mailpoet_form_iframe'] : 0);
-    if(!$form_id || !Form::findOne($form_id)) return;
+    if (!$form_id || !Form::findOne($form_id)) return;
 
     $form_html = $this->widget(
       array(
@@ -65,11 +65,11 @@ class Widget extends \WP_Widget {
     $language_attributes = array();
     $is_rtl = (bool)(function_exists('is_rtl') && is_rtl());
 
-    if($is_rtl) {
+    if ($is_rtl) {
       $language_attributes[] = 'dir="rtl"';
     }
 
-    if(get_option('html_type') === 'text/html') {
+    if (get_option('html_type') === 'text/html') {
       $language_attributes[] = sprintf('lang="%s"', get_bloginfo('language'));
     }
 
@@ -119,7 +119,7 @@ class Widget extends \WP_Widget {
     );
 
     $captcha = $this->settings->get('re_captcha');
-    if(!empty($captcha['enabled'])) {
+    if (!empty($captcha['enabled'])) {
       wp_enqueue_script(
         'mailpoet_recaptcha',
         self::RECAPTCHA_API_URL,
@@ -136,7 +136,7 @@ class Widget extends \WP_Widget {
 
     $inline_script = <<<EOL
 function initMailpoetTranslation() {
-  if(typeof MailPoet !== 'undefined') {
+  if (typeof MailPoet !== 'undefined') {
     MailPoet.I18n.add('ajaxFailedErrorMessage', '%s')
   } else {
     setTimeout(initMailpoetTranslation, 250);
@@ -230,12 +230,12 @@ EOL;
           action: 'create',
           api_version: window.mailpoet_api_version
         }).done(function(response) {
-          if(response.data && response.data.id) {
+          if (response.data && response.data.id) {
             window.location =
               "<?php echo $form_edit_url; ?>" + response.data.id;
           }
         }).fail((response) => {
-          if(response.errors.length > 0) {
+          if (response.errors.length > 0) {
             MailPoet.Notice.error(
               response.errors.map((error) => { return error.message; }),
               { scroll: true }
@@ -257,7 +257,7 @@ EOL;
     // turn $args into variables
     extract($args);
 
-    if($instance === null) {
+    if ($instance === null) {
       $instance = $args;
     }
 
@@ -270,11 +270,11 @@ EOL;
 
     // get form
     $form = Form::getPublished()->findOne($instance['form']);
-    if(!$form) return '';
+    if (!$form) return '';
 
     $form = $form->asArray();
     $form_type = 'widget';
-    if(isset($instance['form_type']) && in_array(
+    if (isset($instance['form_type']) && in_array(
         $instance['form_type'],
         array(
           'html',
@@ -289,7 +289,7 @@ EOL;
     $body = (isset($form['body']) ? $form['body'] : array());
     $output = '';
 
-    if(!empty($body)) {
+    if (!empty($body)) {
       $form_id = $this->id_base . '_' . $form['id'];
       $data = array(
         'form_id' => $form_id,
@@ -333,7 +333,7 @@ EOL;
       }
     }
 
-    if($form_type === 'widget') {
+    if ($form_type === 'widget') {
       echo $output;
     } else {
       return $output;

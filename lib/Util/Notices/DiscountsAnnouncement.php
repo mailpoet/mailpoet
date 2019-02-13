@@ -26,7 +26,7 @@ class DiscountsAnnouncement {
 
   function init($should_display) {
     $should_display = $should_display && (time() <= strtotime('2018-11-30 23:59:59'));
-    if($should_display && $this->settings->get(self::OPTION_NAME, true)) {
+    if ($should_display && $this->settings->get(self::OPTION_NAME, true)) {
       return $this->display();
     }
   }

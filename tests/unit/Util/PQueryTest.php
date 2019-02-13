@@ -56,7 +56,7 @@ class PQueryTest extends \MailPoetUnitTest {
 
   function parseTest($html, $equals = true) {
     $parsed_html = pQuery::parseStr($html)->getInnerText();
-    if($equals) {
+    if ($equals) {
       expect($parsed_html)->equals($html);
     } else {
       expect($parsed_html)->notEquals($html);

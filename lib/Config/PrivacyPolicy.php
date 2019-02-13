@@ -7,7 +7,7 @@ use MailPoet\Util\Helpers;
 class PrivacyPolicy {
 
   function init() {
-    if(function_exists('wp_add_privacy_policy_content')) {
+    if (function_exists('wp_add_privacy_policy_content')) {
       wp_add_privacy_policy_content(__('MailPoet', 'mailpoet'), $this->getPrivacyPolicyContent());
     }
   }

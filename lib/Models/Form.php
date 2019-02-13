@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * @property string|array $settings
@@ -49,7 +49,7 @@ class Form extends Model {
 
   function getFieldList() {
     $body = $this->getBody();
-    if(empty($body)) {
+    if (empty($body)) {
       return false;
     }
 
@@ -57,13 +57,13 @@ class Form extends Model {
     $fields = array();
 
     foreach ((array)$body as $field) {
-      if(empty($field['id'])
+      if (empty($field['id'])
         || empty($field['type'])
         || in_array($field['type'], $skipped_types)
       ) {
         continue;
       }
-      if($field['id'] > 0) {
+      if ($field['id'] > 0) {
         $fields[] = 'cf_' . $field['id'];
       } else {
         $fields[] = $field['id'];
@@ -75,11 +75,11 @@ class Form extends Model {
 
   function filterSegments(array $segment_ids = array()) {
     $settings = $this->getSettings();
-    if(empty($settings['segments'])) {
+    if (empty($settings['segments'])) {
       return array();
     }
 
-    if(!empty($settings['segments_selected_by'])
+    if (!empty($settings['segments_selected_by'])
       && $settings['segments_selected_by'] == 'user'
     ) {
       $segment_ids = array_intersect($segment_ids, $settings['segments']);
@@ -110,7 +110,7 @@ class Form extends Model {
   }
 
   static function groupBy($orm, $group = null) {
-    if($group === 'trash') {
+    if ($group === 'trash') {
       return $orm->whereNotNull('deleted_at');
     }
     return $orm->whereNull('deleted_at');

@@ -5,7 +5,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterPost;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class PostsTest extends \MailPoetTest {
   function testItFailsWhenNoPostsArePresent() {

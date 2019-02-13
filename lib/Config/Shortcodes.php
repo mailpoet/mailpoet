@@ -49,7 +49,7 @@ class Shortcodes {
     // IMPORTANT: fixes conflict with MagicMember
     remove_shortcode('user_list');
 
-    if(isset($params['id']) && (int)$params['id'] > 0) {
+    if (isset($params['id']) && (int)$params['id'] > 0) {
       $form_widget = new \MailPoet\Form\Widget();
       return $form_widget->widget(array(
         'form' => (int)$params['id'],
@@ -59,13 +59,13 @@ class Shortcodes {
   }
 
   function getSubscribersCount($params) {
-    if(!empty($params['segments'])) {
+    if (!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
         return (int)trim($segment_id);
       }, explode(',', $params['segments']));
     }
 
-    if(empty($segment_ids)) {
+    if (empty($segment_ids)) {
       return number_format_i18n(Subscriber::filter('subscribed')->count());
     } else {
       return number_format_i18n(
@@ -79,7 +79,7 @@ class Shortcodes {
 
   function getArchive($params) {
     $segment_ids = array();
-    if(!empty($params['segments'])) {
+    if (!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
         return (int)trim($segment_id);
       }, explode(',', $params['segments']));
@@ -91,14 +91,14 @@ class Shortcodes {
 
     $subscriber = Subscriber::getCurrentWPUser();
 
-    if(empty($newsletters)) {
+    if (empty($newsletters)) {
       return $this->wp->applyFilters(
         'mailpoet_archive_no_newsletters',
         __('Oops! There are no newsletters to display.', 'mailpoet')
       );
     } else {
       $title = $this->wp->applyFilters('mailpoet_archive_title', '');
-      if(!empty($title)) {
+      if (!empty($title)) {
         $html .= '<h3 class="mailpoet_archive_title">'.$title.'</h3>';
       }
       $html .= '<ul class="mailpoet_archive">';

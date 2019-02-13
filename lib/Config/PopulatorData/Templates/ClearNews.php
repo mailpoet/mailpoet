@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class ClearNews {
 
@@ -29,93 +29,93 @@ class ClearNews {
 
   private function getBody() {
     return array (
-      'content' => 
+      'content' =>
       array (
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
+        'image' =>
         array (
           'src' => NULL,
           'display' => 'scale',
         ),
-        'styles' => 
+        'styles' =>
         array (
-          'block' => 
+          'block' =>
           array (
             'backgroundColor' => 'transparent',
           ),
         ),
-        'blocks' => 
+        'blocks' =>
         array (
-          0 => 
+          0 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '27px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'header',
                     'text' => '<p><a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a></p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '11px',
                         'textAlign' => 'left',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#e2973f',
                         'textDecoration' => 'underline',
@@ -126,57 +126,57 @@ class ClearNews {
               ),
             ),
           ),
-          1 => 
+          1 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#ffffff',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '20px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -185,9 +185,9 @@ class ClearNews {
                     'fullWidth' => false,
                     'width' => '120px',
                     'height' => '167px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'left',
                       ),
@@ -195,38 +195,38 @@ class ClearNews {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '30px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3 style="text-align: right;"><span style="color: #808080;"><strong>October 2018</strong></span></h3>',
@@ -235,45 +235,45 @@ class ClearNews {
               ),
             ),
           ),
-          2 => 
+          2 =>
           array (
             'type' => 'container',
             'columnLayout' => '2_1',
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'text',
                     'text' => '<h1 style="text-align: left; line-height: 1.3;" data-post-id="1994"><strong>Good Morning!</strong></h1>
@@ -281,38 +281,38 @@ class ClearNews {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '24px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -321,9 +321,9 @@ class ClearNews {
                     'fullWidth' => false,
                     'width' => '360px',
                     'height' => '400px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -333,50 +333,50 @@ class ClearNews {
               ),
             ),
           ),
-          3 => 
+          3 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'divider',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'padding' => '13px',
@@ -390,57 +390,57 @@ class ClearNews {
               ),
             ),
           ),
-          4 => 
+          4 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '20px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h2><strong>Today\'s Top Stories</strong></h2>',
@@ -449,13 +449,13 @@ class ClearNews {
               ),
             ),
           ),
-          5 => 
+          5 =>
           array (
             'type' => 'automatedLatestContentLayout',
             'withLayout' => true,
             'amount' => '3',
             'contentType' => 'post',
-            'terms' => 
+            'terms' =>
             array (
             ),
             'inclusionType' => 'include',
@@ -471,14 +471,14 @@ class ClearNews {
             'categoriesPrecededBy' => 'Categories:',
             'readMoreType' => 'button',
             'readMoreText' => 'Read more',
-            'readMoreButton' => 
+            'readMoreButton' =>
             array (
               'type' => 'button',
               'text' => 'Read more',
               'url' => '[postLink]',
-              'styles' => 
+              'styles' =>
               array (
-                'block' => 
+                'block' =>
                 array (
                   'backgroundColor' => '#e2973f',
                   'borderColor' => '#e2973f',
@@ -498,12 +498,12 @@ class ClearNews {
             ),
             'sortBy' => 'newest',
             'showDivider' => false,
-            'divider' => 
+            'divider' =>
             array (
               'type' => 'divider',
-              'styles' => 
+              'styles' =>
               array (
-                'block' => 
+                'block' =>
                 array (
                   'backgroundColor' => 'transparent',
                   'padding' => '13px',
@@ -517,50 +517,50 @@ class ClearNews {
             'backgroundColor' => '#ffffff',
             'backgroundColorAlternate' => '#eeeeee',
           ),
-          6 => 
+          6 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'divider',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'padding' => '13px',
@@ -574,57 +574,57 @@ class ClearNews {
               ),
             ),
           ),
-          7 => 
+          7 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '20px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h2><strong>We cover all types of news</strong></h2>',
@@ -633,52 +633,52 @@ class ClearNews {
               ),
             ),
           ),
-          8 => 
+          8 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'World',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#e23f3f',
                         'borderColor' => '#e2973f',
@@ -697,33 +697,33 @@ class ClearNews {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'Business',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#50b6ce',
                         'borderColor' => '#e2973f',
@@ -742,33 +742,33 @@ class ClearNews {
                   ),
                 ),
               ),
-              2 => 
+              2 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'Politics',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#506dce',
                         'borderColor' => '#e2973f',
@@ -789,52 +789,52 @@ class ClearNews {
               ),
             ),
           ),
-          9 => 
+          9 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'Sports',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#e1bc2d',
                         'borderColor' => '#e2973f',
@@ -853,33 +853,33 @@ class ClearNews {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'Science',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#a650ce',
                         'borderColor' => '#e2973f',
@@ -898,33 +898,33 @@ class ClearNews {
                   ),
                 ),
               ),
-              2 => 
+              2 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'Health',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#64b03c',
                         'borderColor' => '#e2973f',
@@ -945,52 +945,52 @@ class ClearNews {
               ),
             ),
           ),
-          10 => 
+          10 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'Family',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#278f6e',
                         'borderColor' => '#e2973f',
@@ -1009,33 +1009,33 @@ class ClearNews {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'Arts',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#7c5e5e',
                         'borderColor' => '#e2973f',
@@ -1054,33 +1054,33 @@ class ClearNews {
                   ),
                 ),
               ),
-              2 => 
+              2 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'button',
                     'text' => 'Local',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#4d4d4d',
                         'borderColor' => '#e2973f',
@@ -1101,50 +1101,50 @@ class ClearNews {
               ),
             ),
           ),
-          11 => 
+          11 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '20px',
@@ -1155,50 +1155,50 @@ class ClearNews {
               ),
             ),
           ),
-          12 => 
+          12 =>
           array (
             'type' => 'container',
             'columnLayout' => '1_2',
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => $this->template_image_url . '/News-Crossword.jpg',
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -1207,51 +1207,51 @@ class ClearNews {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '60px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h2 style="text-align: right;"><span style="color: #ffffff;">The Friday Crossword</span></h2>
     <p style="text-align: right;"><span style="color: #ffffff;"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae ornare elit. Duis laoreet justo sed fringilla maximus. Aenean pharetra nec risus a vestibulum.</span></span></p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'button',
                     'text' => 'Get started',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#e2973f',
                         'borderColor' => '#e2973f',
@@ -1268,12 +1268,12 @@ class ClearNews {
                       ),
                     ),
                   ),
-                  3 => 
+                  3 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '22px',
@@ -1284,50 +1284,50 @@ class ClearNews {
               ),
             ),
           ),
-          13 => 
+          13 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'divider',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'padding' => '34.5px',
@@ -1341,45 +1341,45 @@ class ClearNews {
               ),
             ),
           ),
-          14 => 
+          14 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -1388,9 +1388,9 @@ class ClearNews {
                     'fullWidth' => false,
                     'width' => '120px',
                     'height' => '167px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'left',
                       ),
@@ -1398,64 +1398,64 @@ class ClearNews {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><strong><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a></strong></p>
     <p style="text-align: center;"><strong><a href="[link:subscription_manage_url]">Manage your subscription</a></strong></p>',
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<p style="text-align: center;">Add your postal address!</p>',
                   ),
                 ),
               ),
-              2 => 
+              2 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'circles',
-                    'icons' => 
+                    'icons' =>
                     array (
-                      0 => 
+                      0 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
@@ -1465,7 +1465,7 @@ class ClearNews {
                         'width' => '32px',
                         'text' => 'Facebook',
                       ),
-                      1 => 
+                      1 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
@@ -1475,7 +1475,7 @@ class ClearNews {
                         'width' => '32px',
                         'text' => 'Twitter',
                       ),
-                      2 => 
+                      2 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
@@ -1487,11 +1487,11 @@ class ClearNews {
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'default',
-                    'icons' => 
+                    'icons' =>
                     array (
                     ),
                   ),
@@ -1501,49 +1501,49 @@ class ClearNews {
           ),
         ),
       ),
-      'globalStyles' => 
+      'globalStyles' =>
       array (
-        'text' => 
+        'text' =>
         array (
           'fontColor' => '#000000',
           'fontFamily' => 'Source Sans Pro',
           'fontSize' => '15px',
         ),
-        'h1' => 
+        'h1' =>
         array (
           'fontColor' => '#111111',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '40px',
         ),
-        'h2' => 
+        'h2' =>
         array (
           'fontColor' => '#222222',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '24px',
         ),
-        'h3' => 
+        'h3' =>
         array (
           'fontColor' => '#333333',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '16px',
         ),
-        'link' => 
+        'link' =>
         array (
           'fontColor' => '#e2973f',
           'textDecoration' => 'underline',
         ),
-        'wrapper' => 
+        'wrapper' =>
         array (
           'backgroundColor' => '#ffffff',
         ),
-        'body' => 
+        'body' =>
         array (
           'backgroundColor' => '#ffffff',
         ),
       ),
-      'blockDefaults' => 
+      'blockDefaults' =>
       array (
-        'automatedLatestContent' => 
+        'automatedLatestContent' =>
         array (
           'amount' => '5',
           'withLayout' => false,
@@ -1561,14 +1561,14 @@ class ClearNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -1587,12 +1587,12 @@ class ClearNews {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1605,7 +1605,7 @@ class ClearNews {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'automatedLatestContentLayout' => 
+        'automatedLatestContentLayout' =>
         array (
           'amount' => '3',
           'withLayout' => true,
@@ -1623,14 +1623,14 @@ class ClearNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#e2973f',
                 'borderColor' => '#e2973f',
@@ -1650,12 +1650,12 @@ class ClearNews {
           ),
           'sortBy' => 'newest',
           'showDivider' => false,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1669,17 +1669,17 @@ class ClearNews {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
           'type' => 'automatedLatestContentLayout',
-          'terms' => 
+          'terms' =>
           array (
           ),
         ),
-        'button' => 
+        'button' =>
         array (
           'text' => 'Read more',
           'url' => '[postLink]',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => '#4d4d4d',
               'borderColor' => '#e2973f',
@@ -1697,11 +1697,11 @@ class ClearNews {
           ),
           'type' => 'button',
         ),
-        'divider' => 
+        'divider' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
               'padding' => '34.5px',
@@ -1712,23 +1712,23 @@ class ClearNews {
           ),
           'type' => 'divider',
         ),
-        'footer' => 
+        'footer' =>
         array (
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '13px',
               'textAlign' => 'right',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#e2973f',
               'textDecoration' => 'underline',
@@ -1736,7 +1736,7 @@ class ClearNews {
           ),
           'type' => 'footer',
         ),
-        'posts' => 
+        'posts' =>
         array (
           'amount' => '10',
           'withLayout' => true,
@@ -1755,14 +1755,14 @@ class ClearNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => 'http://mailpoet.info/ladybirds-transparent-shell-reveals-how-it-folds-its-wings/',
             'context' => 'posts.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#e2973f',
                 'borderColor' => '#e2973f',
@@ -1782,12 +1782,12 @@ class ClearNews {
           ),
           'sortBy' => 'newest',
           'showDivider' => false,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'posts.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1802,17 +1802,17 @@ class ClearNews {
           'backgroundColorAlternate' => '#eeeeee',
           'type' => 'posts',
           'offset' => 0,
-          'terms' => 
+          'terms' =>
           array (
           ),
           'search' => '',
         ),
-        'social' => 
+        'social' =>
         array (
           'iconSet' => 'circles',
-          'icons' => 
+          'icons' =>
           array (
-            0 => 
+            0 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'facebook',
@@ -1822,7 +1822,7 @@ class ClearNews {
               'width' => '32px',
               'text' => 'Facebook',
             ),
-            1 => 
+            1 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'twitter',
@@ -1832,7 +1832,7 @@ class ClearNews {
               'width' => '32px',
               'text' => 'Twitter',
             ),
-            2 => 
+            2 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'youtube',
@@ -1845,11 +1845,11 @@ class ClearNews {
           ),
           'type' => 'social',
         ),
-        'spacer' => 
+        'spacer' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => '#ffffff',
               'height' => '20px',
@@ -1857,23 +1857,23 @@ class ClearNews {
           ),
           'type' => 'spacer',
         ),
-        'header' => 
+        'header' =>
         array (
           'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => '#ffffff',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '11px',
               'textAlign' => 'left',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#e2973f',
               'textDecoration' => 'underline',

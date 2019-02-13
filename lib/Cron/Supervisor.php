@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Cron;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Supervisor {
   public $daemon;
@@ -18,7 +18,7 @@ class Supervisor {
       (time() - (int)$daemon['updated_at']) >= CronHelper::DAEMON_EXECUTION_TIMEOUT;
     $daemon_is_inactive =
       isset($daemon['status']) && $daemon['status'] === CronHelper::DAEMON_STATUS_INACTIVE;
-    if($execution_timeout_exceeded || $daemon_is_inactive) {
+    if ($execution_timeout_exceeded || $daemon_is_inactive) {
       CronHelper::restartDaemon($this->token);
       return $this->runDaemon();
     }
@@ -33,7 +33,7 @@ class Supervisor {
 
   function getDaemon() {
     $daemon = CronHelper::getDaemon();
-    if(!$daemon) {
+    if (!$daemon) {
       CronHelper::createDaemon($this->token);
       return $this->runDaemon();
     }

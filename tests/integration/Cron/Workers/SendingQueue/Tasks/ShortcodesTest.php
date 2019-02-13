@@ -6,7 +6,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class ShortcodesTest extends \MailPoetTest {
   function _before() {

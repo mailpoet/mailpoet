@@ -10,7 +10,7 @@ class AmazonSESMapper {
 
   function getErrorFromException(\Exception $e, $subscriber) {
     $level = MailerError::LEVEL_HARD;
-    if($e instanceof \Swift_RfcComplianceException) {
+    if ($e instanceof \Swift_RfcComplianceException) {
       $level = MailerError::LEVEL_SOFT;
     }
     $subscriber_errors = [new SubscriberError($subscriber, null)];
@@ -27,7 +27,7 @@ class AmazonSESMapper {
       sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
 
     $level = MailerError::LEVEL_HARD;
-    if($response && $response->Error->Code->__toString() === 'MessageRejected') {
+    if ($response && $response->Error->Code->__toString() === 'MessageRejected') {
       $level = MailerError::LEVEL_SOFT;
     }
     $subscriber_errors = [new SubscriberError($subscriber, null)];

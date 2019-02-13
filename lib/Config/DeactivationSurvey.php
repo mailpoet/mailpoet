@@ -20,18 +20,18 @@ class DeactivationSurvey {
   }
 
   private function shouldShow() {
-    if(!function_exists('get_current_screen')) {
+    if (!function_exists('get_current_screen')) {
       return false;
     }
     $screen = get_current_screen();
-    if(!is_object($screen)) {
+    if (!is_object($screen)) {
       return false;
     }
     return (in_array(get_current_screen()->id, array('plugins', 'plugins-network'), true));
   }
 
   public function js() {
-    if(!$this->shouldShow()) {
+    if (!$this->shouldShow()) {
       return;
     }
     $this->render('deactivationSurvey/js.html');
@@ -39,14 +39,14 @@ class DeactivationSurvey {
   }
 
   public function css() {
-    if(!$this->shouldShow()) {
+    if (!$this->shouldShow()) {
       return;
     }
     $this->render('deactivationSurvey/css.html');
   }
 
   public function modal() {
-    if(!$this->shouldShow()) {
+    if (!$this->shouldShow()) {
       return;
     }
     $this->render('deactivationSurvey/index.html');

@@ -23,7 +23,7 @@ class Export {
   public $dynamic_subscribers_getter;
 
   public function __construct($data) {
-    if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+    if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
 
@@ -52,10 +52,10 @@ class Export {
   function process() {
     $this->default_subscribers_getter->reset();
     try {
-      if(is_writable($this->export_path) === false) {
+      if (is_writable($this->export_path) === false) {
         throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
       }
-      if(!extension_loaded('zip')) {
+      if (!extension_loaded('zip')) {
         throw new \Exception(__('Export requires a ZIP extension to be installed on the host.', 'mailpoet'));
       }
       $processed_subscribers = call_user_func(
@@ -129,7 +129,7 @@ class Export {
         // sorted by segment name (due to slow queries when using ORDER BY and LIMIT),
         // we need to keep track of processed segments so that we do not create header
         // multiple times when switching from one segment to another and back.
-        if((!count($processed_segments) || $last_segment !== $current_segment) &&
+        if ((!count($processed_segments) || $last_segment !== $current_segment) &&
           (!in_array($last_segment, $processed_segments) || !in_array($current_segment, $processed_segments))
         ) {
           $this->writeXLSX(
@@ -142,7 +142,7 @@ class Export {
         $last_segment = ucwords($subscriber['segment_name']);
         // detect RTL language and set Excel to properly display the sheet
         $RTL_regex = '/\p{Arabic}|\p{Hebrew}/u';
-        if(!$XLSX_writer->rtl && (
+        if (!$XLSX_writer->rtl && (
             preg_grep($RTL_regex, $subscriber) ||
             preg_grep($RTL_regex, $this->formatted_subscriber_fields))
         ) {
@@ -166,7 +166,7 @@ class Export {
 
   function getSubscribers() {
     $subscribers = $this->default_subscribers_getter->get();
-    if($subscribers === false) {
+    if ($subscribers === false) {
       $subscribers = $this->dynamic_subscribers_getter->get();
     }
     return $subscribers;

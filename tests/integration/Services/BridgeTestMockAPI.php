@@ -3,7 +3,7 @@ namespace MailPoet\Services\Bridge;
 
 use Carbon\Carbon;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class BridgeTestMockAPI {
   public $api_key;

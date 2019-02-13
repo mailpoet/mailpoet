@@ -5,11 +5,11 @@ use MailPoet\Models\StatisticsClicks;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Clicks {
   function track($data) {
-    if(!$data || empty($data->link)) {
+    if (!$data || empty($data->link)) {
       return $this->abort();
     }
     $subscriber = $data->subscriber;
@@ -19,7 +19,7 @@ class Clicks {
     $wp_user_preview = ($data->preview && $subscriber->isWPUser());
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
-    if(!$wp_user_preview) {
+    if (!$wp_user_preview) {
       StatisticsClicks::createOrUpdateClickCount(
         $link->id,
         $subscriber->id,
@@ -35,8 +35,8 @@ class Clicks {
   }
 
   function processUrl($url, $newsletter, $subscriber, $queue, $wp_user_preview) {
-    if(preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
-      if(!$shortcode['action']) $this->abort();
+    if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
+      if (!$shortcode['action']) $this->abort();
       $url = Link::processShortcodeAction(
         $shortcode['action'],
         $newsletter,

@@ -2,7 +2,7 @@
 
 namespace MailPoet\Twig;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Handlebars extends \Twig_Extension {
   public function getFunctions() {
@@ -49,7 +49,7 @@ class Handlebars extends \Twig_Extension {
 </script>
 EOL;
 
-    if($alias !== null) {
+    if ($alias !== null) {
       $output .= <<<EOL
 <script type="text/javascript">
 jQuery(function($) {

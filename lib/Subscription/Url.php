@@ -25,11 +25,11 @@ class Url {
   static function getSubscriptionUrl(
     $post = null, $action = null, Subscriber $subscriber = null
   ) {
-    if($post === null || $action === null) return;
+    if ($post === null || $action === null) return;
 
     $url = get_permalink($post);
 
-    if($subscriber !== null) {
+    if ($subscriber !== null) {
       $data = array(
         'token' => Subscriber::generateToken($subscriber->email),
         'email' => $subscriber->email
@@ -51,7 +51,7 @@ class Url {
     $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?').join('&', $params);
 
     $url_params = parse_url($url);
-    if(empty($url_params['scheme'])) {
+    if (empty($url_params['scheme'])) {
       $url = get_bloginfo('url').$url;
     }
 

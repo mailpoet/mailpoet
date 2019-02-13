@@ -82,13 +82,13 @@ class MailerError {
 
   function getMessageWithFailedSubscribers() {
     $message = $this->message ?: '';
-    if(!$this->subscribers_errors) {
+    if (!$this->subscribers_errors) {
       return $message;
     }
 
     $message .= $this->message ? ' ' : '';
 
-    if(count($this->subscribers_errors) === 1) {
+    if (count($this->subscribers_errors) === 1) {
       $message .=  __('Unprocessed subscriber:', 'mailpoet') . ' ';
     } else {
       $message .=  __('Unprocessed subscribers:', 'mailpoet') . ' ';

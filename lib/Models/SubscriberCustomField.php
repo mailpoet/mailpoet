@@ -3,21 +3,21 @@ namespace MailPoet\Models;
 
 use MailPoet\Util\Helpers;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class SubscriberCustomField extends Model {
   public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
 
   static function createOrUpdate($data = array()) {
     $custom_field = CustomField::findOne($data['custom_field_id']);
-    if($custom_field === false) {
+    if ($custom_field === false) {
       return false;
     } else {
       $custom_field = $custom_field->asArray();
     }
 
-    if($custom_field['type'] === 'date') {
-      if(is_array($data['value'])) {
+    if ($custom_field['type'] === 'date') {
+      if (is_array($data['value'])) {
         $day = (
           isset($data['value']['day'])
           ? (int)$data['value']['day']
@@ -72,13 +72,13 @@ class SubscriberCustomField extends Model {
   }
 
   static function deleteSubscriberRelations($subscriber) {
-    if($subscriber === false) return false;
+    if ($subscriber === false) return false;
     $relations = self::where('subscriber_id', $subscriber->id);
     return $relations->deleteMany();
   }
 
   static function deleteManySubscriberRelations(array $subscriber_ids) {
-    if(empty($subscriber_ids)) return false;
+    if (empty($subscriber_ids)) return false;
     $relations = self::whereIn('subscriber_id', $subscriber_ids);
     return $relations->deleteMany();
   }

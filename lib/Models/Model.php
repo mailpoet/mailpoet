@@ -2,7 +2,7 @@
 
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * @method static array|string getConfig($key = null, $connection_name = self::DEFAULT_CONNECTION)
@@ -135,14 +135,14 @@ class Model extends \Sudzy\ValidModel {
   static protected function _createOrUpdate($data = array(), $keys = false, $onCreate = false) {
     $model = false;
 
-    if(isset($data['id']) && (int)$data['id'] > 0) {
+    if (isset($data['id']) && (int)$data['id'] > 0) {
       $model = static::findOne((int)$data['id']);
     }
 
-    if(!empty($keys)) {
+    if (!empty($keys)) {
       $first = true;
       foreach ($keys as $field => $value) {
-        if($first) {
+        if ($first) {
           $model = static::where($field, $value);
           $first = false;
         } else {
@@ -152,8 +152,8 @@ class Model extends \Sudzy\ValidModel {
       $model = $model->findOne();
     }
 
-    if($model === false) {
-      if(!empty($onCreate)) {
+    if ($model === false) {
+      if (!empty($onCreate)) {
         $data = $onCreate($data);
       }
       $model = static::create();
@@ -171,7 +171,7 @@ class Model extends \Sudzy\ValidModel {
   }
 
   function getErrors() {
-    if(empty($this->_errors)) {
+    if (empty($this->_errors)) {
       return false;
     } else {
       return $this->_errors;
@@ -179,11 +179,11 @@ class Model extends \Sudzy\ValidModel {
   }
 
   function setError($error = '', $error_code = null) {
-    if(!$error_code) {
+    if (!$error_code) {
       $error_code = count($this->_errors);
     }
-    if(!empty($error)) {
-      if(is_array($error)) {
+    if (!empty($error)) {
+      if (is_array($error)) {
         $this->_errors = array_merge($this->_errors, $error);
         $this->_errors = array_unique($this->_errors);
       } else {
@@ -203,7 +203,7 @@ class Model extends \Sudzy\ValidModel {
       switch ($e->getCode()) {
         case 23000:
           preg_match("/for key \'(.*?)\'/i", $e->getMessage(), $matches);
-          if(isset($matches[1])) {
+          if (isset($matches[1])) {
             $column = $matches[1];
             $this->setError(
               sprintf(
@@ -275,7 +275,7 @@ class Model extends \Sudzy\ValidModel {
   static function bulkAction($orm, $callback = false) {
     $total = $orm->count();
 
-    if($total === 0) return false;
+    if ($total === 0) return false;
 
     $rows = $orm->select(static::$_table . '.id')
       ->offset(null)
@@ -286,7 +286,7 @@ class Model extends \Sudzy\ValidModel {
       return (int)$model['id'];
     }, $rows);
 
-    if(is_callable($callback)) {
+    if (is_callable($callback)) {
       $callback($ids);
     }
 
@@ -311,7 +311,7 @@ class Model extends \Sudzy\ValidModel {
   }
 
   function setTimestamp() {
-    if($this->created_at === null) {
+    if ($this->created_at === null) {
       $this->set_expr('created_at', 'NOW()');
     }
   }

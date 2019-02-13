@@ -73,7 +73,7 @@ class SendGridTest extends \MailPoetTest {
   }
 
   function testItCannotSendWithoutProperApiKey() {
-    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
@@ -83,7 +83,7 @@ class SendGridTest extends \MailPoetTest {
   }
 
   function testItCanSend() {
-    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

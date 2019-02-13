@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class StatisticsNewsletters extends Model {
   public static $_table = MP_STATISTICS_NEWSLETTERS_TABLE;
@@ -9,7 +9,7 @@ class StatisticsNewsletters extends Model {
   static function createMultiple(array $data) {
     $values = array();
     foreach ($data as $value) {
-      if(!empty($value['newsletter_id']) &&
+      if (!empty($value['newsletter_id']) &&
          !empty($value['subscriber_id']) &&
          !empty($value['queue_id'])
       ) {

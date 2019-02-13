@@ -1,7 +1,7 @@
 #!/usr/local/bin/php
 <?php
 $path = "/tmp/fake-mailer";
-if(!file_exists($path)) {
+if (!file_exists($path)) {
   mkdir($path);
 }
 $filename = $path . '/mailpoet-' . microtime(true) . '.txt';

@@ -27,7 +27,7 @@ class State
        GROUP BY status;"
     )->findMany();
     foreach ($counts as $count) {
-      if($count->status === null) {
+      if ($count->status === null) {
         $stats[ScheduledTask::VIRTUAL_STATUS_RUNNING] = (int)$count->value;
         continue;
       }
@@ -52,10 +52,10 @@ class State
       $query = ScheduledTask::orderByDesc('created_at')
         ->whereNull('deleted_at')
         ->limit($limit);
-      if($type) {
+      if ($type) {
         $query = $query->where('type', $type);
       }
-      if($status === ScheduledTask::VIRTUAL_STATUS_RUNNING) {
+      if ($status === ScheduledTask::VIRTUAL_STATUS_RUNNING) {
         $query = $query->whereNull('status');
       } else {
         $query = $query->where('status', $status);
@@ -71,7 +71,7 @@ class State
    */
   private function buildTaskData(ScheduledTask $task) {
     $queue = $newsletter = null;
-    if($task->type === Sending::TASK_TYPE) {
+    if ($task->type === Sending::TASK_TYPE) {
       $queue = SendingQueue::where('task_id', $task->id)->findOne();
       $newsletter = $queue ? $queue->newsletter()->findOne() : null;
     }

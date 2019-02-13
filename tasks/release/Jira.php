@@ -32,11 +32,11 @@ class Jira {
    */
   function getVersion($version_name = null) {
     $versions = $this->fetchFromJira("project/$this->project/versions");
-    if($version_name === null) {
+    if ($version_name === null) {
       return end($versions);
     }
     foreach ($versions as $version) {
-      if($version_name === $version['name']) {
+      if ($version_name === $version['name']) {
         return $version;
       }
     }
@@ -68,7 +68,7 @@ class Jira {
     $jira_domain = self::JIRA_DOMAIN;
     $jira_url = "https://$url_user:$url_token@$jira_domain/rest/api/3/$path";
     $data = file_get_contents($jira_url);
-    if($data === false) {
+    if ($data === false) {
       $error = error_get_last();
       throw new \Exception('JIRA request error: ' . $error['message']);
     }

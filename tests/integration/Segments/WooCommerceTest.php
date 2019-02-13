@@ -369,14 +369,14 @@ class WooCommerceTest extends \MailPoetTest  {
   }
 
   private function addCustomerRole() {
-    if(!get_role('customer')) {
+    if (!get_role('customer')) {
       add_role('customer', 'Customer');
       $this->customerRoleAdded = true;
     }
   }
 
   private function removeCustomerRole() {
-    if(!empty($this->customerRoleAdded)) {
+    if (!empty($this->customerRoleAdded)) {
       remove_role('customer');
     }
   }
@@ -499,7 +499,7 @@ class WooCommerceTest extends \MailPoetTest  {
         '_billing_last_name' => isset($data['last_name']) ? $data['last_name'] : '',
       )
     );
-    if(!empty($data['user_id'])) {
+    if (!empty($data['user_id'])) {
       $order_data['meta_input']['_customer_user'] = (int)$data['user_id'];
     }
     $id = wp_insert_post($order_data);

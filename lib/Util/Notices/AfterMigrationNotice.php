@@ -25,7 +25,7 @@ class AfterMigrationNotice {
   }
 
   function init($should_display) {
-    if($should_display && $this->settings->get(self::OPTION_NAME, false)) {
+    if ($should_display && $this->settings->get(self::OPTION_NAME, false)) {
       return $this->display();
     }
   }

@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class BookStoreWithCoupon {
 
@@ -29,76 +29,76 @@ class BookStoreWithCoupon {
 
   private function getBody() {
     return array (
-      'content' => 
+      'content' =>
       array (
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
+        'image' =>
         array (
           'src' => NULL,
           'display' => 'scale',
         ),
-        'styles' => 
+        'styles' =>
         array (
-          'block' => 
+          'block' =>
           array (
             'backgroundColor' => 'transparent',
           ),
         ),
-        'blocks' => 
+        'blocks' =>
         array (
-          0 => 
+          0 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#125674',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '60px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -107,20 +107,20 @@ class BookStoreWithCoupon {
                     'fullWidth' => false,
                     'width' => '200px',
                     'height' => '48px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -131,68 +131,68 @@ class BookStoreWithCoupon {
               ),
             ),
           ),
-          1 => 
+          1 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => $this->template_image_url . '/Book-Header.jpg',
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#125674',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '100px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center;"><strong><span style="color: #ffffff;">Turn more pages this weekend...</span></strong></h1>
     <p style="text-align: center;"><span style="color: #ffffff;">Just to say thanks, here\'s a small gift from us to you.</span></p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '71px',
@@ -203,50 +203,50 @@ class BookStoreWithCoupon {
               ),
             ),
           ),
-          2 => 
+          2 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => $this->template_image_url . '/Book-Body-2.png',
               'display' => 'tile',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -255,38 +255,38 @@ class BookStoreWithCoupon {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '21px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><span style="color: #5094ad;"><strong>Read more every week</strong></span></p>
@@ -294,31 +294,31 @@ class BookStoreWithCoupon {
                   ),
                 ),
               ),
-              2 => 
+              2 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -329,50 +329,50 @@ class BookStoreWithCoupon {
               ),
             ),
           ),
-          3 => 
+          3 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => $this->template_image_url . '/Book-Body-2.png',
               'display' => 'tile',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'divider',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'padding' => '2px',
@@ -386,76 +386,76 @@ class BookStoreWithCoupon {
               ),
             ),
           ),
-          4 => 
+          4 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => $this->template_image_url . '/Book-Body-2.png',
               'display' => 'tile',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><span>Lorem ipsum dolor sit amet, adipiscing elit. Fusce mollis orci justo,</span></p>
     <p style="text-align: center;"><span>commodo mattis nisi vitae. Sed aliquam, ex ac lacinia tempus,</span></p>
     <p style="text-align: center;"><span>enim urna luctus odio, at leo ante non.</span></p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><strong>20% off all books</strong></h2>',
                   ),
-                  3 => 
+                  3 =>
                   array (
                     'type' => 'button',
                     'text' => 'Coupon_Code',
                     'url' => '',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'borderColor' => '#125674',
@@ -472,7 +472,7 @@ class BookStoreWithCoupon {
                       ),
                     ),
                   ),
-                  4 => 
+                  4 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -481,9 +481,9 @@ class BookStoreWithCoupon {
                     'fullWidth' => true,
                     'width' => '1200px',
                     'height' => '400px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -493,50 +493,50 @@ class BookStoreWithCoupon {
               ),
             ),
           ),
-          5 => 
+          5 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#cdc391',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -547,51 +547,51 @@ class BookStoreWithCoupon {
               ),
             ),
           ),
-          6 => 
+          6 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#cdc391',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => 
+                    'icons' =>
                     array (
-                      0 => 
+                      0 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
@@ -605,32 +605,32 @@ class BookStoreWithCoupon {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => 
+                    'icons' =>
                     array (
-                      0 => 
+                      0 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
@@ -644,32 +644,32 @@ class BookStoreWithCoupon {
                   ),
                 ),
               ),
-              2 => 
+              2 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => 
+                    'icons' =>
                     array (
-                      0 => 
+                      0 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
@@ -685,50 +685,50 @@ class BookStoreWithCoupon {
               ),
             ),
           ),
-          7 => 
+          7 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#125674',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '29px',
@@ -739,45 +739,45 @@ class BookStoreWithCoupon {
               ),
             ),
           ),
-          8 => 
+          8 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#125674',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -786,56 +786,56 @@ class BookStoreWithCoupon {
                     'fullWidth' => false,
                     'width' => '96px',
                     'height' => '48px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'footer',
                     'text' => '<p><span style="color: #cdc391;"><a href="[link:subscription_unsubscribe_url]" style="color: #cdc391;">Unsubscribe</a> | <a href="[link:subscription_manage_url]" style="color: #cdc391;">Manage subscription</a></span><br /><span style="color: #ffffff;">Add your postal address here!</span></p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'none',
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'header',
                     'text' => '<p><span style="color: #ffffff;"><a href="[link:newsletter_view_in_browser_url]" style="color: #ffffff;">Open this email in your web browser.</a></span></p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'underline',
@@ -848,49 +848,49 @@ class BookStoreWithCoupon {
           ),
         ),
       ),
-      'globalStyles' => 
+      'globalStyles' =>
       array (
-        'text' => 
+        'text' =>
         array (
           'fontColor' => '#000000',
           'fontFamily' => 'Noticia Text',
           'fontSize' => '14px',
         ),
-        'h1' => 
+        'h1' =>
         array (
           'fontColor' => '#111111',
           'fontFamily' => 'Playfair Display',
           'fontSize' => '30px',
         ),
-        'h2' => 
+        'h2' =>
         array (
           'fontColor' => '#222222',
           'fontFamily' => 'Playfair Display',
           'fontSize' => '22px',
         ),
-        'h3' => 
+        'h3' =>
         array (
           'fontColor' => '#333333',
           'fontFamily' => 'Arial',
           'fontSize' => '20px',
         ),
-        'link' => 
+        'link' =>
         array (
           'fontColor' => '#21759B',
           'textDecoration' => 'underline',
         ),
-        'wrapper' => 
+        'wrapper' =>
         array (
           'backgroundColor' => '#ffffff',
         ),
-        'body' => 
+        'body' =>
         array (
           'backgroundColor' => '#125674',
         ),
       ),
-      'blockDefaults' => 
+      'blockDefaults' =>
       array (
-        'automatedLatestContent' => 
+        'automatedLatestContent' =>
         array (
           'amount' => '5',
           'withLayout' => false,
@@ -908,14 +908,14 @@ class BookStoreWithCoupon {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -934,12 +934,12 @@ class BookStoreWithCoupon {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -952,7 +952,7 @@ class BookStoreWithCoupon {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'automatedLatestContentLayout' => 
+        'automatedLatestContentLayout' =>
         array (
           'amount' => '5',
           'withLayout' => true,
@@ -970,14 +970,14 @@ class BookStoreWithCoupon {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -996,12 +996,12 @@ class BookStoreWithCoupon {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1014,13 +1014,13 @@ class BookStoreWithCoupon {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'button' => 
+        'button' =>
         array (
           'text' => 'Coupon_Code',
           'url' => '',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => '#ffffff',
               'borderColor' => '#125674',
@@ -1038,11 +1038,11 @@ class BookStoreWithCoupon {
           ),
           'type' => 'button',
         ),
-        'divider' => 
+        'divider' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
               'padding' => '2px',
@@ -1053,23 +1053,23 @@ class BookStoreWithCoupon {
           ),
           'type' => 'divider',
         ),
-        'footer' => 
+        'footer' =>
         array (
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'none',
@@ -1077,7 +1077,7 @@ class BookStoreWithCoupon {
           ),
           'type' => 'footer',
         ),
-        'posts' => 
+        'posts' =>
         array (
           'amount' => '10',
           'withLayout' => true,
@@ -1096,14 +1096,14 @@ class BookStoreWithCoupon {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -1122,12 +1122,12 @@ class BookStoreWithCoupon {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'posts.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1140,12 +1140,12 @@ class BookStoreWithCoupon {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'social' => 
+        'social' =>
         array (
           'iconSet' => 'full-symbol-black',
-          'icons' => 
+          'icons' =>
           array (
-            0 => 
+            0 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'instagram',
@@ -1158,11 +1158,11 @@ class BookStoreWithCoupon {
           ),
           'type' => 'social',
         ),
-        'spacer' => 
+        'spacer' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
               'height' => '20px',
@@ -1170,23 +1170,23 @@ class BookStoreWithCoupon {
           ),
           'type' => 'spacer',
         ),
-        'header' => 
+        'header' =>
         array (
           'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'underline',

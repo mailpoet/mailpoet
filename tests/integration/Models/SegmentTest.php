@@ -239,7 +239,7 @@ class SegmentTest extends \MailPoetTest {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriber_data);
       $subscriber->save();
-      if(!$index) {
+      if (!$index) {
         $association = SubscriberSegment::create();
         $association->subscriber_id = $subscriber->id;
         $association->segment_id = $this->segment->id;

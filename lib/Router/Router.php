@@ -6,7 +6,7 @@ use MailPoet\Config\AccessControl;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Router {
   public $api_request;
@@ -38,19 +38,19 @@ class Router {
   }
 
   function init() {
-    if(!$this->api_request) return;
+    if (!$this->api_request) return;
     $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
 
-    if(!$this->endpoint || !class_exists($endpoint_class)) {
+    if (!$this->endpoint || !class_exists($endpoint_class)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint', 'mailpoet'));
     }
 
     $endpoint = $this->container->get($endpoint_class);
 
-    if(!method_exists($endpoint, $this->endpoint_action) || !in_array($this->endpoint_action, $endpoint->allowed_actions)) {
+    if (!method_exists($endpoint, $this->endpoint_action) || !in_array($this->endpoint_action, $endpoint->allowed_actions)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action', 'mailpoet'));
     }
-    if(!$this->validatePermissions($this->endpoint_action, $endpoint->permissions)) {
+    if (!$this->validatePermissions($this->endpoint_action, $endpoint->permissions)) {
       return $this->terminateRequest(self::RESPONE_FORBIDDEN, __('You do not have the required permissions.', 'mailpoet'));
     }
     do_action('mailpoet_conflict_resolver_router_url_query_parameters');
@@ -65,7 +65,7 @@ class Router {
 
   static function decodeRequestData($data) {
     $data = json_decode(base64_decode($data), true);
-    if(!is_array($data)) {
+    if (!is_array($data)) {
       $data = array();
     }
     return $data;
@@ -81,7 +81,7 @@ class Router {
       'endpoint' => $endpoint,
       'action' => $action,
     );
-    if($data) {
+    if ($data) {
       $params['data'] = self::encodeRequestData($data);
     }
     return add_query_arg($params, home_url());

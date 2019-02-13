@@ -11,7 +11,7 @@ class PHPVersionWarnings {
 
   function init($php_version, $should_display) {
 
-    if($should_display && $this->isOutdatedPHPVersion($php_version)) {
+    if ($should_display && $this->isOutdatedPHPVersion($php_version)) {
       return $this->display($php_version);
     }
   }

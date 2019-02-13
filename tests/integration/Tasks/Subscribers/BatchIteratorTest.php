@@ -46,7 +46,7 @@ class BatchIteratorTest extends \MailPoetTest {
         ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
         ->save();
 
-      if($i < $iterations) {
+      if ($i < $iterations) {
         expect(count($batch))->equals($this->batch_size);
       } else {
         expect(count($batch))->lessOrEquals($this->batch_size);

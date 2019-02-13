@@ -7,7 +7,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 abstract class SimpleWorker {
   public $timer;
@@ -16,7 +16,7 @@ abstract class SimpleWorker {
   const TASK_BATCH_SIZE = 5;
 
   function __construct($timer = false) {
-    if(static::TASK_TYPE === null) {
+    if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -33,7 +33,7 @@ abstract class SimpleWorker {
   }
 
   function process() {
-    if(!$this->checkProcessingRequirements()) {
+    if (!$this->checkProcessingRequirements()) {
       return false;
     }
 
@@ -42,7 +42,7 @@ abstract class SimpleWorker {
     $scheduled_tasks = self::getScheduledTasks();
     $running_tasks = self::getRunningTasks();
 
-    if(!$scheduled_tasks && !$running_tasks) {
+    if (!$scheduled_tasks && !$running_tasks) {
       self::schedule();
       return false;
     }
@@ -62,7 +62,7 @@ abstract class SimpleWorker {
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
       ->findMany();
-    if($already_scheduled) {
+    if ($already_scheduled) {
       return false;
     }
     $task = ScheduledTask::create();
@@ -88,7 +88,7 @@ abstract class SimpleWorker {
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
 
-    if($this->processTaskStrategy($task)) {
+    if ($this->processTaskStrategy($task)) {
       $this->complete($task);
       return true;
     }

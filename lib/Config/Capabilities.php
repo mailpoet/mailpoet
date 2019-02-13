@@ -11,10 +11,10 @@ class Capabilities {
   private $wp;
 
   function __construct($renderer = null, WPFunctions $wp = null) {
-    if($renderer !== null) {
+    if ($renderer !== null) {
       $this->renderer = $renderer;
     }
-    if($wp == null) {
+    if ($wp == null) {
       $wp = new WPFunctions;
     }
     $this->wp = $wp;
@@ -29,10 +29,10 @@ class Capabilities {
     $role_objects = array();
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
-        if(!isset($role_objects[$role])) {
+        if (!isset($role_objects[$role])) {
           $role_objects[$role] = get_role($role);
         }
-        if(!is_object($role_objects[$role])) continue;
+        if (!is_object($role_objects[$role])) continue;
         $role_objects[$role]->add_cap($name);
       }
     }
@@ -43,10 +43,10 @@ class Capabilities {
     $role_objects = array();
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
-        if(!isset($role_objects[$role])) {
+        if (!isset($role_objects[$role])) {
           $role_objects[$role] = get_role($role);
         }
-        if(!is_object($role_objects[$role])) continue;
+        if (!is_object($role_objects[$role])) continue;
         $role_objects[$role]->remove_cap($name);
       }
     }

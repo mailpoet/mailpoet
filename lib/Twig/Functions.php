@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Functions extends \Twig_Extension {
 
@@ -124,9 +124,9 @@ class Functions extends \Twig_Extension {
       'hours' => __('every %1$d hours', 'mailpoet')
     );
 
-    if($value >= 60) {
+    if ($value >= 60) {
       // we're dealing with hours
-      if($value === 60) {
+      if ($value === 60) {
         $label = $labels['hour'];
       } else {
         $label = $labels['hours'];
@@ -134,14 +134,14 @@ class Functions extends \Twig_Extension {
       $value /= 60;
     } else {
       // we're dealing with minutes
-      if($value === 1) {
+      if ($value === 1) {
         $label = $labels['minute'];
       } else {
         $label = $labels['minutes'];
       }
     }
 
-    if($label !== null) {
+    if ($label !== null) {
       return sprintf($label, $value);
     } else {
       return $value;
@@ -174,7 +174,7 @@ class Functions extends \Twig_Extension {
 
   function params($key = null) {
     $args = stripslashes_deep($_GET);
-    if(array_key_exists($key, $args)) {
+    if (array_key_exists($key, $args)) {
       return $args[$key];
     }
     return null;

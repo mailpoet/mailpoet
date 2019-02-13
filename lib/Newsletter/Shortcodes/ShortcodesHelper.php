@@ -104,7 +104,7 @@ class ShortcodesHelper {
       )
     );
     $custom_fields = self::getCustomFields();
-    if($custom_fields) {
+    if ($custom_fields) {
       $shortcodes[__('Subscriber', 'mailpoet')] = array_merge(
         $shortcodes[__('Subscriber', 'mailpoet')],
         $custom_fields
@@ -115,7 +115,7 @@ class ShortcodesHelper {
 
   static function getCustomFields() {
     $custom_fields = CustomField::findMany();
-    if(!$custom_fields) return false;
+    if (!$custom_fields) return false;
     return array_map(function($custom_field) {
       return array(
         'text' => $custom_field->name,

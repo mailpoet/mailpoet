@@ -6,7 +6,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class SendGrid {
   public $url = 'https://api.sendgrid.com/api/mail.send.json';
@@ -32,11 +32,11 @@ class SendGrid {
       $this->url,
       $this->request($newsletter, $subscriber, $extra_params)
     );
-    if(is_wp_error($result)) {
+    if (is_wp_error($result)) {
       $error = $this->error_mapper->getConnectionError($result->get_error_message());
       return Mailer::formatMailerErrorResult($error);
     }
-    if($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
+    if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = json_decode($result['body'], true);
       $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
       return Mailer::formatMailerErrorResult($error);
@@ -53,16 +53,16 @@ class SendGrid {
       'subject' => $newsletter['subject']
     );
     $headers = array();
-    if(!empty($extra_params['unsubscribe_url'])) {
+    if (!empty($extra_params['unsubscribe_url'])) {
       $headers['List-Unsubscribe'] = '<' . $extra_params['unsubscribe_url'] . '>';
     }
-    if($headers) {
+    if ($headers) {
       $body['headers'] = json_encode($headers);
     }
-    if(!empty($newsletter['body']['html'])) {
+    if (!empty($newsletter['body']['html'])) {
       $body['html'] = $newsletter['body']['html'];
     }
-    if(!empty($newsletter['body']['text'])) {
+    if (!empty($newsletter['body']['text'])) {
       $body['text'] = $newsletter['body']['text'];
     }
     return $body;

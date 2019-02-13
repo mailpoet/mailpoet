@@ -12,14 +12,14 @@ class SendingErrorHandler {
     array $prepared_subscribers_ids,
     array $prepared_subscribers
   ) {
-    if($error->getLevel() === MailerError::LEVEL_HARD) {
+    if ($error->getLevel() === MailerError::LEVEL_HARD) {
       return $this->processHardError($error);
     }
     $this->processSoftError($error, $sending_task, $prepared_subscribers_ids, $prepared_subscribers);
   }
 
   private function processHardError(MailerError $error) {
-    if($error->getRetryInterval() !== null) {
+    if ($error->getRetryInterval() !== null) {
       MailerLog::processNonBlockingError($error->getOperation(), $error->getMessageWithFailedSubscribers(), $error->getRetryInterval());
     } else {
       MailerLog::processError($error->getOperation(), $error->getMessageWithFailedSubscribers());

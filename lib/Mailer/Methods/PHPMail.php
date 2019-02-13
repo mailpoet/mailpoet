@@ -5,7 +5,7 @@ namespace MailPoet\Mailer\Methods;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 require_once ABSPATH . WPINC . '/class-phpmailer.php';
 
@@ -35,7 +35,7 @@ class PHPMail {
     } catch (\Exception $e) {
       return Mailer::formatMailerErrorResult($this->error_mapper->getErrorFromException($e, $subscriber));
     }
-    if($result === true) {
+    if ($result === true) {
       return Mailer::formatMailerSendSuccessResult();
     } else {
       $error = $this->error_mapper->getErrorForSubscriber($subscriber);
@@ -64,7 +64,7 @@ class PHPMail {
     $mailer->Body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : '';
     $mailer->AltBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : '';
     $mailer->Sender = $this->return_path;
-    if(!empty($extra_params['unsubscribe_url'])) {
+    if (!empty($extra_params['unsubscribe_url'])) {
       $this->mailer->addCustomHeader('List-Unsubscribe', $extra_params['unsubscribe_url']);
     }
     return $mailer;
@@ -72,7 +72,7 @@ class PHPMail {
 
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
-    if(!isset($subscriber_data['email'])) {
+    if (!isset($subscriber_data['email'])) {
       $subscriber_data = array(
         'email' => $subscriber,
       );

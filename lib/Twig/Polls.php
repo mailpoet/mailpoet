@@ -4,7 +4,7 @@ namespace MailPoet\Twig;
 
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Polls extends \Twig_Extension {
 

@@ -4,7 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class AccessControl {
   const PERMISSION_ACCESS_PLUGIN_ADMIN = 'mailpoet_access_plugin_admin';
@@ -79,7 +79,7 @@ class AccessControl {
   }
 
   function validatePermission($permission) {
-    if($permission === self::NO_ACCESS_RESTRICTION) return true;
+    if ($permission === self::NO_ACCESS_RESTRICTION) return true;
     return current_user_can($permission);
   }
 }

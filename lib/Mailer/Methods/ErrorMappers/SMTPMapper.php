@@ -17,7 +17,7 @@ class SMTPMapper {
     $message = explode(PHP_EOL, $e->getMessage());
 
     $level = MailerError::LEVEL_HARD;
-    if($e instanceof \Swift_RfcComplianceException) {
+    if ($e instanceof \Swift_RfcComplianceException) {
       $level = MailerError::LEVEL_SOFT;
     }
     $subscriber_errors = [new SubscriberError($subscriber, null)];
@@ -27,7 +27,7 @@ class SMTPMapper {
   function getErrorFromLog($log, $subscriber) {
     // extract error message from log
     preg_match('/!! (.*?)>>/ism', $log, $message);
-    if(!empty($message[1])) {
+    if (!empty($message[1])) {
       $message = $message[1];
       // remove line breaks from the message due to how logger's dump() method works
       $message = preg_replace('/\r|\n/', '', $message);

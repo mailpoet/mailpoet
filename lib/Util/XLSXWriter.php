@@ -25,7 +25,7 @@ class XLSXWriter
 
   public function __construct()
   {
-    if(!ini_get('date.timezone'))
+    if (!ini_get('date.timezone'))
     {
       //using date functions can kick out warning if this isn't set
       date_default_timezone_set('UTC');
@@ -510,9 +510,9 @@ class XLSXWriter
     $mdays = array( 31, ($leap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 );
 
     # Some boundary checks
-    if($year < $epoch || $year > 9999) return 0;
-    if($month < 1     || $month > 12)  return 0;
-    if($day < 1       || $day > $mdays[ $month - 1 ]) return 0;
+    if ($year < $epoch || $year > 9999) return 0;
+    if ($month < 1     || $month > 12)  return 0;
+    if ($day < 1       || $day > $mdays[ $month - 1 ]) return 0;
 
     # Accumulate the number of days since the epoch.
     $days = $day;    # Add days for current month

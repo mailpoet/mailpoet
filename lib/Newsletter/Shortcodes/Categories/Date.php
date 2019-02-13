@@ -17,7 +17,7 @@ class Date {
       'y' => 'Y'
     );
     $wp = new WPFunctions();
-    if(!empty($action_mapping[$shortcode_details['action']])) {
+    if (!empty($action_mapping[$shortcode_details['action']])) {
       return date_i18n($action_mapping[$shortcode_details['action']], $wp->currentTime('timestamp'));
     }
     return ($shortcode_details['action'] === 'custom' && $shortcode_details['action_argument'] === 'format') ?

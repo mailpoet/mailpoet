@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\API\JSON;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class SuccessResponse extends Response {
   public $data;
@@ -12,7 +12,7 @@ class SuccessResponse extends Response {
   }
 
   function getData() {
-    if($this->data === null) return null;
+    if ($this->data === null) return null;
 
     return array(
       'data' => $this->data

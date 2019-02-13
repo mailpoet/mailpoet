@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Block;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 use Carbon\Carbon;
 
@@ -28,7 +28,7 @@ class Date extends Base {
     $date_format = $date_formats[$block['params']['date_type']][0];
 
     // set date format if specified
-    if(isset($block['params']['date_format'])
+    if (isset($block['params']['date_format'])
     && strlen(trim($block['params']['date_format'])) > 0) {
       $date_format = $block['params']['date_format'];
     }
@@ -42,7 +42,7 @@ class Date extends Base {
     $month = null;
     $year = null;
 
-    if(strlen(trim($value)) > 0) {
+    if (strlen(trim($value)) > 0) {
       $value = explode('-', $value);
 
       switch ($block['params']['date_type']) {
@@ -68,7 +68,7 @@ class Date extends Base {
     }
 
     foreach ($date_selectors as $date_selector) {
-      if($date_selector === 'DD') {
+      if ($date_selector === 'DD') {
         $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';
         $html .= static::getInputValidation($block, array(
@@ -160,7 +160,7 @@ class Date extends Base {
     );
 
     // is default today
-    if(!empty($block['params']['is_default_today'])) {
+    if (!empty($block['params']['is_default_today'])) {
       $defaults['selected'] = (int)strftime('%Y');
     }
 
@@ -186,7 +186,7 @@ class Date extends Base {
       'selected' => null
     );
     // is default today
-    if(!empty($block['params']['is_default_today'])) {
+    if (!empty($block['params']['is_default_today'])) {
       $defaults['selected'] = (int)strftime('%d');
     }
 
@@ -209,7 +209,7 @@ class Date extends Base {
 
   static function convertDateToDatetime($date, $date_format) {
     $datetime = false;
-    if($date_format === 'datetime') {
+    if ($date_format === 'datetime') {
       $datetime = $date;
     } else {
       $parsed_date = explode('/', $date);
@@ -217,7 +217,7 @@ class Date extends Base {
       $year_position = array_search('YYYY', $parsed_date_format);
       $month_position = array_search('MM', $parsed_date_format);
       $day_position = array_search('DD', $parsed_date_format);
-      if(count($parsed_date) === 3) {
+      if (count($parsed_date) === 3) {
         // create date from any combination of month, day and year
         $parsed_date = array(
           'year' => $parsed_date[$year_position],
@@ -233,7 +233,7 @@ class Date extends Base {
         );
       } else if ($date_format === 'MM' && count($parsed_date) === 1) {
         // create date from month
-        if((int)$parsed_date[$month_position] === 0) {
+        if ((int)$parsed_date[$month_position] === 0) {
           $datetime = '';
           $parsed_date = false;
         } else {
@@ -245,7 +245,7 @@ class Date extends Base {
         }
       } else if ($date_format === 'YYYY' && count($parsed_date) === 1) {
         // create date from year
-        if((int)$parsed_date[$year_position] === 0) {
+        if ((int)$parsed_date[$year_position] === 0) {
           $datetime = '';
           $parsed_date = false;
         } else {
@@ -258,17 +258,17 @@ class Date extends Base {
       } else {
         $parsed_date = false;
       }
-      if($parsed_date) {
+      if ($parsed_date) {
         $year = $parsed_date['year'];
         $month = $parsed_date['month'];
         $day = $parsed_date['day'];
         // if all date parts are set to 0, date value is empty
-        if((int)$year === 0 && (int)$month === 0 && (int)$day === 0) {
+        if ((int)$year === 0 && (int)$month === 0 && (int)$day === 0) {
           $datetime = '';
         } else {
-          if((int)$year === 0) $year = date('Y');
-          if((int)$month === 0) $month = date('m');
-          if((int)$day === 0) $day = date('d');
+          if ((int)$year === 0) $year = date('Y');
+          if ((int)$month === 0) $month = date('m');
+          if ((int)$day === 0) $day = date('d');
           $datetime = sprintf(
             '%s-%s-%s 00:00:00',
             $year,
@@ -278,7 +278,7 @@ class Date extends Base {
         }
       }
     }
-    if($datetime !== false && !empty($datetime)) {
+    if ($datetime !== false && !empty($datetime)) {
       try {
         $datetime = Carbon::parse($datetime)->toDateTimeString();
       } catch (\Exception $e) {

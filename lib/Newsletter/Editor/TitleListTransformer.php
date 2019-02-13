@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Editor;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class TitleListTransformer {
 
@@ -32,7 +32,7 @@ class TitleListTransformer {
     $alignment = $this->args['titleAlignment'];
     $alignment = (in_array($alignment, array('left', 'right', 'center'))) ? $alignment : 'left';
 
-    if($this->args['titleIsLink']) {
+    if ($this->args['titleIsLink']) {
       $title = '<a data-post-id="' . $post->ID . '" href="' . get_permalink($post->ID) . '">' . $title . '</a>';
     }
 

@@ -14,7 +14,7 @@ class SegmentsExporter {
   }
 
   private function exportSubscriber($subscriber) {
-    if(!$subscriber) return array();
+    if (!$subscriber) return array();
 
     $result = array();
     $segments = $subscriber->getAllSegmentNamesWithStatus();

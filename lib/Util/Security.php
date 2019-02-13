@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Util;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Security {
   const HASH_LENGTH = 12;
@@ -22,7 +22,7 @@ class Security {
   static function generateHash($length = false) {
     $length = ($length) ? $length : self::HASH_LENGTH;
     $auth_key = '';
-    if(defined('AUTH_KEY')) {
+    if (defined('AUTH_KEY')) {
       $auth_key = AUTH_KEY;
     }
     return substr(

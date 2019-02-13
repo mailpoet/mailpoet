@@ -4,7 +4,7 @@ namespace MailPoet\Models;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * @property int $id
@@ -90,7 +90,7 @@ class ScheduledTask extends Model {
 
   function save() {
     // set the default priority to medium
-    if(!$this->priority) {
+    if (!$this->priority) {
       $this->priority = self::PRIORITY_MEDIUM;
     }
     parent::save();

@@ -4,9 +4,9 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 class Social {
   static function render($element) {
     $icons_block = '';
-    if(is_array($element['icons'])) {
+    if (is_array($element['icons'])) {
       foreach ($element['icons'] as $index => $icon) {
-        if(empty($icon['image'])) {
+        if (empty($icon['image'])) {
           continue;
         }
 
@@ -17,7 +17,7 @@ class Social {
       }
     }
     $alignment = isset($element['styles']['block']['textAlign']) ? $element['styles']['block']['textAlign'] : 'center';
-    if(!empty($icons_block)) {
+    if (!empty($icons_block)) {
       $template = '
       <tr>
         <td class="mailpoet_padded_side mailpoet_padded_bottom" valign="top" align="'. $alignment . '">

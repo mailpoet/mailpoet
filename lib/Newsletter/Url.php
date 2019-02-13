@@ -17,7 +17,7 @@ class Url {
     $queue = false,
     $preview = false
   ) {
-    if($subscriber instanceof SubscriberModel) {
+    if ($subscriber instanceof SubscriberModel) {
       $subscriber->token = SubscriberModel::generateToken($subscriber->email);
     }
     switch ($type) {

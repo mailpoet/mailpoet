@@ -13,7 +13,7 @@ class DateTime {
   private $wp;
 
   function __construct(WPFunctions $wp = null) {
-    if($wp === null) {
+    if ($wp === null) {
       $wp = new WPFunctions();
     }
     $this->wp = $wp;

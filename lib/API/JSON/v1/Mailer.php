@@ -7,7 +7,7 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Mailer\MailerLog;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Mailer extends APIEndpoint {
   public $permissions = array(
@@ -28,7 +28,7 @@ class Mailer extends APIEndpoint {
       ));
     }
 
-    if($result['response'] === false) {
+    if ($result['response'] === false) {
       $error = sprintf(
         __('The email could not be sent: %s', 'mailpoet'),
         $result['error']->getMessage()

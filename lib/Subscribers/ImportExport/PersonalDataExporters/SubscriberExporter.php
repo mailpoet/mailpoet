@@ -16,7 +16,7 @@ class SubscriberExporter {
   }
 
   private function exportSubscriber($subscriber) {
-    if(!$subscriber) return array();
+    if (!$subscriber) return array();
     return array(array(
       'group_id' => 'mailpoet-subscriber',
       'group_label' => __('MailPoet Subscriber Data', 'mailpoet'),
@@ -45,13 +45,13 @@ class SubscriberExporter {
         'value' => $subscriber->status,
       ),
     );
-    if($subscriber->subscribed_ip) {
+    if ($subscriber->subscribed_ip) {
       $result[] = array(
         'name' => __('Subscribed IP', 'mailpoet'),
         'value' => $subscriber->subscribed_ip,
       );
     }
-    if($subscriber->confirmed_ip) {
+    if ($subscriber->confirmed_ip) {
       $result[] = array(
         'name' => __('Confirmed IP', 'mailpoet'),
         'value' => $subscriber->confirmed_ip,
@@ -64,7 +64,7 @@ class SubscriberExporter {
 
     foreach ($custom_fields as $custom_field_id => $custom_field_name) {
       $custom_field_value = $subscriber->{$custom_field_id};
-      if($custom_field_value) {
+      if ($custom_field_value) {
         $result[] = array(
           'name' => $custom_field_name,
           'value' => $custom_field_value,

@@ -29,7 +29,7 @@ class LogHandler extends AbstractProcessingHandler {
     ]);
     $model->save();
 
-    if($this->getRandom() <= self::LOG_PURGE_PROBABILITY) {
+    if ($this->getRandom() <= self::LOG_PURGE_PROBABILITY) {
       $this->purgeOldLogs();
     }
   }

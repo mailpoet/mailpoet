@@ -85,7 +85,7 @@ EOL;
   }
 
   function render($prefix = '') {
-    if(!$this->stylesheet) return;
+    if (!$this->stylesheet) return;
     $styles = new CSSParser($this->stylesheet);
     $styles = $styles->parse();
     $formatted_styles = array();

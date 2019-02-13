@@ -24,7 +24,7 @@ class FieldNameObfuscator {
   }
 
   private function deobfuscateField($name) {
-    if($this->wasFieldObfuscated($name)) {
+    if ($this->wasFieldObfuscated($name)) {
       return $this->deobfuscate($name);
     } else {
       return $name;
