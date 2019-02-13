@@ -10,11 +10,11 @@
         <td>
           <div id="select_method">
             <label>
-              <input type="radio" name="select_method"><span><%= __('Paste the data into a text box') %></span>
+              <input type="radio" name="select_method" data-automation-id="import-paste-method"><span><%= __('Paste the data into a text box') %></span>
             </label> <label>
-            <input type="radio" name="select_method"><span><%= __('Upload a file') %></span>
+            <input type="radio" name="select_method" data-automation-id="import-csv-method"><span><%= __('Upload a file') %></span>
           </label> <label>
-            <input type="radio" name="select_method"><span><%= __('Import from MailChimp') %></php></span>
+            <input type="radio" name="select_method" data-automation-id="import-mailchimp-method"><span><%= __('Import from MailChimp') %></php></span>
           </label>
           </div>
         </td>
@@ -64,7 +64,7 @@
             </label>
           </th>
           <td>
-            <input type="file" id="file_local" accept=".csv" />
+            <input type="file" id="file_local" accept=".csv"  data-automation-id="import-file-upload-input" />
           </td>
         </tr>
         </tbody>
@@ -114,6 +114,7 @@
         <tr>
           <th scope="row">
             <a href="javascript:;"
+             data-automation-id="import-next-step"
              class="button-primary button-disabled wysija mailpoet_process"><%= __('Next step') %> </a>
           </th>
         </tr>

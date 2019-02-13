@@ -10,18 +10,25 @@ class SubscriberManageImportExportCest {
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
     //click import
-    $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[2]']);
+    $I->click('[data-automation-id="import-subscribers-button"]');
     $I->waitForText('Back to Subscribers');
     //select upload file as import method, import CSV
-    $I->click(['css'=>'#select_method > label:nth-of-type(2)']);
-    $I->attachFile(['css'=>'#file_local'], 'MailPoetImportList.csv');
-    $I->click(['xpath'=>'//*[@id="method_file"]/div/table/tbody/tr[2]/th/a']);
+    $I->click('[data-automation-id="import-csv-method"]');
+    $I->attachFile('[data-automation-id="import-file-upload-input"]', 'MailPoetImportList.csv');
+    $I->click('#method_file [data-automation-id="import-next-step"]');
+
+    // input validation step
+    $I->click('[data-automation-id="subscribers_agreed"]');
+    $I->click('[data-automation-id="sent_once_last_year"]');
+    $I->click('[data-automation-id="input_understand"]');
+    $I->click('#step_input_validation [data-automation-id="import-next-step"]');
+
     //click is to trigger dropdown to display selections
     $I->click('input.select2-search__field');
     //choose My First List
     $I->click(['xpath'=>'//*[@id="select2-mailpoet_segments_select-results"]/li[2]']);
-    //click next step
-    $I->click(['xpath'=>'//*[@id="step2_process"]']);
+    $I->click('#step_data_manipulation [data-automation-id="import-next-step"]');
+
     $I->waitForText('Import again');
     //confirm subscribers from import list were added
     $I->amOnMailPoetPage ('Subscribers');
