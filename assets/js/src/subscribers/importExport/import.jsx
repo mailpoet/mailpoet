@@ -11,6 +11,34 @@ import Moment from 'moment';
 import sanitizeCSVData from './sanitize_csv_data.jsx';
 import StepInputValidation from './step_input_validation.jsx';
 
+const SUBSCRIBERS_LIMIT_FOR_VALIDATION = 500;
+
+function getMethodSelectionNextStepLink(importData) {
+  if (importData === undefined) {
+    return 'step_data_manipulation';
+  }
+  if (importData.subscribersCount === undefined) {
+    return 'step_data_manipulation';
+  }
+  if (importData.subscribersCount < SUBSCRIBERS_LIMIT_FOR_VALIDATION) {
+    return 'step_data_manipulation';
+  }
+  return 'step_input_validation';
+}
+
+function getDataManipulationPreviousStepLink(importData) {
+  if (importData === undefined) {
+    return 'step_method_selection';
+  }
+  if (importData.subscribersCount === undefined) {
+    return 'step_method_selection';
+  }
+  if (importData.subscribersCount < SUBSCRIBERS_LIMIT_FOR_VALIDATION) {
+    return 'step_method_selection';
+  }
+  return 'step_input_validation';
+}
+
 jQuery(document).ready(() => {
   if (!jQuery('#mailpoet_subscribers_import').length) {
     return;
@@ -116,7 +144,10 @@ jQuery(document).ready(() => {
               source: isFile ? 'file upload' : 'pasted data',
               'MailPoet Free version': window.mailpoet_version,
             });
-            router.navigate('step_input_validation', { trigger: true });
+            router.navigate(
+              getMethodSelectionNextStepLink(window.importData.step_method_selection),
+              { trigger: true }
+            );
           } else {
             MailPoet.Modal.loading(false);
             let errorNotice = MailPoet.I18n.t('noValidRecords');
@@ -295,7 +326,7 @@ jQuery(document).ready(() => {
           source: 'MailChimp',
           'MailPoet Free version': window.mailpoet_version,
         });
-        router.navigate('step_input_validation', { trigger: true });
+        router.navigate('step_data_manipulation', { trigger: true });
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
@@ -319,6 +350,7 @@ jQuery(document).ready(() => {
       ReactDOM.render(
         <StepInputValidation
           navigate={router.navigate}
+          importData={window.importData.step_method_selection}
         />,
         container
       );
@@ -841,7 +873,10 @@ jQuery(document).ready(() => {
       });
 
     previousStepButton.off().on('click', () => {
-      router.navigate('step_input_validation', { trigger: true });
+      router.navigate(
+        getDataManipulationPreviousStepLink(window.importData.step_method_selection),
+        { trigger: true }
+      );
     });
 
     nextStepButton.off().on('click', (event) => {
