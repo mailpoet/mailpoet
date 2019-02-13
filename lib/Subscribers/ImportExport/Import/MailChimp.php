@@ -30,7 +30,7 @@ class MailChimp {
       return $this->throwException('connection');
     } else {
       $response = '';
-      while(!feof($connection)) {
+      while (!feof($connection)) {
         $buffer = fgets($connection, 4096);
         if(trim($buffer) !== '') {
           $response .= $buffer;
@@ -75,7 +75,7 @@ class MailChimp {
         return $this->throwException('connection');
       }
       $i = 0;
-      while(!feof($connection)) {
+      while (!feof($connection)) {
         $buffer = fgets($connection, 4096);
         if(trim($buffer) !== '') {
           $obj = json_decode($buffer);

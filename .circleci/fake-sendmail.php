@@ -10,7 +10,7 @@ $file_handle = fopen($filename, "w");
 $call_arguments = print_r($argv, true) . "\n";
 fwrite($file_handle, $call_arguments);
 
-while($line = fgets(STDIN)) {
+while ($line = fgets(STDIN)) {
   fwrite($file_handle, $line);
 }
 

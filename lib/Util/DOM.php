@@ -17,7 +17,7 @@ class DOM {
       $right = $parent->getNextSibling($ignore_text_and_comment_nodes);
       $right->clear();
 
-      while($sibling = $cut_element->getNextSibling($ignore_text_and_comment_nodes)) {
+      while ($sibling = $cut_element->getNextSibling($ignore_text_and_comment_nodes)) {
         $sibling->move($right);
       }
 
@@ -31,7 +31,7 @@ class DOM {
   }
 
   static function findTopAncestor(DomNode $item) {
-    while($item->parent->parent !== null) {
+    while ($item->parent->parent !== null) {
       $item = $item->parent;
     }
     return $item;
