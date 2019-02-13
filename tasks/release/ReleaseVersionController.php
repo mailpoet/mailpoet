@@ -22,7 +22,7 @@ class ReleaseVersionController {
   }
 
   function assignVersionToCompletedTickets($version = null) {
-    $version = $this->checkVersion($version);
+    $version = $this->ensureCorrectVersion($version);
     if (!$version) {
       throw new \Exception('The version is invalid or already released');
     }
@@ -39,7 +39,7 @@ class ReleaseVersionController {
   }
 
   private function getDoneIssuesWithoutVersion() {
-    $jql = "project = $this->project AND status = Done AND (fixVersion = EMPTY OR fixVersion IN unreleasedVersions()) AND updated >= -52w";
+    $jql = "project = $this->project AND status = Done AND fixVersion = EMPTY AND updated >= -52w";
     $result = $this->jira->search($jql, ['key']);
     return array_map(function ($issue) {
       return [
@@ -49,7 +49,7 @@ class ReleaseVersionController {
     }, $result['issues']);
   }
 
-  private function checkVersion($version) {
+  private function ensureCorrectVersion($version) {
     try {
       $version_data = $this->jira->getVersion($version);
     } catch (\Exception $e) {
