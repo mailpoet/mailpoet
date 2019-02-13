@@ -34,7 +34,7 @@ class MailPoet {
     $message_body = $this->getBody($newsletter, $subscriber, $extra_params);
     $result = $this->api->sendMessages($message_body);
 
-    switch($result['status']) {
+    switch ($result['status']) {
       case API::SENDING_STATUS_CONNECTION_ERROR:
         $error = $this->error_mapper->getConnectionError($result['message']);
         return Mailer::formatMailerErrorResult($error);

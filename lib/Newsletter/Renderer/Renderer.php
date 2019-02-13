@@ -116,7 +116,7 @@ class Renderer {
   function renderStyles($styles) {
     $css = '';
     foreach ($styles as $selector => $style) {
-      switch($selector) {
+      switch ($selector) {
         case 'text':
           $selector = 'td.mailpoet_paragraph, td.mailpoet_blockquote, li.mailpoet_paragraph';
           break;

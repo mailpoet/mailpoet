@@ -45,7 +45,7 @@ class Date extends Base {
     if(strlen(trim($value)) > 0) {
       $value = explode('-', $value);
 
-      switch($block['params']['date_type']) {
+      switch ($block['params']['date_type']) {
         case 'year_month_day':
           $year = (isset($value[0]) ? (int)$value[0] : null);
           $month = (isset($value[1]) ? (int)$value[1] : null);

@@ -63,7 +63,7 @@ class Services extends APIEndpoint {
       return $this->successResponse(array('message' => $success_message));
     }
 
-    switch($state) {
+    switch ($state) {
       case Bridge::KEY_INVALID:
         $error = __('Your MailPoet Sending Service key is invalid.', 'mailpoet');
         break;
@@ -128,7 +128,7 @@ class Services extends APIEndpoint {
       );
     }
 
-    switch($state) {
+    switch ($state) {
       case Bridge::KEY_INVALID:
         $error = __('Your Premium key is invalid.', 'mailpoet');
         break;
@@ -148,7 +148,7 @@ class Services extends APIEndpoint {
   }
 
   private function getErrorDescriptionByCode($code) {
-    switch($code) {
+    switch ($code) {
       case Bridge::CHECK_ERROR_UNAVAILABLE:
         $text = __('Service unavailable', 'mailpoet');
         break;

@@ -33,7 +33,7 @@ class Helpers {
   static function getMaxPostSize($bytes = false) {
     $maxPostSize = ini_get('post_max_size');
     if(!$bytes) return $maxPostSize;
-    switch(substr($maxPostSize, -1)) {
+    switch (substr($maxPostSize, -1)) {
       case 'M':
       case 'm':
         return (int)$maxPostSize * 1048576;

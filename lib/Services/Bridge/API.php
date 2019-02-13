@@ -46,7 +46,7 @@ class API {
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
-    switch($code) {
+    switch ($code) {
       case 200:
         $body = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
         break;
@@ -65,7 +65,7 @@ class API {
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
-    switch($code) {
+    switch ($code) {
       case 200:
         if($body = $this->wp->wpRemoteRetrieveBody($result)) {
           $body = json_decode($body, true);

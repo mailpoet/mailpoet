@@ -28,7 +28,7 @@ class MailPoetMapper {
     $subscribers_errors = [];
     $result_code = !empty($result['code']) ? $result['code'] : null;
 
-    switch($result_code) {
+    switch ($result_code) {
       case API::RESPONSE_CODE_NOT_ARRAY:
         $message = __('JSON input is not an array', 'mailpoet');
         break;

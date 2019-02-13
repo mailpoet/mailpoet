@@ -771,7 +771,7 @@ class Newsletter extends Model {
       )
     );
 
-    switch($type) {
+    switch ($type) {
       case self::TYPE_STANDARD:
         $groups = array_merge($groups, array(
           array(
@@ -847,7 +847,7 @@ class Newsletter extends Model {
   static function groupBy($orm, $data = array()) {
     $group = (!empty($data['group'])) ? $data['group'] : 'all';
 
-    switch($group) {
+    switch ($group) {
       case self::STATUS_DRAFT:
       case self::STATUS_SCHEDULED:
       case self::STATUS_SENDING:

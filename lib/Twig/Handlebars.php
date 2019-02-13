@@ -30,7 +30,7 @@ class Handlebars extends \Twig_Extension {
     // default values
     $alias = null;
 
-    switch($args_count) {
+    switch ($args_count) {
       case 2:
         list($id, $file) = $args;
         break;

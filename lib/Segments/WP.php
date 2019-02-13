@@ -21,7 +21,7 @@ class WP {
       ->findOne();
     $schedule_welcome_newsletter = false;
 
-    switch(current_filter()) {
+    switch (current_filter()) {
       case 'delete_user':
       case 'deleted_user':
       case 'remove_user_from_blog':

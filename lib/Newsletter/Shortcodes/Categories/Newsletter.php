@@ -15,7 +15,7 @@ class Newsletter {
     $queue,
     $content
   ) {
-    switch($shortcode_details['action']) {
+    switch ($shortcode_details['action']) {
       case 'subject':
         return ($newsletter) ? $newsletter->subject : false;
 

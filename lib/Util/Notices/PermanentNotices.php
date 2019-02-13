@@ -42,7 +42,7 @@ class PermanentNotices {
 
   function ajaxDismissNoticeHandler() {
     if(!isset($_POST['type'])) return;
-    switch($_POST['type']) {
+    switch ($_POST['type']) {
       case (PHPVersionWarnings::OPTION_NAME):
         $this->php_version_warnings->disable();
         break;

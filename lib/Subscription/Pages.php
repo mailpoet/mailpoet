@@ -133,7 +133,7 @@ class Pages {
       return $page_title;
     } else {
       // when it's our own page, generate page title based on requested action
-      switch($this->action) {
+      switch ($this->action) {
         case self::ACTION_CONFIRM:
           return $this->getConfirmTitle();
 
@@ -157,7 +157,7 @@ class Pages {
     if(strpos($page_content, '[mailpoet_page]') !== false) {
       $content = '';
 
-      switch($this->action) {
+      switch ($this->action) {
         case self::ACTION_CONFIRM:
           $content = $this->getConfirmContent();
           break;

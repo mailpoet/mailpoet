@@ -193,7 +193,7 @@ class Scheduler {
     $nth_week_day = ($newsletter->nthWeekDay === self::LAST_WEEKDAY_FORMAT) ?
       $newsletter->nthWeekDay :
       '#' . $newsletter->nthWeekDay;
-    switch($interval_type) {
+    switch ($interval_type) {
       case self::INTERVAL_IMMEDIATE:
       case self::INTERVAL_DAILY:
         $schedule = sprintf('0 %s * * *', $hour);
@@ -255,7 +255,7 @@ class Scheduler {
   static function getScheduledTimeWithDelay($after_time_type, $after_time_number) {
     $wp = new WPFunctions();
     $current_time = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
-    switch($after_time_type) {
+    switch ($after_time_type) {
       case 'hours':
         return $current_time->addHours($after_time_number);
       case 'days':
