@@ -96,7 +96,7 @@ class Export {
     );
 
     $subscribers = $this->getSubscribers();
-    while($subscribers !== false) {
+    while ($subscribers !== false) {
       $processed_subscribers += count($subscribers);
       foreach ($subscribers as $subscriber) {
         $row = $this->formatSubscriberData($subscriber);
@@ -117,7 +117,7 @@ class Export {
     $processed_segments = array();
 
     $subscribers = $this->getSubscribers();
-    while($subscribers !== false) {
+    while ($subscribers !== false) {
       $processed_subscribers += count($subscribers);
       foreach ($subscribers as $i => $subscriber) {
         $current_segment = ucwords($subscriber['segment_name']);

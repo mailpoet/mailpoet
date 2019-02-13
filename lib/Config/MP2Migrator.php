@@ -336,7 +336,7 @@ class MP2Migrator {
         }
       }
       $this->progressbar->incrementCurrentCount($lists_count);
-    } while(($lists != null) && ($lists_count > 0));
+    } while (($lists != null) && ($lists_count > 0));
 
     $this->segments_mapping = $this->getImportedMapping('segments');
 
@@ -577,7 +577,7 @@ class MP2Migrator {
         }
       }
       $this->progressbar->incrementCurrentCount($users_count);
-    } while(($users != null) && ($users_count > 0));
+    } while (($users != null) && ($users_count > 0));
 
     $this->log(sprintf(_n("%d subscriber imported", "%d subscribers imported", $imported_subscribers_count, 'mailpoet'), $imported_subscribers_count));
   }
@@ -826,7 +826,7 @@ class MP2Migrator {
         }
       }
       $this->progressbar->incrementCurrentCount($forms_count);
-    } while(($forms != null) && ($forms_count > 0));
+    } while (($forms != null) && ($forms_count > 0));
 
     $this->log(sprintf(_n("%d form imported", "%d forms imported", $imported_forms_count, 'mailpoet'), $imported_forms_count));
   }

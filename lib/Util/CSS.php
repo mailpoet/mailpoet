@@ -176,7 +176,7 @@ class CSS {
     $start = 0;
     $queries = '';
 
-    while(($start = strpos($css, "@media", $start)) !== false) {
+    while (($start = strpos($css, "@media", $start)) !== false) {
       // stack to manage brackets
       $s = array();
 
@@ -191,7 +191,7 @@ class CSS {
         // move past first bracket
         $i++;
 
-        while(!empty($s)) {
+        while (!empty($s)) {
           // if the character is an opening bracket, push it onto the stack, otherwise pop the stack
           if($css[$i] == "{") {
             array_push($s, "{");
