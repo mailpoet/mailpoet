@@ -57,7 +57,7 @@ class Bounce extends SimpleWorker {
 
     $task_subscribers = new TaskSubscribers($task);
 
-    foreach($subscriber_batches as $subscribers_to_process_ids) {
+    foreach ($subscriber_batches as $subscribers_to_process_ids) {
       // abort if execution limit is reached
       CronHelper::enforceExecutionLimit($this->timer);
 
@@ -81,7 +81,7 @@ class Bounce extends SimpleWorker {
   }
 
   function processApiResponse(array $checked_emails) {
-    foreach($checked_emails as $email) {
+    foreach ($checked_emails as $email) {
       if(!isset($email['address'], $email['bounce'])) {
         continue;
       }

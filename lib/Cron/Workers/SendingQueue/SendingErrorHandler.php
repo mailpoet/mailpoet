@@ -27,7 +27,7 @@ class SendingErrorHandler {
   }
 
   private function processSoftError(MailerError $error, SendingTask $sending_task, $prepared_subscribers_ids, $prepared_subscribers) {
-    foreach($error->getSubscriberErrors() as $subscriber_error) {
+    foreach ($error->getSubscriberErrors() as $subscriber_error) {
       $subscriber_id_index = array_search($subscriber_error->getEmail(), $prepared_subscribers);
       $message = $subscriber_error->getMessage() ?: $error->getMessage();
       $sending_task->saveSubscriberError($prepared_subscribers_ids[$subscriber_id_index], $message);

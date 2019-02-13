@@ -52,7 +52,7 @@ class Migrator {
     global $wpdb;
 
     $output = [];
-    foreach($this->models as $model) {
+    foreach ($this->models as $model) {
       $modelMethod = Helpers::underscoreToCamelCase($model);
       $output = array_merge(dbDelta($this->$modelMethod()), $output);
     }

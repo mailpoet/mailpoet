@@ -54,7 +54,7 @@ abstract class Base {
 
     if(!empty($rules)) {
       $rules = array_unique($rules);
-      foreach($rules as $rule => $value) {
+      foreach ($rules as $rule => $value) {
         if(is_bool($value)) {
           $value = ($value) ? 'true' : 'false';
         }

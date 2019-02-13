@@ -114,7 +114,7 @@ abstract class ValidModel extends \Model {
   */
   public function save() {
     if($this->isNew()) { //Fields populated by create() or hydrate() don't pass through set()
-      foreach(array_keys($this->_validations) as $field) {
+      foreach (array_keys($this->_validations) as $field) {
         $this->validateField($field, $this->$field);
       }
     }
@@ -133,7 +133,7 @@ abstract class ValidModel extends \Model {
   public function set($key, $value = null) {
     if(is_array($key)) {
       // multiple values
-      foreach($key as $field => $value) {
+      foreach ($key as $field => $value) {
         $this->validateAndSet($field, $value);
       }
     } else {

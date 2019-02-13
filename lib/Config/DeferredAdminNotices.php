@@ -23,7 +23,7 @@ class DeferredAdminNotices {
   public function printAndClean() {
     $notices = get_option(DeferredAdminNotices::OPTIONS_KEY_NAME, array());
 
-    foreach($notices as $notice) {
+    foreach ($notices as $notice) {
       $notice = new Notice(Notice::TYPE_WARNING, $notice["message"]);
       add_action('network_admin_notices', array($notice, 'displayWPNotice'));
     }

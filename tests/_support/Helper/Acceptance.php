@@ -20,7 +20,7 @@ class Acceptance extends \Codeception\Module
         -15 // Number of log entries to tail
       );
 
-      foreach($logEntries as $logEntry) {
+      foreach ($logEntries as $logEntry) {
         if($this->isJSError($logEntry)) {
           // Collect JS errors into an array
           $this->js_errors[] = $logEntry['message'];

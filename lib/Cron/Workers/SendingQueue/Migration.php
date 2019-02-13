@@ -131,11 +131,11 @@ class Migration extends SimpleWorker {
     );
 
     if(!empty($queues)) {
-      foreach(array_chunk($queues, self::BATCH_SIZE) as $queue_batch) {
+      foreach (array_chunk($queues, self::BATCH_SIZE) as $queue_batch) {
         // abort if execution limit is reached
         CronHelper::enforceExecutionLimit($this->timer);
 
-        foreach($queue_batch as $queue) {
+        foreach ($queue_batch as $queue) {
           // create a new scheduled task of type "sending"
           $wpdb->query(sprintf(
             'INSERT IGNORE INTO %1$s (`type`, %2$s) ' .
@@ -180,7 +180,7 @@ class Migration extends SimpleWorker {
     }
 
     if(!empty($task_ids)) {
-      foreach($task_ids as $task_id) {
+      foreach ($task_ids as $task_id) {
         // abort if execution limit is reached
         CronHelper::enforceExecutionLimit($this->timer);
 
@@ -215,7 +215,7 @@ class Migration extends SimpleWorker {
 
     if(!empty($subscribers['to_process'])) {
       $subscribers_to_migrate = array_slice($subscribers['to_process'], $migrated_unprocessed_count);
-      foreach($subscribers_to_migrate as $sub_id) {
+      foreach ($subscribers_to_migrate as $sub_id) {
         // abort if execution limit is reached
         CronHelper::enforceExecutionLimit($this->timer);
 
@@ -229,7 +229,7 @@ class Migration extends SimpleWorker {
 
     if(!empty($subscribers['processed'])) {
       $subscribers_to_migrate = array_slice($subscribers['processed'], $migrated_processed_count);
-      foreach($subscribers_to_migrate as $sub_id) {
+      foreach ($subscribers_to_migrate as $sub_id) {
         // abort if execution limit is reached
         CronHelper::enforceExecutionLimit($this->timer);
 

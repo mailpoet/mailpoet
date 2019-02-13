@@ -127,7 +127,7 @@ class SendingTest extends \MailPoetTest {
     $this->sending->save();
     $tasks = SendingTask::getScheduledQueues();
     expect($tasks)->notEmpty();
-    foreach($tasks as $task) {
+    foreach ($tasks as $task) {
       expect($task)->isInstanceOf('MailPoet\Tasks\Sending');
     }
 
@@ -158,7 +158,7 @@ class SendingTest extends \MailPoetTest {
     $this->sending->save();
     $tasks = SendingTask::getRunningQueues();
     expect($tasks)->notEmpty();
-    foreach($tasks as $task) {
+    foreach ($tasks as $task) {
       expect($task)->isInstanceOf('MailPoet\Tasks\Sending');
     }
 

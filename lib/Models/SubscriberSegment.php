@@ -23,7 +23,7 @@ class SubscriberSegment extends Model {
 
     if(!empty($segment_ids)) {
       // unsubscribe from segments
-      foreach($segment_ids as $segment_id) {
+      foreach ($segment_ids as $segment_id) {
 
         // do not remove subscriptions to the WP Users or WooCommerce Customers segments
         if(($wp_segment !== false && (int)$wp_segment->id === (int)$segment_id)
@@ -75,7 +75,7 @@ class SubscriberSegment extends Model {
     if($subscriber === false) return false;
     if(!empty($segment_ids)) {
       // subscribe to specified segments
-      foreach($segment_ids as $segment_id) {
+      foreach ($segment_ids as $segment_id) {
         if((int)$segment_id > 0) {
           self::createOrUpdate(array(
             'subscriber_id' => $subscriber->id,
@@ -104,8 +104,8 @@ class SubscriberSegment extends Model {
     // create many subscriptions to each segment
     $values = array();
     $row_count = 0;
-    foreach($segment_ids as &$segment_id) {
-      foreach($subscriber_ids as &$subscriber_id) {
+    foreach ($segment_ids as &$segment_id) {
+      foreach ($subscriber_ids as &$subscriber_id) {
         $values[] = (int)$subscriber_id;
         $values[] = (int)$segment_id;
         $row_count++;

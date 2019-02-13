@@ -98,7 +98,7 @@ class Export {
     $subscribers = $this->getSubscribers();
     while($subscribers !== false) {
       $processed_subscribers += count($subscribers);
-      foreach($subscribers as $subscriber) {
+      foreach ($subscribers as $subscriber) {
         $row = $this->formatSubscriberData($subscriber);
         $row[] = ucwords($subscriber['segment_name']);
         fwrite($CSV_file, implode(',', array_map($format_CSV, $row)) . "\n");
@@ -119,7 +119,7 @@ class Export {
     $subscribers = $this->getSubscribers();
     while($subscribers !== false) {
       $processed_subscribers += count($subscribers);
-      foreach($subscribers as $i => $subscriber) {
+      foreach ($subscribers as $i => $subscriber) {
         $current_segment = ucwords($subscriber['segment_name']);
         // Sheet header (1st row) will be written only if:
         // * This is the first time we're processing a segment

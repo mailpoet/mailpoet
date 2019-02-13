@@ -17,7 +17,7 @@ class FieldNameObfuscator {
 
   public function deobfuscateFormPayload($data) {
     $result = array();
-    foreach($data as $key => $value) {
+    foreach ($data as $key => $value) {
       $result[$this->deobfuscateField($key)] = $value;
     }
     return $result;

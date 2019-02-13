@@ -6,7 +6,7 @@ use MailPoet\Models\NewsletterPost as NewsletterPost;
 
 class NewsletterPostTest extends \MailPoetTest {
   function testItCanGetLatestNewsletterPost() {
-    foreach(range(1, 5) as $index) {
+    foreach (range(1, 5) as $index) {
       $newsletter_post = NewsletterPost::create();
       $newsletter_post->newsletter_id = 1;
       $newsletter_post->post_id = $index;

@@ -46,7 +46,7 @@ class Form {
    */
   public function withSegments(array $segments) {
     $ids = [];
-    foreach($segments as $segment) {
+    foreach ($segments as $segment) {
       $ids[] = $segment->id();
     }
     $this->data['settings']['segments'] = $ids;

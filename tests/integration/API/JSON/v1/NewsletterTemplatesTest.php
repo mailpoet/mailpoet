@@ -97,7 +97,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $normalize = function($array) {
       $result = array();
-      foreach($array as $key => $value) {
+      foreach ($array as $key => $value) {
         if(in_array($key, ['newsletter_id', 'name', 'body'])) {
           $result[$key] = $value;
         }

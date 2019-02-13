@@ -47,10 +47,10 @@ abstract class SimpleWorker {
       return false;
     }
 
-    foreach($scheduled_tasks as $i => $task) {
+    foreach ($scheduled_tasks as $i => $task) {
       $this->prepareTask($task);
     }
-    foreach($running_tasks as $i => $task) {
+    foreach ($running_tasks as $i => $task) {
       $this->processTask($task);
     }
 

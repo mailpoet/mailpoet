@@ -97,7 +97,7 @@ class AutomatedLatestContent {
     if(isset($args['terms']) && is_array($args['terms'])) {
       $taxonomies = array();
       // Categorize terms based on their taxonomies
-      foreach($args['terms'] as $term) {
+      foreach ($args['terms'] as $term) {
         $taxonomy = $term['taxonomy'];
         if(!isset($taxonomies[$taxonomy])) {
           $taxonomies[$taxonomy] = array();
@@ -105,7 +105,7 @@ class AutomatedLatestContent {
         $taxonomies[$taxonomy][] = $term['id'];
       }
 
-      foreach($taxonomies as $taxonomy => $terms) {
+      foreach ($taxonomies as $taxonomy => $terms) {
         if(!empty($terms)) {
           $tax = array(
             'taxonomy' => $taxonomy,
@@ -141,7 +141,7 @@ class AutomatedLatestContent {
 
   private function logPosts(array $posts) {
     $posts_to_log = [];
-    foreach($posts as $post) {
+    foreach ($posts as $post) {
       $posts_to_log[] = [
         'id' => $post->ID,
         'post_date' => $post->post_date,

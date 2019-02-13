@@ -49,7 +49,7 @@ class RequirementsChecker {
       self::TEST_VENDOR_SOURCE
     );
     $results = array();
-    foreach($available_tests as $test) {
+    foreach ($available_tests as $test) {
       $results[$test] = call_user_func(array($this, 'check' .  $test));
     }
     return $results;
@@ -68,7 +68,7 @@ class RequirementsChecker {
       );
       return $this->processError($error);
     }
-    foreach($paths as $path) {
+    foreach ($paths as $path) {
       $index_file = $path . '/index.php';
       if(!file_exists($index_file)) {
         file_put_contents(
@@ -108,7 +108,7 @@ class RequirementsChecker {
   }
 
   function checkVendorSource() {
-    foreach($this->vendor_classes as $dependency) {
+    foreach ($this->vendor_classes as $dependency) {
       $dependency_path = $this->getDependencyPath($dependency);
       if(!$dependency_path) {
         $error = sprintf(

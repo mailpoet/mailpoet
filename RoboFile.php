@@ -35,7 +35,7 @@ class RoboFile extends \Robo\Tasks {
     );
 
     $list = array();
-    foreach($files as $file) {
+    foreach ($files as $file) {
       $list[] = $file[0];
     }
 
@@ -117,7 +117,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Create manifest file
     $manifest = [];
-    foreach(glob('assets/dist/css/*.css') as $style) {
+    foreach (glob('assets/dist/css/*.css') as $style) {
       // Hash and rename styles if production environment
       if($opts['env'] === 'production') {
         $hashed_style = sprintf(

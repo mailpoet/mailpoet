@@ -28,7 +28,7 @@ class Select extends Base {
       : array()
     );
 
-    foreach($options as $option) {
+    foreach ($options as $option) {
       if(!empty($option['is_hidden'])) {
         continue;
       }

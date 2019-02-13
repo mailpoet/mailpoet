@@ -62,7 +62,7 @@ class Subscriber {
    */
   public function create() {
     $subscriber = \MailPoet\Models\Subscriber::createOrUpdate($this->data);
-    foreach($this->segments as $segment) {
+    foreach ($this->segments as $segment) {
       SubscriberSegment::createOrUpdate([
         'subscriber_id' => $subscriber->id(),
         'segment_id' => $segment->id(),

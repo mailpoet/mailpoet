@@ -325,7 +325,7 @@ class Populator {
 
   protected function newsletterTemplates() {
     $templates = array();
-    foreach($this->templates as $template) {
+    foreach ($this->templates as $template) {
       $template = self::TEMPLATES_NAMESPACE . $template;
       $template = new $template(Env::$assets_url);
       $templates[] = $template->get();
@@ -351,7 +351,7 @@ class Populator {
     $remove_duplicates =
       isset($data_descriptor['remove_duplicates']) && $data_descriptor['remove_duplicates'];
 
-    foreach($rows as $row) {
+    foreach ($rows as $row) {
       $existence_comparison_fields = array_intersect_key(
         $row,
         $identification_columns
@@ -405,7 +405,7 @@ class Populator {
 
     $conditions = array('1=1');
     $values = array();
-    foreach($where as $field => $value) {
+    foreach ($where as $field => $value) {
       $conditions[] = "`t1`.`$field` = `t2`.`$field`";
       $conditions[] = "`t1`.`$field` = %s";
       $values[] = $value;

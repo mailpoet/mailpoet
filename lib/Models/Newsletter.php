@@ -391,7 +391,7 @@ class Newsletter extends Model {
       $segments = $this->segments()->findMany();
 
       if(!empty($segments)) {
-        foreach($segments as $segment) {
+        foreach ($segments as $segment) {
           $relation = NewsletterSegment::create();
           $relation->segment_id = $segment->id;
           $relation->newsletter_id = $duplicate->id;
@@ -404,7 +404,7 @@ class Newsletter extends Model {
         ->findMany();
 
       if(!empty($options)) {
-        foreach($options as $option) {
+        foreach ($options as $option) {
           $relation = NewsletterOption::create();
           $relation->newsletter_id = $duplicate->id;
           $relation->option_field_id = $option->option_field_id;
@@ -450,7 +450,7 @@ class Newsletter extends Model {
       $segments = $this->segments()->findMany();
 
       if(!empty($segments)) {
-        foreach($segments as $segment) {
+        foreach ($segments as $segment) {
           $relation = NewsletterSegment::create();
           $relation->segment_id = $segment->id;
           $relation->newsletter_id = $notification_history->id;
@@ -486,7 +486,7 @@ class Newsletter extends Model {
         ->whereNotIn('segment_id', $segment_ids)->findArray();
       $deleted_segments = array();
 
-      foreach($links as $link) {
+      foreach ($links as $link) {
         $deleted_segments[] = array(
           'id' => $link['segment_id'],
           'name' => __('Deleted list', 'mailpoet')
@@ -565,7 +565,7 @@ class Newsletter extends Model {
     );
     $result = array();
 
-    foreach($statisticsExprs as $name => $statisticsExpr) {
+    foreach ($statisticsExprs as $name => $statisticsExpr) {
       if(!in_array($this->type, array(self::TYPE_WELCOME, self::TYPE_AUTOMATIC))) {
         $row = $statisticsExpr->whereRaw('`queue_id` = ?', array($this->queue['id']))->findOne();
       } else {
@@ -664,7 +664,7 @@ class Newsletter extends Model {
       'value' => ''
     );
 
-    foreach($segments as $segment) {
+    foreach ($segments as $segment) {
       $newsletters = $segment->newsletters()
         ->filter('filterType', $type, $group)
         ->filter('groupBy', $data);
@@ -689,7 +689,7 @@ class Newsletter extends Model {
   static function filterBy($orm, $data = array()) {
     // apply filters
     if(!empty($data['filter'])) {
-      foreach($data['filter'] as $key => $value) {
+      foreach ($data['filter'] as $key => $value) {
         if($key === 'segment') {
           $segment = Segment::findOne($value);
           if($segment !== false) {
@@ -720,7 +720,7 @@ class Newsletter extends Model {
   static function filterWithOptions($orm, $type) {
     $orm = $orm->select(MP_NEWSLETTERS_TABLE.'.*');
     $optionFields = NewsletterOptionField::findArray();
-    foreach($optionFields as $optionField) {
+    foreach ($optionFields as $optionField) {
       if($optionField['newsletter_type'] !== $type) {
         continue;
       }

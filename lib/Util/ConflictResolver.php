@@ -63,7 +63,7 @@ class ConflictResolver {
     $dequeue_styles = function() use($_this) {
       global $wp_styles;
       if(empty($wp_styles->queue)) return;
-      foreach($wp_styles->queue as $wp_style) {
+      foreach ($wp_styles->queue as $wp_style) {
         if(empty($wp_styles->registered[$wp_style])) continue;
         $registered_style = $wp_styles->registered[$wp_style];
         if(!preg_match('!' . implode('|', $_this->permitted_assets_locations['styles']) . '!i', $registered_style->src)) {
@@ -83,7 +83,7 @@ class ConflictResolver {
     // unload all scripts except from the list of allowed
     $dequeue_scripts = function() use($_this) {
       global $wp_scripts;
-      foreach($wp_scripts->queue as $wp_script) {
+      foreach ($wp_scripts->queue as $wp_script) {
         if(empty($wp_scripts->registered[$wp_script])) continue;
         $registered_script = $wp_scripts->registered[$wp_script];
         if(!preg_match('!' . implode('|', $_this->permitted_assets_locations['scripts']) . '!i', $registered_script->src)) {

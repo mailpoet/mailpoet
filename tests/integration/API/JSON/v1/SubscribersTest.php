@@ -614,7 +614,7 @@ class SubscribersTest extends \MailPoetTest {
       'schedule' => '* * * * *'
     );
 
-    foreach($welcome_newsletter_options as $option => $value) {
+    foreach ($welcome_newsletter_options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;
       $newsletter_option_field->newsletter_type = Newsletter::TYPE_WELCOME;

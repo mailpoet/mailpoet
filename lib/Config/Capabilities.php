@@ -27,8 +27,8 @@ class Capabilities {
   function setupWPCapabilities() {
     $permissions = AccessControl::getDefaultPermissions();
     $role_objects = array();
-    foreach($permissions as $name => $roles) {
-      foreach($roles as $role) {
+    foreach ($permissions as $name => $roles) {
+      foreach ($roles as $role) {
         if(!isset($role_objects[$role])) {
           $role_objects[$role] = get_role($role);
         }
@@ -41,8 +41,8 @@ class Capabilities {
   function removeWPCapabilities() {
     $permissions = AccessControl::getDefaultPermissions();
     $role_objects = array();
-    foreach($permissions as $name => $roles) {
-      foreach($roles as $role) {
+    foreach ($permissions as $name => $roles) {
+      foreach ($roles as $role) {
         if(!isset($role_objects[$role])) {
           $role_objects[$role] = get_role($role);
         }
@@ -79,7 +79,7 @@ class Capabilities {
 
   function registerMembersCapabilities() {
     $permissions = AccessControl::getPermissionLabels();
-    foreach($permissions as $name => $label) {
+    foreach ($permissions as $name => $label) {
       $this->registerMembersCapability($name, $label);
     }
   }

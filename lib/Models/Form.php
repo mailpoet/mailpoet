@@ -56,7 +56,7 @@ class Form extends Model {
     $skipped_types = array('html', 'divider', 'submit');
     $fields = array();
 
-    foreach((array)$body as $field) {
+    foreach ((array)$body as $field) {
       if(empty($field['id'])
         || empty($field['type'])
         || in_array($field['type'], $skipped_types)

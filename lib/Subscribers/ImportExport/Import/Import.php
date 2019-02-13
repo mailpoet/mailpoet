@@ -74,7 +74,7 @@ class Import {
 
   function getSubscriberDataValidationRules($subscribers_fields) {
     $validation_rules = array();
-    foreach($subscribers_fields as $column => $field) {
+    foreach ($subscribers_fields as $column => $field) {
       $validation_rules[$column] = (!empty($field['validation_rule'])) ?
         $field['validation_rule'] :
         false;
@@ -153,7 +153,7 @@ class Import {
   function validateSubscribersData($subscribers_data, $validation_rules) {
     $invalid_records = array();
     $validator = new ModelValidator();
-    foreach($subscribers_data as $column => &$data) {
+    foreach ($subscribers_data as $column => &$data) {
       $validation_rule = $validation_rules[$column];
       if($validation_rule === 'email') {
         $data = array_map(
@@ -184,7 +184,7 @@ class Import {
       }
     }
     if($invalid_records) {
-      foreach($subscribers_data as $column => &$data) {
+      foreach ($subscribers_data as $column => &$data) {
         $data = array_diff_key($data, array_flip($invalid_records));
         $data = array_values($data);
       }
@@ -195,7 +195,7 @@ class Import {
 
   function transformSubscribersData($subscribers, $columns) {
     $transformed_subscribers = [];
-    foreach($columns as $column => $data) {
+    foreach ($columns as $column => $data) {
       $transformed_subscribers[$column] = array_column($subscribers, $data['index']);
     }
     return $transformed_subscribers;
@@ -205,7 +205,7 @@ class Import {
     // $subscribers_data is an two-dimensional associative array
     // of all subscribers being imported: [field => [value1, value2], field => [value1, value2], ...]
     $temp_existing_subscribers = array();
-    foreach(array_chunk($subscribers_data['email'], self::DB_QUERY_CHUNK_SIZE) as $subscribers_emails) {
+    foreach (array_chunk($subscribers_data['email'], self::DB_QUERY_CHUNK_SIZE) as $subscribers_emails) {
       // create a two-dimensional indexed array of all existing subscribers
       // with just wp_user_id and email fields: [[wp_user_id, email], [wp_user_id, email], ...]
       $temp_existing_subscribers = array_merge(
@@ -230,9 +230,9 @@ class Import {
     // and reduce $subscribers_data to only new subscribers by removing existing subscribers
     $existing_subscribers = [];
     $subscribers_emails = array_flip($subscribers_data['email']);
-    foreach($temp_existing_subscribers as $temp_existing_subscriber) {
+    foreach ($temp_existing_subscribers as $temp_existing_subscriber) {
       $existing_subscriber_key = $subscribers_emails[$temp_existing_subscriber['email']];
-      foreach($subscribers_data as $field => &$value) {
+      foreach ($subscribers_data as $field => &$value) {
         $existing_subscribers[$field][] = $value[$existing_subscriber_key];
         unset($value[$existing_subscriber_key]);
       }
@@ -260,7 +260,7 @@ class Import {
     );
     if(!$existing_trashed_records) return;
     $existing_trashed_records = Helpers::flattenArray($existing_trashed_records);
-    foreach(array_chunk($existing_trashed_records, self::DB_QUERY_CHUNK_SIZE) as
+    foreach (array_chunk($existing_trashed_records, self::DB_QUERY_CHUNK_SIZE) as
             $subscriber_ids) {
       Subscriber::whereIn('id', $subscriber_ids)
         ->deleteMany();
@@ -271,7 +271,7 @@ class Import {
 
   function addMissingRequiredFields($subscribers) {
     $subscribers_count = count($subscribers['data'][key($subscribers['data'])]);
-    foreach(array_keys($this->required_subscribers_fields) as $required_field) {
+    foreach (array_keys($this->required_subscribers_fields) as $required_field) {
       if(in_array($required_field, $subscribers['fields'])) continue;
       $subscribers['data'][$required_field] = array_fill(
         0,
@@ -333,7 +333,7 @@ class Import {
         return $subscribers_data['data'][$field][$index];
       }, $subscribers_data['fields']);
     }, range(0, $subscribers_count - 1));
-    foreach(array_chunk($subscribers, self::DB_QUERY_CHUNK_SIZE) as $data) {
+    foreach (array_chunk($subscribers, self::DB_QUERY_CHUNK_SIZE) as $data) {
       if($action == 'create') {
         Subscriber::createMultiple(
           $subscribers_data['fields'],
@@ -349,7 +349,7 @@ class Import {
       }
     }
     $created_or_updated_subscribers = array();
-    foreach(array_chunk($subscribers_data['data']['email'], self::DB_QUERY_CHUNK_SIZE) as $data) {
+    foreach (array_chunk($subscribers_data['data']['email'], self::DB_QUERY_CHUNK_SIZE) as $data) {
       $created_or_updated_subscribers = array_merge(
         $created_or_updated_subscribers,
         Subscriber::selectMany(array('id', 'email'))->whereIn('email', $data)->findArray()
@@ -388,9 +388,9 @@ class Import {
     // assemble a two-dimensional array: [[custom_field_id, subscriber_id, value], [custom_field_id, subscriber_id, value], ...]
     $subscribers_custom_fields_data = array();
     $subscribers_emails = array_flip($subscribers_data['data']['email']);
-    foreach($created_or_updated_subscribers as $created_or_updated_subscriber) {
+    foreach ($created_or_updated_subscribers as $created_or_updated_subscriber) {
       $subscriber_index = $subscribers_emails[$created_or_updated_subscriber['email']];
-      foreach($subscribers_data['data'] as $field => $values) {
+      foreach ($subscribers_data['data'] as $field => $values) {
         // exclude non-custom fields
         if(!is_int($field)) continue;
         $subscribers_custom_fields_data[] = array(
@@ -400,7 +400,7 @@ class Import {
         );
       }
     }
-    foreach(array_chunk($subscribers_custom_fields_data, self::DB_QUERY_CHUNK_SIZE) as $subscribers_custom_fields_data_chunk) {
+    foreach (array_chunk($subscribers_custom_fields_data, self::DB_QUERY_CHUNK_SIZE) as $subscribers_custom_fields_data_chunk) {
       SubscriberCustomField::createMultiple(
         $subscribers_custom_fields_data_chunk
       );
@@ -417,7 +417,7 @@ class Import {
   }
 
   function addSubscribersToSegments($subscribers_ids, $segments_ids) {
-    foreach(array_chunk($subscribers_ids, self::DB_QUERY_CHUNK_SIZE) as $subscriber_ids_chunk) {
+    foreach (array_chunk($subscribers_ids, self::DB_QUERY_CHUNK_SIZE) as $subscriber_ids_chunk) {
       SubscriberSegment::subscribeManyToSegments(
         $subscriber_ids_chunk, $segments_ids
       );

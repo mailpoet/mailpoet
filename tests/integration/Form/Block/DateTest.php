@@ -11,7 +11,7 @@ class DateTest extends \MailPoetTest {
       'YYYY/MM/DD' => '2016/05/10',
       'YYYY/DD/MM' => '2016/10/05'
     );
-    foreach($date as $date_format => $date) {
+    foreach ($date as $date_format => $date) {
       expect(Date::convertDateToDatetime($date, $date_format))
         ->equals('2016-05-10 00:00:00');
     }
@@ -22,7 +22,7 @@ class DateTest extends \MailPoetTest {
       'MM/YYYY' => '05/2016',
       'YYYY/MM' => '2016/05'
     );
-    foreach($date as $date_format => $date) {
+    foreach ($date as $date_format => $date) {
       expect(Date::convertDATEToDatetime($date, $date_format))
         ->equals('2016-05-01 00:00:00');
     }

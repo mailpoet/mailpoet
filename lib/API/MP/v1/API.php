@@ -52,7 +52,7 @@ class API {
     );
 
     $custom_fields = CustomField::selectMany(array('id', 'name'))->findMany();
-    foreach($custom_fields as $custom_field) {
+    foreach ($custom_fields as $custom_field) {
       $data[] = array(
         'id' => 'cf_' . $custom_field->id,
         'name' => $custom_field->name
@@ -88,7 +88,7 @@ class API {
 
     // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
     $found_segments_ids = array();
-    foreach($found_segments as $found_segment) {
+    foreach ($found_segments as $found_segment) {
       if($found_segment->type === Segment::TYPE_WP_USERS) {
         throw new \Exception(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $found_segment->id), 'mailpoet'));
       }
@@ -142,7 +142,7 @@ class API {
 
     // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
     $found_segments_ids = array();
-    foreach($found_segments as $segment) {
+    foreach ($found_segments as $segment) {
       if($segment->type === Segment::TYPE_WP_USERS) {
         throw new \Exception(__(sprintf("Can't unsubscribe from a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
       }
@@ -287,7 +287,7 @@ class API {
   protected function _scheduleWelcomeNotification(Subscriber $subscriber, array $segments) {
     $result = Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $segments);
     if(is_array($result)) {
-      foreach($result as $queue) {
+      foreach ($result as $queue) {
         if($queue instanceof Sending && $queue->getErrors()) {
           throw new \Exception(
             __(sprintf('Subscriber added, but welcome email failed to send: %s', strtolower(implode(', ', $queue->getErrors()))), 'mailpoet')

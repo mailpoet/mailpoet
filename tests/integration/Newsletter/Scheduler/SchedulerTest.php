@@ -793,7 +793,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function _createNewsletterOptions($newsletter_id, $newsletter_type, $options) {
-    foreach($options as $option => $value) {
+    foreach ($options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
       if(!$newsletter_option_field) {
         $newsletter_option_field = NewsletterOptionField::create();
@@ -813,7 +813,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function _removePostNotificationHooks() {
-    foreach(WPPosts::getTypes() as $post_type) {
+    foreach (WPPosts::getTypes() as $post_type) {
       remove_filter(
         'publish_' . $post_type,
         '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook',

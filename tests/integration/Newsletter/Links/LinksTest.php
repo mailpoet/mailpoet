@@ -160,7 +160,7 @@ class LinksTest extends \MailPoetTest {
 
     // data was properly encoded
     preg_match_all('/data=(?P<data>.*?)"/', $result, $result);
-    foreach($result['data'] as $data) {
+    foreach ($result['data'] as $data) {
       $data = Router::decodeRequestData($data);
       $data = Links::transformUrlDataObject($data);
       expect($data['subscriber_id'])->equals($subscriber->id);

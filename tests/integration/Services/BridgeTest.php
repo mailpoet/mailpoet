@@ -104,7 +104,7 @@ class BridgeTest extends \MailPoetTest {
       Bridge::KEY_INVALID => $this->invalid_key,
       Bridge::KEY_EXPIRING => $this->expiring_key
     );
-    foreach($states as $state => $key) {
+    foreach ($states as $state => $key) {
       $state = array('state' => $state);
       $this->bridge->storeMSSKeyAndState($key, $state);
       expect($this->getMSSKey())->equals($key);
@@ -117,7 +117,7 @@ class BridgeTest extends \MailPoetTest {
       array('state' => Bridge::KEY_CHECK_ERROR),
       array()
     );
-    foreach($states as $state) {
+    foreach ($states as $state) {
       $this->bridge->storeMSSKeyAndState($this->valid_key, $state);
       expect($this->getMSSKey())->notEquals($this->valid_key);
       expect($this->getMSSKeyState())->notEquals($state);
@@ -170,7 +170,7 @@ class BridgeTest extends \MailPoetTest {
       Bridge::KEY_ALREADY_USED => $this->used_premium_key,
       Bridge::KEY_EXPIRING => $this->expiring_key
     );
-    foreach($states as $state => $key) {
+    foreach ($states as $state => $key) {
       $state = array('state' => $state);
       $this->bridge->storePremiumKeyAndState($key, $state);
       expect($this->getPremiumKey())->equals($key);
@@ -183,7 +183,7 @@ class BridgeTest extends \MailPoetTest {
       array('state' => Bridge::KEY_CHECK_ERROR),
       array()
     );
-    foreach($states as $state) {
+    foreach ($states as $state) {
       $this->bridge->storePremiumKeyAndState($this->valid_key, $state);
       expect($this->getPremiumKey())->notEquals($this->valid_key);
       expect($this->getPremiumKeyState())->notEquals($state);

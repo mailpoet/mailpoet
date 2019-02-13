@@ -36,7 +36,7 @@ class BatchIteratorTest extends \MailPoetTest {
   function testItIterates() {
     $iterations = ceil($this->subscriber_count / $this->batch_size);
     $i = 0;
-    foreach($this->iterator as $batch) {
+    foreach ($this->iterator as $batch) {
       $i++;
 
       // process subscribers

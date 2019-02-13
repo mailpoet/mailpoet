@@ -19,7 +19,7 @@ class SubscribersFinder {
 
   function findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids) {
     $result = array();
-    foreach($newsletter_segments_ids as $segment_id) {
+    foreach ($newsletter_segments_ids as $segment_id) {
       $segment = Segment::findOne($segment_id);
       $result = array_merge($result, $this->findSubscribersInSegment($segment, $subscribers_to_process_ids));
     }
@@ -32,7 +32,7 @@ class SubscribersFinder {
       return Subscriber::extractSubscribersIds($subscribers);
     }
     $finders = $this->wp->applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
-    foreach($finders as $finder) {
+    foreach ($finders as $finder) {
       $subscribers = $finder->findSubscribersInSegment($segment, $subscribers_to_process_ids);
       if($subscribers) {
         return Subscriber::extractSubscribersIds($subscribers);
@@ -49,7 +49,7 @@ class SubscribersFinder {
     // Prepare subscribers on the DB side for performance reasons
     $staticSegments = array();
     $dynamicSegments = array();
-    foreach($segments as $segment) {
+    foreach ($segments as $segment) {
       if($this->isStaticSegment($segment)) {
         $staticSegments[] = $segment;
       } else {
@@ -92,7 +92,7 @@ class SubscribersFinder {
 
   private function addSubscribersToTaskFromDynamicSegments(ScheduledTask $task, array $segments) {
     $count = 0;
-    foreach($segments as $segment) {
+    foreach ($segments as $segment) {
       $count += $this->addSubscribersToTaskFromDynamicSegment($task, $segment);
     }
     return $count;
@@ -101,7 +101,7 @@ class SubscribersFinder {
   private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, Segment $segment) {
     $finders = $this->wp->applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
     $count = 0;
-    foreach($finders as $finder) {
+    foreach ($finders as $finder) {
       $subscribers = $finder->getSubscriberIdsInSegment($segment);
       if($subscribers) {
         $count += $this->addSubscribersToTaskByIds($task, $subscribers);
@@ -131,7 +131,7 @@ class SubscribersFinder {
 
   private function unique($subscribers) {
     $result = array();
-    foreach($subscribers as $subscriber) {
+    foreach ($subscribers as $subscriber) {
       if(is_a($subscriber, 'MailPoet\Models\Model')) {
         $result[$subscriber->id] = $subscriber;
       } elseif(is_scalar($subscriber)) {

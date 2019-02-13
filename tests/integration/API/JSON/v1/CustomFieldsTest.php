@@ -53,7 +53,7 @@ class CustomFieldsTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    foreach($this->custom_fields as $custom_field) {
+    foreach ($this->custom_fields as $custom_field) {
       CustomField::createOrUpdate($custom_field);
     }
   }
@@ -64,7 +64,7 @@ class CustomFieldsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->count(count($this->custom_fields));
 
-    foreach($response->data as $custom_field) {
+    foreach ($response->data as $custom_field) {
       expect($custom_field['name'])->notEmpty();
       expect($custom_field['type'])->notEmpty();
       expect($custom_field['params'])->notEmpty();

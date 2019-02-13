@@ -67,7 +67,7 @@ class Date extends Base {
       }
     }
 
-    foreach($date_selectors as $date_selector) {
+    foreach ($date_selectors as $date_selector) {
       if($date_selector === 'DD') {
         $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';

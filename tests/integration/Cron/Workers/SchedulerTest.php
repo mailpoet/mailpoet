@@ -625,7 +625,7 @@ class SchedulerTest extends \MailPoetTest {
     $subscriber = $this->_createSubscriber();
     $segment_subscriber = $this->_createSubscriberSegment($subscriber->id, $segment->id);
     $options = array('sendTo' => 'segment', 'segment' => $segment->id);
-    foreach($options as $option => $value) {
+    foreach ($options as $option => $value) {
       $newsletter_option_field = $this->_createNewsletterOptionField($option, Newsletter::TYPE_AUTOMATIC);
       $newsletter_option = $this->_createNewsletterOption($newsletter_option_field->id, $newsletter->id, $value);
     }

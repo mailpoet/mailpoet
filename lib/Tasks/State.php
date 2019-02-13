@@ -26,7 +26,7 @@ class State
        WHERE deleted_at IS NULL AND `type` = 'sending'
        GROUP BY status;"
     )->findMany();
-    foreach($counts as $count) {
+    foreach ($counts as $count) {
       if($count->status === null) {
         $stats[ScheduledTask::VIRTUAL_STATUS_RUNNING] = (int)$count->value;
         continue;
@@ -48,7 +48,7 @@ class State
     ],
     $limit = Scheduler::TASK_BATCH_SIZE) {
     $tasks = [];
-    foreach($statuses as $status) {
+    foreach ($statuses as $status) {
       $query = ScheduledTask::orderByDesc('created_at')
         ->whereNull('deleted_at')
         ->limit($limit);

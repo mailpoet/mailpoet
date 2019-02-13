@@ -89,7 +89,7 @@ class Subscribers extends APIEndpoint {
     }
 
     $data = array();
-    foreach($listing_data['items'] as $subscriber) {
+    foreach ($listing_data['items'] as $subscriber) {
       $data[] = $subscriber
         ->withSubscriptions()
         ->asArray();

@@ -32,7 +32,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
     $segment_id = $this->segments_ids[$this->segment_index];
 
     $filters = $this->wp->applyFilters(
-      'mailpoet_get_segment_filters', 
+      'mailpoet_get_segment_filters',
       $segment_id
     );
 
@@ -42,7 +42,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
 
     $name = Segment::findOne($segment_id)->name;
 
-    foreach($filters as $filter) {
+    foreach ($filters as $filter) {
       $subscribers = $filter->toSql($subscribers);
     }
 

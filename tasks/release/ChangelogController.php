@@ -49,7 +49,7 @@ class ChangelogController {
 
   private function renderList(array $issues, $field) {
     $messages = [];
-    foreach($issues as $issue) {
+    foreach ($issues as $issue) {
       if(!isset($issue['fields'][$field])) {
         continue;
       }

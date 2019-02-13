@@ -139,7 +139,7 @@ class SegmentTest extends \MailPoetTest {
   }
 
   function testItCanHaveManySubscribers() {
-    foreach($this->subscribers_data as $subscriber_data) {
+    foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriber_data);
       $subscriber->save();
@@ -156,7 +156,7 @@ class SegmentTest extends \MailPoetTest {
   }
 
   function testItCanHaveManyNewsletters() {
-    foreach($this->newsletters_data as $newsletter_data) {
+    foreach ($this->newsletters_data as $newsletter_data) {
       $newsletter = Newsletter::create();
       $newsletter->hydrate($newsletter_data);
       $newsletter->save();
@@ -174,7 +174,7 @@ class SegmentTest extends \MailPoetTest {
 
   function testItCanHaveSubscriberCount() {
     // normal subscribers
-    foreach($this->subscribers_data as $subscriber_data) {
+    foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriber_data);
       $subscriber->save();
@@ -193,7 +193,7 @@ class SegmentTest extends \MailPoetTest {
     expect($subscribers_count[Subscriber::STATUS_BOUNCED])->equals(1);
 
     // unsubscribed from this particular segment
-    foreach($this->subscribers_data as $subscriber_data) {
+    foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::findOne($subscriber_data['email']);
       SubscriberSegment::unsubscribeFromSegments($subscriber, array($this->segment->id));
     }
@@ -206,7 +206,7 @@ class SegmentTest extends \MailPoetTest {
     expect($subscribers_count[Subscriber::STATUS_BOUNCED])->equals(0);
 
     // trashed subscribers
-    foreach($this->subscribers_data as $subscriber_data) {
+    foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::findOne($subscriber_data['email']);
       SubscriberSegment::resubscribeToAllSegments($subscriber);
       $subscriber->trash();
@@ -221,7 +221,7 @@ class SegmentTest extends \MailPoetTest {
   }
 
   function testItCanGetSegmentsWithSubscriberCount() {
-    foreach($this->subscribers_data as $subscriber_data) {
+    foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriber_data);
       $subscriber->save();
@@ -235,7 +235,7 @@ class SegmentTest extends \MailPoetTest {
   }
 
   function testItCanGetSegmentsForExport() {
-    foreach($this->subscribers_data as $index => $subscriber_data) {
+    foreach ($this->subscribers_data as $index => $subscriber_data) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriber_data);
       $subscriber->save();

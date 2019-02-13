@@ -70,7 +70,7 @@ class PostContentManagerTest extends \MailPoetTest {
       '<i>italic</i>',
       'Text<br />new line'
     );
-    foreach($text_tags as $html) {
+    foreach ($text_tags as $html) {
       expect($this->post_content->filterContent($html, 'full'))->equals(
         '<p class="' . PostContentManager::WP_POST_CLASS . '">' . $html . '</p>'
       );
@@ -103,7 +103,7 @@ class PostContentManagerTest extends \MailPoetTest {
       '<td></td>',
     );
 
-    foreach($undesirable_tags as $html) {
+    foreach ($undesirable_tags as $html) {
       expect($this->post_content->filterContent($html, 'full'))->equals('');
     }
   }
@@ -126,7 +126,7 @@ class PostContentManagerTest extends \MailPoetTest {
       '<h3></h3>',
     );
 
-    foreach($undesirable_tags as $html) {
+    foreach ($undesirable_tags as $html) {
       expect($this->post_content->filterContent($html, 'excerpt'))->equals('');
     }
   }

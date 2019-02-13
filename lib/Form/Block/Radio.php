@@ -22,7 +22,7 @@ class Radio extends Base {
 
     $selected_value = self::getFieldValue($block);
 
-    foreach($options as $option) {
+    foreach ($options as $option) {
       $html .= '<label class="mailpoet_radio_label">';
 
       $html .= '<input type="radio" class="mailpoet_radio" ';

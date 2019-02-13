@@ -141,7 +141,7 @@ class Model extends \Sudzy\ValidModel {
 
     if(!empty($keys)) {
       $first = true;
-      foreach($keys as $field => $value) {
+      foreach ($keys as $field => $value) {
         if($first) {
           $model = static::where($field, $value);
           $first = false;
@@ -337,7 +337,7 @@ class Model extends \Sudzy\ValidModel {
 
   public function validate() {
     $success = true;
-    foreach(array_keys($this->_validations) as $field) {
+    foreach (array_keys($this->_validations) as $field) {
       $success = $success && $this->validateField($field, $this->$field);
     }
     $this->setError($this->getValidationErrors());

@@ -166,7 +166,7 @@ class Newsletter {
    * @return Newsletter
    */
   public function withSegments(array $segments) {
-    foreach($segments as $segment) {
+    foreach ($segments as $segment) {
       $this->segments[] = $segment->id();
     }
     return $this;
@@ -187,7 +187,7 @@ class Newsletter {
    */
   public function create() {
     $newsletter = \MailPoet\Models\Newsletter::createOrUpdate($this->data);
-    foreach($this->options as $option_id => $option_value) {
+    foreach ($this->options as $option_id => $option_value) {
       \MailPoet\Models\NewsletterOption::createOrUpdate(
         [
           'newsletter_id' => $newsletter->id,
@@ -196,7 +196,7 @@ class Newsletter {
         ]
       );
     }
-    foreach($this->segments as $segment_id) {
+    foreach ($this->segments as $segment_id) {
       NewsletterSegment::createOrUpdate([
         'newsletter_id' => $newsletter->id,
         'segment_id' => $segment_id,

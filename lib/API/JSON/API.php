@@ -46,7 +46,7 @@ class API {
     $this->access_control = $access_control;
     $this->settings = $settings;
     $this->wp = $wp;
-    foreach($this->_available_api_versions as $available_api_version) {
+    foreach ($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
         sprintf('%s\%s', __NAMESPACE__, $available_api_version),
         $available_api_version
@@ -116,7 +116,7 @@ class API {
       $error_response = $this->createErrorResponse(Error::BAD_REQUEST, $error_message, Response::STATUS_BAD_REQUEST);
       return $error_response;
     } else if(!empty($this->_endpoint_namespaces[$this->_request_api_version])) {
-      foreach($this->_endpoint_namespaces[$this->_request_api_version] as $namespace) {
+      foreach ($this->_endpoint_namespaces[$this->_request_api_version] as $namespace) {
         $endpoint_class = sprintf(
           '%s\%s',
           $namespace,

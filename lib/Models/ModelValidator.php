@@ -23,7 +23,7 @@ class ModelValidator extends \Sudzy\Engine {
 
   private function setupValidators() {
     $_this = $this;
-    foreach($this->validators as $validator => $action) {
+    foreach ($this->validators as $validator => $action) {
       $this->addValidator($validator, function($params) use ($action, $_this) {
         return call_user_func(array($_this, $action), $params);
       });

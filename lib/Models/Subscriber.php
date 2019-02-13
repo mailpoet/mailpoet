@@ -242,7 +242,7 @@ class Subscriber extends Model {
       'value' => 'none'
     );
 
-    foreach($segments as $segment) {
+    foreach ($segments as $segment) {
       $subscribers_count = $segment->subscribers()
         ->filter('groupBy', $group)
         ->count();
@@ -270,7 +270,7 @@ class Subscriber extends Model {
     if(empty($filters)) {
       return $orm;
     }
-    foreach($filters as $key => $value) {
+    foreach ($filters as $key => $value) {
       if($key === 'segment') {
         if($value === 'none') {
           return self::filter('withoutSegments');
@@ -333,7 +333,7 @@ class Subscriber extends Model {
   static function filterWithCustomFields($orm) {
     $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
     $customFields = CustomField::findArray();
-    foreach($customFields as $customField) {
+    foreach ($customFields as $customField) {
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
         MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
@@ -363,7 +363,7 @@ class Subscriber extends Model {
   static function filterWithCustomFieldsForExport($orm) {
     $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
     $customFields = CustomField::findArray();
-    foreach($customFields as $customField) {
+    foreach ($customFields as $customField) {
       $orm = $orm->selectExpr(
         'MAX(CASE WHEN ' .
         MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
@@ -493,7 +493,7 @@ class Subscriber extends Model {
       ->whereIn('custom_field_id', $custom_field_ids)
       ->where('subscriber_id', $this->id())
       ->findMany();
-    foreach($relations as $relation) {
+    foreach ($relations as $relation) {
       $this->{'cf_'.$relation->custom_field_id} = $relation->value;
     }
 
@@ -531,7 +531,7 @@ class Subscriber extends Model {
     // get custom fields
     $custom_fields = CustomField::whereIdIn($custom_field_ids)->findMany();
 
-    foreach($custom_fields as $custom_field) {
+    foreach ($custom_fields as $custom_field) {
       $value = (isset($custom_fields_data[$custom_field->id])
         ? $custom_fields_data[$custom_field->id]
         : null
@@ -646,7 +646,7 @@ class Subscriber extends Model {
     $emails_sent = 0;
     if(!empty($subscribers)) {
       $sender = new ConfirmationEmailMailer();
-      foreach($subscribers as $subscriber) {
+      foreach ($subscribers as $subscriber) {
         if($sender->sendConfirmationEmail($subscriber)) {
           $emails_sent++;
         }
@@ -830,7 +830,7 @@ class Subscriber extends Model {
       'last_name' => '',
       'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED
     );
-    foreach($required_field_default_values as $field => $value) {
+    foreach ($required_field_default_values as $field => $value) {
       if(!isset($data[$field])) {
         $data[$field] = $value;
       }
@@ -840,7 +840,7 @@ class Subscriber extends Model {
 
   static function extractCustomFieldsFromFromObject($data) {
     $custom_fields = array();
-    foreach($data as $key => $value) {
+    foreach ($data as $key => $value) {
       if(strpos($key, 'cf_') === 0) {
         $custom_fields[(int)substr($key, 3)] = $value;
         unset($data[$key]);

@@ -81,11 +81,11 @@ class AutomatedLatestContent extends APIEndpoint {
     $used_posts = array();
     $rendered_posts = array();
 
-    foreach($data['blocks'] as $block) {
+    foreach ($data['blocks'] as $block) {
       $posts = $this->ALC->getPosts($block, $used_posts);
       $rendered_posts[] = $this->ALC->transformPosts($block, $posts);
 
-      foreach($posts as $post) {
+      foreach ($posts as $post) {
         $used_posts[] = $post->ID;
       }
     }
