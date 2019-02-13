@@ -356,6 +356,7 @@ class SubscriberList extends React.Component {
           <a
             className="page-title-action"
             href="?page=mailpoet-import"
+            data-automation-id="import-subscribers-button"
           >
             {MailPoet.I18n.t('import')}
           </a>

@@ -21,6 +21,7 @@ const PreviousNextStepButtons = ({ canGoNext, onPreviousAction, onNextAction }) 
       &nbsp;&nbsp;
       <button
         type="button"
+        data-automation-id="import-next-step"
         className={nextStepClasses}
         onClick={() => {
           if (canGoNext) {

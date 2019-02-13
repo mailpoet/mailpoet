@@ -64,6 +64,7 @@ class StepInputValidation extends Component {
             onChange={e => this.setState({ subscribersAgreed: e.target.checked })}
             name="subscribers_agreed"
             id="subscribers_agreed"
+            data-automation-id="subscribers_agreed"
           />
           {MailPoet.I18n.t('subscribersAgreed')}
         </label>
@@ -85,6 +86,7 @@ class StepInputValidation extends Component {
             onChange={e => this.setState({ sentOnceLastYear: e.target.checked })}
             name="sent_once_last_year"
             id="sent_once_last_year"
+            data-automation-id="sent_once_last_year"
           />
           {MailPoet.I18n.t('sentOnceYear')}
         </label>
@@ -101,6 +103,7 @@ class StepInputValidation extends Component {
             onChange={e => this.setState({ understand: e.target.checked })}
             name="understand"
             id="understand"
+            data-automation-id="input_understand"
           />
           {MailPoet.I18n.t('youUnderstand')}
         </label>
