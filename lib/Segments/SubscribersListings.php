@@ -34,7 +34,7 @@ class SubscribersListings {
       return $listing_data = $this->handler->get('\MailPoet\Models\Subscriber', $data);
     }
     $handlers = $this->wp->applyFilters('mailpoet_get_subscribers_listings_in_segment_handlers', array());
-    foreach($handlers as $handler) {
+    foreach ($handlers as $handler) {
       $listings = $handler->get($segment, $data);
       if($listings) {
         return $listings;

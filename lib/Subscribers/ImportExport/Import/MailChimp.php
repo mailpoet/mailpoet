@@ -46,7 +46,7 @@ class MailChimp {
     }
 
     $lists = [];
-    foreach($response->data as $list) {
+    foreach ($response->data as $list) {
       $lists[] = array(
         'id' => $list->id,
         'name' => $list->name
@@ -68,7 +68,7 @@ class MailChimp {
     $bytes_fetched = 0;
     $subscribers = [];
     $header = [];
-    foreach($lists as $list) {
+    foreach ($lists as $list) {
       $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
       $connection = @fopen($url, 'r');
       if(!$connection) {

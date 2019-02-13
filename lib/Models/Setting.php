@@ -34,7 +34,7 @@ class Setting extends Model {
     $settingsCollection = self::findMany();
     $settings = array();
     if(!empty($settingsCollection)) {
-      foreach($settingsCollection as $setting) {
+      foreach ($settingsCollection as $setting) {
         $value = (is_serialized($setting->value)
           ? unserialize($setting->value)
           : $setting->value

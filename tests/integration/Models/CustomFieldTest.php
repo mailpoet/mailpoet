@@ -107,7 +107,7 @@ class CustomFieldTest extends \MailPoetTest {
   }
 
   function testItCanHaveManySubscribers() {
-    foreach($this->subscribers as $subscriber) {
+    foreach ($this->subscribers as $subscriber) {
       $subscriber = Subscriber::createOrUpdate($subscriber);
 
       $association = SubscriberCustomField::create();

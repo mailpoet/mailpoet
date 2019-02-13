@@ -179,7 +179,7 @@ class Sending {
   }
 
   public function hydrate(array $data) {
-    foreach($data as $k => $v) {
+    foreach ($data as $k => $v) {
       $this->__set($k, $v);
     }
   }
@@ -242,7 +242,7 @@ class Sending {
       ->limit($amount)
       ->findMany();
     $result = array();
-    foreach($tasks as $task) {
+    foreach ($tasks as $task) {
       $result[] = static::createFromTask($task);
     }
     return array_filter($result);
@@ -257,7 +257,7 @@ class Sending {
       ->limit($amount)
       ->findMany();
     $result = array();
-    foreach($tasks as $task) {
+    foreach ($tasks as $task) {
       $result[] = static::createFromTask($task);
     }
     return array_filter($result);

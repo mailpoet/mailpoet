@@ -60,7 +60,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
       )
     );
 
-    foreach($this->subscribers_data as $subscriber) {
+    foreach ($this->subscribers_data as $subscriber) {
       if(isset($subscriber[1])) {
         unset($subscriber[1]);
       }
@@ -69,13 +69,13 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
       $entity->save();
     }
 
-    foreach($this->custom_fields_data as $custom_field) {
+    foreach ($this->custom_fields_data as $custom_field) {
       $entity = CustomField::create();
       $entity->hydrate($custom_field);
       $entity->save();
     }
 
-    foreach($this->segments_data as $segment) {
+    foreach ($this->segments_data as $segment) {
       $entity = Segment::create();
       $entity->hydrate($segment);
       $entity->save();
@@ -104,7 +104,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
   protected function filterSubscribersData($subscribers) {
     return array_map(function($subscriber) {
       $data = array();
-      foreach($subscriber as $key => $value) {
+      foreach ($subscriber as $key => $value) {
         if(in_array($key, array(
           'first_name', 'last_name', 'email', 'global_status',
           'status', 'list_status', 'segment_name', 1

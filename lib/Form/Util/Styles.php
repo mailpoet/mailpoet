@@ -89,7 +89,7 @@ EOL;
     $styles = new CSSParser($this->stylesheet);
     $styles = $styles->parse();
     $formatted_styles = array();
-    foreach($styles->getAllDeclarationBlocks() as $style_declaration) {
+    foreach ($styles->getAllDeclarationBlocks() as $style_declaration) {
       $selectors = array_map(function($selector) use ($prefix) {
         return sprintf('%s %s', $prefix, $selector->__toString());
       }, $style_declaration->getSelectors());

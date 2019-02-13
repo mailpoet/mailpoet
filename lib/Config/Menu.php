@@ -547,7 +547,7 @@ class Menu {
       if(!empty($field['params']['values'])) {
         $values = array();
 
-        foreach($field['params']['values'] as $value) {
+        foreach ($field['params']['values'] as $value) {
           $values[$value['value']] = $value['value'];
         }
         $field['params']['values'] = $values;
@@ -780,7 +780,7 @@ class Menu {
       $screen_id = $_REQUEST['page'];
     }
     if(!empty($exclude)) {
-      foreach($exclude as $slug) {
+      foreach ($exclude as $slug) {
         if(stripos($screen_id, $slug) !== false) {
           return false;
         }

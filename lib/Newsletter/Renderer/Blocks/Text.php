@@ -30,10 +30,10 @@ class Text {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $blockquotes = $DOM->query('blockquote');
-    foreach($blockquotes as $blockquote) {
+    foreach ($blockquotes as $blockquote) {
       $contents = array();
       $paragraphs = $blockquote->query('p, h1, h2, h3, h4', 0);
-      foreach($paragraphs as $index => $paragraph) {
+      foreach ($paragraphs as $index => $paragraph) {
         if(preg_match('/h\d/', $paragraph->getTag())) {
           $contents[] = $paragraph->getOuterText();
         } else {
@@ -76,7 +76,7 @@ class Text {
     $DOM = $DOM_parser->parseStr($html);
     $paragraphs = $DOM->query('p');
     if(!$paragraphs->count()) return $html;
-    foreach($paragraphs as $paragraph) {
+    foreach ($paragraphs as $paragraph) {
       // process empty paragraphs
       if(!trim($paragraph->html())) {
           $next_element = ($paragraph->getNextSibling()) ?
@@ -140,7 +140,7 @@ class Text {
     $DOM = $DOM_parser->parseStr($html);
     $lists = $DOM->query('ol, ul, li');
     if(!$lists->count()) return $html;
-    foreach($lists as $list) {
+    foreach ($lists as $list) {
       if($list->tag === 'li') {
         $list->setInnertext($list->html());
         $list->class = 'mailpoet_paragraph';
@@ -159,7 +159,7 @@ class Text {
     $DOM = $DOM_parser->parseStr($html);
     $headings = $DOM->query('h1, h2, h3, h4');
     if(!$headings->count()) return $html;
-    foreach($headings as $heading) {
+    foreach ($headings as $heading) {
       $heading->style = StylesHelper::applyTextAlignment($heading->style);
       $heading->style .= 'padding:0;font-style:normal;font-weight:normal;';
     }

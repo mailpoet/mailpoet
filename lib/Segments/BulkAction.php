@@ -45,7 +45,7 @@ class BulkAction {
       return $bulk_action->apply('\MailPoet\Models\Subscriber', $this->data);
     } else {
       $handlers = $this->wp->applyFilters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers', array());
-      foreach($handlers as $handler) {
+      foreach ($handlers as $handler) {
         $meta = $handler->apply($segment, $this->data);
         if($meta) {
           return $meta;

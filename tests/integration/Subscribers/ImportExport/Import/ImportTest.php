@@ -166,7 +166,7 @@ class ImportTest extends \MailPoetTest {
         'email' => 'sTeve.sorrow@exaMple.com'
       ),
     );
-    foreach($subscribers_data_existing as $i => $existing_subscriber) {
+    foreach ($subscribers_data_existing as $i => $existing_subscriber) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($existing_subscriber);
       $subscriber->save();
@@ -180,7 +180,7 @@ class ImportTest extends \MailPoetTest {
     );
     expect($existing_subscribers['email'][0])->equals($subscribers_data['email'][2]);
     expect($existing_subscribers['email'][1])->equals($subscribers_data['email'][3]);
-    foreach($new_subscribers as $field => $value) {
+    foreach ($new_subscribers as $field => $value) {
       expect($value[0])->equals($subscribers_data[$field][0]);
     }
     expect($wp_users)->equals(array($subscribers_data_existing[0]['wp_user_id']));
@@ -363,7 +363,7 @@ class ImportTest extends \MailPoetTest {
       array($this->segment_1->id, $this->segment_2->id)
     );
     // 2 subscribers * 2 segments
-    foreach($db_subscribers as $db_subscriber) {
+    foreach ($db_subscribers as $db_subscriber) {
       $subscriber_segment_1 = SubscriberSegment::where('subscriber_id', $db_subscriber)
         ->where('segment_id', $this->segment_1->id)
         ->findOne();
@@ -471,7 +471,7 @@ class ImportTest extends \MailPoetTest {
       'id'
     );
     // subscribers must be added to segments
-    foreach($db_subscribers as $db_subscriber) {
+    foreach ($db_subscribers as $db_subscriber) {
       $subscriber_segment = SubscriberSegment::where('subscriber_id', $db_subscriber)
         ->where('segment_id', $this->test_data['segments'][0])
         ->findOne();

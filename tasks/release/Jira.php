@@ -35,7 +35,7 @@ class Jira {
     if($version_name === null) {
       return end($versions);
     }
-    foreach($versions as $version) {
+    foreach ($versions as $version) {
       if($version_name === $version['name']) {
         return $version;
       }

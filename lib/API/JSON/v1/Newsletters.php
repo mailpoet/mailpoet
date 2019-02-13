@@ -108,7 +108,7 @@ class Newsletters extends APIEndpoint {
     if(!empty($segments)) {
       NewsletterSegment::where('newsletter_id', $newsletter->id)
         ->deleteMany();
-      foreach($segments as $segment) {
+      foreach ($segments as $segment) {
         if(!is_array($segment)) continue;
         $relation = NewsletterSegment::create();
         $relation->segment_id = (int)$segment['id'];
@@ -127,7 +127,7 @@ class Newsletters extends APIEndpoint {
         $newsletter->type
       )->findMany();
       // update newsletter options
-      foreach($option_fields as $option_field) {
+      foreach ($option_fields as $option_field) {
         if(isset($options[$option_field->name])) {
           $newsletter_option = NewsletterOption::createOrUpdate(
             array(
@@ -406,7 +406,7 @@ class Newsletters extends APIEndpoint {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\Newsletter', $data);
 
     $data = array();
-    foreach($listing_data['items'] as $newsletter) {
+    foreach ($listing_data['items'] as $newsletter) {
       $queue = false;
 
       if($newsletter->type === Newsletter::TYPE_STANDARD) {
@@ -504,7 +504,7 @@ class Newsletters extends APIEndpoint {
           'newsletter_type', $newsletter->type
         )->findArray();
 
-        foreach($option_fields as $option_field) {
+        foreach ($option_fields as $option_field) {
           if(isset($options[$option_field['name']])) {
             $relation = NewsletterOption::create();
             $relation->newsletter_id = $newsletter->id;

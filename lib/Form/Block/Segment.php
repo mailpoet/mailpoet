@@ -20,7 +20,7 @@ class Segment extends Base {
       : array()
     );
 
-    foreach($options as $option) {
+    foreach ($options as $option) {
       if(!isset($option['id']) || !isset($option['name'])) continue;
 
       $is_checked = (isset($option['is_checked']) && $option['is_checked']) ? 'checked="checked"' : '';

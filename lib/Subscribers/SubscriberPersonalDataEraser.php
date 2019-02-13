@@ -37,7 +37,7 @@ class SubscriberPersonalDataEraser {
 
   private function eraseCustomFields($subscriber_id) {
     $custom_fields = SubscriberCustomField::where('subscriber_id', $subscriber_id)->findMany();
-    foreach($custom_fields as $custom_field) {
+    foreach ($custom_fields as $custom_field) {
       $custom_field->value = '';
       $custom_field->save();
     }

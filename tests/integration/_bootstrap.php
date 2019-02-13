@@ -80,7 +80,7 @@ $woocommerceBlacklistFilters = [
   'switch_blog',
   'shutdown'
 ];
-foreach($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
+foreach ($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
   unset($GLOBALS['wp_filter'][$woocommerceBlacklistFilter]);
 };
 

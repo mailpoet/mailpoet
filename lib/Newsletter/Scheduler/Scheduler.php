@@ -48,7 +48,7 @@ class Scheduler {
     );
     $newsletters = self::getNewsletters(Newsletter::TYPE_NOTIFICATION);
     if(!count($newsletters)) return false;
-    foreach($newsletters as $newsletter) {
+    foreach ($newsletters as $newsletter) {
       $post = NewsletterPost::where('newsletter_id', $newsletter->id)
         ->where('post_id', $post_id)
         ->findOne();
@@ -62,7 +62,7 @@ class Scheduler {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
     if(empty($newsletters)) return false;
     $result = array();
-    foreach($newsletters as $newsletter) {
+    foreach ($newsletters as $newsletter) {
       if($newsletter->event === 'segment' &&
         in_array($newsletter->segment, $segments)
       ) {
@@ -75,7 +75,7 @@ class Scheduler {
   static function scheduleAutomaticEmail($group, $event, $scheduling_condition = false, $subscriber_id = false, $meta = false) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
     if(empty($newsletters)) return false;
-    foreach($newsletters as $newsletter) {
+    foreach ($newsletters as $newsletter) {
       if($newsletter->event !== $event) continue;
       if(is_callable($scheduling_condition) && !$scheduling_condition($newsletter)) continue;
       self::createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta);
@@ -89,7 +89,7 @@ class Scheduler {
   ) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
     if(empty($newsletters)) return false;
-    foreach($newsletters as $newsletter) {
+    foreach ($newsletters as $newsletter) {
       if($newsletter->event === 'user') {
         if(!empty($old_user_data['roles'])) {
           // do not schedule welcome newsletter if roles have not changed

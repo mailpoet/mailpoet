@@ -130,7 +130,7 @@ class NewSubscriberNotificationMailer {
    */
   private function getSegmentNames($segments) {
     $names = [];
-    foreach($segments as $segment) {
+    foreach ($segments as $segment) {
       $names[] = $segment->get('name');
     }
     return implode(', ', $names);

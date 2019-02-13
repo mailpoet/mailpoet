@@ -248,7 +248,7 @@ class NewslettersTest extends \MailPoetTest {
       'nthWeekDay',
       'schedule'
     );
-    foreach($newsletter_options as $option) {
+    foreach ($newsletter_options as $option) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;
       $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
@@ -293,7 +293,7 @@ class NewslettersTest extends \MailPoetTest {
       'nthWeekDay',
       'schedule'
     );
-    foreach($newsletter_options as $option) {
+    foreach ($newsletter_options as $option) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;
       $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;

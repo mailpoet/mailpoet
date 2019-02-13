@@ -60,7 +60,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
       )
     );
 
-    foreach($this->subscribers_data as $subscriber) {
+    foreach ($this->subscribers_data as $subscriber) {
       if(isset($subscriber[1])) {
         unset($subscriber[1]);
       }
@@ -69,13 +69,13 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
       $entity->save();
     }
 
-    foreach($this->segments_data as $segment) {
+    foreach ($this->segments_data as $segment) {
       $entity = Segment::create();
       $entity->hydrate($segment);
       $entity->save();
     }
 
-    foreach($this->custom_fields_data as $custom_field) {
+    foreach ($this->custom_fields_data as $custom_field) {
       $entity = CustomField::create();
       $entity->hydrate($custom_field);
       $entity->save();
@@ -108,9 +108,9 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
   protected function filterSubscribersData($subscribers) {
     return array_map(function($subscriber) {
       $data = array();
-      foreach($subscriber as $key => $value) {
+      foreach ($subscriber as $key => $value) {
         if(in_array($key, array(
-          'first_name', 'last_name', 'email', 'global_status', 
+          'first_name', 'last_name', 'email', 'global_status',
           'status', 'list_status', 'segment_name', 1
         )))
           $data[$key] = $value;
@@ -118,7 +118,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
       return $data;
     }, $subscribers);
   }
-  
+
   function testItGetsSubscribersInOneSegment() {
     $getter = new DefaultSubscribersGetter([1], 10);
     $subscribers = $getter->get();
@@ -128,7 +128,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNSUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => null
@@ -138,7 +138,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        'global_status' => Subscriber::STATUS_SUBSCRIBED, 
+        'global_status' => Subscriber::STATUS_SUBSCRIBED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
@@ -157,7 +157,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNSUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => null
@@ -167,7 +167,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null
@@ -177,7 +177,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        'global_status' => Subscriber::STATUS_SUBSCRIBED, 
+        'global_status' => Subscriber::STATUS_SUBSCRIBED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
@@ -187,7 +187,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Kookoo',
         'email' => 'john@kookoo.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null,
@@ -205,7 +205,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNSUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => null
@@ -215,20 +215,20 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null
       )
     ]);
-    
+
     expect($this->filterSubscribersData($getter->get()))->equals([
       array(
         'first_name' => 'Mary',
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        'global_status' => Subscriber::STATUS_SUBSCRIBED, 
+        'global_status' => Subscriber::STATUS_SUBSCRIBED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
@@ -238,13 +238,13 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Kookoo',
         'email' => 'john@kookoo.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null,
       )
     ]);
-    
+
     expect($getter->get())->equals([]);
     expect($getter->get())->equals(false);
   }
@@ -258,7 +258,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'last_name' => 'Newman',
         'email' => 'paul@newman.com',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'global_status' => Subscriber::STATUS_UNCONFIRMED, 
+        'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => null,
         'segment_name' => 'Not In Segment',
         1 => null

@@ -49,7 +49,7 @@ class Forms extends APIEndpoint {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\Form', $data);
 
     $data = array();
-    foreach($listing_data['items'] as $form) {
+    foreach ($listing_data['items'] as $form) {
       $form = $form->asArray();
 
       $form['signups'] = StatisticsForms::getTotalSignups($form['id']);
@@ -161,7 +161,7 @@ class Forms extends APIEndpoint {
     $is_widget = false;
     $widgets = get_option('widget_mailpoet_form');
     if(!empty($widgets)) {
-      foreach($widgets as $widget) {
+      foreach ($widgets as $widget) {
         if(isset($widget['form']) && (int)$widget['form'] === $form_id) {
           $is_widget = true;
           break;
@@ -173,7 +173,7 @@ class Forms extends APIEndpoint {
     // or if it's selected by the admin
     $has_segment_selection = false;
     $list_selection = [];
-    foreach($body as $i => $block) {
+    foreach ($body as $i => $block) {
       if($block['type'] === 'segment') {
         $has_segment_selection = true;
         if(!empty($block['params']['values'])) {

@@ -28,7 +28,7 @@ class I18n extends \Twig_Extension {
       'date' => 'date'
     );
 
-    foreach($functions as $twig_function => $function) {
+    foreach ($functions as $twig_function => $function) {
       $twig_functions[] = new \Twig_SimpleFunction(
         $twig_function,
         array($this, $function),
@@ -44,7 +44,7 @@ class I18n extends \Twig_Extension {
     $output = array();
 
     $output[] = '<script type="text/javascript">';
-    foreach($translations as $key => $translation) {
+    foreach ($translations as $key => $translation) {
       $output[] =
         'MailPoet.I18n.add("'.$key.'", "'. str_replace('"', '\"', $translation) . '");';
     }

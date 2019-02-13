@@ -77,7 +77,7 @@ class PagesTest extends \MailPoetTest {
       'afterTimeType' => 'days',
       'afterTimeNumber' => 1
     );
-    foreach($newsletter_options as $option => $value) {
+    foreach ($newsletter_options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;
       $newsletter_option_field->newsletter_type = $newsletter->type;

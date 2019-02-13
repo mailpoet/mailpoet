@@ -41,7 +41,7 @@ class Assets extends \Twig_Extension {
     $stylesheets = func_get_args();
     $output = array();
 
-    foreach($stylesheets as $stylesheet) {
+    foreach ($stylesheets as $stylesheet) {
       $output[] = sprintf(
         '<link rel="stylesheet" type="text/css" href="%s/dist/css/%s" />',
         $this->_globals['assets_url'],
@@ -56,7 +56,7 @@ class Assets extends \Twig_Extension {
     $scripts = func_get_args();
     $output = array();
 
-    foreach($scripts as $script) {
+    foreach ($scripts as $script) {
       $output[] = sprintf(
         '<script type="text/javascript" src="%s/%s/%s"></script>',
         $this->_globals['assets_url'],

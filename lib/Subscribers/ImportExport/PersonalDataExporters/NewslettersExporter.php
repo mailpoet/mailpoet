@@ -31,7 +31,7 @@ class NewslettersExporter {
 
     $newsletters = $this->loadNewsletters($statistics);
 
-    foreach($statistics as $row) {
+    foreach ($statistics as $row) {
       $result[] = $this->exportNewsletter($row, $newsletters, $subscriber);
     }
 
@@ -93,7 +93,7 @@ class NewslettersExporter {
     $newsletters = Newsletter::whereIn('id', $newsletter_ids)->findMany();
 
     $result = array();
-    foreach($newsletters as $newsletter) {
+    foreach ($newsletters as $newsletter) {
       $result[$newsletter->id()] = $newsletter;
     }
     return $result;

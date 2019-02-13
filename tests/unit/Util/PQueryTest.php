@@ -14,7 +14,7 @@ class PQueryTest extends \MailPoetUnitTest {
   function testQuotesAreCorrectlyEscaped() {
     $html_characters = ['&quot;', '&#34;', '&#39;'];
 
-    foreach($html_characters as $char) {
+    foreach ($html_characters as $char) {
       $this->parseTest($char);
     }
   }
@@ -22,7 +22,7 @@ class PQueryTest extends \MailPoetUnitTest {
   function testEncodedHtmlNamesAreDecoded() {
     $html_names = ['&amp;', '&lt;', '&gt;', '&nbsp;', '&iexcl;', '&cent;', '&pound;', '&curren;', '&yen;', '&brvbar;', '&sect;', '&uml;', '&copy;', '&ordf;', '&laquo;', '&not;', '&shy;', '&reg;', '&macr;', '&deg;', '&plusmn;', '&sup2;', '&sup3;', '&acute;', '&micro;', '&para;', '&middot;', '&cedil;', '&sup1;', '&ordm;', '&raquo;', '&frac14;', '&frac12;', '&frac34;', '&iquest;', '&Agrave;', '&Aacute;', '&Acirc;', '&Atilde;', '&Auml;', '&Aring;', '&AElig;', '&Ccedil;', '&Egrave;', '&Eacute;', '&Ecirc;', '&Euml;', '&Igrave;', '&Iacute;', '&Icirc;', '&Iuml;', '&ETH;', '&Ntilde;', '&Ograve;', '&Oacute;', '&Ocirc;', '&Otilde;', '&Ouml;', '&times;', '&Oslash;', '&Ugrave;', '&Uacute;', '&Ucirc;', '&Uuml;', '&Yacute;', '&THORN;', '&szlig;', '&agrave;', '&aacute;', '&acirc;', '&atilde;', '&auml;', '&aring;', '&aelig;', '&ccedil;', '&egrave;', '&eacute;', '&ecirc;', '&euml;', '&igrave;', '&iacute;', '&icirc;', '&iuml;', '&eth;', '&ntilde;', '&ograve;', '&oacute;', '&ocirc;', '&otilde;', '&ouml;', '&divide;', '&oslash;', '&ugrave;', '&uacute;', '&ucirc;', '&uuml;', '&yacute;', '&thorn;', '&yuml;'];
 
-    foreach($html_names as $char) {
+    foreach ($html_names as $char) {
       $this->parseTest($char, $equals = false);
     }
   }
@@ -31,7 +31,7 @@ class PQueryTest extends \MailPoetUnitTest {
     // Tested numbers are from https://www.ascii.cl/htmlcodes.htm
     $html_numbers = array_merge(range(40, 126), range(160, 255), [32, 33, 35, 36, 37, 38, 338, 339, 352, 353, 376, 402, 8211, 8212, 8216, 8217, 8218, 8220, 8221, 8222, 8224, 8225, 8226, 8230, 8240, 8364, 8482]);
 
-    foreach($html_numbers as $char) {
+    foreach ($html_numbers as $char) {
       $this->parseTest('&#'.$char.';', $equals = false);
     }
   }
@@ -49,7 +49,7 @@ class PQueryTest extends \MailPoetUnitTest {
       '<h1 data-post-id="92828" style="text-align:left;padding:0;font-style:normal;font-weight:700;margin:0 0 5.1px;color:#111111;font-family:\'Trebuchet MS\',\'Lucida Grande\',\'Lucida Sans Unicode\',\'Lucida Sans\',Tahoma,sans-serif;font-size:17px;line-height:27.2px">Les petits Bollandistes : vies des Saints de l\'Acien et du Nouveau Testament, des Martyrs, des Pères, des Auteurs sacrés et ecclésiastiques (17 Volumes). Supplément aux vies des saints et spécialement aux Petits bollandistes : d\'après les documents hagiographiques les plus authentiques et les plus récents (3 volumes). (Complete Set, 20 volumes)</h1>',
     ];
 
-    foreach($snippets as $snippet) {
+    foreach ($snippets as $snippet) {
       $this->parseTest($snippet);
     }
   }

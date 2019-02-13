@@ -13,7 +13,7 @@ class RequiredCustomFieldValidator {
    */
   public function validate(array $data) {
     $all_custom_fields = $this->getCustomFields();
-    foreach($all_custom_fields as $custom_field_id => $custom_field_name) {
+    foreach ($all_custom_fields as $custom_field_id => $custom_field_name) {
       if($this->isCustomFieldMissing($custom_field_id, $data)) {
         throw new \Exception(
           __(sprintf('Missing value for custom field "%s"', $custom_field_name), 'mailpoet')
@@ -40,7 +40,7 @@ class RequiredCustomFieldValidator {
 
     $required_custom_fields = CustomField::findMany();
 
-    foreach($required_custom_fields as $custom_field) {
+    foreach ($required_custom_fields as $custom_field) {
       if(is_serialized($custom_field->params)) {
         $params = unserialize($custom_field->params);
         if(is_array($params) && isset($params['required']) && $params['required']) {

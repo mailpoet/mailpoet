@@ -49,7 +49,7 @@ class Segment extends Model {
     $duplicate = parent::duplicate($data);
 
     if($duplicate !== false) {
-      foreach($this->subscribers()->findResultSet() as $relation) {
+      foreach ($this->subscribers()->findResultSet() as $relation) {
         $new_relation = SubscriberSegment::create();
         $new_relation->set('subscriber_id', $relation->id);
         $new_relation->set('segment_id', $duplicate->id);
@@ -280,7 +280,7 @@ class Segment extends Model {
                         ->groupBy('type')
                         ->findArray();
     $result = array();
-    foreach($analytics as $segment) {
+    foreach ($analytics as $segment) {
       $result[$segment['type']] = $segment['count'];
     }
     return $result;

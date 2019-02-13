@@ -42,7 +42,7 @@ class Links {
     }
     // extract HTML anchor tags
     $DOM = DomParser::parseStr($content);
-    foreach($DOM->query('a') as $link) {
+    foreach ($DOM->query('a') as $link) {
       if(!$link->href) continue;
       $extracted_links[] = array(
         'type' => self::LINK_TYPE_URL,
@@ -57,7 +57,7 @@ class Links {
       ->whereEqual('queue_id', $queue_id)
       ->findMany();
     $saved_links = array();
-    foreach($links as $link) {
+    foreach ($links as $link) {
       $saved_links[$link->url] = $link->asArray();
     }
     return $saved_links;
@@ -70,7 +70,7 @@ class Links {
       $link['processed_link'] = self::DATA_TAG_CLICK . '-' . $link['hash'];
       return $link;
     }, $saved_links);
-    foreach($extracted_links as $extracted_link) {
+    foreach ($extracted_links as $extracted_link) {
       $link = $extracted_link['link'];
       if (array_key_exists($link, $processed_links))
         continue;
@@ -92,7 +92,7 @@ class Links {
   static function replace($content, $processed_links) {
     // replace HTML anchor tags
     $DOM = DomParser::parseStr($content);
-    foreach($DOM->query('a') as $link) {
+    foreach ($DOM->query('a') as $link) {
       $link_to_replace = $link->href;
       $replacement_link = (!empty($processed_links[$link_to_replace]['processed_link'])) ?
         $processed_links[$link_to_replace]['processed_link'] :
@@ -102,7 +102,7 @@ class Links {
     }
     $content = $DOM->__toString();
     // replace link shortcodes and markdown links
-    foreach($processed_links as $processed_link) {
+    foreach ($processed_links as $processed_link) {
       $link_to_replace = $processed_link['link'];
       $replacement_link = $processed_link['processed_link'];
       if($processed_link['type'] == self::LINK_TYPE_SHORTCODE) {
@@ -129,7 +129,7 @@ class Links {
     // match data tags
     $subscriber = Subscriber::findOne($subscriber_id);
     preg_match_all(self::getLinkRegex(), $content, $matches);
-    foreach($matches[1] as $index => $match) {
+    foreach ($matches[1] as $index => $match) {
       $hash = null;
       if(preg_match('/-/', $match)) {
         list(, $hash) = explode('-', $match);
@@ -155,7 +155,7 @@ class Links {
   }
 
   static function save(array $links, $newsletter_id, $queue_id) {
-    foreach($links as $link) {
+    foreach ($links as $link) {
       if (isset($link['id']))
         continue;
       if(empty($link['hash']) || empty($link['link'])) continue;
@@ -171,7 +171,7 @@ class Links {
   static function convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = false) {
     preg_match_all(self::getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
-    foreach($links as $link) {
+    foreach ($links as $link) {
       $link_hash = explode('-', $link);
       if(!isset($link_hash[1])) continue;
       $newsletter_link = NewsletterLink::where('hash', $link_hash[1])

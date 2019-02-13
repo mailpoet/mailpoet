@@ -31,8 +31,8 @@ class CapabilitiesTest extends \MailPoetTest {
     $permissions = AccessControl::getDefaultPermissions();
     $this->caps->setupWPCapabilities();
     $checked = false;
-    foreach($permissions as $name => $roles) {
-      foreach($roles as $role) {
+    foreach ($permissions as $name => $roles) {
+      foreach ($roles as $role) {
         $checked = true;
         expect(get_role($role)->has_cap($name))->true();
       }
@@ -44,8 +44,8 @@ class CapabilitiesTest extends \MailPoetTest {
     $permissions = AccessControl::getDefaultPermissions();
     $this->caps->removeWPCapabilities();
     $checked = false;
-    foreach($permissions as $name => $roles) {
-      foreach($roles as $role) {
+    foreach ($permissions as $name => $roles) {
+      foreach ($roles as $role) {
         $checked = true;
         expect(get_role($role)->has_cap($name))->false();
       }

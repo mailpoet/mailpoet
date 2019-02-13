@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
   private $wp;
-  
+
   function __construct() {
     $this->wp = new WPFunctions;
   }
@@ -102,7 +102,7 @@ class Shortcodes {
         $html .= '<h3 class="mailpoet_archive_title">'.$title.'</h3>';
       }
       $html .= '<ul class="mailpoet_archive">';
-      foreach($newsletters as $newsletter) {
+      foreach ($newsletters as $newsletter) {
         $queue = $newsletter->queue()->findOne();
         $html .= '<li>'.
           '<span class="mailpoet_archive_date">'.

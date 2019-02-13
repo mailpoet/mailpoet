@@ -45,7 +45,7 @@ class SendingQueue {
 
   function process() {
     $this->enforceSendingAndExecutionLimits();
-    foreach(self::getRunningQueues() as $queue) {
+    foreach (self::getRunningQueues() as $queue) {
       if(!$queue instanceof SendingTask) continue;
       ScheduledTaskModel::touchAllByIds(array($queue->task_id));
 
@@ -71,7 +71,7 @@ class SendingQueue {
       $newsletter_segments_ids = $this->newsletter_task->getNewsletterSegments($newsletter);
       // get subscribers
       $subscriber_batches = new BatchIterator($queue->task_id, $this->batch_size);
-      foreach($subscriber_batches as $subscribers_to_process_ids) {
+      foreach ($subscriber_batches as $subscribers_to_process_ids) {
         if(!empty($newsletter_segments_ids[0])) {
           // Check that subscribers are in segments
           $finder = new SubscribersFinder();
@@ -120,7 +120,7 @@ class SendingQueue {
     $prepared_subscribers_ids = array();
     $unsubscribe_urls = array();
     $statistics = array();
-    foreach($subscribers as $subscriber) {
+    foreach ($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
       $prepared_newsletters[] =
         $this->newsletter_task->prepareNewsletterForSending(

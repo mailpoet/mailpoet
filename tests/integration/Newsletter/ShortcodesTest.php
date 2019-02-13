@@ -271,7 +271,7 @@ class ShortcodesTest extends \MailPoetTest {
     // tracking function only works during sending, so queue object must not be false
     $shortcodes_object->queue = true;
     $result = $shortcodes_object->process($initial_shortcodes);
-    foreach($result as $index => $transformed_shortcode) {
+    foreach ($result as $index => $transformed_shortcode) {
       // 1. result must not contain a link
       expect($transformed_shortcode)->regExp('/^((?!href="http).)*$/');
       // 2. result must include a URL shortcode. for example:
@@ -297,7 +297,7 @@ class ShortcodesTest extends \MailPoetTest {
     );
     $result = $shortcodes_object->process($shortcodes);
     // hash is returned
-    foreach($result as $index => $transformed_shortcode) {
+    foreach ($result as $index => $transformed_shortcode) {
       expect($transformed_shortcode)->equals($links[$index]);
     }
   }

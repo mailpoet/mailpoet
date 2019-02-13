@@ -62,7 +62,7 @@ class SubscriberExporter {
       'value' => $subscriber->created_at,
     );
 
-    foreach($custom_fields as $custom_field_id => $custom_field_name) {
+    foreach ($custom_fields as $custom_field_id => $custom_field_name) {
       $custom_field_value = $subscriber->{$custom_field_id};
       if($custom_field_value) {
         $result[] = array(
@@ -83,7 +83,7 @@ class SubscriberExporter {
   private function getCustomFields() {
     $fields = CustomField::findMany();
     $result = array();
-    foreach($fields as $field) {
+    foreach ($fields as $field) {
       $result['cf_' . $field->id] = $field->name;
     }
     return $result;

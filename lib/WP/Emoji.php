@@ -30,7 +30,7 @@ class Emoji {
     $matches = array();
     if(preg_match_all($regex, $content, $matches)) {
       if(!empty($matches[1])) {
-        foreach($matches[1] as $emoji) {
+        foreach ($matches[1] as $emoji) {
           $entity = html_entity_decode($emoji, ENT_COMPAT, 'UTF-8');
           $content = str_replace($emoji, $entity, $content);
         }

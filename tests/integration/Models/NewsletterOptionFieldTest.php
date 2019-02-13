@@ -85,7 +85,7 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
   }
 
   function testItCanHaveManyNewsletters() {
-    foreach($this->newsletter_data as $data) {
+    foreach ($this->newsletter_data as $data) {
       $newsletter = Newsletter::create();
       $newsletter->hydrate($data);
       $newsletter->save();

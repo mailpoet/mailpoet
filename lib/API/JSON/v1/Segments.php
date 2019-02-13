@@ -46,7 +46,7 @@ class Segments extends APIEndpoint {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\Segment', $data);
 
     $data = array();
-    foreach($listing_data['items'] as $segment) {
+    foreach ($listing_data['items'] as $segment) {
       $segment->subscribers_url = admin_url(
         'admin.php?page=mailpoet-subscribers#/filter[segment='.$segment->id.']'
       );

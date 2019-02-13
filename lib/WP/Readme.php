@@ -20,7 +20,7 @@ class Readme {
     $c = 0;
     $changelog = array();
 
-    foreach($entries as $entry) {
+    foreach ($entries as $entry) {
       // Locate version header and changes list
       preg_match('/=(.*?)=(.*)/s', $entry, $parts);
 

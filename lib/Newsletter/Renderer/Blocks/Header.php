@@ -18,7 +18,7 @@ class Header {
       $links = $DOM->query('a');
       if($links->count()) {
         $css = new CSS();
-        foreach($links as $link) {
+        foreach ($links as $link) {
           $element_link_styles = StylesHelper::getStyles($element['styles'], 'link');
           $link->style = $css->mergeInlineStyles($element_link_styles, $link->style);
         }

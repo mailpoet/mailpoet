@@ -144,7 +144,7 @@ class SubscriberTest extends \MailPoetTest {
   function testItHasGroupFilter() {
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_UNCONFIRMED)
       ->findMany();
-    foreach($subscribers as $subscriber) {
+    foreach ($subscribers as $subscriber) {
       expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     }
 
@@ -152,7 +152,7 @@ class SubscriberTest extends \MailPoetTest {
     $this->subscriber->save();
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_SUBSCRIBED)
       ->findMany();
-    foreach($subscribers as $subscriber) {
+    foreach ($subscribers as $subscriber) {
       expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     }
 
@@ -160,7 +160,7 @@ class SubscriberTest extends \MailPoetTest {
     $this->subscriber->save();
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_UNSUBSCRIBED)
       ->findMany();
-    foreach($subscribers as $subscriber) {
+    foreach ($subscribers as $subscriber) {
       expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
     }
 
@@ -168,7 +168,7 @@ class SubscriberTest extends \MailPoetTest {
     $this->subscriber->save();
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_BOUNCED)
       ->findMany();
-    foreach($subscribers as $subscriber) {
+    foreach ($subscribers as $subscriber) {
       expect($subscriber->status)->equals(Subscriber::STATUS_BOUNCED);
     }
   }
@@ -472,7 +472,7 @@ class SubscriberTest extends \MailPoetTest {
       'afterTimeType' => 'days',
       'afterTimeNumber' => 1
     );
-    foreach($newsletter_options as $option => $value) {
+    foreach ($newsletter_options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;
       $newsletter_option_field->newsletter_type = $newsletter->type;
@@ -517,7 +517,7 @@ class SubscriberTest extends \MailPoetTest {
       'afterTimeType' => 'days',
       'afterTimeNumber' => 1
     );
-    foreach($newsletter_options as $option => $value) {
+    foreach ($newsletter_options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;
       $newsletter_option_field->newsletter_type = $newsletter->type;
@@ -859,7 +859,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
-    foreach(range(1, 5) as $custom_field) {
+    foreach (range(1, 5) as $custom_field) {
       $subscriber_custom_field = SubscriberCustomField::create();
       $subscriber_custom_field->custom_field_id = $custom_field;
       $subscriber_custom_field->subscriber_id = ($custom_field !== 5) ?

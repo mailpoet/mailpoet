@@ -54,7 +54,7 @@ function array_column($input = null, $column_key = null, $index_key = null) {
     }
   }
   $result_array = [];
-  foreach($params_input as $row) {
+  foreach ($params_input as $row) {
     $key = $value = null;
     $key_set = $value_set = false;
     if($params_index_key !== null && array_key_exists($params_index_key, $row)) {

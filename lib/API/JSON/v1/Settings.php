@@ -36,7 +36,7 @@ class Settings extends APIEndpoint {
             __('You have not specified any settings to be saved.', 'mailpoet')
         ));
     } else {
-      foreach($settings as $name => $value) {
+      foreach ($settings as $name => $value) {
         $this->settings->set($name, $value);
       }
       $bridge = new Bridge();

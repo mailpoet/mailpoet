@@ -878,7 +878,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testPausesTaskWhenNewsletterWithActivationIsDisabled() {
     $newsletters_with_activation = [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_WELCOME, Newsletter::TYPE_AUTOMATIC];
-    foreach($newsletters_with_activation as $type) {
+    foreach ($newsletters_with_activation as $type) {
       $newsletter = Newsletter::createOrUpdate(array(
         'type' => $type
       ));
@@ -895,7 +895,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testUnpausesTaskWhenNewsletterWithActivationIsEnabled() {
     $newsletters_with_activation = [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_WELCOME, Newsletter::TYPE_AUTOMATIC];
-    foreach($newsletters_with_activation as $type) {
+    foreach ($newsletters_with_activation as $type) {
       $newsletter = Newsletter::createOrUpdate(array(
         'type' => $type
       ));

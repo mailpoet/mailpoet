@@ -67,7 +67,7 @@ class MailPoetMapper {
 
   private function getSubscribersErrors($result_parsed, $subscribers) {
     $errors = [];
-    foreach($result_parsed as $result_error) {
+    foreach ($result_parsed as $result_error) {
       if(!is_array($result_error) || !isset($result_error['index']) || !isset($subscribers[$result_error['index']])) {
         throw new InvalidArgumentException( __('Invalid MSS response format.', 'mailpoet'));
       }

@@ -328,7 +328,7 @@ class MP2Migrator {
       $lists_count = count($lists);
 
       if(is_array($lists)) {
-        foreach($lists as $list) {
+        foreach ($lists as $list) {
           $segment = $this->importSegment($list);
           if(!empty($segment)) {
             $imported_segments_count++;
@@ -412,7 +412,7 @@ class MP2Migrator {
     $this->log(__("Importing custom fields...", 'mailpoet'));
     $custom_fields = $this->getCustomFields();
 
-    foreach($custom_fields as $custom_field) {
+    foreach ($custom_fields as $custom_field) {
       $result = $this->importCustomField($custom_field);
       if(!empty($result)) {
         $imported_custom_fields_count++;
@@ -567,7 +567,7 @@ class MP2Migrator {
       $users_count = count($users);
 
       if(is_array($users)) {
-        foreach($users as $user) {
+        foreach ($users as $user) {
           $subscriber = $this->importSubscriber($user);
           if(!empty($subscriber)) {
             $imported_subscribers_count++;
@@ -675,7 +675,7 @@ class MP2Migrator {
    */
   private function importSubscriberSegments($subscriber, $user_id) {
     $user_lists = $this->getUserLists($user_id);
-    foreach($user_lists as $user_list) {
+    foreach ($user_lists as $user_list) {
       $this->importSubscriberSegment($subscriber->id, $user_list);
     }
   }
@@ -736,7 +736,7 @@ class MP2Migrator {
    */
   private function importSubscriberCustomFields($subscriber, $user) {
     $imported_custom_fields = $this->getImportedCustomFields();
-    foreach($imported_custom_fields as $custom_field) {
+    foreach ($imported_custom_fields as $custom_field) {
       $custom_field_column = 'cf_' . $custom_field['id'];
       $this->importSubscriberCustomField($subscriber->id, $custom_field, $user[$custom_field_column]);
     }
@@ -794,7 +794,7 @@ class MP2Migrator {
   public function getImportedMapping($model) {
     $mappings = array();
     $mapping_relations = MappingToExternalEntities::where('type', $model)->findArray();
-    foreach($mapping_relations as $relation) {
+    foreach ($mapping_relations as $relation) {
       $mappings[$relation['old_id']] = $relation['new_id'];
     }
     return $mappings;
@@ -818,7 +818,7 @@ class MP2Migrator {
       $forms_count = count($forms);
 
       if(is_array($forms)) {
-        foreach($forms as $form) {
+        foreach ($forms as $form) {
           $new_form = $this->importForm($form);
           if(!empty($new_form)) {
             $imported_forms_count++;
@@ -876,7 +876,7 @@ class MP2Migrator {
     );
 
     $mp3_form_body = array();
-    foreach($body as $field) {
+    foreach ($body as $field) {
       $type = $this->mapCustomFieldType($field['type']);
       if($type == 'segment') {
           $field_id = 'segments';
@@ -927,7 +927,7 @@ class MP2Migrator {
    */
   private function getMappedSegmentIds($mp2_list_ids) {
     $mp3_segment_ids = array();
-    foreach($mp2_list_ids as $list_id) {
+    foreach ($mp2_list_ids as $list_id) {
       if(isset($this->segments_mapping[$list_id])) {
         $mp3_segment_ids[] = $this->segments_mapping[$list_id];
       }
@@ -970,9 +970,9 @@ class MP2Migrator {
    */
   private function replaceListIds($values) {
     $mp3_values = array();
-    foreach($values as $value) {
+    foreach ($values as $value) {
       $mp3_value = array();
-      foreach($value as $item => $item_value) {
+      foreach ($value as $item => $item_value) {
         if(($item == 'list_id') && isset($this->segments_mapping[$item_value])) {
           $segment_id = $this->segments_mapping[$item_value];
           $mp3_value['id'] = $segment_id;

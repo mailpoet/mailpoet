@@ -25,7 +25,7 @@ class SendingQueue extends Model {
   const PRIORITY_LOW = 10;
 
   private $emoji;
-  
+
   function __construct() {
     parent::__construct();
 
@@ -109,7 +109,7 @@ class SendingQueue extends Model {
 
   function encodeEmojisInBody($newsletter_rendered_body) {
     if(is_array($newsletter_rendered_body)) {
-      foreach($newsletter_rendered_body as $key => $value) {
+      foreach ($newsletter_rendered_body as $key => $value) {
         $newsletter_rendered_body[$key] = $this->emoji->encodeForUTF8Column(
           self::$_table,
           'newsletter_rendered_body',
@@ -122,7 +122,7 @@ class SendingQueue extends Model {
 
   function decodeEmojisInBody($newsletter_rendered_body) {
     if(is_array($newsletter_rendered_body)) {
-      foreach($newsletter_rendered_body as $key => $value) {
+      foreach ($newsletter_rendered_body as $key => $value) {
         $newsletter_rendered_body[$key] = $this->emoji->decodeEntities($value);
       }
     }

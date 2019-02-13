@@ -20,7 +20,7 @@ class Posts {
       return false;
     }
     $newsletter_id = $newsletter->parent_id; // parent post notification
-    foreach($matched_posts_ids as $post_id) {
+    foreach ($matched_posts_ids as $post_id) {
       $newsletter_post = NewsletterPost::create();
       $newsletter_post->newsletter_id = $newsletter_id;
       $newsletter_post->post_id = $post_id;

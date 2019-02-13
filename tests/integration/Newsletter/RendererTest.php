@@ -70,7 +70,7 @@ class RendererTest extends \MailPoetTest {
         $column_content
       )
     );
-    foreach($DOM('table.mailpoet_cols-one > tbody') as $column) {
+    foreach ($DOM('table.mailpoet_cols-one > tbody') as $column) {
       $rendered_column_content[] = trim($column->text());
     };
     expect($rendered_column_content)->equals($column_content);
@@ -95,7 +95,7 @@ class RendererTest extends \MailPoetTest {
         $column_content
       )
     );
-    foreach($DOM('table.mailpoet_cols-two > tbody') as $column) {
+    foreach ($DOM('table.mailpoet_cols-two > tbody') as $column) {
       $rendered_column_content[] = trim($column->text());
     };
     expect($rendered_column_content)->equals($column_content);
@@ -121,7 +121,7 @@ class RendererTest extends \MailPoetTest {
         $column_content
       )
     );
-    foreach($DOM('table.mailpoet_cols-three > tbody') as $column) {
+    foreach ($DOM('table.mailpoet_cols-three > tbody') as $column) {
       $rendered_column_content[] = trim($column->text());
     };
     expect($rendered_column_content)->equals($column_content);

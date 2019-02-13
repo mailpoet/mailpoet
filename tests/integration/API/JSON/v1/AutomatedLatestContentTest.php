@@ -10,7 +10,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     $endpoint = new AutomatedLatestContent(new \MailPoet\Newsletter\AutomatedLatestContent(), new WPFunctions);
     $response = $endpoint->getPostTypes();
     expect($response->data)->notEmpty();
-    foreach($response->data as $post_type) {
+    foreach ($response->data as $post_type) {
       expect($post_type)->count(2);
       expect($post_type['name'])->notEmpty();
       expect($post_type['label'])->notEmpty();

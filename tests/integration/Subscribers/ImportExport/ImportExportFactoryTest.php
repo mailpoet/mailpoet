@@ -104,7 +104,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'first_name',
       'last_name'
     );
-    foreach($fields as $field) {
+    foreach ($fields as $field) {
       expect(in_array($field, array_keys($subsriberFields)))->true();
     }
     // export fields contain extra data
@@ -118,7 +118,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'global_status',
       'subscribed_ip'
     );
-    foreach($export_fields as $field) {
+    foreach ($export_fields as $field) {
       expect(in_array($field, array_keys($subsriberFields)))->true();
     }
   }
@@ -134,7 +134,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'type',
       'custom'
     );
-    foreach($fields as $field) {
+    foreach ($fields as $field) {
       expect(in_array($field, array_keys($formattedSubscriberFields[0])))
         ->true();
     }
@@ -160,7 +160,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'type',
       'custom'
     );
-    foreach($fields as $field) {
+    foreach ($fields as $field) {
       expect(in_array($field, array_keys($formattedSubscriberCustomFields[0])))
         ->true();
     }

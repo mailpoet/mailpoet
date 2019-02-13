@@ -36,7 +36,7 @@ class Renderer {
     $column_widths = ColumnsHelper::columnWidth($column_count, $columns_layout);
     $column_content = [];
 
-    foreach($data['blocks'] as $index => $column_blocks) {
+    foreach ($data['blocks'] as $index => $column_blocks) {
       $rendered_block_element = $this->renderBlocksInColumn($column_blocks, $column_widths[$index]);
       $column_content[] = $rendered_block_element;
     }
@@ -78,7 +78,7 @@ class Renderer {
   function automatedLatestContentTransformedPosts($args) {
     $posts_to_exclude = $this->getPosts();
     $ALC_posts = $this->ALC->getPosts($args, $posts_to_exclude);
-    foreach($ALC_posts as $post) {
+    foreach ($ALC_posts as $post) {
       $posts_to_exclude[] = $post->ID;
     }
     $this->setPosts($posts_to_exclude);

@@ -43,7 +43,7 @@ class Worker {
   function process() {
     $settings = $this->settings->get(self::SETTINGS_KEY);
     $this->mailer->sender = $this->mailer->getSenderNameAndAddress($this->constructSenderEmail());
-    foreach(self::getDueTasks() as $task) {
+    foreach (self::getDueTasks() as $task) {
       try {
         $this->mailer->send($this->constructNewsletter($task), $settings['address']);
       } catch(\Exception $e) {

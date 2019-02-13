@@ -88,7 +88,7 @@ class StylesHelper {
     $css = $selector . '{' . PHP_EOL;
     $style = self::applyHeadingMargin($style, $selector);
     $style = self::applyLineHeight($style, $selector);
-    foreach($style as $attribute => $individual_style) {
+    foreach ($style as $attribute => $individual_style) {
       $individual_style = self::applyFontFamily($attribute, $individual_style);
       $css .= self::translateCSSAttribute($attribute) . ':' . $individual_style . ';' . PHP_EOL;
     }
@@ -135,7 +135,7 @@ class StylesHelper {
 
   private static function getCustomFontsNames($styles) {
     $font_names = [];
-    foreach($styles as $style) {
+    foreach ($styles as $style) {
       if(isset($style['fontFamily']) && in_array($style['fontFamily'], self::$custom_fonts)) {
         $font_names[$style['fontFamily']] = true;
       }
@@ -145,7 +145,7 @@ class StylesHelper {
 
   static function getCustomFontsLinks($styles) {
     $links = [];
-    foreach(self::getCustomFontsNames($styles) as $name) {
+    foreach (self::getCustomFontsNames($styles) as $name) {
       $links[] = urlencode($name) . ':400,400i,700,700i';
     }
     if(!count($links)) {

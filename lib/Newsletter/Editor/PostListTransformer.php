@@ -19,7 +19,7 @@ class PostListTransformer {
     $results = array();
     $use_divider = filter_var($this->args['showDivider'], FILTER_VALIDATE_BOOLEAN);
 
-    foreach($posts as $index => $post) {
+    foreach ($posts as $index => $post) {
       if($use_divider && $index > 0) {
         $results[] = $this->transformer->getDivider();
       }

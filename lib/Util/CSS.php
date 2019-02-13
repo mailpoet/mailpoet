@@ -43,7 +43,7 @@ class CSS {
     $css_blocks = '';
 
     // Find all <style> blocks and cut styles from them (leaving media queries)
-    foreach($html->query('style') as $style) {
+    foreach ($html->query('style') as $style) {
       list($_css_to_parse, $_css_to_keep) = $this->splitMediaQueries($style->getInnerText());
       $css_blocks .= $_css_to_parse;
       if(!empty($_css_to_keep)) {
@@ -66,7 +66,7 @@ class CSS {
     // We loop over each rule by increasing order of specificity, find the nodes matching the selector
     // and apply the CSS properties
     foreach ($rules as $rule) {
-      foreach($html->query($rule['selector']) as $node) {
+      foreach ($html->query($rule['selector']) as $node) {
         // I'm leaving this for debug purposes, it has proved useful.
         /*
         if($node->already_styled === 'yes')
@@ -105,11 +105,11 @@ class CSS {
     // We need to start with a rule with lowest specificity
     $rules = array_reverse($rules);
     foreach ($rules as $rule) {
-      foreach($rule['properties'] as $key => $value) {
+      foreach ($rule['properties'] as $key => $value) {
         if(strpos($value, '!important') === false) {
           continue;
         }
-        foreach($html->query($rule['selector']) as $node) {
+        foreach ($html->query($rule['selector']) as $node) {
           $style = $this->styleToArray($node->style);
           $style[$key] = $value;
           $node->style = $this->arrayToStyle($style);
@@ -131,9 +131,9 @@ class CSS {
     $rules    = array();
     $position   = 0;
 
-    foreach($css->css as $declarations) {
-      foreach($declarations as $selectors => $properties) {
-        foreach(explode(",", $selectors) as $selector) {
+    foreach ($css->css as $declarations) {
+      foreach ($declarations as $selectors => $properties) {
+        foreach (explode(",", $selectors) as $selector) {
           $rules[] = array(
             'position'    => $position,
             'specificity'   => $this->calculateCSSSpecifity($selector),
@@ -257,7 +257,7 @@ class CSS {
 
     if(trim($str) === '') return $array;
 
-    foreach(explode(';', $str) as $kv) {
+    foreach (explode(';', $str) as $kv) {
       if($kv === '') {
         continue;
       }
@@ -275,7 +275,7 @@ class CSS {
   */
   private function arrayToStyle($array) {
     $parts = array();
-    foreach($array as $k => $v) {
+    foreach ($array as $k => $v) {
       $parts[] = "$k:$v";
     }
     return implode(';', $parts);

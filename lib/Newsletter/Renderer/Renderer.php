@@ -80,7 +80,7 @@ class Renderer {
     $content_blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
       : array();
-    foreach($content_blocks as $block) {
+    foreach ($content_blocks as $block) {
       if($block['type'] === 'automatedLatestContentLayout') {
         $blocks = array_merge(
           $blocks,
@@ -115,7 +115,7 @@ class Renderer {
 
   function renderStyles($styles) {
     $css = '';
-    foreach($styles as $selector => $style) {
+    foreach ($styles as $selector => $style) {
       switch($selector) {
         case 'text':
           $selector = 'td.mailpoet_paragraph, td.mailpoet_blockquote, li.mailpoet_paragraph';
@@ -153,7 +153,7 @@ class Renderer {
   function postProcessTemplate($template) {
     $DOM = $this->DOM_parser->parseStr($template);
     // replace spaces in image tag URLs
-    foreach($DOM->query('img') as $image) {
+    foreach ($DOM->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
     }
     $template = $DOM->query('.mailpoet_template');

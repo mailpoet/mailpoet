@@ -53,7 +53,7 @@ class Renderer {
     $alignment = ColumnsHelper::columnAlignment($columns_count);
     $index = 0;
     $result = $this->getMultipleColumnsContainerStart($class, $content_block['styles']['block'], isset($content_block['image'])?$content_block['image']:null);
-    foreach($columns_data as $content) {
+    foreach ($columns_data as $content) {
       $result .= $this->getMultipleColumnsContentStart($widths[$index++], $alignment, $class);
       $result .= $content;
       $result .= $this->getMultipleColumnsContentEnd();

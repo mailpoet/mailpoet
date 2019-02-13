@@ -120,7 +120,7 @@ class CronHelperTest extends \MailPoetTest {
   function testItDetectsNotAccessibleDaemon() {
     $time = time();
     $run_start_values = [null, $time - 20];
-    foreach($run_start_values as $run_start) {
+    foreach ($run_start_values as $run_start) {
       $daemon = $this->getDeamonTestData();
       $daemon['run_accessed_at'] = $time - 10;
       $daemon['run_started_at'] = $run_start;
@@ -161,7 +161,7 @@ class CronHelperTest extends \MailPoetTest {
       ],
       null,
     ];
-    foreach($test_inputs as $test_input) {
+    foreach ($test_inputs as $test_input) {
       $daemon = $this->getDeamonTestData();
       $daemon['run_accessed_at'] = $test_input['run_access'];
       $daemon['run_started_at'] = $test_input['run_start'];

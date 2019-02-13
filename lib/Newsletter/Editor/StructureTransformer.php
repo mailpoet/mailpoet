@@ -23,7 +23,7 @@ class StructureTransformer {
    * elements and inserts tags as children of top ancestor
    */
   protected function hoistImagesToRoot(DomNode $root) {
-    foreach($root->query('img') as $item) {
+    foreach ($root->query('img') as $item) {
       $top_ancestor = DOMUtil::findTopAncestor($item);
       $offset = $top_ancestor->index();
 
@@ -105,7 +105,7 @@ class StructureTransformer {
   private function mergeNeighboringBlocks(array $structure) {
     $updated_structure = array();
     $text_accumulator = '';
-    foreach($structure as $item) {
+    foreach ($structure as $item) {
       if($item['type'] === 'text') {
         $text_accumulator .= $item['text'];
       }

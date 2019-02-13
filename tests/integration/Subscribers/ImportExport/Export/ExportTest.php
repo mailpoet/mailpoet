@@ -59,7 +59,7 @@ class ExportTest extends \MailPoetTest {
         'name' => 'Journals'
       )
     );
-    foreach($this->subscribers_data as $subscriber) {
+    foreach ($this->subscribers_data as $subscriber) {
       if(isset($subscriber[1])) {
         unset($subscriber[1]);
       }
@@ -67,12 +67,12 @@ class ExportTest extends \MailPoetTest {
       $entity->hydrate($subscriber);
       $entity->save();
     }
-    foreach($this->segments_data as $segment) {
+    foreach ($this->segments_data as $segment) {
       $entity = Segment::create();
       $entity->hydrate($segment);
       $entity->save();
     }
-    foreach($this->custom_fields_data as $custom_field) {
+    foreach ($this->custom_fields_data as $custom_field) {
       $entity = CustomField::create();
       $entity->hydrate($custom_field);
       $entity->save();
@@ -156,7 +156,7 @@ class ExportTest extends \MailPoetTest {
 
   function testItProperlyReturnsSubscriberCustomFields() {
     $subscribers = $this->export->getSubscribers(0, 10);
-    foreach($subscribers as $subscriber) {
+    foreach ($subscribers as $subscriber) {
       if($subscriber['email'] === $this->subscribers_data[1]) {
         expect($subscriber['Country'])
           ->equals($this->subscribers_data[1][1]);
@@ -168,11 +168,11 @@ class ExportTest extends \MailPoetTest {
     $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(1), 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
-    
+
     $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(2), 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
-    
+
     $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(1, 2), 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(4);

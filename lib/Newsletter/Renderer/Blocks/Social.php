@@ -5,7 +5,7 @@ class Social {
   static function render($element) {
     $icons_block = '';
     if(is_array($element['icons'])) {
-      foreach($element['icons'] as $index => $icon) {
+      foreach ($element['icons'] as $index => $icon) {
         if(empty($icon['image'])) {
           continue;
         }

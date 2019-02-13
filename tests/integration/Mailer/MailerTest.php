@@ -96,7 +96,7 @@ class MailerTest extends \MailPoetTest {
   }
 
   function testItCanBuildKnownMailerInstances() {
-    foreach($this->available_mailer_methods as $method) {
+    foreach ($this->available_mailer_methods as $method) {
       $mailer = new Mailer($method, $this->sender);
       $mailer->buildMailer();
       expect(get_class($mailer->mailer_instance))

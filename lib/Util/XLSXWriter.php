@@ -37,7 +37,7 @@ class XLSXWriter
   public function __destruct()
   {
     if (!empty($this->temp_files)) {
-      foreach($this->temp_files as $temp_file) {
+      foreach ($this->temp_files as $temp_file) {
         @unlink($temp_file);
       }
     }
@@ -67,7 +67,7 @@ class XLSXWriter
 
   public function writeToFile($filename)
   {
-    foreach($this->sheets as $sheet_name => $sheet) {
+    foreach ($this->sheets as $sheet_name => $sheet) {
       self::finalizeSheet($sheet_name);//making sure all footers have been written
     }
 
@@ -84,7 +84,7 @@ class XLSXWriter
     $zip->addFromString("_rels/.rels", self::buildRelationshipsXML());
 
     $zip->addEmptyDir("xl/worksheets/");
-    foreach($this->sheets as $sheet) {
+    foreach ($this->sheets as $sheet) {
       $zip->addFile($sheet->filename, "xl/worksheets/".$sheet->xmlname );
     }
     if (!empty($this->shared_strings)) {
@@ -214,7 +214,7 @@ class XLSXWriter
     {
       $this->writeSheetHeader($sheet_name, $header_types);
     }
-    foreach($data as $i=>$row)
+    foreach ($data as $i=>$row)
     {
       $this->writeSheetRow($sheet_name, $row);
     }
@@ -329,7 +329,7 @@ class XLSXWriter
     $file = new XLSXWriter_BuffererWriter($temporary_filename, $fd_flags='w', $check_utf8=true);
     $file->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n");
     $file->write('<sst count="'.($this->shared_string_count).'" uniqueCount="'.count($this->shared_strings).'" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">');
-    foreach($this->shared_strings as $s=>$c)
+    foreach ($this->shared_strings as $s=>$c)
     {
       $file->write('<si><t>'.self::xmlspecialchars($s).'</t></si>');
     }
@@ -381,7 +381,7 @@ class XLSXWriter
     $workbook_xml.='<fileVersion appName="Calc"/><workbookPr backupFile="false" showObjects="all" date1904="false"/><workbookProtection/>';
     $workbook_xml.='<bookViews><workbookView activeTab="0" firstSheet="0" showHorizontalScroll="true" showSheetTabs="true" showVerticalScroll="true" tabRatio="212" windowHeight="8192" windowWidth="16384" xWindow="0" yWindow="0"/></bookViews>';
     $workbook_xml.='<sheets>';
-    foreach($this->sheets as $sheet_name=>$sheet) {
+    foreach ($this->sheets as $sheet_name=>$sheet) {
       $workbook_xml.='<sheet name="'.self::xmlspecialchars($sheet->sheetname).'" sheetId="'.($i+1).'" state="visible" r:id="rId'.($i+2).'"/>';
       $i++;
     }
@@ -397,7 +397,7 @@ class XLSXWriter
     $wkbkrels_xml.='<?xml version="1.0" encoding="UTF-8"?>'."\n";
     $wkbkrels_xml.='<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
     $wkbkrels_xml.='<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
-    foreach($this->sheets as $sheet_name=>$sheet) {
+    foreach ($this->sheets as $sheet_name=>$sheet) {
       $wkbkrels_xml.='<Relationship Id="rId'.($i+2).'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/'.($sheet->xmlname).'"/>';
       $i++;
     }
@@ -416,7 +416,7 @@ class XLSXWriter
     $content_types_xml.='<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">';
     $content_types_xml.='<Override PartName="/_rels/.rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>';
     $content_types_xml.='<Override PartName="/xl/_rels/workbook.xml.rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>';
-    foreach($this->sheets as $sheet_name=>$sheet) {
+    foreach ($this->sheets as $sheet_name=>$sheet) {
       $content_types_xml.='<Override PartName="/xl/worksheets/'.($sheet->xmlname).'" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
     }
     if (!empty($this->shared_strings)) {

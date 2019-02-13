@@ -27,7 +27,7 @@ class NewsletterClicksExporter {
        ->offset(self::LIMIT * ($page - 1))
        ->findArray();
 
-    foreach($statistics as $row) {
+    foreach ($statistics as $row) {
       $result[] = $this->exportNewsletter($row);
     }
 
