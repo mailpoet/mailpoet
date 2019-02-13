@@ -852,7 +852,7 @@ class Menu {
   function displayPage($template, $data) {
     try {
       echo $this->renderer->render($template, $data);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();
     }

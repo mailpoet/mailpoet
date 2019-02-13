@@ -20,7 +20,7 @@ class ModelTest extends \MailPoetTest {
     try {
       $model::findMany();
       $this->fail('Exception was not thrown');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e instanceof \PDOException)->false();
       expect($e->getMessage())->equals($message);
     }

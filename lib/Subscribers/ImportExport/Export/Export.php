@@ -64,7 +64,7 @@ class Export {
           'generate' . strtoupper($this->export_format_option)
         )
       );
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
     }
     return array(

@@ -76,7 +76,7 @@ class DatabaseTest extends \MailPoetTest {
     try {
       $this->database->setupDriverOptions();
       $this->fail('Exception was not thrown');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e instanceof \PDOException)->false();
       expect($e->getMessage())->equals($message);
     }

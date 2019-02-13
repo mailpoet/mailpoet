@@ -37,7 +37,7 @@ class SchedulerTest extends \MailPoetTest {
     try {
       $scheduler = new Scheduler(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT);
       self::fail('Maximum execution time limit exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
     }
   }
@@ -525,7 +525,7 @@ class SchedulerTest extends \MailPoetTest {
     try {
       $scheduler->process();
       self::fail('Maximum execution time limit exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
     }
   }

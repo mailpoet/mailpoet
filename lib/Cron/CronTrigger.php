@@ -27,7 +27,7 @@ class CronTrigger {
       return (class_exists($trigger_class)) ?
         $trigger_class::run() :
         false;
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       // cron exceptions should not prevent the rest of the site from loading
     }
   }

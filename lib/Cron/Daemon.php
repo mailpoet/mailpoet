@@ -28,7 +28,7 @@ class Daemon {
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
       // TODO: execute WooCommerceSync worker
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       CronHelper::saveDaemonLastError($e->getMessage());
     }
     // Log successful execution

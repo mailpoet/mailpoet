@@ -61,7 +61,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->subscribeToLists(false, array(1,2,3));
       $this->fail('Subscriber does not exist exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('This subscriber does not exist.');
     }
   }
@@ -74,14 +74,14 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->subscribeToLists($subscriber->id, array(1,2,3));
       $this->fail('Missing segments exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('These lists do not exist.');
     }
     // single list error message
     try {
       $this->getApi()->subscribeToLists($subscriber->id, array(1));
       $this->fail('Missing segments exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('This list does not exist.');
     }
   }
@@ -99,7 +99,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->subscribeToLists($subscriber->id, array($segment->id));
       $this->fail('WP Users segment exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->id}.");
     }
   }
@@ -117,7 +117,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->subscribeToLists($subscriber->id, array($segment->id));
       $this->fail('WooCommerce Customers segment exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals("Can't subscribe to a WooCommerce Customers list with ID {$segment->id}.");
     }
   }
@@ -136,14 +136,14 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->subscribeToLists($subscriber->id, array($segment->id, 90, 100));
       $this->fail('Missing segments with IDs exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
     }
     // single list error message
     try {
       $this->getApi()->subscribeToLists($subscriber->id, array($segment->id, 90));
       $this->fail('Missing segments with IDs exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('List with ID 90 does not exist.');
     }
   }
@@ -182,7 +182,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->subscribeToLists($subscriber->id, array());
       $this->fail('Segments are required exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('At least one segment ID is required.');
     }
 
@@ -307,7 +307,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->addSubscriber(array());
       $this->fail('Subscriber email address required exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Subscriber email address is required.');
     }
   }
@@ -319,7 +319,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->addSubscriber(array('email' => $subscriber->email));
       $this->fail('Subscriber exists exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('This subscriber already exists.');
     }
   }
@@ -331,7 +331,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->addSubscriber($subscriber);
       $this->fail('Failed to add subscriber exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->contains('Failed to add subscriber:');
       // error message (converted to lowercase) returned by the model
       expect($e->getMessage())->contains('your email address is invalid!');
@@ -525,7 +525,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->addList(array());
       $this->fail('List name required exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('List name is required.');
     }
   }
@@ -537,7 +537,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->addList(array('name' => $segment->name));
       $this->fail('List exists exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('This list already exists.');
     }
   }
@@ -556,7 +556,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->unsubscribeFromLists(false, array(1,2,3));
       $this->fail('Subscriber does not exist exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('This subscriber does not exist.');
     }
   }
@@ -569,14 +569,14 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array(1,2,3));
       $this->fail('Missing segments exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('These lists do not exist.');
     }
     // single list error message
     try {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array(1));
       $this->fail('Missing segments exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('This list does not exist.');
     }
   }
@@ -595,14 +595,14 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id, 90, 100));
       $this->fail('Missing segments with IDs exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
     }
     // single list error message
     try {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id, 90));
       $this->fail('Missing segments with IDs exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('List with ID 90 does not exist.');
     }
   }
@@ -620,7 +620,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id));
       $this->fail('WP Users segment exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals("Can't unsubscribe from a WordPress Users list with ID {$segment->id}.");
     }
   }
@@ -638,7 +638,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array($segment->id));
       $this->fail('WooCommerce Customers segment exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals("Can't unsubscribe from a WooCommerce Customers list with ID {$segment->id}.");
     }
   }
@@ -676,7 +676,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->unsubscribeFromLists($subscriber->id, array());
       $this->fail('Segments are required exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('At least one segment ID is required.');
     }
 
@@ -707,7 +707,7 @@ class APITest extends \MailPoetTest {
     try {
       $this->getApi()->getSubscriber('some_fake_email');
       $this->fail('Subscriber does not exist exception should have been thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('This subscriber does not exist.');
     }
   }

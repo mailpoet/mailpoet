@@ -293,7 +293,7 @@ class Forms extends APIEndpoint {
     try {
       $meta = $this->bulk_action->apply('\MailPoet\Models\Form', $data);
       return $this->successResponse(null, $meta);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

@@ -46,7 +46,7 @@ class Worker {
     foreach (self::getDueTasks() as $task) {
       try {
         $this->mailer->send($this->constructNewsletter($task), $settings['address']);
-      } catch(\Exception $e) {
+      } catch (\Exception $e) {
         if(WP_DEBUG) {
           throw $e;
         }

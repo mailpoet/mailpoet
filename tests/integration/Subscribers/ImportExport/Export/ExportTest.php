@@ -197,7 +197,7 @@ class ExportTest extends \MailPoetTest {
       $this->export->export_path = '/fake_folder';
       $this->export->process();
       $this->fail('Export did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())
         ->equals("The export file could not be saved on the server.");
     }
@@ -208,7 +208,7 @@ class ExportTest extends \MailPoetTest {
       $this->export->export_file = $this->export->getExportFile('csv');
       $this->export->export_format_option = 'csv';
       $result = $this->export->process();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $this->fail('Export to .csv process threw an exception');
     }
     expect($result['totalExported'])->equals(4);
@@ -218,7 +218,7 @@ class ExportTest extends \MailPoetTest {
       $this->export->export_file = $this->export->getExportFile('xlsx');
       $this->export->export_format_option = 'xlsx';
       $result = $this->export->process();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $this->fail('Export to .xlsx process threw an exception');
     }
     expect($result['totalExported'])->equals(4);

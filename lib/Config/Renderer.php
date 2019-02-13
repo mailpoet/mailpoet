@@ -107,7 +107,7 @@ class Renderer {
   function render($template, $context = array()) {
     try {
       return $this->renderer->render($template, $context);
-    } catch(\RuntimeException $e) {
+    } catch (\RuntimeException $e) {
       throw new \Exception(sprintf(
         __('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
         $template,

@@ -300,7 +300,7 @@ class Subscribers extends APIEndpoint {
         $bulk_action = new BulkAction($data);
         return $this->successResponse(null, $bulk_action->apply());
       }
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

@@ -44,7 +44,7 @@ class MailChimpTest extends \MailPoetTest {
       $mailchimp->api_key = false;
       $lists = $mailchimp->getLists();
       $this->fail('MailChimp getLists() did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->contains('Invalid API Key');
     }
   }
@@ -53,7 +53,7 @@ class MailChimpTest extends \MailPoetTest {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     try {
       $lists = $this->mailchimp->getLists();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $this->fail('MailChimp getLists() threw an exception');
     }
     expect($lists)->count(2);
@@ -67,14 +67,14 @@ class MailChimpTest extends \MailPoetTest {
     try {
       $subscribers = $this->mailchimp->getSubscribers();
       $this->fail('MailChimp getSubscribers() did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->contains('Did not find any valid lists');
     }
 
     try {
       $subscribers = $this->mailchimp->getSubscribers(array(12));
       $this->fail('MailChimp getSubscribers() did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->contains('Did not find any valid lists');
     }
   }
@@ -84,7 +84,7 @@ class MailChimpTest extends \MailPoetTest {
 
     try {
       $subscribers = $this->mailchimp->getSubscribers(array($this->lists[0]));
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $this->fail('MailChimp getSubscribers() threw an exception');
     }
 
@@ -101,7 +101,7 @@ class MailChimpTest extends \MailPoetTest {
     try {
       $subscribers = $this->mailchimp->getSubscribers($this->lists);
       $this->fail('MailChimp getSubscribers() did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())
         ->contains('The selected lists do not have matching columns (headers)');
     }
@@ -115,7 +115,7 @@ class MailChimpTest extends \MailPoetTest {
     try {
       $subscribers = $mailchimp->getSubscribers($this->lists);
       $this->fail('MailChimp getSubscribers() did not throw an exception');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())
         ->contains('The information received from MailChimp is too large for processing');
     }

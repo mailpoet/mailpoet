@@ -27,7 +27,7 @@ class MP2Migrator extends APIEndpoint {
     try {
       $process = $this->MP2Migrator->import($data);
       return $this->successResponse($process);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
@@ -44,7 +44,7 @@ class MP2Migrator extends APIEndpoint {
     try {
       $process = $this->MP2Migrator->stopImport();
       return $this->successResponse($process);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
@@ -61,7 +61,7 @@ class MP2Migrator extends APIEndpoint {
     try {
       $process = $this->MP2Migrator->skipImport();
       return $this->successResponse($process);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

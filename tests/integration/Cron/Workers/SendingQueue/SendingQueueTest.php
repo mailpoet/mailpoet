@@ -132,7 +132,7 @@ class SendingQueueTest extends \MailPoetTest {
     try {
       $sending_queue_worker->process();
       self::fail('Execution limits function was not called.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       // No exception handling needed
     }
   }
@@ -630,7 +630,7 @@ class SendingQueueTest extends \MailPoetTest {
         $statistics = []
       );
       $this->fail('Paused sending exception was not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sending has been paused.');
     }
     $mailer_log = MailerLog::getMailerLog();

@@ -73,7 +73,7 @@ class ImportTest extends \MailPoetTest {
     try {
       $this->import->validateImportData($data);
       self::fail('Missing or invalid data exception not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Missing or invalid import data.');
     }
     // exception should not be thrown when all fields exist
@@ -86,7 +86,7 @@ class ImportTest extends \MailPoetTest {
     try {
       $this->import->validateImportData($data);
       self::fail('Missing or invalid data exception not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('Missing or invalid import data.');
     }
   }
@@ -135,7 +135,7 @@ class ImportTest extends \MailPoetTest {
     try {
       $import->process();
       self::fail('No valid subscribers found exception not thrown.');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       expect($e->getMessage())->equals('No valid subscribers were found.');
     }
   }

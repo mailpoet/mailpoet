@@ -27,7 +27,7 @@ class Setup extends APIEndpoint {
       $activator->activate();
       $this->wp->doAction('mailpoet_setup_reset');
       return $this->successResponse();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

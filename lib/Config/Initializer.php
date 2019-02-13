@@ -47,7 +47,7 @@ class Initializer {
 
     try {
       $this->setupDB();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return WPNotice::displayError(Helpers::replaceLinkTags(
         __('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
         '//beta.docs.mailpoet.com/article/200-solving-database-connection-issues',
@@ -120,7 +120,7 @@ class Initializer {
     try {
       $this->setupRenderer();
       $this->setupWidget();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
   }
@@ -158,7 +158,7 @@ class Initializer {
       $this->setupDeactivationSurvey();
 
       do_action('mailpoet_initialized', MAILPOET_VERSION);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->handleFailedInitialization($e);
     }
 
@@ -168,7 +168,7 @@ class Initializer {
   function maybeDbUpdate() {
     try {
       $current_db_version = $this->container->get(SettingsController::class)->get('db_version');
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $current_db_version = null;
     }
 
@@ -252,7 +252,7 @@ class Initializer {
       $this->setupJSONAPI();
       $this->setupRouter();
       $this->setupUserLocale();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
   }

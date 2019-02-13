@@ -22,7 +22,7 @@ class Mailer extends APIEndpoint {
         (isset($data['reply_to'])) ? $data['reply_to'] : false
       );
       $result = $mailer->send($data['newsletter'], $data['subscriber']);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

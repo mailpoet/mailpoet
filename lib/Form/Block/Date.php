@@ -281,7 +281,7 @@ class Date extends Base {
     if($datetime !== false && !empty($datetime)) {
       try {
         $datetime = Carbon::parse($datetime)->toDateTimeString();
-      } catch(\Exception $e) {
+      } catch (\Exception $e) {
         $datetime = false;
       }
     }

@@ -197,9 +197,9 @@ class Model extends \Sudzy\ValidModel {
     $this->_new_record = $this->isNew();
     try {
       parent::save();
-    } catch(\Sudzy\ValidationException $e) {
+    } catch (\Sudzy\ValidationException $e) {
       $this->setError($e->getValidationErrors());
-    } catch(\PDOException $e) {
+    } catch (\PDOException $e) {
       switch ($e->getCode()) {
         case 23000:
           preg_match("/for key \'(.*?)\'/i", $e->getMessage(), $matches);
@@ -330,7 +330,7 @@ class Model extends \Sudzy\ValidModel {
   public static function __callStatic($method, $parameters) {
     try {
       return parent::__callStatic($method, $parameters);
-    } catch(\PDOException $e) {
+    } catch (\PDOException $e) {
       throw new \Exception($e->getMessage());
     }
   }

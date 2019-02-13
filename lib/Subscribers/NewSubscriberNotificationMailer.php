@@ -65,7 +65,7 @@ class NewSubscriberNotificationMailer {
     try {
       $this->mailer->getSenderNameAndAddress($this->constructSenderEmail());
       $this->mailer->send($this->constructNewsletter($subscriber, $segments), $settings['address']);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       if(WP_DEBUG) {
         throw $e;
       }

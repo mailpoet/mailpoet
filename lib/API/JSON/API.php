@@ -172,7 +172,7 @@ class API {
       }
       $response = $endpoint->{$this->_request_method}($this->_request_data);
       return $response;
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       $error_message = $e->getMessage();
       $error_response = $this->createErrorResponse(Error::BAD_REQUEST, $error_message, Response::STATUS_BAD_REQUEST);
       return $error_response;

@@ -51,7 +51,7 @@ class SMTP {
     try {
       $message = $this->createMessage($newsletter, $subscriber, $extra_params);
       $result = $this->mailer->send($message);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return Mailer::formatMailerErrorResult(
         $this->error_mapper->getErrorFromException($e, $subscriber)
       );
