@@ -56,7 +56,7 @@ class StepInputValidation extends Component {
 
   render() {
     return (
-      <div className="import_validation_step">
+      <div className="mailpoet_import_validation_step">
         <label htmlFor="subscribers_agreed">
           <input
             type="checkbox"
