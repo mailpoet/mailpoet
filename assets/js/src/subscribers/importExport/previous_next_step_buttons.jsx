@@ -10,7 +10,7 @@ const PreviousNextStepButtons = ({ canGoNext, onPreviousAction, onNextAction }) 
     { 'button-disabled': !canGoNext },
   );
   return (
-    <div className="import_step_buttons">
+    <div className="mailpoet_import_step_buttons">
       <button
         className="button-primary wysija button"
         type="button"
