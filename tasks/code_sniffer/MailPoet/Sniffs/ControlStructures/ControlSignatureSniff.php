@@ -45,15 +45,17 @@ class MailPoet_Sniffs_ControlStructures_ControlSignatureSniff extends PHP_CodeSn
      */
     protected function getPatterns() {
       return array(
-        'do {EOL...} while(...);EOL',
-        'while(...) {EOL',
-        'for(...) {EOL',
-        'if(...) {EOL',
-        'foreach(...) {EOL',
-        '} else if(...) {EOL',
-        '} elseif(...) {EOL',
+        'do {EOL...} while (...);EOL',
+        'while (...) {EOL',
+        'for (...) {EOL',
+        'if (...) {EOL',
+        'foreach (...) {EOL',
+        '} else if (...) {EOL',
+        '} elseif (...) {EOL',
         '} else {EOL',
         'do {EOL',
+        'switch (...) {EOL',
+        'catch (...) {EOL',
       );
     }
 }
