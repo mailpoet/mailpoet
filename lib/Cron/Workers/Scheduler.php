@@ -38,15 +38,15 @@ class Scheduler {
       $newsletter = Newsletter::findOneWithOptions($queue->newsletter_id);
       if(!$newsletter || $newsletter->deleted_at !== null) {
         $queue->delete();
-      } elseif($newsletter->status !== Newsletter::STATUS_ACTIVE && $newsletter->status !== Newsletter::STATUS_SCHEDULED) {
+      } elseif ($newsletter->status !== Newsletter::STATUS_ACTIVE && $newsletter->status !== Newsletter::STATUS_SCHEDULED) {
         continue;
-      } elseif($newsletter->type === Newsletter::TYPE_WELCOME) {
+      } elseif ($newsletter->type === Newsletter::TYPE_WELCOME) {
         $this->processWelcomeNewsletter($newsletter, $queue);
-      } elseif($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+      } elseif ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $this->processPostNotificationNewsletter($newsletter, $queue);
-      } elseif($newsletter->type === Newsletter::TYPE_STANDARD) {
+      } elseif ($newsletter->type === Newsletter::TYPE_STANDARD) {
         $this->processScheduledStandardNewsletter($newsletter, $queue);
-      } elseif($newsletter->type === Newsletter::TYPE_AUTOMATIC) {
+      } elseif ($newsletter->type === Newsletter::TYPE_AUTOMATIC) {
         $this->processScheduledAutomaticEmail($newsletter, $queue);
       }
       CronHelper::enforceExecutionLimit($this->timer);

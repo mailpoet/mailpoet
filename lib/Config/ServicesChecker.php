@@ -42,7 +42,7 @@ class ServicesChecker {
         WPNotice::displayError($error);
       }
       return false;
-    } elseif($mss_key['state'] == Bridge::KEY_EXPIRING
+    } elseif ($mss_key['state'] == Bridge::KEY_EXPIRING
       && !empty($mss_key['data']['expire_at'])
     ) {
       if($display_error_notice) {
@@ -57,7 +57,7 @@ class ServicesChecker {
         WPNotice::displayWarning($error);
       }
       return true;
-    } elseif($mss_key['state'] == Bridge::KEY_VALID) {
+    } elseif ($mss_key['state'] == Bridge::KEY_VALID) {
       return true;
     }
 
@@ -95,7 +95,7 @@ class ServicesChecker {
         WPNotice::displayWarning($error);
       }
       return false;
-    } elseif($premium_key['state'] === Bridge::KEY_EXPIRING
+    } elseif ($premium_key['state'] === Bridge::KEY_EXPIRING
       && !empty($premium_key['data']['expire_at'])
     ) {
       if($display_error_notice) {
@@ -110,7 +110,7 @@ class ServicesChecker {
         WPNotice::displayWarning($error);
       }
       return true;
-    } elseif($premium_key['state'] === Bridge::KEY_VALID) {
+    } elseif ($premium_key['state'] === Bridge::KEY_VALID) {
       return true;
     }
 

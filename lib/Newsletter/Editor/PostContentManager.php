@@ -20,7 +20,7 @@ class PostContentManager {
   function getContent($post, $displayType) {
     if($displayType === 'titleOnly') {
       return '';
-    } elseif($displayType === 'excerpt') {
+    } elseif ($displayType === 'excerpt') {
       // get excerpt
       if(!empty($post->post_excerpt)) {
         return self::stripShortCodes($post->post_excerpt);

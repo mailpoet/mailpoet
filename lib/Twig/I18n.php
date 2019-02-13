@@ -85,7 +85,7 @@ class I18n extends \Twig_Extension {
     // check if it's an int passed as a string
     if((string)(int)$date === $date) {
       $date = (int)$date;
-    } else if(!is_int($date)) {
+    } else if (!is_int($date)) {
       $date = strtotime($date);
     }
 

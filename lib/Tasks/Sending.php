@@ -208,7 +208,7 @@ class Sending {
     if($this->isCommonProperty($prop)) {
       $this->queue->$prop = $value;
       $this->task->$prop = $value;
-    } elseif($this->isQueueProperty($prop)) {
+    } elseif ($this->isQueueProperty($prop)) {
       $this->queue->$prop = $value;
     } else {
       $this->task->$prop = $value;

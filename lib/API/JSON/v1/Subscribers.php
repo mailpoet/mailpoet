@@ -201,7 +201,7 @@ class Subscribers extends APIEndpoint {
           if($form['settings']['on_success'] === 'page') {
             // redirect to a page on a success, pass the page url in the meta
             $meta['redirect_url'] = get_permalink($form['settings']['success_page']);
-          } else if($form['settings']['on_success'] === 'url') {
+          } else if ($form['settings']['on_success'] === 'url') {
             $meta['redirect_url'] = $form['settings']['success_url'];
           }
         }

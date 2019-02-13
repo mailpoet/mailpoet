@@ -64,7 +64,7 @@ function array_column($input = null, $column_key = null, $index_key = null) {
     if($params_column_key === null) {
       $value_set = true;
       $value = $row;
-    } elseif(is_array($row) && array_key_exists($params_column_key, $row)) {
+    } elseif (is_array($row) && array_key_exists($params_column_key, $row)) {
       $value_set = true;
       $value = $row[$params_column_key];
     }

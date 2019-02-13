@@ -443,10 +443,10 @@ class RoboFile extends \Robo\Tasks {
     if(!is_readable($plugin_dist_file)) {
       $this->say("Failed to access " . $plugin_dist_file);
       return;
-    } elseif(!file_exists($svn_dir . "/.svn/")) {
+    } elseif (!file_exists($svn_dir . "/.svn/")) {
       $this->say("$svn_dir/.svn/ dir not found, is it a SVN repository?");
       return;
-    } elseif(file_exists($svn_dir . "/tags/" . $plugin_version)) {
+    } elseif (file_exists($svn_dir . "/tags/" . $plugin_version)) {
       $this->say("A SVN tag already exists: " . $plugin_version);
       return;
     }

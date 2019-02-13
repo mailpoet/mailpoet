@@ -241,7 +241,7 @@ class Pages {
         'first_name' => 'John',
         'last_name' => 'Doe'
       ));
-    } else if($this->subscriber !== false) {
+    } else if ($this->subscriber !== false) {
       $subscriber = $this->subscriber
       ->withCustomFields()
       ->withSubscriptions();

@@ -414,18 +414,18 @@ class Newsletters extends APIEndpoint {
           ->withSegments(true)
           ->withSendingQueue()
           ->withStatistics();
-      } else if($newsletter->type === Newsletter::TYPE_WELCOME || $newsletter->type === Newsletter::TYPE_AUTOMATIC) {
+      } else if ($newsletter->type === Newsletter::TYPE_WELCOME || $newsletter->type === Newsletter::TYPE_AUTOMATIC) {
         $newsletter
           ->withOptions()
           ->withTotalSent()
           ->withScheduledToBeSent()
           ->withStatistics();
-      } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+      } else if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withOptions()
           ->withSegments(true)
           ->withChildrenCount();
-      } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION_HISTORY) {
+      } else if ($newsletter->type === Newsletter::TYPE_NOTIFICATION_HISTORY) {
         $newsletter
           ->withSegments(true)
           ->withSendingQueue()

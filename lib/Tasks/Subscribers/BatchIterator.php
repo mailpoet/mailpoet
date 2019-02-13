@@ -15,7 +15,7 @@ class BatchIterator implements \Iterator, \Countable {
   function __construct($task_id, $batch_size) {
     if($task_id <= 0) {
       throw new \Exception('Task ID must be greater than zero');
-    } elseif($batch_size <= 0) {
+    } elseif ($batch_size <= 0) {
       throw new \Exception('Batch size must be greater than zero');
     }
     $this->task_id = (int)$task_id;

@@ -149,7 +149,7 @@ class CSS {
     usort($rules, function($a, $b) {
       if($a['specificity'] > $b['specificity']) {
         return -1;
-      } else if($a['specificity'] < $b['specificity']) {
+      } else if ($a['specificity'] < $b['specificity']) {
         return 1;
       } else {
         if($a['position'] > $b['position']) {
@@ -195,7 +195,7 @@ class CSS {
           // if the character is an opening bracket, push it onto the stack, otherwise pop the stack
           if($css[$i] == "{") {
             array_push($s, "{");
-          } else if($css[$i] == "}") {
+          } else if ($css[$i] == "}") {
             array_pop($s);
           }
 
@@ -238,7 +238,7 @@ class CSS {
       if(strstr($chunk, '#') !== false) $specifity += 100;
 
           // classes are more important than a tag, but less important then an ID
-      elseif(strstr($chunk, '.')) $specifity += 10;
+      elseif (strstr($chunk, '.')) $specifity += 10;
 
           // anything else isn't that important
       else $specifity += 1;

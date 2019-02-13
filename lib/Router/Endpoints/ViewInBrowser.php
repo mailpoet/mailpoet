@@ -59,7 +59,7 @@ class ViewInBrowser {
       if(empty($data->subscriber_token) ||
          !Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token)
       ) return false;
-    } else if(!$data->subscriber && !empty($data->preview)) {
+    } else if (!$data->subscriber && !empty($data->preview)) {
       // if this is a preview and subscriber does not exist,
       // attempt to set subscriber to the current logged-in WP user
       $data->subscriber = Subscriber::getCurrentWPUser();

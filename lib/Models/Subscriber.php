@@ -41,7 +41,7 @@ class Subscriber extends Model {
   static function findOne($id = false) {
     if(is_int($id) || (string)(int)$id === $id) {
       return parent::findOne($id);
-    } else if(strlen(trim($id)) > 0) {
+    } else if (strlen(trim($id)) > 0) {
       return parent::where('email', $id)->findOne();
     }
     return false;
@@ -323,7 +323,7 @@ class Subscriber extends Model {
   static function groupBy($orm, $group = null) {
     if($group === 'trash') {
       return $orm->whereNotNull('deleted_at');
-    } else if($group === 'all') {
+    } else if ($group === 'all') {
       return $orm->whereNull('deleted_at');
     } else {
       return $orm->filter($group);
