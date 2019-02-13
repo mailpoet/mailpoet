@@ -2,6 +2,7 @@
 
 ## PHP Code
 - Two spaces indentation.
+- Space between keyword (if, for, switch...) and left bracket
 - CamelCase for classes.
 - camelCase for methods.
 - snake_case for variables and class properties.
