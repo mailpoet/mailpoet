@@ -39,7 +39,7 @@ class BridgeTestMockAPI {
   }
 
   private function processAPICheckResponse($code) {
-    switch($code) {
+    switch ($code) {
       case 'expiring':
         // a special case of a valid key
         $code = 200;
@@ -58,7 +58,7 @@ class BridgeTestMockAPI {
   }
 
   private function processPremiumResponse($code) {
-    switch($code) {
+    switch ($code) {
       case 'expiring':
         // a special case of a valid key
         $code = 200;

@@ -18,7 +18,7 @@ class Link {
     $content,
     $wp_user_preview
   ) {
-    switch($shortcode_details['action']) {
+    switch ($shortcode_details['action']) {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $shortcode_details['action'],
@@ -72,7 +72,7 @@ class Link {
   static function processShortcodeAction(
     $shortcode_action, $newsletter, $subscriber, $queue, $wp_user_preview
   ) {
-    switch($shortcode_action) {
+    switch ($shortcode_action) {
       case 'subscription_unsubscribe_url':
         $settings = new SettingsController();
         // track unsubscribe event

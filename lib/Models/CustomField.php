@@ -61,7 +61,7 @@ class CustomField extends Model {
         : 'year_month_day'
       );
       $date_parts = explode('_', $date_type);
-      switch($date_type) {
+      switch ($date_type) {
         case 'year_month_day':
           $value = sprintf(
             '%s/%s/%s',

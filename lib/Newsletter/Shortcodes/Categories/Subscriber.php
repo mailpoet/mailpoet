@@ -16,7 +16,7 @@ class Subscriber {
     $default_value = ($shortcode_details['action_argument'] === 'default') ?
       $shortcode_details['action_argument_value'] :
       '';
-    switch($shortcode_details['action']) {
+    switch ($shortcode_details['action']) {
       case 'firstname':
         return (!empty($subscriber->first_name)) ? $subscriber->first_name : $default_value;
       case 'lastname':

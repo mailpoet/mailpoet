@@ -200,7 +200,7 @@ class Model extends \Sudzy\ValidModel {
     } catch(\Sudzy\ValidationException $e) {
       $this->setError($e->getValidationErrors());
     } catch(\PDOException $e) {
-      switch($e->getCode()) {
+      switch ($e->getCode()) {
         case 23000:
           preg_match("/for key \'(.*?)\'/i", $e->getMessage(), $matches);
           if(isset($matches[1])) {

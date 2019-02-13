@@ -76,7 +76,7 @@ class Renderer {
 
   static function renderBlock($block = array()) {
     $html = '';
-    switch($block['type']) {
+    switch ($block['type']) {
       case 'html':
         $html .= Block\Html::render($block);
         break;

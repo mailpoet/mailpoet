@@ -14,7 +14,7 @@ class Export {
   }
 
   static function get($type = 'html', $form = null) {
-    switch($type) {
+    switch ($type) {
       case 'iframe':
         // generate url to load iframe's content
         $iframe_url = add_query_arg(array(

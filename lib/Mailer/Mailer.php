@@ -42,7 +42,7 @@ class Mailer {
   }
 
   function buildMailer() {
-    switch($this->mailer_config['method']) {
+    switch ($this->mailer_config['method']) {
       case self::METHOD_AMAZONSES:
         $mailer_instance = new $this->mailer_config['class'](
           $this->mailer_config['region'],

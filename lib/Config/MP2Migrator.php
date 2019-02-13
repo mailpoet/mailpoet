@@ -468,7 +468,7 @@ class MP2Migrator {
    */
   private function mapCustomFieldType($mp2_type) {
     $type = '';
-    switch($mp2_type) {
+    switch ($mp2_type) {
       case 'input':
         $type = 'text';
         break;
@@ -499,7 +499,7 @@ class MP2Migrator {
       $params['validate'] = $this->mapCustomFieldValidateValue($params['validate']);
     }
     if(isset($params['date_order'])) { // Convert the date_order field
-      switch($params['date_type']) {
+      switch ($params['date_type']) {
 
         case 'year_month':
           if(preg_match('/y$/i', $params['date_order'])) {
@@ -533,7 +533,7 @@ class MP2Migrator {
    */
   private function mapCustomFieldValidateValue($mp2_value) {
     $value = '';
-    switch($mp2_value) {
+    switch ($mp2_value) {
       case 'onlyLetterSp':
       case 'onlyLetterNumber':
         $value = 'alphanum';
@@ -648,7 +648,7 @@ class MP2Migrator {
   private function mapUserStatus($mp2_user_status) {
 
 
-    switch($mp2_user_status) {
+    switch ($mp2_user_status) {
       case 1:
         $status = 'subscribed';
         break;
@@ -881,7 +881,7 @@ class MP2Migrator {
       if($type == 'segment') {
           $field_id = 'segments';
       } else {
-        switch($field['field']) {
+        switch ($field['field']) {
           case 'firstname':
             $field_id = 'first_name';
             break;
@@ -1123,7 +1123,7 @@ class MP2Migrator {
    * @return string Interval
    */
   private function mapFrequencyInterval($interval_str) {
-    switch($interval_str) {
+    switch ($interval_str) {
       case 'one_min':
         $interval = 1;
         break;
@@ -1157,7 +1157,7 @@ class MP2Migrator {
     if(empty($emails_number)) {
       $emails_number = 70;
     } else {
-      switch($interval_str) {
+      switch ($interval_str) {
         case 'thirty_min':
           $emails_number /= 2;
           break;

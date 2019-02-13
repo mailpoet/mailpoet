@@ -34,7 +34,7 @@ class WooCommerce {
     if($wc_segment === false) return;
 
     $current_filter = $current_filter ?: $this->wp->currentFilter();
-    switch($current_filter) {
+    switch ($current_filter) {
       case 'woocommerce_delete_customer':
         // subscriber should be already deleted in WP users sync
         $this->unsubscribeUsersFromSegment(); // remove leftover association
