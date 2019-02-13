@@ -5,7 +5,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Newsletter;
 use MailPoet\Util\Helpers;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 

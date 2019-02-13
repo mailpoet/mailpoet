@@ -46,12 +46,12 @@ class Hooks {
 
     $subscribe = $this->settings->get('subscribe', []);
     // Subscribe in comments
-    if(
+    if (
       isset($subscribe['on_comment']['enabled'])
       &&
       (bool)$subscribe['on_comment']['enabled']
     ) {
-      if($this->wp->isUserLoggedIn()) {
+      if ($this->wp->isUserLoggedIn()) {
         $this->wp->addAction(
           'comment_form_field_comment',
           '\MailPoet\Subscription\Comment::extendLoggedInForm'
@@ -79,12 +79,12 @@ class Hooks {
     }
 
     // Subscribe in registration form
-    if(
+    if (
       isset($subscribe['on_register']['enabled'])
       &&
       (bool)$subscribe['on_register']['enabled']
     ) {
-      if(is_multisite()) {
+      if (is_multisite()) {
         $this->wp->addAction(
           'signup_extra_fields',
           '\MailPoet\Subscription\Registration::extendForm'
@@ -217,7 +217,7 @@ class Hooks {
   }
 
   function setScreenOption($status, $option, $value) {
-    if(preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
+    if (preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
       return $value;
     } else {
       return $status;

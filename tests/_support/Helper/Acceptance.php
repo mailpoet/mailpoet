@@ -21,13 +21,13 @@ class Acceptance extends \Codeception\Module
       );
 
       foreach ($logEntries as $logEntry) {
-        if($this->isJSError($logEntry)) {
+        if ($this->isJSError($logEntry)) {
           // Collect JS errors into an array
           $this->js_errors[] = $logEntry['message'];
         }
       }
 
-      if(!empty($this->js_errors)) {
+      if (!empty($this->js_errors)) {
         $this->debug('JS errors : ' . print_r($this->js_errors, true));
       }
     } catch (\Exception $e) {

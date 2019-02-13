@@ -1,7 +1,7 @@
 <?php
 namespace Sudzy;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * @method static ORMWrapper|bool create($data=null)
@@ -33,7 +33,7 @@ abstract class ValidModel extends \Model {
   }
 
   public function addValidation($field, $validation, $message) {
-    if(!isset($this->_validations[$field])) {
+    if (!isset($this->_validations[$field])) {
       $this->_validations[$field] = array();
     }
     $this->_validations[$field][] = array(
@@ -69,7 +69,7 @@ abstract class ValidModel extends \Model {
   public function validateField($field, $value) {
     $this->setupValidationEngine();
 
-    if(!isset($this->_validations[$field])) {
+    if (!isset($this->_validations[$field])) {
       return true; // No validations, return true by default
     }
 
@@ -80,7 +80,7 @@ abstract class ValidModel extends \Model {
         $params = explode('|', $check);
         $check  = array_shift($params);
 
-        if($this->_validator->executeOne($check, $value, $params)) {
+        if ($this->_validator->executeOne($check, $value, $params)) {
           $success = $success && true;
         } else {
           $this->addValidationError($v['message'], $field);
@@ -113,14 +113,14 @@ abstract class ValidModel extends \Model {
   * Overload save; checks if errors exist before saving
   */
   public function save() {
-    if($this->isNew()) { //Fields populated by create() or hydrate() don't pass through set()
+    if ($this->isNew()) { //Fields populated by create() or hydrate() don't pass through set()
       foreach (array_keys($this->_validations) as $field) {
         $this->validateField($field, $this->$field);
       }
     }
 
     $errs = $this->getValidationErrors();
-    if(!empty($errs)) {
+    if (!empty($errs)) {
       $this->doValidationError(self::ON_SAVE);
     }
 
@@ -131,7 +131,7 @@ abstract class ValidModel extends \Model {
   * Overload set; to call validateAndSet
   */
   public function set($key, $value = null) {
-    if(is_array($key)) {
+    if (is_array($key)) {
       // multiple values
       foreach ($key as $field => $value) {
         $this->validateAndSet($field, $value);
@@ -148,15 +148,15 @@ abstract class ValidModel extends \Model {
   ////////////////////
   // Protected methods
   protected function doValidationError($context) {
-    if($context == $this->_validationOptions['throw']) {
+    if ($context == $this->_validationOptions['throw']) {
       throw new \Sudzy\ValidationException($this->_validationErrors);
     }
   }
 
   protected function addValidationError($msg, $field = null) {
-    if($this->_validationOptions['indexedErrors'] && $field !== null) {
+    if ($this->_validationOptions['indexedErrors'] && $field !== null) {
       // Only keep the first error found on a field
-      if(!isset($this->_validationErrors[$field])) {
+      if (!isset($this->_validationErrors[$field])) {
         $this->_validationErrors[$field] = $msg;
       }
     } else {
@@ -168,11 +168,11 @@ abstract class ValidModel extends \Model {
   * Overload set; to call validateAndSet
   */
   protected function validateAndSet($name, $value) {
-    if(!$this->validateField($name, $value)) $this->doValidationError(self::ON_SET);
+    if (!$this->validateField($name, $value)) $this->doValidationError(self::ON_SET);
     parent::set($name, $value);
   }
 
   protected function setupValidationEngine() {
-    if(null == $this->_validator) $this->_validator = new \Sudzy\Engine(); // Is lazy setup worth it?
+    if (null == $this->_validator) $this->_validator = new \Sudzy\Engine(); // Is lazy setup worth it?
   }
 }

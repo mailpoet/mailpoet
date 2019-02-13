@@ -7,7 +7,7 @@ class Url {
     $query_args = add_query_arg(null, null);
 
     // Remove home_url() path from add_query_arg
-    if(isset($home_url['path'])) {
+    if (isset($home_url['path'])) {
       $query_args = str_replace($home_url['path'], null, $query_args);
     }
 
@@ -27,12 +27,12 @@ class Url {
     );
 
     // fallback: home_url
-    if(!$referer) {
+    if (!$referer) {
       $referer = home_url();
     }
 
     // append extra params to url
-    if(!empty($params)) {
+    if (!empty($params)) {
       $referer = add_query_arg($params, $referer);
     }
 
@@ -49,7 +49,7 @@ class Url {
       $url
     );
 
-    if($url !== $current_url) {
+    if ($url !== $current_url) {
       self::redirectTo($url);
     }
     exit();

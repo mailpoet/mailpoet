@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Block;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Select extends Base {
 
@@ -15,10 +15,10 @@ class Select extends Base {
     $html .= static::renderLabel($block);
     $html .= '<select class="mailpoet_select" name="'.$field_name.'" ' . $automation_id . '>';
 
-    if(isset($block['params']['label_within']) && $block['params']['label_within']) {
+    if (isset($block['params']['label_within']) && $block['params']['label_within']) {
       $html .= '<option value="">'.static::getFieldLabel($block).'</option>';
     } else {
-      if(empty($block['params']['required']) || !$block['params']['required']) {
+      if (empty($block['params']['required']) || !$block['params']['required']) {
         $html .= '<option value="">-</option>';
       }
     }
@@ -29,7 +29,7 @@ class Select extends Base {
     );
 
     foreach ($options as $option) {
-      if(!empty($option['is_hidden'])) {
+      if (!empty($option['is_hidden'])) {
         continue;
       }
 
@@ -41,7 +41,7 @@ class Select extends Base {
 
       $is_disabled = (!empty($option['is_disabled'])) ? ' disabled="disabled"' : '';
 
-      if(is_array($option['value'])) {
+      if (is_array($option['value'])) {
         $value = key($option['value']);
         $label = reset($option['value']);
       } else {

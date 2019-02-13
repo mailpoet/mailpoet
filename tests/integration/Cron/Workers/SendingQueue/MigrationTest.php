@@ -18,7 +18,7 @@ class MigrationTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     // Alter table to test migration
-    if(!Migration::checkUnmigratedColumnsExist()) {
+    if (!Migration::checkUnmigratedColumnsExist()) {
       $this->downgradeTable();
       $this->altered = true;
     }
@@ -200,7 +200,7 @@ class MigrationTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
 
     // Restore table after testing
-    if(!empty($this->altered)) {
+    if (!empty($this->altered)) {
       $this->restoreTable();
       $this->altered = false;
     }

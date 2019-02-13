@@ -7,7 +7,7 @@ class Renderer {
 
     $columns_count = count($content_block['blocks']);
 
-    if($columns_count === 1) {
+    if ($columns_count === 1) {
       return $this->renderOneColumn($content_block, $columns_data[0]);
     }
     return $this->renderMultipleColumns($content_block, $columns_data);
@@ -105,7 +105,7 @@ class Renderer {
   }
 
   private function getBackgroundCss($styles, $image) {
-    if($image !== null && $image['src'] !== null) {
+    if ($image !== null && $image['src'] !== null) {
       $background_color = isset($styles['backgroundColor']) && $styles['backgroundColor'] !== 'transparent' ? $styles['backgroundColor'] : '#ffffff';
       $repeat = $image['display'] === 'tile' ? 'repeat' : 'no-repeat';
       $size = $image['display'] === 'scale' ? 'cover' : 'contain';
@@ -114,7 +114,7 @@ class Renderer {
         $background_color, $image['src'], $repeat, $size, $background_color, $image['src'], $repeat, $size
       );
     } else {
-      if(!isset($styles['backgroundColor'])) return false;
+      if (!isset($styles['backgroundColor'])) return false;
       $background_color = $styles['backgroundColor'];
       return ($background_color !== 'transparent') ?
         sprintf('background-color:%s!important;" bgcolor="%s', $background_color, $background_color) :

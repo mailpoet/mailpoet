@@ -2,7 +2,7 @@
 
 namespace MailPoet\Config;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Localizer {
   function init() {

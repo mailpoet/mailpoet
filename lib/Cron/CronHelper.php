@@ -9,7 +9,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class CronHelper {
   const DAEMON_EXECUTION_LIMIT = 20; // seconds
@@ -43,7 +43,7 @@ class CronHelper {
 
   static function saveDaemonLastError($error) {
     $daemon = self::getDaemon();
-    if($daemon) {
+    if ($daemon) {
       $daemon['last_error'] = $error;
       self::saveDaemon($daemon);
     }
@@ -51,7 +51,7 @@ class CronHelper {
 
   static function saveDaemonRunCompleted($run_completed_at) {
     $daemon = self::getDaemon();
-    if($daemon) {
+    if ($daemon) {
       $daemon['run_completed_at'] = $run_completed_at;
       self::saveDaemon($daemon);
     }
@@ -84,7 +84,7 @@ class CronHelper {
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
     $result = self::queryCronUrl($url);
-    if(is_wp_error($result)) return $result->get_error_message();
+    if (is_wp_error($result)) return $result->get_error_message();
     $wp = new WPFunctions();
     $response = $wp->wpRemoteRetrieveBody($result);
     $response = substr(trim($response), -strlen(DaemonHttpRunner::PING_SUCCESS_RESPONSE)) === DaemonHttpRunner::PING_SUCCESS_RESPONSE ?
@@ -102,7 +102,7 @@ class CronHelper {
       $data
     );
     $daemon = self::getDaemon();
-    if(!$daemon) {
+    if (!$daemon) {
       throw new \LogicException('Daemon does not exist.');
     }
     $daemon['run_accessed_at'] = time();
@@ -117,13 +117,13 @@ class CronHelper {
    */
   static function isDaemonAccessible() {
     $daemon = self::getDaemon();
-    if(!$daemon || !isset($daemon['run_accessed_at']) || $daemon['run_accessed_at'] === null) {
+    if (!$daemon || !isset($daemon['run_accessed_at']) || $daemon['run_accessed_at'] === null) {
       return null;
     }
-    if($daemon['run_accessed_at'] <= (int)$daemon['run_started_at']) {
+    if ($daemon['run_accessed_at'] <= (int)$daemon['run_started_at']) {
       return true;
     }
-    if(
+    if (
       $daemon['run_accessed_at'] + self::DAEMON_REQUEST_TIMEOUT < time() &&
       $daemon['run_accessed_at'] > (int)$daemon['run_started_at']
     ) {
@@ -133,7 +133,7 @@ class CronHelper {
   }
 
   static function queryCronUrl($url, $wp = null) {
-    if(is_null($wp)) {
+    if (is_null($wp)) {
       $wp = new WPFunctions();
     }
     $args = $wp->applyFilters(
@@ -149,7 +149,7 @@ class CronHelper {
   }
 
   static function getCronUrl($action, $data = false, $wp = null) {
-    if(is_null($wp)) {
+    if (is_null($wp)) {
       $wp = new WPFunctions();
     }
     $url = Router::buildRequest(
@@ -169,26 +169,26 @@ class CronHelper {
     $site_url = ($site_url) ? $site_url : home_url();
     $parsed_url = parse_url($site_url);
     $scheme = '';
-    if($parsed_url['scheme'] === 'https') {
+    if ($parsed_url['scheme'] === 'https') {
       $scheme = 'ssl://';
     }
     // 1. if site URL does not contain a port, return the URL
-    if(empty($parsed_url['port'])) return $site_url;
+    if (empty($parsed_url['port'])) return $site_url;
     // 2. if site URL contains valid port, try connecting to it
     $fp = @fsockopen($scheme . $parsed_url['host'], $parsed_url['port'], $errno, $errstr, 1);
-    if($fp) return $site_url;
+    if ($fp) return $site_url;
     // 3. if connection fails, attempt to connect the standard port derived from URL
     // schema
     $port = (strtolower($parsed_url['scheme']) === 'http') ? 80 : 443;
     $fp = @fsockopen($scheme . $parsed_url['host'], $port, $errno, $errstr, 1);
-    if($fp) return sprintf('%s://%s', $parsed_url['scheme'], $parsed_url['host']);
+    if ($fp) return sprintf('%s://%s', $parsed_url['scheme'], $parsed_url['host']);
     // 4. throw an error if all connection attempts failed
     throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
   }
 
   static function enforceExecutionLimit($timer) {
     $elapsed_time = microtime(true) - $timer;
-    if($elapsed_time >= self::DAEMON_EXECUTION_LIMIT) {
+    if ($elapsed_time >= self::DAEMON_EXECUTION_LIMIT) {
       throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'));
     }
   }

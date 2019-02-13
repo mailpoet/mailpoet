@@ -9,7 +9,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Mailer {
   public $mailer_config;
@@ -100,11 +100,11 @@ class Mailer {
 
   static function getMailerConfig($mailer = false) {
     $settings = new SettingsController();
-    if(!$mailer) {
+    if (!$mailer) {
       $mailer = $settings->get(self::MAILER_CONFIG_SETTING_NAME);
-      if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.', 'mailpoet'));
+      if (!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.', 'mailpoet'));
     }
-    if(empty($mailer['frequency'])) {
+    if (empty($mailer['frequency'])) {
       $default_settings = $settings->getAllDefaults();
       $mailer['frequency'] = $default_settings['mta']['frequency'];
     }
@@ -117,9 +117,9 @@ class Mailer {
   }
 
   function getSenderNameAndAddress($sender = false) {
-    if(empty($sender)) {
+    if (empty($sender)) {
       $sender = $this->settings->get('sender', []);
-      if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured.', 'mailpoet'));
+      if (empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured.', 'mailpoet'));
     }
     $from_name = $this->encodeAddressNamePart($sender['name']);
     return array(
@@ -130,7 +130,7 @@ class Mailer {
   }
 
   function getReplyToNameAndAddress($reply_to = array()) {
-    if(!$reply_to) {
+    if (!$reply_to) {
       $reply_to = $this->settings->get('reply_to');
       $reply_to['name'] = (!empty($reply_to['name'])) ?
         $reply_to['name'] :
@@ -139,7 +139,7 @@ class Mailer {
         $reply_to['address'] :
         $this->sender['from_email'];
     }
-    if(empty($reply_to['address'])) {
+    if (empty($reply_to['address'])) {
       $reply_to['address'] = $this->sender['from_email'];
     }
     $reply_to_name = $this->encodeAddressNamePart($reply_to['name']);
@@ -158,11 +158,11 @@ class Mailer {
 
   function formatSubscriberNameAndEmailAddress($subscriber) {
     $subscriber = (is_object($subscriber)) ? $subscriber->asArray() : $subscriber;
-    if(!is_array($subscriber)) return $subscriber;
-    if(isset($subscriber['address'])) $subscriber['email'] = $subscriber['address'];
+    if (!is_array($subscriber)) return $subscriber;
+    if (isset($subscriber['address'])) $subscriber['email'] = $subscriber['address'];
     $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
     $last_name = (isset($subscriber['last_name'])) ? $subscriber['last_name'] : '';
-    if(!$first_name && !$last_name) return $subscriber['email'];
+    if (!$first_name && !$last_name) return $subscriber['email'];
     $full_name = sprintf('%s %s', $first_name, $last_name);
     $full_name = trim(preg_replace('!\s\s+!', ' ', $full_name));
     $full_name = $this->encodeAddressNamePart($full_name);
@@ -175,7 +175,7 @@ class Mailer {
   }
 
   function encodeAddressNamePart($name) {
-    if(mb_detect_encoding($name) === 'ASCII') return $name;
+    if (mb_detect_encoding($name) === 'ASCII') return $name;
     // encode non-ASCII string as per RFC 2047 (https://www.ietf.org/rfc/rfc2047.txt)
     return sprintf('=?utf-8?B?%s?=', base64_encode($name));
   }

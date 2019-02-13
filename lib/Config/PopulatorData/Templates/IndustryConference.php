@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class IndustryConference {
 
@@ -29,76 +29,76 @@ class IndustryConference {
 
   private function getBody() {
     return array (
-      'content' => 
+      'content' =>
       array (
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
+        'image' =>
         array (
           'src' => NULL,
           'display' => 'scale',
         ),
-        'styles' => 
+        'styles' =>
         array (
-          'block' => 
+          'block' =>
           array (
             'backgroundColor' => 'transparent',
           ),
         ),
-        'blocks' => 
+        'blocks' =>
         array (
-          0 => 
+          0 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#222222',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -107,9 +107,9 @@ class IndustryConference {
                     'fullWidth' => false,
                     'width' => '150px',
                     'height' => '150px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -119,45 +119,45 @@ class IndustryConference {
               ),
             ),
           ),
-          1 => 
+          1 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#222222',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><span style="color: #ffffff; font-size: 11px; text-transform: uppercase; opacity: 0.5; letter-spacing: 3px;">Get ready for the biggest email conference of the year</span></p>',
@@ -166,57 +166,57 @@ class IndustryConference {
               ),
             ),
           ),
-          2 => 
+          2 =>
           array (
             'type' => 'container',
             'columnLayout' => '2_1',
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => $this->template_image_url . '/Conf-Header-2.jpg',
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '56px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -225,25 +225,25 @@ class IndustryConference {
                     'fullWidth' => false,
                     'width' => '339px',
                     'height' => '177px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'left',
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3><span style="font-size: 42px;"><strong><span style="color: #ffffff; line-height: 1.2; position: relative; top: -5px;">Email Boston 2018</span></strong></span></h3>',
                   ),
-                  3 => 
+                  3 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -252,31 +252,31 @@ class IndustryConference {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '133px',
@@ -287,13 +287,13 @@ class IndustryConference {
               ),
             ),
           ),
-          3 => 
+          3 =>
           array (
             'type' => 'automatedLatestContentLayout',
             'withLayout' => true,
             'amount' => '3',
             'contentType' => 'post',
-            'terms' => 
+            'terms' =>
             array (
             ),
             'inclusionType' => 'include',
@@ -309,14 +309,14 @@ class IndustryConference {
             'categoriesPrecededBy' => 'Categories:',
             'readMoreType' => 'button',
             'readMoreText' => 'Read more',
-            'readMoreButton' => 
+            'readMoreButton' =>
             array (
               'type' => 'button',
               'text' => 'Read the post',
               'url' => '[postLink]',
-              'styles' => 
+              'styles' =>
               array (
-                'block' => 
+                'block' =>
                 array (
                   'backgroundColor' => '#b8291e',
                   'borderColor' => '#0074a2',
@@ -336,12 +336,12 @@ class IndustryConference {
             ),
             'sortBy' => 'oldest',
             'showDivider' => true,
-            'divider' => 
+            'divider' =>
             array (
               'type' => 'divider',
-              'styles' => 
+              'styles' =>
               array (
-                'block' => 
+                'block' =>
                 array (
                   'backgroundColor' => 'transparent',
                   'padding' => '13px',
@@ -355,45 +355,45 @@ class IndustryConference {
             'backgroundColor' => '#ffffff',
             'backgroundColorAlternate' => '#eeeeee',
           ),
-          4 => 
+          4 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#222222',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -402,9 +402,9 @@ class IndustryConference {
                     'fullWidth' => true,
                     'width' => '1280px',
                     'height' => '50px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -414,50 +414,50 @@ class IndustryConference {
               ),
             ),
           ),
-          5 => 
+          5 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#222222',
                         'height' => '34px',
@@ -468,71 +468,71 @@ class IndustryConference {
               ),
             ),
           ),
-          6 => 
+          6 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => $this->template_image_url . '/Industry-Coupon.png',
               'display' => 'fit',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#222222',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '75px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;"><span style="color: #ffffff;">---</span></h3>
     <h3 style="text-align: center;"><span style="color: #ffffff;">Grab 20% off your tickets right now</span></h3>
     <p style="text-align: center;"><span style="color: #ffffff;">We\'re offering an exclusive 20% off tickets with this coupon code!</span></p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'button',
                     'text' => 'CouPon_Code',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#b8291e',
                         'borderColor' => '#ffffff',
@@ -549,24 +549,24 @@ class IndustryConference {
                       ),
                     ),
                   ),
-                  3 => 
+                  3 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '33px',
                       ),
                     ),
                   ),
-                  4 => 
+                  4 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '45px',
@@ -577,50 +577,50 @@ class IndustryConference {
               ),
             ),
           ),
-          7 => 
+          7 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#222222',
                         'height' => '20px',
@@ -631,45 +631,45 @@ class IndustryConference {
               ),
             ),
           ),
-          8 => 
+          8 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#222222',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -678,20 +678,20 @@ class IndustryConference {
                     'fullWidth' => true,
                     'width' => '1280px',
                     'height' => '12px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'divider',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'padding' => '14px',
@@ -705,57 +705,57 @@ class IndustryConference {
               ),
             ),
           ),
-          9 => 
+          9 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '30px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -764,9 +764,9 @@ class IndustryConference {
                     'fullWidth' => false,
                     'width' => '1000px',
                     'height' => '667px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -774,51 +774,51 @@ class IndustryConference {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '46px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3><strong>Check out&nbsp;this year\'s event</strong></h3>
     <p>We\'ve ramped up everything this year for our conference, including amazing new speakers and guests, and a few surprises for everyone.</p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'button',
                     'text' => 'Buy a ticket here',
                     'url' => '[postLink]',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#b8291e',
                         'borderColor' => '#0074a2',
@@ -839,62 +839,62 @@ class IndustryConference {
               ),
             ),
           ),
-          10 => 
+          10 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#222222',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'height' => '20px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'divider',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#ffffff',
                         'padding' => '1.5px',
@@ -904,7 +904,7 @@ class IndustryConference {
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -913,9 +913,9 @@ class IndustryConference {
                     'fullWidth' => true,
                     'width' => '1280px',
                     'height' => '50px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
@@ -925,75 +925,75 @@ class IndustryConference {
               ),
             ),
           ),
-          11 => 
+          11 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#222222',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#222222',
                         'height' => '30px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#222222',
                         'height' => '20px',
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'full-symbol-grey',
-                    'icons' => 
+                    'icons' =>
                     array (
-                      0 => 
+                      0 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
@@ -1003,7 +1003,7 @@ class IndustryConference {
                         'width' => '32px',
                         'text' => 'Facebook',
                       ),
-                      1 => 
+                      1 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
@@ -1013,7 +1013,7 @@ class IndustryConference {
                         'width' => '32px',
                         'text' => 'Twitter',
                       ),
-                      2 => 
+                      2 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'email',
@@ -1023,7 +1023,7 @@ class IndustryConference {
                         'width' => '32px',
                         'text' => 'Email',
                       ),
-                      3 => 
+                      3 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
@@ -1035,48 +1035,48 @@ class IndustryConference {
                       ),
                     ),
                   ),
-                  3 => 
+                  3 =>
                   array (
                     'type' => 'header',
                     'text' => '<p>&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a></p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#8d8d8d',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#ffffff',
                         'textDecoration' => 'underline',
                       ),
                     ),
                   ),
-                  4 => 
+                  4 =>
                   array (
                     'type' => 'footer',
                     'text' => '<p><span style="color: #b8291e;"><a href="[link:subscription_unsubscribe_url]" style="color: #b8291e;">Unsubscribe</a> | <a href="[link:subscription_manage_url]" style="color: #b8291e;">Manage subscription</a></span><br />Add your postal address here!</p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'none',
@@ -1089,49 +1089,49 @@ class IndustryConference {
           ),
         ),
       ),
-      'globalStyles' => 
+      'globalStyles' =>
       array (
-        'text' => 
+        'text' =>
         array (
           'fontColor' => '#000000',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '14px',
         ),
-        'h1' => 
+        'h1' =>
         array (
           'fontColor' => '#111111',
           'fontFamily' => 'Arvo',
           'fontSize' => '40px',
         ),
-        'h2' => 
+        'h2' =>
         array (
           'fontColor' => '#222222',
           'fontFamily' => 'Arvo',
           'fontSize' => '26px',
         ),
-        'h3' => 
+        'h3' =>
         array (
           'fontColor' => '#333333',
           'fontFamily' => 'Arvo',
           'fontSize' => '18px',
         ),
-        'link' => 
+        'link' =>
         array (
           'fontColor' => '#b8291e',
           'textDecoration' => 'underline',
         ),
-        'wrapper' => 
+        'wrapper' =>
         array (
           'backgroundColor' => '#ffffff',
         ),
-        'body' => 
+        'body' =>
         array (
           'backgroundColor' => '#222222',
         ),
       ),
-      'blockDefaults' => 
+      'blockDefaults' =>
       array (
-        'automatedLatestContent' => 
+        'automatedLatestContent' =>
         array (
           'amount' => '5',
           'withLayout' => false,
@@ -1149,14 +1149,14 @@ class IndustryConference {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -1175,12 +1175,12 @@ class IndustryConference {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1193,7 +1193,7 @@ class IndustryConference {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'automatedLatestContentLayout' => 
+        'automatedLatestContentLayout' =>
         array (
           'amount' => '3',
           'withLayout' => true,
@@ -1211,14 +1211,14 @@ class IndustryConference {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read the post',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#b8291e',
                 'borderColor' => '#0074a2',
@@ -1238,12 +1238,12 @@ class IndustryConference {
           ),
           'sortBy' => 'oldest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1257,17 +1257,17 @@ class IndustryConference {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
           'type' => 'automatedLatestContentLayout',
-          'terms' => 
+          'terms' =>
           array (
           ),
         ),
-        'button' => 
+        'button' =>
         array (
           'text' => 'Read the post',
           'url' => '[postLink]',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => '#b8291e',
               'borderColor' => '#ffffff',
@@ -1285,11 +1285,11 @@ class IndustryConference {
           ),
           'type' => 'button',
         ),
-        'divider' => 
+        'divider' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => '#222222',
               'padding' => '1.5px',
@@ -1300,23 +1300,23 @@ class IndustryConference {
           ),
           'type' => 'divider',
         ),
-        'footer' => 
+        'footer' =>
         array (
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'none',
@@ -1324,7 +1324,7 @@ class IndustryConference {
           ),
           'type' => 'footer',
         ),
-        'posts' => 
+        'posts' =>
         array (
           'amount' => '10',
           'withLayout' => true,
@@ -1343,14 +1343,14 @@ class IndustryConference {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -1369,12 +1369,12 @@ class IndustryConference {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'posts.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1387,12 +1387,12 @@ class IndustryConference {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'social' => 
+        'social' =>
         array (
           'iconSet' => 'full-symbol-grey',
-          'icons' => 
+          'icons' =>
           array (
-            0 => 
+            0 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'facebook',
@@ -1402,7 +1402,7 @@ class IndustryConference {
               'width' => '32px',
               'text' => 'Facebook',
             ),
-            1 => 
+            1 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'twitter',
@@ -1412,7 +1412,7 @@ class IndustryConference {
               'width' => '32px',
               'text' => 'Twitter',
             ),
-            2 => 
+            2 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'email',
@@ -1422,7 +1422,7 @@ class IndustryConference {
               'width' => '32px',
               'text' => 'Email',
             ),
-            3 => 
+            3 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'instagram',
@@ -1435,11 +1435,11 @@ class IndustryConference {
           ),
           'type' => 'social',
         ),
-        'spacer' => 
+        'spacer' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
               'height' => '75px',
@@ -1447,23 +1447,23 @@ class IndustryConference {
           ),
           'type' => 'spacer',
         ),
-        'header' => 
+        'header' =>
         array (
           'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#8d8d8d',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#ffffff',
               'textDecoration' => 'underline',

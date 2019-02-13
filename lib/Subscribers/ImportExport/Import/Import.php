@@ -65,7 +65,7 @@ class Import {
     );
     // 1. data should contain all required fields
     // 2. column names should only contain alphanumeric & underscore characters
-    if(count(array_intersect_key(array_flip($required_data_fields), $data)) !== count($required_data_fields) ||
+    if (count(array_intersect_key(array_flip($required_data_fields), $data)) !== count($required_data_fields) ||
        preg_grep('/[^a-zA-Z0-9_]/', array_keys($data['columns']))
     ) {
       throw new \Exception(__('Missing or invalid import data.', 'mailpoet'));
@@ -88,7 +88,7 @@ class Import {
       $this->subscribers_data,
       $this->subscribers_fields_validation_rules
     );
-    if(!$subscribers_data) {
+    if (!$subscribers_data) {
       throw new \Exception(__('No valid subscribers were found.', 'mailpoet'));
     }
     // permanently trash deleted subscribers
@@ -106,7 +106,7 @@ class Import {
     // create or update subscribers
     $created_subscribers = $updated_subscribers = array();
     try {
-      if($new_subscribers['data']) {
+      if ($new_subscribers['data']) {
         // add, if required, missing required fields to new subscribers
         $new_subscribers = $this->addMissingRequiredFields($new_subscribers);
         $new_subscribers = $this->setSubscriptionStatusToSubscribed($new_subscribers);
@@ -118,14 +118,14 @@ class Import {
             $this->subscribers_custom_fields
           );
       }
-      if($existing_subscribers['data'] && $this->update_subscribers) {
+      if ($existing_subscribers['data'] && $this->update_subscribers) {
         $updated_subscribers =
           $this->createOrUpdateSubscribers(
             'update',
             $existing_subscribers,
             $this->subscribers_custom_fields
           );
-        if($wp_users) {
+        if ($wp_users) {
           $this->synchronizeWPUsers($wp_users);
         }
       }
@@ -155,10 +155,10 @@ class Import {
     $validator = new ModelValidator();
     foreach ($subscribers_data as $column => &$data) {
       $validation_rule = $validation_rules[$column];
-      if($validation_rule === 'email') {
+      if ($validation_rule === 'email') {
         $data = array_map(
           function($index, $email) use(&$invalid_records, $validator) {
-            if(!$validator->validateEmail($email)) {
+            if (!$validator->validateEmail($email)) {
               $invalid_records[] = $index;
             }
             return strtolower($email);
@@ -166,15 +166,15 @@ class Import {
         );
       }
       // if this is a custom column
-      if(in_array($column, $this->subscribers_custom_fields)) {
+      if (in_array($column, $this->subscribers_custom_fields)) {
         $custom_field = CustomField::findOne($column);
         // validate date type
-        if($custom_field->type === 'date') {
+        if ($custom_field->type === 'date') {
           $data = array_map(
             function($index, $date) use($validation_rule, &$invalid_records) {
               if (empty($date)) return $date;
               $date = Date::convertDateToDatetime($date, $validation_rule);
-              if(!$date) {
+              if (!$date) {
                 $invalid_records[] = $index;
               }
               return $date;
@@ -183,13 +183,13 @@ class Import {
         }
       }
     }
-    if($invalid_records) {
+    if ($invalid_records) {
       foreach ($subscribers_data as $column => &$data) {
         $data = array_diff_key($data, array_flip($invalid_records));
         $data = array_values($data);
       }
     }
-    if(empty($subscribers_data['email'])) return false;
+    if (empty($subscribers_data['email'])) return false;
     return $subscribers_data;
   }
 
@@ -217,7 +217,7 @@ class Import {
           ->findArray()
       );
     }
-    if(!$temp_existing_subscribers) {
+    if (!$temp_existing_subscribers) {
       return array(
         false, // existing subscribers
         $subscribers_data, // new subscribers
@@ -258,7 +258,7 @@ class Import {
           ->findArray();
       }, array_chunk($subscribers_data['email'], self::DB_QUERY_CHUNK_SIZE))
     );
-    if(!$existing_trashed_records) return;
+    if (!$existing_trashed_records) return;
     $existing_trashed_records = Helpers::flattenArray($existing_trashed_records);
     foreach (array_chunk($existing_trashed_records, self::DB_QUERY_CHUNK_SIZE) as
             $subscriber_ids) {
@@ -272,7 +272,7 @@ class Import {
   function addMissingRequiredFields($subscribers) {
     $subscribers_count = count($subscribers['data'][key($subscribers['data'])]);
     foreach (array_keys($this->required_subscribers_fields) as $required_field) {
-      if(in_array($required_field, $subscribers['fields'])) continue;
+      if (in_array($required_field, $subscribers['fields'])) continue;
       $subscribers['data'][$required_field] = array_fill(
         0,
         $subscribers_count,
@@ -284,7 +284,7 @@ class Import {
   }
 
   function setSubscriptionStatusToSubscribed($subscribers_data) {
-    if(!in_array('status', $subscribers_data['fields'])) return $subscribers_data;
+    if (!in_array('status', $subscribers_data['fields'])) return $subscribers_data;
     $subscribers_data['data']['status'] = array_map(function() {
       return Subscriber::STATUS_SUBSCRIBED;
     }, $subscribers_data['data']['status']);
@@ -306,7 +306,7 @@ class Import {
     return array_values(
       array_filter(
         array_map(function($field) {
-          if(!is_int($field)) return $field;
+          if (!is_int($field)) return $field;
         }, $subscribers_fields)
       )
     );
@@ -316,7 +316,7 @@ class Import {
     return array_values(
       array_filter(
         array_map(function($field) {
-          if(is_int($field)) return $field;
+          if (is_int($field)) return $field;
         }, $subscribers_fields)
       )
     );
@@ -334,13 +334,13 @@ class Import {
       }, $subscribers_data['fields']);
     }, range(0, $subscribers_count - 1));
     foreach (array_chunk($subscribers, self::DB_QUERY_CHUNK_SIZE) as $data) {
-      if($action == 'create') {
+      if ($action == 'create') {
         Subscriber::createMultiple(
           $subscribers_data['fields'],
           $data
         );
       }
-      if($action == 'update') {
+      if ($action == 'update') {
         Subscriber::updateMultiple(
           $subscribers_data['fields'],
           $data,
@@ -355,9 +355,9 @@ class Import {
         Subscriber::selectMany(array('id', 'email'))->whereIn('email', $data)->findArray()
       );
     }
-    if(empty($created_or_updated_subscribers)) return null;
+    if (empty($created_or_updated_subscribers)) return null;
     $created_or_updated_subscribers_ids = array_column($created_or_updated_subscribers, 'id');
-    if($subscribers_custom_fields) {
+    if ($subscribers_custom_fields) {
       $this->createOrUpdateCustomFields(
         $action,
         $created_or_updated_subscribers,
@@ -384,7 +384,7 @@ class Import {
         ->select('id')
         ->findArray()
     );
-    if(!$subscribers_custom_fields_ids) return;
+    if (!$subscribers_custom_fields_ids) return;
     // assemble a two-dimensional array: [[custom_field_id, subscriber_id, value], [custom_field_id, subscriber_id, value], ...]
     $subscribers_custom_fields_data = array();
     $subscribers_emails = array_flip($subscribers_data['data']['email']);
@@ -392,7 +392,7 @@ class Import {
       $subscriber_index = $subscribers_emails[$created_or_updated_subscriber['email']];
       foreach ($subscribers_data['data'] as $field => $values) {
         // exclude non-custom fields
-        if(!is_int($field)) continue;
+        if (!is_int($field)) continue;
         $subscribers_custom_fields_data[] = array(
           (int)$field,
           $created_or_updated_subscriber['id'],
@@ -404,7 +404,7 @@ class Import {
       SubscriberCustomField::createMultiple(
         $subscribers_custom_fields_data_chunk
       );
-      if($action === 'update') {
+      if ($action === 'update') {
         SubscriberCustomField::updateMultiple(
           $subscribers_custom_fields_data_chunk
         );

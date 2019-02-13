@@ -3,7 +3,7 @@ namespace MailPoet\Cron\Triggers;
 
 use MailPoet\Cron\Supervisor;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class MailPoet {
   static function run() {

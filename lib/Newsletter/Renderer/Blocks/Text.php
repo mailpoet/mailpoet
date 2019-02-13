@@ -34,15 +34,15 @@ class Text {
       $contents = array();
       $paragraphs = $blockquote->query('p, h1, h2, h3, h4', 0);
       foreach ($paragraphs as $index => $paragraph) {
-        if(preg_match('/h\d/', $paragraph->getTag())) {
+        if (preg_match('/h\d/', $paragraph->getTag())) {
           $contents[] = $paragraph->getOuterText();
         } else {
           $contents[] = $paragraph->html();
         }
-          if($index + 1 < $paragraphs->count()) $contents[] = '<br />';
+          if ($index + 1 < $paragraphs->count()) $contents[] = '<br />';
           $paragraph->remove();
       }
-      if(empty($contents)) continue;
+      if (empty($contents)) continue;
       $blockquote->setTag('table');
       $blockquote->addClass('mailpoet_blockquote');
       $blockquote->width = '100%';
@@ -75,10 +75,10 @@ class Text {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $paragraphs = $DOM->query('p');
-    if(!$paragraphs->count()) return $html;
+    if (!$paragraphs->count()) return $html;
     foreach ($paragraphs as $paragraph) {
       // process empty paragraphs
-      if(!trim($paragraph->html())) {
+      if (!trim($paragraph->html())) {
           $next_element = ($paragraph->getNextSibling()) ?
             trim($paragraph->getNextSibling()->text()) :
             false;
@@ -90,7 +90,7 @@ class Text {
           false;
         // if previous or next paragraphs are empty OR previous paragraph
         // is a heading, insert a break line
-        if(!$next_element ||
+        if (!$next_element ||
             !$previous_element ||
             (preg_match('/h\d+/', $previous_element_tag))
         ) {
@@ -100,7 +100,7 @@ class Text {
         continue;
       }
       $style = $paragraph->style;
-      if(!preg_match('/text-align/i', $style)) {
+      if (!preg_match('/text-align/i', $style)) {
         $style = 'text-align: left;' . $style;
       }
       $contents = $paragraph->html();
@@ -117,7 +117,7 @@ class Text {
       $line_breaks = ($next_element && preg_match('/<li/i', $next_element->getOuterText())) ?
         '<br />' :
         $line_breaks;
-      if($paragraph->hasClass(PostContentManager::WP_POST_CLASS)) {
+      if ($paragraph->hasClass(PostContentManager::WP_POST_CLASS)) {
         $paragraph->removeClass(PostContentManager::WP_POST_CLASS);
         // if this element is followed by a paragraph, add double line breaks
         $line_breaks = ($next_element && preg_match('/<p/i', $next_element->getOuterText())) ?
@@ -139,9 +139,9 @@ class Text {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $lists = $DOM->query('ol, ul, li');
-    if(!$lists->count()) return $html;
+    if (!$lists->count()) return $html;
     foreach ($lists as $list) {
-      if($list->tag === 'li') {
+      if ($list->tag === 'li') {
         $list->setInnertext($list->html());
         $list->class = 'mailpoet_paragraph';
       } else {
@@ -158,7 +158,7 @@ class Text {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $headings = $DOM->query('h1, h2, h3, h4');
-    if(!$headings->count()) return $html;
+    if (!$headings->count()) return $html;
     foreach ($headings as $heading) {
       $heading->style = StylesHelper::applyTextAlignment($heading->style);
       $heading->style .= 'padding:0;font-style:normal;font-weight:normal;';

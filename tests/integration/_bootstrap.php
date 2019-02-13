@@ -1,6 +1,6 @@
 <?php
 
-if((boolean)getenv('MULTISITE') === true) {
+if ((boolean)getenv('MULTISITE') === true) {
   // REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
   $_SERVER['REQUEST_URI'] = '/' . getenv('WP_TEST_MULTISITE_SLUG');
   $wp_load_file = getenv('WP_ROOT_MULTISITE') . '/wp-load.php';
@@ -49,7 +49,7 @@ $destroy = function($model) {
 array_map($destroy, $models);
 
 $cacheDir = '/tmp';
-if(is_dir(getenv('WP_TEST_CACHE_PATH'))) {
+if (is_dir(getenv('WP_TEST_CACHE_PATH'))) {
   $cacheDir = getenv('WP_TEST_CACHE_PATH');
 }
 

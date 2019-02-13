@@ -36,7 +36,7 @@ class CSS {
   function inlineCSS($url, $contents=null) {
     $html = \pQuery::parseStr($contents);
 
-    if(!is_object($html)) {
+    if (!is_object($html)) {
       return false;
     }
 
@@ -46,7 +46,7 @@ class CSS {
     foreach ($html->query('style') as $style) {
       list($_css_to_parse, $_css_to_keep) = $this->splitMediaQueries($style->getInnerText());
       $css_blocks .= $_css_to_parse;
-      if(!empty($_css_to_keep)) {
+      if (!empty($_css_to_keep)) {
         $style->setInnerText($_css_to_keep);
       } else {
         $style->setOuterText('');
@@ -54,7 +54,7 @@ class CSS {
     }
 
     $raw_css = '';
-    if(!empty($css_blocks)) {
+    if (!empty($css_blocks)) {
       $raw_css .= $css_blocks;
     }
 
@@ -69,7 +69,7 @@ class CSS {
       foreach ($html->query($rule['selector']) as $node) {
         // I'm leaving this for debug purposes, it has proved useful.
         /*
-        if($node->already_styled === 'yes')
+        if ($node->already_styled === 'yes')
         {
           echo "<PRE>";
           echo "Rule:\n";
@@ -92,7 +92,7 @@ class CSS {
 
         // I'm leaving this for debug purposes, it has proved useful.
         /*
-        if($rule['selector'] === 'table.table-recap td')
+        if ($rule['selector'] === 'table.table-recap td')
         {
           $node->already_styled = 'yes';
         }//*/
@@ -106,7 +106,7 @@ class CSS {
     $rules = array_reverse($rules);
     foreach ($rules as $rule) {
       foreach ($rule['properties'] as $key => $value) {
-        if(strpos($value, '!important') === false) {
+        if (strpos($value, '!important') === false) {
           continue;
         }
         foreach ($html->query($rule['selector']) as $node) {
@@ -147,12 +147,12 @@ class CSS {
     }
 
     usort($rules, function($a, $b) {
-      if($a['specificity'] > $b['specificity']) {
+      if ($a['specificity'] > $b['specificity']) {
         return -1;
       } else if ($a['specificity'] < $b['specificity']) {
         return 1;
       } else {
-        if($a['position'] > $b['position']) {
+        if ($a['position'] > $b['position']) {
           return -1;
         } else {
           return 1;
@@ -184,7 +184,7 @@ class CSS {
       $i = strpos($css, "{", $start);
 
       // if $i is false, then there is probably a css syntax error
-      if($i !== false) {
+      if ($i !== false) {
         // push bracket onto stack
         array_push($s, $css[$i]);
 
@@ -193,7 +193,7 @@ class CSS {
 
         while (!empty($s)) {
           // if the character is an opening bracket, push it onto the stack, otherwise pop the stack
-          if($css[$i] == "{") {
+          if ($css[$i] == "{") {
             array_push($s, "{");
           } else if ($css[$i] == "}") {
             array_pop($s);
@@ -235,7 +235,7 @@ class CSS {
       // loop chunks
     foreach ($chunks as $chunk) {
           // an ID is important, so give it a high specifity
-      if(strstr($chunk, '#') !== false) $specifity += 100;
+      if (strstr($chunk, '#') !== false) $specifity += 100;
 
           // classes are more important than a tag, but less important then an ID
       elseif (strstr($chunk, '.')) $specifity += 10;
@@ -255,10 +255,10 @@ class CSS {
   private function styleToArray($str) {
     $array = array();
 
-    if(trim($str) === '') return $array;
+    if (trim($str) === '') return $array;
 
     foreach (explode(';', $str) as $kv) {
-      if($kv === '') {
+      if ($kv === '') {
         continue;
       }
 

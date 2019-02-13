@@ -11,7 +11,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class SendingQueue extends APIEndpoint {
   public $permissions = array(
@@ -27,7 +27,7 @@ class SendingQueue extends APIEndpoint {
     // check that the newsletter exists
     $newsletter = Newsletter::findOneWithOptions($newsletter_id);
 
-    if($newsletter === false) {
+    if ($newsletter === false) {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet')
       ));
@@ -48,7 +48,7 @@ class SendingQueue extends APIEndpoint {
       ->whereNull('tasks.status')
       ->findOne();
 
-    if(!empty($queue)) {
+    if (!empty($queue)) {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => __('This newsletter is already being sent.', 'mailpoet')
       ));
@@ -58,14 +58,14 @@ class SendingQueue extends APIEndpoint {
       ->where('queues.newsletter_id', $newsletter->id)
       ->where('tasks.status', SendingQueueModel::STATUS_SCHEDULED)
       ->findOne();
-    if($scheduled_queue) {
+    if ($scheduled_queue) {
       $queue = SendingTask::createFromQueue($scheduled_queue);
     } else {
       $queue = SendingTask::create();
       $queue->newsletter_id = $newsletter->id;
     }
 
-    if((bool)$newsletter->isScheduled) {
+    if ((bool)$newsletter->isScheduled) {
       // set newsletter status
       $newsletter->setStatus(Newsletter::STATUS_SCHEDULED);
 
@@ -76,7 +76,7 @@ class SendingQueue extends APIEndpoint {
       $segments = $newsletter->segments()->findMany();
       $finder = new SubscribersFinder();
       $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
-      if(!$subscribers_count) {
+      if (!$subscribers_count) {
         return $this->errorResponse(array(
           APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet')
         ));
@@ -91,7 +91,7 @@ class SendingQueue extends APIEndpoint {
     $queue->save();
 
     $errors = $queue->getErrors();
-    if(!empty($errors)) {
+    if (!empty($errors)) {
       return $this->errorResponse($errors);
     } else {
       return $this->successResponse(
@@ -107,14 +107,14 @@ class SendingQueue extends APIEndpoint {
     );
     $newsletter = Newsletter::findOne($newsletter_id);
 
-    if($newsletter === false) {
+    if ($newsletter === false) {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet')
       ));
     } else {
       $queue = $newsletter->getQueue();
 
-      if($queue === false) {
+      if ($queue === false) {
         return $this->errorResponse(array(
           APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet')
         ));
@@ -133,14 +133,14 @@ class SendingQueue extends APIEndpoint {
       : false
     );
     $newsletter = Newsletter::findOne($newsletter_id);
-    if($newsletter === false) {
+    if ($newsletter === false) {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet')
       ));
     } else {
       $queue = $newsletter->getQueue();
 
-      if($queue === false) {
+      if ($queue === false) {
         return $this->errorResponse(array(
           APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet')
         ));

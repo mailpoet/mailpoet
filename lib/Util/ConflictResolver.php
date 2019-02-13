@@ -62,11 +62,11 @@ class ConflictResolver {
     // unload all styles except from the list of allowed
     $dequeue_styles = function() use($_this) {
       global $wp_styles;
-      if(empty($wp_styles->queue)) return;
+      if (empty($wp_styles->queue)) return;
       foreach ($wp_styles->queue as $wp_style) {
-        if(empty($wp_styles->registered[$wp_style])) continue;
+        if (empty($wp_styles->registered[$wp_style])) continue;
         $registered_style = $wp_styles->registered[$wp_style];
-        if(!preg_match('!' . implode('|', $_this->permitted_assets_locations['styles']) . '!i', $registered_style->src)) {
+        if (!preg_match('!' . implode('|', $_this->permitted_assets_locations['styles']) . '!i', $registered_style->src)) {
           wp_dequeue_style($wp_style);
         }
       }
@@ -84,9 +84,9 @@ class ConflictResolver {
     $dequeue_scripts = function() use($_this) {
       global $wp_scripts;
       foreach ($wp_scripts->queue as $wp_script) {
-        if(empty($wp_scripts->registered[$wp_script])) continue;
+        if (empty($wp_scripts->registered[$wp_script])) continue;
         $registered_script = $wp_scripts->registered[$wp_script];
-        if(!preg_match('!' . implode('|', $_this->permitted_assets_locations['scripts']) . '!i', $registered_script->src)) {
+        if (!preg_match('!' . implode('|', $_this->permitted_assets_locations['scripts']) . '!i', $registered_script->src)) {
           wp_dequeue_script($wp_script);
         }
       }

@@ -10,7 +10,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class WooCommerce {
   /** @var SettingsController */
@@ -25,13 +25,13 @@ class WooCommerce {
   }
 
   function synchronizeRegisteredCustomer($wp_user_id, $current_filter = null) {
-    if(!$current_filter && !$this->settings->get('enable_wc_hooks_testing')) {
+    if (!$current_filter && !$this->settings->get('enable_wc_hooks_testing')) {
       return false; // temporarily disable hooks (except for testing)
     }
 
     $wc_segment = Segment::getWooCommerceSegment();
 
-    if($wc_segment === false) return;
+    if ($wc_segment === false) return;
 
     $current_filter = $current_filter ?: $this->wp->currentFilter();
     switch ($current_filter) {
@@ -47,7 +47,7 @@ class WooCommerce {
         $subscriber = Subscriber::where('wp_user_id', $wp_user_id)
           ->findOne();
 
-        if($wp_user === false || $subscriber === false) {
+        if ($wp_user === false || $subscriber === false) {
           // registered customers should exist as WP users and WP segment subscribers
           return false;
         }
@@ -55,7 +55,7 @@ class WooCommerce {
         $data = array(
           'is_woocommerce_user' => 1,
         );
-        if(!empty($new_customer)) {
+        if (!empty($new_customer)) {
           $data['status'] = Subscriber::STATUS_SUBSCRIBED;
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
@@ -63,7 +63,7 @@ class WooCommerce {
         $data['deleted_at'] = null; // remove the user from the trash
 
         $subscriber = Subscriber::createOrUpdate($data);
-        if($subscriber->getErrors() === false && $subscriber->id > 0) {
+        if ($subscriber->getErrors() === false && $subscriber->id > 0) {
           // add subscriber to the WooCommerce Customers segment
           SubscriberSegment::subscribeToSegments(
             $subscriber,
@@ -77,23 +77,23 @@ class WooCommerce {
   }
 
   function synchronizeGuestCustomer($order_id, $current_filter = null) {
-    if(!$current_filter && !$this->settings->get('enable_wc_hooks_testing')) {
+    if (!$current_filter && !$this->settings->get('enable_wc_hooks_testing')) {
       return false; // temporarily disable hooks (except for testing)
     }
 
     $wc_order = $this->wp->getPost($order_id);
     $wc_segment = Segment::getWooCommerceSegment();
 
-    if($wc_order === false or $wc_segment === false) return;
+    if ($wc_order === false or $wc_segment === false) return;
 
     $inserted_emails = $this->insertSubscribersFromOrders($order_id);
-    if(empty($inserted_emails[0]['email'])) {
+    if (empty($inserted_emails[0]['email'])) {
       return false;
     }
     $subscriber = Subscriber::where('email', $inserted_emails[0]['email'])
       ->findOne();
 
-    if($subscriber !== false) {
+    if ($subscriber !== false) {
       // add subscriber to the WooCommerce Customers segment
       SubscriberSegment::subscribeToSegments(
         $subscriber,
@@ -164,7 +164,7 @@ class WooCommerce {
     array_filter($updated_emails, function($updated_email) use($validator) {
       return !$validator->validateEmail($updated_email['email']);
     }));
-    if(!$invalid_is_woocommerce_users) {
+    if (!$invalid_is_woocommerce_users) {
       return;
     }
     \ORM::for_table(Subscriber::$_table)

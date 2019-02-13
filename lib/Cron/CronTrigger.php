@@ -4,7 +4,7 @@ namespace MailPoet\Cron;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class CronTrigger {
   public $current_method;

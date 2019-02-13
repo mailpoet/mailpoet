@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class NewsletterTemplate extends Model {
   public static $_table = MP_NEWSLETTER_TEMPLATES_TABLE;
@@ -21,7 +21,7 @@ class NewsletterTemplate extends Model {
   }
 
   static function cleanRecentlySent($data) {
-    if(!empty($data['categories']) && $data['categories'] === self::RECENTLY_SENT_CATEGORIES) {
+    if (!empty($data['categories']) && $data['categories'] === self::RECENTLY_SENT_CATEGORIES) {
       $ids = parent::where('categories', self::RECENTLY_SENT_CATEGORIES)
         ->select('id')
         ->orderByDesc('id')
@@ -38,7 +38,7 @@ class NewsletterTemplate extends Model {
 
   function asArray() {
     $template = parent::asArray();
-    if(isset($template['body'])) {
+    if (isset($template['body'])) {
       $template['body'] = json_decode($template['body'], true);
     }
     return $template;

@@ -27,14 +27,14 @@ class SubscribersFinder {
   }
 
   private function findSubscribersInSegment(Segment $segment, $subscribers_to_process_ids) {
-    if($this->isStaticSegment($segment)) {
+    if ($this->isStaticSegment($segment)) {
       $subscribers = Subscriber::findSubscribersInSegments($subscribers_to_process_ids, array($segment->id))->findMany();
       return Subscriber::extractSubscribersIds($subscribers);
     }
     $finders = $this->wp->applyFilters('mailpoet_get_subscribers_in_segment_finders', array());
     foreach ($finders as $finder) {
       $subscribers = $finder->findSubscribersInSegment($segment, $subscribers_to_process_ids);
-      if($subscribers) {
+      if ($subscribers) {
         return Subscriber::extractSubscribersIds($subscribers);
       }
     }
@@ -50,17 +50,17 @@ class SubscribersFinder {
     $staticSegments = array();
     $dynamicSegments = array();
     foreach ($segments as $segment) {
-      if($this->isStaticSegment($segment)) {
+      if ($this->isStaticSegment($segment)) {
         $staticSegments[] = $segment;
       } else {
         $dynamicSegments[] = $segment;
       }
     }
     $count = 0;
-    if(!empty($staticSegments)) {
+    if (!empty($staticSegments)) {
       $count += $this->addSubscribersToTaskFromStaticSegments($task, $staticSegments);
     }
-    if(!empty($dynamicSegments)) {
+    if (!empty($dynamicSegments)) {
       $count += $this->addSubscribersToTaskFromDynamicSegments($task, $dynamicSegments);
     }
     return $count;
@@ -103,7 +103,7 @@ class SubscribersFinder {
     $count = 0;
     foreach ($finders as $finder) {
       $subscribers = $finder->getSubscriberIdsInSegment($segment);
-      if($subscribers) {
+      if ($subscribers) {
         $count += $this->addSubscribersToTaskByIds($task, $subscribers);
       }
     }
@@ -132,7 +132,7 @@ class SubscribersFinder {
   private function unique($subscribers) {
     $result = array();
     foreach ($subscribers as $subscriber) {
-      if(is_a($subscriber, 'MailPoet\Models\Model')) {
+      if (is_a($subscriber, 'MailPoet\Models\Model')) {
         $result[$subscriber->id] = $subscriber;
       } elseif (is_scalar($subscriber)) {
         $result[$subscriber] = $subscriber;

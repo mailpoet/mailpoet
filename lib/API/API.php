@@ -5,7 +5,7 @@ namespace MailPoet\API;
 use MailPoet\DI\ContainerWrapper;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class API {
   static function MP($version) {

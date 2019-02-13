@@ -4,7 +4,7 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Mailer\Mailer as MailerFactory;
 use MailPoet\Mailer\MailerLog;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Mailer {
   public $mailer;
@@ -26,10 +26,10 @@ class Mailer {
     $reply_to['name'] = (!empty($newsletter->reply_to_name)) ?
       $newsletter->reply_to_name :
       false;
-    if(!$sender['address']) {
+    if (!$sender['address']) {
       $sender = false;
     }
-    if(!$reply_to['address']) {
+    if (!$reply_to['address']) {
       $reply_to = false;
     }
     $this->mailer = new MailerFactory($method = false, $sender, $reply_to);
@@ -55,7 +55,7 @@ class Mailer {
   }
 
   function sendBulk($prepared_newsletters, $prepared_subscribers, $extra_params = array()) {
-    if($this->getProcessingMethod() === 'individual') {
+    if ($this->getProcessingMethod() === 'individual') {
       throw new \LogicException('Trying to send a batch with individual processing method');
     }
     return $this->mailer->mailer_instance->send(
@@ -66,7 +66,7 @@ class Mailer {
   }
 
   function send($prepared_newsletter, $prepared_subscriber, $extra_params = array()) {
-    if($this->getProcessingMethod() === 'bulk') {
+    if ($this->getProcessingMethod() === 'bulk') {
       throw new \LogicException('Trying to send an individual email with a bulk processing method');
     }
     return $this->mailer->mailer_instance->send(

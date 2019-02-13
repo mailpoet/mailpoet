@@ -11,7 +11,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\WP\DateTime;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Services extends APIEndpoint {
   public $bridge;
@@ -28,7 +28,7 @@ class Services extends APIEndpoint {
   function checkMSSKey($data = array()) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
-    if(!$key) {
+    if (!$key) {
       return $this->badRequest(array(
         APIError::BAD_REQUEST  => __('Please specify a key.', 'mailpoet')
       ));
@@ -46,7 +46,7 @@ class Services extends APIEndpoint {
     $state = !empty($result['state']) ? $result['state'] : null;
 
     $success_message = null;
-    if($state == Bridge::KEY_VALID) {
+    if ($state == Bridge::KEY_VALID) {
       $success_message = __('Your MailPoet Sending Service key has been successfully validated.', 'mailpoet');
     } elseif ($state == Bridge::KEY_EXPIRING) {
       $success_message = sprintf(
@@ -55,11 +55,11 @@ class Services extends APIEndpoint {
       );
     }
 
-    if(!empty($result['data']['public_id'])) {
+    if (!empty($result['data']['public_id'])) {
       Analytics::setPublicId($result['data']['public_id']);
     }
 
-    if($success_message) {
+    if ($success_message) {
       return $this->successResponse(array('message' => $success_message));
     }
 
@@ -74,7 +74,7 @@ class Services extends APIEndpoint {
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $errorMessage = __('Error validating MailPoet Sending Service key, please try again later (%s).', 'mailpoet');
         // If site runs on localhost
-        if( 1 === preg_match("/^(http|https)\:\/\/(localhost|127\.0\.0\.1)/", site_url()) ) {
+        if ( 1 === preg_match("/^(http|https)\:\/\/(localhost|127\.0\.0\.1)/", site_url()) ) {
           $errorMessage .= ' ' . __("Note that it doesn't work on localhost.", 'mailpoet');
         }
         $error = sprintf(
@@ -90,7 +90,7 @@ class Services extends APIEndpoint {
   function checkPremiumKey($data = array()) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
-    if(!$key) {
+    if (!$key) {
       return $this->badRequest(array(
         APIError::BAD_REQUEST  => __('Please specify a key.', 'mailpoet')
       ));
@@ -108,7 +108,7 @@ class Services extends APIEndpoint {
     $state = !empty($result['state']) ? $result['state'] : null;
 
     $success_message = null;
-    if($state == Bridge::KEY_VALID) {
+    if ($state == Bridge::KEY_VALID) {
       $success_message = __('Your Premium key has been successfully validated.', 'mailpoet');
     } elseif ($state == Bridge::KEY_EXPIRING) {
       $success_message = sprintf(
@@ -117,11 +117,11 @@ class Services extends APIEndpoint {
       );
     }
 
-    if(!empty($result['data']['public_id'])) {
+    if (!empty($result['data']['public_id'])) {
       Analytics::setPublicId($result['data']['public_id']);
     }
 
-    if($success_message) {
+    if ($success_message) {
       return $this->successResponse(
         array('message' => $success_message),
         Installer::getPremiumStatus()

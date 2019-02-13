@@ -3,7 +3,7 @@ namespace MailPoet\Models;
 
 use MailPoet\Form\Block\Date;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * @property string $type
@@ -31,7 +31,7 @@ class CustomField extends Model {
   function asArray() {
     $model = parent::asArray();
 
-    if(isset($model['params'])) {
+    if (isset($model['params'])) {
       $model['params'] = (is_array($this->params))
         ? $this->params
         : unserialize($this->params);
@@ -40,7 +40,7 @@ class CustomField extends Model {
   }
 
   function save() {
-    if(is_null($this->params)) {
+    if (is_null($this->params)) {
       $this->params = array();
     }
     $this->set('params', (
@@ -53,7 +53,7 @@ class CustomField extends Model {
 
   function formatValue($value = null) {
     // format custom field data depending on type
-    if(is_array($value) && $this->type === self::TYPE_DATE) {
+    if (is_array($value) && $this->type === self::TYPE_DATE) {
       $custom_field_data = $this->asArray();
       $date_format = $custom_field_data['params']['date_format'];
       $date_type = (isset($custom_field_data['params']['date_type'])
@@ -80,7 +80,7 @@ class CustomField extends Model {
           break;
 
         case 'month':
-          if((int)$value['month'] === 0) {
+          if ((int)$value['month'] === 0) {
             $value = '';
           } else {
             $value = sprintf(
@@ -91,7 +91,7 @@ class CustomField extends Model {
           break;
 
         case 'day':
-          if((int)$value['day'] === 0) {
+          if ((int)$value['day'] === 0) {
             $value = '';
           } else {
             $value = sprintf(
@@ -102,7 +102,7 @@ class CustomField extends Model {
           break;
 
         case 'year':
-          if((int)$value['year'] === 0) {
+          if ((int)$value['year'] === 0) {
             $value = '';
           } else {
             $value = sprintf(
@@ -113,7 +113,7 @@ class CustomField extends Model {
           break;
       }
 
-      if(!empty($value)) {
+      if (!empty($value)) {
         $value = Date::convertDateToDatetime($value, $date_format);
       }
     }
@@ -132,7 +132,7 @@ class CustomField extends Model {
 
   static function createOrUpdate($data = array()) {
     // set name as label by default
-    if(empty($data['params']['label']) && isset($data['name'])) {
+    if (empty($data['params']['label']) && isset($data['name'])) {
       $data['params']['label'] = $data['name'];
     }
     return parent::_createOrUpdate($data);

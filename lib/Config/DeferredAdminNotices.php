@@ -28,7 +28,7 @@ class DeferredAdminNotices {
       add_action('network_admin_notices', array($notice, 'displayWPNotice'));
     }
 
-    if(!empty($notices)) {
+    if (!empty($notices)) {
       delete_option(DeferredAdminNotices::OPTIONS_KEY_NAME);
     }
   }

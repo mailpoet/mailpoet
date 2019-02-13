@@ -7,7 +7,7 @@ use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\License;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Installer {
   const PREMIUM_PLUGIN_SLUG = 'mailpoet-premium';
@@ -27,7 +27,7 @@ class Installer {
   }
 
   function getPluginInformation($data, $action = '', $args = null) {
-    if($action === 'plugin_information'
+    if ($action === 'plugin_information'
       && isset($args->slug)
       && $args->slug === $this->slug
     ) {
@@ -72,7 +72,7 @@ class Installer {
 
   static function getPluginActivationUrl($slug) {
     $plugin_file = self::getPluginFile($slug);
-    if(empty($plugin_file)) {
+    if (empty($plugin_file)) {
       return false;
     }
     $activate_url = add_query_arg(
@@ -88,7 +88,7 @@ class Installer {
 
   private static function getInstalledPlugin($slug) {
     $installed_plugin = array();
-    if(is_dir(WP_PLUGIN_DIR . '/' . $slug)) {
+    if (is_dir(WP_PLUGIN_DIR . '/' . $slug)) {
       $installed_plugin = get_plugins('/' . $slug);
     }
     return $installed_plugin;
@@ -97,7 +97,7 @@ class Installer {
   static function getPluginFile($slug) {
     $plugin_file = false;
     $installed_plugin = self::getInstalledPlugin($slug);
-    if(!empty($installed_plugin)) {
+    if (!empty($installed_plugin)) {
       $plugin_file = $slug . '/' . key($installed_plugin);
     }
     return $plugin_file;
@@ -113,7 +113,7 @@ class Installer {
 
   private function formatInformation($info) {
     // cast sections object to array for WP to understand
-    if(isset($info->sections)) {
+    if (isset($info->sections)) {
       $info->sections = (array)$info->sections;
     }
     return $info;

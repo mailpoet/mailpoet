@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Listing;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Handler {
   const DEFAULT_LIMIT_PER_PAGE = 20;
@@ -11,12 +11,12 @@ class Handler {
     $table_name = $model_class::$_table;
     $model = \Model::factory($model_class);
 
-    if(method_exists($model_class, 'listingQuery')) {
+    if (method_exists($model_class, 'listingQuery')) {
       $custom_query = call_user_func_array(
         [$model_class, 'listingQuery'],
         [$data]
       );
-      if(!empty($data['selection'])) {
+      if (!empty($data['selection'])) {
         $custom_query->whereIn($table_name.'.id', $data['selection']);
       }
       return $custom_query;
@@ -25,7 +25,7 @@ class Handler {
       $this->setGroup($model, $data);
       $this->setSearch($model, $data);
 
-      if(!empty($data['selection'])) {
+      if (!empty($data['selection'])) {
         $model->whereIn($table_name.'.id', $data['selection']);
       }
       return $model;
@@ -38,7 +38,7 @@ class Handler {
     $model = \Model::factory($model_class);
     // get groups
     $groups = array();
-    if(method_exists($model_class, 'groups')) {
+    if (method_exists($model_class, 'groups')) {
       $groups = call_user_func_array(
         array($model_class, 'groups'),
         array($data)
@@ -47,7 +47,7 @@ class Handler {
 
     // get filters
     $filters = array();
-    if(method_exists($model_class, 'filters')) {
+    if (method_exists($model_class, 'filters')) {
       $filters = call_user_func_array(
         array($model_class, 'filters'),
         array($data)
@@ -55,7 +55,7 @@ class Handler {
     }
 
     // get items and total count
-    if(method_exists($model_class, 'listingQuery')) {
+    if (method_exists($model_class, 'listingQuery')) {
       $custom_query = call_user_func_array(
         array($model_class, 'listingQuery'),
         array($data)
@@ -93,7 +93,7 @@ class Handler {
   }
 
   private function setSearch(\ORMWrapper $model, array $data) {
-    if(empty($data['search'])) {
+    if (empty($data['search'])) {
       return;
     }
     return $model->filter('search', $data['search']);
@@ -106,14 +106,14 @@ class Handler {
   }
 
   private function setGroup(\ORMWrapper $model, array $data) {
-    if($data['group'] === null) {
+    if ($data['group'] === null) {
       return;
     }
     $model->filter('groupBy', $data['group']);
   }
 
   private function setFilter(\ORMWrapper $model, array $data) {
-    if($data['filter'] === null) {
+    if ($data['filter'] === null) {
       return $model;
     }
     return $model->filter('filterBy', $data['filter']);
@@ -130,7 +130,7 @@ class Handler {
       ? filter_var($data['sort_by'], FILTER_SANITIZE_STRING)
       : '';
 
-    if(empty($sort_by)) {
+    if (empty($sort_by)) {
       $sort_by = 'id';
     }
 

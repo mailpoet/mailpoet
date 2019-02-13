@@ -6,7 +6,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class CronDaemon {
   const ENDPOINT = 'cron_daemon';

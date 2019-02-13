@@ -2,7 +2,7 @@
 
 namespace MailPoet\Twig;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Helpscout extends \Twig_Extension {
   public function getFunctions() {

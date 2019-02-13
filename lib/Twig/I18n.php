@@ -4,7 +4,7 @@ namespace MailPoet\Twig;
 
 use MailPoet\Config\Localizer;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class I18n extends \Twig_Extension {
 
@@ -80,10 +80,10 @@ class I18n extends \Twig_Extension {
     $date = (isset($args[0])) ? $args[0] : null;
     $date_format = (isset($args[1])) ? $args[1] : get_option('date_format');
 
-    if(empty($date)) return;
+    if (empty($date)) return;
 
     // check if it's an int passed as a string
-    if((string)(int)$date === $date) {
+    if ((string)(int)$date === $date) {
       $date = (int)$date;
     } else if (!is_int($date)) {
       $date = strtotime($date);
@@ -94,7 +94,7 @@ class I18n extends \Twig_Extension {
 
   private function setTextDomain($args = array()) {
     // make sure that the last argument is our text domain
-    if($args[count($args) - 1] !== $this->_text_domain) {
+    if ($args[count($args) - 1] !== $this->_text_domain) {
       // otherwise add it to the list of arguments
       $args[] = $this->_text_domain;
     }

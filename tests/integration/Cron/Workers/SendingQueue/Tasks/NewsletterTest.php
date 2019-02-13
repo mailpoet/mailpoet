@@ -19,7 +19,7 @@ use MailPoet\Router\Router;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class NewsletterTest extends \MailPoetTest {
   function _before() {

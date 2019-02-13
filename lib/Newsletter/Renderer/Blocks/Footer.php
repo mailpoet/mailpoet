@@ -14,9 +14,9 @@ class Footer {
     );
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($element['text']);
-    if(isset($element['styles']['link'])) {
+    if (isset($element['styles']['link'])) {
       $links = $DOM->query('a');
-      if($links->count()) {
+      if ($links->count()) {
         $css = new CSS();
         foreach ($links as $link) {
           $element_link_styles = StylesHelper::getStyles($element['styles'], 'link');
@@ -28,7 +28,7 @@ class Footer {
     $background_color = ($background_color !== 'transparent') ?
       'bgcolor="' . $background_color . '"' :
       false;
-    if(!$background_color) unset($element['styles']['block']['backgroundColor']);
+    if (!$background_color) unset($element['styles']['block']['backgroundColor']);
     $template = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_footer" ' . $background_color . '

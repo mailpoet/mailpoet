@@ -5,7 +5,7 @@ use MailPoet\Util\License\License;
 
 class LicenseTest extends \MailPoetUnitTest {
   function testItGetsLicense() {
-    if(defined('MAILPOET_PREMIUM_LICENSE')) return;
+    if (defined('MAILPOET_PREMIUM_LICENSE')) return;
     expect(License::getLicense())->false();
     expect(License::getLicense('valid'))->equals('valid');
   }

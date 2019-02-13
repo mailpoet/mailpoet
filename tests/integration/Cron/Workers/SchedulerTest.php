@@ -745,7 +745,7 @@ class SchedulerTest extends \MailPoetTest {
   function _createOrUpdateWPUser($role = null) {
     $email = 'test@example.com';
     $username = 'phoenix_test_user';
-    if(email_exists($email) === false) {
+    if (email_exists($email) === false) {
       wp_insert_user(
         array(
           'user_login' => $username,

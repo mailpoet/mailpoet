@@ -14,7 +14,7 @@ class SendGridMapper {
       sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SENDGRID);
 
     $level = MailerError::LEVEL_HARD;
-    if(strpos($response, 'Invalid email address') === 0) {
+    if (strpos($response, 'Invalid email address') === 0) {
       $level = MailerError::LEVEL_SOFT;
     }
     $subscriber_errors = [new SubscriberError($subscriber, null)];

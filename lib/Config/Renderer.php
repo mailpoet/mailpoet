@@ -7,7 +7,7 @@ use Twig_Environment as TwigEnv;
 use Twig_Lexer as TwigLexer;
 use Twig_Loader_Filesystem as TwigFileSystem;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Renderer {
   protected $cache_path;
@@ -99,7 +99,7 @@ class Renderer {
   }
 
   function setupDebug() {
-    if($this->debugging_enabled) {
+    if ($this->debugging_enabled) {
       $this->renderer->addExtension(new \Twig_Extension_Debug());
     }
   }

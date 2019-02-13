@@ -4,7 +4,7 @@ namespace MailPoet\Newsletter;
 use MailPoet\Logging\Logger;
 use MailPoet\Newsletter\Editor\Transformer;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class AutomatedLatestContent {
   const DEFAULT_POSTS_PER_PAGE = 10;
@@ -24,7 +24,7 @@ class AutomatedLatestContent {
 
     $wherePostUnsent = 'ID NOT IN (' . $sentPostsQuery . ')';
 
-    if(!empty($where)) $wherePostUnsent = ' AND ' . $wherePostUnsent;
+    if (!empty($where)) $wherePostUnsent = ' AND ' . $wherePostUnsent;
 
     return $where . $wherePostUnsent;
   }
@@ -44,17 +44,17 @@ class AutomatedLatestContent {
       'orderby' => 'date',
       'order' => ($args['sortBy'] === 'newest') ? 'DESC' : 'ASC',
     );
-    if(!empty($args['offset']) && (int)$args['offset'] > 0) {
+    if (!empty($args['offset']) && (int)$args['offset'] > 0) {
       $parameters['offset'] = (int)$args['offset'];
     }
-    if(isset($args['search'])) {
+    if (isset($args['search'])) {
       $parameters['s'] = $args['search'];
     }
-    if(isset($args['posts']) && is_array($args['posts'])) {
+    if (isset($args['posts']) && is_array($args['posts'])) {
       $parameters['post__in'] = $args['posts'];
       $parameters['posts_per_page'] = -1; // Get all posts with matching IDs
     }
-    if(!empty($posts_to_exclude)) {
+    if (!empty($posts_to_exclude)) {
       $parameters['post__not_in'] = $posts_to_exclude;
     }
     $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
@@ -65,7 +65,7 @@ class AutomatedLatestContent {
     // the query.
     $parameters['suppress_filters'] = false;
 
-    if($this->newer_than_timestamp) {
+    if ($this->newer_than_timestamp) {
       $parameters['date_query'] = array(
         array(
           'column' => 'post_date',
@@ -94,29 +94,29 @@ class AutomatedLatestContent {
 
   function constructTaxonomiesQuery($args) {
     $taxonomies_query = array();
-    if(isset($args['terms']) && is_array($args['terms'])) {
+    if (isset($args['terms']) && is_array($args['terms'])) {
       $taxonomies = array();
       // Categorize terms based on their taxonomies
       foreach ($args['terms'] as $term) {
         $taxonomy = $term['taxonomy'];
-        if(!isset($taxonomies[$taxonomy])) {
+        if (!isset($taxonomies[$taxonomy])) {
           $taxonomies[$taxonomy] = array();
         }
         $taxonomies[$taxonomy][] = $term['id'];
       }
 
       foreach ($taxonomies as $taxonomy => $terms) {
-        if(!empty($terms)) {
+        if (!empty($terms)) {
           $tax = array(
             'taxonomy' => $taxonomy,
             'field' => 'id',
             'terms' => $terms,
           );
-          if($args['inclusionType'] === 'exclude') $tax['operator'] = 'NOT IN';
+          if ($args['inclusionType'] === 'exclude') $tax['operator'] = 'NOT IN';
           $taxonomies_query[] = $tax;
         }
       }
-      if(!empty($taxonomies_query)) {
+      if (!empty($taxonomies_query)) {
         // With exclusion we want to use 'AND', because we want posts that
         // don't have excluded tags/categories. But with inclusion we want to
         // use 'OR', because we want posts that have any of the included
@@ -128,13 +128,13 @@ class AutomatedLatestContent {
   }
 
   private function _attachSentPostsFilter() {
-    if($this->newsletter_id > 0) {
+    if ($this->newsletter_id > 0) {
       add_action('posts_where', array($this, 'filterOutSentPosts'));
     }
   }
 
   private function _detachSentPostsFilter() {
-    if($this->newsletter_id > 0) {
+    if ($this->newsletter_id > 0) {
       remove_action('posts_where', array($this, 'filterOutSentPosts'));
     }
   }

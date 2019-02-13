@@ -20,19 +20,19 @@ class MailChimp {
   }
 
   function getLists() {
-    if(!$this->api_key || !$this->data_center) {
+    if (!$this->api_key || !$this->data_center) {
       return $this->throwException('API');
     }
 
     $connection = @fopen(sprintf($this->lists_url, $this->data_center, $this->api_key), 'r');
 
-    if(!$connection) {
+    if (!$connection) {
       return $this->throwException('connection');
     } else {
       $response = '';
       while (!feof($connection)) {
         $buffer = fgets($connection, 4096);
-        if(trim($buffer) !== '') {
+        if (trim($buffer) !== '') {
           $response .= $buffer;
         }
       }
@@ -41,7 +41,7 @@ class MailChimp {
 
     $response = json_decode($response);
 
-    if(!$response) {
+    if (!$response) {
       return $this->throwException('API');
     }
 
@@ -57,11 +57,11 @@ class MailChimp {
   }
 
   function getSubscribers($lists = array()) {
-    if(!$this->api_key || !$this->data_center) {
+    if (!$this->api_key || !$this->data_center) {
       return $this->throwException('API');
     }
 
-    if(!$lists) {
+    if (!$lists) {
       return $this->throwException('lists');
     }
 
@@ -71,20 +71,20 @@ class MailChimp {
     foreach ($lists as $list) {
       $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
       $connection = @fopen($url, 'r');
-      if(!$connection) {
+      if (!$connection) {
         return $this->throwException('connection');
       }
       $i = 0;
       while (!feof($connection)) {
         $buffer = fgets($connection, 4096);
-        if(trim($buffer) !== '') {
+        if (trim($buffer) !== '') {
           $obj = json_decode($buffer);
-          if($i === 0) {
+          if ($i === 0) {
             $header = $obj;
-            if(is_object($header) && isset($header->error)) {
+            if (is_object($header) && isset($header->error)) {
               return $this->throwException('lists');
             }
-            if(!isset($header_hash)) {
+            if (!isset($header_hash)) {
               $header_hash = md5(implode(',', $header));
             } elseif (md5(implode(',', $header) !== $header_hash)) {
               return $this->throwException('headers');
@@ -95,14 +95,14 @@ class MailChimp {
           $i++;
         }
         $bytes_fetched += strlen($buffer);
-        if($bytes_fetched > $this->max_post_size) {
+        if ($bytes_fetched > $this->max_post_size) {
           return $this->throwException('size');
         }
       }
       fclose($connection);
     }
 
-    if(!count($subscribers)) {
+    if (!count($subscribers)) {
       return $this->throwException('subscribers');
     }
 
@@ -116,7 +116,7 @@ class MailChimp {
   }
 
   function getDataCenter($api_key) {
-    if(!$api_key) return false;
+    if (!$api_key) return false;
     $api_key_parts = explode('-', $api_key);
     return end($api_key_parts);
   }

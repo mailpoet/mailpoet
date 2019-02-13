@@ -2,7 +2,7 @@
 
 use MailPoet\Config\Initializer;
 
-if(!defined('ABSPATH') || empty($mailpoet_plugin)) exit;
+if (!defined('ABSPATH') || empty($mailpoet_plugin)) exit;
 
 require_once($mailpoet_plugin['autoloader']);
 

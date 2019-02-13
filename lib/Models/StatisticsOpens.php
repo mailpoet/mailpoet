@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class StatisticsOpens extends Model {
   public static $_table = MP_STATISTICS_OPENS_TABLE;
@@ -11,7 +11,7 @@ class StatisticsOpens extends Model {
       ->where('newsletter_id', $newsletter_id)
       ->where('queue_id', $queue_id)
       ->findOne();
-    if(!$statistics) {
+    if (!$statistics) {
       $statistics = self::create();
       $statistics->subscriber_id = $subscriber_id;
       $statistics->newsletter_id = $newsletter_id;

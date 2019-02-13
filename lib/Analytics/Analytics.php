@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Analytics {
 
@@ -31,7 +31,7 @@ class Analytics {
 
   /** @return array */
   function generateAnalytics() {
-    if($this->shouldSend()) {
+    if ($this->shouldSend()) {
       $data = $this->wp->applyFilters(self::ANALYTICS_FILTER, $this->reporter->getData());
       $this->recordDataSent();
       return $data;
@@ -47,7 +47,7 @@ class Analytics {
   static function setPublicId($new_public_id) {
     $settings = new SettingsController();
     $current_public_id = $settings->get('public_id');
-    if($current_public_id !== $new_public_id) {
+    if ($current_public_id !== $new_public_id) {
       $settings->set('public_id', $new_public_id);
       $settings->set('new_public_id', 'true');
       // Force user data to be resent
@@ -59,7 +59,7 @@ class Analytics {
   function getPublicId() {
     $public_id = $this->settings->get('public_id', '');
     // if we didn't get the user public_id from the shop yet : we create one based on mixpanel distinct_id
-    if(empty($public_id) && !empty($_COOKIE['mixpanel_distinct_id'])) {
+    if (empty($public_id) && !empty($_COOKIE['mixpanel_distinct_id'])) {
       // the public id has to be diffent that mixpanel_distinct_id in order to be used on different browser
       $mixpanel_distinct_id = md5($_COOKIE['mixpanel_distinct_id']);
       $this->settings->set('public_id', $mixpanel_distinct_id);
@@ -75,7 +75,7 @@ class Analytics {
    */
   function isPublicIdNew() {
     $new_public_id = $this->settings->get('new_public_id');
-    if($new_public_id === 'true') {
+    if ($new_public_id === 'true') {
       $this->settings->set('new_public_id', 'false');
       return true;
     }
@@ -83,11 +83,11 @@ class Analytics {
   }
 
   private function shouldSend() {
-    if(!$this->isEnabled()) {
+    if (!$this->isEnabled()) {
       return false;
     }
     $lastSent = $this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY);
-    if(!$lastSent) {
+    if (!$lastSent) {
       return true;
     }
     $lastSentCarbon = Carbon::createFromTimestamp(strtotime($lastSent))->addDays(Analytics::SEND_AFTER_DAYS);

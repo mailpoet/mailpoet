@@ -102,7 +102,7 @@ class CapabilitiesTest extends \MailPoetTest {
   function testItRegistersMembersCapabilities() {
     $permissions = AccessControl::getPermissionLabels();
     $permission_count = count($permissions);
-    if(function_exists('members_register_cap')) { // Members plugin active
+    if (function_exists('members_register_cap')) { // Members plugin active
       $this->caps->registerMembersCapabilities();
       expect(members_get_cap_group(Capabilities::MEMBERS_CAP_GROUP_NAME)->caps)
         ->count($permission_count);

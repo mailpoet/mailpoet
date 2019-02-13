@@ -224,7 +224,7 @@ class CronHelperTest extends \MailPoetTest {
     $site_url = 'http://example.com';
     expect(CronHelper::getSiteUrl($site_url))->equals($site_url);
 
-    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
 
     // 2. when url contains valid port, try connecting to it
     $site_url = 'http://example.com:80';
@@ -246,7 +246,7 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function testItGetsSubsiteUrlOnMultisiteEnvironment() {
-    if((boolean)getenv('MULTISITE') === true) {
+    if ((boolean)getenv('MULTISITE') === true) {
       expect(CronHelper::getSiteUrl())->contains(getenv('WP_TEST_MULTISITE_SLUG'));
     }
   }
@@ -304,7 +304,7 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function testItPingsDaemon() {
-    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     // raw response is returned
     expect(CronHelper::pingDaemon())->equals(DaemonHttpRunner::PING_SUCCESS_RESPONSE);
     // response is validated

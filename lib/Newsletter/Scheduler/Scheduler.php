@@ -35,7 +35,7 @@ class Scheduler {
       ]
     );
     $types = Posts::getTypes();
-    if(($new_status !== 'publish') || !isset($types[$post->post_type])) {
+    if (($new_status !== 'publish') || !isset($types[$post->post_type])) {
       return;
     }
     self::schedulePostNotification($post->ID);
@@ -47,12 +47,12 @@ class Scheduler {
       ['post_id' => $post_id]
     );
     $newsletters = self::getNewsletters(Newsletter::TYPE_NOTIFICATION);
-    if(!count($newsletters)) return false;
+    if (!count($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
       $post = NewsletterPost::where('newsletter_id', $newsletter->id)
         ->where('post_id', $post_id)
         ->findOne();
-      if($post === false) {
+      if ($post === false) {
         self::createPostNotificationSendingTask($newsletter);
       }
     }
@@ -60,10 +60,10 @@ class Scheduler {
 
   static function scheduleSubscriberWelcomeNotification($subscriber_id, $segments) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
-    if(empty($newsletters)) return false;
+    if (empty($newsletters)) return false;
     $result = array();
     foreach ($newsletters as $newsletter) {
-      if($newsletter->event === 'segment' &&
+      if ($newsletter->event === 'segment' &&
         in_array($newsletter->segment, $segments)
       ) {
         $result[] = self::createWelcomeNotificationSendingTask($newsletter, $subscriber_id);
@@ -74,10 +74,10 @@ class Scheduler {
 
   static function scheduleAutomaticEmail($group, $event, $scheduling_condition = false, $subscriber_id = false, $meta = false) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
-    if(empty($newsletters)) return false;
+    if (empty($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
-      if($newsletter->event !== $event) continue;
-      if(is_callable($scheduling_condition) && !$scheduling_condition($newsletter)) continue;
+      if ($newsletter->event !== $event) continue;
+      if (is_callable($scheduling_condition) && !$scheduling_condition($newsletter)) continue;
       self::createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta);
     }
   }
@@ -88,20 +88,20 @@ class Scheduler {
     $old_user_data = false
   ) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
-    if(empty($newsletters)) return false;
+    if (empty($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
-      if($newsletter->event === 'user') {
-        if(!empty($old_user_data['roles'])) {
+      if ($newsletter->event === 'user') {
+        if (!empty($old_user_data['roles'])) {
           // do not schedule welcome newsletter if roles have not changed
           $old_role = $old_user_data['roles'];
           $new_role = $wp_user['roles'];
-          if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
+          if ($newsletter->role === self::WORDPRESS_ALL_ROLES ||
             !array_diff($old_role, $new_role)
           ) {
             continue;
           }
         }
-        if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
+        if ($newsletter->role === self::WORDPRESS_ALL_ROLES ||
           in_array($newsletter->role, $wp_user['roles'])
         ) {
           self::createWelcomeNotificationSendingTask($newsletter, $subscriber_id);
@@ -115,7 +115,7 @@ class Scheduler {
       ->where('queues.newsletter_id', $newsletter->id)
       ->where('subscribers.subscriber_id', $subscriber_id)
       ->findOne();
-    if(!empty($previously_scheduled_notification)) return;
+    if (!empty($previously_scheduled_notification)) return;
     $sending_task = SendingTask::create();
     $sending_task->newsletter_id = $newsletter->id;
     $sending_task->setSubscribers(array($subscriber_id));
@@ -131,10 +131,10 @@ class Scheduler {
   static function createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta) {
     $sending_task = SendingTask::create();
     $sending_task->newsletter_id = $newsletter->id;
-    if($newsletter->sendTo === 'user' && $subscriber_id) {
+    if ($newsletter->sendTo === 'user' && $subscriber_id) {
       $sending_task->setSubscribers(array($subscriber_id));
     }
-    if($meta) {
+    if ($meta) {
       $sending_task->__set('meta', $meta);
     }
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
@@ -163,16 +163,16 @@ class Scheduler {
       )
       ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
       ->findOne();
-    if($existing_notification_history) {
+    if ($existing_notification_history) {
       return;
     }
     $next_run_date = self::getNextRunDate($newsletter->schedule);
-    if(!$next_run_date) return;
+    if (!$next_run_date) return;
     // do not schedule duplicate queues for the same time
     $existing_queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->where('tasks.scheduled_at', $next_run_date)
       ->findOne();
-    if($existing_queue) return;
+    if ($existing_queue) return;
     $sending_task = SendingTask::create();
     $sending_task->newsletter_id = $newsletter->id;
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
@@ -216,7 +216,7 @@ class Scheduler {
     $relation = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $option_field->id)
       ->findOne();
-    if(!$relation) {
+    if (!$relation) {
       $relation = NewsletterOption::create();
       $relation->newsletter_id = $newsletter->id;
       $relation->option_field_id = $option_field->id;

@@ -17,7 +17,7 @@ class FunctionsTest extends \MailPoetTest {
 
   function makeAttachment($upload, $parent_post_id = 0) {
     $type = '';
-    if(!empty($upload['type'])) {
+    if (!empty($upload['type'])) {
         $type = $upload['type'];
     } else {
         $mime = wp_check_filetype($upload['file']);

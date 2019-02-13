@@ -17,7 +17,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
 
   function __construct($segments_ids, $batch_size, WPFunctions $wp = null) {
     parent::__construct($segments_ids, $batch_size);
-    if($wp == null) {
+    if ($wp == null) {
       $wp = new WPFunctions;
     }
     $this->wp = $wp;
@@ -36,7 +36,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
       $segment_id
     );
 
-    if(!is_array($filters) || empty($filters)) {
+    if (!is_array($filters) || empty($filters)) {
       return array();
     }
 
@@ -57,13 +57,13 @@ class DynamicSubscribersGetter extends SubscribersGetter {
   }
 
   public function get() {
-    if($this->segment_index >= count($this->segments_ids)) {
+    if ($this->segment_index >= count($this->segments_ids)) {
       $this->finished = true;
     }
 
     $subscribers = parent::get();
 
-    if($subscribers !== false && count($subscribers) < $this->batch_size) {
+    if ($subscribers !== false && count($subscribers) < $this->batch_size) {
       $this->segment_index ++;
       $this->offset = 0;
       $this->finished = false;

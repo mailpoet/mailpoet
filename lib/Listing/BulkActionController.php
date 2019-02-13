@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Listing;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class BulkActionController {
   /** @var Handler */
@@ -15,7 +15,7 @@ class BulkActionController {
     $bulk_action_method = 'bulk'.ucfirst($data['action']);
     unset($data['action']);
 
-    if(!method_exists($model_class, $bulk_action_method)) {
+    if (!method_exists($model_class, $bulk_action_method)) {
       throw new \Exception(
         $model_class. ' has no method "'.$bulk_action_method.'"'
       );

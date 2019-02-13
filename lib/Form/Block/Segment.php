@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Block;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Segment extends Base {
 
@@ -21,7 +21,7 @@ class Segment extends Base {
     );
 
     foreach ($options as $option) {
-      if(!isset($option['id']) || !isset($option['name'])) continue;
+      if (!isset($option['id']) || !isset($option['name'])) continue;
 
       $is_checked = (isset($option['is_checked']) && $option['is_checked']) ? 'checked="checked"' : '';
 

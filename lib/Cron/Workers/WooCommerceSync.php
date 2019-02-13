@@ -6,7 +6,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class WooCommerceSync extends SimpleWorker {
   const TASK_TYPE = 'woocommerce_sync';

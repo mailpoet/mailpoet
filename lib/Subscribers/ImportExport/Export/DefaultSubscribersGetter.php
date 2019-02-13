@@ -46,7 +46,7 @@ class DefaultSubscribersGetter extends SubscribersGetter {
       )
       ->groupBy(Segment::$_table . '.id');
 
-    if($this->get_subscribers_without_segment !== false) {
+    if ($this->get_subscribers_without_segment !== false) {
       // if there are subscribers who do not belong to any segment, use
       // a CASE function to group them under "Not In Segment"
       $subscribers = $subscribers

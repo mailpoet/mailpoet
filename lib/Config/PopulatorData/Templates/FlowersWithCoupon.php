@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class FlowersWithCoupon {
 
@@ -29,81 +29,81 @@ class FlowersWithCoupon {
 
   private function getBody() {
     return array (
-      'content' => 
+      'content' =>
       array (
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
+        'image' =>
         array (
           'src' => NULL,
           'display' => 'scale',
         ),
-        'styles' => 
+        'styles' =>
         array (
-          'block' => 
+          'block' =>
           array (
             'backgroundColor' => 'transparent',
           ),
         ),
-        'blocks' => 
+        'blocks' =>
         array (
-          0 => 
+          0 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#eae5e5',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'header',
                     'text' => '<p><span style="color: #000000;"><a href="[link:newsletter_view_in_browser_url]" style="color: #000000;">View this email in your browser.</a></span></p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'underline',
@@ -114,57 +114,57 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          1 => 
+          1 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#e0a9bc',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -173,9 +173,9 @@ class FlowersWithCoupon {
                     'fullWidth' => false,
                     'width' => '110px',
                     'height' => '180px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'left',
                       ),
@@ -183,44 +183,44 @@ class FlowersWithCoupon {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '44px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => 
+                    'icons' =>
                     array (
-                      0 => 
+                      0 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
@@ -230,7 +230,7 @@ class FlowersWithCoupon {
                         'width' => '32px',
                         'text' => 'Facebook',
                       ),
-                      1 => 
+                      1 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
@@ -240,7 +240,7 @@ class FlowersWithCoupon {
                         'width' => '32px',
                         'text' => 'Twitter',
                       ),
-                      2 => 
+                      2 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
@@ -256,45 +256,45 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          2 => 
+          2 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#e0a9bc',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -303,15 +303,15 @@ class FlowersWithCoupon {
                     'fullWidth' => true,
                     'width' => '1280px',
                     'height' => '850px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'center',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center;"><strong>Just for you.</strong></h1>',
@@ -320,58 +320,58 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          3 => 
+          3 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#e0a9bc',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><span style="color: #333333;"><strong>Welcome to our flower store - as a token of our appreciation for you signing up,</strong></span></p>
     <p style="text-align: center;"><span style="color: #333333;"><strong>here\'s a little gift from us for your next order.</strong></span></p>',
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'button',
                     'text' => 'CoUpOn_Code',
                     'url' => '',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#292929',
                         'borderColor' => '#0074a2',
@@ -388,17 +388,17 @@ class FlowersWithCoupon {
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><span style="color: #333333; font-size: 11px;"><strong></strong><strong>10% off your next order with us. Terms and Conditions apply.</strong></span></p>',
                   ),
-                  3 => 
+                  3 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -409,50 +409,50 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          4 => 
+          4 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#ffffff',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '45px',
@@ -463,55 +463,55 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          5 => 
+          5 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#ffffff',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><strong>A little inspiration to get you started...</strong></h2>',
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -522,62 +522,62 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          6 => 
+          6 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3><strong>New flowers delivered</strong></h3>',
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rutrum et lacus a dignissim. Curabitur id nisi malesuada, pharetra massa ut, bibendum lacus.</span></p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'button',
                     'text' => 'Buy Now',
                     'url' => '',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#e0a9bc',
                         'borderColor' => '#0074a2',
@@ -596,26 +596,26 @@ class FlowersWithCoupon {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -624,9 +624,9 @@ class FlowersWithCoupon {
                     'fullWidth' => false,
                     'width' => '730px',
                     'height' => '604px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'left',
                       ),
@@ -636,50 +636,50 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          7 => 
+          7 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -690,45 +690,45 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          8 => 
+          8 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -737,9 +737,9 @@ class FlowersWithCoupon {
                     'fullWidth' => false,
                     'width' => '730px',
                     'height' => '604px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'left',
                       ),
@@ -747,43 +747,43 @@ class FlowersWithCoupon {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3><strong>Save with a subscription</strong></h3>',
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rutrum et lacus a dignissim. Curabitur id nisi malesuada, pharetra massa ut, bibendum lacus.</span></p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'button',
                     'text' => 'Buy Now',
                     'url' => '',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#e0a9bc',
                         'borderColor' => '#0074a2',
@@ -804,50 +804,50 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          9 => 
+          9 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
@@ -858,62 +858,62 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          10 => 
+          10 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'text',
                     'text' => '<h3><strong>Collect from our store</strong></h3>',
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rutrum et lacus a dignissim. Curabitur id nisi malesuada, pharetra massa ut, bibendum lacus.</span></p>',
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'button',
                     'text' => 'Buy Now',
                     'url' => '',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => '#e0a9bc',
                         'borderColor' => '#0074a2',
@@ -932,26 +932,26 @@ class FlowersWithCoupon {
                   ),
                 ),
               ),
-              1 => 
+              1 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'image',
                     'link' => '',
@@ -960,9 +960,9 @@ class FlowersWithCoupon {
                     'fullWidth' => false,
                     'width' => '730px',
                     'height' => '604px',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'textAlign' => 'left',
                       ),
@@ -972,50 +972,50 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          11 => 
+          11 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
@@ -1026,63 +1026,63 @@ class FlowersWithCoupon {
               ),
             ),
           ),
-          12 => 
+          12 =>
           array (
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
+            'image' =>
             array (
               'src' => NULL,
               'display' => 'scale',
             ),
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#eae5e5',
               ),
             ),
-            'blocks' => 
+            'blocks' =>
             array (
-              0 => 
+              0 =>
               array (
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
+                'image' =>
                 array (
                   'src' => NULL,
                   'display' => 'scale',
                 ),
-                'styles' => 
+                'styles' =>
                 array (
-                  'block' => 
+                  'block' =>
                   array (
                     'backgroundColor' => 'transparent',
                   ),
                 ),
-                'blocks' => 
+                'blocks' =>
                 array (
-                  0 => 
+                  0 =>
                   array (
                     'type' => 'spacer',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
                       ),
                     ),
                   ),
-                  1 => 
+                  1 =>
                   array (
                     'type' => 'social',
                     'iconSet' => 'grey',
-                    'icons' => 
+                    'icons' =>
                     array (
-                      0 => 
+                      0 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
@@ -1092,7 +1092,7 @@ class FlowersWithCoupon {
                         'width' => '32px',
                         'text' => 'Facebook',
                       ),
-                      1 => 
+                      1 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
@@ -1102,7 +1102,7 @@ class FlowersWithCoupon {
                         'width' => '32px',
                         'text' => 'Twitter',
                       ),
-                      2 => 
+                      2 =>
                       array (
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
@@ -1114,24 +1114,24 @@ class FlowersWithCoupon {
                       ),
                     ),
                   ),
-                  2 => 
+                  2 =>
                   array (
                     'type' => 'footer',
                     'text' => '<p><span style="color: #b3748a;"><a href="[link:subscription_unsubscribe_url]" style="color: #b3748a;">Unsubscribe</a> | <a href="[link:subscription_manage_url]" style="color: #b3748a;">Manage subscription</a></span><br />Add your postal address here!</p>',
-                    'styles' => 
+                    'styles' =>
                     array (
-                      'block' => 
+                      'block' =>
                       array (
                         'backgroundColor' => 'transparent',
                       ),
-                      'text' => 
+                      'text' =>
                       array (
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
                       ),
-                      'link' => 
+                      'link' =>
                       array (
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'none',
@@ -1144,49 +1144,49 @@ class FlowersWithCoupon {
           ),
         ),
       ),
-      'globalStyles' => 
+      'globalStyles' =>
       array (
-        'text' => 
+        'text' =>
         array (
           'fontColor' => '#000000',
           'fontFamily' => 'Arial',
           'fontSize' => '14px',
         ),
-        'h1' => 
+        'h1' =>
         array (
           'fontColor' => '#111111',
           'fontFamily' => 'Arial',
           'fontSize' => '30px',
         ),
-        'h2' => 
+        'h2' =>
         array (
           'fontColor' => '#222222',
           'fontFamily' => 'Arial',
           'fontSize' => '24px',
         ),
-        'h3' => 
+        'h3' =>
         array (
           'fontColor' => '#333333',
           'fontFamily' => 'Arial',
           'fontSize' => '22px',
         ),
-        'link' => 
+        'link' =>
         array (
           'fontColor' => '#e0a9bc',
           'textDecoration' => 'underline',
         ),
-        'wrapper' => 
+        'wrapper' =>
         array (
           'backgroundColor' => '#ffffff',
         ),
-        'body' => 
+        'body' =>
         array (
           'backgroundColor' => '#eae5e5',
         ),
       ),
-      'blockDefaults' => 
+      'blockDefaults' =>
       array (
-        'automatedLatestContent' => 
+        'automatedLatestContent' =>
         array (
           'amount' => '5',
           'withLayout' => false,
@@ -1204,14 +1204,14 @@ class FlowersWithCoupon {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -1230,12 +1230,12 @@ class FlowersWithCoupon {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1248,7 +1248,7 @@ class FlowersWithCoupon {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'automatedLatestContentLayout' => 
+        'automatedLatestContentLayout' =>
         array (
           'amount' => '5',
           'withLayout' => true,
@@ -1266,14 +1266,14 @@ class FlowersWithCoupon {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -1292,12 +1292,12 @@ class FlowersWithCoupon {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1310,13 +1310,13 @@ class FlowersWithCoupon {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'button' => 
+        'button' =>
         array (
           'text' => 'Buy Now',
           'url' => '',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => '#e0a9bc',
               'borderColor' => '#0074a2',
@@ -1334,11 +1334,11 @@ class FlowersWithCoupon {
           ),
           'type' => 'button',
         ),
-        'divider' => 
+        'divider' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
               'padding' => '13px',
@@ -1348,23 +1348,23 @@ class FlowersWithCoupon {
             ),
           ),
         ),
-        'footer' => 
+        'footer' =>
         array (
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'none',
@@ -1372,7 +1372,7 @@ class FlowersWithCoupon {
           ),
           'type' => 'footer',
         ),
-        'posts' => 
+        'posts' =>
         array (
           'amount' => '10',
           'withLayout' => true,
@@ -1391,14 +1391,14 @@ class FlowersWithCoupon {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
+          'readMoreButton' =>
           array (
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
@@ -1417,12 +1417,12 @@ class FlowersWithCoupon {
           ),
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
+          'divider' =>
           array (
             'context' => 'posts.divider',
-            'styles' => 
+            'styles' =>
             array (
-              'block' => 
+              'block' =>
               array (
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
@@ -1435,12 +1435,12 @@ class FlowersWithCoupon {
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
         ),
-        'social' => 
+        'social' =>
         array (
           'iconSet' => 'grey',
-          'icons' => 
+          'icons' =>
           array (
-            0 => 
+            0 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'facebook',
@@ -1450,7 +1450,7 @@ class FlowersWithCoupon {
               'width' => '32px',
               'text' => 'Facebook',
             ),
-            1 => 
+            1 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'twitter',
@@ -1460,7 +1460,7 @@ class FlowersWithCoupon {
               'width' => '32px',
               'text' => 'Twitter',
             ),
-            2 => 
+            2 =>
             array (
               'type' => 'socialIcon',
               'iconType' => 'instagram',
@@ -1473,11 +1473,11 @@ class FlowersWithCoupon {
           ),
           'type' => 'social',
         ),
-        'spacer' => 
+        'spacer' =>
         array (
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
               'height' => '392px',
@@ -1485,23 +1485,23 @@ class FlowersWithCoupon {
           ),
           'type' => 'spacer',
         ),
-        'header' => 
+        'header' =>
         array (
           'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
+          'styles' =>
           array (
-            'block' => 
+            'block' =>
             array (
               'backgroundColor' => 'transparent',
             ),
-            'text' => 
+            'text' =>
             array (
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
             ),
-            'link' => 
+            'link' =>
             array (
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'underline',

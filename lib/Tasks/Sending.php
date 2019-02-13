@@ -9,7 +9,7 @@ use MailPoet\Models\SendingQueue;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * A facade class containing all necessary models to work with a sending queue
@@ -41,7 +41,7 @@ class Sending {
   );
 
   private function __construct(ScheduledTask $task = null, SendingQueue $queue = null) {
-    if(is_null($task) && is_null($queue)) {
+    if (is_null($task) && is_null($queue)) {
       $task = ScheduledTask::create();
       $task->type = self::TASK_TYPE;
       $task->save();
@@ -52,7 +52,7 @@ class Sending {
       $queue->save();
     }
 
-    if($task->type !== self::TASK_TYPE) {
+    if ($task->type !== self::TASK_TYPE) {
       throw new \Exception('Only tasks of type "' . self::TASK_TYPE . '" are accepted by this class');
     }
 
@@ -67,7 +67,7 @@ class Sending {
 
   static function createFromTask(ScheduledTask $task) {
     $queue = SendingQueue::where('task_id', $task->id)->findOne();
-    if(!$queue) {
+    if (!$queue) {
       return false;
     }
 
@@ -76,7 +76,7 @@ class Sending {
 
   static function createFromQueue(SendingQueue $queue) {
     $task = $queue->task()->findOne();
-    if(!$task) {
+    if (!$task) {
       return false;
     }
 
@@ -87,7 +87,7 @@ class Sending {
     $queue = SendingQueue::where('newsletter_id', $newsletter_id)
       ->orderByDesc('updated_at')
       ->findOne();
-    if(!$queue) {
+    if (!$queue) {
       return false;
     }
 
@@ -106,7 +106,7 @@ class Sending {
   public function getErrors() {
     $queue_errors = $this->queue->getErrors();
     $task_errors = $this->task->getErrors();
-    if(empty($queue_errors) && empty($task_errors)) {
+    if (empty($queue_errors) && empty($task_errors)) {
       return false;
     }
     return array_merge((array)$queue_errors, (array)$task_errors);
@@ -138,7 +138,7 @@ class Sending {
 
   public function getSubscribers($processed = null) {
     $subscribers = $this->task_subscribers->getSubscribers();
-    if(!is_null($processed)) {
+    if (!is_null($processed)) {
       $status = ($processed) ? ScheduledTaskSubscriber::STATUS_PROCESSED : ScheduledTaskSubscriber::STATUS_UNPROCESSED;
       $subscribers->where('processed', $status);
     }
@@ -189,7 +189,7 @@ class Sending {
   }
 
   public function __isset($prop) {
-    if($this->isQueueProperty($prop)) {
+    if ($this->isQueueProperty($prop)) {
       return isset($this->queue->$prop);
     } else {
       return isset($this->task->$prop);
@@ -197,7 +197,7 @@ class Sending {
   }
 
   public function __get($prop) {
-    if($this->isQueueProperty($prop)) {
+    if ($this->isQueueProperty($prop)) {
       return $this->queue->$prop;
     } else {
       return $this->task->$prop;
@@ -205,7 +205,7 @@ class Sending {
   }
 
   public function __set($prop, $value) {
-    if($this->isCommonProperty($prop)) {
+    if ($this->isCommonProperty($prop)) {
       $this->queue->$prop = $value;
       $this->task->$prop = $value;
     } elseif ($this->isQueueProperty($prop)) {

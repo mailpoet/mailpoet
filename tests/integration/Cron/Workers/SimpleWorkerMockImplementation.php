@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Cron\Workers;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class SimpleWorkerMockImplementation extends SimpleWorker {
   const TASK_TYPE = 'mock_simple_worker';

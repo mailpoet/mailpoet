@@ -26,10 +26,10 @@ class ConfirmationEmailMailer {
    * @param Mailer|null $mailer
    */
   function __construct($mailer = null, WPFunctions $wp = null) {
-    if($mailer) {
+    if ($mailer) {
       $this->mailer = $mailer;
     }
-    if($wp) {
+    if ($wp) {
       $this->wp = $wp;
     } else {
       $this->wp = new WPFunctions;
@@ -40,13 +40,13 @@ class ConfirmationEmailMailer {
   function sendConfirmationEmail(Subscriber $subscriber) {
     $signup_confirmation = $this->settings->get('signup_confirmation');
 
-    if((bool)$signup_confirmation['enabled'] === false) {
+    if ((bool)$signup_confirmation['enabled'] === false) {
       return false;
     }
 
     $subscriber->count_confirmations++;
     $subscriber->save();
-    if(!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations > self::MAX_CONFIRMATION_EMAILS) {
+    if (!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations > self::MAX_CONFIRMATION_EMAILS) {
       return false;
     }
 
@@ -97,7 +97,7 @@ class ConfirmationEmailMailer {
 
     // send email
     try {
-      if(!$this->mailer) {
+      if (!$this->mailer) {
         $this->mailer = new Mailer(false, $from, $reply_to);
       }
       $this->mailer->getSenderNameAndAddress($from);

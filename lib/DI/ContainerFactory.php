@@ -23,7 +23,7 @@ class ContainerFactory {
 
   function getContainer() {
     $dump_class = '\\'. $this->configurator->getDumpNamespace() . '\\' . $this->configurator->getDumpClassname();
-    if(!$this->debug && class_exists($dump_class)) {
+    if (!$this->debug && class_exists($dump_class)) {
       $container = new $dump_class();
     } else {
       $container = $this->getConfiguredContainer();

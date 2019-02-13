@@ -9,7 +9,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Settings extends APIEndpoint {
 
@@ -29,7 +29,7 @@ class Settings extends APIEndpoint {
   }
 
   function set($settings = array()) {
-    if(empty($settings)) {
+    if (empty($settings)) {
       return $this->badRequest(
         array(
           APIError::BAD_REQUEST =>

@@ -69,7 +69,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function amOnMailpoetPage($page) {
     $I = $this;
-    if($page === 'Emails') {
+    if ($page === 'Emails') {
       $path = 'newsletters';
     } elseif ($page === 'Lists') {
       $path = 'segments';
@@ -124,7 +124,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function createFormAndSubscribe($form = null) {
     $I = $this;
     // create form widget
-    if(!$form) {
+    if (!$form) {
       $form_factory = new Form();
       $form = $form_factory->withName('Confirmation Form')->create();
     }

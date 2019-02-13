@@ -4,7 +4,7 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 abstract class Endpoint {
   public $permissions = array(
@@ -21,7 +21,7 @@ abstract class Endpoint {
   function errorResponse(
     $errors = array(), $meta = array(), $status = Response::STATUS_NOT_FOUND
   ) {
-    if(empty($errors)) {
+    if (empty($errors)) {
       $errors = array(
         Error::UNKNOWN => __('An unknown error occurred.', 'mailpoet')
       );
@@ -30,7 +30,7 @@ abstract class Endpoint {
   }
 
   function badRequest($errors = array(), $meta = array()) {
-    if(empty($errors)) {
+    if (empty($errors)) {
       $errors = array(
         Error::BAD_REQUEST => __('Invalid request parameters', 'mailpoet')
       );

@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class NewsletterLink extends Model {
   public static $_table = MP_NEWSLETTER_LINKS_TABLE;
@@ -18,7 +18,7 @@ class NewsletterLink extends Model {
       ->orderByDesc('clicksCount')
       ->limit(1)
       ->findOne();
-    if(!$link) {
+    if (!$link) {
       return null;
     }
     return $link;

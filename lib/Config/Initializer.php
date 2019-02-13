@@ -14,7 +14,7 @@ use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WP\Notice as WPNotice;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
@@ -36,7 +36,7 @@ class Initializer {
   function init() {
     $requirements_check_results = $this->checkRequirements();
 
-    if(!$requirements_check_results[RequirementsChecker::TEST_PDO_EXTENSION] ||
+    if (!$requirements_check_results[RequirementsChecker::TEST_PDO_EXTENSION] ||
       !$requirements_check_results[RequirementsChecker::TEST_VENDOR_SOURCE]
     ) {
       return;
@@ -173,7 +173,7 @@ class Initializer {
     }
 
     // if current db version and plugin version differ
-    if(version_compare($current_db_version, Env::$version) !== 0) {
+    if (version_compare($current_db_version, Env::$version) !== 0) {
       $this->runActivator();
     }
   }
@@ -192,7 +192,7 @@ class Initializer {
   function setupUpdater() {
     $slug = Installer::PREMIUM_PLUGIN_SLUG;
     $plugin_file = Installer::getPluginFile($slug);
-    if(empty($plugin_file) || !defined('MAILPOET_PREMIUM_VERSION')) {
+    if (empty($plugin_file) || !defined('MAILPOET_PREMIUM_VERSION')) {
       return false;
     }
     $updater = new Updater(
@@ -234,7 +234,7 @@ class Initializer {
 
   function setupCronTrigger() {
     // setup cron trigger only outside of cli environment
-    if(php_sapi_name() !== 'cli') {
+    if (php_sapi_name() !== 'cli') {
       $cron_trigger = $this->container->get(CronTrigger::class);
       $cron_trigger->init();
     }
@@ -246,7 +246,7 @@ class Initializer {
   }
 
   function postInitialize() {
-    if(!defined(self::INITIALIZED)) return;
+    if (!defined(self::INITIALIZED)) return;
     try {
       $this->setupHooks();
       $this->setupJSONAPI();
@@ -267,7 +267,7 @@ class Initializer {
   }
 
   function setupUserLocale() {
-    if(get_user_locale() === get_locale()) return;
+    if (get_user_locale() === get_locale()) return;
     unload_textdomain(Env::$plugin_name);
     $localizer = new Localizer();
     $localizer->init();
@@ -304,7 +304,7 @@ class Initializer {
 
   function handleFailedInitialization($exception) {
     // check if we are able to add pages at this point
-    if(function_exists('wp_get_current_user')) {
+    if (function_exists('wp_get_current_user')) {
       Menu::addErrorPage($this->access_control);
     }
     return WPNotice::displayError($exception);

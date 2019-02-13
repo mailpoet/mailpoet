@@ -13,7 +13,7 @@ class Subscribers {
   }
 
   function check($subscribers_limit = self::SUBSCRIBERS_LIMIT) {
-    if($this->license) return false;
+    if ($this->license) return false;
     return SubscriberModel::getTotalSubscribers() > $subscribers_limit;
   }
 }

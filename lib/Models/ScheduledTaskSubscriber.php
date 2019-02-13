@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class ScheduledTaskSubscriber extends Model {
   const STATUS_UNPROCESSED = 0;
@@ -18,7 +18,7 @@ class ScheduledTaskSubscriber extends Model {
   }
 
   static function createOrUpdate($data = array()) {
-    if(!is_array($data) || empty($data['task_id']) || empty($data['subscriber_id'])) {
+    if (!is_array($data) || empty($data['task_id']) || empty($data['subscriber_id'])) {
       return;
     }
     $data['processed'] = !empty($data['processed']) ? self::STATUS_PROCESSED : self::STATUS_UNPROCESSED;
@@ -64,7 +64,7 @@ class ScheduledTaskSubscriber extends Model {
 
   private static function getCount($task_id, $processed = null) {
     $orm = self::where('task_id', $task_id);
-    if(!is_null($processed)) {
+    if (!is_null($processed)) {
       $orm->where('processed', $processed);
     }
     return $orm->count();

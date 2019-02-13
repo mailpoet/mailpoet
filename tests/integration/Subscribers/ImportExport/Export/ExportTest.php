@@ -60,7 +60,7 @@ class ExportTest extends \MailPoetTest {
       )
     );
     foreach ($this->subscribers_data as $subscriber) {
-      if(isset($subscriber[1])) {
+      if (isset($subscriber[1])) {
         unset($subscriber[1]);
       }
       $entity = Subscriber::create();
@@ -157,7 +157,7 @@ class ExportTest extends \MailPoetTest {
   function testItProperlyReturnsSubscriberCustomFields() {
     $subscribers = $this->export->getSubscribers(0, 10);
     foreach ($subscribers as $subscriber) {
-      if($subscriber['email'] === $this->subscribers_data[1]) {
+      if ($subscriber['email'] === $this->subscribers_data[1]) {
         expect($subscriber['Country'])
           ->equals($this->subscribers_data[1][1]);
       }

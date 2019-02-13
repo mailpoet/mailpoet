@@ -92,7 +92,7 @@ class SendingQueueTest extends \MailPoetTest {
   private function _createOrUpdateNewsletterOptions($newsletter_id, $newsletter_type, $options) {
     foreach ($options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
-      if(!$newsletter_option_field) {
+      if (!$newsletter_option_field) {
         $newsletter_option_field = NewsletterOptionField::create();
         $newsletter_option_field->name = $option;
         $newsletter_option_field->newsletter_type = $newsletter_type;
@@ -103,7 +103,7 @@ class SendingQueueTest extends \MailPoetTest {
       $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter_id)
         ->where('option_field_id', $newsletter_option_field->id)
         ->findOne();
-      if(!$newsletter_option) {
+      if (!$newsletter_option) {
         $newsletter_option = NewsletterOption::create();
         $newsletter_option->option_field_id = $newsletter_option_field->id;
         $newsletter_option->newsletter_id = $newsletter_id;

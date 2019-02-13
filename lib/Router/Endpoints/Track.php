@@ -12,7 +12,7 @@ use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Tasks\Sending as SendingTask;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Track {
   const ENDPOINT = 'track';
@@ -38,21 +38,21 @@ class Track {
 
   function _processTrackData($data) {
     $data = (object)Links::transformUrlDataObject($data);
-    if(empty($data->queue_id) ||
+    if (empty($data->queue_id) ||
       empty($data->subscriber_id) ||
       empty($data->subscriber_token)
     ) {
       return false;
     }
     $data->queue = SendingQueue::findOne($data->queue_id);
-    if($data->queue) {
+    if ($data->queue) {
       $data->queue = SendingTask::createFromQueue($data->queue);
     }
     $data->subscriber = Subscriber::findOne($data->subscriber_id) ?: null;
     $data->newsletter = (!empty($data->queue->newsletter_id)) ?
       Newsletter::findOne($data->queue->newsletter_id) :
       false;
-    if(!empty($data->link_hash)) {
+    if (!empty($data->link_hash)) {
       $data->link = NewsletterLink::where('hash', $data->link_hash)
         ->where('queue_id', $data->queue_id)
         ->findOne();
@@ -61,14 +61,14 @@ class Track {
   }
 
   function _validateTrackData($data) {
-    if(!$data->subscriber || !$data->queue || !$data->newsletter) return false;
+    if (!$data->subscriber || !$data->queue || !$data->newsletter) return false;
     $subscriber_token_match =
       Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
-    if(!$subscriber_token_match) {
+    if (!$subscriber_token_match) {
       $this->terminate(403);
     }
     // return if this is a WP user previewing the newsletter
-    if($data->subscriber->isWPUser() && $data->preview) {
+    if ($data->subscriber->isWPUser() && $data->preview) {
       return $data;
     }
     // check if the newsletter was sent to the subscriber

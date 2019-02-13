@@ -6,7 +6,7 @@ use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 abstract class KeyCheckWorker extends SimpleWorker {
   const UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT = 60;
@@ -14,7 +14,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
   public $bridge;
 
   function init() {
-    if(!$this->bridge) {
+    if (!$this->bridge) {
       $this->bridge = new Bridge();
     }
   }
@@ -26,7 +26,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
       $result = false;
     }
 
-    if(empty($result['code']) || $result['code'] == Bridge::CHECK_ERROR_UNAVAILABLE) {
+    if (empty($result['code']) || $result['code'] == Bridge::CHECK_ERROR_UNAVAILABLE) {
       $this->reschedule($task, self::UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT);
       return false;
     }

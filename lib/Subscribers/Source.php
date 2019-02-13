@@ -25,11 +25,11 @@ class Source {
   );
 
   static function setSource(Subscriber $subscriber, $source) {
-    if((isset($subscriber->source)) && ($subscriber->source !== Source::UNKNOWN)) {
+    if ((isset($subscriber->source)) && ($subscriber->source !== Source::UNKNOWN)) {
       // we don't want to override source
       return $subscriber;
     }
-    if(!in_array($source, Source::$allowed_sources)) {
+    if (!in_array($source, Source::$allowed_sources)) {
       throw new \InvalidArgumentException('Invalid source "' . $source . '""');
     }
     $subscriber->set('source', $source);

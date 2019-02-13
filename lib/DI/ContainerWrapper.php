@@ -25,7 +25,7 @@ class ContainerWrapper implements ContainerInterface {
     try {
       return $this->free_container->get($id);
     } catch (NotFoundExceptionInterface $e) {
-      if(!$this->premium_container) {
+      if (!$this->premium_container) {
         throw $e;
       }
       return $this->premium_container->get($id);
@@ -40,20 +40,20 @@ class ContainerWrapper implements ContainerInterface {
    * @return ContainerInterface|null
    */
   function getPremiumContainer() {
-    if(!$this->premium_container && class_exists(\MailPoet\Premium\DI\ContainerConfigurator::class)) {
+    if (!$this->premium_container && class_exists(\MailPoet\Premium\DI\ContainerConfigurator::class)) {
       $this->premium_container = self::createPremiumContainer($this->free_container);
     }
     return $this->premium_container;
   }
 
   static function getInstance($debug = false) {
-    if(self::$instance) {
+    if (self::$instance) {
       return self::$instance;
     }
     $free_container_factory = new ContainerFactory(new ContainerConfigurator(), $debug);
     $free_container = $free_container_factory->getContainer();
     $premium_container = null;
-    if(class_exists(\MailPoet\Premium\DI\ContainerConfigurator::class)) {
+    if (class_exists(\MailPoet\Premium\DI\ContainerConfigurator::class)) {
       $premium_container = self::createPremiumContainer($free_container, $debug);
     }
     self::$instance = new ContainerWrapper($free_container, $premium_container);

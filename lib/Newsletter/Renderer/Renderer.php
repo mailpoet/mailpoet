@@ -6,7 +6,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\pQuery;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Renderer {
   public $blocks_renderer;
@@ -46,7 +46,7 @@ class Renderer {
       ? $body['globalStyles']
       : array();
 
-    if(!$this->premium_activated && !$this->mss_activated && !$this->preview) {
+    if (!$this->premium_activated && !$this->mss_activated && !$this->preview) {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
@@ -81,7 +81,7 @@ class Renderer {
       ? $content['blocks']
       : array();
     foreach ($content_blocks as $block) {
-      if($block['type'] === 'automatedLatestContentLayout') {
+      if ($block['type'] === 'automatedLatestContentLayout') {
         $blocks = array_merge(
           $blocks,
           $this->blocks_renderer->automatedLatestContentTransformedPosts($block)
@@ -173,7 +173,7 @@ class Renderer {
   }
 
   function addMailpoetLogoContentBlock($content, $styles) {
-    if(empty($content['blocks'])) return $content;
+    if (empty($content['blocks'])) return $content;
     $content['blocks'][] = array(
       'type' => 'container',
       'orientation' => 'horizontal',

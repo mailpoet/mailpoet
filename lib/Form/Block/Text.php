@@ -2,14 +2,14 @@
 
 namespace MailPoet\Form\Block;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Text extends Base {
 
   static function render($block) {
     $type = 'text';
     $automation_id = ' ';
-    if($block['id'] === 'email') {
+    if ($block['id'] === 'email') {
       $type = 'email';
       $automation_id = 'data-automation-id="form_email" ';
     }

@@ -31,7 +31,7 @@ use MailPoet\WP\Notice as WPNotice;
 use MailPoet\WP\Readme;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
@@ -84,12 +84,12 @@ class Menu {
   }
 
   function setup() {
-    if(!$this->access_control->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) return;
-    if(self::isOnMailPoetAdminPage()) {
+    if (!$this->access_control->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) return;
+    if (self::isOnMailPoetAdminPage()) {
       do_action('mailpoet_conflict_resolver_styles');
       do_action('mailpoet_conflict_resolver_scripts');
 
-      if($_REQUEST['page'] === 'mailpoet-newsletter-editor') {
+      if ($_REQUEST['page'] === 'mailpoet-newsletter-editor') {
         // Disable WP emojis to not interfere with the newsletter editor emoji handling
         $this->disableWPEmojis();
         add_action('admin_head', function() {
@@ -373,7 +373,7 @@ class Menu {
   }
 
   function welcomeWizard() {
-    if((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+    if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
       'is_mp2_migration_complete' => (bool)$this->settings->get('mailpoet_migration_complete'),
       'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
@@ -392,7 +392,7 @@ class Menu {
         ? urldecode($_GET['mailpoet_redirect'])
         : wp_get_referer();
 
-    if(
+    if (
       $redirect_url === $current_url
       or
       strpos($redirect_url, 'mailpoet') === false
@@ -409,7 +409,7 @@ class Menu {
 
     $data['is_new_user'] = true;
     $data['is_old_user'] = false;
-    if(!empty($data['settings']['installed_at'])) {
+    if (!empty($data['settings']['installed_at'])) {
       $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
       $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
       $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
@@ -418,9 +418,9 @@ class Menu {
     }
 
     $readme_file = Env::$path . '/readme.txt';
-    if(is_readable($readme_file)) {
+    if (is_readable($readme_file)) {
       $changelog = Readme::parseChangelog(file_get_contents($readme_file), 1);
-      if($changelog) {
+      if ($changelog) {
         $data['changelog'] = $changelog;
       }
     }
@@ -508,7 +508,7 @@ class Menu {
     // flags (available features on WP install)
     $flags = array();
 
-    if(is_multisite()) {
+    if (is_multisite()) {
       // get multisite registration option
       $registration = apply_filters(
         'wpmu_registration_enabled',
@@ -544,7 +544,7 @@ class Menu {
     $data['custom_fields'] = array_map(function($field) {
       $field['params'] = unserialize($field['params']);
 
-      if(!empty($field['params']['values'])) {
+      if (!empty($field['params']['values'])) {
         $values = array();
 
         foreach ($field['params']['values'] as $value) {
@@ -571,7 +571,7 @@ class Menu {
   }
 
   function forms() {
-    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     $data = array();
 
@@ -584,8 +584,8 @@ class Menu {
   }
 
   function newsletters() {
-    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
-    if(isset($this->mp_api_key_valid) && $this->mp_api_key_valid === false) {
+    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if (isset($this->mp_api_key_valid) && $this->mp_api_key_valid === false) {
       return $this->displayMailPoetAPIKeyInvalidTemplate();
     }
 
@@ -732,7 +732,7 @@ class Menu {
   function formEditor() {
     $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $form = Form::findOne($id);
-    if($form !== false) {
+    if ($form !== false) {
       $form = $form->asArray();
     }
 
@@ -773,15 +773,15 @@ class Menu {
   }
 
   static function isOnMailPoetAdminPage(array $exclude = null, $screen_id = null) {
-    if(is_null($screen_id)) {
-      if(empty($_REQUEST['page'])) {
+    if (is_null($screen_id)) {
+      if (empty($_REQUEST['page'])) {
         return false;
       }
       $screen_id = $_REQUEST['page'];
     }
-    if(!empty($exclude)) {
+    if (!empty($exclude)) {
       foreach ($exclude as $slug) {
-        if(stripos($screen_id, $slug) !== false) {
+        if (stripos($screen_id, $slug) !== false) {
           return false;
         }
       }
@@ -794,11 +794,11 @@ class Menu {
    * to display admin notices only
    */
   static function addErrorPage(AccessControl $access_control) {
-    if(!self::isOnMailPoetAdminPage()) {
+    if (!self::isOnMailPoetAdminPage()) {
       return false;
     }
     // Check if page already exists
-    if(get_plugin_page_hook($_REQUEST['page'], '')
+    if (get_plugin_page_hook($_REQUEST['page'], '')
       || get_plugin_page_hook($_REQUEST['page'], self::MAIN_PAGE_SLUG)
     ) {
       return false;
@@ -821,7 +821,7 @@ class Menu {
   }
 
   function checkMailPoetAPIKey(ServicesChecker $checker = null) {
-    if(self::isOnMailPoetAdminPage()) {
+    if (self::isOnMailPoetAdminPage()) {
       $show_notices = isset($_REQUEST['page'])
         && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false;
       $checker = $checker ?: new ServicesChecker();
@@ -837,7 +837,7 @@ class Menu {
   }
 
   function getLimitPerPage($model = null) {
-    if($model === null) {
+    if ($model === null) {
       return Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
     }
 
@@ -860,7 +860,7 @@ class Menu {
 
   function isNewUser() {
     $installed_at = $this->settings->get('installed_at');
-    if(is_null($installed_at)) {
+    if (is_null($installed_at)) {
       return true;
     }
     $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));

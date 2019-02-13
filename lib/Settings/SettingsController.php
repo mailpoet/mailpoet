@@ -22,24 +22,24 @@ class SettingsController {
     $this->ensureLoaded();
     $key_parts = explode('.', $key);
     $setting = self::$settings;
-    if($default === null) {
+    if ($default === null) {
       $default = $this->getDefaultValue($key_parts);
     }
     foreach ($key_parts as $key_part) {
-      if(array_key_exists($key_part, $setting)) {
+      if (array_key_exists($key_part, $setting)) {
         $setting = $setting[$key_part];
       } else {
         return $default;
       }
     }
-    if(is_array($setting) && is_array($default)) {
+    if (is_array($setting) && is_array($default)) {
       return array_replace_recursive($default, $setting);
     }
     return $setting;
   }
 
   function getAllDefaults() {
-    if($this->defaults === null) {
+    if ($this->defaults === null) {
       $this->defaults = [
         'mta_group' => self::DEFAULT_SENDING_METHOD_GROUP,
         'mta' => array(
@@ -96,7 +96,7 @@ class SettingsController {
     $setting =& self::$settings;
     foreach ($key_parts as $key_part) {
       $setting =& $setting[$key_part];
-      if(!is_array($setting)) {
+      if (!is_array($setting)) {
         $setting = [];
       }
     }
@@ -110,7 +110,7 @@ class SettingsController {
   }
 
   private function ensureLoaded() {
-    if(self::$loaded) {
+    if (self::$loaded) {
       return;
     }
     self::$settings = Setting::getAll() ?: [];
@@ -120,7 +120,7 @@ class SettingsController {
   private function getDefaultValue($keys) {
     $default = $this->getAllDefaults();
     foreach ($keys as $key) {
-      if(array_key_exists($key, $default)) {
+      if (array_key_exists($key, $default)) {
         $default = $default[$key];
       } else {
         return null;
@@ -131,10 +131,10 @@ class SettingsController {
 
   private function fetchValue($key) {
     $setting = Setting::where('name', $key)->findOne();
-    if($setting === false) {
+    if ($setting === false) {
       return null;
     }
-    if(is_serialized($setting->value)) {
+    if (is_serialized($setting->value)) {
       return unserialize($setting->value);
     } else {
       return $setting->value;
@@ -143,7 +143,7 @@ class SettingsController {
 
   private function saveValue($key, $value) {
     $value = Helpers::recursiveTrim($value);
-    if(is_array($value)) {
+    if (is_array($value)) {
       $value = serialize($value);
     }
 

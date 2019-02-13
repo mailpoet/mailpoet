@@ -35,7 +35,7 @@ class ChangelogController {
     $issues = $this->jira->getIssuesDataForVersion($version);
     $heading = $this->renderHeading($version);
     $changelog = $this->renderList($issues, Jira::CHANGELOG_FIELD_ID);
-    if(!$changelog) {
+    if (!$changelog) {
       $changelog = self::FALLBACK_RECORD;
     }
     $notes = $this->renderList($issues, Jira::RELEASENOTE_FIELD_ID);
@@ -50,12 +50,12 @@ class ChangelogController {
   private function renderList(array $issues, $field) {
     $messages = [];
     foreach ($issues as $issue) {
-      if(!isset($issue['fields'][$field])) {
+      if (!isset($issue['fields'][$field])) {
         continue;
       }
       $messages[] = "* " . $this->sanitizePunctuation($issue['fields'][$field], ';');
     }
-    if(empty($messages)) {
+    if (empty($messages)) {
       return null;
     }
     $list = implode("\n", $messages);
@@ -65,7 +65,7 @@ class ChangelogController {
   private function sanitizePunctuation($message, $fallback) {
     $valid_punctuation = ['?','.','!'];
     $message = rtrim($message, ';, ');
-    if(!in_array(substr($message, -1), $valid_punctuation)) {
+    if (!in_array(substr($message, -1), $valid_punctuation)) {
       $message .= $fallback;
     }
     return $message;
@@ -76,7 +76,7 @@ class ChangelogController {
     $readme = file_get_contents($this->readme_file);
     $changelog = "$heading\n$changes_list";
 
-    if(strpos($readme, $heading_prefix) !== false) {
+    if (strpos($readme, $heading_prefix) !== false) {
       $start = preg_quote($heading_prefix);
       $readme = preg_replace("/$start.*?(?:\r*\n){2}/us", "$changelog\n\n", $readme);
     } else {

@@ -3,7 +3,7 @@ namespace MailPoet\Newsletter\Editor;
 
 use MailPoet\Newsletter\Editor\PostTransformer;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class PostListTransformer {
 
@@ -20,7 +20,7 @@ class PostListTransformer {
     $use_divider = filter_var($this->args['showDivider'], FILTER_VALIDATE_BOOLEAN);
 
     foreach ($posts as $index => $post) {
-      if($use_divider && $index > 0) {
+      if ($use_divider && $index > 0) {
         $results[] = $this->transformer->getDivider();
       }
 

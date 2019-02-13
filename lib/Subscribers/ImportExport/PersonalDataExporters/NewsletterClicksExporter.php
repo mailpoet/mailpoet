@@ -18,7 +18,7 @@ class NewsletterClicksExporter {
   }
 
   private function exportSubscriber($subscriber, $page) {
-    if(!$subscriber) return array();
+    if (!$subscriber) return array();
 
     $result = array();
 

@@ -16,15 +16,15 @@ class Throttling {
     $subscriber_ip = Helpers::getIP();
     $wp = new WPFunctions;
 
-    if($subscription_limit_enabled && !$wp->isUserLoggedIn()) {
-      if(!empty($subscriber_ip)) {
+    if ($subscription_limit_enabled && !$wp->isUserLoggedIn()) {
+      if (!empty($subscriber_ip)) {
         $subscription_count = SubscriberIP::where('ip', $subscriber_ip)
           ->whereRaw(
             '(`created_at` >= NOW() - INTERVAL ? SECOND)',
             array((int)$subscription_limit_window)
           )->count();
 
-        if($subscription_count > 0) {
+        if ($subscription_count > 0) {
           $timeout = $subscription_limit_base * pow(2, $subscription_count - 1);
           $existing_user = SubscriberIP::where('ip', $subscriber_ip)
             ->whereRaw(
@@ -32,7 +32,7 @@ class Throttling {
               array((int)$timeout)
             )->findOne();
 
-          if(!empty($existing_user)) {
+          if (!empty($existing_user)) {
             return $timeout;
           }
         }

@@ -3,7 +3,7 @@ namespace MailPoet\Form;
 
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Renderer {
   // public: rendering method
@@ -25,14 +25,14 @@ class Renderer {
   }
 
   static function renderHTML($form = array()) {
-    if(isset($form['body']) && !empty($form['body'])) {
+    if (isset($form['body']) && !empty($form['body'])) {
       return static::renderBlocks($form['body']);
     }
     return '';
   }
 
   static function getStyles($form = array()) {
-    if(isset($form['styles'])
+    if (isset($form['styles'])
     && strlen(trim($form['styles'])) > 0) {
       return strip_tags($form['styles']);
     } else {
@@ -47,7 +47,7 @@ class Renderer {
       '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
       '';
     foreach ($blocks as $key => $block) {
-      if($block['type'] == 'submit' && $settings->get('re_captcha.enabled')) {
+      if ($block['type'] == 'submit' && $settings->get('re_captcha.enabled')) {
         $site_key = $settings->get('re_captcha.site_token');
         $html .= '<div class="mailpoet_recaptcha" data-sitekey="'. $site_key .'">
           <div class="mailpoet_recaptcha_container"></div>

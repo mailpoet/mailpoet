@@ -7,7 +7,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Bridge {
   const API_KEY_SETTING_NAME = 'mta.mailpoet_api_key';
@@ -71,7 +71,7 @@ class Bridge {
   }
 
   function initApi($api_key) {
-    if($this->api) {
+    if ($this->api) {
       $this->api->setKey($api_key);
     } else {
       $this->api = new Bridge\API($api_key);
@@ -85,7 +85,7 @@ class Bridge {
   }
 
   function storeMSSKeyAndState($key, $state) {
-    if(empty($state['state'])
+    if (empty($state['state'])
       || $state['state'] === self::KEY_CHECK_ERROR
     ) {
       return false;
@@ -118,8 +118,8 @@ class Bridge {
       403 => self::KEY_INVALID
     );
 
-    if(!empty($result['code']) && isset($state_map[$result['code']])) {
-      if($state_map[$result['code']] == self::KEY_VALID
+    if (!empty($result['code']) && isset($state_map[$result['code']])) {
+      if ($state_map[$result['code']] == self::KEY_VALID
         && !empty($result['data']['expire_at'])
       ) {
         $key_state = self::KEY_EXPIRING;
@@ -137,7 +137,7 @@ class Bridge {
   }
 
   function storePremiumKeyAndState($key, $state) {
-    if(empty($state['state'])
+    if (empty($state['state'])
       || $state['state'] === self::KEY_CHECK_ERROR
     ) {
       return false;
@@ -167,7 +167,7 @@ class Bridge {
   }
 
   function updateSubscriberCount($result) {
-    if(!empty($result['state'])
+    if (!empty($result['state'])
       && ($result['state'] === self::KEY_VALID
       || $result['state'] === self::KEY_EXPIRING)
     ) {
@@ -187,15 +187,15 @@ class Bridge {
   function onSettingsSave($settings) {
     $api_key_set = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
     $premium_key_set = !empty($settings['premium']['premium_key']);
-    if($api_key_set) {
+    if ($api_key_set) {
       $api_key = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'];
       $state = $this->checkMSSKey($api_key);
       $this->storeMSSKeyAndState($api_key, $state);
-      if(self::isMPSendingServiceEnabled()) {
+      if (self::isMPSendingServiceEnabled()) {
         $this->updateSubscriberCount($state);
       }
     }
-    if($premium_key_set) {
+    if ($premium_key_set) {
       $premium_key = $settings['premium']['premium_key'];
       $state = $this->checkPremiumKey($premium_key);
       $this->storePremiumKeyAndState($premium_key, $state);

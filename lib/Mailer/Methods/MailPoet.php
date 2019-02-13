@@ -7,7 +7,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class MailPoet {
   public $api;
@@ -27,7 +27,7 @@ class MailPoet {
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
-    if($this->services_checker->isMailPoetAPIKeyValid() === false) {
+    if ($this->services_checker->isMailPoetAPIKeyValid() === false) {
       return Mailer::formatMailerErrorResult($this->error_mapper->getInvalidApiKeyError());
     }
 
@@ -48,7 +48,7 @@ class MailPoet {
   }
 
   function processSendError($result, $subscriber) {
-    if(!empty($result['code']) && $result['code'] ===  API::RESPONSE_CODE_KEY_INVALID) {
+    if (!empty($result['code']) && $result['code'] ===  API::RESPONSE_CODE_KEY_INVALID) {
       Bridge::invalidateKey();
     }
     return $this->error_mapper->getErrorForResult($result, $subscriber);
@@ -56,7 +56,7 @@ class MailPoet {
 
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
-    if(!isset($subscriber_data['email'])) {
+    if (!isset($subscriber_data['email'])) {
       $subscriber_data = array(
         'email' => $subscriber,
       );
@@ -85,18 +85,18 @@ class MailPoet {
         )),
         'subject' => $newsletter['subject']
       );
-      if(!empty($newsletter['body']['html'])) {
+      if (!empty($newsletter['body']['html'])) {
         $body['html'] = $newsletter['body']['html'];
       }
-      if(!empty($newsletter['body']['text'])) {
+      if (!empty($newsletter['body']['text'])) {
         $body['text'] = $newsletter['body']['text'];
       }
-      if($unsubscribe_url) {
+      if ($unsubscribe_url) {
         $body['list_unsubscribe'] = $unsubscribe_url;
       }
       return $body;
     };
-    if(is_array($newsletter) && is_array($subscriber)) {
+    if (is_array($newsletter) && is_array($subscriber)) {
       $body = array();
       for ($record = 0; $record < count($newsletter); $record++) {
         $body[] = $composeBody(

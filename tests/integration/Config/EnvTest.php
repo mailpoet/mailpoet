@@ -24,19 +24,19 @@ class EnvTest extends \MailPoetTest {
   }
 
   function testItCanReturnDbHost() {
-    if(preg_match('/(?=:\d+$)/', DB_HOST)) {
+    if (preg_match('/(?=:\d+$)/', DB_HOST)) {
       expect(Env::$db_host)->equals(explode(':', DB_HOST)[0]);
     } else expect(Env::$db_host)->equals(DB_HOST);
   }
 
   function testItCanReturnDbPort() {
-    if(preg_match('/(?=:\d+$)/', DB_HOST)) {
+    if (preg_match('/(?=:\d+$)/', DB_HOST)) {
       expect(Env::$db_port)->equals(explode(':', DB_HOST)[1]);
     } else expect(Env::$db_port)->equals(3306);
   }
 
   function testItCanReturnSocket() {
-    if(!preg_match('/(?=:\d+$)/', DB_HOST)
+    if (!preg_match('/(?=:\d+$)/', DB_HOST)
       && preg_match('/:/', DB_HOST)
     ) {
       expect(Env::$db_socket)->true();

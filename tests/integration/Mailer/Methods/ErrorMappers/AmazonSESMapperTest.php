@@ -46,7 +46,7 @@ class AmazonSESMapperTest extends \MailPoetTest {
    */
   private function buildXmlResponseFromArray($response_data, SimpleXMLElement $xml) {
     foreach ($response_data as $tag => $value) {
-      if(is_array($value)) {
+      if (is_array($value)) {
         $this->buildXmlResponseFromArray($value, $xml->addChild($tag));
       } else {
         $xml->addChild($tag, $value);

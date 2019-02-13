@@ -30,7 +30,7 @@ namespace MailPoet\WP;
 
 function override($func, $args) {
   $func = str_replace(__NAMESPACE__ . '\\', '', $func);
-  if($callback = \Helper\WordPress::getInterceptor($func)) {
+  if ($callback = \Helper\WordPress::getInterceptor($func)) {
     return call_user_func_array($callback, $args);
   }
   return call_user_func_array('\\' . $func, $args);
