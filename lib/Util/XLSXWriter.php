@@ -440,7 +440,7 @@ class XLSXWriter
   public static function xlsCell($row_number, $column_number)
   {
     $n = $column_number;
-    for($r = ""; $n >= 0; $n = intval($n / 26) - 1) {
+    for ($r = ""; $n >= 0; $n = intval($n / 26) - 1) {
       $r = chr($n%26 + 0x41) . $r;
     }
     return $r . ($row_number+1);

@@ -299,7 +299,7 @@ class NewsletterTest extends \MailPoetTest {
     );
     $newsletters = array();
     $sending_queues[] = array();
-    for($i = 0; $i < count($types); $i++) {
+    for ($i = 0; $i < count($types); $i++) {
       $newsletters[$i] = Newsletter::createOrUpdate(
         array(
           'subject' => 'My Standard Newsletter',
@@ -342,7 +342,7 @@ class NewsletterTest extends \MailPoetTest {
     );
     $newsletters = array();
     $sending_queues[] = array();
-    for($i = 0; $i < count($types); $i++) {
+    for ($i = 0; $i < count($types); $i++) {
       $newsletters[$i] = Newsletter::createOrUpdate(
         array(
           'subject' => 'My Standard Newsletter',
@@ -416,7 +416,7 @@ class NewsletterTest extends \MailPoetTest {
     );
 
     $newsletters = array();
-    for($i = 0; $i < count($statuses); $i++) {
+    for ($i = 0; $i < count($statuses); $i++) {
       $newsletters[$i] = Newsletter::createOrUpdate(
         array(
           'subject' => 'Test',
@@ -440,7 +440,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter = $this->newsletter;
 
     // create multiple sending queues
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
@@ -461,7 +461,7 @@ class NewsletterTest extends \MailPoetTest {
   function testItDeletesChildrenSegmentAndQueueAssociationsWhenParentNewsletterIsDeleted() {
     $parent_newsletter = $this->newsletter;
     // create multiple children (post notification history) newsletters and sending queues
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',
@@ -494,7 +494,7 @@ class NewsletterTest extends \MailPoetTest {
   function testItTrashesQueueAssociationsWhenNewsletterIsTrashed() {
     // create multiple sending queues
     $newsletter = $this->newsletter;
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
@@ -510,7 +510,7 @@ class NewsletterTest extends \MailPoetTest {
   function testItTrashesChildrenQueueAssociationsWhenParentNewsletterIsTrashed() {
     $parent_newsletter = $this->newsletter;
     // create multiple children (post notification history) newsletters and sending queues
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',
@@ -536,7 +536,7 @@ class NewsletterTest extends \MailPoetTest {
   function testItRestoresTrashedQueueAssociationsWhenNewsletterIsRestored() {
     // create multiple sending queues
     $newsletter = $this->newsletter;
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->deleted_at = date('Y-m-d H:i:s');
@@ -560,7 +560,7 @@ class NewsletterTest extends \MailPoetTest {
     $parent_sending_queue->save();
 
     // create multiple children (post notification history) newsletters and sending queues
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',
@@ -587,7 +587,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItTrashesAllQueueAssociationsWhenNewslettersAreBulkTrashed() {
     // create multiple newsletters and sending queues
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',
@@ -610,7 +610,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItTrashesAllChildrenQueueAssociationsWhenParentNewslettersAreBulkTrashed() {
     // create multiple children (post notification history) newsletters and sending queues
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',
@@ -634,7 +634,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItBulkRestoresTrashedQueueAssociationsWhenNewslettersAreBulkRestored() {
     // create multiple newsletters and sending queues
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',
@@ -659,7 +659,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItBulkRestoresTrashedChildrenQueueAssociationsWhenParentNewslettersAreBulkRestored() {
     // create multiple children (post notification history) newsletters and sending queues
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',
@@ -685,7 +685,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItBulkDeletesSegmentAndQueueAssociationsWhenNewslettersAreBulkDeleted() {
     // create multiple newsletters, sending queues and newsletter segments
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',
@@ -716,7 +716,7 @@ class NewsletterTest extends \MailPoetTest {
   function testItBulkDeletesChildrenSegmentAndQueueAssociationsWhenParentNewslettersAreBulkDeleted() {
     $this->_after();
     // create multiple children (post notification history) newsletters, sending queues and newsletter segments
-    for($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         array(
           'subject' => 'test',

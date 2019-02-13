@@ -21,7 +21,7 @@ class UnitTester extends \Codeception\Actor {
 
   // generate random users
   function generateSubscribers($count, $data = array()) {
-    for($i = 0; $i < $count; $i++) {
+    for ($i = 0; $i < $count; $i++) {
       $this->generateSubscriber($data);
     }
   }
@@ -51,7 +51,7 @@ class UnitTester extends \Codeception\Actor {
     // pick first letter in alphabet
     $name .= $alphabet{mt_rand(0, strlen($alphabet) - 1)};
 
-    for($i = 0; $i < $length; $i++) {
+    for ($i = 0; $i < $length; $i++) {
       $name .= $charset{mt_rand(0, strlen($charset) - 1)};
     }
 

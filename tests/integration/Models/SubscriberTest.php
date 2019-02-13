@@ -973,7 +973,7 @@ class SubscriberTest extends \MailPoetTest {
     // create 3 subscribers, segments and subscriber-segment relations
     $prepare_data = function() {
       $this->_after();
-      for($i = 1; $i <= 3; $i++) {
+      for ($i = 1; $i <= 3; $i++) {
         $subscriber[$i] = Subscriber::create();
         $subscriber[$i]->status = Subscriber::STATUS_SUBSCRIBED;
         $subscriber[$i]->email = $i . '@test.com';

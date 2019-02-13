@@ -77,7 +77,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::make($this->opens, array(
       'returnResponse' => null
     ), $this);
-    for($count = 0; $count <= 2; $count++) {
+    for ($count = 0; $count <= 2; $count++) {
       $opens->track($this->track_data);
     }
     expect(count(StatisticsOpens::findMany()))->equals(1);

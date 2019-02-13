@@ -69,7 +69,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   function testItCanGetABatchOfScheduledTasks() {
-    for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
+    for ($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createScheduledTask();
     }
     expect(count(MockSimpleWorker::getScheduledTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
@@ -82,14 +82,14 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   function testItCanGetBatchOfRunningTasks() {
-    for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
+    for ($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createRunningTask();
     }
     expect(count(MockSimpleWorker::getRunningTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
   }
 
   function testItCanGetBatchOfCompletedTasks() {
-    for($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
+    for ($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createCompletedTask();
     }
     expect(count(MockSimpleWorker::getCompletedTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);

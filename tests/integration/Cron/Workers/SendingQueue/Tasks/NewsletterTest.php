@@ -299,7 +299,7 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function testItGetsSegments() {
-    for($i = 1; $i<=3; $i++) {
+    for ($i = 1; $i<=3; $i++) {
       $newsletter_segment = NewsletterSegment::create();
       $newsletter_segment->newsletter_id = $this->newsletter->id;
       $newsletter_segment->segment_id = $i;

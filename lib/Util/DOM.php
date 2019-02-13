@@ -11,7 +11,7 @@ class DOM {
    */
   static function splitOn(DomNode $bound, DomNode $cut_element) {
     $ignore_text_and_comment_nodes = false;
-    for($parent = $cut_element->parent; $bound != $parent; $parent = $grandparent) {
+    for ($parent = $cut_element->parent; $bound != $parent; $parent = $grandparent) {
       // Clone parent node without children, but with attributes
       $parent->after($parent->toString());
       $right = $parent->getNextSibling($ignore_text_and_comment_nodes);
