@@ -93,7 +93,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
       function($segment_id) {
         if($segment_id == 1) {
           return array(new \DynamicSegmentFilter([1, 2]));
-        } else if($segment_id == 2) {
+        } else if ($segment_id == 2) {
           return array(new \DynamicSegmentFilter([1, 3, 4]));
         }
         return array();

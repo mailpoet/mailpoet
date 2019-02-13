@@ -77,7 +77,7 @@ class Date extends Base {
         $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day', 'mailpoet').'">';
         $html .= static::getDays($block);
         $html .= '</select>';
-      } else if($date_selector === 'MM') {
+      } else if ($date_selector === 'MM') {
         $block['selected'] = $month;
         $html .= '<select class="mailpoet_select mailpoet_date_month" ';
         $html .= static::getInputValidation($block, array(
@@ -86,7 +86,7 @@ class Date extends Base {
         $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month', 'mailpoet').'">';
         $html .= static::getMonths($block);
         $html .= '</select>';
-      } else if($date_selector === 'YYYY') {
+      } else if ($date_selector === 'YYYY') {
         $block['selected'] = $year;
         $html .= '<select class="mailpoet_date_year" ';
         $html .= static::getInputValidation($block, array(
@@ -224,14 +224,14 @@ class Date extends Base {
           'month' => $parsed_date[$month_position],
           'day' => $parsed_date[$day_position]
         );
-      } else if(count($parsed_date) === 2) {
+      } else if (count($parsed_date) === 2) {
         // create date from any combination of month and year
         $parsed_date = array(
           'year' => $parsed_date[$year_position],
           'month' => $parsed_date[$month_position],
           'day' => '01'
         );
-      } else if($date_format === 'MM' && count($parsed_date) === 1) {
+      } else if ($date_format === 'MM' && count($parsed_date) === 1) {
         // create date from month
         if((int)$parsed_date[$month_position] === 0) {
           $datetime = '';
@@ -243,7 +243,7 @@ class Date extends Base {
             'year' => date('Y')
           );
         }
-      } else if($date_format === 'YYYY' && count($parsed_date) === 1) {
+      } else if ($date_format === 'YYYY' && count($parsed_date) === 1) {
         // create date from year
         if((int)$parsed_date[$year_position] === 0) {
           $datetime = '';

@@ -48,7 +48,7 @@ class Services extends APIEndpoint {
     $success_message = null;
     if($state == Bridge::KEY_VALID) {
       $success_message = __('Your MailPoet Sending Service key has been successfully validated.', 'mailpoet');
-    } elseif($state == Bridge::KEY_EXPIRING) {
+    } elseif ($state == Bridge::KEY_EXPIRING) {
       $success_message = sprintf(
         __('Your MailPoet Sending Service key expires on %s!', 'mailpoet'),
         $this->date_time->formatDate(strtotime($result['data']['expire_at']))
@@ -110,7 +110,7 @@ class Services extends APIEndpoint {
     $success_message = null;
     if($state == Bridge::KEY_VALID) {
       $success_message = __('Your Premium key has been successfully validated.', 'mailpoet');
-    } elseif($state == Bridge::KEY_EXPIRING) {
+    } elseif ($state == Bridge::KEY_EXPIRING) {
       $success_message = sprintf(
         __('Your Premium key expires on %s.', 'mailpoet'),
         $this->date_time->formatDate(strtotime($result['data']['expire_at']))

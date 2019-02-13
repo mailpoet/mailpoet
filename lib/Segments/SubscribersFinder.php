@@ -134,7 +134,7 @@ class SubscribersFinder {
     foreach ($subscribers as $subscriber) {
       if(is_a($subscriber, 'MailPoet\Models\Model')) {
         $result[$subscriber->id] = $subscriber;
-      } elseif(is_scalar($subscriber)) {
+      } elseif (is_scalar($subscriber)) {
         $result[$subscriber] = $subscriber;
       } else {
         $result[$subscriber['id']] = $subscriber;

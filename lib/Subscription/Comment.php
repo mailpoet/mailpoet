@@ -52,7 +52,7 @@ class Comment {
           'subscribe_on_comment',
           true
         );
-      } else if($comment_status === Comment::APPROVED) {
+      } else if ($comment_status === Comment::APPROVED) {
         static::subscribeAuthorOfComment($comment_id);
       }
     }

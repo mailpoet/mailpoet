@@ -88,9 +88,9 @@ class StructureTransformer {
     $alignItem = $image->hasParent('figure') ? $image->parent : $image;
     if($alignItem->hasClass('aligncenter')) {
       $align = 'center';
-    } elseif($alignItem->hasClass('alignleft')) {
+    } elseif ($alignItem->hasClass('alignleft')) {
       $align = 'left';
-    } elseif($alignItem->hasClass('alignright')) {
+    } elseif ($alignItem->hasClass('alignright')) {
       $align = 'right';
     } else {
       $align = 'left';

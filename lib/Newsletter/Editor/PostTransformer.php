@@ -210,7 +210,7 @@ class PostTransformer {
 
     if(in_array($this->args['titleFormat'], array('h1', 'h2', 'h3'))) {
       $tag = $this->args['titleFormat'];
-    } elseif($this->args['titleFormat'] === 'ul') {
+    } elseif ($this->args['titleFormat'] === 'ul') {
       $tag = 'li';
       $top_padding = '0';
     } else {
