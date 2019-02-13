@@ -17,12 +17,6 @@ class SubscriberManageImportExportCest {
     $I->attachFile('[data-automation-id="import-file-upload-input"]', 'MailPoetImportList.csv');
     $I->click('#method_file [data-automation-id="import-next-step"]');
 
-    // input validation step
-    $I->click('[data-automation-id="subscribers_agreed"]');
-    $I->click('[data-automation-id="sent_once_last_year"]');
-    $I->click('[data-automation-id="input_understand"]');
-    $I->click('#step_input_validation [data-automation-id="import-next-step"]');
-
     //click is to trigger dropdown to display selections
     $I->click('input.select2-search__field');
     //choose My First List
