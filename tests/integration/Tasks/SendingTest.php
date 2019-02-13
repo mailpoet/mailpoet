@@ -140,7 +140,7 @@ class SendingTest extends \MailPoetTest {
   function testItGetsBatchOfScheduledQueues() {
     $this->_after();
     $amount = 5;
-    for($i = 0; $i < $amount + 3; $i += 1) {
+    for ($i = 0; $i < $amount + 3; $i += 1) {
       $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
     }
     expect(SendingTask::getScheduledQueues($amount))->count($amount);
@@ -171,7 +171,7 @@ class SendingTest extends \MailPoetTest {
   function testItGetsBatchOfRunningQueues() {
     $this->_after();
     $amount = 5;
-    for($i = 0; $i < $amount + 3; $i += 1) {
+    for ($i = 0; $i < $amount + 3; $i += 1) {
       $this->createNewSendingTask(['status' => null]);
     }
     expect(SendingTask::getRunningQueues($amount))->count($amount);

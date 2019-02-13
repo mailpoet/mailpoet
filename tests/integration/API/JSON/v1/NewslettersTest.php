@@ -51,7 +51,7 @@ class NewslettersTest extends \MailPoetTest {
 
   function testItKeepsUnsentNewslettersAtTheTopWhenSortingBySentAtDate() {
     $sent_newsletters = array();
-    for($i = 1; $i <= 3; $i++) {
+    for ($i = 1; $i <= 3; $i++) {
       $sent_newsletters[$i] = Newsletter::create();
       $sent_newsletters[$i]->type = Newsletter::TYPE_STANDARD;
       $sent_newsletters[$i]->subject = 'Sent newsletter ' . $i;

@@ -142,7 +142,7 @@ class Date extends Base {
     // empty value label
     $html .= '<option value="">'.__('Month', 'mailpoet').'</option>';
 
-    for($i = 1; $i < 13; $i++) {
+    for ($i = 1; $i < 13; $i++) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
       $html .= '<option value="'.$i.'" '.$is_selected.'>';
       $html .= $month_names[$i - 1];
@@ -173,7 +173,7 @@ class Date extends Base {
     $html .= '<option value="">'.__('Year', 'mailpoet').'</option>';
 
     // return years as an array
-    for($i = (int)$block['to']; $i > (int)($block['from'] - 1); $i--) {
+    for ($i = (int)$block['to']; $i > (int)($block['from'] - 1); $i--) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
       $html .= '<option value="'.$i.'" '.$is_selected.'>'.$i.'</option>';
     }
@@ -199,7 +199,7 @@ class Date extends Base {
     $html .= '<option value="">'.__('Day', 'mailpoet').'</option>';
 
     // return days as an array
-    for($i = 1; $i < 32; $i++) {
+    for ($i = 1; $i < 32; $i++) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
       $html .= '<option value="'.$i.'" '.$is_selected.'>'.$i.'</option>';
     }

@@ -42,7 +42,7 @@ class UnsubscribesTest extends \MailPoetTest {
   }
 
   function testItDoesNotTrackRepeatedUnsubscribeEvents() {
-    for($count = 0; $count <= 2; $count++) {
+    for ($count = 0; $count <= 2; $count++) {
       $this->unsubscribes->track(
         $this->newsletter->id,
         $this->subscriber->id,

@@ -86,7 +86,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     ], $this);
     $sender = new ConfirmationEmailMailer($mailer);
 
-    for($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
+    for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
       expect($sender->sendConfirmationEmail($subscriber))->equals(true);
     }
     expect($sender->sendConfirmationEmail($subscriber))->equals(false);
@@ -109,7 +109,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     ], $this);
     $sender = new ConfirmationEmailMailer($mailer);
 
-    for($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
+    for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
       expect($sender->sendConfirmationEmail($subscriber))->equals(true);
     }
     expect($sender->sendConfirmationEmail($subscriber))->equals(true);

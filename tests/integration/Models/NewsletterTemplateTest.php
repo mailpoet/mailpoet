@@ -71,7 +71,7 @@ class NewsletterTemplateTest extends \MailPoetTest {
 
   function testItCanCleanRecentlySent() {
     $total = NewsletterTemplate::RECENTLY_SENT_COUNT + 5;
-    for($i = 0; $i < $total; $i++) {
+    for ($i = 0; $i < $total; $i++) {
       NewsletterTemplate::createOrUpdate(array(
         'name' => 'Testing template ' . $i,
         'body' => '{content: {}, globalStyles: {}}',
