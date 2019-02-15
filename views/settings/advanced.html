@@ -9,7 +9,7 @@
         <p class="description">
           <%= __('Your bounced emails will be sent to this address.') %>
           <a href="http://beta.docs.mailpoet.com/article/180-how-bounce-management-works-in-mailpoet-3"
-             target="_blank"
+             target="_blank" data-automation-id="bounce-kb-link"
           ><%= _x('Read more.', 'support article link label') %></a>
         </p>
       </th>
@@ -18,6 +18,7 @@
           <input type="text"
             id="settings[bounce_email]"
             name="bounce[address]"
+            data-automation-id="bounce-address-field"
             value="<%= settings.bounce.address %>"
             placeholder="bounce@mydomain.com"
           />
