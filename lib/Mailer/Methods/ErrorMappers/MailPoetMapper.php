@@ -50,7 +50,7 @@ class MailPoetMapper {
         $message = __('Email service is temporarily not available, please try again in a few minutes.', 'mailpoet');
         $retry_interval = self::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL;
         break;
-      case API::RESPONSE_CODE_BANNED_ACCOUNT:
+      case API::RESPONSE_CODE_CAN_NOT_SEND:
         $message = Helpers::replaceLinkTags(
           __('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
           'https://www.mailpoet.com/support/',

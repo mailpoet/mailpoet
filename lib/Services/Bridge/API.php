@@ -19,7 +19,7 @@ class API {
   const RESPONSE_CODE_NOT_ARRAY = 422;
   const RESPONSE_CODE_PAYLOAD_TOO_BIG = 413;
   const RESPONSE_CODE_PAYLOAD_ERROR = 400;
-  const RESPONSE_CODE_BANNED_ACCOUNT = 403;
+  const RESPONSE_CODE_CAN_NOT_SEND = 403;
 
   private $api_key;
   private $wp;
