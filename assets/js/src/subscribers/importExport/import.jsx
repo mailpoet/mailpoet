@@ -10,6 +10,7 @@ import Papa from 'papaparse';
 import Moment from 'moment';
 import sanitizeCSVData from './sanitize_csv_data.jsx';
 import StepInputValidation from './step_input_validation.jsx';
+import StepResults from './step_results.jsx';
 
 const SUBSCRIBERS_LIMIT_FOR_VALIDATION = 500;
 
@@ -987,55 +988,31 @@ jQuery(document).ready(() => {
 
     showCurrentStep();
 
-    if (window.importData.step_data_manipulation.errors.length > 0) {
-      MailPoet.Notice.error(_.flatten(window.importData.step_data_manipulation.errors));
-    }
-
     MailPoet.trackEvent('Subscribers import finished', {
       'Subscribers created': window.importData.step_data_manipulation.created,
       'Subscribers updated': window.importData.step_data_manipulation.updated,
       'MailPoet Free version': window.mailpoet_version,
     });
 
-    // display statistics
-    const subscribersDataImportResultsTemplate = Handlebars.compile(jQuery('#subscribers_data_import_results_template').html());
-    const exportMenuElement = jQuery('span.mailpoet_export');
-    const importResults = {
-      created: (window.importData.step_data_manipulation.created)
-        ? MailPoet.I18n.t('subscribersCreated')
-          .replace('%1$s', `<strong>${window.importData.step_data_manipulation.created.toLocaleString()}</strong>`)
-          .replace('%2$s', `"${window.importData.step_data_manipulation.segments.join('", "')}"`)
-        : false,
-      updated: (window.importData.step_data_manipulation.updated)
-        ? MailPoet.I18n.t('subscribersUpdated')
-          .replace('%1$s', `<strong>${window.importData.step_data_manipulation.updated.toLocaleString()}</strong>`)
-          .replace('%2$s', `"${window.importData.step_data_manipulation.segments.join('", "')}"`)
-        : false,
-      no_action: (
-        !window.importData.step_data_manipulation.created
-        && !window.importData.step_data_manipulation.updated
-      ),
-      added_to_segment_with_welcome_notification:
-      window.importData.step_data_manipulation.added_to_segment_with_welcome_notification,
-    };
+    const container = document.getElementById('step_results');
 
-    jQuery('#subscribers_data_import_results')
-      .html(subscribersDataImportResultsTemplate(importResults))
-      .show();
-
-    jQuery('a.mailpoet_import_again').off().click(() => {
-      jQuery('#subscribers_data_import_results').hide();
-      router.navigate('step_method_selection', { trigger: true });
-    });
-
-    jQuery('a.mailpoet_view_subscribers').off().click(() => {
-      window.location.href = 'admin.php?page=mailpoet-subscribers';
-    });
-
-    // if new subscribers were created and the export menu item is hidden
-    // (it's shown only when there are subscribers), display it
-    if (importResults.created && exportMenuElement.not(':visible')) {
-      exportMenuElement.show();
+    if (container) {
+      ReactDOM.render(
+        <StepResults
+          navigate={router.navigate}
+          errors={window.importData.step_data_manipulation.errors}
+          createdSubscribers={window.importData.step_data_manipulation.created}
+          updatedSubscribers={window.importData.step_data_manipulation.updated}
+          segments={window.importData.step_data_manipulation.segments}
+          addedToSegmentWithWelcomeNotification={
+            window
+              .importData
+              .step_data_manipulation
+              .added_to_segment_with_welcome_notification
+          }
+        />,
+        container
+      );
     }
 
     // reset previous step's data so that coming back to this step is prevented
