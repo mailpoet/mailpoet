@@ -43,7 +43,7 @@ class MailPoetMapperTest extends \MailPoetTest {
 
   function testGetErrorBannedAccount() {
     $api_result = [
-      'code' => API::RESPONSE_CODE_BANNED_ACCOUNT,
+      'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
       'message' => 'this is a spam',
     ];
