@@ -1,5 +1,4 @@
-define(['mailpoet'], function iframeModule(mp) {
-  'use strict';
+import mp from 'mailpoet';
 
   var MailPoet = mp;
   MailPoet.Iframe = {
@@ -22,5 +21,4 @@ define(['mailpoet'], function iframeModule(mp) {
     }
   };
 
-  return MailPoet;
-});
+export default MailPoet;

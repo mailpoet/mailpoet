@@ -1,11 +1,6 @@
 /* eslint no-restricted-globals: 0 */
-define(
-  [
-    'jquery'
-  ],
-  function ( // eslint-disable-line func-names
-    jQuery
-  ) {
+import jQuery from 'jquery';
+
     var $ = jQuery;
     // Combination of jQuery.deparam and jQuery.serializeObject by Ben Alman.
     /*!
@@ -100,6 +95,4 @@ define(
       return obj;
     };
 
-    return $;
-  }
-);
+export default $;

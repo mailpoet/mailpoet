@@ -4,12 +4,11 @@
  *
  * Adds a media manager integration with the view
  */
-define([
-  'backbone.marionette',
-  'underscore',
-  'newsletter_editor/behaviors/BehaviorsLookup',
-  'jquery'
-], function (Marionette, _, BehaviorsLookup, jQuery) {
+import Marionette from 'backbone.marionette';
+import _ from 'underscore';
+import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
+import jQuery from 'jquery';
+
   var BL = BehaviorsLookup;
 
   BL.MediaManagerBehavior = Marionette.Behavior.extend({
@@ -310,4 +309,3 @@ define([
       }
     }
   });
-});

@@ -1,14 +1,11 @@
-'use strict';
-
 /**
  * Text content block
  */
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/base',
-  'underscore',
-  'mailpoet'
-], function textBlock(App, BaseBlock, _, MailPoet) {
+import App from 'newsletter_editor/App';
+import BaseBlock from 'newsletter_editor/blocks/base';
+import _ from 'underscore';
+import MailPoet from 'mailpoet';
+
   var Module = {};
   var base = BaseBlock;
 
@@ -108,5 +105,4 @@ define([
   });
 
 
-  return Module;
-});
+export default Module;

@@ -1,10 +1,9 @@
 const expect = global.expect;
 const sinon = global.sinon;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/spacer'
-], function (App, SpacerBlock) {
+import App from 'newsletter_editor/App';
+import SpacerBlock from 'newsletter_editor/blocks/spacer';
+
   var EditorApplication = App;
 
   describe('Spacer', function () {
@@ -170,4 +169,3 @@ define([
       });
     });
   });
-});

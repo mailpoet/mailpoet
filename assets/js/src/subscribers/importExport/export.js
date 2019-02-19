@@ -1,16 +1,8 @@
-define(
-  [
-    'underscore',
-    'jquery',
-    'mailpoet',
-    'handlebars'
-  ],
-  function exportSubscribers(
-    _,
-    jQuery,
-    MailPoet,
-    Handlebars
-  ) {
+import _ from 'underscore';
+import jQuery from 'jquery';
+import MailPoet from 'mailpoet';
+import Handlebars from 'handlebars';
+
     if (!jQuery('#mailpoet_subscribers_export').length) {
       return;
     }
@@ -151,5 +143,3 @@ define(
         });
       });
     });
-  }
-);

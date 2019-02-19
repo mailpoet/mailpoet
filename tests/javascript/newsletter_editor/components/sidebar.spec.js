@@ -1,10 +1,9 @@
 const expect = global.expect;
 const Backbone = global.Backbone;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/sidebar'
-], function (EditorApplication, SidebarComponent) {
+import EditorApplication from 'newsletter_editor/App';
+import SidebarComponent from 'newsletter_editor/components/sidebar';
+
   describe('Sidebar', function () {
     describe('content view', function () {
       var view;
@@ -194,4 +193,3 @@ define([
       });
     });
   });
-});

@@ -1,10 +1,4 @@
-define(
-  [
-    'mailpoet'
-  ], function ( // eslint-disable-line func-names
-    mp
-  ) {
-    'use strict';
+import mp from 'mailpoet';
 
     var MailPoet = mp;
     MailPoet.Num = {
@@ -18,4 +12,3 @@ define(
           );
       }
     };
-  });

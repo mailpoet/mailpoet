@@ -3,19 +3,12 @@ const sinon = global.sinon;
 const Backbone = global.Backbone;
 const jQuery = global.jQuery;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/automatedLatestContent',
-  'newsletter_editor/blocks/container',
-  'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
-  'newsletter_editor/components/communication'
-], function (
-  App,
-  AutomatedLatestContentBlock,
-  ContainerBlock,
-  AutomatedLatestContentInjector,
-  Communication
-) {
+import App from 'newsletter_editor/App';
+import AutomatedLatestContentBlock from 'newsletter_editor/blocks/automatedLatestContent';
+import ContainerBlock from 'newsletter_editor/blocks/container';
+import AutomatedLatestContentInjector from 'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent';
+import Communication from 'newsletter_editor/components/communication';
+
   var EditorApplication = App;
   var CommunicationComponent = Communication;
 
@@ -583,4 +576,3 @@ define([
       });
     });
   });
-});

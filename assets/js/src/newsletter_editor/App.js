@@ -1,8 +1,7 @@
-define([
-  'backbone',
-  'backbone.marionette',
-  'backbone.radio'
-], function (Backbone, Marionette, BackboneRadio) { // eslint-disable-line func-names
+import Backbone from 'backbone';
+import Marionette from 'backbone.marionette';
+import BackboneRadio from 'backbone.radio'; // eslint-disable-line func-names
+
   var Radio = BackboneRadio;
 
   var AppView = Marionette.View.extend({
@@ -36,5 +35,4 @@ define([
   var app = new EditorApplication();
   window.EditorApplication = app;
 
-  return app;
-});
+export default app;

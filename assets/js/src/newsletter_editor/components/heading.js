@@ -1,13 +1,10 @@
-'use strict';
+import App from 'newsletter_editor/App';
+import Backbone from 'backbone';
+import Marionette from 'backbone.marionette';
+import _ from 'underscore';
+import jQuery from 'jquery';
+import MailPoet from 'mailpoet'; // eslint-disable-line func-names
 
-define([
-  'newsletter_editor/App',
-  'backbone',
-  'backbone.marionette',
-  'underscore',
-  'jquery',
-  'mailpoet'
-], function (App, Backbone, Marionette, _, jQuery, MailPoet) { // eslint-disable-line func-names
   var Module = {};
 
   Module.HeadingView = Marionette.View.extend({
@@ -41,5 +38,4 @@ define([
     });
   });
 
-  return Module;
-});
+export default Module;

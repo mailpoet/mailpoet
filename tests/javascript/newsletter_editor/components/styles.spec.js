@@ -1,10 +1,9 @@
 const expect = global.expect;
 const sinon = global.sinon;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/styles'
-], function (App, StylesComponent) {
+import App from 'newsletter_editor/App';
+import StylesComponent from 'newsletter_editor/components/styles';
+
   var EditorApplication = App;
 
   describe('Styles', function () {
@@ -48,4 +47,3 @@ define([
       });
     });
   });
-});

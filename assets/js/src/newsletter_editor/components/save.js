@@ -1,32 +1,15 @@
 /* eslint-disable func-names */
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/communication',
-  'mailpoet',
-  'notice',
-  'backbone',
-  'backbone.marionette',
-  'jquery',
-  'blob',
-  'file-saver',
-  'common/thumbnail.jsx',
-  'underscore',
-  'jquery'
-], function (
-  App,
-  CommunicationComponent,
-  MailPoet,
-  Notice,
-  Backbone,
-  Marionette,
-  jQuery,
-  Blob,
-  FileSaver,
-  Thumbnail,
-  _,
-  $
-) {
-  'use strict';
+import App from 'newsletter_editor/App';
+import CommunicationComponent from 'newsletter_editor/components/communication';
+import MailPoet from 'mailpoet';
+import Notice from 'notice';
+import Backbone from 'backbone';
+import Marionette from 'backbone.marionette';
+import $ from 'jquery';
+import Blob from 'blob';
+import FileSaver from 'file-saver';
+import Thumbnail from 'common/thumbnail.jsx';
+import _ from 'underscore';
 
   var Module = {};
   var saveTimeout;
@@ -359,5 +342,4 @@ define([
     BeforeStartApp._appView.showChildView('bottomRegion', bottomSaveView);
   });
 
-  return Module;
-});
+export default Module;

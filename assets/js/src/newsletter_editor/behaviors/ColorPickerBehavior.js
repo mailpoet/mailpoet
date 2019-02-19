@@ -3,12 +3,11 @@
  *
  * Adds a color picker integration with the view
  */
-define([
-  'backbone.marionette',
-  'newsletter_editor/behaviors/BehaviorsLookup',
-  'mailpoet',
-  'spectrum'
-], function (Marionette, BehaviorsLookup, MailPoet) { // eslint-disable-line func-names
+import Marionette from 'backbone.marionette';
+import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
+import MailPoet from 'mailpoet';
+import 'spectrum'; // eslint-disable-line func-names
+
   var BL = BehaviorsLookup;
 
   BL.ColorPickerBehavior = Marionette.Behavior.extend({
@@ -44,4 +43,3 @@ define([
       });
     }
   });
-});

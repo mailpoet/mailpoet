@@ -2,11 +2,10 @@ const expect = global.expect;
 const jQuery = global.jQuery;
 const sinon = global.sinon;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/communication',
-  'amd-inject-loader!newsletter_editor/components/communication'
-], function (EditorApplication, Communication, CommunicationInjector) {
+import EditorApplication from 'newsletter_editor/App';
+import Communication from 'newsletter_editor/components/communication';
+import CommunicationInjector from 'amd-inject-loader!newsletter_editor/components/communication';
+
   describe('getPostTypes', function () {
     it('fetches post types from the server', function () {
       var module = CommunicationInjector({
@@ -320,4 +319,3 @@ define([
       mock.verify();
     });
   });
-});

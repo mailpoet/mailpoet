@@ -1,13 +1,10 @@
-'use strict';
-
 /**
  * Spacer content block
  */
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/base',
-  'underscore'
-], function spacerBlock(App, BaseBlock, _) {
+import App from 'newsletter_editor/App';
+import BaseBlock from 'newsletter_editor/blocks/base';
+import _ from 'underscore';
+
   var Module = {};
   var base = BaseBlock;
 
@@ -99,5 +96,4 @@ define([
     });
   });
 
-  return Module;
-});
+export default Module;

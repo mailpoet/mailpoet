@@ -1,12 +1,11 @@
 const expect = global.expect;
 const sinon = global.sinon;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/save',
-  'amd-inject-loader!newsletter_editor/components/save',
-  'jquery'
-], function (App, SaveComponent, SaveInjector, jQuery) {
+import App from 'newsletter_editor/App';
+import SaveComponent from 'newsletter_editor/components/save';
+import SaveInjector from 'amd-inject-loader!newsletter_editor/components/save';
+import jQuery from 'jquery';
+
   var EditorApplication = App;
 
   describe('Save', function () {
@@ -244,4 +243,3 @@ define([
       });
     });
   });
-});

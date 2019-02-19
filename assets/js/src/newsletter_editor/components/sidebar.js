@@ -1,24 +1,12 @@
 /* eslint-disable func-names */
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/communication',
-  'mailpoet',
-  'backbone',
-  'backbone.marionette',
-  'backbone.supermodel',
-  'underscore',
-  'jquery'
-], function (
-  App,
-  CommunicationComponent,
-  MailPoet,
-  Backbone,
-  Marionette,
-  SuperModel,
-  _,
-  jQuery
-) {
-  'use strict';
+import App from 'newsletter_editor/App';
+import CommunicationComponent from 'newsletter_editor/components/communication';
+import MailPoet from 'mailpoet';
+import Backbone from 'backbone';
+import Marionette from 'backbone.marionette';
+import SuperModel from 'backbone.supermodel';
+import _ from 'underscore';
+import jQuery from 'jquery';
 
   var Module = {};
   var SidebarView;
@@ -408,5 +396,4 @@ define([
     });
   });
 
-  return Module;
-});
+export default Module;

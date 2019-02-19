@@ -1,7 +1,7 @@
-var TooltipComponent = require('help-tooltip.jsx').default;
-var React = require('react');
-var ReactDOM = require('react-dom');
-var MailPoet = require('mailpoet');
+import TooltipComponent from 'help-tooltip.jsx';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MailPoet from 'mailpoet';
 
 MailPoet.helpTooltip = {
   show: function show(domContainerNode, opts) {

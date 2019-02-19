@@ -11,7 +11,10 @@ function requestFailed(errorMessage, xhr) {
   };
 }
 
-define(['mailpoet', 'jquery', 'underscore'], function ajax(mp, jQuery, _) {
+import mp from 'mailpoet';
+import jQuery from 'jquery';
+import _ from 'underscore';
+
   var MailPoet = mp;
 
   MailPoet.Ajax = {
@@ -84,4 +87,3 @@ define(['mailpoet', 'jquery', 'underscore'], function ajax(mp, jQuery, _) {
       return deferred;
     }
   };
-});

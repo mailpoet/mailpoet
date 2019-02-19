@@ -1,7 +1,6 @@
 /* eslint-disable func-names */
-define(['mailpoet', 'jquery'],
-  function (mp, jQuery) {
-    'use strict';
+import mp from 'mailpoet';
+import jQuery from 'jquery';
 
     var MailPoet = mp;
     var closeModalImage = '<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">'
@@ -643,4 +642,3 @@ define(['mailpoet', 'jquery'],
         return this;
       }
     };
-  });

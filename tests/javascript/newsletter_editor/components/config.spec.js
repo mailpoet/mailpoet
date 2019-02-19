@@ -1,9 +1,8 @@
 const expect = global.expect;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/config'
-], function (EditorApplication, ConfigComponent) {
+import EditorApplication from 'newsletter_editor/App';
+import ConfigComponent from 'newsletter_editor/components/config';
+
   describe('Config', function () {
     it('loads and stores configuration', function () {
       var model;
@@ -14,4 +13,3 @@ define([
       expect(model.get('testConfig')).to.equal('testValue');
     });
   });
-});

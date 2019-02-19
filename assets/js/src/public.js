@@ -1,12 +1,7 @@
-define([
-  'mailpoet',
-  'jquery',
-  'parsleyjs'
-],
-function ( // eslint-disable-line func-names
-  MailPoet,
-  jQuery
-) {
+import MailPoet from 'mailpoet';
+import jQuery from 'jquery';
+import 'parsleyjs';
+
   jQuery(function ($) { // eslint-disable-line func-names
     window.reCaptchaCallback = function reCaptchaCallback() {
       $('.mailpoet_recaptcha').each(function () { // eslint-disable-line func-names
@@ -116,4 +111,3 @@ function ( // eslint-disable-line func-names
       });
     });
   });
-});

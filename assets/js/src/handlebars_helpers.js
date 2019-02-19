@@ -1,4 +1,5 @@
-define(['handlebars'], function handlebarsHelpers(Handlebars) {
+import Handlebars from 'handlebars';
+
   // Handlebars helpers
   Handlebars.registerHelper('concat', function concatHelper() {
     var size = (arguments.length - 1);
@@ -169,4 +170,3 @@ define(['handlebars'], function handlebarsHelpers(Handlebars) {
   });
 
   window.Handlebars = Handlebars;
-});

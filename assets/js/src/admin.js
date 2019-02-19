@@ -1,11 +1,8 @@
-define([
-  'jquery'
-],
-function admin(jQuery) {
+import jQuery from 'jquery';
+
   jQuery(function adminDomReady($) {
     // dom ready
     $(function domReady() {
 
     });
   });
-});

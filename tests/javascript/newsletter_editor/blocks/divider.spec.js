@@ -1,10 +1,9 @@
 const expect = global.expect;
 const sinon = global.sinon;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/divider'
-], function (App, DividerBlock) {
+import App from 'newsletter_editor/App';
+import DividerBlock from 'newsletter_editor/blocks/divider';
+
   var EditorApplication = App;
   var sandbox;
 
@@ -246,4 +245,3 @@ define([
       });
     });
   });
-});

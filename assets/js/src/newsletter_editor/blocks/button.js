@@ -2,14 +2,11 @@
 /**
  * Button content block
  */
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/base',
-  'mailpoet',
-  'underscore',
-  'jquery'
-], function (App, BaseBlock, MailPoet, _, jQuery) {
-  'use strict';
+import App from 'newsletter_editor/App';
+import BaseBlock from 'newsletter_editor/blocks/base';
+import MailPoet from 'mailpoet';
+import _ from 'underscore';
+import jQuery from 'jquery';
 
   var Module = {};
   var base = BaseBlock;
@@ -145,5 +142,4 @@ define([
     });
   });
 
-  return Module;
-});
+export default Module;
