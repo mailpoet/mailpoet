@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.19.1
+Stable tag: 3.19.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.19.2 - 2019-02-19 =
+* Added: 13 brand new templates;
+* Improved: TinyMCE is hidden on mouse drag;
+* Improved: block and widget controls are hidden on mouse drag;
+* Fixed: cursor position does not get lost with long text on Chrome;
+* Fixed: Mailpoet icon in the Members plugin looks good again.
 
 = 3.19.1 - 2019-02-12 =
 * Added: warning against using free email address in "from" fields;
