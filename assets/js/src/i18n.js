@@ -1,4 +1,4 @@
-define('i18n',
+define(
   [
     'mailpoet'
   ], function i18n(

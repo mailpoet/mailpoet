@@ -1,6 +1,6 @@
 'use strict';
 
-define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disable-line func-names
+define(['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disable-line func-names
   /*= ==========================================================================================
 
       MailPoet Notice:

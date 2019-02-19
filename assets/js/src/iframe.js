@@ -1,4 +1,4 @@
-define('iframe', ['mailpoet'], function iframeModule(mp) {
+define(['mailpoet'], function iframeModule(mp) {
   'use strict';
 
   var MailPoet = mp;

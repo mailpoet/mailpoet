@@ -1,4 +1,4 @@
-define('date',
+define(
   [
     'mailpoet',
     'jquery',
