@@ -21,12 +21,14 @@ class Notice {
     $this->render_in_paragraph = $render_in_paragraph;
   }
 
-  static function displayError($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
-    $message = sprintf(
-      "<b>%s </b> %s",
-      __('MailPoet Error:', 'mailpoet'),
-      $message
-    );
+  static function displayError($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true, $show_error_title = true) {
+    if ($show_error_title) {
+      $message = sprintf(
+        "<b>%s </b> %s",
+        __('MailPoet Error:', 'mailpoet'),
+        $message
+      );
+    }
     self::createNotice(self::TYPE_ERROR, $message, $classes, $data_notice_name, $render_in_paragraph);
   }
 
