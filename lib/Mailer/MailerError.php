@@ -8,6 +8,8 @@ class MailerError {
   const LEVEL_HARD = 'hard';
   const LEVEL_SOFT = 'soft';
 
+  const MESSAGE_EMAIL_NOT_AUTHORIZED = 'The email address is not authorized';
+
   /** @var string */
   private $operation;
 

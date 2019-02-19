@@ -59,6 +59,20 @@ class MailPoetMapperTest extends \MailPoetTest {
     ));
   }
 
+  function testGetErrorUnauthorizedEmail() {
+    $api_result = [
+      'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
+      'status' => API::SENDING_STATUS_SEND_ERROR,
+      'message' => MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED,
+    ];
+    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->contains('The MailPoet Sending Service did not send your latest email because the address');
+  }
+
   function testGetErrorPayloadTooBig() {
     $api_result = [
       'code' => API::RESPONSE_CODE_PAYLOAD_TOO_BIG,
