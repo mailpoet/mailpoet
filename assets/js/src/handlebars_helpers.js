@@ -1,4 +1,4 @@
-define('handlebars_helpers', ['handlebars'], function handlebarsHelpers(Handlebars) {
+define(['handlebars'], function handlebarsHelpers(Handlebars) {
   // Handlebars helpers
   Handlebars.registerHelper('concat', function concatHelper() {
     var size = (arguments.length - 1);

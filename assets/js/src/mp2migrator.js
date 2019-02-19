@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
+define(['mailpoet', 'jquery'], function (mp, jQuery) {
   'use strict';
 
   var MailPoet = mp;

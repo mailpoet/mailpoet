@@ -1,4 +1,4 @@
-define('num',
+define(
   [
     'mailpoet'
   ], function ( // eslint-disable-line func-names

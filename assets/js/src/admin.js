@@ -1,4 +1,4 @@
-define('admin', [
+define([
   'jquery'
 ],
 function admin(jQuery) {

@@ -1,4 +1,4 @@
-define('mailpoet', [], function mailpoet() {
+define([], function mailpoet() {
   // A placeholder for MailPoet object
   var MailPoet = {};
 
