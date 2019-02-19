@@ -2,11 +2,8 @@ import Backbone from 'backbone';
 import jQuery from 'jquery';
 import mp from 'mailpoet';
 
-    var MailPoet = mp;
-    if (jQuery('#mailpoet_settings').length === 0) {
-      return;
-    }
-
+  var MailPoet = mp;
+  if (jQuery('#mailpoet_settings').length > 0) {
     MailPoet.Router = new (Backbone.Router.extend({
       routes: {
         '': 'defaultRoute',
@@ -79,3 +76,4 @@ import mp from 'mailpoet';
     jQuery(document).ready(function () { // eslint-disable-line func-names
       if (!Backbone.History.started) Backbone.history.start();
     });
+  }
