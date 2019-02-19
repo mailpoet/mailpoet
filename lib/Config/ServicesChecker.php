@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Mailer\MailerError;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -114,5 +115,18 @@ class ServicesChecker {
     }
 
     return false;
+  }
+
+  function isFromEmailAuthorized($display_error_notice = true) {
+    $mta_log_error = $this->settings->get('mta_log.error', []);
+
+    if ($mta_log_error && $mta_log_error['operation'] === MailerError::OPERATION_AUTHORIZATION) {
+      if ($display_error_notice) {
+        WPNotice::displayError($mta_log_error['error_message'], 'js-error-unauthorized-email', '', false, false);
+      }
+      return false;
+    }
+
+    return true;
   }
 }

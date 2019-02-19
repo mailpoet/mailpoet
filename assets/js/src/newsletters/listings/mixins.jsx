@@ -391,7 +391,11 @@ const StatisticsMixin = {
 
 const MailerMixin = {
   checkMailerStatus: function checkMailerStatus(state) {
-    if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
+    if (
+      state.meta.mta_log.error
+      && state.meta.mta_log.status === 'paused'
+      && state.meta.mta_log.error.operation !== 'authorization'
+    ) {
       const errorType = MailerMixin.getMailerErrorType(state);
       MailPoet.Notice[errorType](
         '',

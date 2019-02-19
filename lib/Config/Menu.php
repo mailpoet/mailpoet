@@ -73,6 +73,7 @@ class Menu {
     $this->subscribers_over_limit = $subscribers_feature->check();
     $this->checkMailPoetAPIKey();
     $this->checkPremiumKey();
+    $this->checkFromEmailAuthorization();
 
     add_action(
       'admin_menu',
@@ -834,6 +835,13 @@ class Menu {
       && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
     $checker = $checker ?: new ServicesChecker();
     $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
+  }
+
+  function checkFromEmailAuthorization(ServicesChecker $checker = null) {
+    if (self::isOnMailPoetAdminPage()) {
+      $checker = $checker ?: new ServicesChecker();
+      $checker->isFromEmailAuthorized(true);
+    }
   }
 
   function getLimitPerPage($model = null) {
