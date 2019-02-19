@@ -157,6 +157,16 @@ define([
       this.toolsView = new Module.AutomatedLatestContentLayoutBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_container'), renderOptions: renderOptions }));
+    },
+    duplicateBlock: function duplicateBlock() {
+      var originalData = this.model.toJSON();
+      var newModel = new Module.AutomatedLatestContentLayoutBlockModel(originalData);
+      this.model.collection.add(
+        newModel,
+        {
+          at: this.model.collection.findIndex(this.model)
+        }
+      );
     }
   });
 
