@@ -3,15 +3,15 @@ import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import Handlebars from 'handlebars';
 
-    if (!jQuery('#mailpoet_subscribers_export').length) {
-      return;
-    }
     jQuery(document).ready(function documentReady() {
       var segmentsContainerElement;
       var subscriberFieldsContainerElement;
       var nextStepButton;
       var renderSegmentsAndFields;
       var subscribersExportTemplate;
+      if (!jQuery('#mailpoet_subscribers_export').length) {
+        return;
+      }
       if (!window.exportData.segments) {
         return;
       }
