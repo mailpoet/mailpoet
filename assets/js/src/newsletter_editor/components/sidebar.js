@@ -197,6 +197,14 @@ Module.SidebarStylesView = Marionette.View.extend({
       'change #mailpoet_a_font_underline': function (event) {
         this.model.set('link.textDecoration', (event.target.checked) ? event.target.value : 'none');
       },
+      'change #mailpoet_text_line_height': function (event) {
+        this.model.set('text.lineHeight', event.target.value);
+      },
+      'change #mailpoet_heading_line_height': function (event) {
+        this.model.set('h1.lineHeight', event.target.value);
+        this.model.set('h2.lineHeight', event.target.value);
+        this.model.set('h3.lineHeight', event.target.value);
+      },
       'change #mailpoet_newsletter_background_color': _.partial(this.changeColorField, 'wrapper.backgroundColor'),
       'change #mailpoet_background_color': _.partial(this.changeColorField, 'body.backgroundColor'),
     };

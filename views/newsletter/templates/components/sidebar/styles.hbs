@@ -97,6 +97,28 @@
         </div>
         <hr />
         <div class="mailpoet_form_field">
+            <label>
+            <%= __('Text line height') %>
+            <select id="mailpoet_text_line_height" name="text-line-height">
+            {{#each availableStyles.lineHeights}}
+                <option value="{{ this }}" {{#ifCond this '==' ../model.text.lineHeight}}SELECTED{{/ifCond}}>{{ this }}</option>
+            {{/each}}
+            </select>
+            </label>
+        </div>
+        <div class="mailpoet_form_field">
+            <label>
+            <%= __('Heading line height') %>
+            <select id="mailpoet_heading_line_height" name="heading-line-height">
+            {{#each availableStyles.lineHeights}}
+                {{!-- Checking against h1 only since all headings have the same line height value. --}}
+                <option value="{{ this }}" {{#ifCond this '==' ../model.h1.lineHeight}}SELECTED{{/ifCond}}>{{ this }}</option>
+            {{/each}}
+            </select>
+            </label>
+        </div>
+        <hr />
+        <div class="mailpoet_form_field">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="newsletter-color" value="{{ model.wrapper.backgroundColor }}" id="mailpoet_newsletter_background_color"></span>
             </span><%= __('Content background') %>
