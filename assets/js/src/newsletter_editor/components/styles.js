@@ -11,21 +11,25 @@ Module.StylesModel = SuperModel.extend({
       fontColor: '#000000',
       fontFamily: 'Arial',
       fontSize: '16px',
+      lineHeight: '1.6',
     },
     h1: {
       fontColor: '#111111',
       fontFamily: 'Arial',
       fontSize: '40px',
+      lineHeight: '1.6',
     },
     h2: {
       fontColor: '#222222',
       fontFamily: 'Tahoma',
       fontSize: '32px',
+      lineHeight: '1.6',
     },
     h3: {
       fontColor: '#333333',
       fontFamily: 'Verdana',
       fontSize: '24px',
+      lineHeight: '1.6',
     },
     link: {
       fontColor: '#21759B',

@@ -57,7 +57,7 @@ class StylesHelper {
     'Permanent Marker',
     'Pacifico',
   ];
-  static $line_height_multiplier = 1.6;
+  static $default_line_height = 1.6;
   static $heading_margin_multiplier = 0.3;
   static $padding_width = 20;
 
@@ -128,8 +128,9 @@ class StylesHelper {
 
   static function applyLineHeight($style, $selector) {
     if (!preg_match('/mailpoet_paragraph|h[1-4]/i', $selector)) return $style;
+    $line_height = isset($style['lineHeight']) ? (float)$style['lineHeight'] : self::$default_line_height;
     $font_size = (int)$style['fontSize'];
-    $style['lineHeight'] = sprintf('%spx', self::$line_height_multiplier * $font_size);
+    $style['lineHeight'] = sprintf('%spx', $line_height * $font_size);
     return $style;
   }
 
