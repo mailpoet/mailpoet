@@ -68,7 +68,7 @@ class MailPoetMapperTest extends \MailPoetTest {
     $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
 
     expect($error)->isInstanceOf(MailerError::class);
-    expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
+    expect($error->getOperation())->equals(MailerError::OPERATION_AUTHORIZATION);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
     expect($error->getMessage())->contains('The MailPoet Sending Service did not send your latest email because the address');
   }

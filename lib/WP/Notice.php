@@ -12,6 +12,7 @@ class Notice {
   private $message;
   private $classes;
   private $data_notice_name;
+  private $render_in_paragraph;
 
   function __construct($type, $message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
     $this->type = $type;

@@ -4,6 +4,7 @@ namespace MailPoet\Mailer;
 class MailerError {
   const OPERATION_CONNECT = 'connect';
   const OPERATION_SEND = 'send';
+  const OPERATION_AUTHORIZATION = 'authorization';
 
   const LEVEL_HARD = 'hard';
   const LEVEL_SOFT = 'soft';
