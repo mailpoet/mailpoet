@@ -2,6 +2,7 @@ import App from 'newsletter_editor/App';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore'; // eslint-disable-line func-names
+import jQuery from 'jquery';
 
 var Module = {};
 
@@ -42,7 +43,9 @@ Module.StylesModel = SuperModel.extend({
       backgroundColor: '#cccccc',
     },
   },
-  initialize: function () { // eslint-disable-line func-names
+  initialize: function (data) { // eslint-disable-line func-names
+    // apply model defaults recursively (not only on top level)
+    this.set(jQuery.extend(true, {}, this.defaults, data));
     this.on('change', function () { App.getChannel().trigger('autoSave'); }); // eslint-disable-line func-names
   },
 });
