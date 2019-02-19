@@ -4,6 +4,7 @@ $resize-handle-z-index = 2
 
 .mailpoet_resize_handle_container
   left: 50%
+  margin-top: -16px
   position: absolute
   top: 100%
   transform: translateX(-50%)
@@ -12,12 +13,12 @@ $resize-handle-z-index = 2
 .mailpoet_resize_handle
   align-items: center
   background: $editor-content-color
-  border-radius: 0 0 10px 10px
+  border-radius: 10px
   cursor: ns-resize
   display: flex
   justify-content: space-between
   min-width: 60px
-  padding: 6px 10px 8px
+  padding: 7px 10px
   z-index: $resize-handle-z-index
 
   .mailpoet_resize_handle_text,
