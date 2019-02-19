@@ -4,16 +4,13 @@
  * a BlockModel and a BlockView.
  * BlockToolsView, BlockSettingsView and BlockWidgetView are optional.
  */
-define([
-  'newsletter_editor/App',
-  'backbone.marionette',
-  'backbone.supermodel',
-  'underscore',
-  'jquery',
-  'mailpoet',
-  'modal'
-], function base(App, Marionette, SuperModel, _, jQuery, MailPoet) {
-  'use strict';
+import App from 'newsletter_editor/App';
+import Marionette from 'backbone.marionette';
+import SuperModel from 'backbone.supermodel';
+import _ from 'underscore';
+import jQuery from 'jquery';
+import MailPoet from 'mailpoet';
+import 'modal';
 
   var Module = {};
   var AugmentedView = Marionette.View.extend({});
@@ -331,5 +328,4 @@ define([
     }
   });
 
-  return Module;
-});
+export default Module;

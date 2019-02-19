@@ -51,9 +51,9 @@ function cacheEvent(forced, name, data) {
   });
 }
 
-define(
-  ['mailpoet', 'underscore'],
-  function analyticsEvent(mp, _) {
+import mp from 'mailpoet';
+import _ from 'underscore';
+
     var MailPoet = mp;
 
     function initializeMixpanelWhenLoaded() {
@@ -69,5 +69,3 @@ define(
     MailPoet.forceTrackEvent = _.partial(cacheEvent, true);
 
     initializeMixpanelWhenLoaded();
-  }
-);

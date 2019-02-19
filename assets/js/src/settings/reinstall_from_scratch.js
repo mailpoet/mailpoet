@@ -1,10 +1,5 @@
-define(
-  [
-    'mailpoet'
-  ],
-  function reinstallFromScratch(
-    MailPoet
-  ) {
+import MailPoet from 'mailpoet';
+
     var element;
     function eventHandler() {
       if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) { // eslint-disable-line
@@ -40,5 +35,3 @@ define(
     if (element) {
       element.addEventListener('click', eventHandler, false);
     }
-  }
-);

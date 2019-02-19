@@ -1,11 +1,10 @@
 const expect = global.expect;
 const sinon = global.sinon;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/social',
-  'backbone'
-], function (EditorApplication, SocialBlock, Backbone) {
+import EditorApplication from 'newsletter_editor/App';
+import SocialBlock from 'newsletter_editor/blocks/social';
+import Backbone from 'backbone';
+
   describe('Social', function () {
     describe('block model', function () {
       var model;
@@ -325,4 +324,3 @@ define([
       });
     });
   });
-});

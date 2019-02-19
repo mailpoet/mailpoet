@@ -1,10 +1,9 @@
 const expect = global.expect;
 const sinon = global.sinon;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/header'
-], function (App, HeaderBlock) {
+import App from 'newsletter_editor/App';
+import HeaderBlock from 'newsletter_editor/blocks/header';
+
   var EditorApplication = App;
 
   describe('Header', function () {
@@ -229,4 +228,3 @@ define([
       });
     });
   });
-});

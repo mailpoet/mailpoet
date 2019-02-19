@@ -1,10 +1,4 @@
-define(
-  [
-    'mailpoet'
-  ], function i18n(
-    mp
-  ) {
-    'use strict';
+import mp from 'mailpoet';
 
     var MailPoet = mp;
 
@@ -21,4 +15,3 @@ define(
         return translations;
       }
     };
-  });

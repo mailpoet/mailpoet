@@ -3,12 +3,11 @@ const sinon = global.sinon;
 const Backbone = global.Backbone;
 const jQuery = global.jQuery;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/communication',
-  'newsletter_editor/blocks/posts',
-  'newsletter_editor/blocks/container'
-], function (App, Communication, PostsBlock, ContainerBlock) {
+import App from 'newsletter_editor/App';
+import Communication from 'newsletter_editor/components/communication';
+import PostsBlock from 'newsletter_editor/blocks/posts';
+import ContainerBlock from 'newsletter_editor/blocks/container';
+
   var EditorApplication = App;
   var CommunicationComponent = Communication;
 
@@ -489,4 +488,3 @@ define([
       });
     });
   });
-});

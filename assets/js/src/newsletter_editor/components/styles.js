@@ -1,12 +1,8 @@
+import App from 'newsletter_editor/App';
+import Marionette from 'backbone.marionette';
+import SuperModel from 'backbone.supermodel';
+import _ from 'underscore'; // eslint-disable-line func-names
 
-'use strict';
-
-define([
-  'newsletter_editor/App',
-  'backbone.marionette',
-  'backbone.supermodel',
-  'underscore'
-], function (App, Marionette, SuperModel, _) { // eslint-disable-line func-names
   var Module = {};
 
   Module.StylesModel = SuperModel.extend({
@@ -88,5 +84,4 @@ define([
     StartApp._appView.showChildView('stylesRegion', stylesView);
   });
 
-  return Module;
-});
+export default Module;

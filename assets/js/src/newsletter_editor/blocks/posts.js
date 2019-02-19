@@ -11,33 +11,18 @@
  * This block depends on blocks.button and blocks.divider for block model and
  * block settings view.
  */
-define([
-  'backbone',
-  'backbone.marionette',
-  'backbone.radio',
-  'underscore',
-  'jquery',
-  'mailpoet',
-  'newsletter_editor/App',
-  'newsletter_editor/components/communication',
-  'newsletter_editor/blocks/base',
-  'newsletter_editor/blocks/button',
-  'newsletter_editor/blocks/divider',
-  'select2'
-], function (
-  Backbone,
-  Marionette,
-  Radio,
-  _,
-  jQuery,
-  MailPoet,
-  App,
-  CommunicationComponent,
-  BaseBlock,
-  ButtonBlock,
-  DividerBlock
-) {
-  'use strict';
+import Backbone from 'backbone';
+import Marionette from 'backbone.marionette';
+import Radio from 'backbone.radio';
+import _ from 'underscore';
+import jQuery from 'jquery';
+import MailPoet from 'mailpoet';
+import App from 'newsletter_editor/App';
+import CommunicationComponent from 'newsletter_editor/components/communication';
+import BaseBlock from 'newsletter_editor/blocks/base';
+import ButtonBlock from 'newsletter_editor/blocks/button';
+import DividerBlock from 'newsletter_editor/blocks/divider';
+import 'select2';
 
   var Module = {};
   var base = BaseBlock;
@@ -614,5 +599,4 @@ define([
     });
   });
 
-  return Module;
-});
+export default Module;

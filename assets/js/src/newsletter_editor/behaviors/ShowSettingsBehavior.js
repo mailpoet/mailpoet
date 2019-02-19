@@ -3,11 +3,10 @@
  *
  * Opens up settings of a BlockView if contents are clicked upon
  */
-define([
-  'backbone.marionette',
-  'jquery',
-  'newsletter_editor/behaviors/BehaviorsLookup'
-], function (Marionette, jQuery, BehaviorsLookup) { // eslint-disable-line func-names
+import Marionette from 'backbone.marionette';
+import jQuery from 'jquery';
+import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup'; // eslint-disable-line func-names
+
   var BL = BehaviorsLookup;
 
   BL.ShowSettingsBehavior = Marionette.Behavior.extend({
@@ -28,4 +27,3 @@ define([
         && jQuery(element).is(this.options.ignoreFrom);
     }
   });
-});

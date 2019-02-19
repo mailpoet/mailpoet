@@ -1,14 +1,6 @@
-define(
-  [
-    'mailpoet',
-    'jquery',
-    'moment'
-  ], function ( // eslint-disable-line func-names
-    mp,
-    jQuery,
-    Moment
-  ) {
-    'use strict';
+import mp from 'mailpoet';
+import jQuery from 'jquery';
+import Moment from 'moment';
 
     var MailPoet = mp;
 
@@ -168,4 +160,3 @@ define(
         return convertedFormat.join('');
       }
     };
-  });

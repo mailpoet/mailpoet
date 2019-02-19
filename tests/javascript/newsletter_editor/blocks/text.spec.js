@@ -1,10 +1,9 @@
 const expect = global.expect;
 const sinon = global.sinon;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/text'
-], function (EditorApplication, TextBlock) {
+import EditorApplication from 'newsletter_editor/App';
+import TextBlock from 'newsletter_editor/blocks/text';
+
   describe('Text', function () {
     describe('model', function () {
       var model;
@@ -83,4 +82,3 @@ define([
       });
     });
   });
-});

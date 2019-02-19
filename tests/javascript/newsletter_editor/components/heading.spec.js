@@ -1,10 +1,9 @@
 const expect = global.expect;
 const Backbone = global.Backbone;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/heading'
-], function (EditorApplication, HeadingComponent) {
+import EditorApplication from 'newsletter_editor/App';
+import HeadingComponent from 'newsletter_editor/components/heading';
+
   describe('Heading', function () {
     describe('view', function () {
       var view;
@@ -46,4 +45,3 @@ define([
       });
     });
   });
-});

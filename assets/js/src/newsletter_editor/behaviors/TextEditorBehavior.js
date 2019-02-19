@@ -3,12 +3,11 @@
  *
  * Adds TinyMCE text editing capabilities to a view
  */
-define([
-  'backbone.marionette',
-  'underscore',
-  'newsletter_editor/behaviors/BehaviorsLookup',
-  'newsletter_editor/App'
-], function textEditorBehavior(Marionette, _, BehaviorsLookup, App) {
+import Marionette from 'backbone.marionette';
+import _ from 'underscore';
+import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
+import App from 'newsletter_editor/App';
+
   var BL = BehaviorsLookup;
 
   BL.TextEditorBehavior = Marionette.Behavior.extend({
@@ -90,4 +89,3 @@ define([
       }));
     }
   });
-});

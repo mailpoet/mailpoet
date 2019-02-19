@@ -3,10 +3,9 @@ const sinon = global.sinon;
 const Backbone = global.Backbone;
 const _ = global._;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/components/content'
-], function (App, ContentComponent) {
+import App from 'newsletter_editor/App';
+import ContentComponent from 'newsletter_editor/components/content';
+
   var EditorApplication = App;
 
   describe('Content', function () {
@@ -123,4 +122,3 @@ define([
       });
     });
   });
-});

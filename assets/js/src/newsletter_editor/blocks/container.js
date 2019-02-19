@@ -4,15 +4,12 @@
  * This is a special kind of block, as it can contain content blocks, as well
  * as other containers.
  */
-define([
-  'backbone',
-  'backbone.marionette',
-  'underscore',
-  'jquery',
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/base'
-], function (Backbone, Marionette, _, jQuery, App, BaseBlock) {
-  'use strict';
+import Backbone from 'backbone';
+import Marionette from 'backbone.marionette';
+import _ from 'underscore';
+import jQuery from 'jquery';
+import App from 'newsletter_editor/App';
+import BaseBlock from 'newsletter_editor/blocks/base';
 
   var Module = {};
   var base = BaseBlock;
@@ -445,5 +442,4 @@ define([
     });
   });
 
-  return Module;
-});
+export default Module;

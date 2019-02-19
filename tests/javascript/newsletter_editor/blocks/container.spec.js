@@ -2,10 +2,9 @@ const expect = global.expect;
 const sinon = global.sinon;
 const Backbone = global.Backbone;
 
-define([
-  'newsletter_editor/App',
-  'newsletter_editor/blocks/container'
-], function (App, ContainerBlock) {
+import App from 'newsletter_editor/App';
+import ContainerBlock from 'newsletter_editor/blocks/container';
+
   var EditorApplication = App;
 
   describe('Container', function () {
@@ -285,4 +284,3 @@ define([
       });
     });
   });
-});

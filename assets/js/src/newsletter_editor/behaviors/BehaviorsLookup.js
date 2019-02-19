@@ -4,9 +4,8 @@
  *
  * For more check: http://marionettejs.com/docs/marionette.behaviors.html#behaviorslookup
  */
-define([
-  'backbone.marionette'
-], function (BackboneMarionette) { // eslint-disable-line func-names
+import BackboneMarionette from 'backbone.marionette'; // eslint-disable-line func-names
+
   var Marionette = BackboneMarionette;
   var BehaviorsLookup = {};
   Marionette.Behaviors.behaviorsLookup = function () { // eslint-disable-line func-names
@@ -15,5 +14,4 @@ define([
 
   window.BehaviorsLookup = BehaviorsLookup;
 
-  return BehaviorsLookup;
-});
+export default BehaviorsLookup;

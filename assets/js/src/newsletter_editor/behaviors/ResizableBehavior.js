@@ -3,11 +3,10 @@
  *
  * Allows resizing elements within a block
  */
-define([
-  'backbone.marionette',
-  'newsletter_editor/behaviors/BehaviorsLookup',
-  'interact'
-], function ResizableBehavior(Marionette, BehaviorsLookup, interact) {
+import Marionette from 'backbone.marionette';
+import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
+import interact from 'interact';
+
   var BL = BehaviorsLookup;
 
   BL.ResizableBehavior = Marionette.Behavior.extend({
@@ -81,4 +80,3 @@ define([
       }
     }
   });
-});

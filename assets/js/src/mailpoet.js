@@ -1,12 +1,10 @@
-define([], function mailpoet() {
   // A placeholder for MailPoet object
   var MailPoet = {};
 
   // Expose MailPoet globally
   window.MailPoet = MailPoet;
 
-  return MailPoet;
-});
+export default MailPoet;
 
 require('ajax'); // side effect - extends MailPoet object
 require('date'); // side effect - extends MailPoet object

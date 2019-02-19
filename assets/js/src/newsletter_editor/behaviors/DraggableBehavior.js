@@ -4,14 +4,13 @@
  * Allows View instances to be draggable.
  * Part of the drag&drop behavior.
  */
-define([
-  'backbone.marionette',
-  'underscore',
-  'jquery',
-  'newsletter_editor/behaviors/BehaviorsLookup',
-  'interact',
-  'newsletter_editor/App'
-], function DraggableBehavior(Marionette, _, jQuery, BehaviorsLookup, interact, App) {
+import Marionette from 'backbone.marionette';
+import _ from 'underscore';
+import jQuery from 'jquery';
+import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
+import interact from 'interact';
+import App from 'newsletter_editor/App';
+
   var BL = BehaviorsLookup;
 
   BL.DraggableBehavior = Marionette.Behavior.extend({
@@ -148,4 +147,3 @@ define([
       };
     }
   });
-});

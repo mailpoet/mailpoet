@@ -1,8 +1,7 @@
-define([
-  'newsletter_editor/App',
-  'backbone.supermodel',
-  'underscore'
-], function (App, SuperModel, _) { // eslint-disable-line func-names
+import App from 'newsletter_editor/App';
+import SuperModel from 'backbone.supermodel';
+import _ from 'underscore'; // eslint-disable-line func-names
+
   var Module = {};
 
   Module.ConfigModel = SuperModel.extend({
@@ -39,5 +38,4 @@ define([
     Application.setConfig(config);
   });
 
-  return Module;
-});
+export default Module;

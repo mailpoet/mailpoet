@@ -1,11 +1,8 @@
-'use strict';
+import App from 'newsletter_editor/App';
+import SuperModel from 'backbone.supermodel';
+import _ from 'underscore';
+import MailPoet from 'mailpoet';
 
-define([
-  'newsletter_editor/App',
-  'backbone.supermodel',
-  'underscore',
-  'mailpoet'
-], function content(App, SuperModel, _, MailPoet) {
   var Module = {};
 
   // Holds newsletter entry fields, such as subject or creation datetime.
@@ -102,5 +99,4 @@ define([
   });
 
 
-  return Module;
-});
+export default Module;

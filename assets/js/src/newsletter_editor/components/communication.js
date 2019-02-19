@@ -1,10 +1,9 @@
 /* eslint-disable func-names */
-define([
-  'newsletter_editor/App',
-  'underscore',
-  'mailpoet',
-  'ajax'
-], function (App, _, MailPoet) {
+import App from 'newsletter_editor/App';
+import _ from 'underscore';
+import MailPoet from 'mailpoet';
+import 'ajax';
+
   var Module = {};
 
   Module._query = function (args) {
@@ -103,5 +102,4 @@ define([
     Module.getPostTypes();
   });
 
-  return Module;
-});
+export default Module;

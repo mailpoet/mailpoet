@@ -1,7 +1,7 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
-const DefaultSender = require('settings/default_sender.jsx').default;
-const SignupConfirmationSender = require('settings/signup_confirmation_sender.jsx').default;
+import React from 'react';
+import ReactDOM from 'react-dom';
+import DefaultSender from 'settings/default_sender.jsx';
+import SignupConfirmationSender from 'settings/signup_confirmation_sender.jsx';
 
 const settingsSenderContainer = document.getElementById('settings_sender_container');
 

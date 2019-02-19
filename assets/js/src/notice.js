@@ -1,6 +1,6 @@
-'use strict';
+import mp from 'mailpoet';
+import jQuery from 'jquery'; // eslint-disable-line func-names
 
-define(['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disable-line func-names
   /*= ==========================================================================================
 
       MailPoet Notice:
@@ -219,4 +219,3 @@ define(['mailpoet', 'jquery'], function (mp, jQuery) { // eslint-disable-line fu
       }, options));
     }
   };
-});

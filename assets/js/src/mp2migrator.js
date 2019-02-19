@@ -1,6 +1,6 @@
 /* eslint-disable func-names */
-define(['mailpoet', 'jquery'], function (mp, jQuery) {
-  'use strict';
+import mp from 'mailpoet';
+import jQuery from 'jquery';
 
   var MailPoet = mp;
   MailPoet.MP2Migrator = {
@@ -212,4 +212,3 @@ define(['mailpoet', 'jquery'], function (mp, jQuery) {
     // Update the display
     MailPoet.MP2Migrator.updateDisplay();
   });
-});
