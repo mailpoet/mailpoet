@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 /**
  * @property string|array $settings
  * @property string|array $body
+ * @property string $name
  */
 class Form extends Model {
   public static $_table = MP_FORMS_TABLE;

@@ -9,11 +9,15 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * @property int $count_processed
+ * @property int $count_to_process
  * @property int $count_total
  * @property string $newsletter_rendered_body
+ * @property string $newsletter_rendered_subject
  * @property int $task_id
+ * @property int $newsletter_id
  * @property string|object $meta
  * @property string|array $subscribers
+ * @property string|null $deleted_at
  */
 class SendingQueue extends Model {
   public static $_table = MP_SENDING_QUEUES_TABLE;

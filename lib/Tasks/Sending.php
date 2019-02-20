@@ -13,6 +13,9 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * A facade class containing all necessary models to work with a sending queue
+ * @property string $status
+ * @property int $task_id
+ * @property int $id
  */
 class Sending {
   const TASK_TYPE = 'sending';

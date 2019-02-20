@@ -34,12 +34,14 @@ class Reporter {
     $has_wc = $this->woocommerce_helper->isWooCommerceActive();
     $wc_customers_count = 0;
     if ($has_wc) {
-      $wc_customers_count = (int)Newsletter::rawQuery(
+      /** @var \stdClass */
+      $wc_customers = Newsletter::rawQuery(
         "SELECT COUNT(DISTINCT m.meta_value) as count FROM ".$wpdb->prefix."posts p ".
         "JOIN ".$wpdb->prefix."postmeta m ON m.post_id = p.id ".
         "WHERE p.post_type = 'shop_order' ".
         "AND m.meta_key = '_customer_user' AND m.meta_value <> 0"
-      )->findOne()->count;
+      )->findOne();
+      $wc_customers_count = (int)$wc_customers->count;
     }
 
     return array(

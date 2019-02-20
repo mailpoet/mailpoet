@@ -3,6 +3,13 @@ namespace MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * @property int $newsletter_id
+ * @property int $subscriber_id
+ * @property int $queue_id
+ * @property int $link_id
+ * @property int $count
+ */
 class StatisticsClicks extends Model {
   public static $_table = MP_STATISTICS_CLICKS_TABLE;
 

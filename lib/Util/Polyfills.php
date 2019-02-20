@@ -17,7 +17,7 @@ if (!function_exists('mb_convert_encoding')) {
 }
 
 if (!function_exists('mb_strtoupper')) {
-  function mb_strtoupper($s, $encoding = null) {
+  function mb_strtoupper($s, $encoding = 'UTF-8') {
     return MbstringPolyfill::mb_strtoupper($s, $encoding);
   }
 }

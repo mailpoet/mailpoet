@@ -22,10 +22,12 @@ if (!defined('ABSPATH')) exit;
  * @property int $children_count
  * @property bool|array $statistics
  * @property string $deleted_at
- * @property int $children_count
  * @property int $total_sent
  * @property int $total_scheduled
  * @property array $segments
+ * @property string $subject
+ * @property string $body
+ * @property string|null $schedule
  */
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
@@ -585,16 +587,17 @@ class Newsletter extends Model {
   }
 
   function wasScheduledForSubscriber($subscriber_id) {
-    $count = (int)SendingQueue::rawQuery(
+    /** @var \stdClass */
+    $queue = SendingQueue::rawQuery(
       "SELECT COUNT(*) as count
       FROM `" . SendingQueue::$_table . "`
       JOIN `" . ScheduledTask::$_table . "` ON " . SendingQueue::$_table . ".task_id = " . ScheduledTask::$_table . ".id
       JOIN `" . ScheduledTaskSubscriber::$_table . "` ON " . ScheduledTask::$_table . ".id = " . ScheduledTaskSubscriber::$_table . ".task_id
       WHERE " . ScheduledTaskSubscriber::$_table . ".subscriber_id = " . $subscriber_id . "
       AND " . SendingQueue::$_table . ".newsletter_id = " . $this->id
-    )->findOne()->count;
+    )->findOne();
 
-    return $count > 0;
+    return ((int)$queue->count) > 0;
   }
 
 

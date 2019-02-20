@@ -9,7 +9,10 @@ if (!defined('ABSPATH')) exit;
 /**
  * @property int $id
  * @property string $processed_at
+ * @property string|null $status
+ * @property string|null $type
  * @property int $priority
+ * @property string $scheduled_at
  */
 class ScheduledTask extends Model {
   public static $_table = MP_SCHEDULED_TASKS_TABLE;

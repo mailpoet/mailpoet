@@ -2,6 +2,7 @@
 
 namespace MailPoet\DI;
 
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ContainerFactory {
@@ -21,6 +22,9 @@ class ContainerFactory {
     $this->configurator = $configurator;
   }
 
+  /**
+   * @return Container
+   */
   function getContainer() {
     $dump_class = '\\'. $this->configurator->getDumpNamespace() . '\\' . $this->configurator->getDumpClassname();
     if (!$this->debug && class_exists($dump_class)) {
