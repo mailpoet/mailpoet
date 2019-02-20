@@ -1,0 +1,249 @@
+$box-width: 425px;
+$box-height: 150px;
+$thumbnail-height: $box-height * 2;
+$box-margin-big: 40px;
+$box-margin-small: 20px;
+$box-description-space-between-heading-and-paragraph: 5px;
+$box-description-height: 110px;
+$box-description-text-height: $box-description-height - $box-description-space-between-heading-and-paragraph;
+$box-heading-line-height: $box-description-text-height / 4;
+$box-heading-font-size: $box-heading-line-height * 5 / 7;
+$box-description-line-height: $box-heading-line-height / 2;
+$box-description-font-size: $box-description-line-height;
+
+.mailpoet_boxes.mailpoet_boxes_loading {
+  opacity: 0.2;
+}
+
+.mailpoet_boxes li {
+  float: left;
+  position: relative;
+  padding: 15px;
+  margin: 15px 25px 0 0;
+  width: $box-width;
+  height: $box-height;
+  border: 1px solid #dedede;
+  background-color: #fff;
+}
+
+.mailpoet_boxes .mailpoet_template_boxes {
+  box-sizing: border-box;
+  height: auto;
+  margin: 0 0 $box-margin-big;
+  padding: 0;
+  width: 30.5%;
+
+  @media screen and (max-width: 1178px) {
+    width: 47%;
+  }
+
+  @media screen and (max-width: 520px) {
+    width: 90%;
+  }
+}
+
+@media screen and (min-width: 1179px) {
+  .mailpoet_boxes .mailpoet_template_boxes:nth-child(3n-1) {
+    margin: 0 $box-margin-big $box-margin-big $box-margin-big;
+  }
+}
+
+@media screen and (max-width: 1178px) {
+  .mailpoet_boxes .mailpoet_template_boxes:nth-child(2n-1) {
+    margin: 0 $box-margin-big $box-margin-big 0;
+  }
+}
+
+@media screen and (max-width: 782px) {
+  .mailpoet_boxes .mailpoet_template_boxes:nth-child(2n-1) {
+    margin: 0 $box-margin-small $box-margin-small 0;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .mailpoet_boxes .mailpoet_template_boxes:nth-child(1n) {
+    margin: 0 0 $box-margin-small $box-margin-small;
+  }
+}
+
+.mailpoet_boxes .mailpoet_template_boxes .mailpoet_description {
+  background: #fafafa;
+  border-top: 1px solid #e1e1e1;
+  padding: 12px 5%;
+  width: 90%;
+}
+
+.mailpoet_boxes .mailpoet_template_boxes .mailpoet_description h3 {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  margin: 0;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.mailpoet_boxes .mailpoet_template_boxes .mailpoet_actions {
+  background: #f5f5f5;
+  border-top: 1px solid #d6d6d6;
+  border-left: 1px solid #e8e8e8;
+  padding: 8px 16px;
+  bottom: 0px;
+  right: 0px;
+
+  @media screen and (max-width: 782px) {
+    padding: 6px 16px 2px;
+  }
+}
+
+.mailpoet_boxes .mailpoet_thumbnail {
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 0;
+  width: 100%;
+  height: $thumbnail-height;
+  float: left;
+  overflow: hidden;
+  position: relative;
+
+  img {
+    min-width: $thumbnail-height;
+    height: auto;
+    width: 100%;
+  }
+}
+
+.woocommerce .mailpoet_thumbnail,
+.mailpoet_boxes .mailpoet_newsletter_types .mailpoet_thumbnail {
+  border: 1px solid #ccc;
+  width: $box-height;
+  height: $box-height;
+  margin-right: 15px;
+  float: left;
+  overflow: hidden;
+  position: relative;
+
+  img {
+    min-width: $box-height;
+    width: 110%;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.mailpoet_overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0);
+  opacity: 0;
+  transition: all 250ms cubic-bezier(0.42, 0, 0.58, 1); /* ease-in-out */
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
+  }
+}
+
+.mailpoet_overlay .mailpoet_more_details {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  /* opacity: 0; */
+  position: absolute;
+  top: 35%;
+  right: 20%;
+  left: 20%;
+  background: #23282d;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 15px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+  -webkit-font-smoothing: antialiased;
+  font-weight: 600;
+  padding: 15px 12px;
+  text-align: center;
+  border-radius: 3px;
+  transition: opacity 0.1s ease-in-out;
+}
+
+.mailpoet_boxes.woocommerce .mailpoet_description {
+  h3 {
+    font-size: 17px;
+    line-height: 1.2;
+  }
+}
+
+.mailpoet_boxes .mailpoet_description {
+  float: left;
+  width: 258px;
+  max-height: $box-description-height;
+  padding-bottom: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
+  h3 {
+    margin: 0 0 $box-description-space-between-heading-and-paragraph 0;
+    overflow: hidden;
+    max-width: 223px;
+    line-height: $box-heading-line-height;
+    font-size: $box-heading-font-size;
+  }
+
+  p {
+    font-size: $box-description-font-size;
+    line-height: $box-description-line-height;
+    margin: 0;
+  }
+}
+
+.mailpoet_boxes .mailpoet_actions {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+.mailpoet_boxes .mailpoet_delete {
+  margin-right: 6px;
+}
+
+.mailpoet_boxes .mailpoet_delete a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mailpoet_boxes .mailpoet_delete a:hover {
+  color: inherit;
+}
+[data-type="notification"] .mailpoet_thumbnail {
+  background-image: url("data:image/svg+xml;charset=utf8,%3C?xml version='1.0' encoding='UTF-8'?%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg width='170.08px' height='170.08px' enable-background='new 0 0 170.079 170.079' version='1.1' viewBox='0 0 170.079 170.079' xml:space='preserve' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='-165.74 77.092 -103.12 26.46 -40.486 77.092' fill='%238CD2CA'/%3E%3Cpath d='m-165.74 82.159c-1.477 0-2.942-0.644-3.944-1.88-1.759-2.178-1.42-5.366 0.755-7.128l62.63-50.63c1.858-1.503 4.512-1.503 6.37 0l62.627 50.63c2.178 1.762 2.514 4.95 0.755 7.128-1.759 2.174-4.948 2.513-7.125 0.754l-59.443-48.057-59.444 48.057c-0.938 0.757-2.063 1.126-3.181 1.126z' fill='%233A232C'/%3E%3Crect x='-165.74' y='77.706' width='125.26' height='79.142' display='none' fill='%238CD2CA'/%3E%3Cpath d='m-40.486 161.91h-125.26c-2.798 0-5.067-2.269-5.067-5.066v-79.142c0-2.798 2.269-5.066 5.067-5.066h125.26c2.798 0 5.066 2.269 5.066 5.066v79.142c0 2.797-2.268 5.066-5.066 5.066zm-120.19-10.133h115.12v-69.009h-115.12v69.009z' fill='%233A232C'/%3E%3Cline x1='-103.12' x2='-40.486' y1='117.28' y2='155.97' fill='%238CD2CA'/%3E%3Cpath d='m-40.491 161.04c-0.908 0-1.828-0.243-2.657-0.757l-62.629-38.698c-2.38-1.469-3.117-4.591-1.648-6.971 1.472-2.383 4.594-3.117 6.974-1.648l62.629 38.698c2.38 1.472 3.117 4.591 1.646 6.974-0.958 1.548-2.616 2.402-4.315 2.402z' fill='%233A232C'/%3E%3Cline x1='-103.12' x2='-165.74' y1='117.28' y2='155.97' fill='%238CD2CA'/%3E%3Cpath d='m-165.74 161.04c-1.697 0-3.357-0.854-4.315-2.402-1.472-2.383-0.732-5.502 1.648-6.974l62.628-38.698c2.382-1.472 5.504-0.731 6.974 1.648 1.472 2.38 0.732 5.502-1.648 6.971l-62.628 38.698c-0.831 0.513-1.751 0.757-2.659 0.757z' fill='%233A232C'/%3E%3Cpath d='m-103.12 122.34c-0.925 0-1.86-0.253-2.702-0.784l-62.627-39.571c-2.365-1.494-3.07-4.624-1.576-6.988 1.494-2.365 4.624-3.073 6.989-1.576l62.63 39.57c2.365 1.494 3.07 4.624 1.576 6.989-0.965 1.526-2.607 2.36-4.29 2.36z' fill='%233A232C'/%3E%3Cpath d='m-103.11 122.34c-1.683 0-3.325-0.834-4.29-2.36-1.494-2.365-0.789-5.495 1.576-6.989l62.63-39.57c2.364-1.494 5.494-0.789 6.991 1.576 1.494 2.364 0.786 5.494-1.579 6.988l-62.627 39.571c-0.841 0.531-1.777 0.784-2.701 0.784z' fill='%233A232C'/%3E%3Cpolygon points='-143.83 91.552 -143.83 14.976 -62.405 14.976 -62.405 91.555 -103.12 117.28' fill='%23fff'/%3E%3Cpath d='m-103.12 122.34c-0.938 0-1.88-0.26-2.707-0.784l-40.711-25.725c-1.47-0.928-2.36-2.543-2.36-4.282v-76.576c0-2.798 2.269-5.066 5.067-5.066h81.422c2.798 0 5.066 2.269 5.066 5.066v76.579c0 1.736-0.891 3.354-2.36 4.282l-40.708 25.722c-0.826 0.524-1.766 0.784-2.709 0.784zm-35.645-33.582l35.645 22.523 35.645-22.523v-68.718h-71.289v68.718z' fill='%233A232C'/%3E%3Cpolyline points='-359.84 77.937 -296.12 26.417 -232.39 77.937' fill='%238CD2CA'/%3E%3Cpath d='m-359.84 83.092c-1.503 0-2.993-0.654-4.011-1.913-1.79-2.215-1.446-5.46 0.768-7.252l63.729-51.519c1.891-1.529 4.592-1.529 6.482 0l63.728 51.519c2.213 1.792 2.558 5.037 0.768 7.252-1.791 2.213-5.035 2.558-7.25 0.768l-60.487-48.9-60.486 48.9c-0.957 0.77-2.102 1.145-3.241 1.145z' fill='%233A232C'/%3E%3Crect x='-359.84' y='78.561' width='127.46' height='80.532' display='none' fill='%238CD2CA'/%3E%3Cpath d='m-232.39 164.25h-127.46c-2.847 0-5.156-2.308-5.156-5.155v-80.533c0-2.847 2.309-5.155 5.156-5.155h127.46c2.848 0 5.156 2.309 5.156 5.155v80.532c1e-3 2.848-2.308 5.156-5.156 5.156zm-122.3-10.311h117.14v-70.221h-117.14v70.221z' fill='%233A232C'/%3E%3Cline x1='-296.12' x2='-232.39' y1='118.83' y2='158.2' fill='%238CD2CA'/%3E%3Cpath d='m-232.39 163.36c-0.926 0-1.86-0.25-2.706-0.771l-63.727-39.377c-2.422-1.497-3.173-4.674-1.677-7.096 1.498-2.425 4.675-3.172 7.097-1.677l63.728 39.379c2.422 1.495 3.174 4.672 1.677 7.094-0.975 1.579-2.665 2.448-4.392 2.448z' fill='%233A232C'/%3E%3Cline x1='-296.12' x2='-359.84' y1='118.83' y2='158.2' fill='%238CD2CA'/%3E%3Cpath d='m-359.84 163.36c-1.728 0-3.416-0.869-4.39-2.447-1.498-2.422-0.747-5.599 1.675-7.094l63.728-39.379c2.424-1.498 5.6-0.745 7.096 1.677 1.498 2.422 0.745 5.599-1.676 7.096l-63.728 39.377c-0.845 0.52-1.782 0.77-2.705 0.77z' fill='%233A232C'/%3E%3Cpath d='m-296.12 123.98c-0.941 0-1.893-0.257-2.749-0.798l-63.727-40.268c-2.406-1.521-3.125-4.704-1.604-7.111 1.521-2.406 4.705-3.126 7.113-1.604l63.728 40.265c2.407 1.521 3.125 4.705 1.605 7.112-0.983 1.553-2.654 2.404-4.366 2.404z' fill='%233A232C'/%3E%3Cpath d='m-296.11 123.98c-1.71 0-3.382-0.848-4.364-2.403-1.521-2.407-0.803-5.592 1.604-7.112l63.729-40.265c2.407-1.521 5.589-0.803 7.112 1.604 1.521 2.407 0.803 5.591-1.604 7.111l-63.729 40.268c-0.853 0.54-1.806 0.797-2.748 0.797z' fill='%233A232C'/%3E%3Cpolygon points='-337.54 92.651 -337.54 14.732 -254.69 14.732 -254.69 92.654 -296.12 118.83' fill='%23fff'/%3E%3Cpath d='m-296.12 123.98c-0.955 0-1.913-0.267-2.754-0.798l-41.425-26.178c-1.495-0.944-2.401-2.588-2.401-4.357v-77.919c0-2.847 2.308-5.156 5.155-5.156h82.849c2.847 0 5.156 2.309 5.156 5.156v77.922c0 1.767-0.906 3.413-2.401 4.357l-41.422 26.175c-0.843 0.531-1.799 0.798-2.757 0.798zm-36.27-34.173l36.27 22.918 36.268-22.918v-69.924h-72.538v69.924z' fill='%233A232C'/%3E%3Cline x1='-320.67' x2='-271.56' y1='35.248' y2='35.248' fill='%23fff'/%3E%3Cpath d='m-271.56 40.403h-49.115c-2.847 0-5.156-2.308-5.156-5.155s2.309-5.156 5.156-5.156h49.115c2.847 0 5.155 2.309 5.155 5.156s-2.308 5.155-5.155 5.155z' fill='%233A232C'/%3E%3Cline x1='-320.67' x2='-271.56' y1='56.592' y2='56.592' fill='%23fff'/%3E%3Cpath d='m-271.56 61.748h-49.115c-2.847 0-5.156-2.309-5.156-5.156s2.309-5.155 5.156-5.155h49.115c2.847 0 5.155 2.309 5.155 5.155 1e-3 2.847-2.308 5.156-5.155 5.156z' fill='%233A232C'/%3E%3Cline x1='-320.67' x2='-271.56' y1='77.937' y2='77.937' fill='%23fff'/%3E%3Cpath d='m-271.56 83.092h-49.115c-2.847 0-5.156-2.309-5.156-5.155s2.309-5.155 5.156-5.155h49.115c2.847 0 5.155 2.309 5.155 5.155s-2.308 5.155-5.155 5.155z' fill='%233A232C'/%3E%3Cpath d='m-102.93 60.33c-6 0-7.215-9.093-7.215-9.093-0.714-4.731 1.454-10.071 7.137-10.071 5.71 0 7.877 5.339 7.163 10.071-1e-3 0-1.086 9.093-7.085 9.093zm0 6.794l7.19-4.812c6.317 0 11.947 6.159 11.947 11.976v6.582s-9.646 2.986-19.137 2.986c-9.648 0-19.138-2.986-19.138-2.986v-6.582c0-5.948 5.128-11.843 11.817-11.843l7.321 4.679z' fill='%233A232C'/%3E%3Crect x='16.105' y='13.898' width='108.41' height='112.6' fill='none' stroke='%23BFBFBF' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Crect x='29.935' y='27.729' width='108.41' height='112.6' fill='%23fff' stroke='%23BFBFBF' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Crect x='44.149' y='42.328' width='108.41' height='112.6' fill='%23fff' stroke='%233A232C' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Cpath d='m100.26 68.858l7.971-7.972 27.863 27.815-8.02 7.974c-4.599-2.979-10.863-2.497-14.938 1.577l-3.284 3.286c-4.029 4.073-4.556 10.293-1.534 14.936l-8.016 7.975-10.556-10.559-12.267 12.222c-1.84 1.842-14.807 11.873-16.646 10.032-1.84-1.839 8.146-14.85 9.987-16.689l12.221-12.222-10.556-10.602 8.017-7.972c4.6 3.021 10.865 2.494 14.895-1.579l3.284-3.283c4.075-4.032 4.6-10.295 1.579-14.939z' fill='%233A232C'/%3E%3C/svg%3E");
+}
+
+[data-type="welcome"] .mailpoet_thumbnail {
+  background-image: url("data:image/svg+xml;charset=utf8,%3C?xml version='1.0' encoding='UTF-8'?%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg width='170.08px' height='170.08px' enable-background='new 0 0 170.079 170.079' version='1.1' viewBox='0 0 170.079 170.079' xml:space='preserve' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='22.59 76.092 85.217 25.46 147.85 76.092' fill='%238CD2CA'/%3E%3Cpath d='m22.592 81.159c-1.477 0-2.942-0.644-3.944-1.88-1.759-2.178-1.42-5.366 0.755-7.128l62.63-50.63c1.858-1.503 4.512-1.503 6.37 0l62.627 50.63c2.178 1.762 2.514 4.95 0.755 7.128-1.759 2.174-4.948 2.513-7.125 0.754l-59.443-48.057-59.444 48.057c-0.937 0.757-2.063 1.126-3.181 1.126z' fill='%233A232C'/%3E%3Crect x='22.59' y='76.706' width='125.26' height='79.142' display='none' fill='%238CD2CA'/%3E%3Cpath d='m147.85 160.91h-125.26c-2.798 0-5.067-2.269-5.067-5.066v-79.142c0-2.798 2.269-5.066 5.067-5.066h125.26c2.798 0 5.066 2.269 5.066 5.066v79.142c1e-3 2.797-2.268 5.066-5.066 5.066zm-120.19-10.133h115.12v-69.009h-115.12v69.009z' fill='%233A232C'/%3E%3Cline x1='85.217' x2='147.85' y1='116.28' y2='154.97' fill='%238CD2CA'/%3E%3Cpath d='m147.84 160.04c-0.908 0-1.828-0.243-2.657-0.757l-62.629-38.698c-2.38-1.469-3.117-4.591-1.648-6.971 1.472-2.383 4.594-3.117 6.974-1.648l62.629 38.698c2.38 1.472 3.117 4.591 1.646 6.974-0.957 1.548-2.615 2.402-4.315 2.402z' fill='%233A232C'/%3E%3Cline x1='85.217' x2='22.59' y1='116.28' y2='154.97' fill='%238CD2CA'/%3E%3Cpath d='m22.595 160.04c-1.697 0-3.357-0.854-4.315-2.402-1.472-2.383-0.732-5.502 1.648-6.974l62.628-38.698c2.382-1.472 5.504-0.731 6.974 1.648 1.472 2.38 0.732 5.502-1.648 6.971l-62.628 38.698c-0.831 0.513-1.752 0.757-2.659 0.757z' fill='%233A232C'/%3E%3Cpath d='m85.212 121.34c-0.925 0-1.86-0.253-2.702-0.784l-62.627-39.571c-2.365-1.494-3.07-4.624-1.576-6.988 1.494-2.365 4.624-3.073 6.989-1.576l62.63 39.57c2.365 1.494 3.07 4.624 1.576 6.989-0.964 1.526-2.607 2.36-4.29 2.36z' fill='%233A232C'/%3E%3Cpath d='m85.225 121.34c-1.683 0-3.325-0.834-4.29-2.36-1.494-2.365-0.789-5.495 1.576-6.989l62.63-39.57c2.364-1.494 5.494-0.789 6.991 1.576 1.494 2.364 0.786 5.494-1.579 6.988l-62.627 39.571c-0.841 0.531-1.776 0.784-2.701 0.784z' fill='%233A232C'/%3E%3Cpolygon points='44.506 90.552 44.506 13.976 125.93 13.976 125.93 90.555 85.217 116.28' fill='%23fff'/%3E%3Cpath d='m85.217 121.34c-0.938 0-1.88-0.26-2.707-0.784l-40.71-25.725c-1.47-0.928-2.36-2.543-2.36-4.282v-76.576c0-2.798 2.269-5.066 5.067-5.066h81.422c2.798 0 5.066 2.269 5.066 5.066v76.579c0 1.736-0.891 3.354-2.36 4.282l-40.708 25.722c-0.827 0.524-1.767 0.784-2.71 0.784zm-35.644-33.582l35.645 22.523 35.645-22.523v-68.718h-71.29v68.718z' fill='%233A232C'/%3E%3Cpolyline points='-171.51 76.937 -107.78 25.417 -44.055 76.937' fill='%238CD2CA'/%3E%3Cpath d='m-171.51 82.092c-1.503 0-2.993-0.654-4.011-1.913-1.79-2.215-1.446-5.46 0.768-7.252l63.729-51.519c1.891-1.529 4.592-1.529 6.482 0l63.728 51.519c2.213 1.792 2.558 5.037 0.768 7.252-1.791 2.213-5.035 2.558-7.25 0.768l-60.487-48.9-60.486 48.9c-0.956 0.77-2.102 1.145-3.241 1.145z' fill='%233A232C'/%3E%3Crect x='-171.51' y='77.561' width='127.46' height='80.532' display='none' fill='%238CD2CA'/%3E%3Cpath d='m-44.052 163.25h-127.46c-2.847 0-5.156-2.308-5.156-5.155v-80.533c0-2.847 2.309-5.155 5.156-5.155h127.46c2.848 0 5.156 2.309 5.156 5.155v80.532c0 2.848-2.308 5.156-5.156 5.156zm-122.3-10.311h117.14v-70.221h-117.14v70.221z' fill='%233A232C'/%3E%3Cline x1='-107.78' x2='-44.052' y1='117.83' y2='157.2' fill='%238CD2CA'/%3E%3Cpath d='m-44.057 162.36c-0.926 0-1.86-0.25-2.706-0.771l-63.727-39.377c-2.422-1.497-3.173-4.674-1.677-7.096 1.498-2.425 4.675-3.172 7.097-1.677l63.728 39.379c2.422 1.495 3.174 4.672 1.677 7.094-0.976 1.579-2.665 2.448-4.392 2.448z' fill='%233A232C'/%3E%3Cline x1='-107.78' x2='-171.51' y1='117.83' y2='157.2' fill='%238CD2CA'/%3E%3Cpath d='m-171.5 162.36c-1.728 0-3.416-0.869-4.39-2.447-1.498-2.422-0.747-5.599 1.675-7.094l63.728-39.379c2.424-1.498 5.6-0.745 7.096 1.677 1.498 2.422 0.745 5.599-1.676 7.096l-63.728 39.377c-0.845 0.52-1.781 0.77-2.705 0.77z' fill='%233A232C'/%3E%3Cpath d='m-107.79 122.98c-0.941 0-1.893-0.257-2.749-0.798l-63.727-40.268c-2.406-1.521-3.125-4.704-1.604-7.111 1.521-2.406 4.705-3.126 7.113-1.604l63.728 40.265c2.407 1.521 3.125 4.705 1.605 7.112-0.982 1.553-2.654 2.404-4.366 2.404z' fill='%233A232C'/%3E%3Cpath d='m-107.78 122.98c-1.71 0-3.382-0.848-4.364-2.403-1.521-2.407-0.803-5.592 1.604-7.112l63.729-40.265c2.407-1.521 5.589-0.803 7.112 1.604 1.521 2.407 0.803 5.591-1.604 7.111l-63.729 40.268c-0.854 0.54-1.807 0.797-2.748 0.797z' fill='%233A232C'/%3E%3Cpolygon points='-149.21 91.651 -149.21 13.732 -66.358 13.732 -66.358 91.654 -107.78 117.83' fill='%23fff'/%3E%3Cpath d='m-107.78 122.98c-0.955 0-1.913-0.267-2.754-0.798l-41.425-26.178c-1.495-0.944-2.401-2.588-2.401-4.357v-77.919c0-2.847 2.308-5.156 5.155-5.156h82.849c2.847 0 5.156 2.309 5.156 5.156v77.922c0 1.767-0.906 3.413-2.401 4.357l-41.422 26.175c-0.842 0.531-1.799 0.798-2.757 0.798zm-36.269-34.173l36.27 22.918 36.268-22.918v-69.924h-72.538v69.924z' fill='%233A232C'/%3E%3Cline x1='-132.34' x2='-83.224' y1='34.248' y2='34.248' fill='%23fff'/%3E%3Cpath d='m-83.224 39.403h-49.115c-2.847 0-5.156-2.308-5.156-5.155s2.309-5.156 5.156-5.156h49.115c2.847 0 5.155 2.309 5.155 5.156s-2.308 5.155-5.155 5.155z' fill='%233A232C'/%3E%3Cline x1='-132.34' x2='-83.224' y1='55.592' y2='55.592' fill='%23fff'/%3E%3Cpath d='m-83.224 60.748h-49.115c-2.847 0-5.156-2.309-5.156-5.156s2.309-5.155 5.156-5.155h49.115c2.847 0 5.155 2.309 5.155 5.155 0 2.847-2.308 5.156-5.155 5.156z' fill='%233A232C'/%3E%3Cline x1='-132.34' x2='-83.224' y1='76.937' y2='76.937' fill='%23fff'/%3E%3Cpath d='m-83.224 82.092h-49.115c-2.847 0-5.156-2.309-5.156-5.155s2.309-5.155 5.156-5.155h49.115c2.847 0 5.155 2.309 5.155 5.155s-2.308 5.155-5.155 5.155z' fill='%233A232C'/%3E%3Cpath d='m85.403 52.58c-8.062 0-9.694-12.217-9.694-12.217-0.959-6.357 1.953-13.531 9.589-13.531 7.672 0 10.583 7.174 9.625 13.531-1e-3 0-1.459 12.217-9.52 12.217zm0 9.128l9.661-6.465c8.487 0 16.052 8.275 16.052 16.09v8.844s-12.961 4.013-25.712 4.013c-12.962 0-25.713-4.013-25.713-4.013v-8.844c0-7.992 6.89-15.912 15.877-15.912l9.835 6.287z' fill='%233A232C'/%3E%3Crect x='204.44' y='12.898' width='108.41' height='112.6' fill='none' stroke='%23BFBFBF' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Crect x='218.27' y='26.729' width='108.41' height='112.6' fill='%23fff' stroke='%23BFBFBF' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Crect x='232.48' y='41.328' width='108.41' height='112.6' fill='%23fff' stroke='%233A232C' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Cpath d='m288.6 67.858l7.971-7.972 27.863 27.815-8.02 7.974c-4.599-2.979-10.863-2.497-14.938 1.577l-3.284 3.286c-4.029 4.073-4.556 10.293-1.534 14.936l-8.016 7.975-10.557-10.559-12.267 12.222c-1.84 1.842-14.807 11.873-16.646 10.032-1.84-1.839 8.146-14.85 9.987-16.689l12.221-12.222-10.557-10.602 8.017-7.972c4.6 3.021 10.865 2.494 14.895-1.579l3.284-3.283c4.077-4.032 4.603-10.295 1.581-14.939z' fill='%233A232C'/%3E%3C/svg%3E");
+}
+
+[data-type="standard"] .mailpoet_thumbnail {
+  background-image: url("data:image/svg+xml;charset=utf8,%3C?xml version='1.0' encoding='UTF-8'?%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg width='170.08px' height='170.08px' enable-background='new 0 0 170.079 170.079' version='1.1' viewBox='0 0 170.079 170.079' xml:space='preserve' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='217.59 74.092 280.22 23.46 342.85 74.092' fill='%238CD2CA'/%3E%3Cpath d='m217.59 79.159c-1.477 0-2.942-0.644-3.944-1.88-1.759-2.178-1.42-5.366 0.755-7.128l62.63-50.63c1.858-1.503 4.512-1.503 6.37 0l62.627 50.63c2.178 1.762 2.514 4.95 0.755 7.128-1.759 2.174-4.948 2.513-7.125 0.754l-59.443-48.057-59.444 48.057c-0.938 0.757-2.063 1.126-3.181 1.126z' fill='%233A232C'/%3E%3Crect x='217.59' y='74.706' width='125.26' height='79.142' display='none' fill='%238CD2CA'/%3E%3Cpath d='m342.85 158.91h-125.26c-2.798 0-5.067-2.269-5.067-5.066v-79.142c0-2.798 2.269-5.066 5.067-5.066h125.26c2.798 0 5.066 2.269 5.066 5.066v79.142c1e-3 2.797-2.267 5.066-5.065 5.066zm-120.19-10.133h115.12v-69.009h-115.12v69.009z' fill='%233A232C'/%3E%3Cline x1='280.22' x2='342.85' y1='114.28' y2='152.97' fill='%238CD2CA'/%3E%3Cpath d='m342.84 158.04c-0.908 0-1.828-0.243-2.657-0.757l-62.629-38.698c-2.38-1.469-3.117-4.591-1.648-6.971 1.472-2.383 4.594-3.117 6.974-1.648l62.629 38.698c2.38 1.472 3.117 4.591 1.646 6.974-0.958 1.548-2.616 2.402-4.315 2.402z' fill='%233A232C'/%3E%3Cline x1='280.22' x2='217.59' y1='114.28' y2='152.97' fill='%238CD2CA'/%3E%3Cpath d='m217.59 158.04c-1.697 0-3.357-0.854-4.315-2.402-1.472-2.383-0.732-5.502 1.648-6.974l62.628-38.698c2.382-1.472 5.504-0.731 6.974 1.648 1.472 2.38 0.732 5.502-1.648 6.971l-62.628 38.698c-0.831 0.513-1.751 0.757-2.659 0.757z' fill='%233A232C'/%3E%3Cpath d='m280.21 119.34c-0.925 0-1.86-0.253-2.702-0.784l-62.627-39.571c-2.365-1.494-3.07-4.624-1.576-6.988 1.494-2.365 4.624-3.073 6.989-1.576l62.63 39.57c2.365 1.494 3.07 4.624 1.576 6.989-0.965 1.526-2.607 2.36-4.29 2.36z' fill='%233A232C'/%3E%3Cpath d='m280.22 119.34c-1.683 0-3.325-0.834-4.29-2.36-1.494-2.365-0.789-5.495 1.576-6.989l62.63-39.57c2.364-1.494 5.494-0.789 6.991 1.576 1.494 2.364 0.786 5.494-1.579 6.988l-62.627 39.571c-0.841 0.531-1.777 0.784-2.701 0.784z' fill='%233A232C'/%3E%3Cpolygon points='239.51 88.552 239.51 11.976 320.93 11.976 320.93 88.555 280.22 114.28' fill='%23fff'/%3E%3Cpath d='m280.22 119.34c-0.938 0-1.88-0.26-2.707-0.784l-40.711-25.725c-1.47-0.928-2.36-2.543-2.36-4.282v-76.576c0-2.798 2.269-5.066 5.067-5.066h81.422c2.798 0 5.066 2.269 5.066 5.066v76.579c0 1.736-0.891 3.354-2.36 4.282l-40.708 25.722c-0.826 0.524-1.766 0.784-2.709 0.784zm-35.645-33.582l35.645 22.523 35.645-22.523v-68.718h-71.289v68.718z' fill='%233A232C'/%3E%3Cpolyline points='23.49 74.937 87.218 23.417 150.94 74.937' fill='%238CD2CA'/%3E%3Cpath d='m23.493 80.092c-1.503 0-2.993-0.654-4.011-1.913-1.79-2.215-1.446-5.46 0.768-7.252l63.729-51.519c1.891-1.529 4.592-1.529 6.482 0l63.728 51.519c2.213 1.792 2.558 5.037 0.768 7.252-1.791 2.213-5.035 2.558-7.25 0.768l-60.487-48.9-60.486 48.9c-0.957 0.77-2.102 1.145-3.241 1.145z' fill='%233A232C'/%3E%3Crect x='23.492' y='75.561' width='127.46' height='80.532' display='none' fill='%238CD2CA'/%3E%3Cpath d='m150.95 161.25h-127.46c-2.847 0-5.156-2.308-5.156-5.155v-80.533c0-2.847 2.309-5.155 5.156-5.155h127.46c2.848 0 5.156 2.309 5.156 5.155v80.532c0 2.848-2.309 5.156-5.157 5.156zm-122.3-10.311h117.14v-70.221h-117.14v70.221z' fill='%233A232C'/%3E%3Cline x1='87.218' x2='150.95' y1='115.83' y2='155.2' fill='%238CD2CA'/%3E%3Cpath d='m150.94 160.36c-0.926 0-1.86-0.25-2.706-0.771l-63.727-39.377c-2.422-1.497-3.173-4.674-1.677-7.096 1.498-2.425 4.675-3.172 7.097-1.677l63.728 39.379c2.422 1.495 3.174 4.672 1.677 7.094-0.975 1.579-2.665 2.448-4.392 2.448z' fill='%233A232C'/%3E%3Cline x1='87.218' x2='23.492' y1='115.83' y2='155.2' fill='%238CD2CA'/%3E%3Cpath d='m23.497 160.36c-1.728 0-3.416-0.869-4.39-2.447-1.498-2.422-0.747-5.599 1.675-7.094l63.728-39.379c2.424-1.498 5.6-0.745 7.096 1.677 1.498 2.422 0.745 5.599-1.676 7.096l-63.729 39.376c-0.844 0.521-1.781 0.771-2.704 0.771z' fill='%233A232C'/%3E%3Cpath d='m87.213 120.98c-0.941 0-1.893-0.257-2.749-0.798l-63.727-40.268c-2.406-1.521-3.125-4.704-1.604-7.111 1.521-2.406 4.705-3.126 7.113-1.604l63.728 40.265c2.407 1.521 3.125 4.705 1.605 7.112-0.983 1.553-2.654 2.404-4.366 2.404z' fill='%233A232C'/%3E%3Cpath d='m87.224 120.98c-1.71 0-3.382-0.848-4.364-2.403-1.521-2.407-0.803-5.592 1.604-7.112l63.729-40.265c2.407-1.521 5.589-0.803 7.112 1.604 1.521 2.407 0.803 5.591-1.604 7.111l-63.729 40.268c-0.853 0.54-1.806 0.797-2.748 0.797z' fill='%233A232C'/%3E%3Cpolygon points='45.792 89.651 45.792 11.732 128.64 11.732 128.64 89.654 87.218 115.83' fill='%23fff'/%3E%3Cpath d='m87.218 120.98c-0.955 0-1.913-0.267-2.754-0.798l-41.425-26.178c-1.495-0.944-2.401-2.588-2.401-4.357v-77.919c0-2.847 2.308-5.156 5.155-5.156h82.849c2.847 0 5.156 2.309 5.156 5.156v77.922c0 1.767-0.906 3.413-2.401 4.357l-41.422 26.175c-0.843 0.531-1.799 0.798-2.757 0.798zm-36.27-34.173l36.27 22.918 36.268-22.918v-69.924h-72.538v69.924z' fill='%233A232C'/%3E%3Cline x1='62.66' x2='111.78' y1='32.248' y2='32.248' fill='%23fff'/%3E%3Cpath d='m111.78 37.403h-49.115c-2.847 0-5.156-2.308-5.156-5.155s2.309-5.156 5.156-5.156h49.115c2.847 0 5.155 2.309 5.155 5.156s-2.308 5.155-5.155 5.155z' fill='%233A232C'/%3E%3Cline x1='62.66' x2='111.78' y1='53.592' y2='53.592' fill='%23fff'/%3E%3Cpath d='m111.78 58.748h-49.115c-2.847 0-5.156-2.309-5.156-5.156s2.309-5.155 5.156-5.155h49.115c2.847 0 5.155 2.309 5.155 5.155 1e-3 2.847-2.308 5.156-5.155 5.156z' fill='%233A232C'/%3E%3Cline x1='62.66' x2='111.78' y1='74.937' y2='74.937' fill='%23fff'/%3E%3Cpath d='m111.78 80.092h-49.115c-2.847 0-5.156-2.309-5.156-5.155s2.309-5.155 5.156-5.155h49.115c2.847 0 5.155 2.309 5.155 5.155s-2.308 5.155-5.155 5.155z' fill='%233A232C'/%3E%3Cpath d='m280.4 57.33c-6 0-7.215-9.093-7.215-9.093-0.714-4.731 1.454-10.071 7.137-10.071 5.71 0 7.877 5.339 7.163 10.071-1e-3 0-1.086 9.093-7.085 9.093zm0 6.794l7.19-4.812c6.317 0 11.947 6.159 11.947 11.976v6.582s-9.646 2.986-19.137 2.986c-9.648 0-19.138-2.986-19.138-2.986v-6.582c0-5.948 5.128-11.843 11.817-11.843l7.321 4.679z' fill='%233A232C'/%3E%3Crect x='399.44' y='10.898' width='108.41' height='112.6' fill='none' stroke='%23BFBFBF' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Crect x='413.27' y='24.729' width='108.41' height='112.6' fill='%23fff' stroke='%23BFBFBF' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Crect x='427.48' y='39.328' width='108.41' height='112.6' fill='%23fff' stroke='%233A232C' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='8'/%3E%3Cpath d='m483.6 65.858l7.971-7.972 27.863 27.815-8.02 7.974c-4.599-2.979-10.863-2.497-14.938 1.577l-3.284 3.286c-4.029 4.073-4.556 10.293-1.534 14.936l-8.016 7.975-10.557-10.559-12.267 12.222c-1.84 1.842-14.807 11.873-16.646 10.032-1.84-1.839 8.146-14.85 9.987-16.689l12.221-12.222-10.557-10.602 8.017-7.972c4.6 3.021 10.865 2.494 14.895-1.579l3.284-3.283c4.077-4.032 4.602-10.295 1.581-14.939z' fill='%233A232C'/%3E%3C/svg%3E");
+}
+
+[data-type*="woocommerce"] .mailpoet_thumbnail {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUwMCIgaGVpZ2h0PSIxNDk0IiB2aWV3Qm94PSIwIDAgMjU2IDE1MyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZD0iTTIzLjc1OSAwaDIwOC4zNzhDMjQ1LjMyNSAwIDI1NiAxMC42NzUgMjU2IDIzLjg2M3Y3OS41NDFjMCAxMy4xODgtMTAuNjc1IDIzLjg2My0yMy44NjMgMjMuODYzSDE1Ny40MWwxMC4yNTcgMjUuMTE4LTQ1LjEwOS0yNS4xMThIMjMuODYzYy0xMy4xODcgMC0yMy44NjItMTAuNjc1LTIzLjg2Mi0yMy44NjNWMjMuODYzQy0uMTA0IDEwLjc4IDEwLjU3IDAgMjMuNzU5IDB6IiBmaWxsPSIjOUI1QzhGIi8+PHBhdGggZD0iTTE0LjU3OCAyMS43NWMxLjQ1Ny0xLjk3OCAzLjY0Mi0zLjAxOCA2LjU1Ni0zLjIyNiA1LjMwOC0uNDE3IDguMzI2IDIuMDggOS4wNTQgNy40OTIgMy4yMjYgMjEuNzUgNi43NjQgNDAuMTcgMTAuNTEgNTUuMjU5bDIyLjc5LTQzLjM5NWMyLjA4Mi0zLjk1NSA0LjY4NC02LjAzNiA3LjgwNi02LjI0NCA0LjU3OS0uMzEyIDcuMzg4IDIuNjAxIDguNTMzIDguNzQxIDIuNjAyIDEzLjg0IDUuOTMyIDI1LjYgOS44ODYgMzUuNTkgMi43MDYtMjYuNDMyIDcuMjg1LTQ1LjQ3NiAxMy43MzctNTcuMjM1IDEuNTYtMi45MTQgMy44NS00LjM3MSA2Ljg2OC00LjU4IDIuMzk0LS4yMDcgNC41NzkuNTIxIDYuNTU2IDIuMDgyIDEuOTc3IDEuNTYxIDMuMDE4IDMuNTM4IDMuMjI2IDUuOTMyLjEwNCAxLjg3My0uMjA4IDMuNDM0LTEuMDQgNC45OTUtNC4wNTkgNy40OTMtNy4zOSAyMC4wODUtMTAuMDk1IDM3LjU2Ny0yLjYwMSAxNi45NjMtMy41MzggMzAuMTgtMi45MTQgMzkuNjUuMjA5IDIuNi0uMjA4IDQuODktMS4yNDggNi44NjgtMS4yNSAyLjI4OS0zLjEyMiAzLjUzOC01LjUxNiAzLjc0Ni0yLjcwNi4yMDgtNS41MTUtMS4wNC04LjIyMS0zLjg1LTkuNjc4LTkuODg3LTE3LjM3OS0yNC42NjQtMjIuOTk4LTQ0LjMzMi02Ljc2NSAxMy4zMi0xMS43NiAyMy4zMS0xNC45ODYgMjkuOTctNi4xNCAxMS43Ni0xMS4zNDMgMTcuNzk2LTE1LjcxNCAxOC4xMDgtMi44MS4yMDgtNS4yMDMtMi4xODYtNy4yODQtNy4xOC01LjMwNy0xMy42MzMtMTEuMDMxLTM5Ljk2Mi0xNy4xNy03OC45ODYtLjQxNy0yLjcwNi4yMDctNS4xIDEuNjY0LTYuOTcyem0yMjMuNjM2IDE2LjMzOGMtMy43NDYtNi41NTYtOS4yNjItMTAuNTEtMTYuNjUtMTIuMDcyLTEuOTc4LS40MTYtMy44NS0uNjI0LTUuNjItLjYyNC05Ljk5IDAtMTguMTA3IDUuMjAzLTI0LjQ1NSAxNS42MS01LjQxMiA4Ljg0NS04LjExNyAxOC42MjctOC4xMTcgMjkuMzQ2IDAgOC4wMTMgMS42NjUgMTQuODgxIDQuOTk1IDIwLjYwNSAzLjc0NiA2LjU1NiA5LjI2MiAxMC41MSAxNi42NSAxMi4wNzEgMS45NzcuNDE3IDMuODUuNjI1IDUuNjIuNjI1IDEwLjA5NCAwIDE4LjIxMS01LjIwMyAyNC40NTUtMTUuNjEgNS40MTEtOC45NSA4LjExNy0xOC43MzIgOC4xMTctMjkuNDUuMTA0LTguMTE3LTEuNjY1LTE0Ljg4Mi00Ljk5NS0yMC41MDF6bS0xMy4xMTIgMjguODI2Yy0xLjQ1NyA2Ljg2OC00LjA1OSAxMS45NjctNy45MSAxNS40MDEtMy4wMTcgMi43MDYtNS44MjcgMy44NS04LjQyOCAzLjMzLTIuNDk4LS41Mi00LjU4LTIuNzA1LTYuMTQtNi43NjQtMS4yNS0zLjIyNi0xLjg3My02LjQ1Mi0xLjg3My05LjQ3IDAtMi42MDEuMjA4LTUuMjAzLjcyOC03LjU5Ni45MzctNC4yNjcgMi43MDYtOC40MyA1LjUxNS0xMi4zODQgMy40MzUtNS4xIDcuMDc3LTcuMTggMTAuODIzLTYuNDUyIDIuNDk4LjUyIDQuNTggMi43MDYgNi4xNCA2Ljc2NCAxLjI0OSAzLjIyNiAxLjg3MyA2LjQ1MiAxLjg3MyA5LjQ3IDAgMi43MDYtLjIwOCA1LjMwNy0uNzI4IDcuN3ptLTUyLjAzMy0yOC44MjZjLTMuNzQ2LTYuNTU2LTkuMzY2LTEwLjUxLTE2LjY1LTEyLjA3Mi0xLjk3Ny0uNDE2LTMuODUtLjYyNC01LjYyLS42MjQtOS45OSAwLTE4LjEwNyA1LjIwMy0yNC40NTUgMTUuNjEtNS40MTEgOC44NDUtOC4xMTcgMTguNjI3LTguMTE3IDI5LjM0NiAwIDguMDEzIDEuNjY1IDE0Ljg4MSA0Ljk5NSAyMC42MDUgMy43NDYgNi41NTYgOS4yNjIgMTAuNTEgMTYuNjUgMTIuMDcxIDEuOTc4LjQxNyAzLjg1LjYyNSA1LjYyLjYyNSAxMC4wOTQgMCAxOC4yMTEtNS4yMDMgMjQuNDU1LTE1LjYxIDUuNDEyLTguOTUgOC4xMTctMTguNzMyIDguMTE3LTI5LjQ1IDAtOC4xMTctMS42NjUtMTQuODgyLTQuOTk1LTIwLjUwMXptLTEzLjIxNiAyOC44MjZjLTEuNDU3IDYuODY4LTQuMDU5IDExLjk2Ny03LjkwOSAxNS40MDEtMy4wMTggMi43MDYtNS44MjggMy44NS04LjQzIDMuMzMtMi40OTctLjUyLTQuNTc4LTIuNzA1LTYuMTQtNi43NjQtMS4yNDgtMy4yMjYtMS44NzItNi40NTItMS44NzItOS40NyAwLTIuNjAxLjIwOC01LjIwMy43MjgtNy41OTYuOTM3LTQuMjY3IDIuNzA2LTguNDMgNS41MTYtMTIuMzg0IDMuNDM0LTUuMSA3LjA3Ni03LjE4IDEwLjgyMi02LjQ1MiAyLjQ5OC41MiA0LjU4IDIuNzA2IDYuMTQgNi43NjQgMS4yNSAzLjIyNiAxLjg3MyA2LjQ1MiAxLjg3MyA5LjQ3LjEwNSAyLjcwNi0uMjA4IDUuMzA3LS43MjggNy43eiIgZmlsbD0iI0ZGRiIvPjwvc3ZnPg==');
+}
+
+.mailpoet_boxes {
+  .title_and_badge {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .mailpoet_badge {
+      margin: 0 0 0 10px;
+      padding: 0 6px 0 6px;
+      max-height: 21px;
+      white-space: nowrap;
+    }
+  }
+}

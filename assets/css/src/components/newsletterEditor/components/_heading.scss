@@ -1,0 +1,27 @@
+.mailpoet_heading_form_field {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.mailpoet_input_title, 
+.mailpoet_input_preheader {
+  width: 500px;
+  padding: 3px;
+  line-height: normal;
+}
+
+.mailpoet_input_title {
+  font-size: 23px;
+}
+
+.mailpoet_breadcrumbs {
+  float: left;
+  margin-bottom: 13px;
+  margin-left: 17px;
+  font-size: 0.9em;
+  text-transform: uppercase;
+
+  p {
+    margin: 0;
+  }
+}

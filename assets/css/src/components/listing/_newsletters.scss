@@ -1,0 +1,90 @@
+$excellent-badge-color: #2993ab;
+$good-badge-color: #f0b849;
+$bad-badge-color: #d54e21;
+$green-badge-color: #55bd56;
+$video-guide-badge-color: #46b450;
+
+#newsletters_container {
+  h2.nav-tab-wrapper {
+    margin-bottom: 1rem;
+  }
+}
+
+.mailpoet_stats_text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mailpoet_stat {
+
+  &_excellent {
+    color: $excellent-badge-color;
+  }
+
+  &_good {
+    color: $good-badge-color;
+  }
+
+  &_bad {
+    color: $bad-badge-color;
+  }
+
+  &_hidden {
+    display: none;
+  }
+
+  &_link_small {
+    text-decoration: underline !important;
+    font-size: 0.75rem;
+  }
+}
+
+.mailpoet_badge {
+  padding: 4px 6px 3px 6px;
+  margin-right: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  font-size: 0.5625rem;
+  font-weight: 500;
+  border-radius: 3px;
+  letter-spacing: 1px;
+  vertical-align: middle;
+
+  &_excellent, &_teal {
+    background: $excellent-badge-color;
+  }
+
+  &_good, &_yellow {
+    background: $good-badge-color;
+  }
+
+  &_bad, &_red {
+    background: $bad-badge-color;
+  }
+
+  &_green {
+    background: $green-badge-color;
+  }
+
+  &_video {
+    background: $video-guide-badge-color;
+    line-height: 5em;
+    padding: 7px 6px 7px 6px;
+    text-decoration: none;
+
+    &:hover, &:active, &:focus {
+      color: #FFFFFF;
+      background: $green-badge-color;
+    }
+
+    &_grey {
+      background: #c3c3c3;
+    }
+
+    .dashicons {
+      font-size: 14px;
+      line-height: 3.4em;
+    }
+  }
+}
