@@ -13,7 +13,7 @@ class ManageWelcomeEmailCest {
 
   function __construct() {
     $this->welcomeTemplate = '[data-automation-id="select_template_0"]';
-    $this->titleElement = '[data-automation-id="newsletterTitle"]';
+    $this->titleElement = '[data-automation-id="newsletter_title"]';
   }
 
   private function createWelcomeEmailWithTitle(\AcceptanceTester $I, $newsletterTitle) {
@@ -142,7 +142,7 @@ class ManageWelcomeEmailCest {
     $I->see('Welcome Emails', ['css' => 'a.current']);
     $I->see($templateTitle);
     $I->click(['xpath' => '//*[text()="' . $templateTitle . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
-    $I->waitForElement('[data-automation-id="newsletterTitle"]');
+    $I->waitForElement('[data-automation-id="newsletter_title"]');
     $I->seeNoJSErrors();
   }
 
