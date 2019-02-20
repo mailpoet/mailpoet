@@ -53,7 +53,7 @@ $ ./do compile:all
 - [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) and [Selenium](https://www.seleniumhq.org/) to run acceptance tests.
 - [React](https://reactjs.org/) is used to create most of UIs.
 - [Marionette](https://marionettejs.com/) is used to build the newsletters editor.
-- [Stylus](http://stylus-lang.com/) is used to write styles.
+- [SCSS](http://sass-lang.com/) is used to write styles.
 - [Mocha](https://mochajs.org/), [Chai](https://www.chaijs.com/) and [Sinon](https://sinonjs.org/) are used to write Javascript tests.
 - [ESLint](https://eslint.org/) is used to lint JS files.
 - [Webpack](https://webpack.js.org/) is used to bundle assets.
@@ -64,7 +64,7 @@ $ ./do compile:all
 $ ./do install             # install PHP and JS dependencies
 $ ./do update              # update PHP and JS dependencies
 
-$ ./do compile:css         # compiles Stylus files into CSS.
+$ ./do compile:css         # compiles SCSS files into CSS.
 $ ./do compile:js          # bundles JS files for the browser.
 $ ./do compile:all         # compiles CSS and JS files.
 

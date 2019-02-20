@@ -43,7 +43,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watch() {
-    $css_files = $this->rsearch('assets/css/src/', array('styl'));
+    $css_files = $this->rsearch('assets/css/src/', array('scss'));
     $js_files = $this->rsearch('assets/js/src/', array('js', 'jsx'));
 
     $this->taskWatch()
@@ -57,7 +57,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watchCss() {
-    $css_files = $this->rsearch('assets/css/src/', array('styl'));
+    $css_files = $this->rsearch('assets/css/src/', array('scss'));
     $this->taskWatch()
       ->monitor($css_files, function() {
         $this->compileCss();
@@ -97,23 +97,23 @@ class RoboFile extends \Robo\Tasks {
     // Clean up folder from previous files
     array_map('unlink', glob("assets/dist/css/*.*"));
 
-    $css_files = array(
-      'assets/css/src/admin.styl',
-      'assets/css/src/admin-global.styl',
-      'assets/css/src/newsletter_editor/newsletter_editor.styl',
-      'assets/css/src/public.styl',
-      'assets/css/src/rtl.styl',
-      'assets/css/src/importExport.styl'
+    $scss_files = array(
+      'assets/css/src/admin.scss',
+      'assets/css/src/adminGlobal.scss',
+      'assets/css/src/newsletterEditor.scss',
+      'assets/css/src/public.scss',
+      'assets/css/src/rtl.scss',
+      'assets/css/src/importExport.scss',
     );
 
-    $compilation_result = $this->_exec(join(' ', array(
-      './node_modules/stylus/bin/stylus',
-      '--include ./node_modules',
-      '--include-css',
-      '-u nib',
-      join(' ', $css_files),
-      '-o assets/dist/css/'
-    )));
+    foreach ($scss_files as $file) {
+      $compilation_result = $this->_exec(join(' ', array(
+        './node_modules/node-sass/bin/node-sass',
+        $file,
+        '--output assets/dist/css/',
+        '--output-style compact',
+      )));
+    }
 
     // Create manifest file
     $manifest = [];
