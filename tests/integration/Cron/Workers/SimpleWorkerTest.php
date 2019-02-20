@@ -5,7 +5,6 @@ use Carbon\Carbon;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 

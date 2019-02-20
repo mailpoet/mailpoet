@@ -3,7 +3,6 @@ namespace MailPoet\Subscribers\ImportExport;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
-use MailPoet\Premium\Models\DynamicSegment;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 

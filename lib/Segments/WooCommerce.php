@@ -5,7 +5,6 @@ use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 use MailPoet\WP\Functions as WPFunctions;

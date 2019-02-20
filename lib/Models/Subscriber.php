@@ -1,11 +1,8 @@
 <?php
 namespace MailPoet\Models;
 
-use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
-use MailPoet\Subscribers\NewSubscriberNotificationMailer;
-use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 use function MailPoet\Util\array_column;
 

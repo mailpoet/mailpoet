@@ -13,7 +13,6 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscribers\SubscriberActions;
 
 class SubscriberActionsTest extends \MailPoetTest {
 

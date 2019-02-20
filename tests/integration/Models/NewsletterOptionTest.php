@@ -1,9 +1,7 @@
 <?php
 namespace MailPoet\Test\Models;
 
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 
 class NewsletterOptionTest extends \MailPoetTest {
   public $data;

@@ -4,7 +4,6 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
 

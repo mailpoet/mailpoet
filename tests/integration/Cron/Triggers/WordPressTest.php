@@ -4,7 +4,6 @@ namespace MailPoet\Cron\Triggers;
 use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;

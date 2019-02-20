@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Cron\Workers\KeyCheck;
 
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 

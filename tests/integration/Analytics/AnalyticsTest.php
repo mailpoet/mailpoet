@@ -5,7 +5,6 @@ namespace MailPoet\Analytics;
 use Carbon\Carbon;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 
 class AnalyticsTest extends \MailPoetTest {

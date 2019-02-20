@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Test\Newsletter\Editor;
 
-use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\WP\Functions as WPFunctions;
 

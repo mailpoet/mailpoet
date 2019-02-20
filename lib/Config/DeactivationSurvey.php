@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\WP\Notice;
 
 class DeactivationSurvey {
 

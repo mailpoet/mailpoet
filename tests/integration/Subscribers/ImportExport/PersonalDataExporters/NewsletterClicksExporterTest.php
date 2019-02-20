@@ -6,7 +6,6 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 
 class NewsletterClicksExporterTest extends \MailPoetTest {

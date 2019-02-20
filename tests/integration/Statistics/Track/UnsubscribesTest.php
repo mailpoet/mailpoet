@@ -2,7 +2,6 @@
 namespace MailPoet\Test\Statistics\Track;
 
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\Subscriber;

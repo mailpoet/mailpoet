@@ -5,7 +5,6 @@ namespace MailPoet\Subscription;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Settings\SettingsController;

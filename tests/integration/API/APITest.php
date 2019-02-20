@@ -2,7 +2,6 @@
 namespace MailPoet\Test\API;
 
 use MailPoet\API\API;
-use MailPoet\Config\AccessControl;
 
 class APITest extends \MailPoetTest {
 

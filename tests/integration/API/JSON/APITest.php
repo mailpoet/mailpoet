@@ -4,7 +4,6 @@ namespace MailPoet\Test\API\JSON;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\API as JSONAPI;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\Response as APIResponse;

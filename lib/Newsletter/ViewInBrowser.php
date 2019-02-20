@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Newsletter;
 
-use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;

@@ -6,7 +6,6 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 
 if (!defined('ABSPATH')) exit;

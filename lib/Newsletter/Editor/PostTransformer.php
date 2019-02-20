@@ -1,10 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Editor;
 
-use MailPoet\Newsletter\Editor\PostContentManager;
-use MailPoet\Newsletter\Editor\MetaInformationManager;
-use MailPoet\Newsletter\Editor\StructureTransformer;
-use MailPoet\Newsletter\Editor\LayoutHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
