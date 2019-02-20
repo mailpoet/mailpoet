@@ -6,6 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Models\NewsletterTemplate;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -19,7 +20,7 @@ class NewsletterTemplates extends APIEndpoint {
     $template = NewsletterTemplate::findOne($id);
     if ($template === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This template does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
       ));
     } else {
       return $this->successResponse(
@@ -70,7 +71,7 @@ class NewsletterTemplates extends APIEndpoint {
     $template = NewsletterTemplate::findOne($id);
     if ($template === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This template does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
       ));
     } else {
       $template->delete();

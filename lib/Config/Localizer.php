@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -17,11 +18,11 @@ class Localizer {
       Env::$plugin_name,
       $this->locale()
     );
-    load_textdomain(Env::$plugin_name, $language_path);
+    WPFunctions::get()->loadTextdomain(Env::$plugin_name, $language_path);
   }
 
   function loadPluginText() {
-    load_plugin_textdomain(
+    WPFunctions::get()->loadPluginTextdomain(
       Env::$plugin_name,
       false,
       dirname(plugin_basename(Env::$file)) . '/lang/'
@@ -29,9 +30,9 @@ class Localizer {
   }
 
   function locale() {
-    $locale = apply_filters(
+    $locale = WPFunctions::get()->applyFilters(
       'plugin_locale',
-      get_user_locale(),
+      WPFunctions::get()->getUserLocale(),
       Env::$plugin_name
     );
     return $locale;
@@ -42,9 +43,9 @@ class Localizer {
       '%s/%s-%s.mo',
       Env::$languages_path,
       Env::$plugin_name,
-      get_locale()
+      WPFunctions::get()->getLocale()
     );
-    unload_textdomain(Env::$plugin_name);
-    load_textdomain(Env::$plugin_name, $language_path);
+    WPFunctions::get()->unloadTextdomain(Env::$plugin_name);
+    WPFunctions::get()->loadTextdomain(Env::$plugin_name, $language_path);
   }
 }

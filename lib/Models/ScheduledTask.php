@@ -1,7 +1,6 @@
 <?php
 
 namespace MailPoet\Models;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;

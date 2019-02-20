@@ -12,6 +12,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Notices\AfterMigrationNotice;
 use MailPoet\Util\ProgressBar;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -145,7 +146,7 @@ class MP2Migrator {
    *
    */
   private function enqueueScripts() {
-    wp_enqueue_script('jquery-ui-progressbar');
+    WPFunctions::get()->wpEnqueueScript('jquery-ui-progressbar');
   }
 
   /**
@@ -231,7 +232,7 @@ class MP2Migrator {
   }
 
   private function loadDoubleOptinSettings() {
-    $encoded_option = get_option('wysija');
+    $encoded_option = WPFunctions::get()->getOption('wysija');
     $values = unserialize(base64_decode($encoded_option));
     if (isset($values['confirm_dbleoptin']) && $values['confirm_dbleoptin'] === '0') {
       $this->double_optin_enabled = false;
@@ -287,7 +288,7 @@ class MP2Migrator {
 
     $this->progressbar->setTotalCount(0);
 
-    $result .= __('MailPoet 2 data found:', 'mailpoet') . "\n";
+    $result .= WPFunctions::get()->__('MailPoet 2 data found:', 'mailpoet') . "\n";
 
     // User Lists
     $users_lists_count = \ORM::for_table($this->mp2_list_table)->count();
@@ -996,7 +997,7 @@ class MP2Migrator {
    *
    */
   private function importSettings() {
-    $encoded_options = get_option('wysija');
+    $encoded_options = WPFunctions::get()->getOption('wysija');
     $options = unserialize(base64_decode($encoded_options));
 
     // Sender

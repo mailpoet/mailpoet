@@ -5,7 +5,10 @@ use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class Updater {
   private $plugin;
@@ -16,14 +19,14 @@ class Updater {
   private $settings;
 
   function __construct($plugin_name, $slug, $version) {
-    $this->plugin = plugin_basename($plugin_name);
+    $this->plugin = WPFunctions::get()->pluginBasename($plugin_name);
     $this->slug = $slug;
     $this->version = $version;
     $this->settings = new SettingsController();
   }
 
   function init() {
-    add_filter('pre_set_site_transient_update_plugins', array($this, 'checkForUpdate'));
+    WPFunctions::get()->addFilter('pre_set_site_transient_update_plugins', array($this, 'checkForUpdate'));
   }
 
   function checkForUpdate($update_transient) {

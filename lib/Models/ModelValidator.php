@@ -3,6 +3,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -32,7 +33,7 @@ class ModelValidator extends \Sudzy\Engine {
 
   function validateEmail($email) {
     $permitted_length = (strlen($email) >= self::EMAIL_MIN_LENGTH && strlen($email) <= self::EMAIL_MAX_LENGTH);
-    $valid_email = is_email($email) !== false && parent::_isEmail($email, null);
+    $valid_email = WPFunctions::get()->isEmail($email) !== false && parent::_isEmail($email, null);
     return ($permitted_length && $valid_email);
   }
 

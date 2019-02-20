@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config\PopulatorData\Templates;
+use MailPoet\WP\Functions as WPFunctions;
 
 class RetroComputingMagazine {
 
@@ -14,7 +15,7 @@ class RetroComputingMagazine {
 
   function get() {
     return array(
-      'name' => __("Retro Computing Magazine", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Retro Computing Magazine", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

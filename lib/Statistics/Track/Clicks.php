@@ -4,6 +4,7 @@ namespace MailPoet\Statistics\Track;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -55,8 +56,8 @@ class Clicks {
   }
 
   function abort() {
-    status_header(404);
-    get_template_part((string)404);
+    WPFunctions::get()->statusHeader(404);
+    WPFunctions::get()->getTemplatePart((string)404);
     exit;
   }
 

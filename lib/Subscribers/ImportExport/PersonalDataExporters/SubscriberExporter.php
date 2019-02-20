@@ -1,10 +1,10 @@
 <?php
-
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
 use MailPoet\Subscribers\Source;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberExporter {
 
@@ -19,7 +19,7 @@ class SubscriberExporter {
     if (!$subscriber) return array();
     return array(array(
       'group_id' => 'mailpoet-subscriber',
-      'group_label' => __('MailPoet Subscriber Data', 'mailpoet'),
+      'group_label' => WPFunctions::get()->__('MailPoet Subscriber Data', 'mailpoet'),
       'item_id' => 'subscriber-' . $subscriber->id,
       'data' => $this->getSubscriberExportData($subscriber->withCustomFields()),
     ));
@@ -29,36 +29,36 @@ class SubscriberExporter {
     $custom_fields = $this->getCustomFields();
     $result = array(
       array(
-        'name' => __('First Name', 'mailpoet'),
+        'name' => WPFunctions::get()->__('First Name', 'mailpoet'),
         'value' => $subscriber->first_name,
       ),
       array(
-        'name' => __('Last Name', 'mailpoet'),
+        'name' => WPFunctions::get()->__('Last Name', 'mailpoet'),
         'value' => $subscriber->last_name,
       ),
       array(
-        'name' => __('Email', 'mailpoet'),
+        'name' => WPFunctions::get()->__('Email', 'mailpoet'),
         'value' => $subscriber->email,
       ),
       array(
-        'name' => __('Status', 'mailpoet'),
+        'name' => WPFunctions::get()->__('Status', 'mailpoet'),
         'value' => $subscriber->status,
       ),
     );
     if ($subscriber->subscribed_ip) {
       $result[] = array(
-        'name' => __('Subscribed IP', 'mailpoet'),
+        'name' => WPFunctions::get()->__('Subscribed IP', 'mailpoet'),
         'value' => $subscriber->subscribed_ip,
       );
     }
     if ($subscriber->confirmed_ip) {
       $result[] = array(
-        'name' => __('Confirmed IP', 'mailpoet'),
+        'name' => WPFunctions::get()->__('Confirmed IP', 'mailpoet'),
         'value' => $subscriber->confirmed_ip,
       );
     }
     $result[] = array(
-      'name' => __('Created at', 'mailpoet'),
+      'name' => WPFunctions::get()->__('Created at', 'mailpoet'),
       'value' => $subscriber->created_at,
     );
 
@@ -73,7 +73,7 @@ class SubscriberExporter {
     }
 
     $result[] = array(
-      'name' => __("Subscriber's subscription source", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Subscriber's subscription source", 'mailpoet'),
       'value' => $this->formatSource($subscriber->source),
     );
 
@@ -92,17 +92,17 @@ class SubscriberExporter {
   private function formatSource($source) {
     switch ($source) {
       case Source::WORDPRESS_USER:
-        return __('Subscriber information synchronized via WP user sync', 'mailpoet');
+        return WPFunctions::get()->__('Subscriber information synchronized via WP user sync', 'mailpoet');
       case Source::FORM:
-        return __('Subscription via a MailPoet subscription form', 'mailpoet');
+        return WPFunctions::get()->__('Subscription via a MailPoet subscription form', 'mailpoet');
       case Source::API:
-        return __('Added by a 3rd party via MailPoet 3 API', 'mailpoet');
+        return WPFunctions::get()->__('Added by a 3rd party via MailPoet 3 API', 'mailpoet');
       case Source::ADMINISTRATOR:
-        return __('Created by the administrator', 'mailpoet');
+        return WPFunctions::get()->__('Created by the administrator', 'mailpoet');
       case Source::IMPORTED:
-        return __('Imported by the administrator', 'mailpoet');
+        return WPFunctions::get()->__('Imported by the administrator', 'mailpoet');
       default:
-        return __('Unknown', 'mailpoet');
+        return WPFunctions::get()->__('Unknown', 'mailpoet');
     }
   }
 

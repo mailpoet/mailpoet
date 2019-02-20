@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Mailer;
+use MailPoet\WP\Functions as WPFunctions;
 
 class MailerError {
   const OPERATION_CONNECT = 'connect';
@@ -92,9 +93,9 @@ class MailerError {
     $message .= $this->message ? ' ' : '';
 
     if (count($this->subscribers_errors) === 1) {
-      $message .=  __('Unprocessed subscriber:', 'mailpoet') . ' ';
+      $message .=  WPFunctions::get()->__('Unprocessed subscriber:', 'mailpoet') . ' ';
     } else {
-      $message .=  __('Unprocessed subscribers:', 'mailpoet') . ' ';
+      $message .=  WPFunctions::get()->__('Unprocessed subscribers:', 'mailpoet') . ' ';
     }
 
     $message .= implode(

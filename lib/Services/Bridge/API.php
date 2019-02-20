@@ -1,7 +1,6 @@
 <?php
 
 namespace MailPoet\Services\Bridge;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -42,7 +41,7 @@ class API {
   function checkMSSKey() {
     $result = $this->request(
       $this->url_me,
-      array('site' => home_url())
+      array('site' => WPFunctions::get()->homeUrl())
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
@@ -61,7 +60,7 @@ class API {
   function checkPremiumKey() {
     $result = $this->request(
       $this->url_premium,
-      array('site' => home_url())
+      array('site' => WPFunctions::get()->homeUrl())
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);

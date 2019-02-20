@@ -4,6 +4,7 @@ namespace MailPoet\Form\Block;
 if (!defined('ABSPATH')) exit;
 
 use Carbon\Carbon;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Date extends Base {
 
@@ -72,7 +73,7 @@ class Date extends Base {
         $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';
         $html .= static::getInputValidation($block, array(
-          'required-message' => __('Please select a day', 'mailpoet')
+          'required-message' => WPFunctions::get()->__('Please select a day', 'mailpoet')
         ));
         $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day', 'mailpoet').'">';
         $html .= static::getDays($block);
@@ -81,7 +82,7 @@ class Date extends Base {
         $block['selected'] = $month;
         $html .= '<select class="mailpoet_select mailpoet_date_month" ';
         $html .= static::getInputValidation($block, array(
-          'required-message' => __('Please select a month', 'mailpoet')
+          'required-message' => WPFunctions::get()->__('Please select a month', 'mailpoet')
         ));
         $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month', 'mailpoet').'">';
         $html .= static::getMonths($block);
@@ -90,7 +91,7 @@ class Date extends Base {
         $block['selected'] = $year;
         $html .= '<select class="mailpoet_date_year" ';
         $html .= static::getInputValidation($block, array(
-          'required-message' => __('Please select a year', 'mailpoet')
+          'required-message' => WPFunctions::get()->__('Please select a year', 'mailpoet')
         ));
         $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year', 'mailpoet').'">';
         $html .= static::getYears($block);
@@ -105,10 +106,10 @@ class Date extends Base {
 
   static function getDateTypes() {
     return array(
-      'year_month_day' => __('Year, month, day', 'mailpoet'),
-      'year_month' => __('Year, month', 'mailpoet'),
-      'month' => __('Month (January, February,...)', 'mailpoet'),
-      'year' => __('Year', 'mailpoet')
+      'year_month_day' => WPFunctions::get()->__('Year, month, day', 'mailpoet'),
+      'year_month' => WPFunctions::get()->__('Year, month', 'mailpoet'),
+      'month' => WPFunctions::get()->__('Month (January, February,...)', 'mailpoet'),
+      'year' => WPFunctions::get()->__('Year', 'mailpoet')
     );
   }
 
@@ -121,9 +122,9 @@ class Date extends Base {
     );
   }
   static function getMonthNames() {
-    return array(__('January', 'mailpoet'), __('February', 'mailpoet'), __('March', 'mailpoet'), __('April', 'mailpoet'),
-      __('May', 'mailpoet'), __('June', 'mailpoet'), __('July', 'mailpoet'), __('August', 'mailpoet'), __('September', 'mailpoet'),
-      __('October', 'mailpoet'), __('November', 'mailpoet'), __('December', 'mailpoet')
+    return array(__('January', 'mailpoet'), WPFunctions::get()->__('February', 'mailpoet'), WPFunctions::get()->__('March', 'mailpoet'), WPFunctions::get()->__('April', 'mailpoet'),
+      WPFunctions::get()->__('May', 'mailpoet'), WPFunctions::get()->__('June', 'mailpoet'), WPFunctions::get()->__('July', 'mailpoet'), WPFunctions::get()->__('August', 'mailpoet'), WPFunctions::get()->__('September', 'mailpoet'),
+      WPFunctions::get()->__('October', 'mailpoet'), WPFunctions::get()->__('November', 'mailpoet'), WPFunctions::get()->__('December', 'mailpoet')
     );
   }
 

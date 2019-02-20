@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config\PopulatorData\Templates;
+use MailPoet\WP\Functions as WPFunctions;
 
 class RssSimpleNews {
 
@@ -14,7 +15,7 @@ class RssSimpleNews {
 
   function get() {
     return array(
-      'name' => __("Stripped RSS Style Layout", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Stripped RSS Style Layout", 'mailpoet'),
       'categories' => json_encode(array('notification', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

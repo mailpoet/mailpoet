@@ -1,16 +1,17 @@
 <?php
 namespace MailPoet\Settings;
 use MailPoet\Subscription;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Pages {
   function __construct() {
   }
 
   function init() {
-    register_post_type('mailpoet_page', array(
+    WPFunctions::get()->registerPostType('mailpoet_page', array(
       'labels' => array(
-        'name' => __('MailPoet Page', 'mailpoet'),
-        'singular_name' => __('MailPoet Page', 'mailpoet')
+        'name' => WPFunctions::get()->__('MailPoet Page', 'mailpoet'),
+        'singular_name' => WPFunctions::get()->__('MailPoet Page', 'mailpoet')
       ),
       'public' => true,
       'has_archive' => false,
@@ -25,16 +26,16 @@ class Pages {
   }
 
   static function createMailPoetPage() {
-    remove_all_actions('pre_post_update');
-    remove_all_actions('save_post');
-    remove_all_actions('wp_insert_post');
+    WPFunctions::get()->removeAllActions('pre_post_update');
+    WPFunctions::get()->removeAllActions('save_post');
+    WPFunctions::get()->removeAllActions('wp_insert_post');
 
-    $id = wp_insert_post(array(
+    $id = WPFunctions::get()->wpInsertPost(array(
       'post_status' => 'publish',
       'post_type' => 'mailpoet_page',
       'post_author' => 1,
       'post_content' => '[mailpoet_page]',
-      'post_title' => __('MailPoet Page', 'mailpoet'),
+      'post_title' => WPFunctions::get()->__('MailPoet Page', 'mailpoet'),
       'post_name' => 'subscriptions'
     ));
 
@@ -42,7 +43,7 @@ class Pages {
   }
 
   static function getMailPoetPages() {
-    return get_posts(array(
+    return WPFunctions::get()->getPosts(array(
       'post_type' => 'mailpoet_page'
     ));
   }
@@ -65,7 +66,7 @@ class Pages {
   static function getAll() {
     $all_pages = array_merge(
       static::getMailPoetPages(),
-      get_pages()
+      WPFunctions::get()->getPages()
     );
 
     $pages = array();

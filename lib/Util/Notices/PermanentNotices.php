@@ -3,6 +3,7 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Menu;
+use MailPoet\WP\Functions as WPFunctions;
 
 class PermanentNotices {
 
@@ -21,7 +22,7 @@ class PermanentNotices {
   }
 
   public function init() {
-    add_action('wp_ajax_dismissed_notice_handler', array(
+    WPFunctions::get()->addAction('wp_ajax_dismissed_notice_handler', array(
       $this,
       'ajaxDismissNoticeHandler'
     ));
@@ -35,7 +36,7 @@ class PermanentNotices {
     );
     $this->discounts_announcement->init(
       empty($_GET['page'])
-      && is_admin()
+      && WPFunctions::get()->isAdmin()
       && strpos($_SERVER['SCRIPT_NAME'], 'wp-admin/index.php') !== false
     );
   }

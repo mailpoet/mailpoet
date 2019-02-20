@@ -5,20 +5,21 @@ use MailPoet\Router\Router;
 use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Url {
   static function getConfirmationUrl(Subscriber $subscriber = null) {
-    $post = get_post(self::getSetting('subscription.pages.confirmation'));
+    $post = WPFunctions::get()->getPost(self::getSetting('subscription.pages.confirmation'));
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
   static function getManageUrl(Subscriber $subscriber = null) {
-    $post = get_post(self::getSetting('subscription.pages.manage'));
+    $post = WPFunctions::get()->getPost(self::getSetting('subscription.pages.manage'));
     return self::getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
   static function getUnsubscribeUrl(Subscriber $subscriber = null) {
-    $post = get_post(self::getSetting('subscription.pages.unsubscribe'));
+    $post = WPFunctions::get()->getPost(self::getSetting('subscription.pages.unsubscribe'));
     return self::getSubscriptionUrl($post, 'unsubscribe', $subscriber);
   }
 
@@ -27,7 +28,7 @@ class Url {
   ) {
     if ($post === null || $action === null) return;
 
-    $url = get_permalink($post);
+    $url = WPFunctions::get()->getPermalink($post);
 
     if ($subscriber !== null) {
       $data = array(
@@ -52,7 +53,7 @@ class Url {
 
     $url_params = parse_url($url);
     if (empty($url_params['scheme'])) {
-      $url = get_bloginfo('url').$url;
+      $url = WPFunctions::get()->getBloginfo('url').$url;
     }
 
     return $url;

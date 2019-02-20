@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class NotSoMedium {
 
@@ -15,7 +18,7 @@ class NotSoMedium {
 
   function get() {
     return array(
-      'name' => __("One Full Post In An Email", 'mailpoet'),
+      'name' => WPFunctions::get()->__("One Full Post In An Email", 'mailpoet'),
       'categories' => json_encode(array('notification', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

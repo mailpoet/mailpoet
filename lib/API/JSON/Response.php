@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\API\JSON;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -21,7 +22,7 @@ abstract class Response {
   }
 
   function send() {
-    status_header($this->status);
+    WPFunctions::get()->statusHeader($this->status);
 
     $data = $this->getData();
     $response = array();
@@ -35,7 +36,7 @@ abstract class Response {
 
     if (!empty($response)) {
       @header('Content-Type: application/json; charset='.get_option('blog_charset'));
-      echo wp_json_encode($response);
+      echo WPFunctions::get()->wpJsonEncode($response);
     }
     die();
   }

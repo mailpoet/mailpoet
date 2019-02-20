@@ -6,6 +6,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Link {
   const CATEGORY_NAME = 'link';
@@ -47,7 +48,7 @@ class Link {
 
       default:
         $shortcode = self::getFullShortcode($shortcode_details['action']);
-        $url = apply_filters(
+        $url = WPFunctions::get()->applyFilters(
           'mailpoet_newsletter_shortcode_link',
           $shortcode,
           $newsletter,
@@ -95,7 +96,7 @@ class Link {
         break;
       default:
         $shortcode = self::getFullShortcode($shortcode_action);
-        $url = apply_filters(
+        $url = WPFunctions::get()->applyFilters(
           'mailpoet_newsletter_shortcode_link',
           $shortcode,
           $newsletter,

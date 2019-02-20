@@ -35,7 +35,7 @@ class Changelog {
       return;
     }
 
-    add_action(
+    WPFunctions::get()->addAction(
       'admin_init',
       array($this, 'check')
     );
@@ -48,16 +48,16 @@ class Changelog {
     $mp2_migrator = new MP2Migrator();
     if (!in_array($_GET['page'], array('mailpoet-migration', 'mailpoet-settings')) && $mp2_migrator->isMigrationStartedAndNotCompleted()) {
       // Force the redirection if the migration has started but is not completed
-      $redirect_url = admin_url('admin.php?page=mailpoet-migration');
+      $redirect_url = WPFunctions::get()->adminUrl('admin.php?page=mailpoet-migration');
     } else {
       if ($version === null) {
         // new install
         if ($mp2_migrator->isMigrationNeeded()) {
           // Migration from MP2
-          $redirect_url = admin_url('admin.php?page=mailpoet-migration');
+          $redirect_url = WPFunctions::get()->adminUrl('admin.php?page=mailpoet-migration');
         } else {
           $skip_wizard = $this->wp->applyFilters('mailpoet_skip_welcome_wizard', false);
-          $redirect_url = $skip_wizard ? null : admin_url('admin.php?page=mailpoet-welcome-wizard');
+          $redirect_url = $skip_wizard ? null : WPFunctions::get()->adminUrl('admin.php?page=mailpoet-welcome-wizard');
 
           // ensure there was no MP2 migration (migration resets $version so it must be checked)
           if ($this->settings->get('mailpoet_migration_started') === null) {

@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class Minimal {
 
@@ -15,7 +18,7 @@ class Minimal {
 
   function get() {
     return array(
-      'name' => __("Minimal", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Minimal", 'mailpoet'),
       'categories' => json_encode(array('welcome', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

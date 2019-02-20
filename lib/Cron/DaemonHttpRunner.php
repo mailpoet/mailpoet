@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Cron;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class DaemonHttpRunner {
   public $settings_daemon_data;
@@ -32,10 +35,10 @@ class DaemonHttpRunner {
     }
     $this->addCacheHeaders();
     if (!$request_data) {
-      $error = __('Invalid or missing request data.', 'mailpoet');
+      $error = WPFunctions::get()->__('Invalid or missing request data.', 'mailpoet');
     } else {
       if (!$this->settings_daemon_data) {
-        $error = __('Daemon does not exist.', 'mailpoet');
+        $error = WPFunctions::get()->__('Daemon does not exist.', 'mailpoet');
       } else {
         if (!isset($request_data['token']) ||
           $request_data['token'] !== $this->settings_daemon_data['token']
@@ -73,7 +76,7 @@ class DaemonHttpRunner {
   }
 
   function abortWithError($message) {
-    status_header(404, $message);
+    WPFunctions::get()->statusHeader(404, $message);
     exit;
   }
 

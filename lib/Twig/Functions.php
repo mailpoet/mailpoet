@@ -5,6 +5,7 @@ namespace MailPoet\Twig;
 use Carbon\Carbon;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -118,10 +119,10 @@ class Functions extends \Twig_Extension {
 
     $label = null;
     $labels = array(
-      'minute' => __('every minute', 'mailpoet'),
-      'minutes' => __('every %1$d minutes', 'mailpoet'),
-      'hour' => __('every hour', 'mailpoet'),
-      'hours' => __('every %1$d hours', 'mailpoet')
+      'minute' => WPFunctions::get()->__('every minute', 'mailpoet'),
+      'minutes' => WPFunctions::get()->__('every %1$d minutes', 'mailpoet'),
+      'hour' => WPFunctions::get()->__('every hour', 'mailpoet'),
+      'hours' => WPFunctions::get()->__('every %1$d hours', 'mailpoet')
     );
 
     if ($value >= 60) {
@@ -150,7 +151,7 @@ class Functions extends \Twig_Extension {
 
   function getWPDateFormat() {
     return (get_option('date_format')) ?
-      get_option('date_format') :
+      WPFunctions::get()->getOption('date_format') :
       'F j, Y';
   }
 
@@ -164,7 +165,7 @@ class Functions extends \Twig_Extension {
 
   function getWPTimeFormat() {
     return (get_option('time_format')) ?
-      get_option('time_format') :
+      WPFunctions::get()->getOption('time_format') :
       'g:i a';
   }
 
@@ -173,7 +174,7 @@ class Functions extends \Twig_Extension {
   }
 
   function params($key = null) {
-    $args = stripslashes_deep($_GET);
+    $args = WPFunctions::get()->stripslashesDeep($_GET);
     if (array_key_exists($key, $args)) {
       return $args[$key];
     }
@@ -192,10 +193,10 @@ class Functions extends \Twig_Extension {
   }
 
   function isRtl() {
-    return is_rtl();
+    return WPFunctions::get()->isRtl();
   }
 
   function getTwoLettersLocale() {
-    return explode('_', get_locale())[0];
+    return explode('_', WPFunctions::get()->getLocale())[0];
   }
 }

@@ -1,7 +1,6 @@
 <?php
 
 namespace MailPoet\Newsletter\Editor;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -56,9 +55,9 @@ class PostContentManager {
 
     $content = strip_tags($content, implode('', $tags_not_being_stripped));
     if ($with_post_class) {
-      $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS .'"', wpautop($content));
+      $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS .'"', WPFunctions::get()->wpautop($content));
     } else {
-      $content = wpautop($content);
+      $content = WPFunctions::get()->wpautop($content);
     }
     $content = trim($content);
 
@@ -73,7 +72,7 @@ class PostContentManager {
       return $excerpts[0];
     } else {
       // Separator not present, try to shorten long posts
-      return wp_trim_words($content, $this->max_excerpt_length, ' &hellip;');
+      return WPFunctions::get()->wpTrimWords($content, $this->max_excerpt_length, ' &hellip;');
     }
   }
 

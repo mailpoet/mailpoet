@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Shortcodes;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
   public $newsletter;
@@ -65,7 +66,7 @@ class Shortcodes {
         $shortcode_class =
           Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . ucfirst($shortcode_details['category']);
         if (!class_exists($shortcode_class)) {
-          $custom_shortcode = apply_filters(
+          $custom_shortcode = WPFunctions::get()->applyFilters(
             'mailpoet_newsletter_shortcode',
             $shortcode,
             $_this->newsletter,

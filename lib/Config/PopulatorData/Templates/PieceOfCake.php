@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class PieceOfCake {
 
@@ -15,7 +18,7 @@ class PieceOfCake {
 
   function get() {
     return array(
-      'name' => __("Piece of cake", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Piece of cake", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

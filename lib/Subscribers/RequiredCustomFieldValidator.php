@@ -1,8 +1,8 @@
 <?php
-
 namespace MailPoet\Subscribers;
 
 use MailPoet\Models\CustomField;
+use MailPoet\WP\Functions as WPFunctions;
 
 class RequiredCustomFieldValidator {
 
@@ -16,7 +16,7 @@ class RequiredCustomFieldValidator {
     foreach ($all_custom_fields as $custom_field_id => $custom_field_name) {
       if ($this->isCustomFieldMissing($custom_field_id, $data)) {
         throw new \Exception(
-          __(sprintf('Missing value for custom field "%s"', $custom_field_name), 'mailpoet')
+          WPFunctions::get()->__(sprintf('Missing value for custom field "%s"', $custom_field_name), 'mailpoet')
         );
       }
     }

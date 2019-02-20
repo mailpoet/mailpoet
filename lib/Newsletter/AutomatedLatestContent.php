@@ -3,6 +3,7 @@ namespace MailPoet\Newsletter;
 
 use MailPoet\Logging\Logger;
 use MailPoet\Newsletter\Editor\Transformer;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -80,7 +81,7 @@ class AutomatedLatestContent {
       'getting automated latest content',
       ['parameters' => $parameters]
     );
-    $posts = get_posts($parameters);
+    $posts = WPFunctions::get()->getPosts($parameters);
     $this->logPosts($posts);
 
     $this->_detachSentPostsFilter();
@@ -129,13 +130,13 @@ class AutomatedLatestContent {
 
   private function _attachSentPostsFilter() {
     if ($this->newsletter_id > 0) {
-      add_action('posts_where', array($this, 'filterOutSentPosts'));
+      WPFunctions::get()->addAction('posts_where', array($this, 'filterOutSentPosts'));
     }
   }
 
   private function _detachSentPostsFilter() {
     if ($this->newsletter_id > 0) {
-      remove_action('posts_where', array($this, 'filterOutSentPosts'));
+      WPFunctions::get()->removeAction('posts_where', array($this, 'filterOutSentPosts'));
     }
   }
 

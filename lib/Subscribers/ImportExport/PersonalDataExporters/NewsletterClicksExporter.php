@@ -1,9 +1,9 @@
 <?php
-
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\Subscriber;
+use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterClicksExporter {
 
@@ -37,20 +37,20 @@ class NewsletterClicksExporter {
   private function exportNewsletter($row) {
     $newsletter_data = array();
     $newsletter_data[] = array(
-      'name' => __('Email subject', 'mailpoet'),
+      'name' => WPFunctions::get()->__('Email subject', 'mailpoet'),
       'value' => $row['newsletter_rendered_subject'],
     );
     $newsletter_data[] = array(
-      'name' => __('Timestamp of the click event', 'mailpoet'),
+      'name' => WPFunctions::get()->__('Timestamp of the click event', 'mailpoet'),
       'value' => $row['created_at'],
     );
     $newsletter_data[] = array(
-      'name' => __('URL', 'mailpoet'),
+      'name' => WPFunctions::get()->__('URL', 'mailpoet'),
       'value' => $row['url'],
     );
     return array(
       'group_id' => 'mailpoet-newsletter-clicks',
-      'group_label' => __('MailPoet Emails Clicks', 'mailpoet'),
+      'group_label' => WPFunctions::get()->__('MailPoet Emails Clicks', 'mailpoet'),
       'item_id' => 'newsletter-' . $row['id'],
       'data' => $newsletter_data,
     );

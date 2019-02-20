@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\WP;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Notice {
 
   const TYPE_ERROR = 'error';
@@ -26,7 +28,7 @@ class Notice {
     if ($show_error_title) {
       $message = sprintf(
         "<b>%s </b> %s",
-        __('MailPoet Error:', 'mailpoet'),
+        WPFunctions::get()->__('MailPoet Error:', 'mailpoet'),
         $message
       );
     }
@@ -47,7 +49,7 @@ class Notice {
 
   protected static function createNotice($type, $message, $classes, $data_notice_name, $render_in_paragraph) {
     $notice = new Notice($type, $message, $classes, $data_notice_name, $render_in_paragraph);
-    add_action('admin_notices', array($notice, 'displayWPNotice'));
+    WPFunctions::get()->addAction('admin_notices', array($notice, 'displayWPNotice'));
   }
 
   function displayWPNotice() {

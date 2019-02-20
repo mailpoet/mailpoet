@@ -1,5 +1,4 @@
 <?php
-
 namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
@@ -8,6 +7,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class NewSubscriberNotificationMailer {
 
@@ -120,8 +120,8 @@ class NewSubscriberNotificationMailer {
     $context = [
       'subscriber_email' => $subscriber->get('email'),
       'segments_names' => $segment_names,
-      'link_settings' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-settings'),
-      'link_premium' => get_site_url(null, '/wp-admin/admin.php?page=mailpoet-premium'),
+      'link_settings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings'),
+      'link_premium' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium'),
     ];
     return [
       'subject' => sprintf(__('New subscriber to %s', 'mailpoet'), $segment_names),

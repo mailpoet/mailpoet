@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Editor;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -41,7 +42,7 @@ class MetaInformationManager {
     $preceded_by = trim($preceded_by);
 
     // Get categories
-    $categories = wp_get_post_terms(
+    $categories = WPFunctions::get()->wpGetPostTerms(
       $post_id,
       array('category'),
       array('fields' => 'names')
@@ -61,7 +62,7 @@ class MetaInformationManager {
   }
 
   private static function getPostAuthor($author_id, $preceded_by) {
-    $author_name = get_the_author_meta('display_name', (int)$author_id);
+    $author_name = WPFunctions::get()->getTheAuthorMeta('display_name', (int)$author_id);
 
     $preceded_by = trim($preceded_by);
     if (strlen($preceded_by) > 0) {

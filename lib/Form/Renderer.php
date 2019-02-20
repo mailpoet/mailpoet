@@ -3,7 +3,10 @@ namespace MailPoet\Form;
 
 use MailPoet\Settings\SettingsController;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class Renderer {
   // public: rendering method
@@ -44,7 +47,7 @@ class Renderer {
     $settings = new SettingsController();
     // add honeypot for spambots
     $html = ($honeypot_enabled) ?
-      '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
+      '<label class="mailpoet_hp_email_label">' . WPFunctions::get()->__('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
       '';
     foreach ($blocks as $key => $block) {
       if ($block['type'] == 'submit' && $settings->get('re_captcha.enabled')) {

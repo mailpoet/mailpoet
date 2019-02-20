@@ -9,6 +9,8 @@ if (!defined('ABSPATH')) exit;
  * @property string $type
  * @property string $description
  */
+use MailPoet\WP\Functions as WPFunctions;
+
 class Segment extends Model {
   static $_table = MP_SEGMENTS_TABLE;
   const TYPE_WP_USERS = 'wp_users';
@@ -19,7 +21,7 @@ class Segment extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
     ));
   }
 
@@ -118,9 +120,9 @@ class Segment extends Model {
       // create the wp users segment
       $wp_segment = Segment::create();
       $wp_segment->hydrate(array(
-        'name' => __('WordPress Users', 'mailpoet'),
+        'name' => WPFunctions::get()->__('WordPress Users', 'mailpoet'),
         'description' =>
-          __('This list contains all of your WordPress users.', 'mailpoet'),
+          WPFunctions::get()->__('This list contains all of your WordPress users.', 'mailpoet'),
         'type' => self::TYPE_WP_USERS
       ));
       $wp_segment->save();
@@ -136,9 +138,9 @@ class Segment extends Model {
       // create the WooCommerce customers segment
       $wc_segment = Segment::create();
       $wc_segment->hydrate(array(
-        'name' => __('WooCommerce Customers', 'mailpoet'),
+        'name' => WPFunctions::get()->__('WooCommerce Customers', 'mailpoet'),
         'description' =>
-          __('This list contains all of your WooCommerce customers.', 'mailpoet'),
+          WPFunctions::get()->__('This list contains all of your WooCommerce customers.', 'mailpoet'),
         'type' => self::TYPE_WC_USERS
       ));
       $wc_segment->save();
@@ -155,12 +157,12 @@ class Segment extends Model {
     return array(
       array(
         'name' => 'all',
-        'label' => __('All', 'mailpoet'),
+        'label' => WPFunctions::get()->__('All', 'mailpoet'),
         'count' => Segment::getPublished()->count()
       ),
       array(
         'name' => 'trash',
-        'label' => __('Trash', 'mailpoet'),
+        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
         'count' => Segment::getTrashed()->count()
       )
     );
@@ -223,7 +225,7 @@ class Segment extends Model {
       'AND subscribers.deleted_at IS NULL ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
-      '(SELECT 0 as id, "' . __('Not in a List', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
+      '(SELECT 0 as id, "' . WPFunctions::get()->__('Not in a List', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
       'FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers ' .
       'LEFT JOIN ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation on relation.subscriber_id = subscribers.id ' .
       'WHERE relation.subscriber_id is NULL ' .

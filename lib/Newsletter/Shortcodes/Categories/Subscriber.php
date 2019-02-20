@@ -3,6 +3,7 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Models\SubscriberCustomField;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -25,7 +26,7 @@ class Subscriber {
         return ($subscriber) ? $subscriber->email : false;
       case 'displayname':
         if ($subscriber && $subscriber->wp_user_id) {
-          $wp_user = get_userdata($subscriber->wp_user_id);
+          $wp_user = WPFunctions::get()->getUserdata($subscriber->wp_user_id);
           return $wp_user->user_login;
         }
         return $default_value;

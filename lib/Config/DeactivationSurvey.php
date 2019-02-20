@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\WP\Notice;
+use MailPoet\WP\Functions as WPFunctions;
 
 class DeactivationSurvey {
 
@@ -13,16 +15,16 @@ class DeactivationSurvey {
   }
 
   public function init() {
-    add_action('admin_print_scripts', array($this, 'js'), 20);
-    add_action('admin_print_scripts', array($this, 'css'));
-    add_action('admin_footer', array($this, 'modal'));
+    WPFunctions::get()->addAction('admin_print_scripts', array($this, 'js'), 20);
+    WPFunctions::get()->addAction('admin_print_scripts', array($this, 'css'));
+    WPFunctions::get()->addAction('admin_footer', array($this, 'modal'));
   }
 
   private function shouldShow() {
     if (!function_exists('get_current_screen')) {
       return false;
     }
-    $screen = get_current_screen();
+    $screen = WPFunctions::get()->getCurrentScreen();
     if (!is_object($screen)) {
       return false;
     }

@@ -6,6 +6,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\pQuery;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -192,7 +193,7 @@ class Renderer {
     $template->html(
       str_replace('&', '&amp;', $template->html())
     );
-    $template = apply_filters(
+    $template = WPFunctions::get()->applyFilters(
       self::FILTER_POST_PROCESS,
       $template_dom->__toString()
     );

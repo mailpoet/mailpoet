@@ -4,6 +4,7 @@ namespace MailPoet\Settings;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SettingsController {
 
@@ -33,7 +34,7 @@ class SettingsController {
       }
     }
     if (is_array($setting) && is_array($default)) {
-      return array_replace_recursive($default, $setting);
+      return WPFunctions::get()->arrayReplaceRecursive($default, $setting);
     }
     return $setting;
   }
@@ -54,8 +55,8 @@ class SettingsController {
         ],
         'signup_confirmation' => [
           'enabled' => true,
-          'subject' => sprintf(__('Confirm your subscription to %1$s', 'mailpoet'), get_option('blogname')),
-          'body' => __("Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team", 'mailpoet')
+          'subject' => sprintf(__('Confirm your subscription to %1$s', 'mailpoet'), WPFunctions::get()->getOption('blogname')),
+          'body' => WPFunctions::get()->__("Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team", 'mailpoet')
         ],
         'tracking' => [
           'enabled' => true
@@ -85,7 +86,7 @@ class SettingsController {
 
   function getAll() {
     $this->ensureLoaded();
-    return array_replace_recursive($this->getAllDefaults(), self::$settings);
+    return WPFunctions::get()->arrayReplaceRecursive($this->getAllDefaults(), self::$settings);
   }
 
   function set($key, $value) {

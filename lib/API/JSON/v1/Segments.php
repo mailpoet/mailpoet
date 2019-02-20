@@ -8,6 +8,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Listing;
 use MailPoet\Models\Segment;
 use MailPoet\Segments\WP;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -35,7 +36,7 @@ class Segments extends APIEndpoint {
     $segment = Segment::findOne($id);
     if ($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
     } else {
       return $this->successResponse($segment->asArray());
@@ -47,7 +48,7 @@ class Segments extends APIEndpoint {
 
     $data = array();
     foreach ($listing_data['items'] as $segment) {
-      $segment->subscribers_url = admin_url(
+      $segment->subscribers_url = WPFunctions::get()->adminUrl(
         'admin.php?page=mailpoet-subscribers#/filter[segment='.$segment->id.']'
       );
 
@@ -81,7 +82,7 @@ class Segments extends APIEndpoint {
     $segment = Segment::findOne($id);
     if ($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
     } else {
       $segment->restore();
@@ -97,7 +98,7 @@ class Segments extends APIEndpoint {
     $segment = Segment::findOne($id);
     if ($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
     } else {
       $segment->trash();
@@ -113,7 +114,7 @@ class Segments extends APIEndpoint {
     $segment = Segment::findOne($id);
     if ($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
     } else {
       $segment->delete();
@@ -127,7 +128,7 @@ class Segments extends APIEndpoint {
 
     if ($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
     } else {
       $data = array(

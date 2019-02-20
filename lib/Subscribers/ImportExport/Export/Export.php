@@ -8,6 +8,7 @@ use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use function MailPoet\Util\array_column;
 use MailPoet\Util\Security;
 use MailPoet\Util\XLSXWriter;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Export {
   const SUBSCRIBER_BATCH_SIZE = 15000;
@@ -80,7 +81,7 @@ class Export {
     $format_CSV = function($row) {
       return '"' . str_replace('"', '\"', $row) . '"';
     };
-    $formatted_subscriber_fields[] = __('List', 'mailpoet');
+    $formatted_subscriber_fields[] = WPFunctions::get()->__('List', 'mailpoet');
     // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
     // Excel to automatically recognize the encoding
     fwrite($CSV_file, chr(0xEF) . chr(0xBB) . chr(0xBF));

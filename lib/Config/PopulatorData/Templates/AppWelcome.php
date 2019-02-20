@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class AppWelcome {
 
@@ -15,7 +18,7 @@ class AppWelcome {
 
   function get() {
     return array(
-      'name' => __("App Welcome", 'mailpoet'),
+      'name' => WPFunctions::get()->__("App Welcome", 'mailpoet'),
       'categories' => json_encode(array('welcome', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

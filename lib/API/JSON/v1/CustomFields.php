@@ -6,6 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Models\CustomField;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -28,7 +29,7 @@ class CustomFields extends APIEndpoint {
     $custom_field = CustomField::findOne($id);
     if ($custom_field === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This custom field does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet')
       ));
     } else {
       $custom_field->delete();
@@ -55,7 +56,7 @@ class CustomFields extends APIEndpoint {
     $custom_field = CustomField::findOne($id);
     if ($custom_field === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This custom field does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet')
       ));
     } else {
       return $this->successResponse($custom_field->asArray());

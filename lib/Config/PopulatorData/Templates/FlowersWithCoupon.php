@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class FlowersWithCoupon {
 
@@ -15,7 +18,7 @@ class FlowersWithCoupon {
 
   function get() {
     return array(
-      'name' => __("Flowers (with coupon)", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Flowers (with coupon)", 'mailpoet'),
       'categories' => json_encode(array('woocommerce', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

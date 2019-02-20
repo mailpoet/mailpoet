@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -111,7 +112,7 @@ class ViewInBrowser {
   }
 
   function _abort() {
-    status_header(404);
+    WPFunctions::get()->statusHeader(404);
     exit;
   }
 }

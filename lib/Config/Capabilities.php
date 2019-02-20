@@ -1,7 +1,6 @@
 <?php
 
 namespace MailPoet\Config;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 class Capabilities {
@@ -34,7 +33,7 @@ class Capabilities {
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
         if (!isset($role_objects[$role])) {
-          $role_objects[$role] = get_role($role);
+          $role_objects[$role] = WPFunctions::get()->getRole($role);
         }
         if (!is_object($role_objects[$role])) continue;
         $role_objects[$role]->add_cap($name);
@@ -48,7 +47,7 @@ class Capabilities {
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
         if (!isset($role_objects[$role])) {
-          $role_objects[$role] = get_role($role);
+          $role_objects[$role] = WPFunctions::get()->getRole($role);
         }
         if (!is_object($role_objects[$role])) continue;
         $role_objects[$role]->remove_cap($name);
@@ -63,7 +62,7 @@ class Capabilities {
   }
 
   function enqueueMembersStyles() {
-    wp_enqueue_style(
+    WPFunctions::get()->wpEnqueueStyle(
       'mailpoet-admin-global',
       Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('adminGlobal.css')
     );
@@ -73,7 +72,7 @@ class Capabilities {
     members_register_cap_group(
       self::MEMBERS_CAP_GROUP_NAME,
       array(
-        'label' => __('MailPoet', 'mailpoet'),
+        'label' => WPFunctions::get()->__('MailPoet', 'mailpoet'),
         'caps' => array(),
         'icon' => 'mailpoet-icon-logo',
         'priority' => 30

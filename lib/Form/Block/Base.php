@@ -13,25 +13,25 @@ abstract class Base {
       $rules['required'] = true;
       $rules['minlength'] = ModelValidator::EMAIL_MIN_LENGTH;
       $rules['maxlength'] = ModelValidator::EMAIL_MAX_LENGTH;
-      $rules['error-message'] = __('Please specify a valid email address.', 'mailpoet');
+      $rules['error-message'] = WPFunctions::get()->__('Please specify a valid email address.', 'mailpoet');
     }
 
     if ($block['id'] === 'segments') {
       $rules['required'] = true;
       $rules['mincheck'] = 1;
       $rules['group'] = $block['id'];
-      $rules['required-message'] = __('Please select a list', 'mailpoet');
+      $rules['required-message'] = WPFunctions::get()->__('Please select a list', 'mailpoet');
     }
 
     if (!empty($block['params']['required'])) {
       $rules['required'] = true;
-      $rules['required-message'] = __('This field is required.', 'mailpoet');
+      $rules['required-message'] = WPFunctions::get()->__('This field is required.', 'mailpoet');
     }
 
     if (!empty($block['params']['validate'])) {
       if ($block['params']['validate'] === 'phone') {
         $rules['pattern'] = "^[\d\+\-\.\(\)\/\s]*$";
-        $rules['error-message'] = __('Please specify a valid phone number', 'mailpoet');
+        $rules['error-message'] = WPFunctions::get()->__('Please specify a valid phone number', 'mailpoet');
       } else {
         $rules['type'] = $block['params']['validate'];
       }
@@ -40,7 +40,7 @@ abstract class Base {
     if (in_array($block['type'], array('radio', 'checkbox'))) {
       $rules['group'] = 'custom_field_'.$block['id'];
       $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
-      $rules['required-message'] = __('Please select at least one option', 'mailpoet');
+      $rules['required-message'] = WPFunctions::get()->__('Please select at least one option', 'mailpoet');
     }
 
     if ($block['type'] === 'date') {
@@ -124,7 +124,7 @@ abstract class Base {
   protected static function getFieldValue($block = array()) {
     return (isset($block['params']['value'])
             && strlen(trim($block['params']['value'])) > 0)
-            ? esc_attr(trim($block['params']['value'])) : '';
+            ? WPFunctions::get()->escAttr(trim($block['params']['value'])) : '';
   }
 
   protected static function getInputModifiers($block = array()) {
