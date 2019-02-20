@@ -10,12 +10,9 @@ class EditExistingNewsletterCest {
 
   function editExistingNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Edit a standard newsletter');
-
     $newsletterTitle = 'Unedited Standard Title';
     $editedNewsletterTitle = "Edited Standard Title";
     $titleElement = '[data-automation-id="newsletter_title"]';
-    //$saveDraftButton = '[data-automation-id="save-as-draft-and-close"]';
-
     $standardNewsletter = new Newsletter();
     $newsletter = $standardNewsletter->withSubject($newsletterTitle)->create();
     $I->login();
