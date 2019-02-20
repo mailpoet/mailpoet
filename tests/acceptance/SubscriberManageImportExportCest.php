@@ -26,7 +26,6 @@ class SubscriberManageImportExportCest {
     $I->waitForText('Import again');
     //confirm subscribers from import list were added
     $I->amOnMailPoetPage ('Subscribers');
-    $I->seeInCurrentUrl('mailpoet-subscribers#');
     $I->searchFor('aaa@example.com', 2);
     $I->waitForText('aaa@example.com');
     $I->searchFor('bbb@example.com');

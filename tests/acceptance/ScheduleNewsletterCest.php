@@ -23,14 +23,12 @@ class ScheduleNewsletterCest {
 
     // step 4 - Choose list and schedule
     $I->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
     $I->selectOptionInSelect2('WordPress Users');
     $I->checkOption('isScheduled');
     $I->click('select[name=time]');
     $I->selectOption('form select[name=time]', '6:00');
     $I->click('Schedule');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
-    $I->seeInCurrentUrl('mailpoet-newsletters');
 
   }
 

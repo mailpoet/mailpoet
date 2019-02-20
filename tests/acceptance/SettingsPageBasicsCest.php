@@ -31,7 +31,6 @@ class SettingsPageBasicsCest {
     $I->wantTo('Confirm default sender information can be edited');
     $I->login();
     $I->amOnMailPoetPage('Settings');
-    $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->fillField(['name' => 'sender[name]'], 'Sender');
     $I->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
     $I->fillField(['name' => 'reply_to[name]'], 'Reply Name');
@@ -45,7 +44,6 @@ class SettingsPageBasicsCest {
     $post_title = 'Hello world!';
     $I->login();
     $I->amOnMailPoetPage('Settings');
-    $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->checkOption('#settings[subscribe_on_comment]');
     $I->selectOptionInSelect2('My First List');
     //save settings
@@ -57,7 +55,6 @@ class SettingsPageBasicsCest {
     $I->waitForElement(['css'=>'.comment-form-mailpoet']);
     //clear checkbox to hide Select2 from next test
     $I->amOnMailPoetPage('Settings');
-    $I->seeInCurrentUrl('page=mailpoet-settings');
     $I->uncheckOption('#settings[subscribe_on_comment]');
     //save settings
     $I->click('[data-automation-id="settings-submit-button"]');

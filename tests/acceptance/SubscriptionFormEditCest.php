@@ -23,7 +23,6 @@ class SubscriptionFormEditCest {
     $I->clickItemRowActionByItemName($form_name, 'Edit');
     $title_element = '[data-automation-id="mailpoet_form_name_input"]';
     $I->waitForElement($title_element);
-    $I->seeInCurrentUrl('mailpoet-form-editor');
     $I->fillField($title_element, $form_edited_name);
     $I->selectOptionInSelect2('My First List');
     $I->click('[data-automation-id="save_form"]');

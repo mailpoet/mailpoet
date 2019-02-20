@@ -40,16 +40,13 @@ class SavePostNotificationEmailAsTemplateCest {
     // step 4 - Use the new template
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id="new_email"]');
-    $I->seeInCurrentUrl('#/new');
     $I->click('[data-automation-id="create_notification"]');
     $I->waitForText('Latest Post Notifications');
-    $I->seeInCurrentUrl('#/new/notification');
     $I->click('Next');
     $I->waitForElement('[data-automation-id="select_template_0"]');
     $I->see('Template Test Post Notification Title');
     $I->click(['xpath' => '//*[text()="' . $template_title . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
     $I->waitForElement('[data-automation-id="newsletter_title"]');
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
   }
 
 }

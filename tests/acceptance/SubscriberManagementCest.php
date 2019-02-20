@@ -55,7 +55,6 @@ class SubscriberManagementCest {
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
     $I->click(['xpath'=>'//*[@id="subscribers_container"]/div/h1/a[1]']);
-    $I->seeInCurrentUrl('/wp-admin/admin.php?page=mailpoet-subscribers#/new');
     $I->fillField(['name' => 'email'], 'newglobaluser99@fakemail.fake');
     $I->fillField(['name' => 'first_name'], 'New');
     $I->fillField(['name' => 'last_name'], 'GlobalUser');
@@ -94,7 +93,6 @@ class SubscriberManagementCest {
     $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber');
-    $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
     $I->waitForElementNotVisible('.mailpoet_form_loading');
     $I->selectOptionInSelect2('Cooking');
     $I->click('[data-automation-id="subscriber_edit_form"] input[type="submit"]');
@@ -110,7 +108,6 @@ class SubscriberManagementCest {
     $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber');
-    $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
     $I->waitForElementNotVisible('.mailpoet_form_loading');
     $I->selectOptionInSelect2('Cooking');
     $I->click('.select2-selection__choice__remove');
@@ -127,7 +124,6 @@ class SubscriberManagementCest {
     $I->waitForListingItemsToLoad();
     $I->clickItemRowActionByItemName($new_subscriber_email, 'Edit');
     $I->waitForText('Subscriber');
-    $I->seeInCurrentUrl('mailpoet-subscribers#/edit/');
   }
 
 }
