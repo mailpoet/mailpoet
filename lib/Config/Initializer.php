@@ -52,6 +52,9 @@ class Initializer {
   /** @var Menu */
   private $menu;
 
+  /** @var CronTrigger */
+  private $cron_trigger;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -64,7 +67,8 @@ class Initializer {
     Router\Router $router,
     Hooks $hooks,
     Changelog $changelog,
-    Menu $menu
+    Menu $menu,
+    CronTrigger $cron_trigger
   ) {
       $this->container = $container;
       $this->renderer_factory = $renderer_factory;
@@ -76,6 +80,7 @@ class Initializer {
       $this->hooks = $hooks;
       $this->changelog = $changelog;
       $this->menu = $menu;
+      $this->cron_trigger = $cron_trigger;
   }
 
   function init() {
@@ -253,8 +258,7 @@ class Initializer {
   function setupCronTrigger() {
     // setup cron trigger only outside of cli environment
     if (php_sapi_name() !== 'cli') {
-      $cron_trigger = $this->container->get(CronTrigger::class);
-      $cron_trigger->init();
+      $this->cron_trigger->init();
     }
   }
 

@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Cron;
 
+use Codeception\Stub;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
@@ -32,31 +33,35 @@ class CronTriggerTest extends \MailPoetTest {
     );
   }
 
-  function testItCanConstruct() {
-    expect($this->cron_trigger->current_method)
-      ->equals(CronTrigger::DEFAULT_METHOD);
-  }
-
   function testItCanReturnAvailableMethods() {
     expect($this->cron_trigger->getAvailableMethods())
       ->equals(CronTrigger::$available_methods);
   }
 
   function testItCanInitializeCronTriggerMethod() {
-    $cron_trigger = $this->cron_trigger;
-    $cron_trigger->current_method = 'CronTriggerMockMethod';
+    $settings_mock = Stub::makeEmpty(
+      SettingsController::class,
+      ['get' => 'CronTriggerMockMethod']
+    );
+    $cron_trigger = new CronTrigger($settings_mock);
     expect($cron_trigger->init())->true();
   }
 
   function testItReturnsFalseWhenItCantInitializeCronTriggerMethod() {
-    $cron_trigger = $this->cron_trigger;
-    $cron_trigger->current_method = 'MockInvalidMethod';
+    $settings_mock = Stub::makeEmpty(
+      SettingsController::class,
+      ['get' => 'MockInvalidMethod']
+    );
+    $cron_trigger = new CronTrigger($settings_mock);
     expect($cron_trigger->init())->false();
   }
 
   function testItIgnoresExceptionsThrownFromCronTriggerMethods() {
-    $cron_trigger = $this->cron_trigger;
-    $cron_trigger->current_method = 'CronTriggerMockMethodWithException';
+    $settings_mock = Stub::makeEmpty(
+      SettingsController::class,
+      ['get' => 'CronTriggerMockMethodWithException']
+    );
+    $cron_trigger = new CronTrigger($settings_mock);
     expect($cron_trigger->init())->null();
   }
 
