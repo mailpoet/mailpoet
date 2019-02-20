@@ -1,6 +1,6 @@
-const expect = global.expect;
-
 import ConfigComponent from 'newsletter_editor/components/config';
+
+const expect = global.expect;
 
 describe('Config', function () {
   it('loads and stores configuration', function () {

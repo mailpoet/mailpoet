@@ -1,7 +1,7 @@
+import HeadingComponent from 'newsletter_editor/components/heading';
+
 const expect = global.expect;
 const Backbone = global.Backbone;
-
-import HeadingComponent from 'newsletter_editor/components/heading';
 
 describe('Heading', function () {
   describe('view', function () {

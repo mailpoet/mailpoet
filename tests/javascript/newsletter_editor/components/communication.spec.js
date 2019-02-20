@@ -1,9 +1,9 @@
+/* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
+import CommunicationInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/components/communication';
+
 const expect = global.expect;
 const jQuery = global.jQuery;
 const sinon = global.sinon;
-
-/* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
-import CommunicationInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/components/communication';
 
 describe('getPostTypes', function () {
   it('fetches post types from the server', function () {

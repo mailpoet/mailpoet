@@ -1,8 +1,8 @@
-const expect = global.expect;
-const sinon = global.sinon;
-
 import EditorApplication from 'newsletter_editor/App';
 import TextBlock from 'newsletter_editor/blocks/text';
+
+const expect = global.expect;
+const sinon = global.sinon;
 
 describe('Text', function () {
   describe('model', function () {

@@ -1,8 +1,3 @@
-const expect = global.expect;
-const sinon = global.sinon;
-const Backbone = global.Backbone;
-const jQuery = global.jQuery;
-
 import App from 'newsletter_editor/App';
 import AutomatedLatestContentBlock from 'newsletter_editor/blocks/automatedLatestContent';
 import ContainerBlock from 'newsletter_editor/blocks/container';
@@ -10,6 +5,11 @@ import Communication from 'newsletter_editor/components/communication';
 
 /* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
 import AutomatedLatestContentInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/blocks/automatedLatestContent';
+
+const expect = global.expect;
+const sinon = global.sinon;
+const Backbone = global.Backbone;
+const jQuery = global.jQuery;
 
 var EditorApplication = App;
 var CommunicationComponent = Communication;
