@@ -10,7 +10,6 @@ class SettingsUnsubscribePageCest {
     $I->click('[data-automation-id="unsubscribe_page_preview_link"]');
     $I->switchToNextTab();
     $I->waitForElement(['css'=>'.entry-title']);
-    $I->seeInCurrentUrl('&action=unsubscribe');
   }
 
 }

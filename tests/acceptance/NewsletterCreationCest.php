@@ -14,12 +14,10 @@ class NewsletterCreationCest {
     $I->click('[data-automation-id="new_email"]');
 
     // step 1 - select notification type
-    $I->seeInCurrentUrl('#/new');
     $I->click('[data-automation-id="create_notification"]');
 
     // step 2 - configure schedule
     $I->waitForText('Latest Post Notifications');
-    $I->seeInCurrentUrl('#/new/notification');
     $I->selectOption('select[name=intervalType]', 'immediately');
     $I->click('Next');
 
@@ -27,20 +25,17 @@ class NewsletterCreationCest {
     $post_notification_template = '[data-automation-id="select_template_0"]';
     $I->waitForElement($post_notification_template);
     $I->see('Post Notifications', ['css' => 'a.current']);
-    $I->seeInCurrentUrl('#/template');
     $I->click($post_notification_template);
 
     // step 4 - design newsletter (update subject)
     $title_element = '[data-automation-id="newsletter_title"]';
     $I->waitForElement($title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->fillField($title_element, $newsletter_title);
     $I->click('Next');
 
     // step 5 - activate
     $search_field_element = 'input.select2-search__field';
     $I->waitForElement($search_field_element);
-    $I->seeInCurrentUrl('#/send');
     $I->see('Select a frequency');
     $newsletter_listing_element = '[data-automation-id="listing_item_' . basename($I->getCurrentUrl()) . '"]';
     $I->selectOptionInSelect2('WordPress Users');
@@ -60,27 +55,23 @@ class NewsletterCreationCest {
     $I->click('[data-automation-id="new_email"]');
 
     // step 1 - select notification type
-    $I->seeInCurrentUrl('#/new');
     $I->click('[data-automation-id="create_standard"]');
 
     // step 2 - select template
     $standard_template = '[data-automation-id="select_template_0"]';
     $I->waitForElement($standard_template);
     $I->see('Newsletters', ['css' => 'a.current']);
-    $I->seeInCurrentUrl('#/template');
     $I->click($standard_template);
 
     // step 3 - design newsletter (update subject)
     $title_element = '[data-automation-id="newsletter_title"]';
     $I->waitForElement($title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->fillField($title_element, $newsletter_title);
     $I->click('Next');
 
     // step 4 - Choose list and send
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
     $I->waitForElement($send_form_element);
-    $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
     $I->selectOptionInSelect2('WordPress Users');
     $I->click('Send');
   }

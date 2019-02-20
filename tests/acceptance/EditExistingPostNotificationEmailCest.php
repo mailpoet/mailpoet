@@ -33,13 +33,11 @@ class EditExistingPostNotificationEmailCest {
     // step 4 - Edit subject
     $title_element = '[data-automation-id="newsletter_title"]';
     $I->waitForElement($title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->fillField($title_element, $newsletter_edited_title);
 
     // step 5 - Change schedule, list and activate
     $I->click('Next');
     $I->waitForElement('input.select2-search__field');
-    $I->seeInCurrentUrl('#/send');
     $I->selectOption('[data-automation-id="newsletter_interval_type"]', 'Weekly on...');
     $I->selectOptionInSelect2('WordPress Users');
     $newsletter_listing_element = '[data-automation-id="listing_item_' . basename($I->getCurrentUrl()) . '"]';

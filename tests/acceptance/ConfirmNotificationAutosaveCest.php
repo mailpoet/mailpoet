@@ -22,7 +22,6 @@ class ConfirmNotificationAutosaveCest {
     // step 3 - Add subject, wait for Autosave
     $title_element = '[data-automation-id="newsletter_title"]';
     $I->waitForElement($title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
     $I->fillField($title_element, $newsletter_title);
     $I->waitForText('Autosaved');
   }
