@@ -34,18 +34,28 @@ class Initializer {
   /** @var ContainerInterface */
   private $container;
 
+  /** @var Activator */
+  private $activator;
+
+  /** @var SettingsController */
+  private $settings;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
     ContainerWrapper $container,
     RendererFactory $renderer_factory,
     AccessControl $access_control,
-    API $api
+    API $api,
+    Activator $activator,
+    SettingsController $settings
   ) {
       $this->container = $container;
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
       $this->api = $api;
+      $this->activator = $activator;
+      $this->settings = $settings;
   }
 
   function init() {
@@ -116,8 +126,7 @@ class Initializer {
   }
 
   function runActivator() {
-    $activator = $this->container->get(Activator::class);
-    return $activator->activate();
+    return $this->activator->activate();
   }
 
   function setupDB() {
@@ -170,7 +179,7 @@ class Initializer {
 
   function maybeDbUpdate() {
     try {
-      $current_db_version = $this->container->get(SettingsController::class)->get('db_version');
+      $current_db_version = $this->settings->get('db_version');
     } catch (\Exception $e) {
       $current_db_version = null;
     }
