@@ -19,6 +19,7 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
 
+  /** @var AccessControl */
   private $access_control;
 
   /** @var Renderer */
@@ -34,10 +35,12 @@ class Initializer {
 
   function __construct(
     ContainerWrapper $container,
-    RendererFactory $renderer_factory
+    RendererFactory $renderer_factory,
+    AccessControl $access_control
   ) {
       $this->container = $container;
       $this->renderer_factory = $renderer_factory;
+      $this->access_control = $access_control;
   }
 
   function init() {
@@ -132,8 +135,6 @@ class Initializer {
 
   function initialize() {
     try {
-      $this->setupAccessControl();
-
       $this->maybeDbUpdate();
       $this->setupInstaller();
       $this->setupUpdater();
@@ -173,10 +174,6 @@ class Initializer {
     if (version_compare($current_db_version, Env::$version) !== 0) {
       $this->runActivator();
     }
-  }
-
-  function setupAccessControl() {
-    $this->access_control = $this->container->get(AccessControl::class);
   }
 
   function setupInstaller() {
