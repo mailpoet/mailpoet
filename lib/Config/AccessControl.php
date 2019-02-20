@@ -78,6 +78,6 @@ class AccessControl {
 
   function validatePermission($permission) {
     if ($permission === self::NO_ACCESS_RESTRICTION) return true;
-    return current_user_can($permission);
+    return $this->wp->currentUserCan($permission);
   }
 }
