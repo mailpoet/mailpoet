@@ -3,8 +3,10 @@ const sinon = global.sinon;
 
 import App from 'newsletter_editor/App';
 import SaveComponent from 'newsletter_editor/components/save';
-import SaveInjector from 'amd-inject-loader!newsletter_editor/components/save';
 import jQuery from 'jquery';
+
+/* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
+import SaveInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/components/save';
 
   var EditorApplication = App;
 
@@ -18,7 +20,7 @@ import jQuery from 'jquery';
               return jQuery.Deferred();
             }
           }
-        });
+        }).default;
       });
 
       it('triggers beforeEditorSave event', function () {
@@ -52,7 +54,7 @@ import jQuery from 'jquery';
           'newsletter_editor/components/communication': {
             saveNewsletter: sinon.stub().returns(promise)
           }
-        });
+        }).default;
         promise.resolve({ success: true });
         innerModule.save();
         expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
@@ -64,7 +66,7 @@ import jQuery from 'jquery';
           'newsletter_editor/components/communication': {
             saveNewsletter: mock
           }
-        });
+        }).default;
         global.stubChannel(EditorApplication);
 
         EditorApplication.toJSON = sinon.stub().returns({});
@@ -91,7 +93,7 @@ import jQuery from 'jquery';
           'newsletter_editor/components/communication': {
             saveNewsletter: mock
           }
-        });
+        }).default;
         innerModule.save();
 
         mock.verify();
@@ -210,7 +212,7 @@ import jQuery from 'jquery';
                 return promiseMock;
               }
             }
-          });
+          }).default;
           view = new (module.SaveView)();
           view.render();
 
@@ -229,7 +231,7 @@ import jQuery from 'jquery';
                 return jQuery.Deferred();
               }
             }
-          });
+          }).default;
           global.stubChannel(EditorApplication, {
             trigger: spy
           });
