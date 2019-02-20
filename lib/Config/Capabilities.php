@@ -8,7 +8,10 @@ class Capabilities {
   const MEMBERS_CAP_GROUP_NAME = 'mailpoet';
 
   private $renderer = null;
+  /** @var WPFunctions  */
   private $wp;
+  /** @var AccessControl */
+  private $access_control;
 
   function __construct($renderer = null, WPFunctions $wp = null) {
     if ($renderer !== null) {
@@ -18,6 +21,7 @@ class Capabilities {
       $wp = new WPFunctions;
     }
     $this->wp = $wp;
+    $this->access_control = new AccessControl($wp);
   }
 
   function init() {
@@ -25,7 +29,7 @@ class Capabilities {
   }
 
   function setupWPCapabilities() {
-    $permissions = AccessControl::getDefaultPermissions();
+    $permissions = $this->access_control->getDefaultPermissions();
     $role_objects = array();
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
@@ -39,7 +43,7 @@ class Capabilities {
   }
 
   function removeWPCapabilities() {
-    $permissions = AccessControl::getDefaultPermissions();
+    $permissions = $this->access_control->getDefaultPermissions();
     $role_objects = array();
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
@@ -78,7 +82,7 @@ class Capabilities {
   }
 
   function registerMembersCapabilities() {
-    $permissions = AccessControl::getPermissionLabels();
+    $permissions = $this->access_control->getPermissionLabels();
     foreach ($permissions as $name => $label) {
       $this->registerMembersCapability($name, $label);
     }

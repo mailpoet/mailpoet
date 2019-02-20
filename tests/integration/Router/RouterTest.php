@@ -6,6 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
 use MailPoet\DI\ContainerConfigurator;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\Router\Endpoints\RouterTestMockEndpoint;
@@ -27,7 +28,7 @@ class RouterTest extends \MailPoetTest {
       'action' => 'test',
       'data' => base64_encode(json_encode(array('data' => 'dummy data')))
     );
-    $this->access_control = new AccessControl();
+    $this->access_control = new AccessControl(new WPFunctions());
     $container_factory = new ContainerFactory(new ContainerConfigurator());
     $this->container = $container_factory->getConfiguredContainer();
     $this->container->register(RouterTestMockEndpoint::class)->setPublic(true);
@@ -113,7 +114,7 @@ class RouterTest extends \MailPoetTest {
       'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
     );
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array(
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
@@ -125,7 +126,7 @@ class RouterTest extends \MailPoetTest {
     expect($router->validatePermissions(null, $permissions))->false();
 
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array(
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
@@ -148,7 +149,7 @@ class RouterTest extends \MailPoetTest {
     );
 
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array(
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
@@ -160,7 +161,7 @@ class RouterTest extends \MailPoetTest {
     expect($router->validatePermissions('test', $permissions))->false();
 
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array(
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);

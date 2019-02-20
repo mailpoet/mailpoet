@@ -8,31 +8,13 @@ use MailPoet\Config\AccessControl;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AccessControlTest extends \MailPoetTest {
-  function testItSetsDefaultPermissionsUponInitialization() {
-    $default_permissions = array(
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => array(
-        'administrator',
-        'editor'
-      ),
-      AccessControl::PERMISSION_MANAGE_SETTINGS => array(
-        'administrator'
-      ),
-      AccessControl::PERMISSION_MANAGE_EMAILS => array(
-        'administrator',
-        'editor'
-      ),
-      AccessControl::PERMISSION_MANAGE_SUBSCRIBERS => array(
-        'administrator'
-      ),
-      AccessControl::PERMISSION_MANAGE_FORMS => array(
-        'administrator'
-      ),
-      AccessControl::PERMISSION_MANAGE_SEGMENTS => array(
-        'administrator'
-      ),
-    );
-    $access_control = new AccessControl();
-    expect($access_control->permissions)->equals($default_permissions);
+
+  /** @var AccessControl */
+  private $access_control;
+
+  function _before() {
+    parent::_before();
+    $this->access_control = new AccessControl(new WPFunctions());
   }
 
   function testItAllowsSettingCustomPermissions() {
@@ -74,8 +56,7 @@ class AccessControlTest extends \MailPoetTest {
       }
     );
 
-    $access_control = new AccessControl();
-    expect($access_control->permissions)->equals(
+    expect($this->access_control->getDefaultPermissions())->equals(
       array(
         AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => array(
           'custom_access_plugin_admin_role'
@@ -100,18 +81,17 @@ class AccessControlTest extends \MailPoetTest {
   }
 
   function testItGetsPermissionLabels() {
-    $permissions = AccessControl::getDefaultPermissions();
-    $labels = AccessControl::getPermissionLabels();
+    $permissions = $this->access_control->getDefaultPermissions();
+    $labels = $this->access_control->getPermissionLabels();
     expect(count($permissions))->equals(count($labels));
   }
 
   function testItValidatesIfUserHasCapability() {
     $capability = 'some_capability';
-    $access_control = new AccessControl();
 
     $func = Mock::func('MailPoet\Config', 'current_user_can', true);
 
-    expect($access_control->validatePermission($capability))->true();
+    expect($this->access_control->validatePermission($capability))->true();
     $func->verifyInvoked([$capability]);
   }
 

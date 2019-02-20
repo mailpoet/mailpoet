@@ -15,50 +15,48 @@ class AccessControl {
   const PERMISSION_MANAGE_SEGMENTS = 'mailpoet_manage_segments';
   const NO_ACCESS_RESTRICTION = 'mailpoet_no_access_restriction';
 
-  public $permissions;
-  public $user_roles;
-  public $user_capabilities;
+  /** @var WPFunctions */
+  private $wp;
 
-  function __construct() {
-    $this->permissions = self::getDefaultPermissions();
+  function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
   }
 
-  static function getDefaultPermissions() {
-    $wp = new WPFunctions;
+  function getDefaultPermissions() {
     return array(
-      self::PERMISSION_ACCESS_PLUGIN_ADMIN => $wp->applyFilters(
+      self::PERMISSION_ACCESS_PLUGIN_ADMIN => $this->wp->applyFilters(
         'mailpoet_permission_access_plugin_admin',
         array(
           'administrator',
           'editor'
         )
       ),
-      self::PERMISSION_MANAGE_SETTINGS => $wp->applyFilters(
+      self::PERMISSION_MANAGE_SETTINGS => $this->wp->applyFilters(
         'mailpoet_permission_manage_settings',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_EMAILS => $wp->applyFilters(
+      self::PERMISSION_MANAGE_EMAILS => $this->wp->applyFilters(
         'mailpoet_permission_manage_emails',
         array(
           'administrator',
           'editor'
         )
       ),
-      self::PERMISSION_MANAGE_SUBSCRIBERS => $wp->applyFilters(
+      self::PERMISSION_MANAGE_SUBSCRIBERS => $this->wp->applyFilters(
         'mailpoet_permission_manage_subscribers',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_FORMS => $wp->applyFilters(
+      self::PERMISSION_MANAGE_FORMS => $this->wp->applyFilters(
         'mailpoet_permission_manage_forms',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_SEGMENTS => $wp->applyFilters(
+      self::PERMISSION_MANAGE_SEGMENTS => $this->wp->applyFilters(
         'mailpoet_permission_manage_segments',
         array(
           'administrator'
@@ -67,7 +65,7 @@ class AccessControl {
     );
   }
 
-  static function getPermissionLabels() {
+  function getPermissionLabels() {
     return array(
       self::PERMISSION_ACCESS_PLUGIN_ADMIN => __('Admin menu item', 'mailpoet'),
       self::PERMISSION_MANAGE_SETTINGS => __('Manage settings', 'mailpoet'),

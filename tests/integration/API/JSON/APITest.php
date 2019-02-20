@@ -204,7 +204,7 @@ class APITest extends \MailPoetTest {
       'data' => array('test' => 'data')
     );
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array('validatePermission' => false)
     );
 
@@ -221,7 +221,7 @@ class APITest extends \MailPoetTest {
     );
 
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array(
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
@@ -234,7 +234,7 @@ class APITest extends \MailPoetTest {
     expect($api->validatePermissions(null, $permissions))->false();
 
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array(
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
@@ -255,7 +255,7 @@ class APITest extends \MailPoetTest {
     );
 
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array(
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
@@ -268,7 +268,7 @@ class APITest extends \MailPoetTest {
     expect($api->validatePermissions('test', $permissions))->false();
 
     $access_control = Stub::make(
-      new AccessControl(),
+      new AccessControl(new WPFunctions()),
       array(
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
