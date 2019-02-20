@@ -5,6 +5,10 @@ use MailPoet\Settings\SettingsController;
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * @property string $name
+ * @property string|null $value
+ */
 class Setting extends Model {
   public static $_table = MP_SETTINGS_TABLE;
 

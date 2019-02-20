@@ -3,6 +3,15 @@ namespace MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * @property string $name
+ * @property int|null $newsletter_id
+ * @property string $categories
+ * @property string $description
+ * @property string|null $body
+ * @property string|null $thumbnail
+ * @property int|null $readonly
+ */
 class NewsletterTemplate extends Model {
   public static $_table = MP_NEWSLETTER_TEMPLATES_TABLE;
 

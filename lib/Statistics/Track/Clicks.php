@@ -8,6 +8,9 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes;
 if (!defined('ABSPATH')) exit;
 
 class Clicks {
+  /**
+   * @param \stdClass $data
+   */
   function track($data) {
     if (!$data || empty($data->link)) {
       return $this->abort();

@@ -11,6 +11,15 @@ if (!defined('ABSPATH')) exit;
 /**
  * @property int $id
  * @property string $email
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $status
+ * @property string|null $subscribed_ip
+ * @property string|null $confirmed_ip
+ * @property string|null $confirmed_at
+ * @property string|null $deleted_at
+ * @property string|null $source
+ * @property int $count_confirmations
  * @property int $wp_user_id
  * @property array $segments
  * @property array $subscriptions
@@ -25,6 +34,9 @@ class Subscriber extends Model {
   const STATUS_UNCONFIRMED = 'unconfirmed';
   const STATUS_BOUNCED = 'bounced';
   const SUBSCRIBER_TOKEN_LENGTH = 6;
+
+  /** @var string|bool */
+  public $token;
 
   function __construct() {
     parent::__construct();

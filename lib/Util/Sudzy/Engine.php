@@ -41,9 +41,10 @@ class Engine
     }
 
     /**
-    * @param string label used to call function
-    * @param Callable function with params (value, additional params as array)
-    */
+     * @param string $label label used to call function
+     * @param Callable $function function with params (value, additional params as array)
+     * @throws \Exception
+     */
     public function addValidator($label, $function)
     {
         if (isset($this->_checks[$label])) throw new \Exception();

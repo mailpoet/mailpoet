@@ -4,6 +4,7 @@ namespace MailPoet\DI;
 
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoetVendor\Psr\Container\NotFoundExceptionInterface;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 
 class ContainerWrapper implements ContainerInterface {
 
@@ -60,8 +61,8 @@ class ContainerWrapper implements ContainerInterface {
     return self::$instance;
   }
 
-  private static function createPremiumContainer(ContainerInterface $free_container, $debug = false) {
-    $premium_container_factory =  new ContainerFactory(new \MailPoet\Premium\DI\ContainerConfigurator(), $debug);
+  private static function createPremiumContainer(Container $free_container, $debug = false) {
+    $premium_container_factory = new ContainerFactory(new \MailPoet\Premium\DI\ContainerConfigurator(), $debug);
     $premium_container = $premium_container_factory->getContainer();
     $premium_container->set(IContainerConfigurator::FREE_CONTAINER_SERVICE_SLUG, $free_container);
     $free_container->set(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG, $premium_container);

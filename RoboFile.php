@@ -388,7 +388,7 @@ class RoboFile extends \Robo\Tasks {
         'php -d memory_limit=2G '.
         "$dir/phpstan.phar analyse ".
         "--configuration $dir/tasks/phpstan/phpstan.neon ".
-        '--level 1 '.
+        '--level 2 '.
         "$dir/lib"
       )
       ->dir(__DIR__ . '/tasks/phpstan')

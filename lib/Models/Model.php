@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) exit;
 /**
  * @method static array|string getConfig($key = null, $connection_name = self::DEFAULT_CONNECTION)
  * @method static null resetConfig()
- * @method static \ORM forTable($table_name, $connection_name = self::DEFAULT_CONNECTION)
+ * @method static self forTable($table_name, $connection_name = self::DEFAULT_CONNECTION)
  * @method static null setDb($db, $connection_name = self::DEFAULT_CONNECTION)
  * @method static null resetDb()
  * @method static null setupLimitClauseStyle($connection_name)
@@ -18,14 +18,15 @@ if (!defined('ABSPATH')) exit;
  * @method static array getQueryLog($connection_name = self::DEFAULT_CONNECTION)
  * @method array getConnectionNames()
  * @method $this useIdColumn($id_column)
- * @method \ORM|bool findOne($id=null)
- * @method static \ORM|bool findOne($id=null)
+ * @method $this|bool findOne($id=null)
+ * @method static static|bool findOne($id=null)
  * @method array|\IdiormResultSet findMany()
  * @method static array|\IdiormResultSet findMany()
  * @method \IdiormResultSet findResultSet()
  * @method array findArray()
  * @method static array findArray()
  * @method $this forceAllDirty()
+ * @method $this select_expr(string $expr, string $alias=null)
  * @method $this rawQuery($query, $parameters = array())
  * @method static $this rawQuery($query, $parameters = array())
  * @method $this tableAlias($alias)
@@ -35,11 +36,12 @@ if (!defined('ABSPATH')) exit;
  * @method static $this select($column, $alias=null)
  * @method $this selectExpr($expr, $alias=null)
  * @method static $this selectExpr($expr, $alias=null)
- * @method \ORM selectMany(...$values)
- * @method static \ORM selectMany(...$values)
- * @method \ORM selectManyExpr($values)
+ * @method $this selectMany(...$values)
+ * @method static static selectMany(...$values)
+ * @method static selectManyExpr($values)
  * @method $this rawJoin($table, $constraint, $table_alias, $parameters = array())
  * @method $this innerJoin($table, $constraint, $table_alias=null)
+ * @method $this join(string $table, string $constraint, $table_alias=null)
  * @method $this leftOuterJoin($table, $constraint, $table_alias=null)
  * @method $this rightOuterJoin($table, $constraint, $table_alias=null)
  * @method $this fullOuterJoin($table, $constraint, $table_alias=null)
@@ -51,8 +53,8 @@ if (!defined('ABSPATH')) exit;
  * @method static $this whereNotEqual($column_name, $value=null)
  * @method $this whereIdIs($id)
  * @method $this whereAnyIs($values, $operator='=')
- * @method array|string whereIdIn($ids)
- * @method static array|string whereIdIn($ids)
+ * @method $this whereIdIn($ids)
+ * @method static static whereIdIn($ids)
  * @method $this whereLike($column_name, $value=null)
  * @method $this whereNotLike($column_name, $value=null)
  * @method $this whereGt($column_name, $value=null)
@@ -94,16 +96,21 @@ if (!defined('ABSPATH')) exit;
  * @method static $this clearCache($table_name = null, $connection_name = self::DEFAULT_CONNECTION)
  * @method bool setExpr($key, $value = null)
  * @method bool isDirty($key)
- * @method static ORMWrapper filter(...$args)
- * @method \ORMWrapper hasMany($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
- * @method \ORMWrapper hasManyThrough($associated_class_name, $join_class_name=null, $key_to_base_table=null, $key_to_associated_table=null,  $key_in_base_table=null, $key_in_associated_table=null, $connection_name=null)
- * @method \ORMWrapper hasOne($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
- * @method \ORMWrapper|bool create($data=null)
- * @method static \ORMWrapper|bool create($data=null)
+ * @method static static filter(...$args)
+ * @method $this hasMany($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
+ * @method $this hasManyThrough($associated_class_name, $join_class_name=null, $key_to_base_table=null, $key_to_associated_table=null,  $key_in_base_table=null, $key_in_associated_table=null, $connection_name=null)
+ * @method $this hasOne($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
+ * @method $this|bool create($data=null)
+ * @method static $this|bool create($data=null)
  * @method int count()
  * @method static int count()
+ * @method static static limit(int $limit)
+ * @method static static distinct()
+ * @method $this set(string|array $key, string|null $value = null)
  *
  * @property string|null $created_at
+ * @property string|null $updated_at
+ * @property string|null $id
  */
 class Model extends \Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;
@@ -129,7 +136,7 @@ class Model extends \Sudzy\ValidModel {
    *
    * @param  array   $data
    * @param  boolean $keys
-   * @param  callable $onCreate
+   * @param  callable|bool $onCreate
    * @return self
    */
   static protected function _createOrUpdate($data = array(), $keys = false, $onCreate = false) {

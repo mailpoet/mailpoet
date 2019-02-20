@@ -105,7 +105,12 @@ class Worker {
       ->withStatistics();
   }
 
-  private function prepareContext(Newsletter $newsletter, NewsletterLink $link = null) {
+  /**
+   * @param Newsletter $newsletter
+   * @param \stdClass|NewsletterLink $link
+   * @return array
+   */
+  private function prepareContext(Newsletter $newsletter, $link = null) {
     $clicked = ($newsletter->statistics['clicked'] * 100) / $newsletter->total_sent;
     $opened = ($newsletter->statistics['opened'] * 100) / $newsletter->total_sent;
     $unsubscribed = ($newsletter->statistics['unsubscribed'] * 100) / $newsletter->total_sent;

@@ -62,6 +62,7 @@ class ConflictResolver {
     // unload all styles except from the list of allowed
     $dequeue_styles = function() use($_this) {
       global $wp_styles;
+      if (!isset($wp_styles->registered)) return;
       if (empty($wp_styles->queue)) return;
       foreach ($wp_styles->queue as $wp_style) {
         if (empty($wp_styles->registered[$wp_style])) continue;

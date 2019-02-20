@@ -5,6 +5,11 @@ use MailPoet\Util\Helpers;
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * @property int $subscriber_id
+ * @property int $custom_field_id
+ * @property string $value
+ */
 class SubscriberCustomField extends Model {
   public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
 

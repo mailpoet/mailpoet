@@ -43,6 +43,10 @@ class ViewInBrowser {
       $this->_abort();
   }
 
+  /**
+   * @param \stdClass $data
+   * @return bool|\stdClass
+   */
   function _validateBrowserPreviewData($data) {
     // either newsletter ID or hash must be defined, and newsletter must exist
     if (empty($data->newsletter_id) && empty($data->newsletter_hash)) return false;
