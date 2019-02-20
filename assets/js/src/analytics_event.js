@@ -54,18 +54,18 @@ function cacheEvent(forced, name, data) {
 import mp from 'mailpoet';
 import _ from 'underscore';
 
-    var MailPoet = mp;
+var MailPoet = mp;
 
-    function initializeMixpanelWhenLoaded() {
-      if (typeof window.mixpanel === 'object') {
-        exportMixpanel(MailPoet);
-        trackCachedEvents();
-      } else {
-        setTimeout(initializeMixpanelWhenLoaded, 100);
-      }
-    }
+function initializeMixpanelWhenLoaded() {
+  if (typeof window.mixpanel === 'object') {
+    exportMixpanel(MailPoet);
+    trackCachedEvents();
+  } else {
+    setTimeout(initializeMixpanelWhenLoaded, 100);
+  }
+}
 
-    MailPoet.trackEvent = _.partial(cacheEvent, false);
-    MailPoet.forceTrackEvent = _.partial(cacheEvent, true);
+MailPoet.trackEvent = _.partial(cacheEvent, false);
+MailPoet.forceTrackEvent = _.partial(cacheEvent, true);
 
-    initializeMixpanelWhenLoaded();
+initializeMixpanelWhenLoaded();
