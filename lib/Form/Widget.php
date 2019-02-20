@@ -7,7 +7,6 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;

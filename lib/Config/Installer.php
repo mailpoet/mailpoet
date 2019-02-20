@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;

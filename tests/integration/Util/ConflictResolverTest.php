@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Test\Util;
 
-use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\WP\Functions as WPFunctions;
 

@@ -3,9 +3,7 @@
 namespace MailPoet\Test\Config;
 
 use AspectMock\Test as Mock;
-use Codeception\Util\Stub;
 use Helper\WordPress as WPHelper;
-use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\AccessControl;
 use MailPoet\WP\Functions as WPFunctions;
 

@@ -4,7 +4,6 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\Router\Router;
-use MailPoet\Models\Setting;
 use MailPoet\Subscription\Url;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Track;

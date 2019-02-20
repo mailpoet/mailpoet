@@ -7,7 +7,6 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Installer;
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\WP\DateTime;
 

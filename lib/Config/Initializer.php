@@ -5,7 +5,6 @@ namespace MailPoet\Config;
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Setting;
 use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\ConflictResolver;

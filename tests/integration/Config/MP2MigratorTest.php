@@ -2,7 +2,6 @@
 namespace MailPoet\Test\Config;
 
 use MailPoet\Config\MP2Migrator;
-use MailPoet\Models\Setting;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\MappingToExternalEntities;
 use MailPoet\Models\Segment;

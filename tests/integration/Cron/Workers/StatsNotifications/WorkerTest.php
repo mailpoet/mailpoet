@@ -8,7 +8,6 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;

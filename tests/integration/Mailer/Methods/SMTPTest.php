@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
-use Helper\WordPressHooks as WPHooksHelper;
-use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\WP\Functions as WPFunctions;

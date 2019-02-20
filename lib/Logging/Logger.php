@@ -6,7 +6,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Monolog\Processor\IntrospectionProcessor;
 use MailPoetVendor\Monolog\Processor\MemoryUsageProcessor;
 use MailPoetVendor\Monolog\Processor\WebProcessor;
-use MailPoet\Models\Setting;
 
 /**
  * Usage:

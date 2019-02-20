@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron;
 
-use MailPoet\Models\Setting;
 use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;

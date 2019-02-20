@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Cron;
 
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 
 if (!defined('ABSPATH')) exit;

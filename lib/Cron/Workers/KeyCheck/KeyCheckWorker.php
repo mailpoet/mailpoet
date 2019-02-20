@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Cron\Workers\KeyCheck;
 
-use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;

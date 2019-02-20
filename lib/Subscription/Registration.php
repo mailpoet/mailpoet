@@ -1,7 +1,5 @@
 <?php
 namespace MailPoet\Subscription;
-use MailPoet\Models\Setting;
-use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberActions;
 

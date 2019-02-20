@@ -4,10 +4,7 @@ namespace MailPoet\Test\Cron;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Cron\Daemon;
-use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
-use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 

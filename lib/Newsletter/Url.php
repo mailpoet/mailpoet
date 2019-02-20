@@ -3,7 +3,6 @@ namespace MailPoet\Newsletter;
 
 use MailPoet\Router\Router;
 use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
-use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 
 class Url {

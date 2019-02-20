@@ -5,7 +5,6 @@ use MailPoet\Config\Populator;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;

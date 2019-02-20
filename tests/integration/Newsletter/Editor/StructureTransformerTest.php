@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Test\Newsletter\Editor;
 
-use pQuery;
 use MailPoet\Newsletter\Editor\StructureTransformer;
 
 class StructureTransformerTest extends \MailPoetTest {

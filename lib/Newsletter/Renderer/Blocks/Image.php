@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
-use MailPoet\Logger;
-use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {

@@ -9,7 +9,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
 
