@@ -40,6 +40,9 @@ class Initializer {
   /** @var SettingsController */
   private $settings;
 
+  /** @var Router\Router */
+  private $router;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -48,7 +51,8 @@ class Initializer {
     AccessControl $access_control,
     API $api,
     Activator $activator,
-    SettingsController $settings
+    SettingsController $settings,
+    Router\Router $router
   ) {
       $this->container = $container;
       $this->renderer_factory = $renderer_factory;
@@ -56,6 +60,7 @@ class Initializer {
       $this->api = $api;
       $this->activator = $activator;
       $this->settings = $settings;
+      $this->router = $router;
   }
 
   function init() {
@@ -258,16 +263,11 @@ class Initializer {
     try {
       $this->setupHooks();
       $this->api->init();
-      $this->setupRouter();
+      $this->router->init();
       $this->setupUserLocale();
     } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
-  }
-
-  function setupRouter() {
-    $router = new Router\Router($this->access_control, $this->container);
-    $router->init();
   }
 
   function setupUserLocale() {
