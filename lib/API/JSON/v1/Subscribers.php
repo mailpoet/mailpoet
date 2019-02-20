@@ -16,6 +16,7 @@ use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -35,6 +36,9 @@ class Subscribers extends APIEndpoint {
   /** @var SubscribersListings */
   private $subscribers_listings;
 
+  /** @var SubscriberActions */
+  private $subscriber_actions;
+
   /** @var RequiredCustomFieldValidator */
   private $required_custom_field_validator;
 
@@ -50,6 +54,7 @@ class Subscribers extends APIEndpoint {
   public function __construct(
     Listing\BulkActionController $bulk_action_controller,
     SubscribersListings $subscribers_listings,
+    SubscriberActions $subscriber_actions,
     RequiredCustomFieldValidator $required_custom_field_validator,
     Listing\Handler $listing_handler,
     WPFunctions $wp,
@@ -57,6 +62,7 @@ class Subscribers extends APIEndpoint {
   ) {
     $this->bulk_action_controller = $bulk_action_controller;
     $this->subscribers_listings = $subscribers_listings;
+    $this->subscriber_actions = $subscriber_actions;
     $this->required_custom_field_validator = $required_custom_field_validator;
     $this->listing_handler = $listing_handler;
     $this->wp = $wp;
@@ -183,7 +189,7 @@ class Subscribers extends APIEndpoint {
       throw new \Exception(sprintf(__('You need to wait %d seconds before subscribing again.', 'mailpoet'), $timeout));
     }
 
-    $subscriber = Subscriber::subscribe($data, $segment_ids);
+    $subscriber = $this->subscriber_actions->subscribe($data, $segment_ids);
     $errors = $subscriber->getErrors();
 
     if ($errors !== false) {

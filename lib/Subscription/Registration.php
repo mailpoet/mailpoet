@@ -3,12 +3,26 @@ namespace MailPoet\Subscription;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscriberActions;
 
 class Registration {
 
-  static function extendForm() {
-    $settings = new SettingsController();
-    $label = $settings->get(
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var SubscriberActions */
+  private $subscriber_actions;
+
+  function __construct(
+    SettingsController $settings,
+    SubscriberActions $subscriber_actions
+  ) {
+    $this->settings = $settings;
+    $this->subscriber_actions = $subscriber_actions;
+  }
+
+  function extendForm() {
+    $label = $this->settings->get(
       'subscribe.on_register.label',
       __('Yes, please add me to your mailing list.', 'mailpoet')
     );
@@ -25,13 +39,13 @@ class Registration {
     </p>';
   }
 
-  static function onMultiSiteRegister($result) {
+  function onMultiSiteRegister($result) {
     if (empty($result['errors']->errors)) {
       if (
         isset($_POST['mailpoet']['subscribe_on_register'])
         && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
       ) {
-        static::subscribeNewUser(
+        $this->subscribeNewUser(
           $result['user_name'],
           $result['user_email']
         );
@@ -40,7 +54,7 @@ class Registration {
     return $result;
   }
 
-  static function onRegister(
+  function onRegister(
     $user_login,
     $user_email = null,
     $errors = null
@@ -50,22 +64,21 @@ class Registration {
       && isset($_POST['mailpoet']['subscribe_on_register'])
       && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
     ) {
-      static::subscribeNewUser(
+      $this->subscribeNewUser(
         $user_login,
         $user_email
       );
     }
   }
 
-  private static function subscribeNewUser($name, $email) {
-    $settings = new SettingsController();
-    $segment_ids = $settings->get(
+  private function subscribeNewUser($name, $email) {
+    $segment_ids = $this->settings->get(
       'subscribe.on_register.segments',
       []
     );
 
     if (!empty($segment_ids)) {
-      Subscriber::subscribe(
+      $this->subscriber_actions->subscribe(
         array(
           'email' => $email,
           'first_name' => $name

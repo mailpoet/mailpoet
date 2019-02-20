@@ -3,7 +3,9 @@
 namespace MailPoet\Config;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
+use MailPoet\Subscription\Registration;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -11,6 +13,12 @@ class Hooks {
 
   /** @var Form */
   private $subscription_form;
+
+  /** @var Comment */
+  private $subscription_comment;
+
+  /** @var Registration */
+  private $subscription_registration;
 
   /** @var SettingsController */
   private $settings;
@@ -23,11 +31,15 @@ class Hooks {
 
   function __construct(
     Form $subscription_form,
+    Comment $subscription_comment,
+    Registration $subscription_registration,
     SettingsController $settings,
     WPFunctions $wp,
     WooCommerceSegment $woocommerce_segment
   ) {
     $this->subscription_form = $subscription_form;
+    $this->subscription_comment = $subscription_comment;
+    $this->subscription_registration = $subscription_registration;
     $this->settings = $settings;
     $this->wp = $wp;
     $this->woocommerce_segment = $woocommerce_segment;
@@ -54,25 +66,25 @@ class Hooks {
       if ($this->wp->isUserLoggedIn()) {
         $this->wp->addAction(
           'comment_form_field_comment',
-          '\MailPoet\Subscription\Comment::extendLoggedInForm'
+          [$this->subscription_comment, 'extendLoggedInForm']
         );
       } else {
         $this->wp->addAction(
           'comment_form_after_fields',
-          '\MailPoet\Subscription\Comment::extendLoggedOutForm'
+          [$this->subscription_comment, 'extendLoggedOutForm']
         );
       }
 
       $this->wp->addAction(
         'comment_post',
-        '\MailPoet\Subscription\Comment::onSubmit',
+        [$this->subscription_comment, 'onSubmit'],
         60,
         2
       );
 
       $this->wp->addAction(
         'wp_set_comment_status',
-        '\MailPoet\Subscription\Comment::onStatusUpdate',
+        [$this->subscription_comment, 'onStatusUpdate'],
         60,
         2
       );
@@ -87,22 +99,22 @@ class Hooks {
       if (is_multisite()) {
         $this->wp->addAction(
           'signup_extra_fields',
-          '\MailPoet\Subscription\Registration::extendForm'
+          [$this->subscription_registration, 'extendForm']
         );
         $this->wp->addAction(
           'wpmu_validate_user_signup',
-          '\MailPoet\Subscription\Registration::onMultiSiteRegister',
+          [$this->subscription_registration, 'onMultiSiteRegister'],
           60,
           1
         );
       } else {
         $this->wp->addAction(
           'register_form',
-          '\MailPoet\Subscription\Registration::extendForm'
+          [$this->subscription_registration, 'extendForm']
         );
         $this->wp->addAction(
           'register_post',
-          '\MailPoet\Subscription\Registration::onRegister',
+          [$this->subscription_registration, 'onRegister'],
           60,
           3
         );

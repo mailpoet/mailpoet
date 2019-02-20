@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) exit;
 class API {
 
   /** @var NewSubscriberNotificationMailer */
-  private $new_subscribe_notification_mailer;
+  private $new_subscriber_notification_mailer;
 
   /** @var ConfirmationEmailMailer */
   private $confirmation_email_mailer;
@@ -26,11 +26,11 @@ class API {
   private $required_custom_field_validator;
 
   public function __construct(
-    NewSubscriberNotificationMailer $new_subscribe_notification_mailer,
+    NewSubscriberNotificationMailer $new_subscriber_notification_mailer,
     ConfirmationEmailMailer $confirmation_email_mailer,
     RequiredCustomFieldValidator $required_custom_field_validator
   ) {
-    $this->new_subscribe_notification_mailer = $new_subscribe_notification_mailer;
+    $this->new_subscriber_notification_mailer = $new_subscriber_notification_mailer;
     $this->confirmation_email_mailer = $confirmation_email_mailer;
     $this->required_custom_field_validator = $required_custom_field_validator;
   }
@@ -299,6 +299,6 @@ class API {
   }
 
   private function sendSubscriberNotification(Subscriber $subscriber, array $segment_ids) {
-    $this->new_subscribe_notification_mailer->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
+    $this->new_subscriber_notification_mailer->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
   }
 }

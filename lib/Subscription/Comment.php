@@ -2,24 +2,38 @@
 namespace MailPoet\Subscription;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscriberActions;
 
 class Comment {
   const SPAM = 'spam';
   const APPROVED = 1;
   const PENDING_APPROVAL = 0;
 
-  static function extendLoggedInForm($field) {
-    $field .= self::getSubscriptionField();
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var SubscriberActions */
+  private $subscriber_actions;
+
+  function __construct(
+    SettingsController $settings,
+    SubscriberActions $subscriber_actions
+  ) {
+    $this->settings = $settings;
+    $this->subscriber_actions = $subscriber_actions;
+  }
+
+  function extendLoggedInForm($field) {
+    $field .= $this->getSubscriptionField();
     return $field;
   }
 
-  static function extendLoggedOutForm() {
-    echo self::getSubscriptionField();
+  function extendLoggedOutForm() {
+    echo $this->getSubscriptionField();
   }
 
-  static function getSubscriptionField() {
-    $settings = new SettingsController();
-    $label = $settings->get(
+  private function getSubscriptionField() {
+    $label = $this->settings->get(
       'subscribe.on_comment.label',
       __('Yes, please add me to your mailing list.', 'mailpoet')
     );
@@ -36,7 +50,7 @@ class Comment {
     </p>';
   }
 
-  static function onSubmit($comment_id, $comment_status) {
+  function onSubmit($comment_id, $comment_status) {
     if ($comment_status === Comment::SPAM) return;
 
     if (
@@ -53,12 +67,12 @@ class Comment {
           true
         );
       } else if ($comment_status === Comment::APPROVED) {
-        static::subscribeAuthorOfComment($comment_id);
+        $this->subscribeAuthorOfComment($comment_id);
       }
     }
   }
 
-  static function onStatusUpdate($comment_id, $action) {
+  function onStatusUpdate($comment_id, $action) {
     if ($action === 'approve') {
       // check if the comment's author wants to subscribe
       $do_subscribe = (
@@ -70,21 +84,20 @@ class Comment {
       );
 
       if ($do_subscribe === true) {
-        static::subscribeAuthorOfComment($comment_id);
+        $this->subscribeAuthorOfComment($comment_id);
 
         delete_comment_meta($comment_id, 'mailpoet');
       }
     }
   }
 
-  private static function subscribeAuthorOfComment($comment_id) {
-    $settings = new SettingsController();
-    $segment_ids = $settings->get('subscribe.on_comment.segments', array());
+  private function subscribeAuthorOfComment($comment_id) {
+    $segment_ids = $this->settings->get('subscribe.on_comment.segments', array());
 
     if (!empty($segment_ids)) {
       $comment = get_comment($comment_id);
 
-      $result = Subscriber::subscribe(
+      $result = $this->subscriber_actions->subscribe(
         array(
           'email' => $comment->comment_author_email,
           'first_name' => $comment->comment_author
