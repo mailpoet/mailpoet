@@ -6,12 +6,12 @@
  */
 import BackboneMarionette from 'backbone.marionette'; // eslint-disable-line func-names
 
-  var Marionette = BackboneMarionette;
-  var BehaviorsLookup = {};
-  Marionette.Behaviors.behaviorsLookup = function () { // eslint-disable-line func-names
-    return BehaviorsLookup;
-  };
+var Marionette = BackboneMarionette;
+var BehaviorsLookup = {};
+Marionette.Behaviors.behaviorsLookup = function () { // eslint-disable-line func-names
+  return BehaviorsLookup;
+};
 
-  window.BehaviorsLookup = BehaviorsLookup;
+window.BehaviorsLookup = BehaviorsLookup;
 
 export default BehaviorsLookup;

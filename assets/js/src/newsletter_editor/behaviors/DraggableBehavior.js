@@ -11,139 +11,139 @@ import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 import interact from 'interact';
 import App from 'newsletter_editor/App';
 
-  var BL = BehaviorsLookup;
+var BL = BehaviorsLookup;
 
-  BL.DraggableBehavior = Marionette.Behavior.extend({
-    defaults: {
-      cloneOriginal: false,
-      hideOriginal: false,
-      ignoreSelector: '.mailpoet_ignore_drag, .mailpoet_ignore_drag *',
-      onDragSubstituteBy: undefined,
-      /**
+BL.DraggableBehavior = Marionette.Behavior.extend({
+  defaults: {
+    cloneOriginal: false,
+    hideOriginal: false,
+    ignoreSelector: '.mailpoet_ignore_drag, .mailpoet_ignore_drag *',
+    onDragSubstituteBy: undefined,
+    /**
        * Constructs a model that will be passed to the receiver on drop
        *
        * @return Backbone.Model A model that will be passed to the receiver
        */
-      getDropModel: function getDropModel() {
-        throw new Error("Missing 'drop' function for DraggableBehavior");
-      },
-
-      onDrop: function onDrop() {},
-      testAttachToInstance: function testAttachToInstance() { return true; }
+    getDropModel: function getDropModel() {
+      throw new Error("Missing 'drop' function for DraggableBehavior");
     },
-    onRender: function onRender() {
-      var that = this;
-      var interactable;
 
-      // Give instances more control over whether Draggable should be applied
-      if (!this.options.testAttachToInstance(this.view.model, this.view)) return;
+    onDrop: function onDrop() {},
+    testAttachToInstance: function testAttachToInstance() { return true; }
+  },
+  onRender: function onRender() {
+    var that = this;
+    var interactable;
 
-      interactable = interact(this.$el.get(0), {
-        ignoreFrom: this.options.ignoreSelector
-      }).draggable({
-        // allow dragging of multple elements at the same time
-        max: Infinity,
+    // Give instances more control over whether Draggable should be applied
+    if (!this.options.testAttachToInstance(this.view.model, this.view)) return;
 
-        // Scroll when dragging near edges of a window
-        autoScroll: true,
+    interactable = interact(this.$el.get(0), {
+      ignoreFrom: this.options.ignoreSelector
+    }).draggable({
+      // allow dragging of multple elements at the same time
+      max: Infinity,
 
-        onstart: function onstart(startEvent) {
-          var event = startEvent;
-          var centerXOffset;
-          var centerYOffset;
-          var tempClone;
-          var clone;
-          var $clone;
+      // Scroll when dragging near edges of a window
+      autoScroll: true,
 
-          if (that.options.cloneOriginal === true) {
-            // Use substitution instead of a clone
-            if (_.isFunction(that.options.onDragSubstituteBy)) {
-              tempClone = that.options.onDragSubstituteBy(that);
-            }
-            // Or use a clone
-            clone = tempClone || event.target.cloneNode(true);
-            jQuery(event.target);
-            $clone = jQuery(clone);
+      onstart: function onstart(startEvent) {
+        var event = startEvent;
+        var centerXOffset;
+        var centerYOffset;
+        var tempClone;
+        var clone;
+        var $clone;
 
-            $clone.addClass('mailpoet_droppable_active');
-            $clone.css('position', 'absolute');
-            $clone.css('top', 0);
-            $clone.css('left', 0);
-            document.body.appendChild(clone);
-
-            // Position the clone over the target element with a slight
-            // offset to center the clone under the mouse cursor.
-            // Accurate dimensions can only be taken after insertion to document
-            centerXOffset = $clone.width() / 2;
-            centerYOffset = $clone.height() / 2;
-            $clone.css('top', event.pageY - centerYOffset);
-            $clone.css('left', event.pageX - centerXOffset);
-
-            event.interaction.element = clone;
-
-
-            if (that.options.hideOriginal === true) {
-              that.view.$el.addClass('mailpoet_hidden');
-            }
-            App.getChannel().trigger('dragStart');
+        if (that.options.cloneOriginal === true) {
+          // Use substitution instead of a clone
+          if (_.isFunction(that.options.onDragSubstituteBy)) {
+            tempClone = that.options.onDragSubstituteBy(that);
           }
-        },
-        // call this function on every dragmove event
-        onmove: function onmove(event) {
-          var target = event.target;
-          // keep the dragged position in the data-x/data-y attributes
-          var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-          var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+          // Or use a clone
+          clone = tempClone || event.target.cloneNode(true);
+          jQuery(event.target);
+          $clone = jQuery(clone);
 
-          // translate the element
-          target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-          target.style.webkitTransform = target.style.transform;
+          $clone.addClass('mailpoet_droppable_active');
+          $clone.css('position', 'absolute');
+          $clone.css('top', 0);
+          $clone.css('left', 0);
+          document.body.appendChild(clone);
 
-          // update the posiion attributes
-          target.setAttribute('data-x', x);
-          target.setAttribute('data-y', y);
-        },
-        onend: function onend(event) {
-          var target = event.target;
-          target.style.transform = '';
-          target.style.webkitTransform = target.style.transform;
-          target.removeAttribute('data-x');
-          target.removeAttribute('data-y');
-          jQuery(event.interaction.element).addClass('mailpoet_droppable_active');
+          // Position the clone over the target element with a slight
+          // offset to center the clone under the mouse cursor.
+          // Accurate dimensions can only be taken after insertion to document
+          centerXOffset = $clone.width() / 2;
+          centerYOffset = $clone.height() / 2;
+          $clone.css('top', event.pageY - centerYOffset);
+          $clone.css('left', event.pageX - centerXOffset);
 
-          if (that.options.cloneOriginal === true) {
-            jQuery(target).remove();
+          event.interaction.element = clone;
 
-            if (that.options.hideOriginal === true) {
-              that.view.$el.removeClass('mailpoet_hidden');
-            }
+
+          if (that.options.hideOriginal === true) {
+            that.view.$el.addClass('mailpoet_hidden');
+          }
+          App.getChannel().trigger('dragStart');
+        }
+      },
+      // call this function on every dragmove event
+      onmove: function onmove(event) {
+        var target = event.target;
+        // keep the dragged position in the data-x/data-y attributes
+        var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+        var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+        // translate the element
+        target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+        target.style.webkitTransform = target.style.transform;
+
+        // update the posiion attributes
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+      },
+      onend: function onend(event) {
+        var target = event.target;
+        target.style.transform = '';
+        target.style.webkitTransform = target.style.transform;
+        target.removeAttribute('data-x');
+        target.removeAttribute('data-y');
+        jQuery(event.interaction.element).addClass('mailpoet_droppable_active');
+
+        if (that.options.cloneOriginal === true) {
+          jQuery(target).remove();
+
+          if (that.options.hideOriginal === true) {
+            that.view.$el.removeClass('mailpoet_hidden');
           }
         }
-      })
-        .preventDefault('auto')
-        .styleCursor(false)
-        .actionChecker(function actionChecker(pointer, event, action) {
-        // Disable dragging with right click
-          if (event.button !== 0) {
-            return null;
-          }
-
-          return action;
-        });
-
-      if (this.options.drop !== undefined) {
-        interactable.getDropModel = this.options.drop;
-      } else {
-        interactable.getDropModel = this.view.getDropFunc();
       }
-      interactable.onDrop = function onDrop(opts) {
-        var options = opts;
-        if (_.isObject(options)) {
-          // Inject Draggable behavior if possible
-          options.dragBehavior = that;
+    })
+      .preventDefault('auto')
+      .styleCursor(false)
+      .actionChecker(function actionChecker(pointer, event, action) {
+        // Disable dragging with right click
+        if (event.button !== 0) {
+          return null;
         }
-        // Delegate to view's event handler
-        that.options.onDrop.apply(that, [options]);
-      };
+
+        return action;
+      });
+
+    if (this.options.drop !== undefined) {
+      interactable.getDropModel = this.options.drop;
+    } else {
+      interactable.getDropModel = this.view.getDropFunc();
     }
-  });
+    interactable.onDrop = function onDrop(opts) {
+      var options = opts;
+      if (_.isObject(options)) {
+        // Inject Draggable behavior if possible
+        options.dragBehavior = that;
+      }
+      // Delegate to view's event handler
+      that.options.onDrop.apply(that, [options]);
+    };
+  }
+});

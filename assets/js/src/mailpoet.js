@@ -1,8 +1,8 @@
-  // A placeholder for MailPoet object
-  var MailPoet = {};
+// A placeholder for MailPoet object
+var MailPoet = {};
 
-  // Expose MailPoet globally
-  window.MailPoet = MailPoet;
+// Expose MailPoet globally
+window.MailPoet = MailPoet;
 
 export default MailPoet;
 

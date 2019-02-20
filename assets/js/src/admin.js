@@ -1,8 +1,8 @@
 import jQuery from 'jquery';
 
-  jQuery(function adminDomReady($) {
-    // dom ready
-    $(function domReady() {
+jQuery(function adminDomReady($) {
+  // dom ready
+  $(function domReady() {
 
-    });
   });
+});
