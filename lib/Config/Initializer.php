@@ -25,13 +25,6 @@ class Initializer {
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
-  function __construct($params = array(
-    'file' => '',
-    'version' => '1.0.0'
-  )) {
-    Env::init($params['file'], $params['version']);
-  }
-
   function init() {
     $requirements_check_results = $this->checkRequirements();
 
