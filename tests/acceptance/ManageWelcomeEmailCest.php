@@ -8,154 +8,141 @@ require_once __DIR__ . '/../DataFactories/Newsletter.php';
 
 class ManageWelcomeEmailCest {
 
-  private $welcome_template;
-  private $title_element;
+  private $welcomeTemplate;
+  private $titleElement;
 
   function __construct() {
-    $this->welcome_template = '[data-automation-id="select_template_0"]';
-    $this->title_element = '[data-automation-id="newsletter_title"]';
+    $this->welcomeTemplate = '[data-automation-id="select_template_0"]';
+    $this->titleElement = '[data-automation-id="newsletterTitle"]';
   }
 
-  private function createWelcomeEmailWithTitle(\AcceptanceTester $I, $newsletter_title) {
+  private function createWelcomeEmailWithTitle(\AcceptanceTester $I, $newsletterTitle) {
     $newsletter_factory = new Newsletter();
-    $newsletter_factory->withSubject($newsletter_title)
-     ->withWelcomeType()
-     ->create();
+    $newsletter_factory->withSubject($newsletterTitle)->withWelcomeType()->create();
   }
 
   function saveWelcomeNewsletterAsDraft(\AcceptanceTester $I) {
     $I->wantTo('save a welcome newsletter as a draft');
-    $newsletter_title = 'Save Welcome Email As Draft Test Email';
+    $newsletterTitle = 'Save Welcome Email As Draft Test Email';
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id="new_email"]');
     $I->seeInCurrentUrl('#/new');
     $I->click('[data-automation-id="create_welcome"]');
     $I->waitForText('Welcome Email');
-    $I->seeInCurrentUrl('mailpoet-newsletters#/new/welcome');
     $I->click('Next');
-    $I->waitForElement($this->welcome_template);
+    $I->waitForElement($this->welcomeTemplate);
     $I->see('Welcome Emails', ['css' => 'a.current']);
-    $I->seeInCurrentUrl('#/template');
-    $I->click($this->welcome_template);
-    $I->waitForElement($this->title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
-    $I->fillField($this->title_element, $newsletter_title);
+    $I->click($this->welcomeTemplate);
+    $I->waitForElement($this->titleElement);
+    $I->fillField($this->titleElement, $newsletterTitle);
     $I->click('Next');
     $I->waitForText('Reply-to');
     $I->click('Save as draft and close');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
-    $I->seeInCurrentUrl('mailpoet-newsletters');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title);
+    $I->waitForText($newsletterTitle);
   }
 
   function editWelcomeEmail(\AcceptanceTester $I) {
-    $newsletter_title = 'Edit Welcome Email Test';
-    $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $newsletterTitle = 'Edit Welcome Email Test';
+    $this->createWelcomeEmailWithTitle($I, $newsletterTitle);
     $I->wantTo('Edit a welcome newsletter');
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title);
-    $I->clickItemRowActionByItemName($newsletter_title, 'Edit');
-    $I->waitForElement($this->title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
-    $I->fillField($this->title_element, 'Edit Test Welcome Edited');
+    $I->waitForText($newsletterTitle);
+    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
+    $I->waitForElement($this->titleElement);
+    $I->fillField($this->titleElement, 'Edit Test Welcome Edited');
     $I->click('Next');
     $I->waitForText('Reply-to');
     $I->click('Save as draft and close');
     $I->amOnMailpoetPage('Emails');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
-    $I->seeInCurrentUrl('mailpoet-newsletters');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText('Edit Test Welcome Edited');
   }
 
   function deleteWelcomeEmail(\AcceptanceTester $I) {
     $I->wantTo('Delete a welcome email');
-    $newsletter_title = 'Delete Welcome Email Test';
-    $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $newsletterTitle = 'Delete Welcome Email Test';
+    $this->createWelcomeEmailWithTitle($I, $newsletterTitle);
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title);
-    $I->clickItemRowActionByItemName($newsletter_title, 'Move to trash');
+    $I->waitForText($newsletterTitle);
+    $I->clickItemRowActionByItemName($newsletterTitle, 'Move to trash');
     $I->waitForElement('[data-automation-id="filters_trash"]');
     $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_title);
-    $I->clickItemRowActionByItemName($newsletter_title, 'Restore');
+    $I->waitForText($newsletterTitle);
+    $I->clickItemRowActionByItemName($newsletterTitle, 'Restore');
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title);
+    $I->waitForText($newsletterTitle);
   }
 
   function duplicateWelcomeEmail (\AcceptanceTester $I) {
-    $newsletter_title = 'Duplicate Welcome Email Test';
-    $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $newsletterTitle = 'Duplicate Welcome Email Test';
+    $this->createWelcomeEmailWithTitle($I, $newsletterTitle);
     $I->wantTo('Duplicate a welcome email');
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title);
-    $I->clickItemRowActionByItemName($newsletter_title, 'Duplicate');
-    $I->waitForText('Copy of ' . $newsletter_title);
+    $I->waitForText($newsletterTitle);
+    $I->clickItemRowActionByItemName($newsletterTitle, 'Duplicate');
+    $I->waitForText('Copy of ' . $newsletterTitle);
   }
 
   function searchForWelcomeEmail (\AcceptanceTester $I) {
     $I->wantTo('Search for a welcome email');
-    $newsletter_title = 'Welcome Email Search Test';
-    $failure_condition_newsletter = 'Totes Fake';
-    $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $newsletterTitle = 'Welcome Email Search Test';
+    $failureConditionNewsletter = 'Totes Fake';
+    $this->createWelcomeEmailWithTitle($I, $newsletterTitle);
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title);
-    $I->searchFor($failure_condition_newsletter, 2);
+    $I->waitForText($newsletterTitle);
+    $I->searchFor($failureConditionNewsletter, 2);
     $I->wait(5);
     $I->waitForElement('tr.no-items');
-    $I->searchFor($newsletter_title);
-    $I->waitForText($newsletter_title);
+    $I->searchFor($newsletterTitle);
+    $I->waitForText($newsletterTitle);
   }
 
   function saveWelcomeEmailAsTemplate (\AcceptanceTester $I) {
     $I->wantTo('Save welcome email as a template');
-    $newsletter_title = 'Save Welcome Email As Template Test';
-    $template_title = 'Welcome Template Test Title';
-    $template_descr = 'Welcome Template Test Descr';
-    $this->createWelcomeEmailWithTitle($I, $newsletter_title);
+    $newsletterTitle = 'Save Welcome Email As Template Test';
+    $templateTitle = 'Welcome Template Test Title';
+    $templateDescr = 'Welcome Template Test Descr';
+    $this->createWelcomeEmailWithTitle($I, $newsletterTitle);
 
-    $save_template_option = '[data-automation-id="newsletter_save_as_template_option"]';
-    $save_template_button = '[data-automation-id="newsletter_save_as_template_button"]';
+    $saveTemplateOption = '[data-automation-id="newsletter_save_as_template_option"]';
+    $saveTemplateButton = '[data-automation-id="newsletter_save_as_template_button"]';
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_title);
-    $I->clickItemRowActionByItemName($newsletter_title, 'Edit');
-    $I->waitForElement($this->title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
+    $I->waitForText($newsletterTitle);
+    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
+    $I->waitForElement($this->titleElement);
     $I->click('[data-automation-id="newsletter_save_options_toggle"]');
-    $I->waitForElement($save_template_option);
-    $I->click($save_template_option);
-    $I->waitForElement($save_template_button);
-    $I->fillField('template_name', $template_title);
-    $I->fillField('template_description', $template_descr);
-    $I->click($save_template_button);
+    $I->waitForElement($saveTemplateOption);
+    $I->click($saveTemplateOption);
+    $I->waitForElement($saveTemplateButton);
+    $I->fillField('template_name', $templateTitle);
+    $I->fillField('template_description', $templateDescr);
+    $I->click($saveTemplateButton);
     $I->waitForText('Template has been saved.');
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id="new_email"]');
-    $I->seeInCurrentUrl('#/new');
     $I->click('[data-automation-id="create_welcome"]');
-    $I->seeInCurrentUrl('#/new/welcome');
     $I->click('Next');
-    $I->waitForElement($this->welcome_template);
+    $I->waitForElement($this->welcomeTemplate);
     $I->see('Welcome Emails', ['css' => 'a.current']);
-    $I->seeInCurrentUrl('#/template');
-    $I->see($template_title);
-    $I->click(['xpath' => '//*[text()="' . $template_title . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
-    $I->waitForElement('[data-automation-id="newsletter_title"]');
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
+    $I->see($templateTitle);
+    $I->click(['xpath' => '//*[text()="' . $templateTitle . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
+    $I->waitForElement('[data-automation-id="newsletterTitle"]');
     $I->seeNoJSErrors();
   }
 
