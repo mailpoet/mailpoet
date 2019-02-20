@@ -1,4 +1,3 @@
-import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
 import BackboneRadio from 'backbone.radio'; // eslint-disable-line func-names
 

@@ -4,7 +4,6 @@
  */
 import App from 'newsletter_editor/App';
 import BaseBlock from 'newsletter_editor/blocks/base';
-import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import jQuery from 'jquery';
 

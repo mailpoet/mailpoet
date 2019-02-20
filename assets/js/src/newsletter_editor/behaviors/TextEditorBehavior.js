@@ -4,7 +4,6 @@
  * Adds TinyMCE text editing capabilities to a view
  */
 import Marionette from 'backbone.marionette';
-import _ from 'underscore';
 import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 import App from 'newsletter_editor/App';
 

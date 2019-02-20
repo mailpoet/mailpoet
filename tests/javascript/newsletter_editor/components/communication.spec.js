@@ -2,9 +2,6 @@ const expect = global.expect;
 const jQuery = global.jQuery;
 const sinon = global.sinon;
 
-import EditorApplication from 'newsletter_editor/App';
-import Communication from 'newsletter_editor/components/communication';
-
 /* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
 import CommunicationInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/components/communication';
 
