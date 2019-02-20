@@ -20,10 +20,15 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 class Initializer {
   private $access_control;
   private $renderer;
+
   /** @var ContainerInterface */
   private $container;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
+
+  function __construct(ContainerWrapper $container) {
+      $this->container = $container;
+  }
 
   function init() {
     $requirements_check_results = $this->checkRequirements();
@@ -46,8 +51,6 @@ class Initializer {
         array('target' => '_blank')
       ));
     }
-
-    $this->loadContainer();
 
     // activation function
     register_activation_hook(
@@ -87,10 +90,6 @@ class Initializer {
       new DeferredAdminNotices,
       'printAndClean'
     ));
-  }
-
-  function loadContainer() {
-    $this->container = ContainerWrapper::getInstance(WP_DEBUG);
   }
 
   function checkRequirements() {
