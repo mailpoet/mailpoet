@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Editor;
 
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Config\Env;
 
 if (!defined('ABSPATH')) exit;
 
@@ -138,6 +139,25 @@ class PostTransformer {
     return $content;
   }
 
+  private function getImageInfo($id) {
+    /*
+     * In some cases wp_get_attachment_image_src ignore the second parameter
+     * and use global variable $content_width value instead.
+     * By overriding it ourselves when ensure a constant behaviour regardless
+     * of the user setup.
+     *
+     * https://mailpoet.atlassian.net/browse/MAILPOET-1365
+     */
+    global $content_width; // default is NULL
+    
+    $content_width_copy = $content_width;
+    $content_width = Env::NEWSLETTER_CONTENT_WIDTH;
+    $image_info = $this->wp->wpGetAttachmentImageSrc($id, 'mailpoet_newsletter_max');
+    $content_width = $content_width_copy;
+
+    return $image_info;
+  }
+
   private function getFeaturedImage($post) {
     $post_id = $post->ID;
     $post_title = $post->post_title;
@@ -147,8 +167,8 @@ class PostTransformer {
       return false;
     }
 
-    $thumbnail_id = get_post_thumbnail_id($post_id);
-    $image_info = $this->wp->getImageInfo($thumbnail_id);
+    $thumbnail_id = $this->wp->getPostThumbnailId($post_id);
+    $image_info = $this->getImageInfo($thumbnail_id);
 
     // get alt text
     $alt_text = trim(strip_tags(get_post_meta(
@@ -163,7 +183,7 @@ class PostTransformer {
 
     return array(
       'type' => 'image',
-      'link' => get_permalink($post_id),
+      'link' => $this->wp->getPermalink($post_id),
       'src' => $image_info[0],
       'alt' => $alt_text,
       'fullWidth' => $image_full_width,
@@ -180,13 +200,13 @@ class PostTransformer {
   private function getReadMoreButton($post) {
     if ($this->args['readMoreType'] === 'button') {
       $button = $this->args['readMoreButton'];
-      $button['url'] = get_permalink($post->ID);
+      $button['url'] = $this->wp->getPermalink($post->ID);
       return $button;
     }
 
     $read_more_text = sprintf(
       '<p><a href="%s">%s</a></p>',
-      get_permalink($post->ID),
+      $this->wp->getPermalink($post->ID),
       $this->args['readMoreText']
     );
 
@@ -201,7 +221,7 @@ class PostTransformer {
     $top_padding = '20px';
 
     if (filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
-      $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
+      $title = '<a href="' . $this->wp->getPermalink($post->ID) . '">' . $title . '</a>';
     }
 
     if (in_array($this->args['titleFormat'], array('h1', 'h2', 'h3'))) {
