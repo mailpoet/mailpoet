@@ -11,10 +11,15 @@ use MailPoet\Config\Renderer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CapabilitiesTest extends \MailPoetTest {
+
+  /** @var AccessControl */
+  private $access_control;
+
   function _before() {
     parent::_before();
     $renderer = new Renderer();
     $this->caps = new Capabilities($renderer);
+    $this->access_control = new AccessControl(new WPFunctions());
   }
 
   function testItInitializes() {
@@ -28,7 +33,7 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
   function testItSetsUpWPCapabilities() {
-    $permissions = AccessControl::getDefaultPermissions();
+    $permissions = $this->access_control->getDefaultPermissions();
     $this->caps->setupWPCapabilities();
     $checked = false;
     foreach ($permissions as $name => $roles) {
@@ -41,7 +46,7 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
   function testItRemovesWPCapabilities() {
-    $permissions = AccessControl::getDefaultPermissions();
+    $permissions = $this->access_control->getDefaultPermissions();
     $this->caps->removeWPCapabilities();
     $checked = false;
     foreach ($permissions as $name => $roles) {
@@ -100,7 +105,7 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
   function testItRegistersMembersCapabilities() {
-    $permissions = AccessControl::getPermissionLabels();
+    $permissions = $this->access_control->getPermissionLabels();
     $permission_count = count($permissions);
     if (function_exists('members_register_cap')) { // Members plugin active
       $this->caps->registerMembersCapabilities();
@@ -110,7 +115,10 @@ class CapabilitiesTest extends \MailPoetTest {
       $caps = Stub::makeEmptyExcept(
         $this->caps,
         'registerMembersCapabilities',
-        array('registerMembersCapability' => Expected::exactly($permission_count)),
+        [
+          'registerMembersCapability' => Expected::exactly($permission_count),
+          'access_control' => $this->access_control,
+        ],
         $this
       );
       $caps->registerMembersCapabilities();

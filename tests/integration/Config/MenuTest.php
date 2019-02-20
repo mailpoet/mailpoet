@@ -43,7 +43,7 @@ class MenuTest extends \MailPoetTest {
 
   function testItChecksMailpoetAPIKey() {
     $renderer = Stub::make(new Renderer());
-    $menu = new Menu($renderer, new AccessControl(), new SettingsController(), new Functions(), new WooCommerceHelper);
+    $menu = new Menu($renderer, new AccessControl(new Functions()), new SettingsController(), new Functions(), new WooCommerceHelper);
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
@@ -65,7 +65,7 @@ class MenuTest extends \MailPoetTest {
 
   function testItChecksPremiumKey() {
     $renderer = Stub::make(new Renderer());
-    $menu = new Menu($renderer, new AccessControl(), new SettingsController(), new Functions(), new WooCommerceHelper);
+    $menu = new Menu($renderer, new AccessControl(new Functions()), new SettingsController(), new Functions(), new WooCommerceHelper);
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
