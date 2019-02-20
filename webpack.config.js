@@ -65,8 +65,8 @@ const baseConfig = {
   module: {
     rules: [
       {
-        test: /\.jsx$/,
-        exclude: /node_modules/,
+        test: /\.jsx?$/,
+        exclude: /(node_modules|src\/vendor)/,
         loader: 'babel-loader',
       },
       {
