@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config\PopulatorData\Templates;
+use MailPoet\WP\Functions as WPFunctions;
 
 class TakeAHike {
 
@@ -14,7 +15,7 @@ class TakeAHike {
 
   function get() {
     return array(
-      'name' => __("Take a Hike", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Take a Hike", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

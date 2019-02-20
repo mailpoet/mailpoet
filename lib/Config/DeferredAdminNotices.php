@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\WP\Notice;
+use MailPoet\WP\Functions as WPFunctions;
 
 class DeferredAdminNotices {
 
@@ -12,24 +13,24 @@ class DeferredAdminNotices {
    * @param string $message
    */
   public function addNetworkAdminNotice($message) {
-    $notices = get_option(DeferredAdminNotices::OPTIONS_KEY_NAME, array());
+    $notices = WPFunctions::get()->getOption(DeferredAdminNotices::OPTIONS_KEY_NAME, array());
     $notices[] = array(
       "message" => $message,
       "networkAdmin" => true,// if we'll need to display the notice to anyone else
     );
-    update_option(DeferredAdminNotices::OPTIONS_KEY_NAME, $notices);
+    WPFunctions::get()->updateOption(DeferredAdminNotices::OPTIONS_KEY_NAME, $notices);
   }
 
   public function printAndClean() {
-    $notices = get_option(DeferredAdminNotices::OPTIONS_KEY_NAME, array());
+    $notices = WPFunctions::get()->getOption(DeferredAdminNotices::OPTIONS_KEY_NAME, array());
 
     foreach ($notices as $notice) {
       $notice = new Notice(Notice::TYPE_WARNING, $notice["message"]);
-      add_action('network_admin_notices', array($notice, 'displayWPNotice'));
+      WPFunctions::get()->addAction('network_admin_notices', array($notice, 'displayWPNotice'));
     }
 
     if (!empty($notices)) {
-      delete_option(DeferredAdminNotices::OPTIONS_KEY_NAME);
+      WPFunctions::get()->deleteOption(DeferredAdminNotices::OPTIONS_KEY_NAME);
     }
   }
 

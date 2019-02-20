@@ -36,7 +36,7 @@ class AutomatedLatestContent extends APIEndpoint {
 
   function getTaxonomies($data = array()) {
     $post_type = (isset($data['postType'])) ? $data['postType'] : 'post';
-    $all_taxonomies = get_object_taxonomies($post_type, 'objects');
+    $all_taxonomies = WPFunctions::get()->getObjectTaxonomies($post_type, 'objects');
     $taxonomies_with_label = array_filter($all_taxonomies, function($taxonomy) {
       return $taxonomy->label;
     });

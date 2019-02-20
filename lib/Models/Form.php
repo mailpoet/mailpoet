@@ -8,6 +8,8 @@ if (!defined('ABSPATH')) exit;
  * @property string|array $body
  * @property string $name
  */
+use MailPoet\WP\Functions as WPFunctions;
+
 class Form extends Model {
   public static $_table = MP_FORMS_TABLE;
 
@@ -15,16 +17,16 @@ class Form extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
     ));
   }
 
   function getSettings() {
-    return is_serialized($this->settings) ? unserialize($this->settings) : $this->settings;
+    return WPFunctions::get()->isSerialized($this->settings) ? unserialize($this->settings) : $this->settings;
   }
 
   function getBody() {
-    return is_serialized($this->body) ? unserialize($this->body) : $this->body;
+    return WPFunctions::get()->isSerialized($this->body) ? unserialize($this->body) : $this->body;
   }
 
   function asArray() {
@@ -99,12 +101,12 @@ class Form extends Model {
     return array(
       array(
         'name' => 'all',
-        'label' => __('All', 'mailpoet'),
+        'label' => WPFunctions::get()->__('All', 'mailpoet'),
         'count' => Form::getPublished()->count()
       ),
       array(
         'name' => 'trash',
-        'label' => __('Trash', 'mailpoet'),
+        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
         'count' => Form::getTrashed()->count()
       )
     );

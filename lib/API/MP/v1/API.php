@@ -11,6 +11,7 @@ use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Tasks\Sending;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -39,15 +40,15 @@ class API {
     $data = array(
       array(
         'id' => 'email',
-        'name' => __('Email', 'mailpoet')
+        'name' => WPFunctions::get()->__('Email', 'mailpoet')
       ),
       array(
         'id' => 'first_name',
-        'name' => __('First name', 'mailpoet')
+        'name' => WPFunctions::get()->__('First name', 'mailpoet')
       ),
       array(
         'id' => 'last_name',
-        'name' => __('Last name', 'mailpoet')
+        'name' => WPFunctions::get()->__('Last name', 'mailpoet')
       )
     );
 
@@ -82,7 +83,7 @@ class API {
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
     if (!$found_segments) {
-      $exception = _n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
+      $exception = WPFunctions::get()->n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
       throw new \Exception($exception);
     }
 
@@ -102,7 +103,7 @@ class API {
     if (count($found_segments_ids) !== count($segments_ids)) {
       $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
       $exception = sprintf(
-        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
+        WPFunctions::get()->n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
         implode(', ', $missing_ids)
       );
       throw new \Exception(sprintf($exception, implode(', ', $missing_ids)));
@@ -136,7 +137,7 @@ class API {
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
     if (!$found_segments) {
-      $exception = _n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
+      $exception = WPFunctions::get()->n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
       throw new \Exception($exception);
     }
 
@@ -156,7 +157,7 @@ class API {
     if (count($found_segments_ids) !== count($segments_ids)) {
       $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
       $exception = sprintf(
-        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
+        WPFunctions::get()->n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
         implode(', ', $missing_ids)
       );
       throw new \Exception($exception);
@@ -179,14 +180,14 @@ class API {
     // throw exception when subscriber email is missing
     if (empty($subscriber['email'])) {
       throw new \Exception(
-        __('Subscriber email address is required.', 'mailpoet')
+        WPFunctions::get()->__('Subscriber email address is required.', 'mailpoet')
       );
     }
 
     // throw exception when subscriber already exists
     if (Subscriber::findOne($subscriber['email'])) {
       throw new \Exception(
-        __('This subscriber already exists.', 'mailpoet')
+        WPFunctions::get()->__('This subscriber already exists.', 'mailpoet')
       );
     }
 
@@ -204,7 +205,7 @@ class API {
     $new_subscriber->save();
     if ($new_subscriber->getErrors() !== false) {
       throw new \Exception(
-        __(sprintf('Failed to add subscriber: %s', strtolower(implode(', ', $new_subscriber->getErrors()))), 'mailpoet')
+        WPFunctions::get()->__(sprintf('Failed to add subscriber: %s', strtolower(implode(', ', $new_subscriber->getErrors()))), 'mailpoet')
       );
     }
     if (!empty($custom_fields)) {
@@ -223,7 +224,7 @@ class API {
         $result = $this->_sendConfirmationEmail($new_subscriber);
         if (!$result && $new_subscriber->getErrors()) {
           throw new \Exception(
-            __(sprintf('Subscriber added, but confirmation email failed to send: %s', strtolower(implode(', ', $new_subscriber->getErrors()))), 'mailpoet')
+            WPFunctions::get()->__(sprintf('Subscriber added, but confirmation email failed to send: %s', strtolower(implode(', ', $new_subscriber->getErrors()))), 'mailpoet')
           );
         }
       }
@@ -244,14 +245,14 @@ class API {
     // throw exception when list name is missing
     if (empty($list['name'])) {
       throw new \Exception(
-        __('List name is required.', 'mailpoet')
+        WPFunctions::get()->__('List name is required.', 'mailpoet')
       );
     }
 
     // throw exception when list already exists
     if (Segment::where('name', $list['name'])->findOne()) {
       throw new \Exception(
-        __('This list already exists.', 'mailpoet')
+        WPFunctions::get()->__('This list already exists.', 'mailpoet')
       );
     }
 
@@ -261,7 +262,7 @@ class API {
     $new_list->save();
     if ($new_list->getErrors() !== false) {
       throw new \Exception(
-        __(sprintf('Failed to add list: %s', strtolower(implode(', ', $new_list->getErrors()))), 'mailpoet')
+        WPFunctions::get()->__(sprintf('Failed to add list: %s', strtolower(implode(', ', $new_list->getErrors()))), 'mailpoet')
       );
     }
 
@@ -290,7 +291,7 @@ class API {
       foreach ($result as $queue) {
         if ($queue instanceof Sending && $queue->getErrors()) {
           throw new \Exception(
-            __(sprintf('Subscriber added, but welcome email failed to send: %s', strtolower(implode(', ', $queue->getErrors()))), 'mailpoet')
+            WPFunctions::get()->__(sprintf('Subscriber added, but welcome email failed to send: %s', strtolower(implode(', ', $queue->getErrors()))), 'mailpoet')
           );
         }
       }

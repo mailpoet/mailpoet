@@ -1,13 +1,15 @@
 <?php
 namespace MailPoet\Util;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
 
 class Security {
   const HASH_LENGTH = 12;
 
   static function generateToken($action = 'mailpoet_token') {
-    return wp_create_nonce($action);
+    return WPFunctions::get()->wpCreateNonce($action);
   }
 
   static function generateRandomString($length = 5) {

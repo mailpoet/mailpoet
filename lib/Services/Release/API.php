@@ -1,7 +1,6 @@
 <?php
 
 namespace MailPoet\Services\Release;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -46,7 +45,7 @@ class API {
 
   private function request($url, $params = array()) {
     $params['license'] = $this->api_key;
-    $url = add_query_arg($params, $url);
+    $url = WPFunctions::get()->addQueryArg($params, $url);
     $args = array(
       'timeout' => 10,
       'httpversion' => '1.0'

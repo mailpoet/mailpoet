@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Renderer\StylesHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Image {
   static function render($element, $column_base_width) {
@@ -9,7 +10,7 @@ class Image {
       return '';
     }
     if (substr($element['src'], 0, 1) == '/' && substr($element['src'], 1, 1) != '/') {
-      $element['src'] = get_option('siteurl') . $element['src'];
+      $element['src'] = WPFunctions::get()->getOption('siteurl') . $element['src'];
     }
 
     $element['width'] = str_replace('px', '', $element['width']);

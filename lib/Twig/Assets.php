@@ -1,6 +1,7 @@
 <?php
-
 namespace MailPoet\Twig;
+
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -75,7 +76,7 @@ class Assets extends \Twig_Extension {
   }
 
   function appendVersionToUrl($url) {
-    return add_query_arg('mailpoet_version', $this->_globals['version'], $url);
+    return WPFunctions::get()->addQueryArg('mailpoet_version', $this->_globals['version'], $url);
   }
 
   function getAssetFileName($manifest, $asset) {

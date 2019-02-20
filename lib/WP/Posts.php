@@ -1,17 +1,19 @@
 <?php
 namespace MailPoet\WP;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Posts {
 
   static function getTerms($args) {
     // Since WordPress 4.5.0 signature of get_terms changed to require
     // one argument array, where taxonomy is key of that array
     if (version_compare(get_bloginfo('version'), '4.5.0', '>=')) {
-      return get_terms($args);
+      return WPFunctions::get()->getTerms($args);
     } else {
       $taxonomy = $args['taxonomy'];
       unset($args['taxonomy']);
-      return get_terms($taxonomy, $args);
+      return WPFunctions::get()->getTerms($taxonomy, $args);
     }
   }
 
@@ -20,7 +22,7 @@ class Posts {
       'exclude_from_search' => false
     );
     $args = array_merge($defaults, $args);
-    return get_post_types($args, $output, $operator);
+    return WPFunctions::get()->getPostTypes($args, $output, $operator);
   }
 
 }

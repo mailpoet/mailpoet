@@ -31,7 +31,7 @@ class ImportExportFactory {
     }
 
     return array_map(function($segment) {
-      if (!$segment['name']) $segment['name'] = __('Not In List', 'mailpoet');
+      if (!$segment['name']) $segment['name'] = WPFunctions::get()->__('Not In List', 'mailpoet');
       if (!$segment['id']) $segment['id'] = 0;
       return array(
         'id' => $segment['id'],
@@ -43,17 +43,17 @@ class ImportExportFactory {
 
   function getSubscriberFields() {
     $fields = array(
-      'email' => __('Email', 'mailpoet'),
-      'first_name' => __('First name', 'mailpoet'),
-      'last_name' => __('Last name', 'mailpoet')
+      'email' => WPFunctions::get()->__('Email', 'mailpoet'),
+      'first_name' => WPFunctions::get()->__('First name', 'mailpoet'),
+      'last_name' => WPFunctions::get()->__('Last name', 'mailpoet')
     );
     if ($this->action === 'export') {
       $fields = array_merge(
         $fields,
         array(
-          'list_status' => _x('List status', 'Subscription status', 'mailpoet'),
-          'global_status' => _x('Global status', 'Subscription status', 'mailpoet'),
-          'subscribed_ip' => __('IP address', 'mailpoet')
+          'list_status' => WPFunctions::get()->x('List status', 'Subscription status', 'mailpoet'),
+          'global_status' => WPFunctions::get()->x('Global status', 'Subscription status', 'mailpoet'),
+          'subscribed_ip' => WPFunctions::get()->__('IP address', 'mailpoet')
         )
       );
     }
@@ -94,36 +94,36 @@ class ImportExportFactory {
       array(
         array(
           'id' => 'ignore',
-          'name' => __('Ignore field...', 'mailpoet'),
+          'name' => WPFunctions::get()->__('Ignore field...', 'mailpoet'),
         ),
         array(
           'id' => 'create',
-          'name' => __('Create new field...', 'mailpoet')
+          'name' => WPFunctions::get()->__('Create new field...', 'mailpoet')
         ),
       ) :
       array(
         array(
           'id' => 'select',
-          'name' => __('Select all...', 'mailpoet'),
+          'name' => WPFunctions::get()->__('Select all...', 'mailpoet'),
         ),
         array(
           'id' => 'deselect',
-          'name' => __('Deselect all...', 'mailpoet')
+          'name' => WPFunctions::get()->__('Deselect all...', 'mailpoet')
         ),
       );
     $select2Fields = array(
       array(
-        'name' => __('Actions', 'mailpoet'),
+        'name' => WPFunctions::get()->__('Actions', 'mailpoet'),
         'children' => $actions
       ),
       array(
-        'name' => __('System fields', 'mailpoet'),
+        'name' => WPFunctions::get()->__('System fields', 'mailpoet'),
         'children' => $this->formatSubscriberFields($subscriber_fields)
       )
     );
     if ($subscriber_custom_fields) {
       array_push($select2Fields, array(
-        'name' => __('User fields', 'mailpoet'),
+        'name' => WPFunctions::get()->__('User fields', 'mailpoet'),
         'children' => $this->formatSubscriberCustomFields(
           $subscriber_custom_fields
         )

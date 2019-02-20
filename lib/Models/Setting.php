@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -21,7 +22,7 @@ class Setting extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
     ));
   }
 

@@ -56,19 +56,19 @@ class API {
 
   function init() {
      // admin security token and API version
-    add_action(
+    WPFunctions::get()->addAction(
       'admin_head',
       array($this, 'setTokenAndAPIVersion')
     );
 
     // ajax (logged in users)
-    add_action(
+    WPFunctions::get()->addAction(
       'wp_ajax_mailpoet',
       array($this, 'setupAjax')
     );
 
     // ajax (logged out users)
-    add_action(
+    WPFunctions::get()->addAction(
       'wp_ajax_nopriv_mailpoet',
       array($this, 'setupAjax')
     );
@@ -85,7 +85,7 @@ class API {
     );
 
     if (!$ignoreToken && $this->checkToken() === false) {
-      $error_message = __("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
+      $error_message = WPFunctions::get()->__("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
       $error_response = $this->createErrorResponse(Error::UNAUTHORIZED, $error_message, Response::STATUS_UNAUTHORIZED);
       return $error_response->send();
     }
@@ -112,7 +112,7 @@ class API {
       : null;
 
     if (!$this->_request_endpoint || !$this->_request_method || !$this->_request_api_version) {
-      $error_message = __('Invalid API request.', 'mailpoet');
+      $error_message = WPFunctions::get()->__('Invalid API request.', 'mailpoet');
       $error_response = $this->createErrorResponse(Error::BAD_REQUEST, $error_message, Response::STATUS_BAD_REQUEST);
       return $error_response;
     } else if (!empty($this->_endpoint_namespaces[$this->_request_api_version])) {
@@ -128,7 +128,7 @@ class API {
         }
       }
       $this->_request_data = isset($data['data'])
-        ? stripslashes_deep($data['data'])
+        ? WPFunctions::get()->stripslashesDeep($data['data'])
         : array();
 
       // remove reserved keywords from data
@@ -166,7 +166,7 @@ class API {
       // check the accessibility of the requested endpoint's action
       // by default, an endpoint's action is considered "private"
       if (!$this->validatePermissions($this->_request_method, $endpoint->permissions)) {
-        $error_message = __('You do not have the required permissions.', 'mailpoet');
+        $error_message = WPFunctions::get()->__('You do not have the required permissions.', 'mailpoet');
         $error_response = $this->createErrorResponse(Error::FORBIDDEN, $error_message, Response::STATUS_FORBIDDEN);
         return $error_response;
       }
@@ -187,7 +187,7 @@ class API {
   }
 
   function checkToken() {
-    return wp_verify_nonce($this->_request_token, 'mailpoet_token');
+    return WPFunctions::get()->wpVerifyNonce($this->_request_token, 'mailpoet_token');
   }
 
   function setTokenAndAPIVersion() {

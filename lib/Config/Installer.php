@@ -5,6 +5,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\License;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -22,7 +23,7 @@ class Installer {
   }
 
   function init() {
-    add_filter('plugins_api', array($this, 'getPluginInformation'), 10, 3);
+    WPFunctions::get()->addFilter('plugins_api', array($this, 'getPluginInformation'), 10, 3);
   }
 
   function getPluginInformation($data, $action = '', $args = null) {
@@ -58,13 +59,13 @@ class Installer {
   }
 
   static function getPluginInstallationUrl($slug) {
-    $install_url = add_query_arg(
+    $install_url = WPFunctions::get()->addQueryArg(
       array(
         'action'   => 'install-plugin',
         'plugin'   => $slug,
-        '_wpnonce' => wp_create_nonce('install-plugin_' . $slug),
+        '_wpnonce' => WPFunctions::get()->wpCreateNonce('install-plugin_' . $slug),
       ),
-      self_admin_url('update.php')
+      WPFunctions::get()->selfAdminUrl('update.php')
     );
     return $install_url;
   }
@@ -74,13 +75,13 @@ class Installer {
     if (empty($plugin_file)) {
       return false;
     }
-    $activate_url = add_query_arg(
+    $activate_url = WPFunctions::get()->addQueryArg(
       array(
         'action'   => 'activate',
         'plugin'   => $plugin_file,
-        '_wpnonce' => wp_create_nonce('activate-plugin_' . $plugin_file),
+        '_wpnonce' => WPFunctions::get()->wpCreateNonce('activate-plugin_' . $plugin_file),
       ),
-      self_admin_url('plugins.php')
+      WPFunctions::get()->selfAdminUrl('plugins.php')
     );
     return $activate_url;
   }
@@ -88,7 +89,7 @@ class Installer {
   private static function getInstalledPlugin($slug) {
     $installed_plugin = array();
     if (is_dir(WP_PLUGIN_DIR . '/' . $slug)) {
-      $installed_plugin = get_plugins('/' . $slug);
+      $installed_plugin = WPFunctions::get()->getPlugins('/' . $slug);
     }
     return $installed_plugin;
   }

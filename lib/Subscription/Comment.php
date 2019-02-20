@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Subscription;
+
+use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberActions;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Comment {
   const SPAM = 'spam';
@@ -34,7 +37,7 @@ class Comment {
   private function getSubscriptionField() {
     $label = $this->settings->get(
       'subscribe.on_comment.label',
-      __('Yes, please add me to your mailing list.', 'mailpoet')
+      WPFunctions::get()->__('Yes, please add me to your mailing list.', 'mailpoet')
     );
 
     return '<p class="comment-form-mailpoet">
@@ -59,7 +62,7 @@ class Comment {
       if ($comment_status === Comment::PENDING_APPROVAL) {
         // add a comment meta to remember to subscribe the user
         // once the comment gets approved
-        add_comment_meta(
+        WPFunctions::get()->addCommentMeta(
           $comment_id,
           'mailpoet',
           'subscribe_on_comment',
@@ -75,7 +78,7 @@ class Comment {
     if ($action === 'approve') {
       // check if the comment's author wants to subscribe
       $do_subscribe = (
-        get_comment_meta(
+        WPFunctions::get()->getCommentMeta(
           $comment_id,
           'mailpoet',
           true
@@ -85,7 +88,7 @@ class Comment {
       if ($do_subscribe === true) {
         $this->subscribeAuthorOfComment($comment_id);
 
-        delete_comment_meta($comment_id, 'mailpoet');
+        WPFunctions::get()->deleteCommentMeta($comment_id, 'mailpoet');
       }
     }
   }
@@ -94,7 +97,7 @@ class Comment {
     $segment_ids = $this->settings->get('subscribe.on_comment.segments', array());
 
     if (!empty($segment_ids)) {
-      $comment = get_comment($comment_id);
+      $comment = WPFunctions::get()->getComment($comment_id);
 
       $result = $this->subscriber_actions->subscribe(
         array(

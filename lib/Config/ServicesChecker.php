@@ -10,7 +10,10 @@ use MailPoet\Util\License\License;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Notice as WPNotice;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class ServicesChecker {
 
@@ -35,7 +38,7 @@ class ServicesChecker {
     ) {
       if ($display_error_notice) {
         $error = Helpers::replaceLinkTags(
-          __('All sending is currently paused! Your key to send with MailPoet is invalid. [link]Visit MailPoet.com to purchase a key[/link]', 'mailpoet'),
+          WPFunctions::get()->__('All sending is currently paused! Your key to send with MailPoet is invalid. [link]Visit MailPoet.com to purchase a key[/link]', 'mailpoet'),
           'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers(),
           array('target' => '_blank')
         );
@@ -49,7 +52,7 @@ class ServicesChecker {
         $date_time = new DateTime();
         $date = $date_time->formatDate(strtotime($mss_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
-          __("Your newsletters are awesome! Don't forget to [link]upgrade your MailPoet email plan[/link] by %s to keep sending them to your subscribers.", 'mailpoet'),
+          WPFunctions::get()->__("Your newsletters are awesome! Don't forget to [link]upgrade your MailPoet email plan[/link] by %s to keep sending them to your subscribers.", 'mailpoet'),
           'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers(),
           array('target' => '_blank')
         );
@@ -79,7 +82,7 @@ class ServicesChecker {
       || $premium_key['state'] === Bridge::KEY_ALREADY_USED
     ) {
       if ($display_error_notice) {
-        $error_string = __('[link1]Register[/link1] your copy of the MailPoet Premium plugin to receive access to automatic upgrades and support. Need a license key? [link2]Purchase one now.[/link2]', 'mailpoet');
+        $error_string = WPFunctions::get()->__('[link1]Register[/link1] your copy of the MailPoet Premium plugin to receive access to automatic upgrades and support. Need a license key? [link2]Purchase one now.[/link2]', 'mailpoet');
         $error = Helpers::replaceLinkTags(
           $error_string,
           'admin.php?page=mailpoet-settings#premium',
@@ -102,7 +105,7 @@ class ServicesChecker {
         $date_time = new DateTime();
         $date = $date_time->formatDate(strtotime($premium_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
-          __("Your License Key for MailPoet is expiring! Don't forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.", 'mailpoet'),
+          WPFunctions::get()->__("Your License Key for MailPoet is expiring! Don't forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.", 'mailpoet'),
           'https://account.mailpoet.com',
           array('target' => '_blank')
         );

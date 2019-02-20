@@ -6,6 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -30,7 +31,7 @@ class Mailer extends APIEndpoint {
 
     if ($result['response'] === false) {
       $error = sprintf(
-        __('The email could not be sent: %s', 'mailpoet'),
+        WPFunctions::get()->__('The email could not be sent: %s', 'mailpoet'),
         $result['error']->getMessage()
       );
       return $this->errorResponse(array(APIError::BAD_REQUEST => $error));

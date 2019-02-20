@@ -7,6 +7,7 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -32,7 +33,7 @@ class Settings extends APIEndpoint {
       return $this->badRequest(
         array(
           APIError::BAD_REQUEST =>
-            __('You have not specified any settings to be saved.', 'mailpoet')
+            WPFunctions::get()->__('You have not specified any settings to be saved.', 'mailpoet')
         ));
     } else {
       foreach ($settings as $name => $value) {

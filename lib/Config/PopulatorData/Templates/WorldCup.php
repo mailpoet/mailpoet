@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config\PopulatorData\Templates;
+use MailPoet\WP\Functions as WPFunctions;
 
 class WorldCup {
 
@@ -14,7 +15,7 @@ class WorldCup {
 
   function get() {
     return array(
-      'name' => __("World Cup", 'mailpoet'),
+      'name' => WPFunctions::get()->__("World Cup", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

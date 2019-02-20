@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Form\Block;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class Select extends Base {
 
@@ -50,7 +53,7 @@ class Select extends Base {
       }
 
       $html .= '<option value="'.$value.'"' . $is_selected . $is_disabled . '>';
-      $html .= esc_attr($label);
+      $html .= WPFunctions::get()->escAttr($label);
       $html .= '</option>';
     }
     $html .= '</select>';

@@ -1,7 +1,6 @@
 <?php
 
 namespace MailPoet\Newsletter\Shortcodes\Categories;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 class Date {
@@ -18,10 +17,10 @@ class Date {
     );
     $wp = new WPFunctions();
     if (!empty($action_mapping[$shortcode_details['action']])) {
-      return date_i18n($action_mapping[$shortcode_details['action']], $wp->currentTime('timestamp'));
+      return WPFunctions::get()->dateI18n($action_mapping[$shortcode_details['action']], $wp->currentTime('timestamp'));
     }
     return ($shortcode_details['action'] === 'custom' && $shortcode_details['action_argument'] === 'format') ?
-      date_i18n($shortcode_details['action_argument_value'], $wp->currentTime('timestamp')) :
+      WPFunctions::get()->dateI18n($shortcode_details['action_argument_value'], $wp->currentTime('timestamp')) :
       false;
   }
 }

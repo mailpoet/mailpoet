@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class ClearNews {
 
@@ -15,7 +18,7 @@ class ClearNews {
 
   function get() {
     return array(
-      'name' => __("Clear News", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Clear News", 'mailpoet'),
       'categories' => json_encode(array('notification', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

@@ -22,7 +22,7 @@ class Emoji {
   }
 
   function decodeEntities($content) {
-    // Based on wp_staticize_emoji()
+    // Based on WPFunctions::get()->wpStaticizeEmoji()
 
     // Loosely match the Emoji Unicode range.
     $regex = '/(&#x[2-3][0-9a-f]{3};|&#x1f[1-6][0-9a-f]{2};)/';

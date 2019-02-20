@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Renderer\PostProcess;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\pQuery\pQuery;
+use MailPoet\WP\Functions as WPFunctions;
 
 class OpenTracking {
   static function process($template) {
@@ -22,7 +23,7 @@ class OpenTracking {
   }
 
   static function addTrackingImage() {
-    add_filter(Renderer::FILTER_POST_PROCESS, function ($template) {
+    WPFunctions::get()->addFilter(Renderer::FILTER_POST_PROCESS, function ($template) {
       return OpenTracking::process($template);
     });
     return true;

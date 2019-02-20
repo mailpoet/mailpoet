@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config\PopulatorData\Templates;
+use MailPoet\WP\Functions as WPFunctions;
 
 class CityLocalNews {
 
@@ -14,7 +15,7 @@ class CityLocalNews {
 
   function get() {
     return array(
-      'name' => __("City News", 'mailpoet'),
+      'name' => WPFunctions::get()->__("City News", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

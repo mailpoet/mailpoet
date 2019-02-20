@@ -5,6 +5,7 @@ namespace MailPoet\Router;
 use MailPoet\Config\AccessControl;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -42,18 +43,18 @@ class Router {
     $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
 
     if (!$this->endpoint || !class_exists($endpoint_class)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint', 'mailpoet'));
+      return $this->terminateRequest(self::RESPONSE_ERROR, WPFunctions::get()->__('Invalid router endpoint', 'mailpoet'));
     }
 
     $endpoint = $this->container->get($endpoint_class);
 
     if (!method_exists($endpoint, $this->endpoint_action) || !in_array($this->endpoint_action, $endpoint->allowed_actions)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action', 'mailpoet'));
+      return $this->terminateRequest(self::RESPONSE_ERROR, WPFunctions::get()->__('Invalid router endpoint action', 'mailpoet'));
     }
     if (!$this->validatePermissions($this->endpoint_action, $endpoint->permissions)) {
-      return $this->terminateRequest(self::RESPONE_FORBIDDEN, __('You do not have the required permissions.', 'mailpoet'));
+      return $this->terminateRequest(self::RESPONE_FORBIDDEN, WPFunctions::get()->__('You do not have the required permissions.', 'mailpoet'));
     }
-    do_action('mailpoet_conflict_resolver_router_url_query_parameters');
+    WPFunctions::get()->doAction('mailpoet_conflict_resolver_router_url_query_parameters');
     return call_user_func(
       [
         $endpoint,
@@ -84,11 +85,11 @@ class Router {
     if ($data) {
       $params['data'] = self::encodeRequestData($data);
     }
-    return add_query_arg($params, home_url());
+    return WPFunctions::get()->addQueryArg($params, WPFunctions::get()->homeUrl());
   }
 
   function terminateRequest($code, $message) {
-    status_header($code, $message);
+    WPFunctions::get()->statusHeader($code, $message);
     exit;
   }
 

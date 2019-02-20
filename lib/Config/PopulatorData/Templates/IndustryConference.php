@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class IndustryConference {
 
@@ -15,7 +18,7 @@ class IndustryConference {
 
   function get() {
     return array(
-      'name' => __("Industry Conference", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Industry Conference", 'mailpoet'),
       'categories' => json_encode(array('notification', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

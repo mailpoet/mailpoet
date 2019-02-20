@@ -470,4 +470,16 @@ class Functions {
   function getTerms() {
     return call_user_func_array('get_terms', func_get_args());
   }
+
+  function getEditableRoles() {
+    return call_user_func_array('get_editable_roles', func_get_args());
+  }
+
+  function getCategories() {
+    return call_user_func_array('get_categories', func_get_args());
+  }
+
+  function hasFilter() {
+    return call_user_func_array('has_filter', func_get_args());
+  }
 }

@@ -2,6 +2,7 @@
 namespace MailPoet\Form\Util;
 use MailPoet\Form\Widget;
 use MailPoet\Config\Env;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Export {
   static function getAll($form = null) {
@@ -17,9 +18,9 @@ class Export {
     switch ($type) {
       case 'iframe':
         // generate url to load iframe's content
-        $iframe_url = add_query_arg(array(
+        $iframe_url = WPFunctions::get()->addQueryArg(array(
           'mailpoet_form_iframe' => $form['id']
-        ), site_url());
+        ), WPFunctions::get()->siteUrl());
 
         // generate iframe
         return join(' ', array(
@@ -53,7 +54,7 @@ class Export {
         $output = array();
 
         $output[] = '<!-- '.
-          __(
+          WPFunctions::get()->__(
             'BEGIN Scripts: you should place them in the header of your theme',
             'mailpoet'
           ).
@@ -66,7 +67,7 @@ class Export {
 
         // jQuery
         $output[] = '<script type="text/javascript" src="'.
-          includes_url().'js/jquery/jquery.js?mp_ver'.MAILPOET_VERSION.
+          WPFunctions::get()->includesUrl().'js/jquery/jquery.js?mp_ver'.MAILPOET_VERSION.
         '"></script>';
 
         // JS
@@ -85,7 +86,7 @@ class Export {
         $output[] = '   };';
         $output[] = '</script>';
         $output[] = '<!-- '.
-          __('END Scripts', 'mailpoet').
+          WPFunctions::get()->__('END Scripts', 'mailpoet').
         '-->';
 
         $form_widget = new Widget();

@@ -74,7 +74,7 @@ class Subscribers extends APIEndpoint {
     $subscriber = Subscriber::findOne($id);
     if ($subscriber === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This subscriber does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
       ));
     } else {
       return $this->successResponse(
@@ -121,24 +121,24 @@ class Subscribers extends APIEndpoint {
 
     if (!$form) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Please specify a valid form ID.', 'mailpoet')
+        APIError::BAD_REQUEST => WPFunctions::get()->__('Please specify a valid form ID.', 'mailpoet')
       ));
     }
     if (!empty($data['email'])) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Please leave the first field empty.', 'mailpoet')
+        APIError::BAD_REQUEST => WPFunctions::get()->__('Please leave the first field empty.', 'mailpoet')
       ));
     }
 
     if (!empty($recaptcha['enabled']) && empty($data['recaptcha'])) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Please check the CAPTCHA.', 'mailpoet')
+        APIError::BAD_REQUEST => WPFunctions::get()->__('Please check the CAPTCHA.', 'mailpoet')
       ));
     }
 
     if (!empty($recaptcha['enabled'])) {
       $res = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
-      $res = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
+      $res = WPFunctions::get()->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', array(
         'body' => array(
           'secret' => $recaptcha['secret_token'],
           'response' => $res
@@ -146,13 +146,13 @@ class Subscribers extends APIEndpoint {
       ));
       if (is_wp_error($res)) {
         return $this->badRequest(array(
-          APIError::BAD_REQUEST => __('Error while validating the CAPTCHA.', 'mailpoet')
+          APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet')
         ));
       }
       $res = json_decode(wp_remote_retrieve_body($res));
       if (empty($res->success)) {
         return $this->badRequest(array(
-          APIError::BAD_REQUEST => __('Error while validating the CAPTCHA.', 'mailpoet')
+          APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet')
         ));
       }
     }
@@ -174,7 +174,7 @@ class Subscribers extends APIEndpoint {
 
     if (empty($segment_ids)) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Please select a list.', 'mailpoet')
+        APIError::BAD_REQUEST => WPFunctions::get()->__('Please select a list.', 'mailpoet')
       ));
     }
 
@@ -206,7 +206,7 @@ class Subscribers extends APIEndpoint {
         if (!empty($form['settings']['on_success'])) {
           if ($form['settings']['on_success'] === 'page') {
             // redirect to a page on a success, pass the page url in the meta
-            $meta['redirect_url'] = get_permalink($form['settings']['success_page']);
+            $meta['redirect_url'] = WPFunctions::get()->getPermalink($form['settings']['success_page']);
           } else if ($form['settings']['on_success'] === 'url') {
             $meta['redirect_url'] = $form['settings']['success_url'];
           }
@@ -255,7 +255,7 @@ class Subscribers extends APIEndpoint {
     $subscriber = Subscriber::findOne($id);
     if ($subscriber === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This subscriber does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
       ));
     } else {
       $subscriber->restore();
@@ -271,7 +271,7 @@ class Subscribers extends APIEndpoint {
     $subscriber = Subscriber::findOne($id);
     if ($subscriber === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This subscriber does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
       ));
     } else {
       $subscriber->trash();
@@ -287,7 +287,7 @@ class Subscribers extends APIEndpoint {
     $subscriber = Subscriber::findOne($id);
     if ($subscriber === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This subscriber does not exist.', 'mailpoet')
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
       ));
     } else {
       $subscriber->delete();

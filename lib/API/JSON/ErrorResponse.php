@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\API\JSON;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -20,7 +21,7 @@ class ErrorResponse extends Response {
     return array_map(function($error, $message) {
       // sanitize SQL error
       if (preg_match('/^SQLSTATE/i', $message)) {
-        $message = __('An unknown error occurred.', 'mailpoet');
+        $message = WPFunctions::get()->__('An unknown error occurred.', 'mailpoet');
       }
       return array(
         'error' => $error,

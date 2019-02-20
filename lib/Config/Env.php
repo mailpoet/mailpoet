@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -42,12 +43,12 @@ class Env {
     self::$file = $file;
     self::$path = dirname(self::$file);
     self::$plugin_name = 'mailpoet';
-    self::$base_url = plugins_url('', $file);
+    self::$base_url = WPFunctions::get()->pluginsUrl('', $file);
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';
-    self::$assets_url = plugins_url('/assets', $file);
+    self::$assets_url = WPFunctions::get()->pluginsUrl('/assets', $file);
     self::$util_path = self::$path . '/lib/Util';
-    $wp_upload_dir = wp_upload_dir();
+    $wp_upload_dir = WPFunctions::get()->wpUploadDir();
     self::$temp_path = $wp_upload_dir['basedir'] . '/' . self::$plugin_name;
     self::$cache_path = self::$temp_path . '/cache';
     self::$temp_url = $wp_upload_dir['baseurl'] . '/' . self::$plugin_name;
@@ -93,7 +94,7 @@ class Env {
   }
 
   static function getDbTimezoneOffset($offset = false) {
-    $offset = ($offset) ? $offset : get_option('gmt_offset');
+    $offset = ($offset) ? $offset : WPFunctions::get()->getOption('gmt_offset');
     $mins = $offset * 60;
     $sgn = ($mins < 0 ? -1 : 1);
     $mins = abs($mins);

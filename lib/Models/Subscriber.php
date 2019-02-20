@@ -26,6 +26,8 @@ if (!defined('ABSPATH')) exit;
  * @property string $unconfirmed_data
  * @property int $is_woocommerce_user
  */
+use MailPoet\WP\Functions as WPFunctions;
+
 class Subscriber extends Model {
   public static $_table = MP_SUBSCRIBERS_TABLE;
 
@@ -42,8 +44,8 @@ class Subscriber extends Model {
     parent::__construct();
 
     $this->addValidations('email', array(
-      'required' => __('Please enter your email address', 'mailpoet'),
-      'validEmail' => __('Your email address is invalid!', 'mailpoet')
+      'required' => WPFunctions::get()->__('Please enter your email address', 'mailpoet'),
+      'validEmail' => WPFunctions::get()->__('Your email address is invalid!', 'mailpoet')
     ));
   }
 
@@ -103,7 +105,7 @@ class Subscriber extends Model {
   }
 
   static function getCurrentWPUser() {
-    $wp_user = wp_get_current_user();
+    $wp_user = WPFunctions::get()->wpGetCurrentUser();
     return self::where('wp_user_id', $wp_user->ID)->findOne();
   }
 
@@ -167,7 +169,7 @@ class Subscriber extends Model {
       ->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All Lists', 'mailpoet'),
+      'label' => WPFunctions::get()->__('All Lists', 'mailpoet'),
       'value' => ''
     );
 
@@ -175,7 +177,7 @@ class Subscriber extends Model {
       ->whereNull('deleted_at')
       ->count();
     $subscribers_without_segment_label = sprintf(
-      __('Subscribers without a list (%s)', 'mailpoet'),
+      WPFunctions::get()->__('Subscribers without a list (%s)', 'mailpoet'),
       number_format($subscribers_without_segment)
     );
 
@@ -231,32 +233,32 @@ class Subscriber extends Model {
     return array(
       array(
         'name' => 'all',
-        'label' => __('All', 'mailpoet'),
+        'label' => WPFunctions::get()->__('All', 'mailpoet'),
         'count' => self::getPublished()->count()
       ),
       array(
         'name' => self::STATUS_SUBSCRIBED,
-        'label' => __('Subscribed', 'mailpoet'),
+        'label' => WPFunctions::get()->__('Subscribed', 'mailpoet'),
         'count' => self::filter(self::STATUS_SUBSCRIBED)->count()
       ),
       array(
         'name' => self::STATUS_UNCONFIRMED,
-        'label' => __('Unconfirmed', 'mailpoet'),
+        'label' => WPFunctions::get()->__('Unconfirmed', 'mailpoet'),
         'count' => self::filter(self::STATUS_UNCONFIRMED)->count()
       ),
       array(
         'name' => self::STATUS_UNSUBSCRIBED,
-        'label' => __('Unsubscribed', 'mailpoet'),
+        'label' => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
         'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count()
       ),
       array(
         'name' => self::STATUS_BOUNCED,
-        'label' => __('Bounced', 'mailpoet'),
+        'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
         'count' => self::filter(self::STATUS_BOUNCED)->count()
       ),
       array(
         'name' => 'trash',
-        'label' => __('Trash', 'mailpoet'),
+        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
         'count' => self::getTrashed()->count()
       )
     );
@@ -358,7 +360,7 @@ class Subscriber extends Model {
   static function createOrUpdate($data = array()) {
     $subscriber = false;
     if (is_array($data) && !empty($data)) {
-      $data = stripslashes_deep($data);
+      $data = WPFunctions::get()->stripslashesDeep($data);
     }
 
     if (isset($data['id']) && (int)$data['id'] > 0) {

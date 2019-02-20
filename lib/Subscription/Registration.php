@@ -2,6 +2,7 @@
 namespace MailPoet\Subscription;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberActions;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Registration {
 
@@ -22,7 +23,7 @@ class Registration {
   function extendForm() {
     $label = $this->settings->get(
       'subscribe.on_register.label',
-      __('Yes, please add me to your mailing list.', 'mailpoet')
+      WPFunctions::get()->__('Yes, please add me to your mailing list.', 'mailpoet')
     );
 
     print '<p class="registration-form-mailpoet">

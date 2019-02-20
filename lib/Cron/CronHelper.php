@@ -165,7 +165,7 @@ class CronHelper {
   static function getSiteUrl($site_url = false) {
     // additional check for some sites running inside a virtual machine or behind
     // proxy where there could be different ports (e.g., host:8080 => guest:80)
-    $site_url = ($site_url) ? $site_url : home_url();
+    $site_url = ($site_url) ? $site_url : WPFunctions::get()->homeUrl();
     $parsed_url = parse_url($site_url);
     $scheme = '';
     if ($parsed_url['scheme'] === 'https') {

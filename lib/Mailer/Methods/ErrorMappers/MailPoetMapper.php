@@ -7,7 +7,10 @@ use MailPoet\Services\Bridge\API;
 use InvalidArgumentException;
 use MailPoet\Util\Helpers;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class MailPoetMapper {
   use ConnectionErrorMapperTrait;
@@ -18,7 +21,7 @@ class MailPoetMapper {
     return new MailerError(
       MailerError::OPERATION_SEND,
       MailerError::LEVEL_HARD,
-      __('MailPoet API key is invalid!', 'mailpoet')
+      WPFunctions::get()->__('MailPoet API key is invalid!', 'mailpoet')
     );
   }
 
@@ -31,11 +34,11 @@ class MailPoetMapper {
 
     switch ($result_code) {
       case API::RESPONSE_CODE_NOT_ARRAY:
-        $message = __('JSON input is not an array', 'mailpoet');
+        $message = WPFunctions::get()->__('JSON input is not an array', 'mailpoet');
         break;
       case API::RESPONSE_CODE_PAYLOAD_ERROR:
         $result_parsed = json_decode($result['message'], true);
-        $message = __('Error while sending.', 'mailpoet');
+        $message = WPFunctions::get()->__('Error while sending.', 'mailpoet');
         if (!is_array($result_parsed)) {
           $message .= ' ' . $result['message'];
           break;
@@ -48,7 +51,7 @@ class MailPoetMapper {
         }
         break;
       case API::RESPONSE_CODE_TEMPORARY_UNAVAILABLE:
-        $message = __('Email service is temporarily not available, please try again in a few minutes.', 'mailpoet');
+        $message = WPFunctions::get()->__('Email service is temporarily not available, please try again in a few minutes.', 'mailpoet');
         $retry_interval = self::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL;
         break;
       case API::RESPONSE_CODE_CAN_NOT_SEND:
@@ -71,7 +74,7 @@ class MailPoetMapper {
     $errors = [];
     foreach ($result_parsed as $result_error) {
       if (!is_array($result_error) || !isset($result_error['index']) || !isset($subscribers[$result_error['index']])) {
-        throw new InvalidArgumentException( __('Invalid MSS response format.', 'mailpoet'));
+        throw new InvalidArgumentException( WPFunctions::get()->__('Invalid MSS response format.', 'mailpoet'));
       }
       $subscriber_errors = [];
       if (isset($result_error['errors']) && is_array($result_error['errors'])) {

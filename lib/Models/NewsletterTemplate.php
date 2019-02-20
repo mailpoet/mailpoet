@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Models;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -22,10 +23,10 @@ class NewsletterTemplate extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
     ));
     $this->addValidations('body', array(
-      'required' => __('The template body cannot be empty.', 'mailpoet')
+      'required' => WPFunctions::get()->__('The template body cannot be empty.', 'mailpoet')
     ));
   }
 

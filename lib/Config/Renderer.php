@@ -7,7 +7,10 @@ use Twig_Environment as TwigEnv;
 use Twig_Lexer as TwigLexer;
 use Twig_Loader_Filesystem as TwigFileSystem;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class Renderer {
   protected $cache_path;
@@ -109,7 +112,7 @@ class Renderer {
       return $this->renderer->render($template, $context);
     } catch (\RuntimeException $e) {
       throw new \Exception(sprintf(
-        __('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
+        WPFunctions::get()->__('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
         $template,
         $this->cache_path,
         $e->getMessage()

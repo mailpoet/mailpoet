@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class ModularStyleStories {
 
@@ -15,7 +18,7 @@ class ModularStyleStories {
 
   function get() {
     return array(
-      'name' => __("Modular Style Stories", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Modular Style Stories", 'mailpoet'),
       'categories' => json_encode(array('notification', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

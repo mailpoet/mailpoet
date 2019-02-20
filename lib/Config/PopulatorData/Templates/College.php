@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config\PopulatorData\Templates;
+use MailPoet\WP\Functions as WPFunctions;
 
 class College {
 
@@ -14,7 +15,7 @@ class College {
 
   function get() {
     return array(
-      'name' => __("College", 'mailpoet'),
+      'name' => WPFunctions::get()->__("College", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

@@ -112,6 +112,8 @@ if (!defined('ABSPATH')) exit;
  * @property string|null $updated_at
  * @property string|null $id
  */
+use MailPoet\WP\Functions as WPFunctions;
+
 class Model extends \Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;
 
@@ -214,7 +216,7 @@ class Model extends \Sudzy\ValidModel {
             $column = $matches[1];
             $this->setError(
               sprintf(
-                __('Another record already exists. Please specify a different "%1$s".', 'mailpoet'),
+                WPFunctions::get()->__('Another record already exists. Please specify a different "%1$s".', 'mailpoet'),
                 $column
               ),
               Model::DUPLICATE_RECORD

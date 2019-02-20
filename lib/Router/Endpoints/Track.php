@@ -11,6 +11,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -78,8 +79,8 @@ class Track {
   }
 
   function terminate($code) {
-    status_header($code);
-    get_template_part((string)$code);
+    WPFunctions::get()->statusHeader($code);
+    WPFunctions::get()->getTemplatePart((string)$code);
     exit;
   }
 }

@@ -1,21 +1,23 @@
 <?php
 namespace MailPoet\Util;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Url {
   static function getCurrentUrl() {
     $home_url = parse_url(home_url());
-    $query_args = add_query_arg(null, null);
+    $query_args = WPFunctions::get()->addQueryArg(null, null);
 
-    // Remove home_url() path from add_query_arg
+    // Remove WPFunctions::get()->homeUrl() path from add_query_arg
     if (isset($home_url['path'])) {
       $query_args = str_replace($home_url['path'], null, $query_args);
     }
 
-    return home_url($query_args);
+    return WPFunctions::get()->homeUrl($query_args);
   }
 
   static function redirectTo($url = null) {
-    wp_safe_redirect($url);
+    WPFunctions::get()->wpSafeRedirect($url);
     exit();
   }
 
@@ -23,17 +25,17 @@ class Url {
     // check mailpoet_redirect parameter
     $referer = (isset($_POST['mailpoet_redirect'])
       ? $_POST['mailpoet_redirect']
-      : wp_get_referer()
+      : WPFunctions::get()->wpGetReferer()
     );
 
     // fallback: home_url
     if (!$referer) {
-      $referer = home_url();
+      $referer = WPFunctions::get()->homeUrl();
     }
 
     // append extra params to url
     if (!empty($params)) {
-      $referer = add_query_arg($params, $referer);
+      $referer = WPFunctions::get()->addQueryArg($params, $referer);
     }
 
     self::redirectTo($referer);
@@ -42,7 +44,7 @@ class Url {
 
   static function redirectWithReferer($url = null) {
     $current_url = self::getCurrentUrl();
-    $url = add_query_arg(
+    $url = WPFunctions::get()->addQueryArg(
       array(
         'mailpoet_redirect' => urlencode($current_url)
       ),

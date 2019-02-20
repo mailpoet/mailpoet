@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config\PopulatorData\Templates;
+use MailPoet\WP\Functions as WPFunctions;
 
 class WideStoryLayout {
 
@@ -14,7 +15,7 @@ class WideStoryLayout {
 
   function get() {
     return array(
-      'name' => __("Wide Story Layout", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Wide Story Layout", 'mailpoet'),
       'categories' => json_encode(array('notification', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

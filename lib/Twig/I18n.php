@@ -3,6 +3,7 @@
 namespace MailPoet\Twig;
 
 use MailPoet\Config\Localizer;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -78,7 +79,7 @@ class I18n extends \Twig_Extension {
   function date() {
     $args = func_get_args();
     $date = (isset($args[0])) ? $args[0] : null;
-    $date_format = (isset($args[1])) ? $args[1] : get_option('date_format');
+    $date_format = (isset($args[1])) ? $args[1] : WPFunctions::get()->getOption('date_format');
 
     if (empty($date)) return;
 
@@ -89,7 +90,7 @@ class I18n extends \Twig_Extension {
       $date = strtotime($date);
     }
 
-    return get_date_from_gmt(date('Y-m-d H:i:s', $date), $date_format);
+    return WPFunctions::get()->getDateFromGmt(date('Y-m-d H:i:s', $date), $date_format);
   }
 
   private function setTextDomain($args = array()) {

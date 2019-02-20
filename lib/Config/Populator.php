@@ -15,6 +15,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -121,7 +122,7 @@ class Populator {
   }
 
   private function createMailPoetPage() {
-    $pages = get_posts(array(
+    $pages = WPFunctions::get()->getPosts(array(
       'posts_per_page' => 1,
       'orderby' => 'date',
       'order' => 'DESC',
@@ -153,7 +154,7 @@ class Populator {
   }
 
   private function createDefaultSettings() {
-    $current_user = wp_get_current_user();
+    $current_user = WPFunctions::get()->wpGetCurrentUser();
 
     // set cron trigger option to default method
     if (!$this->settings->fetch(CronTrigger::SETTING_NAME)) {
@@ -178,8 +179,8 @@ class Populator {
       $this->settings->set('signup_confirmation', array(
         'enabled' => true,
         'from' => array(
-          'name' => get_option('blogname'),
-          'address' => get_option('admin_email')
+          'name' => WPFunctions::get()->getOption('blogname'),
+          'address' => WPFunctions::get()->getOption('admin_email')
         ),
         'reply_to' => $sender
       ));
@@ -235,9 +236,9 @@ class Populator {
     if (Segment::where('type', 'default')->count() === 0) {
       $this->default_segment = Segment::create();
       $this->default_segment->hydrate([
-        'name' => __('My First List', 'mailpoet'),
+        'name' => WPFunctions::get()->__('My First List', 'mailpoet'),
         'description' =>
-          __('This list is automatically created when you install MailPoet.', 'mailpoet')
+          WPFunctions::get()->__('This list is automatically created when you install MailPoet.', 'mailpoet')
       ]);
       $this->default_segment->save();
     }

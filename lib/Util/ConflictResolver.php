@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Util;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class ConflictResolver {
   public $permitted_assets_locations = array(
     'styles' => array(
@@ -28,21 +30,21 @@ class ConflictResolver {
   );
 
   function init() {
-    add_action(
+    WPFunctions::get()->addAction(
       'mailpoet_conflict_resolver_router_url_query_parameters',
       array(
         $this,
         'resolveRouterUrlQueryParametersConflict'
       )
     );
-    add_action(
+    WPFunctions::get()->addAction(
       'mailpoet_conflict_resolver_styles',
       array(
         $this,
         'resolveStylesConflict'
       )
     );
-    add_action(
+    WPFunctions::get()->addAction(
       'mailpoet_conflict_resolver_scripts',
       array(
         $this,
@@ -58,7 +60,7 @@ class ConflictResolver {
 
   function resolveStylesConflict() {
     $_this = $this;
-    $_this->permitted_assets_locations['styles'] = apply_filters('mailpoet_conflict_resolver_whitelist_style', $_this->permitted_assets_locations['styles']);
+    $_this->permitted_assets_locations['styles'] = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_style', $_this->permitted_assets_locations['styles']);
     // unload all styles except from the list of allowed
     $dequeue_styles = function() use($_this) {
       global $wp_styles;
@@ -68,19 +70,19 @@ class ConflictResolver {
         if (empty($wp_styles->registered[$wp_style])) continue;
         $registered_style = $wp_styles->registered[$wp_style];
         if (!preg_match('!' . implode('|', $_this->permitted_assets_locations['styles']) . '!i', $registered_style->src)) {
-          wp_dequeue_style($wp_style);
+          WPFunctions::get()->wpDequeueStyle($wp_style);
         }
       }
     };
-    add_action('wp_print_styles', $dequeue_styles, PHP_INT_MAX);
-    add_action('admin_print_styles', $dequeue_styles, PHP_INT_MAX);
-    add_action('admin_print_footer_scripts', $dequeue_styles, PHP_INT_MAX);
-    add_action('admin_footer', $dequeue_styles, PHP_INT_MAX);
+    WPFunctions::get()->addAction('wp_print_styles', $dequeue_styles, PHP_INT_MAX);
+    WPFunctions::get()->addAction('admin_print_styles', $dequeue_styles, PHP_INT_MAX);
+    WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_styles, PHP_INT_MAX);
+    WPFunctions::get()->addAction('admin_footer', $dequeue_styles, PHP_INT_MAX);
   }
 
   function resolveScriptsConflict() {
     $_this = $this;
-    $_this->permitted_assets_locations['scripts'] = apply_filters('mailpoet_conflict_resolver_whitelist_script', $_this->permitted_assets_locations['scripts']);
+    $_this->permitted_assets_locations['scripts'] = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_script', $_this->permitted_assets_locations['scripts']);
     // unload all scripts except from the list of allowed
     $dequeue_scripts = function() use($_this) {
       global $wp_scripts;
@@ -88,12 +90,12 @@ class ConflictResolver {
         if (empty($wp_scripts->registered[$wp_script])) continue;
         $registered_script = $wp_scripts->registered[$wp_script];
         if (!preg_match('!' . implode('|', $_this->permitted_assets_locations['scripts']) . '!i', $registered_script->src)) {
-          wp_dequeue_script($wp_script);
+          WPFunctions::get()->wpDequeueScript($wp_script);
         }
       }
     };
-    add_action('wp_print_scripts', $dequeue_scripts, PHP_INT_MAX);
-    add_action('admin_print_footer_scripts', $dequeue_scripts, PHP_INT_MAX);
-    add_action('admin_footer', $dequeue_scripts, PHP_INT_MAX);
+    WPFunctions::get()->addAction('wp_print_scripts', $dequeue_scripts, PHP_INT_MAX);
+    WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_scripts, PHP_INT_MAX);
+    WPFunctions::get()->addAction('admin_footer', $dequeue_scripts, PHP_INT_MAX);
   }
 }

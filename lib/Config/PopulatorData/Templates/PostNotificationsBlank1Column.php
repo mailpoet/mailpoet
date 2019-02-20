@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
+
 
 class PostNotificationsBlank1Column {
 
@@ -19,7 +22,7 @@ class PostNotificationsBlank1Column {
 
   function get() {
     return array(
-      'name' => __("Post Notifications: Blank 1 Column", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Post Notifications: Blank 1 Column", 'mailpoet'),
       'categories' => json_encode(array('notification')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -58,7 +61,7 @@ class PostNotificationsBlank1Column {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser.</a>", 'mailpoet'),
+                    "text" => WPFunctions::get()->__("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser.</a>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -122,7 +125,7 @@ class PostNotificationsBlank1Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Check Out Our New Blog Posts! </strong></h1>\n<p>&nbsp;</p>\n<p>MailPoet can <span style=\"line-height: 1.6em; background-color: inherit;\"><em>automatically</em> </span><span style=\"line-height: 1.6em; background-color: inherit;\">send your new blog posts to your subscribers.</span></p>\n<p><span style=\"line-height: 1.6em; background-color: inherit;\"></span></p>\n<p><span style=\"line-height: 1.6em; background-color: inherit;\">Below, you'll find three recent posts, which are displayed automatically, thanks to the <em>Automatic Latest Content</em> widget, which can be found in the right sidebar, under <em>Content</em>.</span></p>\n<p><span style=\"line-height: 1.6em; background-color: inherit;\"></span></p>\n<p><span style=\"line-height: 1.6em; background-color: inherit;\">To edit the settings and styles of your post, simply click on a post below.</span></p>", 'mailpoet')
+                    "text" => WPFunctions::get()->__("<h1 style=\"text-align: center;\"><strong>Check Out Our New Blog Posts! </strong></h1>\n<p>&nbsp;</p>\n<p>MailPoet can <span style=\"line-height: 1.6em; background-color: inherit;\"><em>automatically</em> </span><span style=\"line-height: 1.6em; background-color: inherit;\">send your new blog posts to your subscribers.</span></p>\n<p><span style=\"line-height: 1.6em; background-color: inherit;\"></span></p>\n<p><span style=\"line-height: 1.6em; background-color: inherit;\">Below, you'll find three recent posts, which are displayed automatically, thanks to the <em>Automatic Latest Content</em> widget, which can be found in the right sidebar, under <em>Content</em>.</span></p>\n<p><span style=\"line-height: 1.6em; background-color: inherit;\"></span></p>\n<p><span style=\"line-height: 1.6em; background-color: inherit;\">To edit the settings and styles of your post, simply click on a post below.</span></p>", 'mailpoet')
                   ),
                   array(
                     "type" => "divider",
@@ -163,14 +166,14 @@ class PostNotificationsBlank1Column {
             "imageFullWidth" => false,
             "featuredImagePosition" => "alternate",
             "showAuthor" => "no",
-            "authorPrecededBy" => __("Author:", 'mailpoet'),
+            "authorPrecededBy" => WPFunctions::get()->__("Author:", 'mailpoet'),
             "showCategories" => "no",
-            "categoriesPrecededBy" => __("Categories:", 'mailpoet'),
+            "categoriesPrecededBy" => WPFunctions::get()->__("Categories:", 'mailpoet'),
             "readMoreType" => "button",
             "readMoreText" => "Read more",
             "readMoreButton" => array(
               "type" => "button",
-              "text" => __("Read the post", 'mailpoet'),
+              "text" => WPFunctions::get()->__("Read the post", 'mailpoet'),
               "url" => "[postLink]",
               "styles" => array(
                 "block" => array(
@@ -283,7 +286,7 @@ class PostNotificationsBlank1Column {
                   ),
                   array(
                     "type" => "footer",
-                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
+                    "text" => WPFunctions::get()->__("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
