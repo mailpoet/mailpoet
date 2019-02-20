@@ -52,16 +52,16 @@ $two-column-wider-column-width: $newsletter-width / 3 - $column-margin * 2;
     margin-bottom: 0;
     width: $column-margin + $one-column-width + $column-margin;
   }
-  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal, 
-  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_posts_block > .mailpoet_posts_container > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal, 
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal,
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_posts_block > .mailpoet_posts_container > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal,
   & > .mailpoet_container_block > .mailpoet_container .mailpoet_automated_latest_content_block_posts .mailpoet_container_horizontal {
-    & > .mailpoet_block:first-child:nth-last-child(2), 
+    & > .mailpoet_block:first-child:nth-last-child(2),
     & > .mailpoet_block:first-child:nth-last-child(2) ~ .mailpoet_block {
 
 
       width: $column-margin + $two-column-width + $column-margin;
     }
-    & > .mailpoet_block:first-child:nth-last-child(3), 
+    & > .mailpoet_block:first-child:nth-last-child(3),
     & > .mailpoet_block:first-child:nth-last-child(3) ~ .mailpoet_block {
 
 
@@ -69,12 +69,12 @@ $two-column-wider-column-width: $newsletter-width / 3 - $column-margin * 2;
     }
   }
 
-  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_1_2 > .mailpoet_container_block:first-child, 
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_1_2 > .mailpoet_container_block:first-child,
   & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_2_1 > .mailpoet_container_block:nth-child(2) {
     width: $column-margin + $three-column-width + $column-margin;
   }
 
-  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_2_1 > .mailpoet_container_block:first-child, 
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_2_1 > .mailpoet_container_block:first-child,
   & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal.mailpoet_irregular_width_contents_container.column_layout_1_2 > .mailpoet_container_block:nth-child(2) {
     width: $column-margin + $two-column-wider-column-width + $column-margin;
   }
