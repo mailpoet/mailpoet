@@ -1,4 +1,4 @@
-.mailpoet_listing_loading tbody tr, 
+.mailpoet_listing_loading tbody tr,
 .mailpoet_form_loading tbody tr {
   opacity: 0.2;
 }
@@ -16,7 +16,7 @@
     white-space: nowrap;
   }
 
-  thead .mailpoet-check-column, 
+  thead .mailpoet-check-column,
   tfoot .mailpoet-check-column {
     padding: 10px 0 0 3px;
     width: 2.2em;
@@ -29,14 +29,14 @@
     padding: 11px 0 0 3px;
   }
 
-  thead th.column-primary, 
+  thead th.column-primary,
   tfoot th.column-primary {
     width: 25em;
   }
 
 
   @media screen and (max-width: 782px) {
-    thead th.column-primary, 
+    thead th.column-primary,
     tfoot th.column-primary {
       width: 100%;
     }

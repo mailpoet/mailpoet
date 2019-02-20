@@ -29,8 +29,8 @@ $draggable-widget-z-index: 2;
     content: "\f141";
   }
 }
-.mailpoet_drop_marker.mailpoet_drop_marker_middle, 
-.mailpoet_drop_marker.mailpoet_drop_marker_first.mailpoet_drop_marker_after, 
+.mailpoet_drop_marker.mailpoet_drop_marker_middle,
+.mailpoet_drop_marker.mailpoet_drop_marker_first.mailpoet_drop_marker_after,
 .mailpoet_drop_marker.mailpoet_drop_marker_last.mailpoet_drop_marker_before {
   margin-top: -1 * ($marker-width / 2);
 }

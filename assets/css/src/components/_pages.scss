@@ -85,7 +85,7 @@ Please add custom styles to pages_custom.styl
     color: #23282d;
   }
 
-  .about-description, 
+  .about-description,
   .about-text {
     margin-top: 1.4em;
     font-weight: 400;
@@ -139,7 +139,7 @@ Please add custom styles to pages_custom.styl
     }
   }
 
-  .two-col .col:nth-of-type(2n), 
+  .two-col .col:nth-of-type(2n),
   .three-col .col:nth-of-type(3n) {
     margin-right: 0;
   }
@@ -280,7 +280,7 @@ Please add custom styles to pages_custom.styl
   @media screen and (max-width: 500px) {
     margin-right: 20px;
     margin-left: 10px;
-    h1, 
+    h1,
     .about-text {
       margin-right: 0;
     }
@@ -293,7 +293,7 @@ Please add custom styles to pages_custom.styl
       width: 100%;
       text-align: center;
     }
-    .two-col .col, 
+    .two-col .col,
     .three-col .col {
       width: 100% !important;
       float: none !important;
