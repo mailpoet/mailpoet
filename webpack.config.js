@@ -396,12 +396,6 @@ const testConfig = {
       'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
     },
   },
-  resolveLoader: {
-    alias: {
-      // replace 'amd-inject-loader' with a wrapper fixed for Webpack 4
-      'amd-inject-loader': path.join(__dirname, 'assets/js/src/amd-inject-loader-fixed.js'),
-    }
-  },
   externals: {
     'jquery': 'jQuery',
     'tinymce': 'tinymce',

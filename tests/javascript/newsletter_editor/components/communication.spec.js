@@ -4,7 +4,9 @@ const sinon = global.sinon;
 
 import EditorApplication from 'newsletter_editor/App';
 import Communication from 'newsletter_editor/components/communication';
-import CommunicationInjector from 'amd-inject-loader!newsletter_editor/components/communication';
+
+/* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
+import CommunicationInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/components/communication';
 
   describe('getPostTypes', function () {
     it('fetches post types from the server', function () {
@@ -23,7 +25,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             }
           }
         }
-      });
+      }).default;
       module.getPostTypes().done(function (types) {
         expect(types).to.eql(['val1', 'val2']);
       });
@@ -38,7 +40,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: mock
           }
         }
-      });
+      }).default;
       deferred.resolve({
         post: 'val1',
         page: 'val2'
@@ -69,7 +71,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: spy
           }
         }
-      });
+      }).default;
 
       module.getTaxonomies('post');
       expect(spy.args[0][0].data.postType).to.equal('post');
@@ -90,7 +92,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             }
           }
         }
-      });
+      }).default;
       module.getTaxonomies('page').done(function (types) {
         expect(types).to.eql({ category: 'val1' });
       });
@@ -105,7 +107,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: mock
           }
         }
-      });
+      }).default;
       deferred.resolve({ category: 'val1' });
       module.getTaxonomies('page');
       module.getTaxonomies('page');
@@ -130,7 +132,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: spy
           }
         }
-      });
+      }).default;
 
       module.getTerms({
         taxonomies: ['category', 'post_tag']
@@ -154,7 +156,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             }
           }
         }
-      });
+      }).default;
       module.getTerms({ taxonomies: ['category'] }).done(function (types) {
         expect(types).to.eql({ term1: 'term1val1', term2: 'term2val2' });
       });
@@ -169,7 +171,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: mock
           }
         }
-      });
+      }).default;
       deferred.resolve({ term1: 'term1val1', term2: 'term2val2' });
       module.getTerms({ taxonomies: ['category'] });
       module.getTerms({ taxonomies: ['category'] });
@@ -194,7 +196,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: spy
           }
         }
-      });
+      }).default;
 
       module.getPosts({
         type: 'posts',
@@ -222,7 +224,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             }
           }
         }
-      });
+      }).default;
       module.getPosts().done(function (posts) {
         expect(posts).to.eql([{ post_title: 'title 1' }, { post_title: 'post title 2' }]);
       });
@@ -237,7 +239,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: mock
           }
         }
-      });
+      }).default;
       deferred.resolve({
         type: 'posts',
         search: 'some search term'
@@ -265,7 +267,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: spy
           }
         }
-      });
+      }).default;
 
       module.getTransformedPosts({
         type: 'posts',
@@ -293,7 +295,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             }
           }
         }
-      });
+      }).default;
       module.getTransformedPosts().done(function (posts) {
         expect(posts).to.eql([{ type: 'text', text: 'something' }, { type: 'text', text: 'something else' }]);
       });
@@ -308,7 +310,7 @@ import CommunicationInjector from 'amd-inject-loader!newsletter_editor/component
             post: mock
           }
         }
-      });
+      }).default;
       deferred.resolve({
         type: 'posts',
         posts: [1, 3]
