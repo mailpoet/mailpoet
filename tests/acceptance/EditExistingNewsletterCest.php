@@ -2,48 +2,32 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Test\DataFactories\Newsletter;
+
+require_once __DIR__ . '/../DataFactories/Newsletter.php';
+
 class EditExistingNewsletterCest {
 
   function editExistingNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Edit a standard newsletter');
 
-    $newsletter_title = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
+    $newsletterTitle = 'Unedited Standard Title';
+    $editedNewsletterTitle = "Edited Standard Title";
+    $titleElement = '[data-automation-id="newsletter_title"]';
+    //$saveDraftButton = '[data-automation-id="save-as-draft-and-close"]';
 
+    $standardNewsletter = new Newsletter();
+    $newsletter = $standardNewsletter->withSubject($newsletterTitle)->create();
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
-
-    // step 1 - select notification type
-    $I->seeInCurrentUrl('#/new');
-    $I->click('[data-automation-id="create_standard"]');
-
-    // step 2 - select template
-    $standard_template = '[data-automation-id="select_template_0"]';
-    $I->waitForElement($standard_template);
-    $I->see('Newsletters', ['css' => 'a.current']);
-    $I->seeInCurrentUrl('#/template');
-    $I->click($standard_template);
-
-    // step 3 - design newsletter (update subject)
-    $title_element = '[data-automation-id="newsletter_title"]';
-    $I->waitForElement($title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
-    $I->fillField($title_element, $newsletter_title);
+    $I->waitForText($newsletterTitle);
+    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
+    $I->waitForElement($titleElement);
+    $I->fillField($titleElement, $editedNewsletterTitle);
     $I->click('Next');
-
-    // step 4 - Edit sender, choose list, and save
-    $send_form_element = '[data-automation-id="newsletter_send_form"]';
-    $I->waitForElement($send_form_element);
-    $I->seeInCurrentUrl('mailpoet-newsletters#/send/');
-    $I->fillField('#field_sender_name', 'Test sender');
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->waitForText('This subscriber segment');
     $I->click('Save as draft and close');
-    $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
-
-    // step 5 - Edit this newsletter!
-    $I->moveMouseOver(['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
-    $I->makeScreenshot('after_mouse_over');
-    $I->click('Edit', ['css' => '.mailpoet_listing_table *[data-automation-id="listing_item_1"]']);
-    $I->seeInCurrentUrl('page=mailpoet-newsletter-editor');
+    $I->amOnMailpoetPage('Emails');
+    $I->waitForText($editedNewsletterTitle);
   }
 }
