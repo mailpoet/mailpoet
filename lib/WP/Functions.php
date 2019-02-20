@@ -84,6 +84,10 @@ class Functions {
     return call_user_func_array('wp_encode_emoji', func_get_args());
   }
 
+  function currentUserCan() {
+    return call_user_func_array('current_user_can', func_get_args());
+  }
+
   function getImageInfo($id) {
     /*
      * In some cases wp_get_attachment_image_src ignore the second parameter
