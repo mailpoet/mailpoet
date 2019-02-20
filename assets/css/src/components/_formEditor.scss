@@ -30,8 +30,6 @@ $handle_icon: '../../img/handle.png';
   left: 12px;
   bottom: 12px;
   background: transparent;
-  -webkit-transform: skew(-5deg) rotate(-5deg);
-  -ms-transform: skew(-5deg) rotate(-5deg);
   transform: skew(-5deg) rotate(-5deg);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
   z-index: -1;
@@ -40,8 +38,6 @@ $handle_icon: '../../img/handle.png';
 #mailpoet_form_editor:after {
   left: auto;
   right: 12px;
-  -webkit-transform: skew(5deg) rotate(5deg);
-  -ms-transform: skew(5deg) rotate(5deg);
   transform: skew(5deg) rotate(5deg);
 }
 
@@ -160,7 +156,6 @@ $handle_icon: '../../img/handle.png';
   height: 30px;
   line-height: 30px;
   padding: 0;
-  display: -moz-inline-box;
   display: inline-block;
   *display: inline;
   *float: left;
@@ -275,8 +270,6 @@ $handle_icon: '../../img/handle.png';
   padding: 8px 10px;
   top: 0;
   position: relative;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-decoration: none !important;
   content: '\f142';
 }
