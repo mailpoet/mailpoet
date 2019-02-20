@@ -1,0 +1,334 @@
+$modal_title_color: #cfcfcf;
+$modal_highlight_background_color: #f1f1f1;
+$modal_background_color: #fff;
+$modal_popup_margin: 30px;
+$modal_popup_margin_mobile: 10px;
+$modal_popup_padding: 30px;
+$modal_popup_padding_mobile: 12px;
+$modal_close_button_size: 23px;
+$overlay_background_color: rgba(0, 0, 0, 0.6);
+body.mailpoet_modal_opened {
+  overflow: hidden;
+}
+.mailpoet_modal_overlay {
+  height: 100%;
+  left: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100000;
+  background-color: $overlay_background_color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $modal_popup_margin;
+  box-sizing: border-box;
+}
+
+.mailpoet_modal_highlight {
+  pointer-events: none;
+  background-color: $modal_highlight_background_color;
+  position: relative;
+  z-index: 100001 !important;
+  box-shadow: 0px 0px 20px 2px rgba(#fff, 75%);
+}
+.mailpoet_modal_overlay.mailpoet_overlay_hidden {
+  background-color: transparent;
+}
+.mailpoet_modal_overlay.mailpoet_overlay_loading {
+  background-color: $overlay_background_color !important;
+  display: flex !important;
+}
+.mailpoet_popup {
+  z-index: 25;
+  max-width: 100%;
+  margin: auto;
+  animation: mailpoet_popup_fadein 0.5s;
+}
+
+@-webkit-keyframes mailpoet_popup_fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes mailpoet_popup_fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes mailpoet_popup_fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes mailpoet_popup_fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mailpoet_popup_fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.mailpoet_popup_wrapper {
+  display: flex;
+  flex-flow: column;
+  background-color: $modal_background_color;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  border-radius: 4px;
+  box-shadow: 1px 2px 4px #343434;
+  box-sizing: border-box;
+  padding: $modal_popup_padding;
+}
+
+.mailpoet_overlay_hidden .mailpoet_popup_wrapper {
+  border: 1px solid #333;
+}
+
+.mailpoet_popup_title h2 {
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 29px;
+  margin: 0, $modal_close_button_size + 20 0 0;
+}
+
+.mailpoet_popup_body {
+  flex-grow: 1;
+  position: relative;
+  margin-top: 20px;
+
+  .button + .button {
+    margin-left: 10px;
+  }
+}
+
+.mailpoet_popup_has_title .mailpoet_popup_body {
+  margin-top: 30px;
+}
+.mailpoet_modal_overlay.mailpoet_panel_overlay {
+  top: 32px;
+  overflow: hidden;
+}
+
+.mailpoet_panel {
+  display: none;
+  position: fixed;
+  z-index: 100002;
+  top: 0;
+  bottom: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  transition: margin 350ms ease-out;
+}
+
+.mailpoet_panel_wrapper {
+  background-color: #f1f1f1;
+  border: 1px solid #e1e1e1;
+  border-top: 0 none;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  top: 0;
+  z-index: 0;
+}
+
+.mailpoet_panel_title {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  height: 0;
+}
+
+.mailpoet_panel_title h2 {
+  color: $modal_title_color;
+  border-left: 1px solid #444;
+  border-right: 1px solid #444;
+  font-size: 1em;
+  font-weight: normal;
+  margin: 0;
+  padding: 0 30px 0 10px;
+  font-family: "Lucida Grande", Verdana, Arial, sans-serif;
+  line-height: 32px;
+}
+
+.mailpoet_panel_body {
+  padding: 10px 10px 36px 10px;
+}
+.mailpoet_modal_close {
+  cursor: pointer;
+  position: absolute;
+  overflow: hidden;
+  padding: 0;
+  z-index: 2;
+  outline: 0 none;
+
+  svg {
+    opacity: 0.5;
+    stroke: #979797;
+
+    &:hover {
+      stroke: #636363;
+    }
+  }
+}
+
+.mailpoet_popup .mailpoet_modal_close {
+  right: $modal_popup_padding;
+  top: $modal_popup_padding;
+  width: $modal_close_button_size;
+  height: $modal_close_button_size;
+  padding: 3px 0;
+}
+
+.mailpoet_panel .mailpoet_modal_close {
+  width: 16px;
+  height: 16px;
+  right: 20px;
+  top: 20px;
+  padding: 2px 0;
+}
+
+.mailpoet_modal_close:focus {
+  outline: 0 none;
+}
+.mailpoet_align_left {
+  margin: 0;
+  text-align: left;
+}
+
+.mailpoet_align_center {
+  margin: 0;
+  text-align: center;
+}
+
+.mailpoet_align_right {
+  margin: 0;
+  text-align: right;
+}
+
+@media screen and (max-width: 782px) {
+  .mailpoet_modal_overlay {
+    padding: $modal_popup_margin_mobile;
+  }
+
+  .mailpoet_popup {
+    width: 100%;
+    min-width: auto !important;
+  }
+
+  .mailpoet_popup_wrapper {
+    padding: $modal_popup_padding_mobile;
+  }
+
+  .mailpoet_popup_title h2 {
+    margin-right: $modal_close_button_size + 10;
+  }
+
+  .mailpoet_popup .mailpoet_modal_close {
+    top: $modal_popup_padding_mobile;
+    right: $modal_popup_padding_mobile;
+  }
+
+  .mailpoet_modal_overlay.mailpoet_panel_overlay {
+    top: 46px;
+  }
+
+  .mailpoet_panel_body {
+    padding-bottom: 52px;
+  }
+}
+
+.mailpoet_loading {
+  height: 32px;
+  width: 150px;
+  display: flex;
+  flex-direction: row;
+}
+
+.mailpoet_modal_loading {
+  animation-direction: linear;
+  animation-duration: 1.9500000000000002s;
+  animation-iteration-count: infinite;
+  animation-name: bounce_mailpoet_modal_loading;
+  border-radius: 21px;
+  background-color: #E01D4E;
+  height: 32px;
+  margin-left: 17px;
+  width: 32px;
+}
+
+.mailpoet_modal_loading_1, .mailpoet_modal_loading_1 {
+  animation-delay: 0.39s;
+}
+
+.mailpoet_modal_loading_2, .mailpoet_modal_loading_2 {
+  animation-delay: 0.9099999999999999s;
+}
+
+.mailpoet_modal_loading_3, .mailpoet_modal_loading_3 {
+  animation-delay: 1.1700000000000002s;
+}
+
+@-webkit-keyframes bounce_mailpoet_modal_loading {
+  0%,
+  50% {
+    background-color: #064E6D;
+  }
+}
+
+@-moz-keyframes bounce_mailpoet_modal_loading {
+  0%,
+  50% {
+    background-color: #064E6D;
+  }
+}
+
+@-ms-keyframes bounce_mailpoet_modal_loading {
+  0%,
+  50% {
+    background-color: #064E6D;
+  }
+}
+
+@-o-keyframes bounce_mailpoet_modal_loading {
+  0%,
+  50% {
+    background-color: #064E6D;
+  }
+}
+
+@keyframes bounce_mailpoet_modal_loading {
+  0%,
+  50% {
+    background-color: #064E6D;
+  }
+}

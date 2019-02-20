@@ -1,0 +1,135 @@
+#mailpoet_settings {
+  .mailpoet_tab_panel {
+    display: none;
+  }
+
+  .form-table th {
+    width: 20em;
+  }
+  .mailpoet_sending_methods {
+    margin: 25px 0 0 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    > li {
+      flex-grow: 1;
+      flex-shrink: 1;
+      display: flex;
+      flex-direction: column;
+      flex-basis: 0;
+      margin: 0 25px 25px 0;
+      background-color: #fff;
+      border: 2px solid #dcdcdc;
+      max-width: 500px;
+      .mailpoet_sending_method_description {
+        padding: 25px;
+        flex-grow: 1;
+        flex-shrink: 0;
+      }
+      &:hover:not(.mailpoet_active) {
+        border-color: #c5c5c5;
+      }
+    }
+    > li:last-child {
+      margin-right: 0;
+    }
+    h3 {
+      text-align: center;
+      height: 54px;
+      font-size: 1.5em;
+    }
+    .mailpoet_description {
+      font-size: 14px;
+    }
+    .mailpoet_status {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      background-color: #dcdcdc;
+      color: #fff;
+      text-overflow: ellipsis;
+      min-height: 2em;
+      padding: 1em;
+      span {
+        visibility: hidden;
+        font-weight: bold;
+      }
+      div {
+        margin-left: 1em;
+      }
+    }
+    .mailpoet_active {
+      border: 2px solid #088b00;
+      &.mailpoet_invalid_key {
+        border: 2px solid #dc3232;
+      }
+      .mailpoet_status {
+        background-color: #088b00;
+        &.mailpoet_invalid_key {
+          background-color: #dc3232;
+          .mailpoet_actions {
+            color: white;
+            a:not(.button-primary) {
+              color: white;
+            }
+          }
+        }
+        span {
+          visibility: visible;
+        }
+      }
+      #mailpoet_mta_activate {
+        visibility: hidden;
+      }
+    }
+    .mailpoet_actions {
+      color: initial;
+    }
+  }
+
+  .tooltip.dashicons.dashicons-editor-help {
+    line-height: 1.4;
+  }
+
+  ul.sending-method-benefits {
+    list-style-type: none;
+    margin-bottom: 2em;
+    margin-top: 2em;
+  }
+
+  .sending-free-plan-button {
+    background: #FF5301;
+    border-color: #e64c03;
+    text-shadow: 0 -1px 1px #e64c03;
+    box-shadow: 0 1px 0 #e64c03;
+    margin: 10px 0;
+    strong {
+      text-transform: uppercase;
+    }
+  }
+
+  .mailpoet_success_item::before {
+    content: '✔ ';
+  }
+
+  .mailpoet_error_item::before {
+    content: '✗ ';
+  }
+
+
+  @media screen and (max-width: 782px) {
+    .form-table th {
+      width: auto;
+    }
+
+    .mailpoet_sending_methods {
+      flex-flow: row wrap;
+      justify-content: space-around;
+      > li {
+        margin-right: 0;
+        flex-basis: auto;
+      }
+    }
+  }
+}

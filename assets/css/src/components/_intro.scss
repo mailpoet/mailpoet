@@ -1,0 +1,78 @@
+.mailpoet-intro-active #adminmenuback {
+  z-index: auto;
+}
+#adminmenuwrap.introjs-fixParent {
+  position: absolute;
+}
+
+#adminmenu li.introjs-showElement {
+  background: inherit;
+}
+
+.introjs-helperLayer {
+  border: none;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.introjs-tooltip {
+  min-width: 240px;
+  &[style*="top:"] {
+    margin-top: -8px;
+  }
+}
+
+.introjs-tooltip .introjs-tooltipbuttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.introjs-tooltip .button {
+  margin-top: 15px;
+  position: relative;
+
+  &:hover, &:focus {
+    z-index: 1;
+  }
+  &:focus {
+    height: 100%;
+    margin-bottom: -1px;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #5b9dd9;
+    }
+  }
+
+  &.introjs-hidden {
+    display: none;
+  }
+
+  &.introjs-skipbutton:not(.introjs-donebutton) {
+    margin-right: auto;
+
+    & + .button {
+      margin-left: 10px;
+    }
+  }
+
+  &.introjs-donebutton {
+    order: 1;
+  }
+
+  &.introjs-prevbutton {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &:not(.introjs-hidden) + .introjs-nextbutton, &.introjs-donebutton {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+  }
+}

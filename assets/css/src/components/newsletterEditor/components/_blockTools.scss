@@ -1,0 +1,216 @@
+$tool-inactive-color: #333333;
+$tool-inactive-secondary-color: #ffffff;
+$tool-hover-color: #bbbbbb;
+$tool-hover-secondary-color: #ffffff;
+$tool-active-color: #d2d2d4;
+$tool-active-secondary-color: #ffffff;
+
+$content-icon-size: 14px;
+$content-icon-size-with-padding: 24px;
+$column-icon-size: 15px;
+$column-icon-size-with-padding: 27px;
+
+.mailpoet_tools {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  z-index: 20;
+  text-align: right;
+  overflow: hidden;
+  text-align: center;
+  transform: translateX(-50%);
+  transition: visibility 0s linear 250ms;
+  visibility: hidden;
+
+  .mailpoet_tools_slider {
+    background: $editor-content-color;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    flex-direction: row;
+    padding: 3px 7px;
+    position: relative;
+    transform: translateY(100%);
+    transition: all 250ms cubic-bezier(0.42, 0, 0.58, 1);
+  }
+
+  .mailpoet_resize_active & .mailpoet_tools_slider,
+  &.mailpoet_display_tools .mailpoet_tools_slider {
+    transform: translateY(0);
+    transition: all 250ms cubic-bezier(0.42, 0, 0.58, 1), visibility 0s linear;
+    visibility: visible;
+  }
+
+  a {
+    vertical-align: top;
+  }
+
+  .mailpoet_container_horizontal + & {
+    bottom: auto;
+    left: 100%;
+    top: -2px;
+    transform: none;
+
+    .mailpoet_tools_slider {
+      background: $editor-column-color;
+      border-radius: 0 10px 10px 0;
+      flex-direction: column;
+      padding: 7px 3px;
+      transform: translateY(0) translateX(-100%);
+    }
+
+    &.mailpoet_display_tools,
+    .mailpoet_resize_active & {
+      z-index: 21;
+
+      .mailpoet_tools_slider {
+        transform: translateY(0) translateX(0);
+      }
+    }
+
+    .mailpoet_tool {
+      width: $column-icon-size-with-padding;
+      height: $column-icon-size-with-padding;
+      display: block;
+
+      svg {
+        height: $column-icon-size;
+        padding: 6px;
+        width: $column-icon-size;
+      }
+    }
+
+    .mailpoet_delete_block {
+      flex-direction: column;
+    }
+
+    .mailpoet_delete_block_activate {
+      display: block;
+      max-height: $column-icon-size-with-padding;
+      max-width: none;
+      opacity: 1;
+    }
+
+    .mailpoet_delete_block_confirm,
+    .mailpoet_delete_block_cancel {
+      display: block;
+      margin: 0;
+      width: 100%;
+    }
+
+    .mailpoet_delete_block_activated {
+      width: auto;
+      height: auto;
+      padding: 0 5px 3px 5px;
+
+      .mailpoet_delete_block_activate {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+      }
+
+      .mailpoet_delete_block_confirm,
+      .mailpoet_delete_block_cancel {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.mailpoet_tool {
+  display: inline-block;
+  width: $content-icon-size-with-padding;
+  height: $content-icon-size-with-padding;
+
+  svg {
+    fill: #fff;
+    height: $content-icon-size;
+    padding: 5px;
+    vertical-align: top;
+    width: $content-icon-size;
+  }
+
+  &:hover svg,
+  &:focus svg {
+    opacity: 0.7;
+  }
+
+  .mailpoet_delete_block_confirmation {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+  }
+}
+
+.mailpoet_delete_block {
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row-reverse;
+  line-height: 24px;
+  vertical-align: top;
+  white-space: nowrap;
+  @include animation-background-color();
+
+  .mailpoet_tool {
+    padding: 0;
+  }
+
+  .mailpoet_delete_block_activate {
+    max-width: $content-icon-size-with-padding;
+    display: inline-block;
+    opacity: 1;
+    @include animation-fade-in-and-scale-horizontally();
+  }
+
+  .mailpoet_delete_block_confirm,
+  .mailpoet_delete_block_cancel {
+    max-height: 0;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    display: inline-block;
+    @include animation-fade-in-and-scale-horizontally();
+  }
+}
+
+.mailpoet_delete_block_activated {
+  height: auto;
+  width: auto;
+  background-color: $warning-background-color;
+  padding: 0 5px;
+
+  .mailpoet_delete_block_activate {
+    overflow: hidden;
+    max-width: 0;
+    opacity: 0;
+  }
+
+  .mailpoet_delete_block_confirm,
+  .mailpoet_delete_block_cancel {
+    max-height: 20px;
+    max-width: 90px;
+    opacity: 1;
+  }
+
+  .mailpoet_delete_block_cancel {
+    margin-left: 3px;
+  }
+}
+
+.mailpoet_delete_block_confirm {
+  color: $warning-text-color;
+
+  &:hover {
+    color: $warning-text-color;
+    text-decoration: underline;
+  }
+}
+
+.mailpoet_delete_block_cancel {
+  color: $warning-alternate-text-color;
+
+  &:hover {
+    color: $warning-alternate-text-color;
+    text-decoration: underline;
+  }
+}
