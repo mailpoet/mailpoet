@@ -55,9 +55,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\Hooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Initializer::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Menu::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\RendererFactory::class)->setPublic(true);
     $container->register(\MailPoet\Config\Renderer::class)
       ->setPublic(true)
-      ->setFactory([__CLASS__, 'createRenderer']);
+      ->setFactory([new Reference(\MailPoet\Config\RendererFactory::class), 'getRenderer']);
     // Cron
     $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
@@ -114,11 +115,5 @@ class ContainerConfigurator implements IContainerConfigurator {
       return null;
     }
     return $container->get(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)->get($id);
-  }
-
-  static function createRenderer() {
-    $caching = !WP_DEBUG;
-    $debugging = WP_DEBUG;
-    return new \MailPoet\Config\Renderer($caching, $debugging);
   }
 }

@@ -18,16 +18,26 @@ if (!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
+
   private $access_control;
+
+  /** @var Renderer */
   private $renderer;
+
+  /** @var RendererFactory */
+  private $renderer_factory;
 
   /** @var ContainerInterface */
   private $container;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
-  function __construct(ContainerWrapper $container) {
+  function __construct(
+    ContainerWrapper $container,
+    RendererFactory $renderer_factory
+  ) {
       $this->container = $container;
+      $this->renderer_factory = $renderer_factory;
   }
 
   function init() {
@@ -109,15 +119,11 @@ class Initializer {
 
   function preInitialize() {
     try {
-      $this->setupRenderer();
+      $this->renderer = $this->renderer_factory->getRenderer();
       $this->setupWidget();
     } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
-  }
-
-  function setupRenderer() {
-    $this->renderer = $this->container->get(Renderer::class);
   }
 
   function setupWidget() {
