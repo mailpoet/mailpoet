@@ -4,14 +4,12 @@ namespace MailPoet\Config;
 
 use MailPoet\API\JSON\API;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WP\Notice as WPNotice;
-use MailPoetVendor\Psr\Container\ContainerInterface;
 
 if (!defined('ABSPATH')) exit;
 
@@ -30,9 +28,6 @@ class Initializer {
 
   /** @var API */
   private $api;
-
-  /** @var ContainerInterface */
-  private $container;
 
   /** @var Activator */
   private $activator;
@@ -58,7 +53,6 @@ class Initializer {
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
-    ContainerWrapper $container,
     RendererFactory $renderer_factory,
     AccessControl $access_control,
     API $api,
@@ -70,7 +64,6 @@ class Initializer {
     Menu $menu,
     CronTrigger $cron_trigger
   ) {
-      $this->container = $container;
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
       $this->api = $api;
