@@ -57,7 +57,7 @@ jQuery(function ($) { // eslint-disable-line func-names
           api_version: formData.api_version,
           endpoint: 'subscribers',
           action: 'subscribe',
-          data: formData.data
+          data: formData.data,
         })
           .fail(function handleFailedPost(response) {
             form.find('.mailpoet_validate_error').html(

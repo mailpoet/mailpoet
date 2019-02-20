@@ -13,7 +13,7 @@ describe('Footer', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
-        blockDefaults: {}
+        blockDefaults: {},
       });
       model = new (FooterBlock.FooterBlockModel)();
       sandbox = sinon.sandbox.create();
@@ -68,7 +68,7 @@ describe('Footer', function () {
     it('triggers autosave when any of the attributes change', function () {
       var mock = sinon.mock().exactly(8).withArgs('autoSave');
       EditorApplication.getChannel = sinon.stub().returns({
-        trigger: mock
+        trigger: mock,
       });
 
       model.set('text', 'Some new text');
@@ -91,21 +91,21 @@ describe('Footer', function () {
             text: 'some custom config text',
             styles: {
               block: {
-                backgroundColor: '#123456'
+                backgroundColor: '#123456',
               },
               text: {
                 fontColor: '#234567',
                 fontFamily: 'Tahoma',
                 fontSize: '37px',
-                textAlign: 'right'
+                textAlign: 'right',
               },
               link: {
                 fontColor: '#345678',
-                textDecoration: 'underline'
-              }
-            }
-          }
-        }
+                textDecoration: 'underline',
+              },
+            },
+          },
+        },
       });
       innerModel = new (FooterBlock.FooterBlockModel)();
 
@@ -154,9 +154,9 @@ describe('Footer', function () {
     global.stubAvailableStyles(EditorApplication, {
       fonts: {
         standard: ['Arial', 'Tahoma'],
-        custom: ['Arvo', 'Lato', 'Lora']
+        custom: ['Arvo', 'Lato', 'Lora'],
       },
-      textSizes: ['16px', '20px']
+      textSizes: ['16px', '20px'],
     });
 
     it('renders', function () {
@@ -177,9 +177,9 @@ describe('Footer', function () {
         global.stubAvailableStyles(EditorApplication, {
           fonts: {
             standard: ['Arial', 'Tahoma'],
-            custom: ['Arvo', 'Lato', 'Lora']
+            custom: ['Arvo', 'Lato', 'Lora'],
           },
-          textSizes: ['16px', '20px']
+          textSizes: ['16px', '20px'],
         });
         model = new (FooterBlock.FooterBlockModel)({});
         view = new (FooterBlock.FooterBlockSettingsView)({ model: model });

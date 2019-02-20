@@ -43,15 +43,15 @@ describe('Container', function () {
             container: {
               styles: {
                 block: {
-                  backgroundColor: '#123456'
-                }
+                  backgroundColor: '#123456',
+                },
               },
               image: {
                 src: null,
-                display: 'scale'
-              }
-            }
-          }
+                display: 'scale',
+              },
+            },
+          },
         });
         innerModel = new (ContainerBlock.ContainerBlockModel)();
 
@@ -71,7 +71,7 @@ describe('Container', function () {
     describe('when creating with children', function () {
       var testModel = {
         type: 'sampleType',
-        someField: 'Some Content'
+        someField: 'Some Content',
       };
       var model;
 
@@ -80,7 +80,7 @@ describe('Container', function () {
 
         model = new (ContainerBlock.ContainerBlockModel)({
           type: 'container',
-          blocks: [testModel]
+          blocks: [testModel],
         }, { parse: true });
 
         expect(model.get('blocks')).to.have.length(1);
@@ -102,15 +102,15 @@ describe('Container', function () {
               blocks: [
                 {
                   type: 'someType',
-                  someField: 'some text'
+                  someField: 'some text',
                 },
                 {
                   type: 'someType',
-                  someField: 'some text 2'
-                }
-              ]
-            }
-          ]
+                  someField: 'some text 2',
+                },
+              ],
+            },
+          ],
         }, { parse: true });
 
         expect(model.get('blocks')).to.have.length(1);
@@ -146,13 +146,13 @@ describe('Container', function () {
             src: imageSrc,
             display: 'scale',
             width: 123,
-            height: 456
+            height: 456,
           },
           styles: {
             block: {
-              backgroundColor: 'transparent'
-            }
-          }
+              backgroundColor: 'transparent',
+            },
+          },
         });
         var view;
 
@@ -162,8 +162,8 @@ describe('Container', function () {
           view = new (ContainerBlock.ContainerBlockView)({
             model: model,
             renderOptions: {
-              depth: 0
-            }
+              depth: 0,
+            },
           });
           view.render();
         });
@@ -203,8 +203,8 @@ describe('Container', function () {
           view = new (ContainerBlock.ContainerBlockView)({
             model: model,
             renderOptions: {
-              depth: 1
-            }
+              depth: 1,
+            },
           });
           view.render();
         });

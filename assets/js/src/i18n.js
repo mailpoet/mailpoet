@@ -13,5 +13,5 @@ MailPoet.I18n = {
   },
   all: function all() {
     return translations;
-  }
+  },
 };

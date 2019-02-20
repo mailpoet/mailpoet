@@ -14,7 +14,7 @@ describe('Button', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
-        blockDefaults: {}
+        blockDefaults: {},
       });
       model = new (ButtonBlock.ButtonBlockModel)();
       sandbox = sinon.sandbox.create();
@@ -92,7 +92,7 @@ describe('Button', function () {
     it('triggers autosave if any attribute changes', function () {
       var mock = sinon.mock().exactly(12).withArgs('autoSave');
       EditorApplication.getChannel = sinon.stub().returns({
-        trigger: mock
+        trigger: mock,
       });
       model.set('text', 'some other text');
       model.set('url', 'some url');
@@ -143,11 +143,11 @@ describe('Button', function () {
                 fontColor: '#345678',
                 fontFamily: 'Tahoma',
                 fontSize: '30px',
-                fontWeight: 'bold'
-              }
-            }
-          }
-        }
+                fontWeight: 'bold',
+              },
+            },
+          },
+        },
       });
       model = new (ButtonBlock.ButtonBlockModel)();
 
@@ -211,9 +211,9 @@ describe('Button', function () {
               fontColor: '#345678',
               fontFamily: 'Arial',
               fontSize: '12px',
-              fontWeight: 'bold'
-            }
-          }
+              fontWeight: 'bold',
+            },
+          },
         });
         view = new (ButtonBlock.ButtonBlockView)({ model: innerModel });
         view.render();
@@ -305,9 +305,9 @@ describe('Button', function () {
       const data = {
         styles: {
           block: {
-            borderRadius: '14px'
-          }
-        }
+            borderRadius: '14px',
+          },
+        },
       };
       callback(data);
       expect(model.set).to.have.been.callCount(1);
@@ -323,14 +323,14 @@ describe('Button', function () {
       global.stubAvailableStyles(EditorApplication, {
         fonts: {
           standard: ['Arial', 'Tahoma'],
-          custom: ['Arvo', 'Lato', 'Lora']
+          custom: ['Arvo', 'Lato', 'Lora'],
         },
-        headingSizes: ['16px', '20px']
+        headingSizes: ['16px', '20px'],
       });
 
       model = new (ButtonBlock.ButtonBlockModel)({
         type: 'button',
-        text: 'Some random text'
+        text: 'Some random text',
       });
     });
 
@@ -347,16 +347,16 @@ describe('Button', function () {
         global.stubAvailableStyles(EditorApplication, {
           fonts: {
             standard: ['Arial', 'Tahoma'],
-            custom: ['Arvo', 'Lato', 'Lora']
+            custom: ['Arvo', 'Lato', 'Lora'],
           },
-          headingSizes: ['16px', '20px']
+          headingSizes: ['16px', '20px'],
         });
       });
 
       beforeEach(function () {
         model = new (ButtonBlock.ButtonBlockModel)({
           type: 'button',
-          text: 'Some random text'
+          text: 'Some random text',
         });
         view = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
 
@@ -479,8 +479,8 @@ describe('Button', function () {
         view = new (ButtonBlock.ButtonBlockSettingsView)({
           model: model,
           renderOptions: {
-            hideLink: true
-          }
+            hideLink: true,
+          },
         });
         view.render();
         expect(view.$('.mailpoet_field_button_url').length).to.equal(0);
@@ -490,8 +490,8 @@ describe('Button', function () {
         view = new (ButtonBlock.ButtonBlockSettingsView)({
           model: model,
           renderOptions: {
-            hideApplyToAll: true
-          }
+            hideApplyToAll: true,
+          },
         });
         view.render();
         expect(view.$('.mailpoet_field_button_replace_all_styles').length).to.equal(0);

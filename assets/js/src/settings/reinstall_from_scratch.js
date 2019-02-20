@@ -12,7 +12,7 @@ function eventHandler() {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'setup',
-      action: 'reset'
+      action: 'reset',
     }).always(function alwaysCb() {
       MailPoet.Modal.loading(false);
     }).done(function doneCb() {

@@ -16,10 +16,10 @@ Module._contentWidgets = new (Backbone.Collection.extend({
     defaults: {
       name: '',
       priority: 100,
-      widgetView: undefined
-    }
+      widgetView: undefined,
+    },
   }),
-  comparator: 'priority'
+  comparator: 'priority',
 }))();
 Module.registerWidget = function (widget) { return Module._contentWidgets.add(widget); };
 Module.getWidgets = function () { return Module._contentWidgets; };
@@ -30,10 +30,10 @@ Module._layoutWidgets = new (Backbone.Collection.extend({
     defaults: {
       name: '',
       priority: 100,
-      widgetView: undefined
-    }
+      widgetView: undefined,
+    },
   }),
-  comparator: 'priority'
+  comparator: 'priority',
 }))();
 Module.registerLayoutWidget = function (widget) { return Module._layoutWidgets.add(widget); };
 Module.getLayoutWidgets = function () { return Module._layoutWidgets; };
@@ -44,7 +44,7 @@ SidebarView = Marionette.View.extend({
     contentRegion: '.mailpoet_content_region',
     layoutRegion: '.mailpoet_layout_region',
     stylesRegion: '.mailpoet_styles_region',
-    previewRegion: '.mailpoet_preview_region'
+    previewRegion: '.mailpoet_preview_region',
   },
   events: {
     'click .mailpoet_sidebar_region h3, .mailpoet_sidebar_region .handlediv': function (event) {
@@ -58,7 +58,7 @@ SidebarView = Marionette.View.extend({
           easing: 'easeOut',
           complete: function () {
             $openRegion.addClass('closed');
-          }
+          },
         }
       );
 
@@ -70,11 +70,11 @@ SidebarView = Marionette.View.extend({
             easing: 'easeIn',
             complete: function () {
               $targetRegion.removeClass('closed');
-            }
+            },
           }
         );
       }
-    }
+    },
   },
   initialize: function () {
     jQuery(window)
@@ -90,7 +90,7 @@ SidebarView = Marionette.View.extend({
     ));
     this.showChildView('stylesRegion', new Module.SidebarStylesView({
       model: App.getGlobalStyles(),
-      availableStyles: App.getAvailableStyles()
+      availableStyles: App.getAvailableStyles(),
     }));
     this.showChildView('previewRegion', new Module.SidebarPreviewView());
   },
@@ -112,20 +112,20 @@ SidebarView = Marionette.View.extend({
   },
   onDomRefresh: function () {
     this.$el.parent().stick_in_parent({
-      offset_top: 32
+      offset_top: 32,
     });
     this.$el.parent().on('sticky_kit:stick', this.updateHorizontalScroll.bind(this));
     this.$el.parent().on('sticky_kit:unstick', this.updateHorizontalScroll.bind(this));
     this.$el.parent().on('sticky_kit:bottom', this.updateHorizontalScroll.bind(this));
     this.$el.parent().on('sticky_kit:unbottom', this.updateHorizontalScroll.bind(this));
-  }
+  },
 });
 
 /**
    * Draggable widget collection view
    */
 Module.SidebarWidgetsCollectionView = Marionette.CollectionView.extend({
-  childView: function (item) { return item.get('widgetView'); }
+  childView: function (item) { return item.get('widgetView'); },
 });
 
 /**
@@ -134,7 +134,7 @@ Module.SidebarWidgetsCollectionView = Marionette.CollectionView.extend({
 Module.SidebarWidgetsView = Marionette.View.extend({
   getTemplate: function () { return window.templates.sidebarContent; },
   regions: {
-    widgets: '.mailpoet_region_content'
+    widgets: '.mailpoet_region_content',
   },
 
   initialize: function (widgets) {
@@ -143,16 +143,16 @@ Module.SidebarWidgetsView = Marionette.View.extend({
 
   onRender: function () {
     this.showChildView('widgets', new Module.SidebarWidgetsCollectionView({
-      collection: this.widgets
+      collection: this.widgets,
     }));
-  }
+  },
 });
 
 /**
    * Responsible for rendering draggable layout widgets
    */
 Module.SidebarLayoutWidgetsView = Module.SidebarWidgetsView.extend({
-  getTemplate: function () { return window.templates.sidebarLayout; }
+  getTemplate: function () { return window.templates.sidebarLayout; },
 });
 
 /**
@@ -161,7 +161,7 @@ Module.SidebarLayoutWidgetsView = Module.SidebarWidgetsView.extend({
 Module.SidebarStylesView = Marionette.View.extend({
   getTemplate: function () { return window.templates.sidebarStyles; },
   behaviors: {
-    ColorPickerBehavior: {}
+    ColorPickerBehavior: {},
   },
   events: function () {
     return {
@@ -198,13 +198,13 @@ Module.SidebarStylesView = Marionette.View.extend({
         this.model.set('link.textDecoration', (event.target.checked) ? event.target.value : 'none');
       },
       'change #mailpoet_newsletter_background_color': _.partial(this.changeColorField, 'wrapper.backgroundColor'),
-      'change #mailpoet_background_color': _.partial(this.changeColorField, 'body.backgroundColor')
+      'change #mailpoet_background_color': _.partial(this.changeColorField, 'body.backgroundColor'),
     };
   },
   templateContext: function () {
     return {
       model: this.model.toJSON(),
-      availableStyles: this.availableStyles.toJSON()
+      availableStyles: this.availableStyles.toJSON(),
     };
   },
   initialize: function (options) {
@@ -219,14 +219,14 @@ Module.SidebarStylesView = Marionette.View.extend({
       value = 'transparent';
     }
     this.model.set(field, value);
-  }
+  },
 });
 
 Module.SidebarPreviewView = Marionette.View.extend({
   getTemplate: function () { return window.templates.sidebarPreview; },
   events: {
     'click .mailpoet_show_preview': 'showPreview',
-    'click #mailpoet_send_preview': 'sendPreview'
+    'click #mailpoet_send_preview': 'sendPreview',
   },
   onBeforeDestroy: function () {
     if (this.previewView) {
@@ -248,13 +248,13 @@ Module.SidebarPreviewView = Marionette.View.extend({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
       action: 'showPreview',
-      data: json
+      data: json,
     }).always(function () {
       MailPoet.Modal.loading(false);
     }).done(function (response) {
       this.previewView = new Module.NewsletterPreviewView({
         previewType: window.localStorage.getItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey')),
-        previewUrl: response.meta.preview_url
+        previewUrl: response.meta.preview_url,
       });
 
       this.previewView.render();
@@ -268,11 +268,11 @@ Module.SidebarPreviewView = Marionette.View.extend({
         onCancel: function () {
           this.previewView.destroy();
           this.previewView = null;
-        }.bind(this)
+        }.bind(this),
       });
 
       MailPoet.trackEvent('Editor > Browser Preview', {
-        'MailPoet Free version': window.mailpoet_version
+        'MailPoet Free version': window.mailpoet_version,
       });
     }.bind(this)).fail(function (response) {
       if (response.errors.length > 0) {
@@ -288,7 +288,7 @@ Module.SidebarPreviewView = Marionette.View.extend({
     var $emailField = this.$('#mailpoet_preview_to_email');
     var data = {
       subscriber: $emailField.val(),
-      id: App.getNewsletter().get('id')
+      id: App.getNewsletter().get('id'),
     };
 
     if (data.subscriber.length <= 0) {
@@ -296,7 +296,7 @@ Module.SidebarPreviewView = Marionette.View.extend({
         MailPoet.I18n.t('newsletterPreviewEmailMissing'),
         {
           positionAfter: $emailField,
-          scroll: true
+          scroll: true,
         }
       );
       return false;
@@ -317,7 +317,7 @@ Module.SidebarPreviewView = Marionette.View.extend({
         );
         MailPoet.trackEvent('Editor > Preview sent', {
           'MailPoet Free version': window.mailpoet_version,
-          'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1)
+          'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1),
         });
         showSuccessDeliveryPoll = MailPoet.Poll.successDelivery.canShow('preview');
         if (showSuccessDeliveryPoll) {
@@ -334,7 +334,7 @@ Module.SidebarPreviewView = Marionette.View.extend({
       });
     });
     return undefined;
-  }
+  },
 });
 
 Module.NewsletterPreviewView = Marionette.View.extend({
@@ -342,7 +342,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
   getTemplate: function () { return window.templates.newsletterPreview; },
   events: function () {
     return {
-      'change .mailpoet_browser_preview_type': 'changeBrowserPreviewType'
+      'change .mailpoet_browser_preview_type': 'changeBrowserPreviewType',
     };
   },
   initialize: function (options) {
@@ -358,7 +358,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
       previewType: this.previewType,
       previewUrl: this.previewUrl,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   },
   changeBrowserPreviewType: function (event) {
@@ -374,7 +374,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
 
     window.localStorage.setItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey'), value);
     this.previewType = value;
-  }
+  },
 });
 
 App.on('before:start', function (BeforeStartApp) {
@@ -392,7 +392,7 @@ App.on('start', function (StartApp) {
 
   MailPoet.helpTooltip.show(document.getElementById('tooltip-send-preview'), {
     tooltipId: 'tooltip-editor-send-preview',
-    tooltip: MailPoet.I18n.t('helpTooltipSendPreview')
+    tooltip: MailPoet.I18n.t('helpTooltipSendPreview'),
   });
 });
 

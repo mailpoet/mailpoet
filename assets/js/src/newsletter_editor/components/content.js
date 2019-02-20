@@ -19,7 +19,7 @@ Module.NewsletterModel = SuperModel.extend({
     // Use only whitelisted properties to ensure properties editor
     // doesn't control don't change.
     return _.pick(SuperModel.prototype.toJSON.call(this), this.whitelisted);
-  }
+  },
 });
 
 // Content block view and model handlers for different content types
@@ -44,13 +44,13 @@ Module.getBody = function getBody() {
   return {
     content: App._contentContainer.toJSON(),
     globalStyles: App.getGlobalStyles().toJSON(),
-    blockDefaults: _.omit(App.getConfig().toJSON().blockDefaults, 'text', 'image')
+    blockDefaults: _.omit(App.getConfig().toJSON().blockDefaults, 'text', 'image'),
   };
 };
 
 Module.toJSON = function toJSON() {
   return _.extend({
-    body: Module.getBody()
+    body: Module.getBody(),
   }, App.getNewsletter().toJSON());
 };
 
@@ -92,7 +92,7 @@ App.on('start', function appOnStart(Application, options) {
   StartApp._contentContainer = new (StartApp.getBlockTypeModel('container'))(bodyContent, { parse: true });
   StartApp._contentContainerView = new (StartApp.getBlockTypeView('container'))({
     model: StartApp._contentContainer,
-    renderOptions: { depth: 0 }
+    renderOptions: { depth: 0 },
   });
 
   StartApp._appView.showChildView('contentRegion', StartApp._contentContainerView);

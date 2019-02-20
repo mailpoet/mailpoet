@@ -18,7 +18,7 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
     invalidElements: 'script',
     blockFormats: 'Paragraph=p',
     plugins: 'link textcolor colorpicker mailpoet_shortcodes',
-    configurationFilter: function configurationFilter(originalConfig) { return originalConfig; }
+    configurationFilter: function configurationFilter(originalConfig) { return originalConfig; },
   },
   initialize: function initialize() {
     this.listenTo(App.getChannel(), 'dragStart', this.hideEditor);
@@ -84,7 +84,7 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
         editor.on('blur', function onBlur() {
           that.view.triggerMethod('text:editor:blur');
         });
-      }
+      },
     }));
-  }
+  },
 });

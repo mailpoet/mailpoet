@@ -11,8 +11,8 @@ Module.ConfigModel = SuperModel.extend({
     blockDefaults: {},
     sidepanelWidth: '331px',
     validation: {},
-    urls: {}
-  }
+    urls: {},
+  },
 });
 
 // Global and available styles for access in blocks and their settings

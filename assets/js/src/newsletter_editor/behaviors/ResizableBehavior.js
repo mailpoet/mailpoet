@@ -23,11 +23,11 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
       var newLength = currentLength + this.options.transformationFunction(event.dy);
       newLength = Math.min(this.options.maxLength, Math.max(this.options.minLength, newLength));
       this.view.model.set(this.options.modelField, newLength + 'px');
-    }
+    },
   },
   events: {
     mouseenter: 'showResizeHandle',
-    mouseleave: 'hideResizeHandle'
+    mouseleave: 'hideResizeHandle',
   },
   onRender: function onRender() {
     this.attachResize();
@@ -50,8 +50,8 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
         top: false,
         left: false,
         right: false,
-        bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector
-      }
+        bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector,
+      },
     })
       .on('resizestart', function resizestart() {
         that.isBeingResized = true;
@@ -78,5 +78,5 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
     if (typeof this.options.resizeHandleSelector === 'string') {
       this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden');
     }
-  }
+  },
 });

@@ -77,7 +77,7 @@ MailPoet.Modal = {
     // callbacks
     onInit: null,
     onSuccess: null,
-    onCancel: null
+    onCancel: null,
   },
   renderer: 'html',
   options: {},
@@ -103,7 +103,7 @@ MailPoet.Modal = {
         + '</div>',
     subpanel: '<div class="mailpoet_panel_wrapper" tabindex="-1">'
         + '<div class="mailpoet_panel_body clearfix"></div>'
-        + '</div>'
+        + '</div>',
   },
   getContentContainer: function () {
     return jQuery('.mailpoet_' + this.options.type + '_body');
@@ -317,16 +317,16 @@ MailPoet.Modal = {
         // set popup dimensions
         if (this.options.width && this.options.width !== 'auto') {
           jQuery('#mailpoet_popup').css({
-            width: this.options.width
+            width: this.options.width,
           });
         }
 
         if (this.options.height && this.options.height !== 'auto') {
           jQuery('#mailpoet_popup_wrapper').css({
-            height: this.options.height
+            height: this.options.height,
           });
           jQuery('#mailpoet_popup').css({
-            height: this.options.height
+            height: this.options.height,
           });
         }
 
@@ -341,14 +341,14 @@ MailPoet.Modal = {
             width: this.options.width,
             right: 0,
             marginRight: '-' + this.options.width,
-            left: 'auto'
+            left: 'auto',
           });
         } else if (this.options.position === 'left') {
           jQuery('#mailpoet_panel').css({
             width: this.options.width,
             left: 0,
             marginLeft: '-' + this.options.width,
-            right: 'auto'
+            right: 'auto',
           });
         }
         jQuery('#mailpoet_panel').css({ minHeight: 'auto' });
@@ -367,11 +367,11 @@ MailPoet.Modal = {
           // set position of popup depending on screen dimensions.
           if (this.options.position === 'right') {
             jQuery('#mailpoet_panel').css({
-              marginRight: 0
+              marginRight: 0,
             });
           } else if (this.options.position === 'left') {
             jQuery('#mailpoet_panel').css({
-              marginLeft: 0
+              marginLeft: 0,
             });
           }
         }.bind(this), 0);
@@ -636,9 +636,9 @@ MailPoet.Modal = {
     // reset options
     this.options = {
       onSuccess: null,
-      onCancel: null
+      onCancel: null,
     };
 
     return this;
-  }
+  },
 };

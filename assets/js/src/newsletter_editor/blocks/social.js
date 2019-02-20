@@ -28,7 +28,7 @@ Module.SocialIconModel = SuperModel.extend({
       image: App.getAvailableStyles().get('socialIconSets.default.custom'),
       height: '32px',
       width: '32px',
-      text: defaultValues.get('title')
+      text: defaultValues.get('title'),
     };
   },
   initialize: function () {
@@ -40,15 +40,15 @@ Module.SocialIconModel = SuperModel.extend({
       this.set({
         link: defaultValues.get('defaultLink'),
         image: iconSet.get(that.get('iconType')),
-        text: defaultValues.get('title')
+        text: defaultValues.get('title'),
       });
     }, this);
     this.on('change', function () { App.getChannel().trigger('autoSave'); });
-  }
+  },
 });
 
 Module.SocialIconCollectionModel = Backbone.Collection.extend({
-  model: Module.SocialIconModel
+  model: Module.SocialIconModel,
 });
 
 Module.SocialBlockModel = base.BlockModel.extend({
@@ -59,14 +59,14 @@ Module.SocialBlockModel = base.BlockModel.extend({
       iconSet: 'default',
       styles: {
         block: {
-          textAlign: 'center'
-        }
+          textAlign: 'center',
+        },
       },
-      icons: new Module.SocialIconCollectionModel()
+      icons: new Module.SocialIconCollectionModel(),
     }, App.getConfig().get('blockDefaults.social'));
   },
   relations: {
-    icons: Module.SocialIconCollectionModel
+    icons: Module.SocialIconCollectionModel,
   },
   initialize: function () {
     this.get('icons').on('add remove change', this._iconsChanged, this);
@@ -85,53 +85,53 @@ Module.SocialBlockModel = base.BlockModel.extend({
   _iconsChanged: function () {
     this._updateDefaults();
     App.getChannel().trigger('autoSave');
-  }
+  },
 });
 
 SocialIconView = Marionette.View.extend({
   tagName: 'span',
   getTemplate: function () { return window.templates.socialIconBlock; },
   modelEvents: {
-    change: 'render'
+    change: 'render',
   },
   templateContext: function () {
     var allIconSets = App.getAvailableStyles().get('socialIconSets');
     return {
       model: this.model.toJSON(),
       allIconSets: allIconSets.toJSON(),
-      imageMissingSrc: App.getConfig().get('urls.imageMissing')
+      imageMissingSrc: App.getConfig().get('urls.imageMissing'),
     };
-  }
+  },
 });
 
 Module.SocialIconCollectionView = Marionette.CollectionView.extend({
-  childView: SocialIconView
+  childView: SocialIconView,
 });
 
 Module.SocialBlockView = base.BlockView.extend({
   className: 'mailpoet_block mailpoet_social_block mailpoet_droppable_block',
   getTemplate: function () { return window.templates.socialBlock; },
   regions: _.extend({}, base.BlockView.prototype.regions, {
-    icons: '.mailpoet_social'
+    icons: '.mailpoet_social',
   }),
   ui: {
-    tools: '> .mailpoet_tools'
+    tools: '> .mailpoet_tools',
   },
   behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
-    ShowSettingsBehavior: {}
+    ShowSettingsBehavior: {},
   }),
   onDragSubstituteBy: function () { return Module.SocialWidgetView; },
   onRender: function () {
     this.toolsView = new Module.SocialBlockToolsView({ model: this.model });
     this.showChildView('toolsRegion', this.toolsView);
     this.showChildView('icons', new Module.SocialIconCollectionView({
-      collection: this.model.get('icons')
+      collection: this.model.get('icons'),
     }));
-  }
+  },
 });
 
 Module.SocialBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function () { return Module.SocialBlockSettingsView; }
+  getSettingsView: function () { return Module.SocialBlockSettingsView; },
 });
 
 // Sidebar view container
@@ -139,12 +139,12 @@ Module.SocialBlockSettingsView = base.BlockSettingsView.extend({
   getTemplate: function () { return window.templates.socialBlockSettings; },
   regions: {
     iconRegion: '#mailpoet_social_icons_selection',
-    stylesRegion: '#mailpoet_social_icons_styles'
+    stylesRegion: '#mailpoet_social_icons_styles',
   },
   events: function () {
     return {
       'click .mailpoet_done_editing': 'close',
-      'change .mailpoet_social_block_alignment': _.partial(this.changeField, 'styles.block.textAlign')
+      'change .mailpoet_social_block_alignment': _.partial(this.changeField, 'styles.block.textAlign'),
     };
   },
   initialize: function () {
@@ -156,7 +156,7 @@ Module.SocialBlockSettingsView = base.BlockSettingsView.extend({
   onRender: function () {
     this.showChildView('iconRegion', this._iconSelectorView);
     this.showChildView('stylesRegion', this._stylesView);
-  }
+  },
 });
 
 // Single icon settings view, used by the selector view
@@ -168,7 +168,7 @@ SocialBlockSettingsIconView = Marionette.View.extend({
       'change .mailpoet_social_icon_field_type': _.partial(this.changeField, 'iconType'),
       'input .mailpoet_social_icon_field_image': _.partial(this.changeField, 'image'),
       'input .mailpoet_social_icon_field_link': this.changeLink,
-      'input .mailpoet_social_icon_field_text': _.partial(this.changeField, 'text')
+      'input .mailpoet_social_icon_field_text': _.partial(this.changeField, 'text'),
     };
   },
   modelEvents: {
@@ -178,7 +178,7 @@ SocialBlockSettingsIconView = Marionette.View.extend({
     },
     'change:text': function () {
       this.$('.mailpoet_social_icon_image').attr('alt', this.model.get('text'));
-    }
+    },
   },
   templateContext: function () {
     var icons = App.getConfig().get('socialIcons');
@@ -188,7 +188,7 @@ SocialBlockSettingsIconView = Marionette.View.extend({
     return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
       iconTypes: availableIconTypes,
       currentType: icons.get(this.model.get('iconType')).toJSON(),
-      allIconSets: allIconSets.toJSON()
+      allIconSets: allIconSets.toJSON(),
     });
   },
   deleteIcon: function () {
@@ -204,30 +204,30 @@ SocialBlockSettingsIconView = Marionette.View.extend({
   },
   changeField: function (field, event) {
     this.model.set(field, jQuery(event.target).val());
-  }
+  },
 });
 
 SocialBlockSettingsIconCollectionView = Marionette.CollectionView.extend({
   behaviors: {
     SortableBehavior: {
-      items: '> div'
-    }
+      items: '> div',
+    },
   },
   childViewContainer: '#mailpoet_social_icon_selector_contents',
-  childView: SocialBlockSettingsIconView
+  childView: SocialBlockSettingsIconView,
 });
 
 // Select icons section container view
 SocialBlockSettingsIconSelectorView = Marionette.View.extend({
   getTemplate: function () { return window.templates.socialSettingsIconSelector; },
   regions: {
-    icons: '#mailpoet_social_icon_selector_contents'
+    icons: '#mailpoet_social_icon_selector_contents',
   },
   events: {
-    'click .mailpoet_add_social_icon': 'addSocialIcon'
+    'click .mailpoet_add_social_icon': 'addSocialIcon',
   },
   modelEvents: {
-    'change:iconSet': 'render'
+    'change:iconSet': 'render',
   },
   addSocialIcon: function () {
     // Add a social icon with default values
@@ -235,19 +235,19 @@ SocialBlockSettingsIconSelectorView = Marionette.View.extend({
   },
   onRender: function () {
     this.showChildView('icons', new SocialBlockSettingsIconCollectionView({
-      collection: this.model.get('icons')
+      collection: this.model.get('icons'),
     }));
-  }
+  },
 
 });
 
 SocialBlockSettingsStylesView = Marionette.View.extend({
   getTemplate: function () { return window.templates.socialSettingsStyles; },
   modelEvents: {
-    change: 'render'
+    change: 'render',
   },
   events: {
-    'click .mailpoet_social_icon_set': 'changeSocialIconSet'
+    'click .mailpoet_social_icon_set': 'changeSocialIconSet',
   },
   initialize: function () {
     this.listenTo(this.model.get('icons'), 'add remove change', this.render);
@@ -258,7 +258,7 @@ SocialBlockSettingsStylesView = Marionette.View.extend({
       activeSet: this.model.get('iconSet'),
       socialIconSets: allIconSets.toJSON(),
       availableSets: _.keys(allIconSets.toJSON()),
-      availableSocialIcons: this.model.get('icons').pluck('iconType')
+      availableSocialIcons: this.model.get('icons').pluck('iconType'),
     };
   },
   changeSocialIconSet: function (event) {
@@ -266,7 +266,7 @@ SocialBlockSettingsStylesView = Marionette.View.extend({
   },
   onBeforeDestroy: function () {
     this.model.get('icons').off('add remove', this.render, this);
-  }
+  },
 });
 
 Module.SocialWidgetView = base.WidgetView.extend({
@@ -276,21 +276,21 @@ Module.SocialWidgetView = base.WidgetView.extend({
       cloneOriginal: true,
       drop: function () {
         return new Module.SocialBlockModel();
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 App.on('before:start', function (BeforeStartApp) {
   BeforeStartApp.registerBlockType('social', {
     blockModel: Module.SocialBlockModel,
-    blockView: Module.SocialBlockView
+    blockView: Module.SocialBlockView,
   });
 
   BeforeStartApp.registerWidget({
     name: 'social',
     widgetView: Module.SocialWidgetView,
-    priority: 95
+    priority: 95,
   });
 });
 

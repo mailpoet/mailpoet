@@ -18,20 +18,20 @@ describe('Save', function () {
         'newsletter_editor/components/communication': {
           saveNewsletter: function () {
             return jQuery.Deferred();
-          }
-        }
+          },
+        },
       }).default;
     });
 
     it('triggers beforeEditorSave event', function () {
       var spy = sinon.spy();
       global.stubChannel(EditorApplication, {
-        trigger: spy
+        trigger: spy,
       });
       EditorApplication.toJSON = sinon.stub().returns({
         body: {
-          type: 'container'
-        }
+          type: 'container',
+        },
       });
       module.save();
       expect(spy).to.have.callCount(1);
@@ -43,17 +43,17 @@ describe('Save', function () {
       var spy = sinon.spy();
       var promise = jQuery.Deferred();
       global.stubChannel(EditorApplication, {
-        trigger: spy
+        trigger: spy,
       });
       EditorApplication.toJSON = sinon.stub().returns({
         body: {
-          type: 'container'
-        }
+          type: 'container',
+        },
       });
       innerModule = SaveInjector({
         'newsletter_editor/components/communication': {
-          saveNewsletter: sinon.stub().returns(promise)
-        }
+          saveNewsletter: sinon.stub().returns(promise),
+        },
       }).default;
       promise.resolve({ success: true });
       innerModule.save();
@@ -64,8 +64,8 @@ describe('Save', function () {
       var mock = sinon.mock().once().returns(jQuery.Deferred());
       var innerModule = SaveInjector({
         'newsletter_editor/components/communication': {
-          saveNewsletter: mock
-        }
+          saveNewsletter: mock,
+        },
       }).default;
       global.stubChannel(EditorApplication);
 
@@ -81,18 +81,18 @@ describe('Save', function () {
       var mock = sinon.mock()
         .once()
         .withArgs({
-          body: JSON.stringify(body)
+          body: JSON.stringify(body),
         })
         .returns(jQuery.Deferred());
       global.stubChannel(EditorApplication);
 
       EditorApplication.toJSON = sinon.stub().returns({
-        body: body
+        body: body,
       });
       innerModule = SaveInjector({
         'newsletter_editor/components/communication': {
-          saveNewsletter: mock
-        }
+          saveNewsletter: mock,
+        },
       }).default;
       innerModule.save();
 
@@ -133,10 +133,10 @@ describe('Save', function () {
           body: {
             content: {
               blocks: [
-                { type: 'automatedLatestContent' }
-              ]
-            }
-          }
+                { type: 'automatedLatestContent' },
+              ],
+            },
+          },
         });
         expect(hideValidationErrorStub.callCount).to.be.equal(1);
       });
@@ -161,7 +161,7 @@ describe('Save', function () {
       it('triggers newsletter saving when clicked on save button', function () {
         var mock = sinon.mock({ request: function () {} }).expects('request').once().withArgs('save');
         global.stubChannel(EditorApplication, {
-          request: mock
+          request: mock,
         });
         view.$('.mailpoet_save_button').click();
 
@@ -189,29 +189,29 @@ describe('Save', function () {
           return {
             get: function () {
               return 'standard';
-            }
+            },
           };
         };
         module = SaveInjector({
           mailpoet: {
             Ajax: {
-              post: mock
+              post: mock,
             },
             I18n: {
-              t: function () { return ''; }
+              t: function () { return ''; },
             },
             Notice: {
               success: function () {},
-              error: function () {}
+              error: function () {},
             },
-            trackEvent: function () {}
+            trackEvent: function () {},
           },
           'newsletter_editor/App': EditorApplication,
           'common/thumbnail.jsx': {
             fromNewsletter: function () {
               return promiseMock;
-            }
-          }
+            },
+          },
         }).default;
         view = new (module.SaveView)();
         view.render();
@@ -229,11 +229,11 @@ describe('Save', function () {
           'newsletter_editor/components/communication': {
             saveNewsletter: function () {
               return jQuery.Deferred();
-            }
-          }
+            },
+          },
         }).default;
         global.stubChannel(EditorApplication, {
-          trigger: spy
+          trigger: spy,
         });
         view = new (module.SaveView)();
         view.render();

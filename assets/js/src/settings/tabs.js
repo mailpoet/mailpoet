@@ -8,7 +8,7 @@ if (jQuery('#mailpoet_settings').length > 0) {
     routes: {
       '': 'defaultRoute',
       'mta(/:group)': 'sendingMethodGroup',
-      '(:tab)': 'tabs'
+      '(:tab)': 'tabs',
     },
     defaultRoute: function () { // eslint-disable-line func-names
       // display basics tab as default
@@ -67,10 +67,10 @@ if (jQuery('#mailpoet_settings').length > 0) {
         'User has clicked a tab in Settings',
         {
           'MailPoet Free version': window.mailpoet_version,
-          'Tab ID': tab
+          'Tab ID': tab,
         }
       );
-    }
+    },
   }))();
 
   jQuery(document).ready(function () { // eslint-disable-line func-names

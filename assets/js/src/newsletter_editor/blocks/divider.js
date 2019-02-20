@@ -19,11 +19,11 @@ Module.DividerBlockModel = base.BlockModel.extend({
           padding: '12px',
           borderStyle: 'solid',
           borderWidth: '1px',
-          borderColor: '#000000'
-        }
-      }
+          borderColor: '#000000',
+        },
+      },
     }, App.getConfig().get('blockDefaults.divider'));
-  }
+  },
 });
 
 Module.DividerBlockView = base.BlockView.extend({
@@ -36,11 +36,11 @@ Module.DividerBlockView = base.BlockView.extend({
       resizeHandleSelector: '.mailpoet_resize_handle',
       transformationFunction: function transformationFunction(y) { return y / 2; },
       minLength: 0, // TODO: Move this number to editor configuration
-      modelField: 'styles.block.padding'
+      modelField: 'styles.block.padding',
     },
     ShowSettingsBehavior: {
-      ignoreFrom: '.mailpoet_resize_handle'
-    }
+      ignoreFrom: '.mailpoet_resize_handle',
+    },
   }, base.BlockView.prototype.behaviors),
   onDragSubstituteBy: function onDragSubstituteBy() { return Module.DividerWidgetView; },
   initialize: function initialize() {
@@ -58,7 +58,7 @@ Module.DividerBlockView = base.BlockView.extend({
   },
   templateContext: function templateContext() {
     return _.extend({
-      totalHeight: (parseInt(this.model.get('styles.block.padding'), 10) * 2) + parseInt(this.model.get('styles.block.borderWidth'), 10) + 'px'
+      totalHeight: (parseInt(this.model.get('styles.block.padding'), 10) * 2) + parseInt(this.model.get('styles.block.borderWidth'), 10) + 'px',
     }, base.BlockView.prototype.templateContext.apply(this));
   },
   onRender: function onRender() {
@@ -73,11 +73,11 @@ Module.DividerBlockView = base.BlockView.extend({
     this.$('.mailpoet_content').css('padding-top', this.model.get('styles.block.padding'));
     this.$('.mailpoet_content').css('padding-bottom', this.model.get('styles.block.padding'));
     this.$('.mailpoet_resize_handle_text').text((parseInt(this.model.get('styles.block.padding'), 10) * 2) + parseInt(this.model.get('styles.block.borderWidth'), 10) + 'px');
-  }
+  },
 });
 
 Module.DividerBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function getSettingsView() { return Module.DividerBlockSettingsView; }
+  getSettingsView: function getSettingsView() { return Module.DividerBlockSettingsView; },
 });
 
 Module.DividerBlockSettingsView = base.BlockSettingsView.extend({
@@ -93,18 +93,18 @@ Module.DividerBlockSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_field_divider_border_color': _.partial(this.changeColorField, 'styles.block.borderColor'),
       'change .mailpoet_field_divider_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
       'click .mailpoet_button_divider_apply_to_all': 'applyToAll',
-      'click .mailpoet_done_editing': 'close'
+      'click .mailpoet_done_editing': 'close',
     };
   },
   modelEvents: function modelEvents() {
     return {
-      'change:styles.block.borderColor': 'repaintDividerStyleOptions'
+      'change:styles.block.borderColor': 'repaintDividerStyleOptions',
     };
   },
   templateContext: function templateContext() {
     return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
       availableStyles: App.getAvailableStyles().toJSON(),
-      renderOptions: this.renderOptions
+      renderOptions: this.renderOptions,
     });
   },
   changeStyle: function changeStyle(event) {
@@ -122,7 +122,7 @@ Module.DividerBlockSettingsView = base.BlockSettingsView.extend({
   updateValueAndCall: function updateValueAndCall(fieldToUpdate, callable, event) {
     this.$(fieldToUpdate).val(jQuery(event.target).val());
     callable(event);
-  }
+  },
 });
 
 Module.DividerWidgetView = base.WidgetView.extend({
@@ -132,20 +132,20 @@ Module.DividerWidgetView = base.WidgetView.extend({
       cloneOriginal: true,
       drop: function drop() {
         return new Module.DividerBlockModel();
-      }
-    }
-  }
+      },
+    },
+  },
 });
 App.on('before:start', function onBeforeStart(BeforeStartApp) {
   BeforeStartApp.registerBlockType('divider', {
     blockModel: Module.DividerBlockModel,
-    blockView: Module.DividerBlockView
+    blockView: Module.DividerBlockView,
   });
 
   BeforeStartApp.registerWidget({
     name: 'divider',
     widgetView: Module.DividerWidgetView,
-    priority: 93
+    priority: 93,
   });
 });
 

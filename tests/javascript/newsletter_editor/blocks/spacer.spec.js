@@ -14,7 +14,7 @@ describe('Spacer', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
-        blockDefaults: {}
+        blockDefaults: {},
       });
       global.stubAvailableStyles(EditorApplication);
       model = new (SpacerBlock.SpacerBlockModel)();
@@ -47,7 +47,7 @@ describe('Spacer', function () {
     it('triggers autosave if any attribute changes', function () {
       var mock = sinon.mock().exactly(2).withArgs('autoSave');
       EditorApplication.getChannel = sinon.stub().returns({
-        trigger: mock
+        trigger: mock,
       });
 
       model.set('styles.block.backgroundColor', '#000000');
@@ -63,11 +63,11 @@ describe('Spacer', function () {
             styles: {
               block: {
                 backgroundColor: '#567890',
-                height: '19px'
-              }
-            }
-          }
-        }
+                height: '19px',
+              },
+            },
+          },
+        },
       });
       model = new (SpacerBlock.SpacerBlockModel)();
 

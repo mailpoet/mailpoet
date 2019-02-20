@@ -52,14 +52,14 @@ jQuery(document).ready(function documentReady() {
           return (item.subscriberCount > 0)
             ? item.name + ' (' + parseInt(item.subscriberCount, 10).toLocaleString() + ')'
             : item.name;
-        }
+        },
       })
       .on('select2:selecting', function onSelect2Selecting(selectEvent) {
         var selectElement = this;
         var selectedOptionId = selectEvent.params.args.data.id;
         var fieldsToExclude = [
           'select',
-          'deselect'
+          'deselect',
         ];
         var allOptions;
         if (_.contains(fieldsToExclude, selectedOptionId)) {
@@ -100,7 +100,7 @@ jQuery(document).ready(function documentReady() {
     'first_name',
     'last_name',
     'list_status',
-    'global_status'
+    'global_status',
   ]).trigger('change');
 
   nextStepButton.click(function nextClick() {
@@ -117,8 +117,8 @@ jQuery(document).ready(function documentReady() {
       data: JSON.stringify({
         export_format_option: exportFormat,
         segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
-        subscriber_fields: subscriberFieldsContainerElement.val()
-      })
+        subscriber_fields: subscriberFieldsContainerElement.val(),
+      }),
     }).always(function always() {
       MailPoet.Modal.loading(false);
     }).done(function done(response) {
@@ -131,7 +131,7 @@ jQuery(document).ready(function documentReady() {
       MailPoet.trackEvent('Subscribers export completed', {
         'Total exported': response.data.totalExported,
         'File Format': exportFormat,
-        'MailPoet Free version': window.mailpoet_version
+        'MailPoet Free version': window.mailpoet_version,
       });
     }).fail(function fail(response) {
       if (response.errors.length > 0) {

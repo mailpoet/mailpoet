@@ -24,12 +24,12 @@ Module.ImageBlockModel = base.BlockModel.extend({
       height: '64px',
       styles: {
         block: {
-          textAlign: 'center'
-        }
-      }
+          textAlign: 'center',
+        },
+      },
     }, App.getConfig().get('blockDefaults.image'));
   },
-  _updateDefaults: function () {}
+  _updateDefaults: function () {},
 });
 
 Module.ImageBlockView = base.BlockView.extend({
@@ -38,7 +38,7 @@ Module.ImageBlockView = base.BlockView.extend({
   onDragSubstituteBy: function () { return Module.ImageWidgetView; },
   templateContext: function () {
     return _.extend({
-      imageMissingSrc: App.getConfig().get('urls.imageMissing')
+      imageMissingSrc: App.getConfig().get('urls.imageMissing'),
     }, base.BlockView.prototype.templateContext.apply(this));
   },
   behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
@@ -49,11 +49,11 @@ Module.ImageBlockView = base.BlockView.extend({
         var corner = this.$('.mailpoet_image').offset();
         var width = event.pageX - corner.left;
         this.view.model.set('width', width + 'px');
-      }
+      },
     },
     ShowSettingsBehavior: {
-      ignoreFrom: '.mailpoet_image_resize_handle'
-    }
+      ignoreFrom: '.mailpoet_image_resize_handle',
+    },
   }),
   onRender: function () {
     var that = this;
@@ -72,27 +72,27 @@ Module.ImageBlockView = base.BlockView.extend({
       });
     }
     this.$('.mailpoet_content').css('width', this.model.get('width'));
-  }
+  },
 });
 
 Module.ImageBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function () { return Module.ImageBlockSettingsView; }
+  getSettingsView: function () { return Module.ImageBlockSettingsView; },
 });
 
 Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
   behaviors: _.extend({}, base.BlockSettingsView.prototype.behaviors, {
     MediaManagerBehavior: {
-      onSelect: 'onImageSelect'
-    }
+      onSelect: 'onImageSelect',
+    },
   }),
   onRender: function () {
     MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-full-width'), {
       tooltipId: 'tooltip-editor-full-width',
-      tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth')
+      tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth'),
     });
     MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-ideal-width'), {
       tooltipId: 'tooltip-editor-ideal-width',
-      tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth')
+      tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth'),
     });
   },
   getTemplate: function () { return window.templates.imageBlockSettings; },
@@ -105,13 +105,13 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
       'click .mailpoet_done_editing': 'close',
       'input .mailpoet_field_image_width': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width_input', _.partial(this.changePixelField, 'width').bind(this)),
       'change .mailpoet_field_image_width': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width_input', _.partial(this.changePixelField, 'width').bind(this)),
-      'input .mailpoet_field_image_width_input': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width', _.partial(this.changePixelField, 'width').bind(this))
+      'input .mailpoet_field_image_width_input': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width', _.partial(this.changePixelField, 'width').bind(this)),
     };
   },
   modelEvents: function () {
     return {
       'change:maxWidth': 'updateMaxWidth',
-      'change:width': 'updateWidth'
+      'change:width': 'updateWidth',
     };
   },
   updateValueAndCall: function (fieldToUpdate, callable, event) {
@@ -136,7 +136,7 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
     }
     // Rerender settings view due to changes from outside of settings view
     this.render();
-  }
+  },
 });
 
 ImageWidgetView = base.WidgetView.extend({
@@ -149,22 +149,22 @@ ImageWidgetView = base.WidgetView.extend({
       },
       onDrop: function (options) {
         options.droppedView.triggerMethod('showSettings', { showImageManager: true });
-      }
-    }
-  }
+      },
+    },
+  },
 });
 Module.ImageWidgetView = ImageWidgetView;
 
 App.on('before:start', function (BeforeStartApp) {
   BeforeStartApp.registerBlockType('image', {
     blockModel: Module.ImageBlockModel,
-    blockView: Module.ImageBlockView
+    blockView: Module.ImageBlockView,
   });
 
   BeforeStartApp.registerWidget({
     name: 'image',
     widgetView: Module.ImageWidgetView,
-    priority: 91
+    priority: 91,
   });
 });
 

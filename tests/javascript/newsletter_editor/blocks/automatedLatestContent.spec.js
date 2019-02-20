@@ -31,8 +31,8 @@ describe('Automated Latest Content Supervisor', function () {
 
     module = AutomatedLatestContentInjector({
       'newsletter_editor/components/communication': {
-        getBulkTransformedPosts: mock
-      }
+        getBulkTransformedPosts: mock,
+      },
     }).default;
 
     model = new module.ALCSupervisor();
@@ -45,11 +45,11 @@ describe('Automated Latest Content Supervisor', function () {
     var block1 = new Backbone.SuperModel();
     var block2 = new Backbone.SuperModel();
     var postsSet1 = [
-      { type: 'customTypeOne' }
+      { type: 'customTypeOne' },
     ];
     var postsSet2 = [
       { type: 'customTypeTwo' },
-      { type: 'customTypeTwo' }
+      { type: 'customTypeTwo' },
     ];
     var mock1 = sinon.mock(block1);
     var mock2 = sinon.mock(block2);
@@ -197,14 +197,14 @@ describe('Automated latest content', function () {
               styles: {
                 block: {
                   backgroundColor: '#123456',
-                  borderColor: '#234567'
+                  borderColor: '#234567',
                 },
                 link: {
                   fontColor: '#345678',
                   fontFamily: 'Tahoma',
-                  fontSize: '37px'
-                }
-              }
+                  fontSize: '37px',
+                },
+              },
             },
             sortBy: 'oldest', // 'newest'|'oldest',
             showDivider: true, // true|false
@@ -213,12 +213,12 @@ describe('Automated latest content', function () {
               styles: {
                 block: {
                   backgroundColor: '#456789',
-                  padding: '38px'
-                }
-              }
-            }
-          }
-        }
+                  padding: '38px',
+                },
+              },
+            },
+          },
+        },
       });
       model = new (module.AutomatedLatestContentBlockModel)();
 
@@ -257,7 +257,7 @@ describe('Automated latest content', function () {
       model = new (module.AutomatedLatestContentBlockModel)();
 
       model.updatePosts([{
-        type: 'someCustomType'
+        type: 'someCustomType',
       }]);
 
       expect(model.get('_container.blocks').size()).to.equal(1);
@@ -327,7 +327,7 @@ describe('Automated latest content', function () {
       EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
       view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({
-        model: { set: sinon.stub() }
+        model: { set: sinon.stub() },
       });
     });
 
@@ -341,9 +341,9 @@ describe('Automated latest content', function () {
       const data = {
         styles: {
           block: {
-            borderRadius: '14px'
-          }
-        }
+            borderRadius: '14px',
+          },
+        },
       };
       callback(data);
       expect(view.model.set).to.have.been.callCount(1);
@@ -361,8 +361,8 @@ describe('Automated latest content', function () {
         'newsletter_editor/components/communication': {
           getPostTypes: function () {
             return jQuery.Deferred();
-          }
-        }
+          },
+        },
       }).default;
     });
 
@@ -373,28 +373,28 @@ describe('Automated latest content', function () {
           {
             name: 'post',
             labels: {
-              singular_name: 'Post'
-            }
+              singular_name: 'Post',
+            },
           },
           {
             name: 'page',
             labels: {
-              singular_name: 'Page'
-            }
+              singular_name: 'Page',
+            },
           },
           {
             name: 'mailpoet_page',
             labels: {
-              singular_name: 'Mailpoet page'
-            }
-          }
+              singular_name: 'Mailpoet page',
+            },
+          },
         ]);
         return deferred;
       };
 
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
-        blockDefaults: {}
+        blockDefaults: {},
       });
       EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);

@@ -14,11 +14,11 @@ var BL = BehaviorsLookup;
 BL.MediaManagerBehavior = Marionette.Behavior.extend({
   ui: {
     'select-image': '.mailpoet_field_image_select_image',
-    'address-input': '.mailpoet_field_image_address'
+    'address-input': '.mailpoet_field_image_address',
   },
   events: {
     'click @ui.select-image': 'showMediaManager',
-    'input @ui.address-input': 'changeAddress'
+    'input @ui.address-input': 'changeAddress',
   },
   initialize: function () {
     if (this.view.options.showImageManager) {
@@ -33,7 +33,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
       this.view[this.options.onSelect]({
         src: null,
         width: null,
-        height: null
+        height: null,
       });
       return;
     }
@@ -43,7 +43,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
         this.view[this.options.onSelect]({
           src: src,
           width: image.naturalWidth + 'px',
-          height: image.naturalHeight + 'px'
+          height: image.naturalHeight + 'px',
         });
       }
     }.bind(this);
@@ -68,7 +68,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
         _.defaults(this.options, {
           multiple: true,
           editing: false,
-          state: 'insert'
+          state: 'insert',
         });
 
         this.createSelection();
@@ -113,8 +113,8 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
             displaySettings: false,
             // Update user settings when users adjust the
             // attachment display settings.
-            displayUserSettings: false
-          })
+            displayUserSettings: false,
+          }),
         ]);
 
         if (window.wp.media.view.settings.post.featuredImageId) {
@@ -141,11 +141,11 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
         handlers = {
           content: {
             embed: 'embedContent',
-            'edit-selection': 'editSelectionContent'
+            'edit-selection': 'editSelectionContent',
           },
           toolbar: {
-            'main-insert': 'mainInsertToolbar'
-          }
+            'main-insert': 'mainInsertToolbar',
+          },
         };
 
         _.each(handlers, function (regionHandlers, region) {
@@ -164,7 +164,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
       embedContent: function () {
         var view = new window.wp.media.view.Embed({
           controller: this,
-          model: this.state()
+          model: this.state(),
         }).render();
 
         this.content.set(view);
@@ -185,7 +185,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
           search: false,
           dragInfo: true,
 
-          AttachmentView: window.wp.media.view.Attachment.EditSelection
+          AttachmentView: window.wp.media.view.Attachment.EditSelection,
         }).render();
 
         view.toolbar.set('backToLibrary', {
@@ -194,7 +194,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
 
           click: function () {
             this.controller.content.mode('browse');
-          }
+          },
         });
 
         // Browse our library of attachments.
@@ -214,7 +214,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
           // switch the content mode.
           editable: editable && function () {
             this.controller.content.mode('edit-selection');
-          }
+          },
         }).render());
       },
 
@@ -235,7 +235,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
 
             controller.close();
             state.trigger('insert', selection).reset();
-          }
+          },
         });
       },
 
@@ -243,9 +243,9 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
         var tbar = toolbar;
         tbar.view = new window.wp.media.view.Toolbar.Embed({
           controller: this,
-          text: 'Add images'
+          text: 'Add images',
         });
-      }
+      },
 
     });
 
@@ -256,12 +256,12 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
       editing: false,
       multiple: false,
       library: {
-        type: 'image'
+        type: 'image',
       },
       displaySettings: false,
       button: {
-        text: 'Select'
-      }
+        text: 'Select',
+      },
     });
     this._mediaManager = theFrame;
 
@@ -296,7 +296,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
             height: mainSize.height + 'px',
             width: mainSize.width + 'px',
             src: mainSize.url,
-            alt: (attachment.get('alt') !== '' && attachment.get('alt') !== undefined) ? attachment.get('alt') : attachment.get('title')
+            alt: (attachment.get('alt') !== '' && attachment.get('alt') !== undefined) ? attachment.get('alt') : attachment.get('title'),
           });
         }
       });
@@ -307,5 +307,5 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
     if (typeof this._mediaManager === 'object') {
       this._mediaManager.remove();
     }
-  }
+  },
 });

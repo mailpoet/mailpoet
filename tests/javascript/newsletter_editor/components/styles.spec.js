@@ -10,7 +10,7 @@ describe('Styles', function () {
   it('loads and stores globally available styles', function () {
     var model;
     StylesComponent.setGlobalStyles({
-      testStyle: 'testValue'
+      testStyle: 'testValue',
     });
     model = StylesComponent.getGlobalStyles();
     expect(model.get('testStyle')).to.equal('testValue');
@@ -26,7 +26,7 @@ describe('Styles', function () {
       var mock = sinon.mock({ trigger: function () {} }).expects('trigger').once().withExactArgs('autoSave');
       EditorApplication.getChannel = function () {
         return {
-          trigger: mock
+          trigger: mock,
         };
       };
       model.set('text.fontColor', '#123456');

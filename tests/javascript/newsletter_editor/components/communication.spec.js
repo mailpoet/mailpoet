@@ -15,13 +15,13 @@ describe('getPostTypes', function () {
             deferred.resolve({
               data: {
                 post: 'val1',
-                page: 'val2'
-              }
+                page: 'val2',
+              },
             });
             return deferred;
-          }
-        }
-      }
+          },
+        },
+      },
     }).default;
     module.getPostTypes().done(function (types) {
       expect(types).to.eql(['val1', 'val2']);
@@ -34,13 +34,13 @@ describe('getPostTypes', function () {
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: mock
-        }
-      }
+          post: mock,
+        },
+      },
     }).default;
     deferred.resolve({
       post: 'val1',
-      page: 'val2'
+      page: 'val2',
     });
     module.getPostTypes();
     module.getPostTypes();
@@ -56,7 +56,7 @@ describe('getTaxonomies', function () {
       var deferred = jQuery.Deferred();
       deferred.resolve({
         category: 'val1',
-        post_tag: 'val2'
+        post_tag: 'val2',
       });
       return deferred;
     };
@@ -65,9 +65,9 @@ describe('getTaxonomies', function () {
     module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: spy
-        }
-      }
+          post: spy,
+        },
+      },
     }).default;
 
     module.getTaxonomies('post');
@@ -82,13 +82,13 @@ describe('getTaxonomies', function () {
             var deferred = jQuery.Deferred();
             deferred.resolve({
               data: {
-                category: 'val1'
-              }
+                category: 'val1',
+              },
             });
             return deferred;
-          }
-        }
-      }
+          },
+        },
+      },
     }).default;
     module.getTaxonomies('page').done(function (types) {
       expect(types).to.eql({ category: 'val1' });
@@ -101,9 +101,9 @@ describe('getTaxonomies', function () {
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: mock
-        }
-      }
+          post: mock,
+        },
+      },
     }).default;
     deferred.resolve({ category: 'val1' });
     module.getTaxonomies('page');
@@ -126,13 +126,13 @@ describe('getTerms', function () {
     module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: spy
-        }
-      }
+          post: spy,
+        },
+      },
     }).default;
 
     module.getTerms({
-      taxonomies: ['category', 'post_tag']
+      taxonomies: ['category', 'post_tag'],
     });
     expect(spy.args[0][0].data.taxonomies).to.eql(['category', 'post_tag']);
   });
@@ -146,13 +146,13 @@ describe('getTerms', function () {
             deferred.resolve({
               data: {
                 term1: 'term1val1',
-                term2: 'term2val2'
-              }
+                term2: 'term2val2',
+              },
             });
             return deferred;
-          }
-        }
-      }
+          },
+        },
+      },
     }).default;
     module.getTerms({ taxonomies: ['category'] }).done(function (types) {
       expect(types).to.eql({ term1: 'term1val1', term2: 'term2val2' });
@@ -165,9 +165,9 @@ describe('getTerms', function () {
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: mock
-        }
-      }
+          post: mock,
+        },
+      },
     }).default;
     deferred.resolve({ term1: 'term1val1', term2: 'term2val2' });
     module.getTerms({ taxonomies: ['category'] });
@@ -190,18 +190,18 @@ describe('getPosts', function () {
     module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: spy
-        }
-      }
+          post: spy,
+        },
+      },
     }).default;
 
     module.getPosts({
       type: 'posts',
-      search: 'some search term'
+      search: 'some search term',
     });
     expect(spy.args[0][0].data).to.eql({
       type: 'posts',
-      search: 'some search term'
+      search: 'some search term',
     });
   });
 
@@ -214,13 +214,13 @@ describe('getPosts', function () {
             deferred.resolve({
               data: [
                 { post_title: 'title 1' },
-                { post_title: 'post title 2' }
-              ]
+                { post_title: 'post title 2' },
+              ],
             });
             return deferred;
-          }
-        }
-      }
+          },
+        },
+      },
     }).default;
     module.getPosts().done(function (posts) {
       expect(posts).to.eql([{ post_title: 'title 1' }, { post_title: 'post title 2' }]);
@@ -233,13 +233,13 @@ describe('getPosts', function () {
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: mock
-        }
-      }
+          post: mock,
+        },
+      },
     }).default;
     deferred.resolve({
       type: 'posts',
-      search: 'some search term'
+      search: 'some search term',
     });
     module.getPosts({});
     module.getPosts({});
@@ -261,18 +261,18 @@ describe('getTransformedPosts', function () {
     module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: spy
-        }
-      }
+          post: spy,
+        },
+      },
     }).default;
 
     module.getTransformedPosts({
       type: 'posts',
-      posts: [1, 2]
+      posts: [1, 2],
     });
     expect(spy.args[0][0].data).to.eql({
       type: 'posts',
-      posts: [1, 2]
+      posts: [1, 2],
     });
   });
 
@@ -285,13 +285,13 @@ describe('getTransformedPosts', function () {
             deferred.resolve({
               data: [
                 { type: 'text', text: 'something' },
-                { type: 'text', text: 'something else' }
-              ]
+                { type: 'text', text: 'something else' },
+              ],
             });
             return deferred;
-          }
-        }
-      }
+          },
+        },
+      },
     }).default;
     module.getTransformedPosts().done(function (posts) {
       expect(posts).to.eql([{ type: 'text', text: 'something' }, { type: 'text', text: 'something else' }]);
@@ -304,13 +304,13 @@ describe('getTransformedPosts', function () {
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
-          post: mock
-        }
-      }
+          post: mock,
+        },
+      },
     }).default;
     deferred.resolve({
       type: 'posts',
-      posts: [1, 3]
+      posts: [1, 3],
     });
     module.getTransformedPosts({});
     module.getTransformedPosts({});
