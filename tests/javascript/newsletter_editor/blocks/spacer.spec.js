@@ -1,8 +1,8 @@
-const expect = global.expect;
-const sinon = global.sinon;
-
 import App from 'newsletter_editor/App';
 import SpacerBlock from 'newsletter_editor/blocks/spacer';
+
+const expect = global.expect;
+const sinon = global.sinon;
 
 var EditorApplication = App;
 

@@ -1,10 +1,10 @@
+import App from 'newsletter_editor/App';
+import ContentComponent from 'newsletter_editor/components/content';
+
 const expect = global.expect;
 const sinon = global.sinon;
 const Backbone = global.Backbone;
 const _ = global._;
-
-import App from 'newsletter_editor/App';
-import ContentComponent from 'newsletter_editor/components/content';
 
 var EditorApplication = App;
 

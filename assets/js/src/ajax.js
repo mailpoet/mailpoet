@@ -1,3 +1,7 @@
+import MailPoet from 'mailpoet';
+import jQuery from 'jquery';
+import _ from 'underscore';
+
 function requestFailed(errorMessage, xhr) {
   if (xhr.responseJSON) {
     return xhr.responseJSON;
@@ -10,12 +14,6 @@ function requestFailed(errorMessage, xhr) {
     ]
   };
 }
-
-import mp from 'mailpoet';
-import jQuery from 'jquery';
-import _ from 'underscore';
-
-var MailPoet = mp;
 
 MailPoet.Ajax = {
   version: 0.5,

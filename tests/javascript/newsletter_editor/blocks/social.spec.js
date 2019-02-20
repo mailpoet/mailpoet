@@ -1,9 +1,9 @@
-const expect = global.expect;
-const sinon = global.sinon;
-
 import EditorApplication from 'newsletter_editor/App';
 import SocialBlock from 'newsletter_editor/blocks/social';
 import Backbone from 'backbone';
+
+const expect = global.expect;
+const sinon = global.sinon;
 
 describe('Social', function () {
   describe('block model', function () {

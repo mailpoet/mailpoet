@@ -1,12 +1,12 @@
-const expect = global.expect;
-const sinon = global.sinon;
-
 import App from 'newsletter_editor/App';
 import SaveComponent from 'newsletter_editor/components/save';
 import jQuery from 'jquery';
 
 /* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
 import SaveInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/components/save';
+
+const expect = global.expect;
+const sinon = global.sinon;
 
 var EditorApplication = App;
 

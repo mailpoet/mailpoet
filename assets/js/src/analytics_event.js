@@ -7,6 +7,8 @@
  *   even if it has been disabled.
  *
  */
+import MailPoet from 'mailpoet';
+import _ from 'underscore';
 
 /**
  *  This is to cache events which are triggered before the mixpanel
@@ -24,8 +26,7 @@ function track(name, data) {
   window.mixpanel.track(name, data);
 }
 
-function exportMixpanel(mp) {
-  var MailPoet = mp;
+function exportMixpanel() {
   MailPoet.forceTrackEvent = track;
 
   if (window.mailpoet_analytics_enabled) {
@@ -51,14 +52,9 @@ function cacheEvent(forced, name, data) {
   });
 }
 
-import mp from 'mailpoet';
-import _ from 'underscore';
-
-var MailPoet = mp;
-
 function initializeMixpanelWhenLoaded() {
   if (typeof window.mixpanel === 'object') {
-    exportMixpanel(MailPoet);
+    exportMixpanel();
     trackCachedEvents();
   } else {
     setTimeout(initializeMixpanelWhenLoaded, 100);

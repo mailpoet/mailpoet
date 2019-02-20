@@ -1,8 +1,8 @@
-const expect = global.expect;
-const sinon = global.sinon;
-
 import App from 'newsletter_editor/App';
 import ImageBlock from 'newsletter_editor/blocks/image';
+
+const expect = global.expect;
+const sinon = global.sinon;
 
 var EditorApplication = App;
 

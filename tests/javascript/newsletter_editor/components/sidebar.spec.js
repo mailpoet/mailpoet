@@ -1,7 +1,7 @@
+import SidebarComponent from 'newsletter_editor/components/sidebar';
+
 const expect = global.expect;
 const Backbone = global.Backbone;
-
-import SidebarComponent from 'newsletter_editor/components/sidebar';
 
 describe('Sidebar', function () {
   describe('content view', function () {
