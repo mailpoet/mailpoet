@@ -13,7 +13,7 @@ describe('Image', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
-        blockDefaults: {}
+        blockDefaults: {},
       });
       model = new (ImageBlock.ImageBlockModel)();
       sandbox = sinon.sandbox.create();
@@ -63,7 +63,7 @@ describe('Image', function () {
     it('triggers autosave when any of the attributes change', function () {
       var mock = sinon.mock().exactly(7).withArgs('autoSave');
       EditorApplication.getChannel = sinon.stub().returns({
-        trigger: mock
+        trigger: mock,
       });
 
       model.set('link', 'http://example.net');
@@ -90,11 +90,11 @@ describe('Image', function () {
             height: '2345px',
             styles: {
               block: {
-                textAlign: 'right'
-              }
-            }
-          }
-        }
+                textAlign: 'right',
+              },
+            },
+          },
+        },
       });
       innerModel = new (ImageBlock.ImageBlockModel)();
 
@@ -173,7 +173,7 @@ describe('Image', function () {
         model = new (ImageBlock.ImageBlockModel)({
           link: 'http://example.org/somepath',
           src: 'http://example.org/someimage.png',
-          alt: 'some alt'
+          alt: 'some alt',
         });
         view = new (ImageBlock.ImageBlockView)({ model: model });
         view.render();
@@ -212,7 +212,7 @@ describe('Image', function () {
     before(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
-        blockDefaults: {}
+        blockDefaults: {},
       });
       global.stubImage(newWidth, newHeight);
       model = new (ImageBlock.ImageBlockModel)();

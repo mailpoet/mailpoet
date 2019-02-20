@@ -32,14 +32,14 @@ tinymce.PluginManager.add('mailpoet_shortcodes', function tinyMceAdd(editor) {
         if (Object.prototype.hasOwnProperty.call(configShortcodes, segment)) {
           shortcodes.push({
             type: 'label',
-            text: segment
+            text: segment,
           });
 
           for (i = 0; i < configShortcodes[segment].length; i += 1) {
             shortcodes.push({
               type: 'button',
               text: configShortcodes[segment][i].text,
-              onClick: generateOnClickFunc(configShortcodes[segment][i].shortcode)
+              onClick: generateOnClickFunc(configShortcodes[segment][i].shortcode),
             });
           }
         }
@@ -52,8 +52,8 @@ tinymce.PluginManager.add('mailpoet_shortcodes', function tinyMceAdd(editor) {
         autoScroll: true,
         title: editor.settings.mailpoet_shortcodes_window_title,
         body: shortcodes,
-        buttons: []
+        buttons: [],
       });
-    }
+    },
   });
 });

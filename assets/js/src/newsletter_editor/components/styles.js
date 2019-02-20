@@ -10,47 +10,47 @@ Module.StylesModel = SuperModel.extend({
     text: {
       fontColor: '#000000',
       fontFamily: 'Arial',
-      fontSize: '16px'
+      fontSize: '16px',
     },
     h1: {
       fontColor: '#111111',
       fontFamily: 'Arial',
-      fontSize: '40px'
+      fontSize: '40px',
     },
     h2: {
       fontColor: '#222222',
       fontFamily: 'Tahoma',
-      fontSize: '32px'
+      fontSize: '32px',
     },
     h3: {
       fontColor: '#333333',
       fontFamily: 'Verdana',
-      fontSize: '24px'
+      fontSize: '24px',
     },
     link: {
       fontColor: '#21759B',
-      textDecoration: 'underline'
+      textDecoration: 'underline',
     },
     wrapper: {
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
     },
     body: {
-      backgroundColor: '#cccccc'
-    }
+      backgroundColor: '#cccccc',
+    },
   },
   initialize: function () { // eslint-disable-line func-names
     this.on('change', function () { App.getChannel().trigger('autoSave'); }); // eslint-disable-line func-names
-  }
+  },
 });
 
 Module.StylesView = Marionette.View.extend({
   getTemplate: function () { return window.templates.styles; }, // eslint-disable-line func-names
   modelEvents: {
-    change: 'render'
+    change: 'render',
   },
   serializeData: function () { // eslint-disable-line func-names
     return this.model.toJSON();
-  }
+  },
 });
 
 Module._globalStyles = new SuperModel();

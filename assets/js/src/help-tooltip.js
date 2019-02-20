@@ -9,8 +9,8 @@ MailPoet.helpTooltip = {
       TooltipComponent, {
         tooltip: opts.tooltip,
         tooltipId: opts.tooltipId,
-        place: opts.place
+        place: opts.place,
       }
     ), domContainerNode);
-  }
+  },
 };

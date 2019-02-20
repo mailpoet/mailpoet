@@ -13,7 +13,7 @@ describe('Header', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
-        blockDefaults: {}
+        blockDefaults: {},
       });
       model = new (HeaderBlock.HeaderBlockModel)();
       sandbox = sinon.sandbox.create();
@@ -67,7 +67,7 @@ describe('Header', function () {
     it('triggers autosave if any attribute changes', function () {
       var mock = sinon.mock().exactly(8).withArgs('autoSave');
       EditorApplication.getChannel = sinon.stub().returns({
-        trigger: mock
+        trigger: mock,
       });
 
       model.set('text', 'Some new text');
@@ -90,21 +90,21 @@ describe('Header', function () {
             text: 'some custom config text',
             styles: {
               block: {
-                backgroundColor: '#123456'
+                backgroundColor: '#123456',
               },
               text: {
                 fontColor: '#234567',
                 fontFamily: 'Tahoma',
                 fontSize: '37px',
-                textAlign: 'right'
+                textAlign: 'right',
               },
               link: {
                 fontColor: '#345678',
-                textDecoration: 'underline'
-              }
-            }
-          }
-        }
+                textDecoration: 'underline',
+              },
+            },
+          },
+        },
       });
       innerModel = new (HeaderBlock.HeaderBlockModel)();
 
@@ -154,9 +154,9 @@ describe('Header', function () {
     global.stubAvailableStyles(EditorApplication, {
       fonts: {
         standard: ['Arial', 'Tahoma'],
-        custom: ['Arvo', 'Lato', 'Lora']
+        custom: ['Arvo', 'Lato', 'Lora'],
       },
-      textSizes: ['16px', '20px']
+      textSizes: ['16px', '20px'],
     });
 
     it('renders', function () {
@@ -177,9 +177,9 @@ describe('Header', function () {
         global.stubAvailableStyles(EditorApplication, {
           fonts: {
             standard: ['Arial', 'Tahoma'],
-            custom: ['Arvo', 'Lato', 'Lora']
+            custom: ['Arvo', 'Lato', 'Lora'],
           },
-          textSizes: ['16px', '20px']
+          textSizes: ['16px', '20px'],
         });
         model = new (HeaderBlock.HeaderBlockModel)({});
         view = new (HeaderBlock.HeaderBlockSettingsView)({ model: model });

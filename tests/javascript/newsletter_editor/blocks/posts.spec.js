@@ -17,8 +17,8 @@ describe('Posts', function () {
       request: function () {
       },
       reply: function () {
-      }
-    }
+      },
+    },
   };
   describe('model', function () {
     var model;
@@ -159,14 +159,14 @@ describe('Posts', function () {
               styles: {
                 block: {
                   backgroundColor: '#123456',
-                  borderColor: '#234567'
+                  borderColor: '#234567',
                 },
                 link: {
                   fontColor: '#345678',
                   fontFamily: 'Tahoma',
-                  fontSize: '37px'
-                }
-              }
+                  fontSize: '37px',
+                },
+              },
             },
             sortBy: 'oldest', // 'newest'|'oldest',
             showDivider: true, // true|false
@@ -175,12 +175,12 @@ describe('Posts', function () {
               styles: {
                 block: {
                   backgroundColor: '#456789',
-                  padding: '38px'
-                }
-              }
-            }
-          }
-        }
+                  padding: '38px',
+                },
+              },
+            },
+          },
+        },
       });
       innerModel = new (PostsBlock.PostsBlockModel)();
 
@@ -222,7 +222,7 @@ describe('Posts', function () {
     it('increases offset when loading more posts', function () {
       model.set({
         amount: 2,
-        offset: 0
+        offset: 0,
       });
       model.set('_availablePosts', new Backbone.Collection([{}, {}])); // 2 posts
       model.trigger('loadMorePosts');
@@ -232,7 +232,7 @@ describe('Posts', function () {
     it('does not increase offset when there is no more posts to load', function () {
       model.set({
         amount: 10,
-        offset: 0
+        offset: 0,
       });
       model.set('_availablePosts', new Backbone.Collection([{}, {}])); // 2 posts
       model.trigger('loadMorePosts');
@@ -249,7 +249,7 @@ describe('Posts', function () {
 
       model.set({
         amount: 2,
-        offset: 0
+        offset: 0,
       });
       model.set('_availablePosts', new Backbone.Collection([{}, {}])); // 2 posts
       model._loadMorePosts();
@@ -307,28 +307,28 @@ describe('Posts', function () {
           {
             name: 'post',
             labels: {
-              singular_name: 'Post'
-            }
+              singular_name: 'Post',
+            },
           },
           {
             name: 'page',
             labels: {
-              singular_name: 'Page'
-            }
+              singular_name: 'Page',
+            },
           },
           {
             name: 'mailpoet_page',
             labels: {
-              singular_name: 'Mailpoet page'
-            }
-          }
+              singular_name: 'Mailpoet page',
+            },
+          },
         ]);
         return deferred;
       };
 
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
-        blockDefaults: {}
+        blockDefaults: {},
       });
       EditorApplication.getBlockTypeModel = sinon.stub()
         .returns(ContainerBlock.ContainerBlockModel);

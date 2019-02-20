@@ -10,18 +10,18 @@ Module.HeadingView = Marionette.View.extend({
   getTemplate: function () { return window.templates.heading; }, // eslint-disable-line func-names
   templateContext: function () { // eslint-disable-line func-names
     return {
-      model: this.model.toJSON()
+      model: this.model.toJSON(),
     };
   },
   events: function () { // eslint-disable-line func-names
     return {
       'keyup .mailpoet_input_title': _.partial(this.changeField, 'subject'),
-      'keyup .mailpoet_input_preheader': _.partial(this.changeField, 'preheader')
+      'keyup .mailpoet_input_preheader': _.partial(this.changeField, 'preheader'),
     };
   },
   changeField: function (field, event) { // eslint-disable-line func-names
     this.model.set(field, jQuery(event.target).val());
-  }
+  },
 });
 
 App.on('start', function (StartApp) { // eslint-disable-line func-names
@@ -29,11 +29,11 @@ App.on('start', function (StartApp) { // eslint-disable-line func-names
   MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-subject-line'), {
     tooltipId: 'tooltip-designer-subject-line-ti',
     tooltip: MailPoet.I18n.t('helpTooltipDesignerSubjectLine'),
-    place: 'right'
+    place: 'right',
   });
   MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-preheader'), {
     tooltipId: 'tooltip-designer-preheader-ti',
-    tooltip: MailPoet.I18n.t('helpTooltipDesignerPreheader')
+    tooltip: MailPoet.I18n.t('helpTooltipDesignerPreheader'),
   });
 });
 

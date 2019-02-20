@@ -38,8 +38,8 @@ BL.ColorPickerBehavior = Marionette.Behavior.extend({
         cancelText: MailPoet.I18n.t('cancelColorSelection'),
         change: updateColorInput,
         move: updateColorInput,
-        hide: updateColorInput
+        hide: updateColorInput,
       });
     });
-  }
+  },
 });

@@ -11,8 +11,8 @@ var AppView = Marionette.View.extend({
     sidebarRegion: '#mailpoet_editor_sidebar',
     bottomRegion: '#mailpoet_editor_bottom',
     headingRegion: '#mailpoet_editor_heading',
-    topRegion: '#mailpoet_editor_top'
-  }
+    topRegion: '#mailpoet_editor_top',
+  },
 });
 
 var EditorApplication = Marionette.Application.extend({
@@ -28,7 +28,7 @@ var EditorApplication = Marionette.Application.extend({
       return Radio.channel('global');
     }
     return Radio.channel(channel);
-  }
+  },
 });
 
 var app = new EditorApplication();

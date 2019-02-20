@@ -28,7 +28,7 @@ MailPoet.MP2Migrator = {
   displayLogs: function () {
     jQuery.ajax({
       url: window.mailpoet_mp2_migrator.log_file_url,
-      cache: false
+      cache: false,
     }).done(function (result) {
       jQuery('#logger').html('');
       result.split('\n').forEach(function (resultRow) {
@@ -56,7 +56,7 @@ MailPoet.MP2Migrator = {
     jQuery.ajax({
       url: window.mailpoet_mp2_migrator.progress_url,
       cache: false,
-      dataType: 'json'
+      dataType: 'json',
     }).always(function (result) {
       // Move the progress bar
       var progress = 0;
@@ -98,7 +98,7 @@ MailPoet.MP2Migrator = {
       endpoint: 'MP2Migrator',
       action: 'import',
       data: {
-      }
+      },
     }).always(function () {
       MailPoet.MP2Migrator.stopLogger();
       // Get the latest information after the import was stopped
@@ -134,7 +134,7 @@ MailPoet.MP2Migrator = {
       endpoint: 'MP2Migrator',
       action: 'stopImport',
       data: {
-      }
+      },
     }).always(function () {
       jQuery('#stop-import').removeAttr('disabled'); // Enable the button
       MailPoet.MP2Migrator.reactivateImportButton();
@@ -160,7 +160,7 @@ MailPoet.MP2Migrator = {
       endpoint: 'MP2Migrator',
       action: 'skipImport',
       data: {
-      }
+      },
     }).done(function () {
       MailPoet.MP2Migrator.gotoWelcomePage();
     }).fail(function (response) {
@@ -179,7 +179,7 @@ MailPoet.MP2Migrator = {
   gotoWelcomePage: function () {
     window.location.href = 'admin.php?page=mailpoet-welcome-wizard';
     return false;
-  }
+  },
 
 };
 

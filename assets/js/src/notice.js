@@ -37,7 +37,7 @@ MailPoet.Notice = {
     scroll: false,
     timeout: 10000,
     onOpen: null,
-    onClose: null
+    onClose: null,
   },
   options: {},
   init: function init(options) {
@@ -202,20 +202,20 @@ MailPoet.Notice = {
   error: function error(message, options) {
     this.show(jQuery.extend({}, {
       type: 'error',
-      message: message
+      message: message,
     }, options));
   },
   success: function success(message, options) {
     this.show(jQuery.extend({}, {
       type: 'success',
-      message: message
+      message: message,
     }, options));
   },
   system: function system(message, options) {
     this.show(jQuery.extend({}, {
       type: 'system',
       static: true,
-      message: message
+      message: message,
     }, options));
-  }
+  },
 };

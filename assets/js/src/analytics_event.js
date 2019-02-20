@@ -48,7 +48,7 @@ function cacheEvent(forced, name, data) {
   eventsCache.push({
     name: name,
     data: data,
-    forced: forced
+    forced: forced,
   });
 }
 

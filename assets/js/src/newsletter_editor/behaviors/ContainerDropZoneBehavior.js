@@ -16,7 +16,7 @@ var BehaviorsLookup = BL;
 
 BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
   defaults: {
-    columnLimit: 3
+    columnLimit: 3,
   },
   onRender: function () {
     var dragAndDropDisabled = (
@@ -224,7 +224,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
             // Regular blocks always need to be inserted into columns - vertical containers
 
             tempCollection = new (window.EditorApplication.getBlockTypeModel('container'))({
-              orientation: 'vertical'
+              orientation: 'vertical',
             });
             tempCollection.get('blocks').add(droppableModel);
             viewCollection.add(tempCollection, { at: index });
@@ -239,7 +239,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
           tempModel = viewCollection.at(dropPosition.index);
 
           tempCollection = new (window.EditorApplication.getBlockTypeModel('container'))({
-            orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical'
+            orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical',
           });
 
           viewCollection.remove(tempModel);
@@ -247,19 +247,19 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
           if (tempCollection.get('orientation') === 'horizontal') {
             if (dropPosition.position === 'before') {
               tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
-                orientation: 'vertical'
+                orientation: 'vertical',
               });
               tempCollection2.get('blocks').add(droppableModel);
               tempCollection.get('blocks').add(tempCollection2);
             }
             tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
-              orientation: 'vertical'
+              orientation: 'vertical',
             });
             tempCollection2.get('blocks').add(tempModel);
             tempCollection.get('blocks').add(tempCollection2);
             if (dropPosition.position === 'after') {
               tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
-                orientation: 'vertical'
+                orientation: 'vertical',
               });
               tempCollection2.get('blocks').add(droppableModel);
               tempCollection.get('blocks').add(tempCollection2);
@@ -287,11 +287,11 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
         event.draggable.onDrop({
           dropBehavior: that,
           droppedModel: droppableModel,
-          droppedView: droppedView
+          droppedView: droppedView,
         });
 
         that.cleanup();
-      }
+      },
     });
   },
   cleanup: function () {
@@ -333,7 +333,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
       return {
         insertionType: 'normal',
         index: 0,
-        position: 'inside'
+        position: 'inside',
       };
     }
 
@@ -390,7 +390,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     return {
       insertionType: insertionType, // 'normal'|'special'
       index: index,
-      position: position // 'inside'|'before'|'after'
+      position: position, // 'inside'|'before'|'after'
     };
   },
   _computeNormalIndex: function (eventX, eventY) {
@@ -422,13 +422,13 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
       // First half of the element
       return {
         index: index,
-        position: 'before'
+        position: 'before',
       };
     }
     // Second half of the element
     return {
       index: index,
-      position: 'after'
+      position: 'after',
     };
   },
   _computeSpecialIndex: function (eventX, eventY) {
@@ -479,5 +479,5 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
   },
   getCollection: function () {
     return this.getCollectionView().collection;
-  }
+  },
 });

@@ -31,9 +31,9 @@ describe('Text', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {
           text: {
-            text: 'some custom config text'
-          }
-        }
+            text: 'some custom config text',
+          },
+        },
       });
       model = new (TextBlock.TextBlockModel)();
 

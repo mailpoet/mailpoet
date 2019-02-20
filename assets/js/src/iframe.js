@@ -18,7 +18,7 @@ MailPoet.Iframe = {
     iframe.style.height = (
       parseInt(i, 10) + this.marginY
     ) + 'px';
-  }
+  },
 };
 
 export default MailPoet;

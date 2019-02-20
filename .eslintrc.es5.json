@@ -9,6 +9,7 @@
     "sourceType": "module"
   },
   "rules": {
-    "no-underscore-dangle": 0 // Backbone uses underscores, we cannot remove them
+    "no-underscore-dangle": 0, // Backbone uses underscores, we cannot remove them
+    "comma-dangle": ["error", "always-multiline"]
   }
 }

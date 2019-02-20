@@ -29,7 +29,7 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
     },
 
     onDrop: function onDrop() {},
-    testAttachToInstance: function testAttachToInstance() { return true; }
+    testAttachToInstance: function testAttachToInstance() { return true; },
   },
   onRender: function onRender() {
     var that = this;
@@ -39,7 +39,7 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
     if (!this.options.testAttachToInstance(this.view.model, this.view)) return;
 
     interactable = interact(this.$el.get(0), {
-      ignoreFrom: this.options.ignoreSelector
+      ignoreFrom: this.options.ignoreSelector,
     }).draggable({
       // allow dragging of multple elements at the same time
       max: Infinity,
@@ -118,7 +118,7 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
             that.view.$el.removeClass('mailpoet_hidden');
           }
         }
-      }
+      },
     })
       .preventDefault('auto')
       .styleCursor(false)
@@ -145,5 +145,5 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
       // Delegate to view's event handler
       that.options.onDrop.apply(that, [options]);
     };
-  }
+  },
 });

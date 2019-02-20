@@ -15,11 +15,11 @@ Module.SpacerBlockModel = base.BlockModel.extend({
       styles: {
         block: {
           backgroundColor: 'transparent',
-          height: '40px'
-        }
-      }
+          height: '40px',
+        },
+      },
     }, App.getConfig().get('blockDefaults.spacer'));
-  }
+  },
 });
 
 Module.SpacerBlockView = base.BlockView.extend({
@@ -30,11 +30,11 @@ Module.SpacerBlockView = base.BlockView.extend({
       elementSelector: '.mailpoet_spacer',
       resizeHandleSelector: '.mailpoet_resize_handle',
       minLength: 20, // TODO: Move this number to editor configuration
-      modelField: 'styles.block.height'
+      modelField: 'styles.block.height',
     },
     ShowSettingsBehavior: {
-      ignoreFrom: '.mailpoet_resize_handle'
-    }
+      ignoreFrom: '.mailpoet_resize_handle',
+    },
   }, base.BlockView.prototype.behaviors),
   modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'),
   onDragSubstituteBy: function onDragSubstituteBy() { return Module.SpacerWidgetView; },
@@ -54,11 +54,11 @@ Module.SpacerBlockView = base.BlockView.extend({
   },
   onBeforeDestroy: function onBeforeDestroy() {
     this.stopListening(this.model);
-  }
+  },
 });
 
 Module.SpacerBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function getSettingsView() { return Module.SpacerBlockSettingsView; }
+  getSettingsView: function getSettingsView() { return Module.SpacerBlockSettingsView; },
 });
 
 Module.SpacerBlockSettingsView = base.BlockSettingsView.extend({
@@ -66,9 +66,9 @@ Module.SpacerBlockSettingsView = base.BlockSettingsView.extend({
   events: function events() {
     return {
       'change .mailpoet_field_spacer_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
-      'click .mailpoet_done_editing': 'close'
+      'click .mailpoet_done_editing': 'close',
     };
-  }
+  },
 });
 
 Module.SpacerWidgetView = base.WidgetView.extend({
@@ -78,21 +78,21 @@ Module.SpacerWidgetView = base.WidgetView.extend({
       cloneOriginal: true,
       drop: function drop() {
         return new Module.SpacerBlockModel();
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 App.on('before:start', function beforeAppStart(BeforeStartApp) {
   BeforeStartApp.registerBlockType('spacer', {
     blockModel: Module.SpacerBlockModel,
-    blockView: Module.SpacerBlockView
+    blockView: Module.SpacerBlockView,
   });
 
   BeforeStartApp.registerWidget({
     name: 'spacer',
     widgetView: Module.SpacerWidgetView,
-    priority: 94
+    priority: 94,
   });
 });
 

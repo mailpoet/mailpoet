@@ -37,9 +37,9 @@ describe('Social', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {
           social: {
-            iconSet: 'customConfigIconSet'
-          }
-        }
+            iconSet: 'customConfigIconSet',
+          },
+        },
       });
       model = new (SocialBlock.SocialBlockModel)();
 
@@ -68,15 +68,15 @@ describe('Social', function () {
     before(function () {
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
-        'socialIconSets.default.custom': 'someimage.jpg'
+        'socialIconSets.default.custom': 'someimage.jpg',
       });
       global.stubConfig(EditorApplication, {
         socialIcons: {
           custom: {
             defaultLink: 'http://example.org',
-            title: 'sometitle'
-          }
-        }
+            title: 'sometitle',
+          },
+        },
       });
       model = new (SocialBlock.SocialIconModel)();
     });
@@ -115,19 +115,19 @@ describe('Social', function () {
       global.stubAvailableStyles(EditorApplication, {
         socialIconSets: {
           default: {
-            custom: 'http://www.sott.net/images/icons/big_x.png'
+            custom: 'http://www.sott.net/images/icons/big_x.png',
           },
           light: {
-            custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
-          }
+            custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
+          },
         },
         socialIcons: {
           custom: {
             title: 'Custom',
             linkFieldName: 'Page URL',
-            defaultLink: 'http://example.org'
-          }
-        }
+            defaultLink: 'http://example.org',
+          },
+        },
       });
       model = new (SocialBlock.SocialBlockModel)({
         type: 'social',
@@ -138,9 +138,9 @@ describe('Social', function () {
             iconType: 'custom',
             link: 'somelink.htm',
             image: 'someimage.png',
-            text: 'some text'
-          }
-        ]
+            text: 'some text',
+          },
+        ],
       });
     });
 
@@ -160,8 +160,8 @@ describe('Social', function () {
           iconSet: 'default',
           styles: {
             block: {
-              textAlign: 'right'
-            }
+              textAlign: 'right',
+            },
           },
           icons: [
             {
@@ -169,16 +169,16 @@ describe('Social', function () {
               iconType: 'custom',
               link: 'http://example.org/',
               image: 'http://example.org/someimage.png',
-              text: 'some text'
+              text: 'some text',
             },
             {
               type: 'socialIcon',
               iconType: 'facebook',
               link: 'http://facebook.com/',
               image: 'http://facebook.com/icon.png',
-              text: 'Facebook icon'
-            }
-          ]
+              text: 'Facebook icon',
+            },
+          ],
         });
         view = new (SocialBlock.SocialBlockView)({ model: model });
         view.render();
@@ -208,19 +208,19 @@ describe('Social', function () {
       global.stubAvailableStyles(EditorApplication, {
         socialIconSets: {
           default: {
-            custom: 'someimage.png'
+            custom: 'someimage.png',
           },
           light: {
-            custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
-          }
+            custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
+          },
         },
         socialIcons: {
           custom: {
             title: 'Custom',
             linkFieldName: 'Page URL',
-            defaultLink: 'http://example.org'
-          }
-        }
+            defaultLink: 'http://example.org',
+          },
+        },
       });
       model = new (SocialBlock.SocialBlockModel)({
         type: 'social',
@@ -233,9 +233,9 @@ describe('Social', function () {
             image: 'someimage.png',
             height: '32px',
             width: '32px',
-            text: 'some text'
-          }
-        ]
+            text: 'some text',
+          },
+        ],
       });
     });
 
@@ -251,27 +251,27 @@ describe('Social', function () {
         global.stubAvailableStyles(EditorApplication, {
           socialIconSets: {
             default: {
-              custom: 'http://www.sott.net/images/icons/big_x.png'
+              custom: 'http://www.sott.net/images/icons/big_x.png',
             },
             light: {
-              custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
-            }
+              custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
+            },
           },
           socialIcons: {
             custom: {
               title: 'Custom',
               linkFieldName: 'Page URL',
-              defaultLink: 'http://example.org'
-            }
-          }
+              defaultLink: 'http://example.org',
+            },
+          },
         });
         model = new (SocialBlock.SocialBlockModel)({
           type: 'social',
           iconSet: 'default',
           styles: {
             block: {
-              textAlign: 'center'
-            }
+              textAlign: 'center',
+            },
           },
           icons: [
             {
@@ -281,9 +281,9 @@ describe('Social', function () {
               image: 'someimage.png',
               height: '32px',
               width: '32px',
-              text: 'some text'
-            }
-          ]
+              text: 'some text',
+            },
+          ],
         });
         view = new (SocialBlock.SocialBlockSettingsView)({ model: model });
         view.render();

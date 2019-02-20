@@ -16,7 +16,7 @@ if (!global.document || !global.window) {
     FetchExternalResources: ['script'],
     ProcessExternalResources: ['script'],
     MutationEvents: '2.0',
-    QuerySelector: false
+    QuerySelector: false,
   });
 
   global.window = document.defaultView;
@@ -44,7 +44,7 @@ global.interact = function () {
     dropzone: global.interact,
     preventDefault: global.interact,
     actionChecker: global.interact,
-    styleCursor: global.interact
+    styleCursor: global.interact,
   };
 };
 global.spectrum = function () { return this; };
@@ -60,7 +60,7 @@ global.stubChannel = function (EditorApplication, returnObject) {
     trigger: function () {
     },
     on: function () {
-    }
+    },
   }));
 };
 global.stubConfig = function (EditorApplication, opts) {
@@ -86,7 +86,7 @@ global.stubImage = function (defaultWidth, defaultHeight) {
       set: function (src) {
         this.address = src;
         this.onload();
-      }
+      },
     });
   };
 };
@@ -232,6 +232,6 @@ global.templates = {
 
   textBlock: Handlebars.compile(jQuery('#newsletter_editor_template_text_block').html()),
   textInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_text_widget').html()),
-  textBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_text_settings').html())
+  textBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_text_settings').html()),
 };
 global.window.templates = global.templates;

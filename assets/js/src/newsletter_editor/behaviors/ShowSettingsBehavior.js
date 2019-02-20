@@ -11,10 +11,10 @@ var BL = BehaviorsLookup;
 
 BL.ShowSettingsBehavior = Marionette.Behavior.extend({
   defaults: {
-    ignoreFrom: '' // selector
+    ignoreFrom: '', // selector
   },
   events: {
-    'click .mailpoet_content': 'showSettings'
+    'click .mailpoet_content': 'showSettings',
   },
   showSettings: function (event) { // eslint-disable-line func-names
     if (!this.isIgnoredElement(event.target)) {
@@ -25,5 +25,5 @@ BL.ShowSettingsBehavior = Marionette.Behavior.extend({
     return this.options.ignoreFrom
         && this.options.ignoreFrom.length > 0
         && jQuery(element).is(this.options.ignoreFrom);
-  }
+  },
 });

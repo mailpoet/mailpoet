@@ -47,21 +47,21 @@ Module.BlockModel = SuperModel.extend({
   },
   getChildren: function getChildren() {
     return [];
-  }
+  },
 });
 
 Module.BlockView = AugmentedView.extend({
   regions: {
-    toolsRegion: '> .mailpoet_tools'
+    toolsRegion: '> .mailpoet_tools',
   },
   modelEvents: {
     change: 'render',
     delete: 'deleteBlock',
-    duplicate: 'duplicateBlock'
+    duplicate: 'duplicateBlock',
   },
   events: {
     mouseenter: 'showTools',
-    mouseleave: 'hideTools'
+    mouseleave: 'hideTools',
   },
   behaviors: {
     DraggableBehavior: {
@@ -86,13 +86,13 @@ Module.BlockView = AugmentedView.extend({
           return node;
         }
         return undefined;
-      }
-    }
+      },
+    },
   },
   templateContext: function templateContext() {
     return {
       model: this.model.toJSON(),
-      viewCid: this.cid
+      viewCid: this.cid,
     };
   },
   constructor: function constructor() {
@@ -175,19 +175,19 @@ Module.BlockView = AugmentedView.extend({
         easing: easing,
         complete: function complete() {
           promise.resolve();
-        }
+        },
       }
     ).velocity(
       fadeDirection,
       {
         duration: 250,
         easing: easing,
-        queue: false // Do not enqueue, trigger animation in parallel
+        queue: false, // Do not enqueue, trigger animation in parallel
       }
     );
 
     return promise;
-  }
+  },
 });
 
 Module.BlockToolsView = AugmentedView.extend({
@@ -197,14 +197,14 @@ Module.BlockToolsView = AugmentedView.extend({
     'click .mailpoet_delete_block_activate': 'showDeletionConfirmation',
     'click .mailpoet_delete_block_cancel': 'hideDeletionConfirmation',
     'click .mailpoet_delete_block_confirm': 'deleteBlock',
-    'click .mailpoet_duplicate_block': 'duplicateBlock'
+    'click .mailpoet_duplicate_block': 'duplicateBlock',
   },
   // Markers of whether these particular tools will be used for this instance
   tools: {
     settings: true,
     delete: true,
     duplicate: true,
-    move: true
+    move: true,
   },
   getSettingsView: function getSettingsView() { return Module.BlockSettingsView; },
   initialize: function initialize(opts) {
@@ -222,7 +222,7 @@ Module.BlockToolsView = AugmentedView.extend({
     return {
       model: this.model.toJSON(),
       viewCid: this.cid,
-      tools: this.tools
+      tools: this.tools,
     };
   },
   changeSettings: function changeSettings(options) {
@@ -254,13 +254,13 @@ Module.BlockToolsView = AugmentedView.extend({
     event.preventDefault();
     this.model.trigger('duplicate');
     return false;
-  }
+  },
 });
 
 Module.BlockSettingsView = Marionette.View.extend({
   className: 'mailpoet_editor_settings',
   behaviors: {
-    ColorPickerBehavior: {}
+    ColorPickerBehavior: {},
   },
   initialize: function initialize(params) {
     var panelParams;
@@ -272,7 +272,7 @@ Module.BlockSettingsView = Marionette.View.extend({
       width: App.getConfig().get('sidepanelWidth'),
       onCancel: function onCancel() {
         this.destroy();
-      }.bind(this)
+      }.bind(this),
     };
     this.renderOptions = params.renderOptions || {};
     if (this.renderOptions.displayFormat === 'subpanel') {
@@ -283,7 +283,7 @@ Module.BlockSettingsView = Marionette.View.extend({
   },
   templateContext: function templateContext() {
     return {
-      model: this.model.toJSON()
+      model: this.model.toJSON(),
     };
   },
   close: function close() {
@@ -314,7 +314,7 @@ Module.BlockSettingsView = Marionette.View.extend({
   onBeforeDestroy: function onBeforeDestroy() {
     MailPoet.Modal.close();
     this.model.trigger('stopEditing');
-  }
+  },
 });
 
 Module.WidgetView = Marionette.View.extend({
@@ -323,9 +323,9 @@ Module.WidgetView = Marionette.View.extend({
     DraggableBehavior: {
       drop: function drop() {
         throw new Error('Unsupported operation');
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 export default Module;

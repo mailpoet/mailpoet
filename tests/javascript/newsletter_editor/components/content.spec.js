@@ -17,21 +17,21 @@ describe('Content', function () {
         body: {
           globalStyles: {
             style1: 'style1Value',
-            style2: 'style2Value'
+            style2: 'style2Value',
           },
           content: {
             data1: 'data1Value',
-            data2: 'data2Value'
-          }
+            data2: 'data2Value',
+          },
         },
-        subject: 'my test subject'
+        subject: 'my test subject',
       });
     });
 
     it('triggers autosave on change', function () {
       var mock = sinon.mock({ trigger: function () {} }).expects('trigger').once().withArgs('autoSave');
       global.stubChannel(EditorApplication, {
-        trigger: mock
+        trigger: mock,
       });
       model.set('subject', 'another test subject');
       mock.verify();
@@ -51,7 +51,7 @@ describe('Content', function () {
           preheader: 'some preheader',
           segments: [1, 2, 3],
           modified_at: '2000-01-01 12:01:02',
-          someField: 'someValue'
+          someField: 'someValue',
         });
 
         json = model.toJSON();
@@ -69,7 +69,7 @@ describe('Content', function () {
       var blockView = new Backbone.View();
       ContentComponent.registerBlockType('testType', {
         blockModel: blockModel,
-        blockView: blockView
+        blockView: blockView,
       });
       expect(ContentComponent.getBlockTypeModel('testType')).to.deep.equal(blockModel);
       expect(ContentComponent.getBlockTypeView('testType')).to.deep.equal(blockView);
@@ -80,34 +80,34 @@ describe('Content', function () {
     it('includes content, globalStyles and initial newsletter fields', function () {
       var json;
       var dataField = {
-        containerModelField: 'containerModelValue'
+        containerModelField: 'containerModelValue',
       };
       var stylesField = {
-        globalStylesField: 'globalStylesValue'
+        globalStylesField: 'globalStylesValue',
       };
       var newsletterFields = {
-        subject: 'test newsletter subject'
+        subject: 'test newsletter subject',
       };
       var blockDefaults = {
-        button: {}
+        button: {},
       };
       EditorApplication._contentContainer = {
         toJSON: function () {
           return dataField;
-        }
+        },
       };
       EditorApplication.getGlobalStyles = function () {
         return {
           toJSON: function () {
             return stylesField;
-          }
+          },
         };
       };
       EditorApplication.getNewsletter = function () {
         return {
           toJSON: function () {
             return newsletterFields;
-          }
+          },
         };
       };
       EditorApplication.getConfig().set('blockDefaults', blockDefaults);
@@ -116,8 +116,8 @@ describe('Content', function () {
         body: {
           content: dataField,
           globalStyles: stylesField,
-          blockDefaults: blockDefaults
-        }
+          blockDefaults: blockDefaults,
+        },
       }, newsletterFields));
     });
   });

@@ -8,10 +8,10 @@ describe('Heading', function () {
     var view;
     beforeEach(function () {
       var model = new Backbone.SuperModel({
-        subject: 'a test subject'
+        subject: 'a test subject',
       });
       view = new (HeadingComponent.HeadingView)({
-        model: model
+        model: model,
       });
     });
 
@@ -24,10 +24,10 @@ describe('Heading', function () {
       beforeEach(function () {
         model = new Backbone.SuperModel({
           subject: 'a test subject',
-          preheader: 'a test preheader'
+          preheader: 'a test preheader',
         });
         view = new (HeadingComponent.HeadingView)({
-          model: model
+          model: model,
         });
         view.render();
       });

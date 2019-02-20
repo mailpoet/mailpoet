@@ -10,5 +10,5 @@ MailPoet.Num = {
         undefined,
         { minimumFractionDigits: precision, maximumFractionDigits: precision }
       );
-  }
+  },
 };

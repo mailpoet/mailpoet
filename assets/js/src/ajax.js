@@ -9,9 +9,9 @@ function requestFailed(errorMessage, xhr) {
   return {
     errors: [
       {
-        message: errorMessage.replace('%d', xhr.status)
-      }
-    ]
+        message: errorMessage.replace('%d', xhr.status),
+      },
+    ],
   };
 }
 
@@ -24,7 +24,7 @@ MailPoet.Ajax = {
     endpoint: null,
     action: null,
     token: null,
-    data: {}
+    data: {},
   },
   post: function post(options) {
     return this.request('post', options);
@@ -50,7 +50,7 @@ MailPoet.Ajax = {
       token: this.options.token,
       endpoint: this.options.endpoint,
       method: this.options.action,
-      data: this.options.data || {}
+      data: this.options.data || {},
     };
   },
   request: function request(method, options) {
@@ -83,5 +83,5 @@ MailPoet.Ajax = {
     this.options = {};
 
     return deferred;
-  }
+  },
 };

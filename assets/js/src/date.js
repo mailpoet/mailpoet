@@ -9,7 +9,7 @@ MailPoet.Date = {
   options: {},
   defaults: {
     offset: 0,
-    format: 'F, d Y H:i:s'
+    format: 'F, d Y H:i:s',
   },
   init: function init(opts) {
     var options = opts || {};
@@ -50,17 +50,17 @@ MailPoet.Date = {
   },
   short: function short(date) {
     return this.format(date, {
-      format: 'F, j Y'
+      format: 'F, j Y',
     });
   },
   full: function full(date) {
     return this.format(date, {
-      format: 'F, j Y H:i:s'
+      format: 'F, j Y H:i:s',
     });
   },
   time: function time(date) {
     return this.format(date, {
-      format: 'H:i:s'
+      format: 'H:i:s',
     });
   },
   convertFormat: function convertFormat(format) {
@@ -107,7 +107,7 @@ MailPoet.Date = {
         Z: '', // no equivalent
         c: '', // no equivalent
         r: '', // no equivalent
-        U: 'X'
+        U: 'X',
       },
       strftime: {
         a: 'ddd',
@@ -132,8 +132,8 @@ MailPoet.Date = {
         y: 'YY',
         Y: 'YYYY',
         z: 'ZZ',
-        Z: 'z'
-      }
+        Z: 'z',
+      },
     };
 
     if (!format || format.length <= 0) return format;
@@ -158,5 +158,5 @@ MailPoet.Date = {
     }
 
     return convertedFormat.join('');
-  }
+  },
 };
