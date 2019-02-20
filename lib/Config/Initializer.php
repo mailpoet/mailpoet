@@ -2,7 +2,7 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\API;
+use MailPoet\API\JSON\API;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Router;
@@ -28,6 +28,9 @@ class Initializer {
   /** @var RendererFactory */
   private $renderer_factory;
 
+  /** @var API */
+  private $api;
+
   /** @var ContainerInterface */
   private $container;
 
@@ -36,11 +39,13 @@ class Initializer {
   function __construct(
     ContainerWrapper $container,
     RendererFactory $renderer_factory,
-    AccessControl $access_control
+    AccessControl $access_control,
+    API $api
   ) {
       $this->container = $container;
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
+      $this->api = $api;
   }
 
   function init() {
@@ -243,16 +248,12 @@ class Initializer {
     if (!defined(self::INITIALIZED)) return;
     try {
       $this->setupHooks();
-      $this->setupJSONAPI();
+      $this->api->init();
       $this->setupRouter();
       $this->setupUserLocale();
     } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
-  }
-
-  function setupJSONAPI() {
-    $this->container->get(API\JSON\API::class)->init();
   }
 
   function setupRouter() {
