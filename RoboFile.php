@@ -107,13 +107,21 @@ class RoboFile extends \Robo\Tasks {
     );
 
     foreach ($scss_files as $file) {
-      $compilation_result = $this->_exec(join(' ', array(
+      $this->_exec(join(' ', array(
         './node_modules/node-sass/bin/node-sass',
         $file,
         '--output assets/dist/css/',
         '--output-style compact',
       )));
     }
+
+    $compilation_result = $this->_exec(join(' ', array(
+      './node_modules/postcss-cli/bin/postcss',
+      'assets/dist/css/*.css',
+      '--use autoprefixer',
+      '--no-map',
+      '--replace',
+    )));
 
     // Create manifest file
     $manifest = [];
