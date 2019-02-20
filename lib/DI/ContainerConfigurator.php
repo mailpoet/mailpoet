@@ -53,6 +53,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\Activator::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Changelog::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Hooks::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\Initializer::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Menu::class)->setPublic(true);
     $container->register(\MailPoet\Config\Renderer::class)
       ->setPublic(true)
