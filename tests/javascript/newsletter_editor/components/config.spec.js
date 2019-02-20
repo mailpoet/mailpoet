@@ -1,6 +1,5 @@
 const expect = global.expect;
 
-import EditorApplication from 'newsletter_editor/App';
 import ConfigComponent from 'newsletter_editor/components/config';
 
 describe('Config', function () {

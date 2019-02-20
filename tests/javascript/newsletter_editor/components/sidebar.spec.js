@@ -1,7 +1,6 @@
 const expect = global.expect;
 const Backbone = global.Backbone;
 
-import EditorApplication from 'newsletter_editor/App';
 import SidebarComponent from 'newsletter_editor/components/sidebar';
 
 describe('Sidebar', function () {
