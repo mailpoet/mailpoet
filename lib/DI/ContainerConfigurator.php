@@ -74,6 +74,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Router\Endpoints\Subscription::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Router::class)
+      ->setArgument('$container', new Reference(ContainerWrapper::class));
     // Mailer
     $container->autowire(\MailPoet\Mailer\Mailer::class);
     // Subscribers
