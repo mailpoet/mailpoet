@@ -43,6 +43,15 @@ class Initializer {
   /** @var Router\Router */
   private $router;
 
+  /** @var Hooks */
+  private $hooks;
+
+  /** @var Changelog */
+  private $changelog;
+
+  /** @var Menu */
+  private $menu;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -52,7 +61,10 @@ class Initializer {
     API $api,
     Activator $activator,
     SettingsController $settings,
-    Router\Router $router
+    Router\Router $router,
+    Hooks $hooks,
+    Changelog $changelog,
+    Menu $menu
   ) {
       $this->container = $container;
       $this->renderer_factory = $renderer_factory;
@@ -61,6 +73,9 @@ class Initializer {
       $this->activator = $activator;
       $this->settings = $settings;
       $this->router = $router;
+      $this->hooks = $hooks;
+      $this->changelog = $changelog;
+      $this->menu = $menu;
   }
 
   function init() {
@@ -159,13 +174,13 @@ class Initializer {
       $this->setupUpdater();
 
       $this->setupCapabilities();
-      $this->setupMenu();
+      $this->menu->init();
       $this->setupShortcodes();
       $this->setupImages();
       $this->setupPersonalDataExporters();
       $this->setupPersonalDataErasers();
 
-      $this->setupChangelog();
+      $this->changelog->init();
       $this->setupCronTrigger();
       $this->setupConflictResolver();
 
@@ -226,11 +241,6 @@ class Initializer {
     $caps->init();
   }
 
-  function setupMenu() {
-    $menu = $this->container->get(Menu::class);
-    $menu->init();
-  }
-
   function setupShortcodes() {
     $shortcodes = new Shortcodes();
     $shortcodes->init();
@@ -238,11 +248,6 @@ class Initializer {
 
   function setupImages() {
     add_image_size('mailpoet_newsletter_max', Env::NEWSLETTER_CONTENT_WIDTH);
-  }
-
-  function setupChangelog() {
-    $changelog = $this->container->get(Changelog::class);
-    $changelog->init();
   }
 
   function setupCronTrigger() {
@@ -261,7 +266,7 @@ class Initializer {
   function postInitialize() {
     if (!defined(self::INITIALIZED)) return;
     try {
-      $this->setupHooks();
+      $this->hooks->init();
       $this->api->init();
       $this->router->init();
       $this->setupUserLocale();
@@ -280,10 +285,6 @@ class Initializer {
   function setupPages() {
     $pages = new \MailPoet\Settings\Pages();
     $pages->init();
-  }
-
-  function setupHooks() {
-    $this->container->get(\MailPoet\Config\Hooks::class)->init();
   }
 
   function setupPrivacyPolicy() {
