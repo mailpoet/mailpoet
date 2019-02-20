@@ -48,49 +48,9 @@ body.mailpoet_modal_opened {
   animation: mailpoet_popup_fadein 0.5s;
 }
 
-@-webkit-keyframes mailpoet_popup_fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@-moz-keyframes mailpoet_popup_fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@-ms-keyframes mailpoet_popup_fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@-o-keyframes mailpoet_popup_fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes mailpoet_popup_fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .mailpoet_popup_wrapper {
@@ -298,37 +258,6 @@ body.mailpoet_modal_opened {
   animation-delay: 1.1700000000000002s;
 }
 
-@-webkit-keyframes bounce_mailpoet_modal_loading {
-  0%,
-  50% {
-    background-color: #064E6D;
-  }
-}
-
-@-moz-keyframes bounce_mailpoet_modal_loading {
-  0%,
-  50% {
-    background-color: #064E6D;
-  }
-}
-
-@-ms-keyframes bounce_mailpoet_modal_loading {
-  0%,
-  50% {
-    background-color: #064E6D;
-  }
-}
-
-@-o-keyframes bounce_mailpoet_modal_loading {
-  0%,
-  50% {
-    background-color: #064E6D;
-  }
-}
-
 @keyframes bounce_mailpoet_modal_loading {
-  0%,
-  50% {
-    background-color: #064E6D;
-  }
+  0%, 50% { background-color: #064E6D; }
 }
