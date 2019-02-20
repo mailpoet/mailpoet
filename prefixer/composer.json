@@ -1,7 +1,7 @@
 {
   "require": {
     "php": ">=5.6",
-    "symfony/dependency-injection": "3.4.17",
+    "symfony/dependency-injection": "3.4.22",
     "monolog/monolog": "^1.23",
     "sabberworm/php-css-parser": "^8.1"
   },
