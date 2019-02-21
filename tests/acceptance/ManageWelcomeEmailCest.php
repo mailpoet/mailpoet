@@ -17,8 +17,8 @@ class ManageWelcomeEmailCest {
   }
 
   private function createWelcomeEmailWithTitle(\AcceptanceTester $I, $newsletterTitle) {
-    $newsletter_factory = new Newsletter();
-    $newsletter_factory->withSubject($newsletterTitle)->withWelcomeType()->create();
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory->withSubject($newsletterTitle)->withWelcomeType()->create();
   }
 
   function saveWelcomeNewsletterAsDraft(\AcceptanceTester $I) {
