@@ -2,9 +2,8 @@
 
 namespace MailPoet\Test\Config;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
 use Codeception\Stub\Expected;
-use Helper\WordPress as WPHelper;
 use MailPoet\Config\AccessControl;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -15,7 +14,7 @@ class AccessControlTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->access_control = new AccessControl(new WPFunctions());
+    $this->access_control = new AccessControl;
   }
 
   function testItAllowsSettingCustomPermissions() {
@@ -88,17 +87,16 @@ class AccessControlTest extends \MailPoetTest {
   }
 
   function testItValidatesIfUserHasCapability() {
-    $wp_mock = Stub::makeEmpty(
-      new WPFunctions(),
-      ['currentUserCan' => Expected::once(true)]
-    );
-    $access_control = new AccessControl($wp_mock);
     $capability = 'some_capability';
+    $access_control = new AccessControl();
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      'currentUserCan' => true
+    ]));
 
     expect($access_control->validatePermission($capability))->true();
   }
 
   function _after() {
-    WPHelper::releaseAllFunctions();
+    WPFunctions::set(new WPFunctions);
   }
 }

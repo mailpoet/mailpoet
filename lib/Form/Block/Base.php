@@ -4,6 +4,7 @@ namespace MailPoet\Form\Block;
 
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\ModelValidator;
+use MailPoet\WP\Functions as WPFunctions;
 
 abstract class Base {
   protected static function getInputValidation($block, $extra_rules = array()) {

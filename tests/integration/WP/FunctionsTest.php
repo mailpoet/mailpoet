@@ -42,25 +42,6 @@ class FunctionsTest extends \MailPoetTest {
     return $this->ids[] = $id;
   }
 
-  function testItCanGetImageInfo() {
-    expect(
-      function_exists('wp_generate_attachment_metadata')
-    )->true();
-
-    $filename = 'tests/_data/test-image.jpg';
-    $contents = file_get_contents($filename);
-
-    $upload = wp_upload_bits(basename($filename), null, $contents);
-    $id = $this->makeAttachment($upload);
-    expect($id)->notEmpty();
-
-    $image = $this->wp->getImageInfo($id);
-    expect($image[1])->equals(Env::NEWSLETTER_CONTENT_WIDTH);
-
-    wp_delete_attachment($id, $force_delete = true);
-  }
-
-
   function testItCanProcessActions() {
     $test_value = array('abc', 'def');
     $test_value2 = new \stdClass;
