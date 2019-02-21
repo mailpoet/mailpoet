@@ -51,6 +51,9 @@ rm -Rf $plugin_name/assets/css/src
 rm -Rf $plugin_name/assets/js/src
 rm -Rf $plugin_name/lang/*.po
 
+# Remove generated PHP files after they were copied for release
+rm -Rf generated/*.php
+
 # Remove extra files (docs, examples,...) from 3rd party extensions
 unameString=`uname`
 if [ "$unameString" = 'Darwin' ]; then
