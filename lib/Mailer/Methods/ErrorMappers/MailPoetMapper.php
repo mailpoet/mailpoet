@@ -54,29 +54,9 @@ class MailPoetMapper {
       case API::RESPONSE_CODE_CAN_NOT_SEND:
         if ($result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED) {
           $operation = MailerError::OPERATION_AUTHORIZATION;
-          $message = sprintf(__('<p>The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.</p>', 'mailpoet'), $sender ? $sender['from_email'] : __('Unknown address'));
-          $message .= '<p>';
-          $message .= Helpers::replaceLinkTags(
-            __('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
-            'https://account.mailpoet.com/account/authorization',
-            array(
-              'class' => 'button button-primary',
-              'target' => '_blank',
-              'rel' => 'noopener noreferrer',
-            )
-          );
-          $message .= ' &nbsp; <button class="button js-button-resume-sending">' . __('Resume sending', 'mailpoet') . '</button>';
-          $message .= '</p>';
-          $message .= "<script>jQuery('.js-button-resume-sending').on('click', function() { MailPoet.Ajax.post({ api_version: window.mailpoet_api_version, endpoint: 'mailer', action: 'resumeSending' }).done(function() { jQuery('.js-error-unauthorized-email').slideUp(); MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice')); if (window.mailpoet_listing) { window.mailpoet_listing.forceUpdate(); }}).fail(function(response) { if (response.errors.length > 0) { MailPoet.Notice.error(response.errors.map(function(error) { return error.message }), { scroll: true }); }}); })</script>";
+          $message = $this->getUnauthorizedEmailMessage($sender);
         } else {
-          $message = Helpers::replaceLinkTags(
-            __('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
-            'https://www.mailpoet.com/support/',
-            array(
-              'target' => '_blank',
-              'rel' => 'noopener noreferrer',
-            )
-          );
+          $message = $this->getAccountBannedMessage();
         }
         break;
       case API::RESPONSE_CODE_KEY_INVALID:
@@ -103,5 +83,34 @@ class MailPoetMapper {
       $errors[] = new SubscriberError($subscribers[$result_error['index']], $message);
     }
     return $errors;
+  }
+
+  private function getUnauthorizedEmailMessage($sender) {
+    $message = sprintf(__('<p>The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.</p>', 'mailpoet'), $sender ? $sender['from_email'] : __('Unknown address'));
+    $message .= '<p>';
+    $message .= Helpers::replaceLinkTags(
+      __('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
+      'https://account.mailpoet.com/account/authorization',
+      array(
+        'class' => 'button button-primary',
+        'target' => '_blank',
+        'rel' => 'noopener noreferrer',
+      )
+    );
+    $message .= ' &nbsp; <button class="button js-button-resume-sending">' . __('Resume sending', 'mailpoet') . '</button>';
+    $message .= '</p>';
+    $message .= "<script>jQuery('.js-button-resume-sending').on('click', function() { MailPoet.Ajax.post({ api_version: window.mailpoet_api_version, endpoint: 'mailer', action: 'resumeSending' }).done(function() { jQuery('.js-error-unauthorized-email').slideUp(); MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice')); if (window.mailpoet_listing) { window.mailpoet_listing.forceUpdate(); }}).fail(function(response) { if (response.errors.length > 0) { MailPoet.Notice.error(response.errors.map(function(error) { return error.message }), { scroll: true }); }}); })</script>";
+    return $message;
+  }
+
+  private function getAccountBannedMessage() {
+    return Helpers::replaceLinkTags(
+      __('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
+      'https://www.mailpoet.com/support/',
+      array(
+        'target' => '_blank',
+        'rel' => 'noopener noreferrer',
+      )
+    );
   }
 }
