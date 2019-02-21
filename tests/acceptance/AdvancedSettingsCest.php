@@ -24,6 +24,7 @@ class AdvancedSettingsCest {
     $I->waitForText($successMessage);
     $I->seeOptionIsSelected($yesAnonymousData, 'Yes');
   }
+
   function addBounceEmailAddress(\AcceptanceTester $I) {
     $I->wantTo('Add a bounce email address on Advanced Settings page');
     $bounceAddressField = '[data-automation-id="bounce-address-field"]';
@@ -45,4 +46,5 @@ class AdvancedSettingsCest {
     $I->waitForText('The information below is useful');
     $I->waitForText($bounceAddressText);
   }
+  
 }
