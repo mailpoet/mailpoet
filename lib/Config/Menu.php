@@ -837,10 +837,10 @@ class Menu {
     $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
   }
 
-  function checkFromEmailAuthorization(ServicesChecker $checker = null) {
+  private function checkFromEmailAuthorization() {
     if (self::isOnMailPoetAdminPage()) {
-      $checker = $checker ?: new ServicesChecker();
-      $checker->isFromEmailAuthorized(true);
+      $checker = new ServicesChecker();
+      $checker->isFromEmailAuthorized();
     }
   }
 
