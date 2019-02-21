@@ -14,6 +14,10 @@
 - Ensure compatibility with PHP 5.5 and newer versions.
 - Cover your code in tests.
 
+## SCSS Code
+- camelCase for file name
+- Components files are prefixed with underscore, to indicate, that they aren't compiled separately.
+
 ## JS Code
 - Javascript code should follow the [Airbnb style guide](https://github.com/airbnb/javascript).
 
