@@ -482,4 +482,16 @@ class Functions {
   function hasFilter() {
     return call_user_func_array('has_filter', func_get_args());
   }
+
+  function wcPrice() {
+    return call_user_func_array('wc_price', func_get_args());
+  }
+
+  function wcGetOrder() {
+    return call_user_func_array('wc_get_order', func_get_args());
+  }
+  function wcGetCustomerOrderCount() {
+    return call_user_func_array('wc_get_customer_order_count', func_get_args());
+  }
+
 }

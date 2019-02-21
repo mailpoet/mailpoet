@@ -14,48 +14,41 @@ class AccessControl {
   const PERMISSION_MANAGE_SEGMENTS = 'mailpoet_manage_segments';
   const NO_ACCESS_RESTRICTION = 'mailpoet_no_access_restriction';
 
-  /** @var WPFunctions */
-  private $wp;
-
-  function __construct(WPFunctions $wp) {
-    $this->wp = $wp;
-  }
-
   function getDefaultPermissions() {
     return array(
-      self::PERMISSION_ACCESS_PLUGIN_ADMIN => $this->wp->applyFilters(
+      self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPFunctions::get()->applyFilters(
         'mailpoet_permission_access_plugin_admin',
         array(
           'administrator',
           'editor'
         )
       ),
-      self::PERMISSION_MANAGE_SETTINGS => $this->wp->applyFilters(
+      self::PERMISSION_MANAGE_SETTINGS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_settings',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_EMAILS => $this->wp->applyFilters(
+      self::PERMISSION_MANAGE_EMAILS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_emails',
         array(
           'administrator',
           'editor'
         )
       ),
-      self::PERMISSION_MANAGE_SUBSCRIBERS => $this->wp->applyFilters(
+      self::PERMISSION_MANAGE_SUBSCRIBERS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_subscribers',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_FORMS => $this->wp->applyFilters(
+      self::PERMISSION_MANAGE_FORMS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_forms',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_SEGMENTS => $this->wp->applyFilters(
+      self::PERMISSION_MANAGE_SEGMENTS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_segments',
         array(
           'administrator'
