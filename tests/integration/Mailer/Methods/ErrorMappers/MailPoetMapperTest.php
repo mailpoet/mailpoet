@@ -55,7 +55,10 @@ class MailPoetMapperTest extends \MailPoetTest {
     expect($error->getMessage())->equals(Helpers::replaceLinkTags(
       __('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
       'https://www.mailpoet.com/support/',
-      array('target' => '_blank')
+      array(
+        'target' => '_blank',
+        'rel' => 'noopener noreferrer',
+      )
     ));
   }
 
