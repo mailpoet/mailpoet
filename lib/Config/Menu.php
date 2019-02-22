@@ -51,6 +51,8 @@ class Menu {
   private $settings;
   /** @var WPFunctions */
   private $wp;
+  /** @var ServicesChecker */
+  private $servicesChecker;
 
   private $subscribers_over_limit;
 
@@ -59,13 +61,15 @@ class Menu {
     AccessControl $access_control,
     SettingsController $settings,
     WPFunctions $wp,
-    WooCommerceHelper $woocommerce_helper
+    WooCommerceHelper $woocommerce_helper,
+    ServicesChecker $servicesChecker
   ) {
     $this->renderer = $renderer;
     $this->access_control = $access_control;
     $this->wp = $wp;
     $this->settings = $settings;
     $this->woocommerce_helper = $woocommerce_helper;
+    $this->servicesChecker = $servicesChecker;
   }
 
   function init() {
@@ -445,8 +449,7 @@ class Menu {
     $flags = $this->_getFlags();
 
     // force MSS key check even if the method isn't active
-    $checker = new ServicesChecker();
-    $mp_api_key_valid = $checker->isMailPoetAPIKeyValid(false, true);
+    $mp_api_key_valid = $this->servicesChecker->isMailPoetAPIKeyValid(false, true);
 
     $data = array(
       'settings' => $settings,
@@ -825,7 +828,7 @@ class Menu {
     if (self::isOnMailPoetAdminPage()) {
       $show_notices = isset($_REQUEST['page'])
         && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false;
-      $checker = $checker ?: new ServicesChecker();
+      $checker = $checker ?: $this->servicesChecker;
       $this->mp_api_key_valid = $checker->isMailPoetAPIKeyValid($show_notices);
     }
   }
@@ -833,13 +836,13 @@ class Menu {
   function checkPremiumKey(ServicesChecker $checker = null) {
     $show_notices = isset($_SERVER['SCRIPT_NAME'])
       && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
-    $checker = $checker ?: new ServicesChecker();
+    $checker = $checker ?: $this->servicesChecker;
     $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
   }
 
   private function checkFromEmailAuthorization() {
     if (self::isOnMailPoetAdminPage()) {
-      $checker = new ServicesChecker();
+      $checker = $this->servicesChecker;
       $checker->isFromEmailAuthorized();
     }
   }
