@@ -148,10 +148,6 @@ abstract class SimpleWorker {
     return array_merge((array)$scheduled_tasks, (array)$running_tasks);
   }
 
-  static function getFutureTasks() {
-    return self::getScheduledTasks(true);
-  }
-
   static function getCompletedTasks() {
     return ScheduledTask::where('type', static::TASK_TYPE)
       ->whereNull('deleted_at')
