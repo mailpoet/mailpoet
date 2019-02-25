@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions;
@@ -36,18 +37,14 @@ class NewSubscriberNotificationMailer {
     } else {
       $caching = !WP_DEBUG;
       $debugging = WP_DEBUG;
-      $this->renderer = new Renderer($caching, $debugging);
+       $this->renderer = new Renderer($caching, $debugging);
     }
     if ($wordpress_functions) {
       $this->wordpress_functions = $wordpress_functions;
     } else {
       $this->wordpress_functions = new Functions();
     }
-    if ($mailer) {
-      $this->mailer = $mailer;
-    } else {
-      $this->mailer = new \MailPoet\Mailer\Mailer(false, $this->constructSenderEmail());
-    }
+    $this->mailer = $mailer;
     $this->settings = new SettingsController();
   }
 
@@ -63,8 +60,9 @@ class NewSubscriberNotificationMailer {
       return;
     }
     try {
-      $this->mailer->getSenderNameAndAddress($this->constructSenderEmail());
-      $this->mailer->send($this->constructNewsletter($subscriber, $segments), $settings['address']);
+
+      $this->getMailer()->getSenderNameAndAddress($this->constructSenderEmail());
+      $this->getMailer()->send($this->constructNewsletter($subscriber, $segments), $settings['address']);
     } catch (\Exception $e) {
       if (WP_DEBUG) {
         throw $e;
@@ -86,6 +84,16 @@ class NewSubscriberNotificationMailer {
       return true;
     }
     return !(bool)$settings['enabled'];
+  }
+
+  /**
+   * @return Mailer
+   */
+  private function getMailer() {
+    if (!$this->mailer) {
+      $this->mailer = new Mailer(false, $this->constructSenderEmail());
+    }
+    return $this->mailer;
   }
 
   private function constructSenderEmail() {
