@@ -421,44 +421,80 @@ const MailerMixin = {
     }
   },
   getMailerError(state) {
-    let mailerErrorNotice;
     if (state.meta.mta_log.error.operation === 'migration') {
-      mailerErrorNotice = state.meta.mta_log.error.error_message;
       return (
         <div>
-          <p>{ mailerErrorNotice }</p>
+          <p>{ state.meta.mta_log.error.error_message }</p>
         </div>
       );
     }
-    const mailerCheckSettingsNotice = ReactStringReplace(
-      MailPoet.I18n.t('mailerCheckSettingsNotice'),
-      /\[link\](.*?)\[\/link\]/g,
-      match => (
-        <a href="?page=mailpoet-settings#mta" key="check-sending">{ match }</a>
-      )
-    );
-    if (state.meta.mta_log.error.operation === 'send') {
-      mailerErrorNotice = MailPoet.I18n.t('mailerSendErrorNotice')
-        .replace('%$1s', state.meta.mta_method)
-        .replace('%$2s', state.meta.mta_log.error.error_message);
+
+    // offer MSS when PHPMail is failing
+    let mailerErrorCheckSettings;
+    if (state.meta.mta_method === 'PHPMail') {
+      mailerErrorCheckSettings = (
+        <>
+          <p>{ MailPoet.I18n.t('mailerSendErrorCheckConfiguration') }</p>
+          <br />
+          <p>
+            {
+              ReactStringReplace(
+                MailPoet.I18n.t('mailerSendErrorUseSendingService'),
+                /<b>(.*?)<\/b>/g,
+                match => <b>{ match }</b>
+              )
+            }
+          </p>
+          <p>
+            <a
+              href="https://www.mailpoet.com/free-plan/?utm_source=plugin&utm_campaign=sending-error"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              { MailPoet.I18n.t('mailerSendErrorSignUpForSendingService') }
+            </a>
+          </p>
+          <br />
+        </>
+      );
     } else {
-      mailerErrorNotice = MailPoet.I18n.t('mailerConnectionErrorNotice')
-        .replace('%$1s', state.meta.mta_log.error.error_message);
+      mailerErrorCheckSettings = (
+        <p>
+          {
+            ReactStringReplace(
+              MailPoet.I18n.t('mailerCheckSettingsNotice'),
+              /\[link\](.*?)\[\/link\]/g,
+              match => <a href="?page=mailpoet-settings#mta" key="check-sending">{ match }</a>
+            )
+          }
+        </p>
+      );
     }
+
+    // append error code if available
+    let mailerErrorMessage = state.meta.mta_log.error.error_message;
     if (state.meta.mta_log.error.error_code) {
-      mailerErrorNotice += ` ${MailPoet.I18n.t('mailerErrorCode')
-        .replace('%$1s', state.meta.mta_log.error.error_code)}`;
+      mailerErrorMessage += mailerErrorMessage ? ', ' : '';
+      mailerErrorMessage += MailPoet.I18n.t('mailerErrorCode').replace('%$1s', state.meta.mta_log.error.error_code);
     }
-    // eslint-disable-next-line react/no-danger
-    mailerErrorNotice = <p dangerouslySetInnerHTML={{ __html: mailerErrorNotice }} />;
+
     return (
       <div>
-        { mailerErrorNotice }
-        <p>{ mailerCheckSettingsNotice }</p>
+        <p>
+          {
+            state.meta.mta_log.error.operation === 'send'
+              ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%$1s', state.meta.mta_method)
+              : MailPoet.I18n.t('mailerConnectionErrorNotice')
+          }
+          :
+          {' '}
+          <i>{ mailerErrorMessage }</i>
+        </p>
+        { mailerErrorCheckSettings }
         <p>
           <a
             href="javascript:;"
-            className="button"
+            className="button button-primary"
             onClick={MailerMixin.resumeMailerSending}
           >
             { MailPoet.I18n.t('mailerResumeSendingButton') }
