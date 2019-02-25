@@ -50,6 +50,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
       titleAlignment: 'left', // 'left'|'center'|'right'
       titleIsLink: false, // false|true
       imageFullWidth: false, // true|false
+      titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
       featuredImagePosition: 'centered', // 'centered'|'right'|'left'|'alternate'|'none'
       showAuthor: 'no', // 'no'|'aboveText'|'belowText'
       authorPrecededBy: 'Author:',
@@ -98,7 +99,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
     this.on('loadMorePosts', this._loadMorePosts, this);
 
     this.listenTo(this.get('_selectedPosts'), 'add remove reset', refreshTransformedPosts);
-    this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider', refreshTransformedPosts);
+    this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider change:titlePosition', refreshTransformedPosts);
     this.listenTo(this.get('readMoreButton'), 'change', refreshTransformedPosts);
     this.listenTo(this.get('divider'), 'change', refreshTransformedPosts);
 
@@ -491,6 +492,7 @@ PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'input .mailpoet_posts_categories': _.partial(this.changeField, 'categoriesPrecededBy'),
       'input .mailpoet_posts_read_more_text': _.partial(this.changeField, 'readMoreText'),
       'change .mailpoet_posts_sort_by': _.partial(this.changeField, 'sortBy'),
+      'change .mailpoet_automated_latest_content_title_position': _.partial(this.changeField, 'titlePosition'),
     };
   },
   templateContext: function () {

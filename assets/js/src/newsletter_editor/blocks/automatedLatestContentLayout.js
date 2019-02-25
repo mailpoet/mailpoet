@@ -66,6 +66,7 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
       titleAlignment: 'left', // 'left'|'center'|'right'
       titleIsLink: false, // false|true
       imageFullWidth: false, // true|false
+      titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
       featuredImagePosition: 'centered', // 'centered'|'left'|'right'|'alternate'|'none'
       showAuthor: 'no', // 'no'|'aboveText'|'belowText'
       authorPrecededBy: 'Author:',
@@ -92,7 +93,7 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
   },
   initialize: function () {
     base.BlockView.prototype.initialize.apply(this, arguments);
-    this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._handleChanges, this);
+    this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider change:titlePosition', this._handleChanges, this);
     this.listenTo(this.get('readMoreButton'), 'change', this._handleChanges);
     this.listenTo(this.get('divider'), 'change', this._handleChanges);
     this.on('add remove update reset', this._handleChanges);
@@ -187,6 +188,7 @@ Module.AutomatedLatestContentLayoutBlockSettingsView = base.BlockSettingsView.ex
       'input .mailpoet_automated_latest_content_categories': _.partial(this.changeField, 'categoriesPrecededBy'),
       'input .mailpoet_automated_latest_content_read_more_text': _.partial(this.changeField, 'readMoreText'),
       'change .mailpoet_automated_latest_content_sort_by': _.partial(this.changeField, 'sortBy'),
+      'change .mailpoet_automated_latest_content_title_position': _.partial(this.changeField, 'titlePosition'),
       'click .mailpoet_done_editing': 'close',
     };
   },
@@ -330,8 +332,12 @@ Module.AutomatedLatestContentLayoutBlockSettingsView = base.BlockSettingsView.ex
 
     if (value === 'excerpt') {
       this.$('.mailpoet_automated_latest_content_featured_image_position_container').removeClass('mailpoet_hidden');
+      this.$('.mailpoet_automated_latest_content_title_position_separator').removeClass('mailpoet_hidden');
+      this.$('.mailpoet_automated_latest_content_title_position').removeClass('mailpoet_hidden');
     } else {
       this.$('.mailpoet_automated_latest_content_featured_image_position_container').addClass('mailpoet_hidden');
+      this.$('.mailpoet_automated_latest_content_title_position_separator').addClass('mailpoet_hidden');
+      this.$('.mailpoet_automated_latest_content_title_position').addClass('mailpoet_hidden');
     }
     this.changeField('displayType', event);
   },
