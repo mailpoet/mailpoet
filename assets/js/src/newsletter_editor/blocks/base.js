@@ -88,6 +88,7 @@ Module.BlockView = AugmentedView.extend({
         return undefined;
       },
     },
+    HighlightEditingBehavior: {},
   },
   templateContext: function templateContext() {
     return {
@@ -115,6 +116,9 @@ Module.BlockView = AugmentedView.extend({
     }
   },
   hideTools: function hideTools() {
+    if (this._isBeingEdited) {
+      return;
+    }
     this.$('> .mailpoet_tools').removeClass('mailpoet_display_tools');
     this.toolsView.triggerMethod('hideTools');
   },

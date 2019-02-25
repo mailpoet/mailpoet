@@ -497,6 +497,18 @@ describe('Button', function () {
         expect(view.$('.mailpoet_field_button_replace_all_styles').length).to.equal(0);
       });
 
+      it('displays/hides tools and highlight block when settings active/inactive', function () {
+        var settingsView;
+        var blockView = new (ButtonBlock.ButtonBlockView)({ model: model });
+        blockView.render();
+        expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(false);
+        settingsView = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
+        settingsView.render();
+        expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(true);
+        settingsView.destroy();
+        expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(false);
+      });
+
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
