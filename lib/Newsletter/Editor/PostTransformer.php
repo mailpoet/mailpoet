@@ -76,18 +76,27 @@ class PostTransformer {
         ))
       );
     }
+    $title_position = isset($this->args['titlePosition']) ? $this->args['titlePosition'] : '';
 
     if ($featured_image_position === 'aboveTitle' || $featured_image_position === 'belowTitle') {
       $featured_image_position = 'centered';
     }
 
     if ($featured_image_position === 'centered') {
-      array_unshift($content, $title, $featured_image);
+      if ($title_position !== 'aboveExcerpt') {
+        array_unshift($content, $title, $featured_image);
+      } else {
+        array_unshift($content, $featured_image, $title);
+      }
       return array(
         LayoutHelper::row(array(
           LayoutHelper::col($content)
         ))
       );
+    }
+
+    if ($title_position === 'aboveExcerpt') {
+      array_unshift($content, $title);
     }
 
     if ($featured_image_position === 'alternate') {
@@ -104,12 +113,22 @@ class PostTransformer {
         LayoutHelper::col(array($featured_image))
       );
 
-    return array(
-      LayoutHelper::row(array(
-        LayoutHelper::col(array($title))
-      )),
+    $result = array(
       LayoutHelper::row($content)
     );
+
+    if ($title_position !== 'aboveExcerpt') {
+      array_unshift(
+        $result,
+        LayoutHelper::row(
+          [
+            LayoutHelper::col([$title]),
+          ]
+        )
+      );
+    }
+
+    return $result;
   }
 
   private function nextImagePosition() {

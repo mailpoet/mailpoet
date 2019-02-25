@@ -109,7 +109,27 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][0]['type'])->equals('container');
     expect($result[0]['blocks'][0]['orientation'])->equals('vertical');
     expect($result[0]['blocks'][0]['styles'])->notEmpty();
-    expect(count($result[0]['blocks'][0]['blocks']))->equals(3);
+    $result_blocks = $result[0]['blocks'][0]['blocks'];
+    expect(count($result_blocks))->equals(3);
+    expect($result_blocks[0]['text'])->equals('Title');
+    expect($result_blocks[1]['type'])->equals('image');
+  }
+
+  function testShouldCreateLayoutStructureForCenteredImageWithLayoutWithTitleAboveExcerpt() {
+    $args = array (
+      'withLayout' => true,
+      'displayType' => 'excerpt',
+      'featuredImagePosition' => 'centered',
+      'titlePosition' => 'aboveExcerpt',
+    );
+
+    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $result = $transformer->transform(array());
+    $result_blocks = $result[0]['blocks'][0]['blocks'];
+    expect(count($result_blocks))->equals(3);
+    expect($result_blocks[0])->equals($this->image_mock);
+    expect($result_blocks[1])->equals($this->title_mock);
+
   }
 
   function testShouldCreateLayoutStructureForOtherThanCenteredPositionedImageWithLayout() {
@@ -167,6 +187,21 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][0]['blocks'])->equals(array($this->title_mock));
     expect($result[1]['blocks'][0]['blocks'])->equals(array($this->image_mock));
     expect($result[1]['blocks'][1]['blocks'])->equals(array($this->content_mock[0]));
+  }
+
+  function testShouldAddLeftPositionedImageForExcerptWithTitleAboveExcerpt() {
+    $args = array (
+      'withLayout' => true,
+      'displayType' => 'excerpt',
+      'featuredImagePosition' => 'left',
+      'titlePosition' => 'aboveExcerpt',
+    );
+
+    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $result = $transformer->transform(array());
+    expect($result[0]['blocks'][0]['blocks'])->equals(array($this->image_mock));
+    expect($result[0]['blocks'][1]['blocks'][0])->equals($this->title_mock);
+    expect($result[0]['blocks'][1]['blocks'][1])->equals($this->content_mock[0]);
   }
 
   function testShouldAddRightPositionedImageForExcerptWithLayout() {
