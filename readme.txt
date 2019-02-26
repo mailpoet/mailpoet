@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 3.19.2
+Stable tag: 3.19.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -168,6 +168,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.19.3 - 2019-02-26 =
+* Added: new step in import to educate users about good sending practices during subscriber import;
+* Improved: editor controls;
+* Fixed: issue with duplicating ALC posts.
 
 = 3.19.2 - 2019-02-19 =
 * Added: 13 brand new templates;
