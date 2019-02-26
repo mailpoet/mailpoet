@@ -12,6 +12,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
+use MailPoet\Cron\Workers\Bounce as BounceWorker;
 
 class WordPressTest extends \MailPoetTest {
 
@@ -81,6 +82,18 @@ class WordPressTest extends \MailPoetTest {
     $this->_enableMigration();
     $this->_addScheduledTask(MigrationWorker::TASK_TYPE, $status = ScheduledTask::STATUS_COMPLETED);
     expect(WordPress::checkExecutionRequirements())->false();
+  }
+
+  function testItExecutesWhenBounceIsActive() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
+      'method' => Mailer::METHOD_MAILPOET,
+      'frequency' => array(
+        'emails' => Setting::DEFAULT_SENDING_FREQUENCY_EMAILS,
+        'interval' => Setting::DEFAULT_SENDING_FREQUENCY_INTERVAL
+      )
+    ]);
+    $this->_addScheduledTask(BounceWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
+    expect(WordPress::checkExecutionRequirements())->true();
   }
 
   function testItCanDeactivateRunningDaemon() {
