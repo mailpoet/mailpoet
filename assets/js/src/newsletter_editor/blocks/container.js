@@ -144,6 +144,7 @@ Module.ContainerBlockView = base.BlockView.extend({
         return view.renderOptions.depth === 1;
       },
     },
+    HighlightEditingBehavior: {},
   }),
   onDragSubstituteBy: function () {
     // For two and three column layouts display their respective widgets,
@@ -201,11 +202,15 @@ Module.ContainerBlockView = base.BlockView.extend({
     }
   },
   hideTools: function () {
-    if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
-      this.$(this.ui.tools).removeClass('mailpoet_display_tools');
-      this.$el.removeClass('mailpoet_highlight');
-      this.toolsView.triggerMethod('hideTools');
+    if (this.renderOptions.depth !== 1
+      || this.$el.hasClass('mailpoet_container_layer_active')
+      || this._isBeingEdited
+    ) {
+      return;
     }
+    this.$(this.ui.tools).removeClass('mailpoet_display_tools');
+    this.$el.removeClass('mailpoet_highlight');
+    this.toolsView.triggerMethod('hideTools');
   },
   toggleEditingLayer: function (event) {
     var that = this;
@@ -268,7 +273,7 @@ Module.ContainerBlockSettingsView = base.BlockSettingsView.extend({
   },
   initialize: function () {
     base.BlockSettingsView.prototype.initialize.apply(this, arguments);
-
+    this.model.trigger('startEditing');
     this._columnsSettingsView = new (Module.ContainerBlockColumnsSettingsView)({
       collection: this.model.get('blocks'),
     });
