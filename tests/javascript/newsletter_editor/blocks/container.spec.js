@@ -274,6 +274,18 @@ describe('Container', function () {
         expect(model.get('image.src')).to.equal(null);
       });
 
+      it('displays/hides tools and highlight container block when settings active/inactive', function () {
+        var settingsView;
+        var blockView = new (ContainerBlock.ContainerBlockView)({ model: model });
+        blockView.render();
+        expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(false);
+        settingsView = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
+        settingsView.render();
+        expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(true);
+        settingsView.destroy();
+        expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(false);
+      });
+
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
