@@ -5,7 +5,7 @@
 		</a>
 	{{/if}}
 	{{#if tools.settings}}
-		<a href="javascript:;" class="mailpoet_tool mailpoet_edit_block mailpoet_ignore_drag" title="<%= __('Edit settings') %>">
+		<a href="javascript:;" data-automation-id="settings_tool" class="mailpoet_tool mailpoet_edit_block mailpoet_ignore_drag" title="<%= __('Edit settings') %>">
 			<%= source('newsletter/templates/svg/block-tools/settings.svg') %>
 		</a>
 	{{/if}}
