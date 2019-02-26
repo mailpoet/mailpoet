@@ -116,14 +116,6 @@ class SimpleWorkerTest extends \MailPoetTest {
     expect(count(MockSimpleWorker::getDueTasks()))->equals(2);
   }
 
-  function testItCanGetFutureTasks() {
-    expect(MockSimpleWorker::getFutureTasks())->isEmpty();
-    $task = $this->createScheduledTask();
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->addDays(7);
-    $task->save();
-    expect(count(MockSimpleWorker::getFutureTasks()))->notEmpty();
-  }
-
   function testItFailsToProcessWithoutTasks() {
     expect($this->worker->process())->false();
   }
