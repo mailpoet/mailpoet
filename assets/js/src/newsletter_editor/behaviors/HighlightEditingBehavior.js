@@ -21,4 +21,10 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
     this.view.hideTools();
     this.$el.removeClass('mailpoet_highlight');
   },
+  onDomRefresh: function onDomRefresh() {
+    if (this.view._isBeingEdited) {
+      this.view.showTools();
+      this.$el.addClass('mailpoet_highlight');
+    }
+  },
 });
