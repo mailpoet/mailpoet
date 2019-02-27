@@ -397,9 +397,9 @@ const MailerMixin = {
         state.meta.mta_log.error.error_message,
         { static: true, id: 'mailpoet_authorization_error' }
       );
-      jQuery('.js-button-resume-sending').on('click', function() {
+      jQuery('.js-button-resume-sending').on('click', () => {
         jQuery('[data-id="mailpoet_authorization_error"]').slideUp();
-      })
+      });
     }
     if (
       state.meta.mta_log.error
