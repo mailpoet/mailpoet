@@ -391,6 +391,15 @@ const StatisticsMixin = {
 
 const MailerMixin = {
   checkMailerStatus: function checkMailerStatus(state) {
+    if (state.meta.mta_log.error && state.meta.mta_log.error.operation === 'authorization') {
+      MailPoet.Notice.error(
+        state.meta.mta_log.error.error_message,
+        { static: true, id: 'mailpoet_authorization_error' }
+      );
+      jQuery('.js-button-resume-sending').on('click', function() {
+        jQuery('[data-id="mailpoet_authorization_error"]').slideUp();
+      })
+    }
     if (
       state.meta.mta_log.error
       && state.meta.mta_log.status === 'paused'
