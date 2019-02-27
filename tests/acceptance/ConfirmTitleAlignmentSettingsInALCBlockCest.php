@@ -48,7 +48,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $I->waitForText($post_title, 60);
 
     // assert no vertical element with two text block is present
-    $I->cantSeeElement('.mailpoet_container_vertical > .mailpoet_text_block + .mailpoet_text_block');
+    $I->cantSeeElementInDOM('.mailpoet_container_vertical > .mailpoet_text_block + .mailpoet_text_block');
   }
 
 }
