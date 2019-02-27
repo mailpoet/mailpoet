@@ -174,7 +174,7 @@ class NewsletterTypes extends React.Component {
 
         <Breadcrumb step="type" />
 
-        <ul className="mailpoet_boxes clearfix">
+        <ul className="mailpoet_boxes mailpoet_boxes_types">
           {types.map(type => (
             <li key={type.slug} data-type={type.slug} className="mailpoet_newsletter_types">
               <div>
