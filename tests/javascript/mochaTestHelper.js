@@ -94,9 +94,9 @@ global.stubImage = function (defaultWidth, defaultHeight) {
 
 testHelpers.loadTemplate('blocks/base/toolsGeneric.hbs', window, { id: 'newsletter_editor_template_tools_generic' });
 
-testHelpers.loadTemplate('blocks/automatedLatestContent/block.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_block' });
-testHelpers.loadTemplate('blocks/automatedLatestContent/widget.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_widget' });
-testHelpers.loadTemplate('blocks/automatedLatestContent/settings.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_settings' });
+testHelpers.loadTemplate('blocks/automatedLatestContentLayout/block.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_layout_block' });
+testHelpers.loadTemplate('blocks/automatedLatestContentLayout/widget.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_layout_widget' });
+testHelpers.loadTemplate('blocks/automatedLatestContentLayout/settings.hbs', window, { id: 'newsletter_editor_template_automated_latest_content_layout_settings' });
 
 testHelpers.loadTemplate('blocks/button/block.hbs', window, { id: 'newsletter_editor_template_button_block' });
 testHelpers.loadTemplate('blocks/button/widget.hbs', window, { id: 'newsletter_editor_template_button_widget' });
@@ -218,9 +218,9 @@ global.templates = {
   spacerInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_spacer_widget').html()),
   spacerBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_spacer_settings').html()),
 
-  automatedLatestContentBlock: Handlebars.compile(jQuery('#newsletter_editor_template_automated_latest_content_block').html()),
-  automatedLatestContentInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_automated_latest_content_widget').html()),
-  automatedLatestContentBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_automated_latest_content_settings').html()),
+  automatedLatestContentLayoutBlock: Handlebars.compile(jQuery('#newsletter_editor_template_automated_latest_content_layout_block').html()),
+  automatedLatestContentLayoutInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_automated_latest_content_layout_widget').html()),
+  automatedLatestContentLayoutBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_automated_latest_content_layout_settings').html()),
 
   postsBlock: Handlebars.compile(jQuery('#newsletter_editor_template_posts_block').html()),
   postsInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_posts_widget').html()),

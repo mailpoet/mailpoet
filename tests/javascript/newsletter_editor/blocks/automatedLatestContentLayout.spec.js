@@ -1,10 +1,10 @@
 import App from 'newsletter_editor/App';
-import AutomatedLatestContentBlock from 'newsletter_editor/blocks/automatedLatestContent';
+import AutomatedLatestContentBlock from 'newsletter_editor/blocks/automatedLatestContentLayout';
 import ContainerBlock from 'newsletter_editor/blocks/container';
 import Communication from 'newsletter_editor/components/communication';
 
 /* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
-import AutomatedLatestContentInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/blocks/automatedLatestContent';
+import AutomatedLatestContentInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/blocks/automatedLatestContentLayout';
 
 const expect = global.expect;
 const sinon = global.sinon;
@@ -14,12 +14,12 @@ const jQuery = global.jQuery;
 var EditorApplication = App;
 var CommunicationComponent = Communication;
 
-describe('Automated Latest Content Supervisor', function () {
+describe('Automated Latest Content Layout Supervisor', function () {
   var model;
   var mock;
   var module;
   beforeEach(function () {
-    model = new AutomatedLatestContentBlock.ALCSupervisor();
+    model = new AutomatedLatestContentBlock.ALCLayoutSupervisor();
   });
 
   it('fetches posts in bulk from the server', function () {
@@ -35,7 +35,7 @@ describe('Automated Latest Content Supervisor', function () {
       },
     }).default;
 
-    model = new module.ALCSupervisor();
+    model = new module.ALCLayoutSupervisor();
     model.refresh();
 
     mock.verify();
@@ -64,7 +64,7 @@ describe('Automated Latest Content Supervisor', function () {
   });
 });
 
-describe('Automated latest content', function () {
+describe('Automated latest content layout', function () {
   describe('model', function () {
     var model;
     var module;
@@ -78,7 +78,7 @@ describe('Automated latest content', function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
-      model = new (module.AutomatedLatestContentBlockModel)();
+      model = new (module.AutomatedLatestContentLayoutBlockModel)();
       sandbox = sinon.sandbox.create();
     });
 
@@ -88,8 +88,8 @@ describe('Automated latest content', function () {
       sandbox.restore();
     });
 
-    it('has automatedLatestContent type', function () {
-      expect(model.get('type')).to.equal('automatedLatestContent');
+    it('has automatedLatestContentLayout type', function () {
+      expect(model.get('type')).to.equal('automatedLatestContentLayout');
     });
 
     it('has post amount limit', function () {
@@ -129,7 +129,7 @@ describe('Automated latest content', function () {
     });
 
     it('has featured image position', function () {
-      expect(model.get('featuredImagePosition')).to.match(/^(aboveTitle|belowTitle|none)$/);
+      expect(model.get('featuredImagePosition')).to.match(/^(centered|left|right|alternate|none)$/);
     });
 
     it('has an option to display author', function () {
@@ -175,7 +175,7 @@ describe('Automated latest content', function () {
     it('uses defaults from config when they are set', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {
-          automatedLatestContent: {
+          automatedLatestContentLayout: {
             amount: '17',
             contentType: 'mailpoet_page', // 'post'|'page'|'mailpoet_page'
             inclusionType: 'exclude', // 'include'|'exclude'
@@ -220,7 +220,7 @@ describe('Automated latest content', function () {
           },
         },
       });
-      model = new (module.AutomatedLatestContentBlockModel)();
+      model = new (module.AutomatedLatestContentLayoutBlockModel)();
 
       expect(model.get('amount')).to.equal('17');
       expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -254,7 +254,7 @@ describe('Automated latest content', function () {
     it('accepts displayable posts', function () {
       EditorApplication.getBlockTypeModel = sinon.stub()
         .returns(ContainerBlock.ContainerBlockModel);
-      model = new (module.AutomatedLatestContentBlockModel)();
+      model = new (module.AutomatedLatestContentLayoutBlockModel)();
 
       model.updatePosts([{
         type: 'someCustomType',
@@ -264,7 +264,7 @@ describe('Automated latest content', function () {
       expect(model.get('_container.blocks').first().get('type')).to.equal('someCustomType');
     });
 
-    it('updates blockDefaults.automatedLatestContent when handling changes', function () {
+    it('updates blockDefaults.automatedLatestContentLayout when handling changes', function () {
       var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
       model.set('amount', '17');
       model.set('contentType', 'mailpoet_page');
@@ -283,7 +283,7 @@ describe('Automated latest content', function () {
       model.set('sortBy', 'oldest');
       model.set('showDivider', false);
       expect(stub.callCount).to.equal(16);
-      expect(stub.getCall(15).args[0]).to.equal('blockDefaults.automatedLatestContent');
+      expect(stub.getCall(15).args[0]).to.equal('blockDefaults.automatedLatestContentLayout');
       expect(stub.getCall(15).args[1]).to.deep.equal(model.toJSON());
     });
   });
@@ -302,8 +302,8 @@ describe('Automated latest content', function () {
       global.stubConfig(EditorApplication);
       EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-      model = new (module.AutomatedLatestContentBlockModel)();
-      view = new (module.AutomatedLatestContentBlockView)({ model: model });
+      model = new (module.AutomatedLatestContentLayoutBlockModel)();
+      view = new (module.AutomatedLatestContentLayoutBlockView)({ model: model });
     });
 
     afterEach(function () {
@@ -326,7 +326,7 @@ describe('Automated latest content', function () {
       global.stubConfig(EditorApplication);
       EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-      view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({
+      view = new (AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockView)({
         model: { set: sinon.stub() },
       });
     });
@@ -401,8 +401,8 @@ describe('Automated latest content', function () {
     });
 
     beforeEach(function () {
-      model = new (module.AutomatedLatestContentBlockModel)();
-      view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
+      model = new (module.AutomatedLatestContentLayoutBlockModel)();
+      view = new (module.AutomatedLatestContentLayoutBlockSettingsView)({ model: model });
     });
 
     after(function () {
@@ -415,8 +415,8 @@ describe('Automated latest content', function () {
 
     describe('once rendered', function () {
       beforeEach(function () {
-        model = new (module.AutomatedLatestContentBlockModel)();
-        view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
+        model = new (module.AutomatedLatestContentLayoutBlockModel)();
+        view = new (module.AutomatedLatestContentLayoutBlockSettingsView)({ model: model });
         view.render();
       });
 
@@ -524,8 +524,8 @@ describe('Automated latest content', function () {
 
       describe('when "title only" display type is selected', function () {
         beforeEach(function () {
-          model = new (module.AutomatedLatestContentBlockModel)();
-          view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
+          model = new (module.AutomatedLatestContentLayoutBlockModel)();
+          view = new (module.AutomatedLatestContentLayoutBlockSettingsView)({ model: model });
           view.render();
           view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
         });
@@ -536,8 +536,8 @@ describe('Automated latest content', function () {
 
         describe('when "title as list" is selected', function () {
           beforeEach(function () {
-            model = new (module.AutomatedLatestContentBlockModel)();
-            view = new (module.AutomatedLatestContentBlockSettingsView)({ model: model });
+            model = new (module.AutomatedLatestContentLayoutBlockModel)();
+            view = new (module.AutomatedLatestContentLayoutBlockSettingsView)({ model: model });
             view.render();
             view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
             view.$('.mailpoet_automated_latest_content_title_format').val('ul').change();
@@ -566,14 +566,6 @@ describe('Automated latest content', function () {
             });
           });
         });
-      });
-
-      it.skip('closes the sidepanel after "Done" is clicked', function () {
-        var mock = sinon.mock().once();
-        global.MailPoet.Modal.cancel = mock;
-        view.$('.mailpoet_done_editing').click();
-        mock.verify();
-        delete (global.MailPoet.Modal.cancel);
       });
     });
   });

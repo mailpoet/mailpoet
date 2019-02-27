@@ -356,7 +356,7 @@ const testConfig = {
       'components/styles.spec.js',
       'components/communication.spec.js',
 
-      'blocks/automatedLatestContent.spec.js',
+      'blocks/automatedLatestContentLayout.spec.js',
       'blocks/button.spec.js',
       'blocks/container.spec.js',
       'blocks/divider.spec.js',
