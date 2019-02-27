@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
  * Requires at least: 4.7
- * Tested up to: 5.0
+ * Tested up to: 5.1
  *
  * @package WordPress
  * @author MailPoet
