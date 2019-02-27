@@ -69,9 +69,11 @@ $video-guide-badge-color: #46b450;
 
   &_video {
     background: $video-guide-badge-color;
-    line-height: 5em;
-    padding: 7px 6px 7px 6px;
+    display: inline-block;
+    line-height: 20px;
+    padding: 3px 6px;
     text-decoration: none;
+    vertical-align: top;
 
     &:hover, &:active, &:focus {
       color: #FFFFFF;
@@ -84,7 +86,7 @@ $video-guide-badge-color: #46b450;
 
     .dashicons {
       font-size: 14px;
-      line-height: 3.4em;
+      line-height: 20px;
     }
   }
 }
