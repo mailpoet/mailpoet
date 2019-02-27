@@ -190,22 +190,16 @@ Module.ContainerBlockView = base.BlockView.extend({
     this.$('> .mailpoet_container').attr('class',
       'mailpoet_container mailpoet_container_' + this.model.get('orientation') + ' ' + classIrregular);
   },
-  showTools: function (mouseEvent) {
-    // Skip if user is dragging/resizing
-    if (mouseEvent && mouseEvent.buttons > 0) {
+  addHighlight: function addHighlight() {
+    if (this.renderOptions.depth !== 1 || this.$el.hasClass('mailpoet_container_layer_active')) {
       return;
     }
-    if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
-      this.$(this.ui.tools).addClass('mailpoet_display_tools');
-      this.$el.addClass('mailpoet_highlight');
-      this.toolsView.triggerMethod('showTools');
-    }
+    this.$(this.ui.tools).addClass('mailpoet_display_tools');
+    this.$el.addClass('mailpoet_highlight');
+    this.toolsView.triggerMethod('showTools');
   },
-  hideTools: function () {
-    if (this.renderOptions.depth !== 1
-      || this.$el.hasClass('mailpoet_container_layer_active')
-      || this._isBeingEdited
-    ) {
+  removeHighlight: function removeHighlight() {
+    if (this.renderOptions.depth !== 1 || this.$el.hasClass('mailpoet_container_layer_active')) {
       return;
     }
     this.$(this.ui.tools).removeClass('mailpoet_display_tools');
