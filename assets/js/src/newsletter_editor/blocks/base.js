@@ -59,10 +59,6 @@ Module.BlockView = AugmentedView.extend({
     delete: 'deleteBlock',
     duplicate: 'duplicateBlock',
   },
-  events: {
-    mouseenter: 'showTools',
-    mouseleave: 'hideTools',
-  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
@@ -105,20 +101,18 @@ Module.BlockView = AugmentedView.extend({
     this.on('dom:refresh', this.showBlock, this);
     this._isFirstRender = true;
   },
-  showTools: function showTools(mouseEvent) {
-    // Skip if user is dragging/resizing
-    if (mouseEvent && mouseEvent.buttons > 0) {
-      return;
-    }
+  addHighlight: function addHighlight() {
+    this.$el.addClass('mailpoet_highlight');
     if (!this.showingToolsDisabled) {
       this.$('> .mailpoet_tools').addClass('mailpoet_display_tools');
       this.toolsView.triggerMethod('showTools');
     }
   },
+  removeHighlight: function removeHighlight() {
+    this.$el.removeClass('mailpoet_highlight');
+    this.hideTools();
+  },
   hideTools: function hideTools() {
-    if (this._isBeingEdited) {
-      return;
-    }
     this.$('> .mailpoet_tools').removeClass('mailpoet_display_tools');
     this.toolsView.triggerMethod('hideTools');
   },

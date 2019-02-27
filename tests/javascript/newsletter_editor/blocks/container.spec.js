@@ -278,6 +278,10 @@ describe('Container', function () {
         var settingsView;
         var blockView = new (ContainerBlock.ContainerBlockView)({ model: model });
         blockView.render();
+        // Set proper depth since we want to highlight only top level containers
+        blockView.renderOptions = {
+          depth: 1,
+        };
         expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(false);
         settingsView = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
         settingsView.render();
