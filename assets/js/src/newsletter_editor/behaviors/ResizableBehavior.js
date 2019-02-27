@@ -6,6 +6,7 @@
 import Marionette from 'backbone.marionette';
 import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 import interact from 'interact';
+import _ from 'underscore';
 
 var BL = BehaviorsLookup;
 
@@ -59,12 +60,15 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
         that.$el.addClass('mailpoet_resize_active');
       }).on('resizemove', function resizemove(event) {
         var onResize = that.options.onResize.bind(that);
-        that.view.model.trigger('resizeMove', event);
+        that.view.model.trigger('resizeMove', that.detectMousePointerFocus(event));
         return onResize(event);
       })
-      .on('resizeend', function resizeend() {
+      .on('resizeend', function resizeend(event) {
         that.view.model.trigger('stopEditing');
         that.isBeingResized = null;
+        if (!that.detectMousePointerFocus(event).isViewFocused) {
+          that.hideResizeHandle();
+        }
         that.$el.removeClass('mailpoet_resize_active');
       });
   },
@@ -81,5 +85,21 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
     if (typeof this.options.resizeHandleSelector === 'string') {
       this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden');
     }
+  },
+  detectMousePointerFocus: function detectMousePointerFocus(event) {
+    var eventCopy = _.extend({}, event);
+    var offset = this.view.$el.offset();
+    var height = this.view.$el.height();
+    var width = this.view.$el.width();
+    if (event.pageX < offset.left
+      || event.pageX > offset.left + width
+      || event.pageY < offset.top
+      || event.pageY > offset.top + height
+    ) {
+      eventCopy.isViewFocused = false;
+    } else {
+      eventCopy.isViewFocused = true;
+    }
+    return eventCopy;
   },
 });
