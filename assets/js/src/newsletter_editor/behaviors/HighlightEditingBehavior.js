@@ -19,18 +19,7 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
   // mouseleave event is not always triggered during resizing
   // so we have to check if the pointer is still inside using resize event coordinates
   onResizeMove: function onResizeMove(event) {
-    var offset = this.view.$el.offset();
-    var height = this.view.$el.height();
-    var width = this.view.$el.width();
-    if (event.pageX < offset.left
-      || event.pageX > offset.left + width
-      || event.pageY < offset.top
-      || event.pageY > offset.top + height
-    ) {
-      this.isFocusedByPointer = false;
-    } else {
-      this.isFocusedByPointer = true;
-    }
+    this.isFocusedByPointer = event.isViewFocused;
   },
   onMouseEnter: function onMouseEnter(mouseEvent) {
     this.isFocusedByPointer = true;
