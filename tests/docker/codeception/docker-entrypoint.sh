@@ -96,6 +96,7 @@ CONFIG+="define('WP_DEBUG', true);\n"
 CONFIG+="define('WP_DEBUG_DISPLAY', true);\n"
 CONFIG+="define('WP_DEBUG_LOG', true);\n"
 CONFIG+="define('COOKIE_DOMAIN', \$_SERVER['HTTP_HOST']);\n"
+CONFIG+="define('WP_AUTO_UPDATE_CORE', false);\n"
 
 sed -i "s/define( *'WP_DEBUG', false *);/$CONFIG/" ./wp-config.php
 
