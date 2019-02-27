@@ -62,16 +62,16 @@ class ListingPages extends React.Component {
     }
     let pagination = false;
     let firstPage = (
-      <span aria-hidden="true" className="tablenav-pages-navspan">«</span>
+      <span aria-hidden="true" className="tablenav-pages-navspan button disabled">«</span>
     );
     let previousPage = (
-      <span aria-hidden="true" className="tablenav-pages-navspan">‹</span>
+      <span aria-hidden="true" className="tablenav-pages-navspan button disabled">‹</span>
     );
     let nextPage = (
-      <span aria-hidden="true" className="tablenav-pages-navspan">›</span>
+      <span aria-hidden="true" className="tablenav-pages-navspan button disabled">›</span>
     );
     let lastPage = (
-      <span aria-hidden="true" className="tablenav-pages-navspan">»</span>
+      <span aria-hidden="true" className="tablenav-pages-navspan button disabled">»</span>
     );
 
     if (this.props.limit > 0 && this.props.count > this.props.limit) {
@@ -80,7 +80,7 @@ class ListingPages extends React.Component {
           <a
             href="javascript:;"
             onClick={this.setPreviousPage}
-            className="prev-page"
+            className="prev-page button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('previousPage')}</span>
             <span aria-hidden="true">‹</span>
@@ -93,7 +93,7 @@ class ListingPages extends React.Component {
           <a
             href="javascript:;"
             onClick={this.setFirstPage}
-            className="first-page"
+            className="first-page button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('firstPage')}</span>
             <span aria-hidden="true">«</span>
@@ -106,7 +106,7 @@ class ListingPages extends React.Component {
           <a
             href="javascript:;"
             onClick={this.setNextPage}
-            className="next-page"
+            className="next-page button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('nextPage')}</span>
             <span aria-hidden="true">›</span>
@@ -119,7 +119,7 @@ class ListingPages extends React.Component {
           <a
             href="javascript:;"
             onClick={this.setLastPage}
-            className="last-page"
+            className="last-page button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('lastPage')}</span>
             <span aria-hidden="true">»</span>
