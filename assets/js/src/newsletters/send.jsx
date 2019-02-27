@@ -184,7 +184,8 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
           });
         } else {
           MailPoet.Notice.success(
-            MailPoet.I18n.t('newsletterBeingSent')
+            MailPoet.I18n.t('newsletterBeingSent'),
+            { id: 'mailpoet_notice_being_sent' }
           );
           MailPoet.trackEvent('Emails > Newsletter sent', {
             scheduled: false,

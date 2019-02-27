@@ -392,6 +392,7 @@ const StatisticsMixin = {
 const MailerMixin = {
   checkMailerStatus: function checkMailerStatus(state) {
     if (state.meta.mta_log.error && state.meta.mta_log.error.operation === 'authorization') {
+      MailPoet.Notice.hide('mailpoet_notice_being_sent');
       MailPoet.Notice.error(
         state.meta.mta_log.error.error_message,
         { static: true, id: 'mailpoet_authorization_error' }
