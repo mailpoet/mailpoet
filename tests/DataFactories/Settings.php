@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
 
 class Settings {
@@ -54,6 +55,18 @@ class Settings {
     $this->settings->set('display_nps_poll', 0);
     $this->settings->set('user_seen_editor_tutorial1', 1);
     $this->settings->set('show_congratulate_after_first_newsletter', 0);
+    return $this;
+  }
+
+  function withSendingMethod($sending_method) {
+    $this->settings->set('mta.method', $sending_method);
+    $this->settings->set('mta_group', $sending_method === Mailer::METHOD_SMTP ? 'smtp' : 'website');
+  }
+
+  function withSendingError($error_message, $operation = 'send') {
+    $this->settings->set('mta_log.status', 'paused');
+    $this->settings->set('mta_log.error.operation', $operation);
+    $this->settings->set('mta_log.error.error_message', $error_message);
     return $this;
   }
 }
