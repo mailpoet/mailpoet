@@ -1,4 +1,6 @@
 .mailpoet_notice {
   position: relative;
   clear: both;
+
+  p:empty { display: none; }
 }
