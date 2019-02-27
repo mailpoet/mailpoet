@@ -327,7 +327,38 @@ Module.SidebarPreviewView = Marionette.View.extend({
       }).fail(function (response) {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function (error) { return error.message; }),
+            response.errors.map(function (error) {
+              let errorMessage = `
+                <p>
+                  ${MailPoet.I18n.t('newsletterPreviewErrorNotice').replace('%$1s', window.config.mtaMethod)}:
+                  <i>${error.message}</i>
+                </p>
+              `;
+
+              if (window.config.mtaMethod === 'PHPMail') {
+                errorMessage += `
+                  <p>${MailPoet.I18n.t('newsletterPreviewErrorCheckConfiguration')}</p>
+                  <br />
+                  <p>${MailPoet.I18n.t('newsletterPreviewErrorUseSendingService')}</p>
+                  <p>
+                    <a
+                      href="https://www.mailpoet.com/free-plan/?utm_source=plugin&utm_campaign=sending-error"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ${MailPoet.I18n.t('newsletterPreviewErrorSignUpForSendingService')}
+                    </a>
+                  </p>
+                `;
+              } else {
+                const checkSettingsNotice = MailPoet.I18n.t('newsletterPreviewErrorCheckSettingsNotice').replace(
+                  /\[link\](.*?)\[\/link\]/g,
+                  '<a href="?page=mailpoet-settings#mta" key="check-sending">$1</a>'
+                );
+                errorMessage += `<p>${checkSettingsNotice}</p>`;
+              }
+              return errorMessage;
+            }),
             { scroll: true, static: true }
           );
         }

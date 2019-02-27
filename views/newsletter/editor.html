@@ -347,6 +347,11 @@
     'automatedLatestContentMissing': __('Please add an "Automated Latest Content" widget to the email from the right sidebar.'),
     'newsletterPreviewEmailMissing': __('Enter an email address to send the preview newsletter to.'),
     'newsletterPreviewSent': __('Your test email has been sent!'),
+    'newsletterPreviewErrorNotice': __('The email could not be send due to a technical issue with %$1s'),
+    'newsletterPreviewErrorCheckConfiguration': __('Please check your sending method configuration, you may need to consult with your hosting company.'),
+    'newsletterPreviewErrorUseSendingService': __('The easy alternative is to <b>send emails with MailPoet Sending Service</b> instead, like thousand of other users do.'),
+    'newsletterPreviewErrorSignUpForSendingService': __('Sign up for free in minutes'),
+    'newsletterPreviewErrorCheckSettingsNotice': __('Check your [link]sending method settings[/link].'),
     'templateNameMissing': __('Please add a template name'),
     'helpTooltipSendPreview': helpTooltipSendPreview,
     'helpTooltipDesignerSubjectLine': __("You can add MailPoet shortcodes here. For example, you can add your subscribers' first names by using this shortcode: [subscriber:firstname | default:reader]. Simply copy and paste the shortcode into the field."),
@@ -1351,6 +1356,7 @@
       currentUserId: '<%= current_wp_user.wp_user_id %>',
       dragDemoUrlSettings: '<%= settings["user_seen_editor_tutorial" ~ current_wp_user.wp_user_id] %>',
       installedAt: '<%= settings["installed_at"] %>',
+      mtaMethod: '<%= settings["mta"]["method"] %>',
     };
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
 
