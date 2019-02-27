@@ -91,8 +91,13 @@ else
 
 fi
 
-sed -i "s/define( *'WP_DEBUG', false *);/define('WP_DEBUG', true);define('WP_DEBUG_DISPLAY', true);define('WP_DEBUG_LOG', true);/" ./wp-config.php
-sed -i "s/.*That's all, stop editing! Happy blogging.*/define('COOKIE_DOMAIN', \$_SERVER['HTTP_HOST'] );/" ./wp-config.php
+CONFIG=''
+CONFIG+="define('WP_DEBUG', true);\n"
+CONFIG+="define('WP_DEBUG_DISPLAY', true);\n"
+CONFIG+="define('WP_DEBUG_LOG', true);\n"
+CONFIG+="define('COOKIE_DOMAIN', \$_SERVER['HTTP_HOST']);\n"
+
+sed -i "s/define( *'WP_DEBUG', false *);/$CONFIG/" ./wp-config.php
 
 # Load Composer dependencies
 # Set SKIP_DEPS environment flag to not download them. E.g. you have downloaded them yourself
