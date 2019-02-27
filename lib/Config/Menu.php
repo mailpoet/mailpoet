@@ -841,7 +841,7 @@ class Menu {
   }
 
   private function checkFromEmailAuthorization() {
-    if (self::isOnMailPoetAdminPage()) {
+    if (self::isOnMailPoetAdminPage() && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false) {
       $checker = $this->servicesChecker;
       $checker->isFromEmailAuthorized();
     }
