@@ -16,7 +16,7 @@ jobs:
           name: "Set up test environment"
           command: |
             # Install NodeJS+NPM
-            curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+            curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
             sudo apt-get install nodejs build-essential
             # install plugin dependencies
             curl -sL https://github.com/humbug/php-scoper/releases/download/0.11.4/php-scoper.phar --output php-scoper.phar
@@ -388,6 +388,9 @@ jobs:
       - run:
           name: "Set up environment"
           command: |
+            # Install NodeJS+NPM
+            curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+            sudo apt-get install nodejs build-essential
             source ./.circleci/setup.bash && setup php7
             sudo apt-get update
             sudo apt-get install python-pip gettext
