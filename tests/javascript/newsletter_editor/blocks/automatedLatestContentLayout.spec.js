@@ -132,6 +132,10 @@ describe('Automated latest content layout', function () {
       expect(model.get('featuredImagePosition')).to.match(/^(centered|left|right|alternate|none)$/);
     });
 
+    it('has title position', function () {
+      expect(model.get('titlePosition')).to.match(/^(abovePost|aboveExcerpt)$/);
+    });
+
     it('has an option to display author', function () {
       expect(model.get('showAuthor')).to.match(/^(no|aboveText|belowText)$/);
     });
@@ -185,6 +189,7 @@ describe('Automated latest content layout', function () {
             titleIsLink: true, // false|true
             imageFullWidth: false, // true|false
             featuredImagePosition: 'aboveTitle',
+            titlePosition: 'aboveExcerpt',
             showAuthor: 'belowText', // 'no'|'aboveText'|'belowText'
             authorPrecededBy: 'Custom config author preceded by',
             showCategories: 'belowText', // 'no'|'aboveText'|'belowText'
@@ -231,6 +236,7 @@ describe('Automated latest content layout', function () {
       expect(model.get('titleIsLink')).to.equal(true);
       expect(model.get('imageFullWidth')).to.equal(false);
       expect(model.get('featuredImagePosition')).to.equal('aboveTitle');
+      expect(model.get('titlePosition')).to.equal('aboveExcerpt');
       expect(model.get('showAuthor')).to.equal('belowText');
       expect(model.get('authorPrecededBy')).to.equal('Custom config author preceded by');
       expect(model.get('showCategories')).to.equal('belowText');
@@ -276,15 +282,16 @@ describe('Automated latest content layout', function () {
       model.set('titleIsLink', true);
       model.set('imageFullWidth', true);
       model.set('featuredImagePosition', 'aboveTitle');
+      model.set('titlePosition', 'aboveExcerpt');
       model.set('showAuthor', 'belowText');
       model.set('authorPrecededBy', 'Custom config author preceded by');
       model.set('showCategories', 'belowText');
       model.set('categoriesPrecededBy', 'Custom config categories preceded by');
       model.set('sortBy', 'oldest');
       model.set('showDivider', false);
-      expect(stub.callCount).to.equal(16);
-      expect(stub.getCall(15).args[0]).to.equal('blockDefaults.automatedLatestContentLayout');
-      expect(stub.getCall(15).args[1]).to.deep.equal(model.toJSON());
+      expect(stub.callCount).to.equal(17);
+      expect(stub.getCall(16).args[0]).to.equal('blockDefaults.automatedLatestContentLayout');
+      expect(stub.getCall(16).args[1]).to.deep.equal(model.toJSON());
     });
   });
 
@@ -472,6 +479,12 @@ describe('Automated latest content layout', function () {
         var newValue = 'aboveTitle';
         view.$('.mailpoet_automated_latest_content_featured_image_position').val(newValue).change();
         expect(model.get('featuredImagePosition')).to.equal(newValue);
+      });
+
+      it('changes the model if featured image position changes', function () {
+        var newValue = 'aboveExcerpt';
+        view.$('.mailpoet_automated_latest_content_title_position').val(newValue).change();
+        expect(model.get('titlePosition')).to.equal(newValue);
       });
 
       it('changes the model if show author changes', function () {
