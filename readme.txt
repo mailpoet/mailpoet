@@ -92,23 +92,26 @@ The MailPoet Sending Service is very easy to setup, you just have to enter a key
 
 = Translations =
 
+* Arabic
+* British
+* Catalan
+* Chinese
+* Danish
+* Dutch
 * French (FR and CA)
 * German
+* Hungarian
 * Italian
-* Spanish
-* Dutch
-* Portuguese (BR and PT)
-* British
-* Russian
 * Japanese
+* Mexican
 * Persian (IR)
 * Polish
-* Catalan
-* Danish
+* Portuguese (BR and PT)
+* Russian
+* Serbian
+* Spanish
 * Swedish
 * Turkish
-* Chinese
-* Hungarian
 
 We welcome experienced translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work.
 
