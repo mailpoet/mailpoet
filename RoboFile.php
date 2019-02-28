@@ -8,7 +8,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->taskExecStack()
       ->stopOnFail()
       ->exec('./composer.phar install')
-      ->exec('npm ci')
+      ->exec('npm ci --prefer-offline')
       ->run();
   }
 
