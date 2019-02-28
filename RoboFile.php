@@ -552,6 +552,7 @@ class RoboFile extends \Robo\Tasks {
   public function publish($opts = ['force' => false]) {
     return $this->collectionBuilder()
       ->addCode(array($this, 'pushpot'))
+      ->addCode(array($this, 'svnCheckout'))
       ->addCode(function () use ($opts) {
         return $this->svnPublish($opts);
       })
