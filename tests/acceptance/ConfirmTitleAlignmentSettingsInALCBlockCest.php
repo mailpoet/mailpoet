@@ -10,6 +10,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
 
   function createWelcomeNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Confirm title alignment settings in ALC block');
+
     // create a post and a newsletter with ALC block
     $subject = 'ALC Newsletter';
     $post_title = 'Post for ALC newsletter testing';
@@ -18,10 +19,12 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $I->cli(sprintf("media import https://dummyimage.com/600x400/000/fff.jpg --post_id=%s --title='A downloaded picture' --featured_image --allow-root", $post[0]));
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($subject)->create();
+
     // open the newsletter in editor
     $I->login();
     $I->amEditingNewsletter($newsletter->id);
     $I->waitForText($post_title, 60);
+
     // open settings
     $I->moveMouseOver('[data-automation-id="alc_posts"]');
     $I->waitForElementVisible('[data-automation-id="settings_tool"]');
@@ -29,9 +32,12 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $I->waitForElementVisible('[data-automation-id="display_options"]');
     //display only the post we created
     $I->fillField('[data-automation-id="show_max_posts"]', '1');
+
     $I->click('[data-automation-id="display_options"]');
+
     // select above excerpt title position
     $I->checkOption('[data-automation-id="title_above_excerpt"]');
+
     // wait for xhr to finish loading
     $I->waitForJS("return $.active > 0;", 60);
     $I->waitForJS("return $.active == 0;", 60);
@@ -42,6 +48,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
 
     // select above post title position
     $I->checkOption('[data-automation-id="title_above_post"]');
+    
     // wait for xhr to finish loading
     $I->waitForJS("return $.active > 0;", 60);
     $I->waitForJS("return $.active == 0;", 60);
