@@ -66,10 +66,16 @@ class Newsletters extends APIEndpoint {
       $newsletter = $newsletter
         ->withSegments()
         ->withOptions()
-        ->withSendingQueue()
-        ->asArray();
-      $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter);
-      return $this->successResponse($newsletter);
+        ->withSendingQueue();
+
+      $preview_url = NewsletterUrl::getViewInBrowserUrl(
+        NewsletterUrl::TYPE_LISTING_EDITOR,
+        $newsletter,
+        Subscriber::getCurrentWPUser()
+      );
+
+      $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter->asArray());
+      return $this->successResponse($newsletter, ['preview_url' => $preview_url]);
     }
   }
 

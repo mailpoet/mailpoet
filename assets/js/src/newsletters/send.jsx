@@ -33,6 +33,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
       fields: [],
       item: {},
       loading: true,
+      thumbnailPromise: null,
     };
   },
 
@@ -63,6 +64,10 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
     }
   },
 
+  getThumbnailPromise: function getThumbnailPromise(url) {
+    return this.state.thumbnailPromise ? this.state.thumbnailPromise : fromUrl(url);
+  },
+
   isValid: function isValid() {
     return jQuery('#mailpoet_newsletter').parsley().isValid();
   },
@@ -78,10 +83,12 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
         id,
       },
     }).done((response) => {
+      const thumbnailPromise = response.data.status === 'draft' ? this.getThumbnailPromise(response.meta.preview_url) : null;
       this.setState({
         loading: false,
         item: response.data,
         fields: this.getFieldsByNewsletter(response.data),
+        thumbnailPromise,
       });
     }).fail(() => {
       this.setState({
@@ -94,7 +101,8 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   saveTemplate: function saveTemplate(response, done) {
-    fromUrl(response.meta.preview_url)
+    const thumbnailPromise = this.getThumbnailPromise(response.meta.preview_url);
+    thumbnailPromise
       .then((thumbnail) => {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
