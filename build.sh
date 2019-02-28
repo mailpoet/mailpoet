@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-# Translations (npm install & composer install need to be run before)
+# Translations (npm ci & composer install need to be run before)
 echo '[BUILD] Generating translations'
 ./do makepot
 ./do packtranslations
@@ -19,7 +19,7 @@ mkdir $plugin_name
 # Production assets.
 echo '[BUILD] Generating production CSS and JS assets'
 rm -rf node_modules
-npm install
+npm ci
 ./do compile:all --env production
 
 # Dependency injection container cache.
