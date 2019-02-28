@@ -35,7 +35,7 @@ class ReleaseVersionController {
     }, $issues);
     $output[] = "Done, issues processed: " . count($result);
 
-    return join("\n", $output);
+    return [$version, join("\n", $output)];
   }
 
   private function getDoneIssuesWithoutVersion() {

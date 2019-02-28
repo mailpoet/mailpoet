@@ -636,13 +636,29 @@ class RoboFile extends \Robo\Tasks {
       $this->validateVersion($version);
     }
     try {
-      $output = $this->getReleaseVersionController()
+      list($version, $output) = $this->getReleaseVersionController()
         ->assignVersionToCompletedTickets($version);
     } catch (\Exception $e) {
       $this->yell($e->getMessage(), 40, 'red');
       exit(1);
     }
     $this->say($output);
+    if (!empty($opts['return'])) {
+      return $version;
+    }
+  }
+
+  public function prepareRelease($version = null) {
+    $version = $this->jiraReleaseVersion($version, ['return' => true]);
+
+    return $this->collectionBuilder()
+      ->addCode(function () use ($version) {
+        return $this->writeReleaseVersion($version);
+      })
+      ->addCode(function () use ($version) {
+        return $this->changelogUpdate(['version-name' => $version]);
+      })
+      ->run();
   }
 
   protected function validateVersion($version) {
