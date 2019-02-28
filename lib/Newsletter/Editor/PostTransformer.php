@@ -83,10 +83,10 @@ class PostTransformer {
     }
 
     if ($featured_image_position === 'centered') {
-      if ($title_position !== 'aboveExcerpt') {
-        array_unshift($content, $title, $featured_image);
-      } else {
+      if ($title_position === 'aboveExcerpt') {
         array_unshift($content, $featured_image, $title);
+      } else {
+        array_unshift($content, $title, $featured_image);
       }
       return array(
         LayoutHelper::row(array(
