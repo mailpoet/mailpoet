@@ -11,7 +11,9 @@ jobs:
       - restore_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
       - restore_cache:
-          key: npm-{{ checksum "package.json" }}
+          keys:
+            - npm-{{ checksum "package-lock.json" }}
+            - npm- # fallback to most recent npm-* if not found by checksum
       - run:
           name: "Set up test environment"
           command: |
@@ -33,9 +35,9 @@ jobs:
           paths:
             - vendor
       - save_cache:
-          key: npm-{{ checksum "package.json" }}
+          key: npm-{{ checksum "package-lock.json" }}
           paths:
-            - node_modules
+            - ~/.npm
       - run:
           name: "Composer security check"
           command: |
