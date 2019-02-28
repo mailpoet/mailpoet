@@ -311,7 +311,9 @@ class Model extends \Sudzy\ValidModel {
     $duplicate->hydrate($model_data);
     $duplicate->set_expr('created_at', 'NOW()');
     $duplicate->set_expr('updated_at', 'NOW()');
-    $duplicate->set_expr('deleted_at', 'NULL');
+    if (isset($model_data['deleted_at'])) {
+      $duplicate->set_expr('deleted_at', 'NULL');
+    }
 
     $duplicate->save();
     return $duplicate;
