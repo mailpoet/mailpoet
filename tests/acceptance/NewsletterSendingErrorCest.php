@@ -43,7 +43,7 @@ class NewsletterSendingErrorCest {
     $I->waitForElement('.mailpoet_notice.notice-error div');
     $I->see('Sending has been paused due to a technical issue with PHPMail: ' . $errorMessage, '.notice-error p');
     $I->see('Please check your sending method configuration, you may need to consult with your hosting company.', '.notice-error p');
-    $I->see('The easy alternative is to send emails with MailPoet Sending Service instead, like thousand of other users do.', '.notice-error p');
+    $I->see('The easy alternative is to send emails with MailPoet Sending Service instead, like thousands of other users do.', '.notice-error p');
     $I->see('Sign up for free in minutes', '.notice-error p');
     $I->see('Resume sending', '.notice-error p');
 
