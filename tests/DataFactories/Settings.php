@@ -61,6 +61,7 @@ class Settings {
   function withSendingMethod($sending_method) {
     $this->settings->set('mta.method', $sending_method);
     $this->settings->set('mta_group', $sending_method === Mailer::METHOD_SMTP ? 'smtp' : 'website');
+    return $this;
   }
 
   function withSendingError($error_message, $operation = 'send') {
