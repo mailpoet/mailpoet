@@ -27,7 +27,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     // open the newsletter in editor
     $I->login();
     $I->amEditingNewsletter($newsletter->id);
-    $I->waitForText($post_title, 60);
+    $I->waitForText($post_title);
 
     // open settings
     $I->moveMouseOver('[data-automation-id="alc_posts"]');
@@ -43,9 +43,9 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $I->checkOption('[data-automation-id="title_above_excerpt"]');
 
     // wait for xhr to finish loading
-    $I->waitForJS("return $.active > 0;", 60);
-    $I->waitForJS("return $.active == 0;", 60);
-    $I->waitForText($post_title, 60);
+    $I->waitForJS("return $.active > 0;", 15);
+    $I->waitForJS("return $.active == 0;", 15);
+    $I->waitForText($post_title);
 
     // assert we have heading and text as a next sibling in a vertical block
     $I->canSeeElement('.mailpoet_container_vertical > .mailpoet_text_block + .mailpoet_text_block');
@@ -54,9 +54,9 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $I->checkOption('[data-automation-id="title_above_post"]');
 
     // wait for xhr to finish loading
-    $I->waitForJS("return $.active > 0;", 60);
-    $I->waitForJS("return $.active == 0;", 60);
-    $I->waitForText($post_title, 60);
+    $I->waitForJS("return $.active > 0;", 15);
+    $I->waitForJS("return $.active == 0;", 15);
+    $I->waitForText($post_title);
 
     // assert no vertical element with two text block is present
     $I->cantSeeElementInDOM('.mailpoet_container_vertical > .mailpoet_text_block + .mailpoet_text_block');
