@@ -2,7 +2,7 @@ $column-margin: 20px;
 $one-column-width: $newsletter-width - (2 * $column-margin);
 $two-column-width: $newsletter-width / 2 - (2 * $column-margin);
 $three-column-width: $newsletter-width / 3 - (2 * $column-margin);
-$two-column-wider-column-width: $newsletter-width / 3 - $column-margin * 2;
+$two-column-wider-column-width: (($newsletter-width / 3) - $column-margin) * 2;
 
 .mailpoet_container {
   width: 100%;
