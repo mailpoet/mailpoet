@@ -8,6 +8,7 @@ use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
 use function MailPoet\Util\array_column;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -29,7 +30,6 @@ if (!defined('ABSPATH')) exit;
  * @property string $body
  * @property string|null $schedule
  */
-use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;

@@ -21,7 +21,10 @@ class Renderer {
   private $template;
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
-
+  
+  /**
+   * @param \MailPoet\Models\Newsletter|array $newsletter
+   */
   function __construct($newsletter, $preview = false) {
     $this->newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;

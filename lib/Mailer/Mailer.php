@@ -154,7 +154,10 @@ class Mailer {
       $return_path :
       $this->settings->get('bounce.address');
   }
-
+  
+  /**
+   * @param  \MailPoet\Models\Subscriber|array $subscriber
+   */
   function formatSubscriberNameAndEmailAddress($subscriber) {
     $subscriber = (is_object($subscriber)) ? $subscriber->asArray() : $subscriber;
     if (!is_array($subscriber)) return $subscriber;

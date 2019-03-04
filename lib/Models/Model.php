@@ -2,6 +2,8 @@
 
 namespace MailPoet\Models;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
 
 /**
@@ -112,7 +114,6 @@ if (!defined('ABSPATH')) exit;
  * @property string|null $updated_at
  * @property string|null $id
  */
-use MailPoet\WP\Functions as WPFunctions;
 
 class Model extends \Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;

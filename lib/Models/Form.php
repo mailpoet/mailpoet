@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
 
 /**
@@ -8,7 +10,6 @@ if (!defined('ABSPATH')) exit;
  * @property string|array $body
  * @property string $name
  */
-use MailPoet\WP\Functions as WPFunctions;
 
 class Form extends Model {
   public static $_table = MP_FORMS_TABLE;

@@ -5,6 +5,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Util\Helpers;
 use function MailPoet\Util\array_column;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -26,7 +27,6 @@ if (!defined('ABSPATH')) exit;
  * @property string $unconfirmed_data
  * @property int $is_woocommerce_user
  */
-use MailPoet\WP\Functions as WPFunctions;
 
 class Subscriber extends Model {
   public static $_table = MP_SUBSCRIBERS_TABLE;

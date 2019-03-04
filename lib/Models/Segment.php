@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
 
 /**
@@ -9,7 +11,6 @@ if (!defined('ABSPATH')) exit;
  * @property string $type
  * @property string $description
  */
-use MailPoet\WP\Functions as WPFunctions;
 
 class Segment extends Model {
   static $_table = MP_SEGMENTS_TABLE;

@@ -2,8 +2,12 @@
 namespace MailPoet\WP;
 
 class Functions {
-  static private $instance;
 
+  static private $instance;
+  
+  /**
+   * @return Functions
+   */
   static function get() {
     if (self::$instance == null) {
       self::$instance = new Functions;
@@ -154,7 +158,10 @@ class Functions {
   function currentUserCan() {
     return call_user_func_array('current_user_can', func_get_args());
   }
-
+  
+  /**
+   * @return \WP_Role | null
+   */
   function getRole() {
     return call_user_func_array('get_role', func_get_args());
   }
