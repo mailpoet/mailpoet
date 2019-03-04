@@ -5,11 +5,11 @@ namespace MailPoet\Subscribers\ImportExport\Export;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * Gets batches of subscribers from default segments.
  */
-use MailPoet\WP\Functions as WPFunctions;
 
 class DefaultSubscribersGetter extends SubscribersGetter {
 

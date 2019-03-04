@@ -20,7 +20,7 @@ class Capabilities {
       $wp = new WPFunctions;
     }
     $this->wp = $wp;
-    $this->access_control = new AccessControl($wp);
+    $this->access_control = new AccessControl;
   }
 
   function init() {

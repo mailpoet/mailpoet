@@ -8,6 +8,9 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class Subscriber {
+  /**
+   * @param \MailPoet\Models\Subscriber|false $subscriber
+   */
   static function process(
     $shortcode_details,
     $newsletter,

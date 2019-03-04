@@ -4,6 +4,7 @@ namespace MailPoet\Models;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -19,7 +20,6 @@ if (!defined('ABSPATH')) exit;
  * @property string|array $subscribers
  * @property string|null $deleted_at
  */
-use MailPoet\WP\Functions as WPFunctions;
 
 class SendingQueue extends Model {
   public static $_table = MP_SENDING_QUEUES_TABLE;
