@@ -16,7 +16,11 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $post_title = 'Post for ALC newsletter testing';
     $post_body = 'Magna primis leo neque litora quisque phasellus nunc himenaeos per, cursus porttitor rhoncus primis cubilia condimentum magna semper curabitur nibh, nunc nulla porttitor aptent aliquet dui nec accumsan quisque pharetra non pellentesque senectus hendrerit bibendum.';
     $post = $I->cliToArray(sprintf("post create --format=json --porcelain --post_title='%s' --post_content='%s' --post_status='publish' --allow-root", $post_title, $post_body));
-    $I->cli(sprintf("media import https://dummyimage.com/600x400/000/fff.jpg --post_id=%s --title='A downloaded picture' --featured_image --allow-root", $post[0]));
+    $I->cli(sprintf(
+      "media import %s --post_id=%s --title='A downloaded picture' --featured_image --allow-root",
+      dirname(__DIR__) . '/_data/600x400.jpg',
+      $post[0]
+    ));
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($subject)->create();
 
@@ -48,7 +52,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
 
     // select above post title position
     $I->checkOption('[data-automation-id="title_above_post"]');
-    
+
     // wait for xhr to finish loading
     $I->waitForJS("return $.active > 0;", 60);
     $I->waitForJS("return $.active == 0;", 60);
