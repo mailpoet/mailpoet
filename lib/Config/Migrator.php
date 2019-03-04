@@ -337,7 +337,8 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
-      'KEY queue_id (queue_id)',
+      'KEY queue_id (queue_id),',
+      'KEY url (url(255))',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
