@@ -5,11 +5,7 @@ $block-text-line-height: $text-line-height;
   box-sizing: border-box;
   box-sizing: border-box;
   float: left;
-
-  margin-bottom: 20px;
-
-  padding-left: 20px;
-  padding-right: 20px;
+  padding: 10px 20px;
   position: relative;
 
   & > .mailpoet_block_highlight {
