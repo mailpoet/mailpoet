@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Util\Helpers;
@@ -807,5 +808,16 @@ class Subscriber extends Model {
       ->where('subscriber_segment.subscriber_id', $this->id)
       ->orderByAsc('name')
       ->findArray();
+  }
+
+  /**
+   * This method is here only for BC fix of 3rd party plugin integration.
+   * @see https://kb.mailpoet.com/article/195-add-subscribers-through-your-own-form-or-plugin
+   * @deprecated
+   */
+  static function subscribe($subscriber_data = [], $segment_ids = []) {
+    trigger_error('Calling Subscriber::subscribe() is deprecated and will be removed. Use MailPoet\API\MP\v1\API instead. ', E_USER_DEPRECATED);
+    $service = ContainerWrapper::getInstance()->get(\MailPoet\Subscribers\SubscriberActions::class);
+    return $service->subscribe($subscriber_data, $segment_ids);
   }
 }
