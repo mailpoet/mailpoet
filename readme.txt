@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 3.19.3
+Stable tag: 3.20.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -171,6 +171,17 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.20.0 - 2019-03-05 =
+* Added: requirement for all "from" email addresses to be authorized to enable sending;
+* Added: WooCommerce revenues in stats email notifications;
+* Added: new image for WordPress repo;
+* Improved: adjustments for third-party plugins who do not integrate MailPoet correctly;
+* Improved: email type selection CSS improved to prevent issues with some languages;
+* Fixed: double elements in form editor;
+* Fixed: MailPoet Sending Service can be activated with a key that has an 'expiring' status;
+* Fixed: display bug for 1:2 and 2:1 column layouts in editor;
+* Fixed: pagination controls on listings pages.
 
 = 3.19.3 - 2019-02-26 =
 * Added: new step in import to educate users about good sending practices during subscriber import;
