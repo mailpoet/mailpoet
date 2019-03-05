@@ -18,10 +18,6 @@ $two-column-wider-column-width: (($newsletter-width / 3) - $column-margin) * 2;
   border: 0;
   padding-left: 0;
   padding-right: 0;
-
-  &:hover > .mailpoet_block_highlight {
-    border: 0;
-  }
 }
 
 .mailpoet_container_vertical > * {
