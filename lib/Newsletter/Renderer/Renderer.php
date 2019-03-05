@@ -11,7 +11,6 @@ if (!defined('ABSPATH')) exit;
 class Renderer {
   public $blocks_renderer;
   public $columns_renderer;
-  public $DOM_parser;
   public $CSS_inliner;
   public $newsletter;
   public $preview;
@@ -26,7 +25,6 @@ class Renderer {
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
-    $this->DOM_parser = new pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
     $this->premium_activated = License::getLicense();
@@ -62,8 +60,8 @@ class Renderer {
       $newsletter['preheader'],
       $rendered_body
     ));
-    $template = $this->inlineCSSStyles($template);
-    $template = $this->postProcessTemplate($template);
+    $template_dom = $this->inlineCSSStyles($template);
+    $template = $this->postProcessTemplate($template_dom);
 
     $rendered_newsletter = array(
       'html' => $template,
@@ -150,8 +148,7 @@ class Renderer {
     return @\Html2Text\Html2Text::convert($template);
   }
 
-  private function postProcessTemplate($template) {
-    $DOM = $this->DOM_parser->parseStr($template);
+  private function postProcessTemplate($DOM) {
     // replace spaces in image tag URLs
     foreach ($DOM->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
