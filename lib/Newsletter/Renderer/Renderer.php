@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
+use MailPoet\Models\Newsletter;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\pQuery;
@@ -21,7 +22,7 @@ class Renderer {
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
   function __construct($newsletter, $preview = false) {
-    $this->newsletter = (is_object($newsletter)) ? $newsletter->asArray() : $newsletter;
+    $this->newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
@@ -73,7 +74,11 @@ class Renderer {
       $rendered_newsletter;
   }
 
-  private function preProcessALC($content) {
+  /**
+   * @param array $content
+   * @return array
+   */
+  private function preProcessALC(array $content) {
     $blocks = array();
     $content_blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
@@ -93,6 +98,10 @@ class Renderer {
     return $content;
   }
 
+  /**
+   * @param array $content
+   * @return string
+   */
   private function renderBody($content) {
     $blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
@@ -111,7 +120,11 @@ class Renderer {
     return implode('', $rendered_content);
   }
 
-  private function renderStyles($styles) {
+  /**
+   * @param array $styles
+   * @return string
+   */
+  private function renderStyles(array $styles) {
     $css = '';
     foreach ($styles as $selector => $style) {
       switch ($selector) {
@@ -133,27 +146,44 @@ class Renderer {
     return $css;
   }
 
+  /**
+   * @param string $template
+   * @param string $content
+   * @return string|string[]|null
+   */
   private function injectContentIntoTemplate($template, $content) {
     return preg_replace_callback('/{{\w+}}/', function($matches) use (&$content) {
       return array_shift($content);
     }, $template);
   }
 
+  /**
+   * @param string $template
+   * @return \pQuery\DomNode
+   */
   private function inlineCSSStyles($template) {
     return $this->CSS_inliner->inlineCSS(null, $template);
   }
 
+  /**
+   * @param string $template
+   * @return string
+   */
   private function renderTextVersion($template) {
     $template = (mb_detect_encoding($template, 'UTF-8', true)) ? $template : utf8_encode($template);
     return @\Html2Text\Html2Text::convert($template);
   }
 
-  private function postProcessTemplate($DOM) {
+  /**
+   * @param \pQuery\DomNode $template_dom
+   * @return string
+   */
+  private function postProcessTemplate(\pQuery\DomNode $template_dom) {
     // replace spaces in image tag URLs
-    foreach ($DOM->query('img') as $image) {
+    foreach ($template_dom->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
     }
-    $template = $DOM->query('.mailpoet_template');
+    $template = $template_dom->query('.mailpoet_template');
     // replace all !important tags except for in the body tag
     $template->html(
       str_replace('!important', '', $template->html())
@@ -164,12 +194,17 @@ class Renderer {
     );
     $template = apply_filters(
       self::FILTER_POST_PROCESS,
-      $DOM->__toString()
+      $template_dom->__toString()
     );
     return $template;
   }
 
-  private function addMailpoetLogoContentBlock($content, $styles) {
+  /**
+   * @param array $content
+   * @param array $styles
+   * @return array
+   */
+  private function addMailpoetLogoContentBlock(array $content, array $styles) {
     if (empty($content['blocks'])) return $content;
     $content['blocks'][] = array(
       'type' => 'container',
