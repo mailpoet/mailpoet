@@ -9,7 +9,7 @@ class Functions {
    * @return Functions
    */
   static function get() {
-    if (self::$instance == null) {
+    if (self::$instance === null) {
       self::$instance = new Functions;
     }
     return self::$instance;
@@ -160,7 +160,7 @@ class Functions {
   }
   
   /**
-   * @return \WP_Role | null
+   * @return \WP_Role|null
    */
   function getRole() {
     return call_user_func_array('get_role', func_get_args());
