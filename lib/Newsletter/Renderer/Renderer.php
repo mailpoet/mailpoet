@@ -75,7 +75,7 @@ class Renderer {
       $rendered_newsletter;
   }
 
-  function preProcessALC($content) {
+  private function preProcessALC($content) {
     $blocks = array();
     $content_blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
@@ -95,7 +95,7 @@ class Renderer {
     return $content;
   }
 
-  function renderBody($content) {
+  private function renderBody($content) {
     $blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
       : array();
@@ -113,7 +113,7 @@ class Renderer {
     return implode('', $rendered_content);
   }
 
-  function renderStyles($styles) {
+  private function renderStyles($styles) {
     $css = '';
     foreach ($styles as $selector => $style) {
       switch ($selector) {
@@ -135,22 +135,22 @@ class Renderer {
     return $css;
   }
 
-  function injectContentIntoTemplate($template, $content) {
+  private function injectContentIntoTemplate($template, $content) {
     return preg_replace_callback('/{{\w+}}/', function($matches) use (&$content) {
       return array_shift($content);
     }, $template);
   }
 
-  function inlineCSSStyles($template) {
+  private function inlineCSSStyles($template) {
     return $this->CSS_inliner->inlineCSS(null, $template);
   }
 
-  function renderTextVersion($template) {
+  private function renderTextVersion($template) {
     $template = (mb_detect_encoding($template, 'UTF-8', true)) ? $template : utf8_encode($template);
     return @\Html2Text\Html2Text::convert($template);
   }
 
-  function postProcessTemplate($template) {
+  private function postProcessTemplate($template) {
     $DOM = $this->DOM_parser->parseStr($template);
     // replace spaces in image tag URLs
     foreach ($DOM->query('img') as $image) {
@@ -172,7 +172,7 @@ class Renderer {
     return $template;
   }
 
-  function addMailpoetLogoContentBlock($content, $styles) {
+  private function addMailpoetLogoContentBlock($content, $styles) {
     if (empty($content['blocks'])) return $content;
     $content['blocks'][] = array(
       'type' => 'container',
