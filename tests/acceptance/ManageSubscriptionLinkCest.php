@@ -43,7 +43,7 @@ class ManageSubscriptionLinkCest {
     $I->waitForElement($search_field_element);
     $I->selectOptionInSelect2('WordPress Users');
     $I->click('Send');
-    $I->waitForText('Sent to 1 of 1');
+    $I->waitForText('Sent to 1 of 1', 60);
   }
 
   function manageSubscriptionLink(\AcceptanceTester $I) {
