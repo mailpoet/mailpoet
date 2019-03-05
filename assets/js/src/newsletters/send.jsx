@@ -115,12 +115,12 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
             body: JSON.stringify(response.data.body),
             categories: '["recent"]',
           },
-        }).then(done).fail((err) => {
+        }).fail((err) => {
           this.showError(err);
           this.setState({ loading: false });
           MailPoet.Modal.loading(false);
-          done();
         });
+        done();
       })
       .catch((err) => {
         this.showError({ errors: [err] });
