@@ -63,9 +63,6 @@ class SettingsController {
         'analytics' => [
           'enabled' => false,
         ],
-        'in_app_announcements' => [
-          'displayed' => []
-        ],
         'display_nps_poll' => true,
       ];
     }
