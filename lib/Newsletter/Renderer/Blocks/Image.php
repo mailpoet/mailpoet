@@ -43,7 +43,7 @@ class Image {
 
     $template = '
       <tr>
-        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_bottom mailpoet_padded_side' : '') . '" align="' . $align . '" valign="top">
+        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_vertical mailpoet_padded_side' : '') . '" align="' . $align . '" valign="top">
           ' . $image_template . '
         </td>
       </tr>';

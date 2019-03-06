@@ -8,7 +8,7 @@ class Button {
     $element['styles']['block']['width'] = self::calculateWidth($element, $column_base_width);
     $template = '
       <tr>
-        <td class="mailpoet_padded_bottom mailpoet_padded_side" valign="top">
+        <td class="mailpoet_padded_vertical mailpoet_padded_side" valign="top">
           <div>
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;">
               <tr>
