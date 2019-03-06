@@ -19,7 +19,7 @@ class FoodBox {
   function get() {
     return array(
       'name' => WPFunctions::get()->__("Welcome to FoodBox", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(array('welcome', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

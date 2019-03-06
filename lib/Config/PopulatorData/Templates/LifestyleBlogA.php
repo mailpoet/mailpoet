@@ -18,7 +18,7 @@ class LifestyleBlogA {
 
   function get() {
     return array(
-      'name' => WPFunctions::get()->__("Lifestyle Blog - A", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Makeup Blog", 'mailpoet'),
       'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
