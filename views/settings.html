@@ -217,9 +217,6 @@
         });
       });
     });
-    var mailpoet_in_app_announcements = <%= json_encode(settings.in_app_announcements) %>;
-    var mailpoet_new_subscriber_announcement_image = '<%= cdn_url('in-app-announcements/new-subscriber-notification.20181121-1440.png') %>';
-    var mailpoet_installed_at = <%= json_encode(settings.installed_at) %>;
     <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     var mailpoet_is_new_user = <%= newUser %>;
     var mailpoet_settings_sender_name = "<%= settings.sender.name %>";
