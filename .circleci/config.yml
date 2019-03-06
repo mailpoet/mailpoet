@@ -3,7 +3,7 @@ jobs:
   build_and_code_qa:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.1_20181009.1
+      - image: mailpoet/wordpress:7.3_20190306.1
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
@@ -17,9 +17,6 @@ jobs:
       - run:
           name: "Set up test environment"
           command: |
-            # Install NodeJS+NPM
-            curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-            sudo apt-get install nodejs build-essential
             # install plugin dependencies
             curl -sL https://github.com/humbug/php-scoper/releases/download/0.11.4/php-scoper.phar --output php-scoper.phar
             chmod 755 php-scoper.phar
@@ -56,7 +53,7 @@ jobs:
   static_analysis:
     working_directory: /home/circleci/mailpoet
     docker:
-    - image: mailpoet/wordpress:7.1_20181009.1
+    - image: mailpoet/wordpress:7.3_20190306.1
     - image: circleci/mysql:5.7
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -287,7 +284,7 @@ jobs:
   php7_unit:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.1_20181009.1
+      - image: mailpoet/wordpress:7.3_20190306.1
       - image: circleci/mysql:5.7
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -318,7 +315,7 @@ jobs:
   php7_integration:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.1_20181009.1
+      - image: mailpoet/wordpress:7.3_20190306.1
       - image: circleci/mysql:5.7
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -349,7 +346,7 @@ jobs:
   php7_integration_multisite:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.1_20181009.1
+      - image: mailpoet/wordpress:7.3_20190306.1
       - image: circleci/mysql:5.7
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -380,7 +377,7 @@ jobs:
   build_release_zip:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.1_20181009.1
+      - image: mailpoet/wordpress:7.3_20190306.1
       - image: circleci/mysql:5.7
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -390,9 +387,6 @@ jobs:
       - run:
           name: "Set up environment"
           command: |
-            # Install NodeJS+NPM
-            curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-            sudo apt-get install nodejs build-essential
             source ./.circleci/setup.bash && setup php7
             sudo apt-get update
             sudo apt-get install python-pip gettext
