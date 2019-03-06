@@ -15,7 +15,7 @@ class WineCity {
 
   function get() {
     return array(
-      'name' => WPFunctions::get()->__("Wine City", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Wine City (with coupon)", 'mailpoet'),
       'categories' => json_encode(array('woocommerce', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
