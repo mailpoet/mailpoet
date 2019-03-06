@@ -55,5 +55,6 @@ class NewsletterSendingErrorCest {
 
     $I->click('Resume sending');
     $I->waitForText('Sending has been resumed.');
+    $settings->withSendingMethod(Mailer::METHOD_SMTP);
   }
 }
