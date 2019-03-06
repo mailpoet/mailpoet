@@ -87,6 +87,7 @@ class Database {
       $mapping_to_external_entities = Env::$db_prefix . 'mapping_to_external_entities';
       $log = Env::$db_prefix . 'log';
       $stats_notifications = Env::$db_prefix . 'stats_notifications';
+      $user_flags = Env::$db_prefix . 'user_flags';
 
       define('MP_SETTINGS_TABLE', $settings);
       define('MP_SEGMENTS_TABLE', $segments);
@@ -114,6 +115,7 @@ class Database {
       define('MP_MAPPING_TO_EXTERNAL_ENTITIES_TABLE', $mapping_to_external_entities);
       define('MP_LOG_TABLE', $log);
       define('MP_STATS_NOTIFICATIONS_TABLE', $stats_notifications);
+      define('MP_USER_FLAGS_TABLE', $user_flags);
     }
   }
 }
