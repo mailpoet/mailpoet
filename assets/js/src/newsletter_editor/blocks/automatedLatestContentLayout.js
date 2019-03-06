@@ -131,9 +131,9 @@ Module.AutomatedLatestContentLayoutBlockView = base.BlockView.extend({
       postsChanged: 'render',
     }
   ),
-  events: _.extend(base.BlockView.prototype.events, {
+  events: {
     'click .mailpoet_automated_latest_content_block_overlay': 'showSettings',
-  }),
+  },
   onDragSubstituteBy: function () { return Module.AutomatedLatestContentLayoutWidgetView; },
   onRender: function () {
     var ContainerView = App.getBlockTypeView('container');
