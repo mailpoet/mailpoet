@@ -45,6 +45,7 @@ class Migrator {
       'statistics_forms',
       'mapping_to_external_entities',
       'log',
+      'user_flags',
     ];
   }
 
@@ -468,6 +469,20 @@ class Migrator {
       'created_at timestamp DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id)',
     ];
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function userFlags() {
+    $attributes = array(
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'user_id bigint(20) NOT NULL,',
+      'name varchar(50) NOT NULL,',
+      'value longtext,',
+      'created_at timestamp NULL,',
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id),',
+      'UNIQUE KEY user_id_name (user_id, name)',
+    );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
