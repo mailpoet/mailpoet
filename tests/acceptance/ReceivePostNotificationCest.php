@@ -64,7 +64,7 @@ class ReceivePostNotificationCest {
     $I->waitForText('View history', 90);
     $selector = sprintf('[data-automation-id="history-%d"]', $newsletter->id());
     $I->click($selector);
-    $I->waitForText('Sent to 1 of 1', 190);
+    $I->waitForText('Sent to 1 of 1', 90);
 
     // confirm newsletter is received
     $I->amOnMailboxAppPage();
