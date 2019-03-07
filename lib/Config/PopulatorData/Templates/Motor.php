@@ -15,7 +15,7 @@ class Motor {
   function get() {
     return array(
       'name' => __("Motor", 'mailpoet'),
-      'categories' => json_encode(array('automatic', 'all')),
+      'categories' => json_encode(array('woocommerce', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
