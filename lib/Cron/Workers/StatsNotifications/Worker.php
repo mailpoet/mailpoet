@@ -18,8 +18,6 @@ class Worker {
   const TASK_TYPE = 'stats_notification';
   const SETTINGS_KEY = 'stats_notifications';
 
-  const SENDER_EMAIL_PREFIX = 'wordpress@';
-
   /** @var float */
   public $timer;
 
@@ -42,7 +40,6 @@ class Worker {
   /** @throws \Exception */
   function process() {
     $settings = $this->settings->get(self::SETTINGS_KEY);
-    $this->mailer->sender = $this->mailer->getSenderNameAndAddress($this->constructSenderEmail());
     foreach (self::getDueTasks() as $task) {
       try {
         $this->mailer->send($this->constructNewsletter($task), $settings['address']);
@@ -55,18 +52,6 @@ class Worker {
       }
       CronHelper::enforceExecutionLimit($this->timer);
     }
-  }
-
-  private function constructSenderEmail() {
-    $url_parts = parse_url(home_url());
-    $site_name = strtolower($url_parts['host']);
-    if (strpos($site_name, 'www.') === 0) {
-      $site_name = substr($site_name, 4);
-    }
-    return [
-      'address' => self::SENDER_EMAIL_PREFIX . $site_name,
-      'name' => self::SENDER_EMAIL_PREFIX . $site_name,
-    ];
   }
 
   public static function getDueTasks() {
