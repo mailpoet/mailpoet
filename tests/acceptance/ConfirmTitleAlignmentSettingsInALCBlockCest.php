@@ -43,8 +43,8 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $I->checkOption('[data-automation-id="title_above_excerpt"]');
 
     // wait for xhr to finish loading
-    $I->waitForJS("return $.active > 0;", 30);
-    $I->waitForJS("return $.active == 0;", 30);
+    $I->waitForJS("return $.active > 0;", 60);
+    $I->waitForJS("return $.active == 0;", 60);
     $I->waitForText($post_title);
 
     // assert we have heading and text as a next sibling in a vertical block
@@ -54,8 +54,8 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $I->checkOption('[data-automation-id="title_above_post"]');
 
     // wait for xhr to finish loading
-    $I->waitForJS("return $.active > 0;", 30);
-    $I->waitForJS("return $.active == 0;", 30);
+    $I->waitForJS("return $.active > 0;", 60);
+    $I->waitForJS("return $.active == 0;", 60);
     $I->waitForText($post_title);
 
     // assert no vertical element with two text block is present
