@@ -5,13 +5,14 @@ namespace MailPoet\Twig;
 use MailPoet\Analytics\Reporter;
 use MailPoet\Analytics\Analytics as AnalyticsGenerator;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WooCommerce\Helper;
 
 if (!defined('ABSPATH')) exit;
 
 class Analytics extends \Twig_Extension {
   public function getFunctions() {
     $settings = new SettingsController();
-    $analytics = new AnalyticsGenerator(new Reporter($settings), $settings);
+    $analytics = new AnalyticsGenerator(new Reporter($settings, new Helper), $settings);
     return array(
       new \Twig_SimpleFunction(
         'get_analytics_data',

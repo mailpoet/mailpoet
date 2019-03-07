@@ -28,6 +28,8 @@ class ContainerConfigurator implements IContainerConfigurator {
       ContainerWrapper::class,
       'getInstance'
       ]);
+    // Analytics
+    $container->autowire(\MailPoet\Analytics\Reporter::class)->setPublic(true);
     // API
     $container->autowire(\MailPoet\API\JSON\API::class)
       ->addArgument(new Reference(ContainerWrapper::class))
