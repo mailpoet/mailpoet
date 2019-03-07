@@ -393,11 +393,32 @@ jobs:
             sudo pip install transifex-client
             mv wordpress ..
             sed -i 's/^WP_ROOT=.*$/WP_ROOT=\/home\/circleci\/wordpress/g' .env
+            echo ${CIRCLE_BUILD_NUM} > release_zip_build_number.txt
       - run:
           name: "Build"
           command: ./build.sh
       - store_artifacts:
           path: /home/circleci/mailpoet/mailpoet.zip
+      - persist_to_workspace:
+          root: /home/circleci/mailpoet
+          paths:
+          - release_zip_build_number.txt
+  test_deployment:
+    working_directory: /home/circleci/mailpoet
+    docker:
+      - image: mailpoet/wordpress:7.1_20181009.1
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "Deploy"
+          command: |
+            RELEASE_ZIP_BUILD_NUMBER=`cat release_zip_build_number.txt`
+            curl "${MAILPOET_TEST_DEPLOY_HOST}/wp-admin/admin-ajax.php?action=mailpoet_test_deploy&key=${MAILPOET_TEST_DEPLOY_KEY}&build=${RELEASE_ZIP_BUILD_NUMBER}&plugin_name=${CIRCLE_PROJECT_REPONAME}" | tee deploy.log | grep "Done! Installed successfully"
+      - store_artifacts:
+          path: deploy.log
 
 workflows:
   version: 2
@@ -470,3 +491,11 @@ workflows:
             - acceptance_tests_4
             - php5_integration_and_js
             - php7_integration
+      - test_deployment:
+          requires:
+            - build_release_zip
+          filters:
+            branches:
+              only:
+                - master
+                - ci-test-deploy
