@@ -614,12 +614,24 @@ class Newsletter extends Model {
       ->filter('filterStatus', self::STATUS_ACTIVE)
       ->count();
 
+    $automatic_count = Newsletter::getPublished()
+      ->filter('filterType', self::TYPE_AUTOMATIC)
+      ->filter('filterStatus', self::STATUS_ACTIVE)
+      ->count();
+
+    $newsletters_count = Newsletter::getPublished()
+      ->filter('filterType', self::TYPE_STANDARD)
+      ->filter('filterStatus', self::STATUS_SENT)
+      ->count();
+
     $sent_newsletters_3_months = self::sentAfter(Carbon::now()->subMonths(3));
     $sent_newsletters_30_days = self::sentAfter(Carbon::now()->subDays(30));
 
     return array(
       'welcome_newsletters_count' => $welcome_newsletters_count,
       'notifications_count' => $notifications_count,
+      'automatic_emails_count' => $automatic_count,
+      'sent_newsletters_count' => $newsletters_count,
       'sent_newsletters_3_months' => $sent_newsletters_3_months,
       'sent_newsletters_30_days' => $sent_newsletters_30_days,
     );

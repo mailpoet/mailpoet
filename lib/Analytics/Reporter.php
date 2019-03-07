@@ -19,9 +19,9 @@ class Reporter {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
-  public function __construct(SettingsController $settings) {
+  public function __construct(SettingsController $settings, WooCommerceHelper $woocommerce_helper) {
     $this->settings = $settings;
-    $this->woocommerce_helper = new WooCommerceHelper;
+    $this->woocommerce_helper = $woocommerce_helper;
   }
 
   function getData() {
@@ -102,4 +102,19 @@ class Reporter {
     );
   }
 
+  function getTrackingData() {
+    $newletters = Newsletter::getAnalytics();
+    $segments = Segment::getAnalytics();
+    $mta = $this->settings->get('mta', []);
+    return [
+      'newslettersSent' => $newletters['sent_newsletters_count'],
+      'welcomeEmails' => $newletters['welcome_newsletters_count'],
+      'postnotificationEmails' => $newletters['notifications_count'],
+      'woocommerceEmails' => $newletters['automatic_emails_count'],
+      'subscribers' => Subscriber::getTotalSubscribers(),
+      'lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
+      'sendingMethod' => isset($mta['method']) ? $mta['method'] : null,
+      'woocommerceIsInstalled' => $this->woocommerce_helper->isWooCommerceActive(),
+    ];
+  }
 }
