@@ -54,11 +54,11 @@ class ManageSubscriptionLinkCest {
     $I->click(Locator::contains('span.subject', $this->newsletter_title));
     $I->switchToIframe('preview-html');
     $I->waitForElementChange(
-        \Codeception\Util\Locator::contains('a', 'Manage subscription'), function ($el) {
+        \Codeception\Util\Locator::contains('a', 'Manage your subscription'), function ($el) {
             return $el->getAttribute('target') === "_blank";
         }, 100
     );
-    $I->click('Manage subscription');
+    $I->click('Manage your subscription');
     $I->switchToNextTab();
     $I->waitForText('Manage your subscription');
 
