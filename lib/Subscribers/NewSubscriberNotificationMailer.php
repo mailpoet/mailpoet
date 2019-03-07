@@ -11,7 +11,6 @@ use MailPoet\Settings\SettingsController;
 
 class NewSubscriberNotificationMailer {
 
-  const SENDER_EMAIL_PREFIX = 'wordpress@';
   const SETTINGS_KEY = 'subscriber_email_notification';
 
   /** @var Renderer */
@@ -60,8 +59,6 @@ class NewSubscriberNotificationMailer {
       return;
     }
     try {
-
-      $this->getMailer()->getSenderNameAndAddress($this->constructSenderEmail());
       $this->getMailer()->send($this->constructNewsletter($subscriber, $segments), $settings['address']);
     } catch (\Exception $e) {
       if (WP_DEBUG) {
@@ -91,21 +88,9 @@ class NewSubscriberNotificationMailer {
    */
   private function getMailer() {
     if (!$this->mailer) {
-      $this->mailer = new Mailer(false, $this->constructSenderEmail());
+      $this->mailer = new Mailer();
     }
     return $this->mailer;
-  }
-
-  private function constructSenderEmail() {
-    $url_parts = parse_url($this->wordpress_functions->homeUrl());
-    $site_name = strtolower($url_parts['host']);
-    if (substr($site_name, 0, 4) === 'www.') {
-      $site_name = substr($site_name, 4);
-    }
-    return [
-      'address' => self::SENDER_EMAIL_PREFIX . $site_name,
-      'name' => self::SENDER_EMAIL_PREFIX . $site_name,
-    ];
   }
 
   /**
