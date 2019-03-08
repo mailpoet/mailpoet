@@ -6,7 +6,6 @@ import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
-import withNpsPoll from 'nps_poll.jsx';
 
 import {
   StatisticsMixin,
@@ -372,4 +371,4 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
   },
 });
 
-export default withNpsPoll(NewsletterListWelcome);
+export default NewsletterListWelcome;
