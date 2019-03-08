@@ -149,12 +149,10 @@ class Model extends \Sudzy\ValidModel {
       $model = static::findOne((int)$data['id']);
     }
 
-    if (!empty($keys)) {
-      $first = true;
+    if ($model === false && !empty($keys)) {
       foreach ($keys as $field => $value) {
-        if ($first) {
+        if ($model === false) {
           $model = static::where($field, $value);
-          $first = false;
         } else {
           $model = $model->where($field, $value);
         }
