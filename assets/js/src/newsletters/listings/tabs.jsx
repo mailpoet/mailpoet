@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
+import withNpsPoll from 'nps_poll.jsx';
 
 class ListingTabs extends React.Component {
   state = {
@@ -59,4 +60,4 @@ ListingTabs.propTypes = {
   tab: PropTypes.string.isRequired,
 };
 
-export default ListingTabs;
+export default withNpsPoll(ListingTabs);

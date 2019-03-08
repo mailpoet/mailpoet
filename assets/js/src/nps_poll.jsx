@@ -80,7 +80,7 @@ const withNpsPoll = function withNpsPoll(Component) {
 
     render() {
       if (!window.mailpoet_display_nps_poll) {
-        return null;
+        return (<Component {...this.props} />);
       }
       if (window.satismeter) {
         this.displayPoll();

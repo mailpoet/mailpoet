@@ -10,7 +10,6 @@ import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
-import withNpsPoll from 'nps_poll.jsx';
 
 import {
   QueueMixin,
@@ -257,4 +256,4 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
   },
 });
 
-export default withNpsPoll(NewsletterListStandard);
+export default NewsletterListStandard;
