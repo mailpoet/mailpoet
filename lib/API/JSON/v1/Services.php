@@ -2,7 +2,7 @@
 
 namespace MailPoet\API\JSON\v1;
 
-use MailPoet\Analytics\Analytics;
+use MailPoet\Analytics\Analytics as AnalyticsHelper;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
@@ -56,7 +56,7 @@ class Services extends APIEndpoint {
     }
 
     if (!empty($result['data']['public_id'])) {
-      Analytics::setPublicId($result['data']['public_id']);
+      AnalyticsHelper::setPublicId($result['data']['public_id']);
     }
 
     if ($success_message) {
@@ -118,7 +118,7 @@ class Services extends APIEndpoint {
     }
 
     if (!empty($result['data']['public_id'])) {
-      Analytics::setPublicId($result['data']['public_id']);
+      AnalyticsHelper::setPublicId($result['data']['public_id']);
     }
 
     if ($success_message) {
