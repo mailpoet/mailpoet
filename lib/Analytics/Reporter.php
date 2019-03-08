@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Analytics;
 
+use \DateTime;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Newsletter;
@@ -106,7 +107,9 @@ class Reporter {
     $newletters = Newsletter::getAnalytics();
     $segments = Segment::getAnalytics();
     $mta = $this->settings->get('mta', []);
+    $installed_at = new DateTime($this->settings->get('installed_at'));
     return [
+      'installedAtIso' => $installed_at->format(DateTime::ISO8601),
       'newslettersSent' => $newletters['sent_newsletters_count'],
       'welcomeEmails' => $newletters['welcome_newsletters_count'],
       'postnotificationEmails' => $newletters['notifications_count'],

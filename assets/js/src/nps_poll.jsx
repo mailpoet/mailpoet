@@ -41,10 +41,7 @@ const withNpsPoll = function withNpsPoll(Component) {
     }
 
     displayPoll() {
-      if (
-        !this.state.pollShown
-        && window.mailpoet_installed_at_isoFormat
-      ) {
+      if (!this.state.pollShown) {
         this.setState({ pollShown: true });
         getTrackingData().then(this.callSatismeter);
       }
@@ -59,9 +56,9 @@ const withNpsPoll = function withNpsPoll(Component) {
         traits: {
           name: window.mailpoet_current_wp_user.user_nicename,
           email: window.mailpoet_current_wp_user.user_email,
-          createdAt: window.mailpoet_installed_at_isoFormat,
           mailpoetVersion: window.mailpoet_version,
           mailpoetPremiumIsActive: window.mailpoet_premium_active,
+          createdAt: trackingData.installedAtIso,
           newslettersSent: trackingData.newslettersSent,
           welcomeEmails: trackingData.welcomeEmails,
           postnotificationEmails: trackingData.postnotificationEmails,
