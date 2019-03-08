@@ -54,8 +54,6 @@ class Menu {
   private $wp;
   /** @var ServicesChecker */
   private $servicesChecker;
-  /** @var Reporter */
-  private $analytics_reporter;
 
   private $subscribers_over_limit;
 
@@ -65,8 +63,7 @@ class Menu {
     SettingsController $settings,
     WPFunctions $wp,
     WooCommerceHelper $woocommerce_helper,
-    ServicesChecker $servicesChecker,
-    Reporter $analytics_reporter
+    ServicesChecker $servicesChecker
   ) {
     $this->renderer = $renderer;
     $this->access_control = $access_control;
@@ -74,7 +71,6 @@ class Menu {
     $this->settings = $settings;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->servicesChecker = $servicesChecker;
-    $this->analytics_reporter = $analytics_reporter;
   }
 
   function init() {
@@ -692,7 +688,6 @@ class Menu {
     );
 
     $data['is_new_user'] = $this->isNewUser();
-    $data['analytics_tracking_data'] = $this->analytics_reporter->getTrackingData();
 
     WPFunctions::get()->wpEnqueueScript('jquery-ui');
     WPFunctions::get()->wpEnqueueScript('jquery-ui-datepicker');
