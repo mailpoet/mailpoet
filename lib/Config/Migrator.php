@@ -202,7 +202,8 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'KEY wp_user_id (wp_user_id),',
-      'KEY updated_at (updated_at)',
+      'KEY updated_at (updated_at),',
+      'KEY status_deleted_at (status,deleted_at)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
