@@ -2,7 +2,6 @@ import MailPoet from 'mailpoet';
 import moment from 'moment';
 
 const displayTutorial = () => {
-  const key = `user_seen_editor_tutorial${window.config.currentUserId}`;
   if (window.config.dragDemoUrlSettings) {
     return;
   }
@@ -15,9 +14,9 @@ const displayTutorial = () => {
     onCancel: () => {
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
-        endpoint: 'settings',
+        endpoint: 'user_flags',
         action: 'set',
-        data: { [key]: 1 },
+        data: { editor_tutorial_seen: 1 },
       });
     },
   });

@@ -20,6 +20,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\UserFlags;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\State;
@@ -49,6 +50,8 @@ class Menu {
   private $access_control;
   /** @var SettingsController */
   private $settings;
+  /** @var UserFlags */
+  private $user_flags;
   /** @var WPFunctions */
   private $wp;
   /** @var ServicesChecker */
@@ -62,7 +65,8 @@ class Menu {
     SettingsController $settings,
     WPFunctions $wp,
     WooCommerceHelper $woocommerce_helper,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    UserFlags $user_flags
   ) {
     $this->renderer = $renderer;
     $this->access_control = $access_control;
@@ -70,6 +74,7 @@ class Menu {
     $this->settings = $settings;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->servicesChecker = $servicesChecker;
+    $this->user_flags = $user_flags;
   }
 
   function init() {
@@ -606,6 +611,7 @@ class Menu {
     });
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
+    $data['user_flags'] = $this->user_flags->getAll();
     $data['current_wp_user'] = WPFunctions::get()->wpGetCurrentUser()->to_array();
     $data['current_wp_user_firstname'] = WPFunctions::get()->wpGetCurrentUser()->user_firstname;
     $data['site_url'] = WPFunctions::get()->siteUrl();
@@ -631,9 +637,9 @@ class Menu {
     $data['is_woocommerce_active'] = $this->woocommerce_helper->isWooCommerceActive();
 
     $user_id = $data['current_wp_user']['ID'];
-    $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'][$user_id])
-      || $data['settings']['last_announcement_seen'][$user_id] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
-    $data['last_announcement_seen'] = isset($data['settings']['last_announcement_seen']) ? $data['settings']['last_announcement_seen'] : false;
+    $data['feature_announcement_has_news'] = empty($data['user_flags']['last_announcement_seen'])
+      || $data['user_flags']['last_announcement_seen'] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
+    $data['last_announcement_seen'] = $data['user_flags']['last_announcement_seen'];
 
     $data['automatic_emails'] = array(
       array(
@@ -701,6 +707,7 @@ class Menu {
     $data = array(
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => $this->settings->getAll(),
+      'user_flags' => $this->user_flags->getAll(),
       'current_wp_user' => array_merge($subscriber_data, WPFunctions::get()->wpGetCurrentUser()->to_array()),
       'sub_menu' => self::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled()
