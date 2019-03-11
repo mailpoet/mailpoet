@@ -18,7 +18,9 @@
         <a class="nav-tab" href="#basics" data-automation-id="basic_settings_tab"><%= __('Basics') %></a>
         <a class="nav-tab" href="#signup" data-automation-id="signup_settings_tab"><%= __('Sign-up Confirmation') %></a>
         <a class="nav-tab" href="#mta" data-automation-id="send_with_settings_tab"><%= __('Send With...') %></a>
-        <a class="nav-tab" href="#woocommerce" data-automation-id="send_with_settings_tab"><%= __('WooCommerce') %></a>
+        <% if is_woocommerce_active %>
+          <a class="nav-tab" href="#woocommerce" data-automation-id="send_with_settings_tab"><%= __('WooCommerce') %></a>
+        <% endif %>
         <a class="nav-tab" href="#advanced" data-automation-id="settings-advanced-tab"><%= __('Advanced') %></a>
         <a class="nav-tab" href="#premium" data-automation-id="activation_settings_tab"><%= __('Key Activation') %></a>
       </h2>

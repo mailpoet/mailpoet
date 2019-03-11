@@ -465,6 +465,7 @@ class Menu {
       'flags' => $flags,
       'current_user' => WPFunctions::get()->wpGetCurrentUser(),
       'linux_cron_path' => dirname(dirname(__DIR__)),
+      'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
       'ABSPATH' => ABSPATH,
       'hosts' => array(
         'web' => Hosts::getWebHosts(),
