@@ -3,7 +3,6 @@
 namespace MailPoet\Config;
 
 use Carbon\Carbon;
-use MailPoet\Analytics\Reporter;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
