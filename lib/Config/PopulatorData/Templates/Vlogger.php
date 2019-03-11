@@ -15,7 +15,7 @@ class Vlogger {
   function get() {
     return array(
       'name' => __("Vlogger", 'mailpoet'),
-      'categories' => json_encode(array('notification', 'all')),
+      'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
