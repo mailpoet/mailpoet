@@ -556,7 +556,7 @@ class Motor {
                     'text' => '<h1><strong>We\'re here to help</strong></h1>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam a elementum ex. Aliquam mollis metus ac nisl luctus pulvinar. Donec tincidunt pharetra sem, nec eleifend augue. Morbi id nunc commodo, tempor erat et, pretium neque.</p>
     <p></p>
-    <p><strong><a href="http://mailpoet.info/wp-admin/google.com">Get in touch with us here</a></strong></p>',
+    <p><strong><a href="">Get in touch with us here</a></strong></p>',
                   ),
                   1 =>
                   array (
