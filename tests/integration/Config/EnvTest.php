@@ -9,8 +9,7 @@ class EnvTest extends \MailPoetTest {
     // Back up original environment values
     $this->file = Env::$file;
     $this->version = Env::$version;
-
-    Env::init('file', '1.0.0');
+    Env::init('file', '1.0.0', 'localhost:3306', DB_USER, DB_PASSWORD, DB_NAME);
   }
 
   function testItCanReturnPluginPrefix() {
@@ -23,24 +22,10 @@ class EnvTest extends \MailPoetTest {
     expect(Env::$db_prefix)->equals($db_prefix);
   }
 
-  function testItCanReturnDbHost() {
-    if (preg_match('/(?=:\d+$)/', DB_HOST)) {
-      expect(Env::$db_host)->equals(explode(':', DB_HOST)[0]);
-    } else expect(Env::$db_host)->equals(DB_HOST);
-  }
-
-  function testItCanReturnDbPort() {
-    if (preg_match('/(?=:\d+$)/', DB_HOST)) {
-      expect(Env::$db_port)->equals(explode(':', DB_HOST)[1]);
-    } else expect(Env::$db_port)->equals(3306);
-  }
-
-  function testItCanReturnSocket() {
-    if (!preg_match('/(?=:\d+$)/', DB_HOST)
-      && preg_match('/:/', DB_HOST)
-    ) {
-      expect(Env::$db_socket)->true();
-    } else expect(Env::$db_socket)->false();
+  function testItProcessDBHost() {
+    Env::init('file', '1.0.0', 'localhost:3306', DB_USER, DB_PASSWORD, DB_NAME);
+    expect(Env::$db_host)->equals('localhost');
+    expect(Env::$db_port)->equals('3306');
   }
 
   function testItCanReturnDbName() {
@@ -88,6 +73,6 @@ class EnvTest extends \MailPoetTest {
 
   function _after() {
     // Restore the original environment
-    Env::init($this->file, $this->version);
+    Env::init($this->file, $this->version, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
   }
 }

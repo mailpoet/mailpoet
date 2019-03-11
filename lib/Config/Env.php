@@ -37,7 +37,7 @@ class Env {
   static $db_charset_collate;
   static $db_timezone_offset;
 
-  static function init($file, $version) {
+  static function init($file, $version, $db_host, $db_user, $db_password, $db_name) {
     global $wpdb;
     self::$version = $version;
     self::$file = $file;
@@ -56,27 +56,27 @@ class Env {
     self::$lib_path = self::$path . '/lib';
     self::$plugin_prefix = 'mailpoet_';
     self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
-    self::$db_host = DB_HOST;
+    self::$db_host = $db_host;
     self::$db_port = 3306;
     self::$db_socket = false;
-    if (preg_match('/(?=:\d+$)/', DB_HOST)) {
-      list(self::$db_host, self::$db_port) = explode(':', DB_HOST);
+    if (preg_match('/(?=:\d+$)/', $db_host)) {
+      list(self::$db_host, self::$db_port) = explode(':', $db_host);
     } else {
-      if (preg_match('/:/', DB_HOST)) {
+      if (preg_match('/:/', $db_host)) {
         self::$db_socket = true;
       }
     }
-    self::$db_name = DB_NAME;
-    self::$db_username = DB_USER;
-    self::$db_password = DB_PASSWORD;
+    self::$db_name = $db_name;
+    self::$db_username = $db_user;
+    self::$db_password = $db_password;
     self::$db_charset = $wpdb->charset;
     self::$db_collation = $wpdb->collate;
     self::$db_charset_collate = $wpdb->get_charset_collate();
-    self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port, self::$db_charset);
+    self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port, self::$db_charset, self::$db_name);
     self::$db_timezone_offset = self::getDbTimezoneOffset();
   }
 
-  private static function dbSourceName($host, $socket, $port, $charset) {
+  private static function dbSourceName($host, $socket, $port, $charset, $db_name) {
     $source_name = array(
       (!$socket) ? 'mysql:host=' : 'mysql:unix_socket=',
       $host,
@@ -85,7 +85,7 @@ class Env {
       $port,
       ';',
       'dbname=',
-      DB_NAME
+      $db_name
     );
     if (!empty($charset)) {
       $source_name[] = ';charset=' . $charset;
