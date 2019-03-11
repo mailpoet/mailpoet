@@ -496,6 +496,4 @@ workflows:
             - build_release_zip
           filters:
             branches:
-              only:
-                - master
-                - ci-test-deploy
+              only: master
