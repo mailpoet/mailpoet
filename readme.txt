@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 3.20.0
+Stable tag: 3.21.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -171,6 +171,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.21.0 - 2019-03-11 =
+* Added: backwards compatibility method to fix 3rd party integrations;
+* Added: option to position the title of your post above the excerpt;
+* Added: change the default line heights in Styles sidebar;
+* Improved: human readable error message when mail mail function fails;
+* Fixed: incorrect "authorize your address" link in plugin.
 
 = 3.20.0 - 2019-03-05 =
 * Added: requirement for all "from" email addresses to be authorized to enable sending;
