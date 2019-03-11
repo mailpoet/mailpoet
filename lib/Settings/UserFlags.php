@@ -37,7 +37,7 @@ class UserFlags {
     }
   }
 
-  public function get(string $name) {
+  public function get($name) {
     $this->ensureLoaded();
     if (empty(self::$data[$name])) {
       $defaults = $this->getDefaults();
@@ -51,7 +51,7 @@ class UserFlags {
     return array_merge($this->getDefaults(), self::$data);
   }
 
-  public function set(string $name, $value) {
+  public function set($name, $value) {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     UserFlag::createOrUpdate([
       'user_id' => $current_user_id,
@@ -63,7 +63,7 @@ class UserFlags {
     }
   }
 
-  public function delete(string $name) {
+  public function delete($name) {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     UserFlag::where('user_id', $current_user_id)
       ->where('name', $name)

@@ -58,6 +58,7 @@ if (!defined('ABSPATH')) exit;
  * @method $this whereIdIn($ids)
  * @method static static whereIdIn($ids)
  * @method $this whereLike($column_name, $value=null)
+ * @method static $this whereLike($column_name, $value=null)
  * @method $this whereNotLike($column_name, $value=null)
  * @method $this whereGt($column_name, $value=null)
  * @method static $this whereLt($column_name, $value=null)
@@ -157,7 +158,7 @@ class Model extends \Sudzy\ValidModel {
           $model = $model->where($field, $value);
         }
       }
-      $model = $model->findOne();
+      if ($model) $model = $model->findOne();
     }
 
     if ($model === false) {

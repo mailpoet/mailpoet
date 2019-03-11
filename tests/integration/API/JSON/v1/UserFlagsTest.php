@@ -57,6 +57,7 @@ class UserFlagsTest extends \MailPoetTest {
   }
 
   function _after() {
+    UserFlagsController::clear();
     \ORM::forTable(UserFlag::$_table)->deleteMany();
   }
 }

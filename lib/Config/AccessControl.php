@@ -69,6 +69,7 @@ class AccessControl {
     return array(
       self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPFunctions::get()->__('Admin menu item', 'mailpoet'),
       self::PERMISSION_MANAGE_SETTINGS => WPFunctions::get()->__('Manage settings', 'mailpoet'),
+      self::PERMISSION_MANAGE_USER_FLAGS => WPFunctions::get()->__('Manage user flags', 'mailpoet'),
       self::PERMISSION_MANAGE_EMAILS => WPFunctions::get()->__('Manage emails', 'mailpoet'),
       self::PERMISSION_MANAGE_SUBSCRIBERS => WPFunctions::get()->__('Manage subscribers', 'mailpoet'),
       self::PERMISSION_MANAGE_FORMS => WPFunctions::get()->__('Manage forms', 'mailpoet'),

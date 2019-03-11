@@ -104,6 +104,7 @@ class UserFlagsTest extends \MailPoetTest {
 
   function _after() {
     UserFlags::clear();
+    WPFunctions::set(new WPFunctions);
     \ORM::raw_execute('TRUNCATE ' . UserFlag::$_table);
   }
 }
