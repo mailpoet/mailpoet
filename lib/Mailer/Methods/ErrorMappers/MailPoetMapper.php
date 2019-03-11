@@ -93,7 +93,7 @@ class MailPoetMapper {
     $message .= '<p>';
     $message .= Helpers::replaceLinkTags(
       __('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
-      'https://account.mailpoet.com/account/authorization',
+      'https://account.mailpoet.com/authorization',
       array(
         'class' => 'button button-primary',
         'target' => '_blank',
