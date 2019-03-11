@@ -49,6 +49,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\v1\SendingQueue::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Services::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Settings::class)->setPublic(true);
+    $container->autowire(\MailPoet\API\JSON\v1\UserFlags::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Setup::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Subscribers::class)->setPublic(true);
     // Config
@@ -91,6 +92,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
     // Settings
     $container->autowire(\MailPoet\Settings\SettingsController::class)->setPublic(true);
+    // User Flags
+    $container->autowire(\MailPoet\Settings\UserFlags::class)->setPublic(true);
     // Subscription
     $container->autowire(\MailPoet\Subscription\Comment::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);

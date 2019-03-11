@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) exit;
 class AccessControl {
   const PERMISSION_ACCESS_PLUGIN_ADMIN = 'mailpoet_access_plugin_admin';
   const PERMISSION_MANAGE_SETTINGS = 'mailpoet_manage_settings';
+  const PERMISSION_MANAGE_USER_FLAGS = 'mailpoet_manage_user_flags';
   const PERMISSION_MANAGE_EMAILS = 'mailpoet_manage_emails';
   const PERMISSION_MANAGE_SUBSCRIBERS = 'mailpoet_manage_subscribers';
   const PERMISSION_MANAGE_FORMS = 'mailpoet_manage_forms';
@@ -27,6 +28,13 @@ class AccessControl {
         'mailpoet_permission_manage_settings',
         array(
           'administrator'
+        )
+      ),
+      self::PERMISSION_MANAGE_USER_FLAGS => WPFunctions::get()->applyFilters(
+        'mailpoet_permission_manage_user_flags',
+        array(
+          'administrator',
+          'editor'
         )
       ),
       self::PERMISSION_MANAGE_EMAILS => WPFunctions::get()->applyFilters(
