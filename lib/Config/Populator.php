@@ -10,6 +10,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\UserFlag;
+use MailPoet\Models\Setting;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
@@ -240,7 +241,7 @@ class Populator {
     
     $prefix = 'user_seen_editor_tutorial';
     $prefix_length = strlen($prefix);
-    $users_seen_editor_tutorial = Settings::whereLike('name', $prefix . '%')->findMany();
+    $users_seen_editor_tutorial = Setting::whereLike('name', $prefix . '%')->findMany();
     if (!empty($users_seen_editor_tutorial)) {
       foreach ($users_seen_editor_tutorial as $setting) {
         $user_id = substr($setting->name, $prefix_length);
@@ -250,7 +251,7 @@ class Populator {
           'value' => $setting->value,
         ]);
       }
-      Settings::whereLike('name', $prefix . '%')->deleteMany();
+      Setting::whereLike('name', $prefix . '%')->deleteMany();
     }
   }
 
