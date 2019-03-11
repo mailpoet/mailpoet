@@ -9,6 +9,7 @@ use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\UserFlag;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
@@ -116,6 +117,7 @@ class Populator {
     $this->createDefaultSegments();
     $this->createDefaultForm();
     $this->createDefaultSettings();
+    $this->createDefaultUsersFlags();
     $this->createMailPoetPage();
     $this->createSourceForSubscribers();
     $this->updateNewsletterCategories();
@@ -221,6 +223,35 @@ class Populator {
 
     // reset mailer log
     MailerLog::resetMailerLog();
+  }
+
+  private function createDefaultUsersFlags() {
+    $last_announcement_seen = $this->settings->fetch('last_announcement_seen');
+    if (!empty($last_announcement_seen)) {
+      foreach ($last_announcement_seen as $user_id => $value) {
+        UserFlag::createOrUpdate([
+          'user_id' => $user_id,
+          'name' => 'last_announcement_seen',
+          'value' => $value,
+        ]);
+      }
+      $this->settings->delete('last_announcement_seen');
+    }
+    
+    $prefix = 'user_seen_editor_tutorial';
+    $prefix_length = strlen($prefix);
+    $users_seen_editor_tutorial = Settings::whereLike('name', $prefix . '%')->findMany();
+    if (!empty($users_seen_editor_tutorial)) {
+      foreach ($users_seen_editor_tutorial as $setting) {
+        $user_id = substr($setting->name, $prefix_length);
+        UserFlag::createOrUpdate([
+          'user_id' => $user_id,
+          'name' => 'editor_tutorial_seen',
+          'value' => $setting->value,
+        ]);
+      }
+      Settings::whereLike('name', $prefix . '%')->deleteMany();
+    }
   }
 
   private function createDefaultSegments() {
