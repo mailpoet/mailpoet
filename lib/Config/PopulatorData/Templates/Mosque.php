@@ -398,7 +398,7 @@ class Mosque {
                     'text' => '<p style="text-align: left;"><span style="color: #999999;"><strong>14th&nbsp;January 2019</strong></span></p>
     <h3 style="text-align: left;"><span style="color: #333333;"><span>The Four Imams</span></span></h3>
     <p style="text-align: left;"><span style="color: #333333;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc scelerisque ut purus vel eleifend. Curabitur mollis nisi id mauris.</span></p>
-    <p style="text-align: left;"><strong><a href="http://a9d.fc4.mwp.accessdomain.com">Find out more &gt;</a></strong></p>',
+    <p style="text-align: left;"><strong><a href="">Find out more &gt;</a></strong></p>',
                   ),
                 ),
               ),
@@ -486,7 +486,7 @@ class Mosque {
                     'text' => '<p style="text-align: left;"><span style="color: #999999;"><strong>23rd&nbsp;January 2019</strong></span></p>
     <h3 style="text-align: left;"><span style="color: #333333;"><span>Prayer Makes Perfect</span></span></h3>
     <p style="text-align: left;"><span style="color: #333333;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc scelerisque ut purus vel eleifend. Curabitur mollis nisi id mauris.</span></p>
-    <p style="text-align: left;"><span style="color: #333333;"><strong><a href="http://a9d.fc4.mwp.accessdomain.com">Find out more &gt;</a></strong></span></p>',
+    <p style="text-align: left;"><span style="color: #333333;"><strong><a href="">Find out more &gt;</a></strong></span></p>',
                   ),
                 ),
               ),

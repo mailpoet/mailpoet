@@ -357,7 +357,7 @@ class Painter {
                   0 =>
                   array (
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><a href="http://a9d.fc4.mwp.accessdomain.com">Reviews &amp; Submissions</a></p>',
+                    'text' => '<p style="text-align: center;"><a href="">Reviews &amp; Submissions</a></p>',
                   ),
                 ),
               ),
@@ -383,7 +383,7 @@ class Painter {
                   0 =>
                   array (
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><a href="http://a9d.fc4.mwp.accessdomain.com">Essential&nbsp;Gear</a></p>',
+                    'text' => '<p style="text-align: center;"><a href="">Essential&nbsp;Gear</a></p>',
                   ),
                 ),
               ),
@@ -409,7 +409,7 @@ class Painter {
                   0 =>
                   array (
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><a href="http://a9d.fc4.mwp.accessdomain.com">Latest Commissions</a></p>',
+                    'text' => '<p style="text-align: center;"><a href="">Latest Commissions</a></p>',
                   ),
                 ),
               ),
@@ -701,7 +701,7 @@ class Painter {
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Self-Assessment: 2018&mdash;Filling Journals, Using Up Paint</span></p>
-    <p><a href="http://a9d.fc4.mwp.accessdomain.com">Read more &gt;</a></p>',
+    <p><a href="">Read more &gt;</a></p>',
                   ),
                 ),
               ),
@@ -745,7 +745,7 @@ class Painter {
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Happy New Year 2019</span></p>
-    <p><a href="http://a9d.fc4.mwp.accessdomain.com">Read more &gt;</a></p>',
+    <p><a href="">Read more &gt;</a></p>',
                   ),
                 ),
               ),
@@ -789,7 +789,7 @@ class Painter {
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Roz&rsquo;s 2018 Minnesota State Fair Journal</span></p>
-    <p><a href="http://a9d.fc4.mwp.accessdomain.com">Read more &gt;</a></p>',
+    <p><a href="">Read more &gt;</a></p>',
                   ),
                 ),
               ),
