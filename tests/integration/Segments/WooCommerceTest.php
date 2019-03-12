@@ -10,14 +10,23 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
+use MailPoet\Segments\WooCommerce;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 
 class WooCommerceTest extends \MailPoetTest  {
 
   private $userEmails = array();
 
+  /** @var WooCommerce */
+  private $woocommerce_segment;
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
     $this->woocommerce_segment = ContainerWrapper::getInstance()->get(WooCommerceSegment::class);
+    $this->settings = ContainerWrapper::getInstance()->get(SettingsController::class);
     $this->cleanData();
     $this->addCustomerRole();
   }
@@ -107,6 +116,7 @@ class WooCommerceTest extends \MailPoetTest  {
   }
 
   function testItSynchronizesCustomers() {
+    $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1', 'enabled' => '1']);
     $user = $this->insertRegisteredCustomer();
     $guest = $this->insertGuestCustomer();
     $this->woocommerce_segment->synchronizeCustomers();
@@ -363,6 +373,52 @@ class WooCommerceTest extends \MailPoetTest  {
     expect(SubscriberSegment::findOne($association->id))->isEmpty();
   }
 
+  function testItUnsubscribesSubscribersWhenSettingsIsEnabled() {
+    $user1 = $this->insertRegisteredCustomer();
+    $user2 = $this->insertRegisteredCustomer();
+    $subscriber1 = Subscriber::createOrUpdate([
+      'email' => $user1->user_email,
+      'is_woocommerce_user' => 1,
+      'status' => Subscriber::STATUS_UNSUBSCRIBED,
+    ]);
+    $subscriber2 = Subscriber::createOrUpdate([
+      'email' => $user2->user_email,
+      'is_woocommerce_user' => 1,
+      'status' => Subscriber::STATUS_UNSUBSCRIBED,
+      'confirmed_ip' => '123'
+    ]);
+    $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1', 'enabled' => '1']);
+    $this->woocommerce_segment->synchronizeCustomers();
+
+    $subscriber1_after_update = Subscriber::where('email', $subscriber1->email)->findOne();
+    $subscriber2_after_update = Subscriber::where('email', $subscriber2->email)->findOne();
+    expect($subscriber1_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber2_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+  }
+
+  function testItSubscribesSubscribersWhenSettingsIsDisabled() {
+    $user1 = $this->insertRegisteredCustomer();
+    $user2 = $this->insertRegisteredCustomer();
+    $subscriber1 = Subscriber::createOrUpdate([
+      'email' => $user1->user_email,
+      'is_woocommerce_user' => 1,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
+    $subscriber2 = Subscriber::createOrUpdate([
+      'email' => $user2->user_email,
+      'is_woocommerce_user' => 1,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'confirmed_ip' => '123'
+    ]);
+    $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1']);
+    $this->woocommerce_segment->synchronizeCustomers();
+
+    $subscriber1_after_update = Subscriber::where('email', $subscriber1->email)->findOne();
+    $subscriber2_after_update = Subscriber::where('email', $subscriber2->email)->findOne();
+    expect($subscriber1_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    expect($subscriber2_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
   function _after() {
     $this->cleanData();
     $this->removeCustomerRole();
@@ -440,7 +496,7 @@ class WooCommerceTest extends \MailPoetTest  {
    * Those tests are testing user synchronisation, so we need data in wp_users table which has not been synchronised to
    * mailpoet database yet. We cannot use wp_insert_user functions because they would do the sync on insert.
    *
-   * @return string
+   * @return \WP_User
    */
   private function insertRegisteredCustomer($number = null) {
     global $wpdb;
