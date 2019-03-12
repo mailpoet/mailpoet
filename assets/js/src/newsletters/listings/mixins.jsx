@@ -441,7 +441,7 @@ const MailerMixin = {
               ReactStringReplace(
                 MailPoet.I18n.t('mailerSendErrorUseSendingService'),
                 /<b>(.*?)<\/b>/g,
-                match => <b>{ match }</b>
+                (match, key) => <b key={key}>{ match }</b>
               )
             }
           </p>
