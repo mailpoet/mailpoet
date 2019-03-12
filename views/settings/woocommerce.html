@@ -1,1 +1,34 @@
+<table class="form-table">
+  <tr>
+    <th scope="row">
+      <label for="settings[mailpoet_subscribe_old_woocommerce_customers]">
+        <%= __('Subscribe old WooCommerce customers') %>
+      </label>
+      <p class="description">
+        <%= __('Subscribe all your past customers to the “WooCommerce Customers” list because they agreed to receive marketing emails from me.') %>
+    <td>
+      <p>
+        <input
+        data-toggle="mailpoet_subscribe_old_woocommerce_customers"
+        type="checkbox"
+        value="1"
+        id="settings[mailpoet_subscribe_old_woocommerce_customers]"
+        name="mailpoet_subscribe_old_woocommerce_customers[enabled]"
+        <% if(settings.mailpoet_subscribe_old_woocommerce_customers.enabled) %>checked="checked"<% endif %>
+        >
+        <#
+          Our settings is stupid:
+          We cannot use a simple checkbox with a simple name. The name must be an array.
+          We are using `$.serializeArray` and that ignores empty values.
+          So if the checkbox is not checked it is not sent to the server and not saved.
+
+          For that reason we need the hidden field which is always sent to server and if the checkbox
+          is not set it will rewrite the array in the database using only the dummy field.
+        #>
+        <input
+          type="hidden"
+          value="1"
+          name="mailpoet_subscribe_old_woocommerce_customers[dummy]"
+        >
+</table>
 
