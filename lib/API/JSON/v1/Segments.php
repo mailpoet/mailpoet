@@ -7,6 +7,7 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Listing;
 use MailPoet\Models\Segment;
+use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -23,12 +24,17 @@ class Segments extends APIEndpoint {
   /** @var Listing\Handler */
   private $listing_handler;
 
+  /** @var WooCommerce */
+  private $woo_commerce_sync;
+
   function __construct(
     Listing\BulkActionController $bulk_action,
-    Listing\Handler $listing_handler
+    Listing\Handler $listing_handler,
+    WooCommerce $woo_commerce
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
+    $this->woo_commerce_sync = $woo_commerce;
   }
 
   function get($data = array()) {
@@ -148,9 +154,13 @@ class Segments extends APIEndpoint {
     }
   }
 
-  function synchronize() {
+  function synchronize($data) {
     try {
-      WP::synchronizeUsers();
+      if ($data['type'] === Segment::TYPE_WC_USERS) {
+        $this->woo_commerce_sync->synchronizeCustomers();
+      } else {
+        WP::synchronizeUsers();
+      }
     } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
