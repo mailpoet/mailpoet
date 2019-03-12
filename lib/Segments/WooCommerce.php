@@ -114,6 +114,7 @@ class WooCommerce {
     $this->insertUsersToSegment();
     $this->unsubscribeUsersFromSegment();
     $this->removeOrphanedSubscribers();
+    $this->updateStatus();
 
     return true;
   }
@@ -272,5 +273,27 @@ class WooCommerce {
       ->findResultSet()
       ->set('is_woocommerce_user', 0)
       ->delete();
+  }
+
+  private function updateStatus() {
+    $subscribe_old_customers = $this->settings->get('mailpoet_subscribe_old_woocommerce_customers.enabled', false);
+    if ($subscribe_old_customers !== "1") {
+      $status = Subscriber::STATUS_UNSUBSCRIBED;
+    } else {
+      $status = Subscriber::STATUS_SUBSCRIBED;
+    }
+    $subscribers_table = Subscriber::$_table;
+
+    $sql = sprintf('
+      UPDATE %1$s
+      SET status = "%2$s"
+        WHERE
+          `confirmed_at` IS NULL
+          AND `confirmed_ip` IS NULL
+          AND `is_woocommerce_user` = 1
+    ', $subscribers_table, $status);
+
+    Subscriber::rawExecute($sql);
+
   }
 }
