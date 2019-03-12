@@ -162,6 +162,9 @@ const itemActions = [
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         action: 'synchronize',
+        data: {
+          type: item.type,
+        },
       }).done(() => {
         MailPoet.Modal.loading(false);
         MailPoet.Notice.success(
@@ -179,7 +182,7 @@ const itemActions = [
       });
     },
     display: function display(segment) {
-      return isWPUsersSegment(segment);
+      return isWPUsersSegment(segment) || isWooCommerceCustomersSegment(segment);
     },
   },
   {
