@@ -60,7 +60,6 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
         that.$el.addClass('mailpoet_resize_active');
       }).on('resizemove', function resizemove(event) {
         var onResize = that.options.onResize.bind(that);
-        that.view.model.trigger('resizeMove', that.detectMousePointerFocus(event));
         return onResize(event);
       })
       .on('resizeend', function resizeend(event) {
