@@ -10,6 +10,8 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
   modelEvents: {
     startEditing: 'onStartEditing',
     stopEditing: 'onStopEditing',
+    startResizing: 'onStartResizing',
+    stopResizing: 'onStopResizing',
     resizeMove: 'onResizeMove',
   },
   events: {
@@ -47,9 +49,25 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
       this.view.removeHighlight();
     }
   },
+  onStartResizing: function onStartResizing() {
+    this.onStartEditing();
+    this.view.triggerMethod('resizeStart');
+  },
+  onStopResizing: function onStopResizing(event) {
+    this.onStopEditing();
+    this.view.triggerMethod('resizeStop', event);
+  },
   onDomRefresh: function onDomRefresh() {
     if (this.isBeingEdited) {
       this.view.addHighlight();
     }
+  },
+  onChildviewResizeStart: function onChildviewResizeStart() {
+    // Let event bubble up
+    this.view.triggerMethod('resizeStart');
+  },
+  onChildviewResizeStop: function onChildviewResizeStop(event) {
+    // Let event bubble up
+    this.view.triggerMethod('resizeStop', event);
   },
 });
