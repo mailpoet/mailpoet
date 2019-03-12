@@ -407,14 +407,17 @@ const MailerMixin = {
       && state.meta.mta_log.error.operation !== 'authorization'
     ) {
       const errorType = MailerMixin.getMailerErrorType(state);
-      MailPoet.Notice[errorType](
-        '',
-        { static: true, id: 'mailpoet_mailer_error' }
-      );
-
+      let container = jQuery('[data-id="mailpoet_mailer_error"]')[0];
+      if (!container) {
+        MailPoet.Notice[errorType](
+          '',
+          { static: true, id: 'mailpoet_mailer_error' }
+        );
+        container = jQuery('[data-id="mailpoet_mailer_error"]')[0];
+      }
       ReactDOM.render(
         MailerMixin.getMailerError(state),
-        jQuery('[data-id="mailpoet_mailer_error"]')[0]
+        container
       );
     } else {
       MailPoet.Notice.hide('mailpoet_mailer_error');
