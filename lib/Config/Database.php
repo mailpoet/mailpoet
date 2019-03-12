@@ -61,38 +61,33 @@ class Database {
 
   function defineTables() {
     if (!defined('MP_SETTINGS_TABLE')) {
-      $tables = [
-        'MP_SETTINGS_TABLE' => 'settings',
-        'MP_SEGMENTS_TABLE' => 'segments',
-        'MP_FORMS_TABLE' => 'forms',
-        'MP_CUSTOM_FIELDS_TABLE' => 'custom_fields',
-        'MP_SUBSCRIBERS_TABLE' => 'subscribers',
-        'MP_SUBSCRIBER_SEGMENT_TABLE' => 'subscriber_segment',
-        'MP_SUBSCRIBER_CUSTOM_FIELD_TABLE' => 'subscriber_custom_field',
-        'MP_SUBSCRIBER_IPS_TABLE' => 'subscriber_ips',
-        'MP_NEWSLETTER_SEGMENT_TABLE' => 'newsletter_segment',
-        'MP_SCHEDULED_TASKS_TABLE' => 'scheduled_tasks',
-        'MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE' => 'scheduled_task_subscribers',
-        'MP_SENDING_QUEUES_TABLE' => 'sending_queues',
-        'MP_NEWSLETTERS_TABLE' => 'newsletters',
-        'MP_NEWSLETTER_TEMPLATES_TABLE' => 'newsletter_templates',
-        'MP_NEWSLETTER_OPTION_FIELDS_TABLE' => 'newsletter_option_fields',
-        'MP_NEWSLETTER_OPTION_TABLE' => 'newsletter_option',
-        'MP_NEWSLETTER_LINKS_TABLE' => 'newsletter_links',
-        'MP_NEWSLETTER_POSTS_TABLE' => 'newsletter_posts',
-        'MP_STATISTICS_NEWSLETTERS_TABLE' => 'statistics_newsletters',
-        'MP_STATISTICS_CLICKS_TABLE' => 'statistics_clicks',
-        'MP_STATISTICS_OPENS_TABLE' => 'statistics_opens',
-        'MP_STATISTICS_UNSUBSCRIBES_TABLE' => 'statistics_unsubscribes',
-        'MP_STATISTICS_FORMS_TABLE' => 'statistics_forms',
-        'MP_MAPPING_TO_EXTERNAL_ENTITIES_TABLE' => 'mapping_to_external_entities',
-        'MP_LOG_TABLE' => 'log',
-        'MP_STATS_NOTIFICATIONS_TABLE' => 'stats_notifications',
-        'MP_USER_FLAGS_TABLE' => 'user_flags',
-      ];
-      foreach ($tables as $constant => $name) {
-        define($constant, Env::$db_prefix . $name);
-      }
+      define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
+      define('MP_SEGMENTS_TABLE', Env::$db_prefix . 'segments');
+      define('MP_FORMS_TABLE', Env::$db_prefix . 'forms');
+      define('MP_CUSTOM_FIELDS_TABLE', Env::$db_prefix . 'custom_fields');
+      define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
+      define('MP_SUBSCRIBER_SEGMENT_TABLE', Env::$db_prefix . 'subscriber_segment');
+      define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', Env::$db_prefix . 'subscriber_custom_field');
+      define('MP_SUBSCRIBER_IPS_TABLE', Env::$db_prefix . 'subscriber_ips');
+      define('MP_NEWSLETTER_SEGMENT_TABLE', Env::$db_prefix . 'newsletter_segment');
+      define('MP_SCHEDULED_TASKS_TABLE', Env::$db_prefix . 'scheduled_tasks');
+      define('MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE', Env::$db_prefix . 'scheduled_task_subscribers');
+      define('MP_SENDING_QUEUES_TABLE', Env::$db_prefix . 'sending_queues');
+      define('MP_NEWSLETTERS_TABLE', Env::$db_prefix . 'newsletters');
+      define('MP_NEWSLETTER_TEMPLATES_TABLE', Env::$db_prefix . 'newsletter_templates');
+      define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', Env::$db_prefix . 'newsletter_option_fields');
+      define('MP_NEWSLETTER_OPTION_TABLE', Env::$db_prefix . 'newsletter_option');
+      define('MP_NEWSLETTER_LINKS_TABLE', Env::$db_prefix . 'newsletter_links');
+      define('MP_NEWSLETTER_POSTS_TABLE', Env::$db_prefix . 'newsletter_posts');
+      define('MP_STATISTICS_NEWSLETTERS_TABLE', Env::$db_prefix . 'statistics_newsletters');
+      define('MP_STATISTICS_CLICKS_TABLE', Env::$db_prefix . 'statistics_clicks');
+      define('MP_STATISTICS_OPENS_TABLE', Env::$db_prefix . 'statistics_opens');
+      define('MP_STATISTICS_UNSUBSCRIBES_TABLE', Env::$db_prefix . 'statistics_unsubscribes');
+      define('MP_STATISTICS_FORMS_TABLE', Env::$db_prefix . 'statistics_forms');
+      define('MP_MAPPING_TO_EXTERNAL_ENTITIES_TABLE', Env::$db_prefix . 'mapping_to_external_entities');
+      define('MP_LOG_TABLE', Env::$db_prefix . 'log');
+      define('MP_STATS_NOTIFICATIONS_TABLE', Env::$db_prefix . 'stats_notifications');
+      define('MP_USER_FLAGS_TABLE', Env::$db_prefix . 'user_flags');
     }
   }
 }
