@@ -96,6 +96,12 @@ Module.ContainerBlocksView = Marionette.CollectionView.extend({
   initialize: function (options) {
     this.renderOptions = options.renderOptions;
   },
+  onChildviewResizeStart: function onChildviewResizeStart() {
+    this.triggerMethod('resizeStart');
+  },
+  onChildviewResizeStop: function onChildviewResizeStart(event) {
+    this.triggerMethod('resizeStop', event);
+  },
 });
 
 Module.ContainerBlockView = base.BlockView.extend({

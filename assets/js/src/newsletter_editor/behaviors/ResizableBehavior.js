@@ -55,7 +55,7 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
       },
     })
       .on('resizestart', function resizestart() {
-        that.view.model.trigger('startEditing');
+        that.view.model.trigger('startResizing');
         that.isBeingResized = true;
         that.$el.addClass('mailpoet_resize_active');
       }).on('resizemove', function resizemove(event) {
@@ -64,7 +64,7 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
         return onResize(event);
       })
       .on('resizeend', function resizeend(event) {
-        that.view.model.trigger('stopEditing');
+        that.view.model.trigger('stopResizing', event);
         that.isBeingResized = null;
         if (!isEventInsideElement(event, that.view.$el)) {
           that.hideResizeHandle();
