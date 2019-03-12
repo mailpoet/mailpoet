@@ -42,7 +42,7 @@ class NpsPoll extends React.Component {
   displayPoll() {
     if (!this.state.pollShown) {
       this.setState({ pollShown: true });
-      getTrackingData().then(this.callSatismeter);
+      getTrackingData().then(data => this.callSatismeter(data.data));
     }
   }
 
