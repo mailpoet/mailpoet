@@ -59,12 +59,13 @@ class Env {
     self::$db_host = $db_host;
     self::$db_port = 3306;
     self::$db_socket = false;
+    // Peel off the port parameter
     if (preg_match('/(?=:\d+$)/', $db_host)) {
       list(self::$db_host, self::$db_port) = explode(':', $db_host);
-    } else {
-      if (preg_match('/:/', $db_host)) {
-        self::$db_socket = true;
-      }
+    }
+    // Peel off the socket parameter
+    if (preg_match('/:\//', self::$db_host)) {
+      list(self::$db_host, self::$db_socket) = explode(':', $db_host);
     }
     self::$db_name = $db_name;
     self::$db_username = $db_user;
@@ -78,7 +79,7 @@ class Env {
 
   private static function dbSourceName($host, $socket, $port, $charset, $db_name) {
     $source_name = array(
-      (!$socket) ? 'mysql:host=' : 'mysql:unix_socket=',
+      'mysql:host=',
       $host,
       ';',
       'port=',
@@ -87,6 +88,9 @@ class Env {
       'dbname=',
       $db_name
     );
+    if (!empty($socket)) {
+      $source_name[] = ';unix_socket=' . $socket;
+    }
     if (!empty($charset)) {
       $source_name[] = ';charset=' . $charset;
     }

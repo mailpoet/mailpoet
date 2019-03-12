@@ -23,9 +23,22 @@ class EnvTest extends \MailPoetTest {
   }
 
   function testItProcessDBHost() {
-    Env::init('file', '1.0.0', 'localhost:3306', DB_USER, DB_PASSWORD, DB_NAME);
+    Env::init('file', '1.0.0', 'localhost', 'db_user', 'pass123', 'db_name');
     expect(Env::$db_host)->equals('localhost');
     expect(Env::$db_port)->equals('3306');
+    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3306;dbname=db_name;charset='. ENV::$db_charset);
+
+    Env::init('file', '1.0.0', 'localhost:3307', 'db_user', 'pass123', 'db_name');
+    expect(Env::$db_host)->equals('localhost');
+    expect(Env::$db_port)->equals('3307');
+    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3307;dbname=db_name;charset='. ENV::$db_charset);
+  }
+
+  function testItProcessDBHostWithSocket() {
+    Env::init('file', '1.0.0', 'localhost:/var/lib/mysql/mysql55.sock', 'db_user', 'pass123', 'db_name');
+    expect(Env::$db_host)->equals('localhost');
+    expect(Env::$db_socket)->equals('/var/lib/mysql/mysql55.sock');
+    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3306;dbname=db_name;unix_socket=/var/lib/mysql/mysql55.sock;charset='. ENV::$db_charset);
   }
 
   function testItCanReturnDbName() {
@@ -56,13 +69,6 @@ class EnvTest extends \MailPoetTest {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
     expect(Env::$db_charset_collate)->equals($charset_collate);
-  }
-
-  function testItCanGenerateDbSourceName() {
-    $source_name = ((!ENV::$db_socket) ? 'mysql:host=' : 'mysql:unix_socket=') .
-      ENV::$db_host . ';port=' . ENV::$db_port . ';dbname=' . DB_NAME .
-      (!empty(ENV::$db_charset) ? ';charset=' . ENV::$db_charset : '');
-    expect(Env::$db_source_name)->equals($source_name);
   }
 
   function testItCanGetDbTimezoneOffset() {
