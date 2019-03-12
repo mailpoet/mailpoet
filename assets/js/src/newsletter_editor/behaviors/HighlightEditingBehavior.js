@@ -5,6 +5,7 @@
  */
 import Marionette from 'backbone.marionette';
 import BL from 'newsletter_editor/behaviors/BehaviorsLookup';
+import { isEventInsideElement } from 'newsletter_editor/utils';
 
 BL.HighlightEditingBehavior = Marionette.Behavior.extend({
   modelEvents: {
@@ -12,16 +13,10 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
     stopEditing: 'onStopEditing',
     startResizing: 'onStartResizing',
     stopResizing: 'onStopResizing',
-    resizeMove: 'onResizeMove',
   },
   events: {
     mouseenter: 'onMouseEnter',
     mouseleave: 'onMouseLeave',
-  },
-  // mouseleave event is not always triggered during resizing
-  // so we have to check if the pointer is still inside using resize event coordinates
-  onResizeMove: function onResizeMove(event) {
-    this.isFocusedByPointer = event.isViewFocused;
   },
   onMouseEnter: function onMouseEnter(mouseEvent) {
     this.isFocusedByPointer = true;
@@ -54,6 +49,7 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
     this.view.triggerMethod('resizeStart');
   },
   onStopResizing: function onStopResizing(event) {
+    this.isFocusedByPointer = isEventInsideElement(event, this.view.$el);
     this.onStopEditing();
     this.view.triggerMethod('resizeStop', event);
   },
@@ -63,10 +59,13 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
     }
   },
   onChildviewResizeStart: function onChildviewResizeStart() {
+    this.onStartEditing();
     // Let event bubble up
     this.view.triggerMethod('resizeStart');
   },
   onChildviewResizeStop: function onChildviewResizeStop(event) {
+    this.isFocusedByPointer = isEventInsideElement(event, this.view.$el);
+    this.onStopEditing();
     // Let event bubble up
     this.view.triggerMethod('resizeStop', event);
   },
