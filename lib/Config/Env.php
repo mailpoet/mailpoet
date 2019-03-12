@@ -38,7 +38,6 @@ class Env {
   static $db_timezone_offset;
 
   static function init($file, $version, $db_host, $db_user, $db_password, $db_name) {
-    global $wpdb;
     self::$version = $version;
     self::$file = $file;
     self::$path = dirname(self::$file);
@@ -55,6 +54,14 @@ class Env {
     self::$languages_path = self::$path . '/lang';
     self::$lib_path = self::$path . '/lib';
     self::$plugin_prefix = 'mailpoet_';
+    self::initDbParameters($db_host, $db_user, $db_password, $db_name);
+  }
+
+  /**
+   * @see https://codex.wordpress.org/Editing_wp-config.php#Set_Database_Host for possible DB_HOSTS values
+   */
+  private static function initDbParameters($db_host, $db_user, $db_password, $db_name) {
+    global $wpdb;
     self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
     self::$db_host = $db_host;
     self::$db_port = 3306;
