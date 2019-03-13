@@ -353,9 +353,8 @@ class MP2Migrator {
    */
   private function getLists($limit) {
     global $wpdb;
-    $lists = array();
 
-    $last_id = $this->settings->get('last_imported_list_id', 0);
+    $last_id = intval($this->settings->get('last_imported_list_id', 0));
     $table = $this->mp2_list_table;
     $sql = "
       SELECT l.list_id, l.name, l.description, l.is_enabled, l.created_at
@@ -592,8 +591,7 @@ class MP2Migrator {
    */
   private function getUsers($limit) {
     global $wpdb;
-    $users = array();
-    $last_id = $this->settings->get('last_imported_user_id', 0);
+    $last_id = intval($this->settings->get('last_imported_user_id', 0));
     $table = $this->mp2_user_table;
     $sql = "
       SELECT u.*
@@ -690,7 +688,6 @@ class MP2Migrator {
    */
   private function getUserLists($user_id) {
     global $wpdb;
-    $user_lists = array();
 
     $table = $this->mp2_user_list_table;
     $sql = "
@@ -841,9 +838,8 @@ class MP2Migrator {
    */
   private function getForms($limit) {
     global $wpdb;
-    $forms = array();
 
-    $last_id = $this->settings->get('last_imported_form_id', 0);
+    $last_id = intval($this->settings->get('last_imported_form_id', 0));
     $table = $this->mp2_form_table;
     $sql = "
       SELECT f.*
