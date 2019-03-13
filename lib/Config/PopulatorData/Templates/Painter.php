@@ -187,13 +187,13 @@ class Painter {
             'image' =>
             array (
               'src' => $this->template_image_url . '/Painter-Logo-bg.jpg',
-              'display' => 'fit',
+              'display' => 'scale',
             ),
             'styles' =>
             array (
               'block' =>
               array (
-                'backgroundColor' => 'transparent',
+                'backgroundColor' => '#8289ca',
               ),
             ),
             'blocks' =>
@@ -225,7 +225,7 @@ class Painter {
                       'block' =>
                       array (
                         'backgroundColor' => 'transparent',
-                        'height' => '78px',
+                        'height' => '100px',
                       ),
                     ),
                   ),
@@ -254,7 +254,7 @@ class Painter {
                       'block' =>
                       array (
                         'backgroundColor' => 'transparent',
-                        'height' => '78px',
+                        'height' => '100px',
                       ),
                     ),
                   ),
@@ -357,7 +357,7 @@ class Painter {
                   0 =>
                   array (
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><a href="">Reviews &amp; Submissions</a></p>',
+                    'text' => '<p style="text-align: center;"><a href="https://www.mailpoet.com">Reviews &amp; Submissions</a></p>',
                   ),
                 ),
               ),
@@ -383,7 +383,7 @@ class Painter {
                   0 =>
                   array (
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><a href="">Essential&nbsp;Gear</a></p>',
+                    'text' => '<p style="text-align: center;"><a href="https://www.mailpoet.com">Essential&nbsp;Gear</a></p>',
                   ),
                 ),
               ),
@@ -409,7 +409,7 @@ class Painter {
                   0 =>
                   array (
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><a href="">Latest Commissions</a></p>',
+                    'text' => '<p style="text-align: center;"><a href="https://www.mailpoet.com">Latest Commissions</a></p>',
                   ),
                 ),
               ),
@@ -701,7 +701,7 @@ class Painter {
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Self-Assessment: 2018&mdash;Filling Journals, Using Up Paint</span></p>
-    <p><a href="">Read more &gt;</a></p>',
+    <p><a href="https://www.mailpoet.com">Read more &gt;</a></p>',
                   ),
                 ),
               ),
@@ -745,7 +745,7 @@ class Painter {
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Happy New Year 2019</span></p>
-    <p><a href="">Read more &gt;</a></p>',
+    <p><a href="https://www.mailpoet.com">Read more &gt;</a></p>',
                   ),
                 ),
               ),
@@ -789,7 +789,7 @@ class Painter {
                   array (
                     'type' => 'text',
                     'text' => '<p><span>Roz&rsquo;s 2018 Minnesota State Fair Journal</span></p>
-    <p><a href="">Read more &gt;</a></p>',
+    <p><a href="https://www.mailpoet.com">Read more &gt;</a></p>',
                   ),
                 ),
               ),
@@ -1383,7 +1383,7 @@ class Painter {
             'block' =>
             array (
               'backgroundColor' => 'transparent',
-              'height' => '78px',
+              'height' => '100px',
             ),
           ),
           'type' => 'spacer',

@@ -297,7 +297,7 @@ class Birds {
             array (
               'block' =>
               array (
-                'backgroundColor' => 'transparent',
+                'backgroundColor' => '#222222',
               ),
             ),
             'blocks' =>

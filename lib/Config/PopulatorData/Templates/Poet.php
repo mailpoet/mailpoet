@@ -204,7 +204,7 @@ class Poet {
                       'block' =>
                       array (
                         'backgroundColor' => 'transparent',
-                        'height' => '80px',
+                        'height' => '144px',
                       ),
                     ),
                   ),
@@ -227,11 +227,23 @@ class Poet {
                   ),
                   3 =>
                   array (
-                    'type' => 'text',
-                    'text' => '<h1>Thanks for signing up!</h1>
-    <p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut fringilla velit, id malesuada nisi. Nam ac rutrum diam.</span></p>',
+                    'type' => 'spacer',
+                    'styles' =>
+                    array (
+                      'block' =>
+                      array (
+                        'backgroundColor' => 'transparent',
+                        'height' => '20px',
+                      ),
+                    ),
                   ),
                   4 =>
+                  array (
+                    'type' => 'text',
+                    'text' => '<h1>Thanks for signing up!</h1>
+    <p><span style="color: #000000;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut fringilla velit, id malesuada nisi. Nam ac rutrum diam.</span></p>',
+                  ),
+                  5 =>
                   array (
                     'type' => 'spacer',
                     'styles' =>
@@ -239,7 +251,7 @@ class Poet {
                       'block' =>
                       array (
                         'backgroundColor' => 'transparent',
-                        'height' => '160px',
+                        'height' => '20px',
                       ),
                     ),
                   ),
@@ -1220,7 +1232,7 @@ class Poet {
             'block' =>
             array (
               'backgroundColor' => 'transparent',
-              'height' => '30px',
+              'height' => '20px',
             ),
           ),
           'type' => 'spacer',
