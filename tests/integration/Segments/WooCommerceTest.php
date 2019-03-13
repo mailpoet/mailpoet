@@ -373,7 +373,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect(SubscriberSegment::findOne($association->id))->isEmpty();
   }
 
-  function testItUnsubscribesSubscribersWhenSettingsIsEnabled() {
+  function testItSubscribesSubscribersWhenSettingsIsEnabled() {
     $user1 = $this->insertRegisteredCustomer();
     $user2 = $this->insertRegisteredCustomer();
     $subscriber1 = Subscriber::createOrUpdate([
@@ -396,7 +396,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber2_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItSubscribesSubscribersWhenSettingsIsDisabled() {
+  function testItUnsubscribesSubscribersWhenSettingsIsDisabled() {
     $user1 = $this->insertRegisteredCustomer();
     $user2 = $this->insertRegisteredCustomer();
     $subscriber1 = Subscriber::createOrUpdate([
