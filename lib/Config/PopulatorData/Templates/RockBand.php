@@ -15,7 +15,7 @@ class RockBand {
   function get() {
     return array(
       'name' => __("Rock Band", 'mailpoet'),
-      'categories' => json_encode(array('woocommerce', 'all')),
+      'categories' => json_encode(array('automatic', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
