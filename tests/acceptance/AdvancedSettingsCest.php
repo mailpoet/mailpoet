@@ -46,5 +46,60 @@ class AdvancedSettingsCest {
     $I->waitForText('The information below is useful');
     $I->waitForText($bounceAddressText);
   }
-  
+
+  function toggleTaskScheduler(\AcceptanceTester $I) {
+    $I->wantTo('Toggle the newsletter task schedule between cron options');
+    $chooseWordPressCron = '[data-automation-id="wordress_cron_radio"]';
+    $chooseMailPoetCron = '[data-automation-id="mailpoet_cron_radio"]';
+    $chooseLinuxCron = '[data-automation-id="linux_cron_radio"]';
+    $systemInfoWordPressCron = "Task Scheduler method: WordPress";
+    $systemInfoMailPoetCron = "Task Scheduler method: MailPoet";
+    $systemInfoLinuxCron = "Task Scheduler method: Linux Cron";
+    $bounceAddressField = '[data-automation-id="bounce-address-field"]';
+    $submitButton = '[data-automation-id="settings-submit-button"]';
+    $successMessage = "Settings saved";
+    //switch to MailPoet cron
+    $I->login();
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->waitForElement($bounceAddressField);
+    $I->click($chooseMailPoetCron);
+    $I->click($submitButton);
+    $I->waitForText($successMessage);
+    $I->waitForElement($bounceAddressField);
+    //check System Info to make sure the value changed
+    $I->amOnMailPoetPage('Help');
+    $I->waitForText('Knowledge Base');
+    $I->click('System Info');
+    $I->waitForText('The information below is useful');
+    $I->waitForText($systemInfoMailPoetCron);
+    //switch to linux cron
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->waitForElement($bounceAddressField);
+    $I->click($chooseLinuxCron);
+    $I->click($submitButton);
+    $I->waitForText($successMessage);
+    $I->waitForElement($bounceAddressField);
+    //check System Info to make sure the value changed
+    $I->amOnMailPoetPage('Help');
+    $I->waitForText('Knowledge Base');
+    $I->click('System Info');
+    $I->waitForText('The information below is useful');
+    $I->waitForText($systemInfoLinuxCron);
+    //switch to default cron
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->waitForElement($bounceAddressField);
+    $I->click($chooseWordPressCron);
+    $I->click($submitButton);
+    $I->waitForText($successMessage);
+    $I->waitForElement($bounceAddressField);
+    //check System Info to make sure the value changed
+    $I->amOnMailPoetPage('Help');
+    $I->waitForText('Knowledge Base');
+    $I->click('System Info');
+    $I->waitForText('The information below is useful');
+    $I->waitForText($systemInfoWordPressCron);
+  }
 }
