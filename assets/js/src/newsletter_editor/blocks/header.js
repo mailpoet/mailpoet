@@ -118,7 +118,7 @@ App.on('before:start', function beforeAppStart(BeforeStartApp) {
   BeforeStartApp.registerWidget({
     name: 'header',
     widgetView: Module.HeaderWidgetView,
-    priority: 98,
+    priority: 99,
   });
 });
 
