@@ -154,6 +154,34 @@
     'newsletter/templates/blocks/posts/settingsSinglePost.hbs'
   ) %>
   <%= partial(
+  'newsletter_editor_template_products_block',
+  'newsletter/templates/blocks/products/block.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_widget',
+  'newsletter/templates/blocks/products/widget.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings',
+  'newsletter/templates/blocks/products/settings.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings_display_options',
+  'newsletter/templates/blocks/products/settingsDisplayOptions.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings_selection',
+  'newsletter/templates/blocks/products/settingsSelection.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings_selection_empty',
+  'newsletter/templates/blocks/products/settingsSelectionEmpty.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings_single_post',
+  'newsletter/templates/blocks/products/settingsSinglePost.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_social_block',
     'newsletter/templates/blocks/social/block.hbs'
   ) %>
@@ -597,6 +625,28 @@
       ),
       displayOptionsPostsBlockSettings: Handlebars.compile(
         jQuery('#newsletter_editor_template_posts_settings_display_options').html()
+      ),
+
+      productsBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_block').html()
+      ),
+      productsInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_widget').html()
+      ),
+      productsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings').html()
+      ),
+      postSelectionProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings_selection').html()
+      ),
+      emptyPostProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings_selection_empty').html()
+      ),
+      singlePostProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings_single_post').html()
+      ),
+      displayOptionsProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings_display_options').html()
       ),
 
       textBlock: Handlebars.compile(
