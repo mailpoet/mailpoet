@@ -1,0 +1,17 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+<script>
+  var mailpoet_logo_url = '<%= cdn_url('welcome-wizard/mailpoet-logo.20190109-1400.png') %>';
+  var finish_wizard_url = '<%= finish_wizard_url %>';
+</script>
+
+<div id="mailpoet_wizard_container"></div>
+
+<% endblock %>
+
+<% block translations %>
+<%= localize({
+'wooCommerceListImportTitle': __('WooCommerce customers now have their own list'),
+}) %>
+<% endblock %>
