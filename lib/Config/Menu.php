@@ -340,6 +340,19 @@ class Menu {
       )
     );
 
+    // WooCommerce List Import
+    $this->wp->addSubmenuPage(
+      true,
+      $this->setPageTitle($this->wp->__('WooCommerce List Import', 'mailpoet')),
+      $this->wp->__('WooCommerce List Import', 'mailpoet'),
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      'mailpoet-woocommerce-list-import',
+      array(
+        $this,
+        'wooCommerceListImport'
+      )
+    );
+
     // Update page
     $this->wp->addSubmenuPage(
       true,
@@ -392,6 +405,14 @@ class Menu {
       'admin_email' => get_option('admin_email'),
     ];
     $this->displayPage('welcome_wizard.html', $data);
+  }
+
+  function wooCommerceListImport() {
+    if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+    $data = [
+
+    ];
+    $this->displayPage('woocommerce_list_import.html', $data);
   }
 
   function update() {
