@@ -16,4 +16,4 @@ import 'poll.jsx'; // side effect - assigns to MailPoet.Poll
 import 'settings/reinstall_from_scratch.js'; // side effect - adds event handler to document
 import 'subscribers/importExport/import.jsx'; // side effect - executes on doc ready, adds events
 import 'subscribers/importExport/export.js'; // side effect - executes on doc ready
-import 'welcome_wizard/wizard.jsx'; // side effect - renders ReactDOM to document
+import 'wizard/wizard.jsx'; // side effect - renders ReactDOM to document

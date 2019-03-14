@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
-import WelcomeWizardStepsController from './steps_controller.jsx';
+import WelcomeWizardStepsController from './welcome_wizard_controller.jsx';
 
-const container = document.getElementById('welcome_wizard_container');
+const container = document.getElementById('mailpoet_wizard_container');
 
 if (container) {
   ReactDOM.render((
