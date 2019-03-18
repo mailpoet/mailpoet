@@ -8,7 +8,7 @@ use MailPoet\Config\Menu;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\UserFlags;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions;
 
@@ -44,7 +44,7 @@ class MenuTest extends \MailPoetTest {
 
   function testItChecksMailpoetAPIKey() {
     $renderer = Stub::make(new Renderer());
-    $menu = new Menu($renderer, new AccessControl(new Functions()), new SettingsController(), new Functions(), new WooCommerceHelper, new ServicesChecker, new UserFlags);
+    $menu = new Menu($renderer, new AccessControl(new Functions()), new SettingsController(), new Functions(), new WooCommerceHelper, new ServicesChecker, new UserFlagsController);
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
@@ -66,7 +66,7 @@ class MenuTest extends \MailPoetTest {
 
   function testItChecksPremiumKey() {
     $renderer = Stub::make(new Renderer());
-    $menu = new Menu($renderer, new AccessControl(new Functions()), new SettingsController(), new Functions(), new WooCommerceHelper, new ServicesChecker, new UserFlags);
+    $menu = new Menu($renderer, new AccessControl(new Functions()), new SettingsController(), new Functions(), new WooCommerceHelper, new ServicesChecker, new UserFlagsController);
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
