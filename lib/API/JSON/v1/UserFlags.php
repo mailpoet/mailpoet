@@ -33,6 +33,7 @@ class UserFlags extends APIEndpoint {
         ));
     } else {
       foreach ($flags as $name => $value) {
+        $value = htmlspecialchars($value);
         $this->user_flags->set($name, $value);
       }
       return $this->successResponse([]);
