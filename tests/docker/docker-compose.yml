@@ -47,6 +47,10 @@ services:
       interval: 1m30s
       timeout: 10s
       retries: 3
+    networks:
+      default:
+        aliases:
+          - test.local
 
   mysql:
     image: circleci/mysql:5.7-ram
@@ -73,3 +77,6 @@ services:
       - 5900:5900
 volumes:
   wp-core:
+
+networks:
+  default:
