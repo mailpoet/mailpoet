@@ -32,12 +32,6 @@ class AccessControlTest extends \MailPoetTest {
       }
     );
     $wp->addFilter(
-      'mailpoet_permission_manage_user_flags',
-      function() {
-        return array('custom_manage_user_flags_role');
-      }
-    );
-    $wp->addFilter(
       'mailpoet_permission_manage_emails',
       function() {
         return array('custom_manage_emails_role');
@@ -69,9 +63,6 @@ class AccessControlTest extends \MailPoetTest {
         ),
         AccessControl::PERMISSION_MANAGE_SETTINGS => array(
           'custom_manage_settings_role'
-        ),
-        AccessControl::PERMISSION_MANAGE_USER_FLAGS => array(
-          'custom_manage_user_flags_role'
         ),
         AccessControl::PERMISSION_MANAGE_EMAILS => array(
           'custom_manage_emails_role'
