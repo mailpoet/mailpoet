@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 3.21.0
+Stable tag: 3.21.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -171,6 +171,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.21.1 - 2019-03-18 =
+* Improved: better highlighting when resizing widgets in editor;
+* Improved: sending with consistent FROM address;
+* Fixed: db connection issues for connections via socket. Thanks Nicolas!
+* Fixed: react console warnings when sending is paused.
 
 = 3.21.0 - 2019-03-11 =
 * Added: backwards compatibility method to fix 3rd party integrations;

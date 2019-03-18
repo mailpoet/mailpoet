@@ -35,7 +35,7 @@ if (!defined('ABSPATH')) exit;
 
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
-  const LAST_ANNOUNCEMENT_DATE = '2019-03-12 10:00:00';
+  const LAST_ANNOUNCEMENT_DATE = '2019-03-18 10:00:00';
 
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
