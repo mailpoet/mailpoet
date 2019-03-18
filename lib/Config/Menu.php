@@ -20,7 +20,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\UserFlags;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\State;
@@ -50,7 +50,7 @@ class Menu {
   private $access_control;
   /** @var SettingsController */
   private $settings;
-  /** @var UserFlags */
+  /** @var UserFlagsController */
   private $user_flags;
   /** @var WPFunctions */
   private $wp;
@@ -66,7 +66,7 @@ class Menu {
     WPFunctions $wp,
     WooCommerceHelper $woocommerce_helper,
     ServicesChecker $servicesChecker,
-    UserFlags $user_flags
+    UserFlagsController $user_flags
   ) {
     $this->renderer = $renderer;
     $this->access_control = $access_control;

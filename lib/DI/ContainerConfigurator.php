@@ -93,7 +93,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Settings
     $container->autowire(\MailPoet\Settings\SettingsController::class)->setPublic(true);
     // User Flags
-    $container->autowire(\MailPoet\Settings\UserFlags::class)->setPublic(true);
+    $container->autowire(\MailPoet\Settings\UserFlagsController::class)->setPublic(true);
     // Subscription
     $container->autowire(\MailPoet\Subscription\Comment::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);

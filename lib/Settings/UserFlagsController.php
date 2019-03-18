@@ -4,7 +4,7 @@ namespace MailPoet\Settings;
 use MailPoet\Models\UserFlag;
 use MailPoet\WP\Functions as WPFunctions;
 
-class UserFlags {
+class UserFlagsController {
 
   /**
    * @var array|null
