@@ -6,7 +6,7 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\v1\UserFlags;
 use MailPoet\Models\UserFlag;
-use MailPoet\Settings\UserFlags as UserFlagsController;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class UserFlagsTest extends \MailPoetTest {
@@ -20,12 +20,10 @@ class UserFlagsTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->user_flags = Stub::make(new UserFlagsController, [
-      'getDefaults' => function() {
-        return [
-          'flag_1' => 'default_value_1',
-          'flag_2' => 'default_value_2',
-        ];
-      },
+      'defaults' => [
+        'flag_1' => 'default_value_1',
+        'flag_2' => 'default_value_2',
+      ],
     ]);    
     $this->user_flags->set('flag_1', 'value_1');
     $this->endpoint = new UserFlags($this->user_flags);
@@ -57,7 +55,6 @@ class UserFlagsTest extends \MailPoetTest {
   }
 
   function _after() {
-    UserFlagsController::clear();
     \ORM::forTable(UserFlag::$_table)->deleteMany();
   }
 }

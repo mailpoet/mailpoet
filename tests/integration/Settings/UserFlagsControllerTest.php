@@ -3,12 +3,12 @@ namespace MailPoet\Test\Settings;
 
 use Codeception\Stub;
 use MailPoet\Models\UserFlag;
-use MailPoet\Settings\UserFlags;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-class UserFlagsTest extends \MailPoetTest {
+class UserFlagsControllerTest extends \MailPoetTest {
 
-  /** @var UserFlags */
+  /** @var UserFlagsController */
   private $user_flags;
 
   /** @var int */
@@ -26,14 +26,12 @@ class UserFlagsTest extends \MailPoetTest {
       'getCurrentUserId' => $current_user_id,
     ]));
     $this->current_user_id = $current_user_id;
-    $this->user_flags = Stub::make(new UserFlags(), [
-      'getDefaults' => function() {
-        return [
-          'flag_1' => 'default_value_1',
-          'flag_2' => 'default_value_2',
-          'flag_3' => 'default_value_3',
-        ];
-      }
+    $this->user_flags = Stub::make(new UserFlagsController(), [
+      'defaults' => [
+        'flag_1' => 'default_value_1',
+        'flag_2' => 'default_value_2',
+        'flag_3' => 'default_value_3',
+      ],
     ]);
     UserFlag::createOrUpdate([
       'user_id' => $this->current_user_id,
@@ -103,7 +101,6 @@ class UserFlagsTest extends \MailPoetTest {
   }
 
   function _after() {
-    UserFlags::clear();
     WPFunctions::set(new WPFunctions);
     \ORM::raw_execute('TRUNCATE ' . UserFlag::$_table);
   }

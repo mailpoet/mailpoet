@@ -9,49 +9,35 @@ class UserFlagsController {
   /**
    * @var array|null
    */
-  private static $data = null;
+  private $data = null;
+  
+  /**
+   * @var array
+   */
+  private $defaults;
 
-  public function getDefaults() {
-    return [
+  function __construct() {
+    $this->defaults = [
       'last_announcement_seen' => false,
       'editor_tutorial_seen' => false,
     ];
   }
 
-  public function load() {
-    $current_user_id = WPFunctions::get()->getCurrentUserId();
-    $flags = UserFlag::where('user_id', $current_user_id)->findMany();
-    self::$data = [];
-    foreach ($flags as $flag) {
-      self::$data[$flag->name] = $flag->value;
-    }
-  }
-
-  public function isLoaded() {
-    return self::$data !== null;
-  }
-
-  public function ensureLoaded() {
-    if (!$this->isLoaded()) {
-      $this->load();
-    }
-  }
-
-  public function get($name) {
+  function get($name) {
+    l(['defaults', $this->defaults]);
     $this->ensureLoaded();
-    if (empty(self::$data[$name])) {
-      $defaults = $this->getDefaults();
-      return $defaults[$name];
+    if (empty($this->data[$name])) {
+      return $this->defaults[$name];
     }
-    return self::$data[$name];
+    return $this->data[$name];
   }
 
-  public function getAll() {
+  function getAll() {
     $this->ensureLoaded();
-    return array_merge($this->getDefaults(), self::$data);
+    return array_merge($this->defaults, $this->data);
   }
 
-  public function set($name, $value) {
+  function set($name, $value) {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     UserFlag::createOrUpdate([
       'user_id' => $current_user_id,
@@ -59,21 +45,36 @@ class UserFlagsController {
       'value' => $value
     ]);
     if ($this->isLoaded()) {
-      self::$data[$name] = $value;
+      $this->data[$name] = $value;
     }
   }
 
-  public function delete($name) {
+  function delete($name) {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     UserFlag::where('user_id', $current_user_id)
       ->where('name', $name)
       ->deleteMany();
     if ($this->isLoaded()) {
-      unset(self::$data[$name]);
+      unset($this->data[$name]);
     }
   }
 
-  public static function clear() {
-    self::$data = null;
+  private function load() {
+    $current_user_id = WPFunctions::get()->getCurrentUserId();
+    $flags = UserFlag::where('user_id', $current_user_id)->findMany();
+    $this->data = [];
+    foreach ($flags as $flag) {
+      $this->data[$flag->name] = $flag->value;
+    }
+  }
+
+  private function isLoaded() {
+    return $this->data !== null;
+  }
+
+  private function ensureLoaded() {
+    if (!$this->isLoaded()) {
+      $this->load();
+    }
   }
 }
