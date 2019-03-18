@@ -17,7 +17,7 @@ class UserFlags extends APIEndpoint {
   private $user_flags;
 
   public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS
+    'global' => AccessControl::ALL_ROLES_ACCESS
   );
 
   function __construct(UserFlagsController $user_flags) {
