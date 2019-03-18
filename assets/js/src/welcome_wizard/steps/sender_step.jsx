@@ -22,7 +22,7 @@ const WelcomeWizardSenderStep = props => (
     >
       <label htmlFor="senderName">
         {MailPoet.I18n.t('senderName')}
-:
+        :
         <input
           name="senderName"
           type="text"
@@ -34,7 +34,7 @@ const WelcomeWizardSenderStep = props => (
       </label>
       <label htmlFor="senderAddress">
         {MailPoet.I18n.t('senderAddress')}
-:
+        :
         <input
           name="senderAddress"
           type="text"
@@ -47,7 +47,7 @@ const WelcomeWizardSenderStep = props => (
       </label>
       <label htmlFor="replyToAddress">
         {MailPoet.I18n.t('replyToAddress')}
-:
+        :
         <input
           name="replyToAddress"
           type="text"
@@ -58,7 +58,11 @@ const WelcomeWizardSenderStep = props => (
           onChange={e => props.update_reply_to({ address: e.target.value })}
         />
       </label>
-      <SenderEmailAddressWarning emailAddress={props.sender.address} />
+      <SenderEmailAddressWarning
+        emailAddress={props.sender.address}
+        mssActive={props.mssActive}
+        pluginInstalledAt={props.pluginInstalledAt}
+      />
       <input className="button button-primary" type="submit" value={MailPoet.I18n.t('next')} />
       <a onClick={props.finish} href="#finish" className="sender_form_small">{MailPoet.I18n.t('noThanksSkip')}</a>
     </form>
@@ -78,6 +82,8 @@ WelcomeWizardSenderStep.propTypes = {
   reply_to: PropTypes.shape({
     address: PropTypes.string,
   }),
+  mssActive: PropTypes.bool.isRequired,
+  pluginInstalledAt: PropTypes.string.isRequired,
 };
 
 WelcomeWizardSenderStep.defaultProps = {

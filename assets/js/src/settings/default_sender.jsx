@@ -66,7 +66,11 @@ class DefaultSender extends React.Component {
           />
         </p>
         <div className="regular-text">
-          <SenderEmailAddressWarning emailAddress={this.state.senderAddress} />
+          <SenderEmailAddressWarning
+            emailAddress={this.state.senderAddress}
+            mssActive={this.props.mssActive}
+            pluginInstalledAt={this.props.pluginInstalledAt}
+          />
         </div>
       </React.Fragment>
     );
@@ -78,6 +82,8 @@ DefaultSender.propTypes = {
   senderName: PropTypes.string.isRequired,
   replyToAddress: PropTypes.string.isRequired,
   replyToName: PropTypes.string.isRequired,
+  mssActive: PropTypes.bool.isRequired,
+  pluginInstalledAt: PropTypes.string.isRequired,
 };
 
 export default DefaultSender;

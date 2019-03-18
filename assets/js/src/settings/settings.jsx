@@ -12,6 +12,8 @@ if (settingsSenderContainer) {
       senderName: window.mailpoet_settings_sender_name,
       replyToAddress: window.mailpoet_settings_reply_to_address,
       replyToName: window.mailpoet_settings_reply_to_name,
+      pluginInstalledAt: window.mailpoet_installed_at,
+      mssActive: window.mailpoet_mss_active,
     }),
     settingsSenderContainer
   );
@@ -24,6 +26,8 @@ if (settingsSignupConfirmationSenderContainer) {
     React.createElement(SignupConfirmationSender, {
       senderAddress: window.mailpoet_settings_sender_adddress,
       senderName: window.mailpoet_settings_sender_name,
+      pluginInstalledAt: window.mailpoet_installed_at,
+      mssActive: window.mailpoet_mss_active,
     }),
     settingsSignupConfirmationSenderContainer
   );
