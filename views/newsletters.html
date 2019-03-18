@@ -32,6 +32,8 @@
     var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20181207-1345.png') %>';
     <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     var mailpoet_is_new_user = <%= newUser %>;
+    var mailpoet_installed_at = '<%= settings.installed_at %>';
+    var mailpoet_mss_active = <%= json_encode(mss_active) %>;
   </script>
 <% endblock %>
 

@@ -25,7 +25,11 @@ class SenderField extends React.Component {
           onValueChange={this.onChange}
         />
         <div className="regular-text">
-          <SenderEmailAddressWarning emailAddress={this.state.emailAddress} />
+          <SenderEmailAddressWarning
+            emailAddress={this.state.emailAddress}
+            mssActive={window.mailpoet_mss_active}
+            pluginInstalledAt={window.mailpoet_installed_at}
+          />
         </div>
       </React.Fragment>
     );

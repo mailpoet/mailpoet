@@ -390,6 +390,8 @@ class Menu {
       'finish_wizard_url' => WPFunctions::get()->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
       'sender' => $this->settings->get('sender'),
       'reply_to' => $this->settings->get('reply_to'),
+      'installed_at' => $this->settings->get('installed_at'),
+      'mss_active' => Bridge::isMPSendingServiceEnabled(),
     ];
     $this->displayPage('welcome_wizard.html', $data);
   }
@@ -611,6 +613,7 @@ class Menu {
     });
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
+    $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
     $data['current_wp_user'] = WPFunctions::get()->wpGetCurrentUser()->to_array();
     $data['current_wp_user_firstname'] = WPFunctions::get()->wpGetCurrentUser()->user_firstname;
     $data['site_url'] = WPFunctions::get()->siteUrl();
