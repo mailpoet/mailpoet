@@ -530,8 +530,8 @@ CREATE TABLE `mp_options` (
   UNIQUE KEY `option_name` (`option_name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `mp_options` VALUES (1,'siteurl','http://wordpress','yes'),
-(2,'home','http://wordpress','yes'),
+INSERT INTO `mp_options` VALUES (1,'siteurl','http://test.local','yes'),
+(2,'home','http://test.local','yes'),
 (3,'blogname','MP Dev','yes'),
 (4,'blogdescription','Just another WordPress site','yes'),
 (5,'users_can_register','1','yes'),
@@ -779,7 +779,7 @@ CREATE TABLE `mp_posts` (
 INSERT INTO `mp_posts` (`ID`, `post_author`, `post_date`, `post_date_gmt`, `post_content`, `post_title`, `post_excerpt`, `post_status`, `comment_status`, `ping_status`, `post_password`, `post_name`, `to_ping`, `pinged`, `post_modified`, `post_modified_gmt`, `post_content_filtered`, `post_parent`, `guid`, `menu_order`, `post_type`, `post_mime_type`, `comment_count`) VALUES
 (1,	1,	'2016-11-23 14:16:53',	'2016-11-23 14:16:53',	'Welcome to WordPress. This is your first post. Edit or delete it, then start writing!',	'Hello world!',	'',	'publish',	'open',	'open',	'',	'hello-world',	'',	'',	'2016-11-23 14:16:53',	'2016-11-23 14:16:53',	'',	0,	'http://mailpoet/?p=1',	0,	'post',	'',	1),
 (4,	1,	'2016-11-23 18:32:23',	'2016-11-23 18:32:23',	'[mailpoet_page]',	'MailPoet Page',	'',	'publish',	'closed',	'closed',	'',	'subscriptions',	'',	'',	'2016-11-23 18:32:23',	'2016-11-23 18:32:23',	'',	0,	'http://mailpoet/2016/11/23/subscriptions/',	0,	'mailpoet_page',	'',	0),
-(470,	1,	'2017-11-05 23:48:01',	'2017-11-05 23:48:01',	'Regular form:\r\n\r\n[mailpoet_form id=\"1\"]\r\n\r\nIframe form:\r\n\r\n<iframe class=\"mailpoet_form_iframe\" id=\"mailpoet_form_iframe\" tabindex=\"0\" src=\"http://wordpress?mailpoet_form_iframe=1\" width=\"100%\" height=\"100%\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" scrolling=\"no\"></iframe>',	'Form Test',	'',	'publish',	'closed',	'closed',	'',	'form-test',	'',	'',	'2017-11-05 23:58:38',	'2017-11-05 23:58:38',	'',	0,	'http://wordpress/?page_id=470',	0,	'page',	'',	0);
+(470,	1,	'2017-11-05 23:48:01',	'2017-11-05 23:48:01',	'Regular form:\r\n\r\n[mailpoet_form id=\"1\"]\r\n\r\nIframe form:\r\n\r\n<iframe class=\"mailpoet_form_iframe\" id=\"mailpoet_form_iframe\" tabindex=\"0\" src=\"http://test.local?mailpoet_form_iframe=1\" width=\"100%\" height=\"100%\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" scrolling=\"no\"></iframe>',	'Form Test',	'',	'publish',	'closed',	'closed',	'',	'form-test',	'',	'',	'2017-11-05 23:58:38',	'2017-11-05 23:58:38',	'',	0,	'http://wordpress/?page_id=470',	0,	'page',	'',	0);
 
 DROP TABLE IF EXISTS `mp_signups`;
 CREATE TABLE `mp_signups` (

@@ -81,7 +81,7 @@ class SubscriptionFormCest {
     $I->see('You have subscribed');
     $I->seeNoJSErrors();
 
-    $I->amOnUrl('http://wordpress');
+    $I->amOnUrl(\AcceptanceTester::WP_URL);
     $I->login();
     $I->amOnMailpoetPage('Subscribers');
     $I->waitForText($this->subscriber_email);

@@ -15,7 +15,7 @@ modules:
             activatePlugins: ['mailpoet/mailpoet.php']
         - WPWebDriver:
             host: chrome
-            url: 'http://wordpress'
+            url: 'http://test.local'
             browser: chrome
             port: 4444
             window_size: '1024x768'
@@ -32,7 +32,7 @@ modules:
             dump: tests/_data/acceptanceGenerated.sql
             populate: true
             cleanup: false
-            url: 'http://wordpress'
+            url: 'http://test.local'
             urlReplacement: true
             tablePrefix: 'mp_'
         - WPCLI:
