@@ -62,7 +62,7 @@ CREATE TABLE `mp_blogs` (
 
 LOCK TABLES `mp_blogs` WRITE;
 /*!40000 ALTER TABLE `mp_blogs` DISABLE KEYS */;
-INSERT INTO `mp_blogs` VALUES (1,1,'wordpress','/','2018-01-17 17:08:02','0000-00-00 00:00:00',1,0,0,0,0,0);
+INSERT INTO `mp_blogs` VALUES (1,1,'test.local','/','2018-01-17 17:08:02','0000-00-00 00:00:00',1,0,0,0,0,0);
 /*!40000 ALTER TABLE `mp_blogs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -115,7 +115,7 @@ CREATE TABLE `mp_site` (
 
 LOCK TABLES `mp_site` WRITE;
 /*!40000 ALTER TABLE `mp_site` DISABLE KEYS */;
-INSERT INTO `mp_site` VALUES (1,'wordpress','/');
+INSERT INTO `mp_site` VALUES (1,'test.local','/');
 /*!40000 ALTER TABLE `mp_site` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,6 +143,6 @@ CREATE TABLE `mp_sitemeta` (
 
 LOCK TABLES `mp_sitemeta` WRITE;
 /*!40000 ALTER TABLE `mp_sitemeta` DISABLE KEYS */;
-INSERT INTO `mp_sitemeta` VALUES (1,1,'site_name','tests Sites'),(2,1,'admin_email','test@test.com'),(3,1,'admin_user_id','1'),(4,1,'registration','user'),(5,1,'upload_filetypes','jpg jpeg png gif mov avi mpg 3gp 3g2 midi mid pdf doc ppt odt pptx docx pps ppsx xls xlsx key mp3 ogg m4a wav mp4 m4v webm ogv flv'),(6,1,'blog_upload_space','100'),(7,1,'fileupload_maxk','1500'),(8,1,'site_admins','a:1:{i:0;s:5:\"admin\";}'),(9,1,'allowedthemes','a:1:{s:15:\"twentyseventeen\";b:1;}'),(10,1,'illegal_names','a:9:{i:0;s:3:\"www\";i:1;s:3:\"web\";i:2;s:4:\"root\";i:3;s:5:\"admin\";i:4;s:4:\"main\";i:5;s:6:\"invite\";i:6;s:13:\"administrator\";i:7;s:5:\"files\";i:8;s:4:\"blog\";}'),(11,1,'wpmu_upgrade_site','38590'),(12,1,'welcome_email','Howdy USERNAME,\n\nYour new SITE_NAME site has been successfully set up at:\nBLOG_URL\n\nYou can log in to the administrator account with the following information:\n\nUsername: USERNAME\nPassword: PASSWORD\nLog in here: BLOG_URLwp-login.php\n\nWe hope you enjoy your new site. Thanks!\n\n--The Team @ SITE_NAME'),(13,1,'first_post','Welcome to %s. This is your first post. Edit or delete it, then start blogging!'),(14,1,'siteurl','http://wordpress/'),(15,1,'add_new_users','0'),(16,1,'upload_space_check_disabled','1'),(17,1,'subdomain_install','0'),(18,1,'global_terms_enabled','0'),(19,1,'ms_files_rewriting','0'),(20,1,'initial_db_version','38590'),(21,1,'active_sitewide_plugins','a:0:{}'),(22,1,'WPLANG','en_US');
+INSERT INTO `mp_sitemeta` VALUES (1,1,'site_name','tests Sites'),(2,1,'admin_email','test@test.com'),(3,1,'admin_user_id','1'),(4,1,'registration','user'),(5,1,'upload_filetypes','jpg jpeg png gif mov avi mpg 3gp 3g2 midi mid pdf doc ppt odt pptx docx pps ppsx xls xlsx key mp3 ogg m4a wav mp4 m4v webm ogv flv'),(6,1,'blog_upload_space','100'),(7,1,'fileupload_maxk','1500'),(8,1,'site_admins','a:1:{i:0;s:5:\"admin\";}'),(9,1,'allowedthemes','a:1:{s:15:\"twentyseventeen\";b:1;}'),(10,1,'illegal_names','a:9:{i:0;s:3:\"www\";i:1;s:3:\"web\";i:2;s:4:\"root\";i:3;s:5:\"admin\";i:4;s:4:\"main\";i:5;s:6:\"invite\";i:6;s:13:\"administrator\";i:7;s:5:\"files\";i:8;s:4:\"blog\";}'),(11,1,'wpmu_upgrade_site','38590'),(12,1,'welcome_email','Howdy USERNAME,\n\nYour new SITE_NAME site has been successfully set up at:\nBLOG_URL\n\nYou can log in to the administrator account with the following information:\n\nUsername: USERNAME\nPassword: PASSWORD\nLog in here: BLOG_URLwp-login.php\n\nWe hope you enjoy your new site. Thanks!\n\n--The Team @ SITE_NAME'),(13,1,'first_post','Welcome to %s. This is your first post. Edit or delete it, then start blogging!'),(14,1,'siteurl','http://test.local/'),(15,1,'add_new_users','0'),(16,1,'upload_space_check_disabled','1'),(17,1,'subdomain_install','0'),(18,1,'global_terms_enabled','0'),(19,1,'ms_files_rewriting','0'),(20,1,'initial_db_version','38590'),(21,1,'active_sitewide_plugins','a:0:{}'),(22,1,'WPLANG','en_US');
 /*!40000 ALTER TABLE `mp_sitemeta` ENABLE KEYS */;
 UNLOCK TABLES;

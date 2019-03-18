@@ -34,7 +34,7 @@ if ! $(wp-su core is-installed); then
 
     else
 
-      wp-su core multisite-install --url=wordpress --title=tests --admin_user=admin --admin_email=test@test.com
+      wp-su core multisite-install --url=test.local --title=tests --admin_user=admin --admin_email=test@test.com
 
       cp /project/tests/_data/acceptanceMultisiteDump.sql /project/tests/_data/acceptanceGenerated.sql
       cat /project/tests/_data/acceptanceDump.sql >> /project/tests/_data/acceptanceGenerated.sql
