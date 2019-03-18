@@ -611,7 +611,6 @@ class Menu {
     });
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
-    $data['user_flags'] = $this->user_flags->getAll();
     $data['current_wp_user'] = WPFunctions::get()->wpGetCurrentUser()->to_array();
     $data['current_wp_user_firstname'] = WPFunctions::get()->wpGetCurrentUser()->user_firstname;
     $data['site_url'] = WPFunctions::get()->siteUrl();
@@ -637,9 +636,13 @@ class Menu {
     $data['is_woocommerce_active'] = $this->woocommerce_helper->isWooCommerceActive();
 
     $user_id = $data['current_wp_user']['ID'];
-    $data['feature_announcement_has_news'] = empty($data['user_flags']['last_announcement_seen'])
-      || $data['user_flags']['last_announcement_seen'] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
-    $data['last_announcement_seen'] = $data['user_flags']['last_announcement_seen'];
+
+    $last_announcement_seen = $this->user_flags->get('last_announcement_seen');
+    $data['feature_announcement_has_news'] = (
+      empty($last_announcement_seen) || 
+      $last_announcement_seen < strtotime(self::LAST_ANNOUNCEMENT_DATE)
+    );
+    $data['last_announcement_seen'] = $last_announcement_seen;
 
     $data['automatic_emails'] = array(
       array(
@@ -707,7 +710,7 @@ class Menu {
     $data = array(
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => $this->settings->getAll(),
-      'user_flags' => $this->user_flags->getAll(),
+      'editor_tutorial_seen' => $this->user_flags->get('editor_tutorial_seen'),
       'current_wp_user' => array_merge($subscriber_data, WPFunctions::get()->wpGetCurrentUser()->to_array()),
       'sub_menu' => self::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled()
