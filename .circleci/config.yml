@@ -44,6 +44,10 @@ jobs:
           command: |
             ./do test:acceptance-group-tests
       - run:
+          name: Dump tests ENV variables for acceptance tests
+          command: |
+            printenv | grep WP_TEST_ > .env
+      - run:
           name: "QA Scripts"
           command: ./do qa
       - persist_to_workspace:
