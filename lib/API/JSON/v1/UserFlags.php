@@ -6,7 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Services\Bridge;
-use MailPoet\Settings\UserFlags as UserFlagsController;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
