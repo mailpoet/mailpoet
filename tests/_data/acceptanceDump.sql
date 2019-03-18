@@ -469,10 +469,12 @@ CREATE TABLE `mp_mailpoet_subscribers` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `unconfirmed_data` longtext COLLATE utf8mb4_unicode_520_ci,
+  `is_woocommerce_user` int(1) NOT NULL DEFAULT 0,
   `source` ENUM("form", "imported", "administrator", "api", "wordpress_user", "unknown") DEFAULT "unknown",
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `wp_user_id` (`wp_user_id`),
+  KEY `status_deleted_at` (`status`, `deleted_at`),
   KEY updated_at (updated_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
