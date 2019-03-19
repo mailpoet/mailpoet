@@ -25,7 +25,7 @@ class UserFlagsController {
 
   function get($name) {
     $this->ensureLoaded();
-    if (empty($this->data[$name])) {
+    if (!isset($this->data[$name])) {
       return $this->defaults[$name];
     }
     return $this->data[$name];
