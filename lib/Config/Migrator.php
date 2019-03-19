@@ -477,7 +477,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'user_id bigint(20) NOT NULL,',
       'name varchar(50) NOT NULL,',
-      'value longtext,',
+      'value varchar(255),',
       'created_at timestamp NULL,',
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
