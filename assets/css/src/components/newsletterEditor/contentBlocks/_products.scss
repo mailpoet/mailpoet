@@ -1,0 +1,74 @@
+.mailpoet_products_block {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.mailpoet_products_block_products {
+  overflow: auto;
+
+  & > .mailpoet_block {
+    width: 100%;
+  }
+}
+
+.mailpoet_product_selection_filter_row {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.mailpoet_products_categories_and_tags {
+  width: 100%;
+}
+
+.mailpoet_settings_products_display_options,
+.mailpoet_settings_products_selection {
+  @include animation-slide-open-downwards();
+  overflow-x: hidden;
+}
+
+.mailpoet_settings_products_show_display_options,
+.mailpoet_settings_products_show_product_selection {
+  display: block;
+  margin-top: 10px;
+}
+
+.mailpoet_product_selection_container {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.mailpoet_product_scroll_container {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 400px;
+}
+
+.mailpoet_settings_products_single_product {
+  border-radius: 1px;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height: 38px;
+  line-height: 38px;
+  overflow: hidden;
+  border: 1px solid $content-border-color;
+  background-color: $white-color;
+
+  &:hover {
+    border-color: $primary-active-color;
+  }
+
+  .mailpoet_select_product_checkbox {
+    margin-left: 10px;
+    margin-right: 8px;
+  }
+}
+
+.mailpoet_product_selection_loading {
+  color: #999;
+}
+
+.mailpoet_products_container > .mailpoet_droppable_block {
+  width: 100%;
+}
