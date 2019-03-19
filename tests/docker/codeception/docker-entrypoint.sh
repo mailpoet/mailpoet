@@ -56,6 +56,9 @@ RewriteRule . index.php [L]
 " > .htaccess
     fi
 
+    echo "Installing WooCommerce"
+    wp plugin install woocommerce --allow-root
+
 else
 
     if [ -z "${MULTISITE}" ] &&  $(wp-su core is-installed --network)
