@@ -13,6 +13,7 @@ if (!defined('ABSPATH')) exit;
 class Renderer {
   public $blocks_renderer;
   public $columns_renderer;
+  public $DOM_parser;
   public $CSS_inliner;
   public $newsletter;
   public $preview;
@@ -21,7 +22,7 @@ class Renderer {
   private $template;
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
-  
+
   /**
    * @param \MailPoet\Models\Newsletter|array $newsletter
    */
@@ -30,6 +31,7 @@ class Renderer {
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
+    $this->DOM_parser = new pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
     $this->premium_activated = License::getLicense();
@@ -65,8 +67,8 @@ class Renderer {
       $newsletter['preheader'],
       $rendered_body
     ));
-    $template_dom = $this->inlineCSSStyles($template);
-    $template = $this->postProcessTemplate($template_dom);
+    $template = $this->inlineCSSStyles($template);
+    $template = $this->postProcessTemplate($template);
 
     $rendered_newsletter = array(
       'html' => $template,
@@ -179,10 +181,11 @@ class Renderer {
   }
 
   /**
-   * @param \pQuery\DomNode $template_dom
+   * @param string $template
    * @return string
    */
-  private function postProcessTemplate(\pQuery\DomNode $template_dom) {
+  private function postProcessTemplate($template) {
+    $template_dom = $this->DOM_parser->parseStr($template);
     // replace spaces in image tag URLs
     foreach ($template_dom->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
