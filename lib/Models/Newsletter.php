@@ -626,6 +626,9 @@ class Newsletter extends Model {
       ->filter('filterStatus', self::STATUS_SENT)
       ->count();
 
+    $first_purchase_emails_count = self::getActiveAutomaticNewslettersCount('woocommerce_first_purchase');
+    $product_purchased_emails_count = self::getActiveAutomaticNewslettersCount('woocommerce_product_purchased');
+
     $sent_newsletters_3_months = self::sentAfter(Carbon::now()->subMonths(3));
     $sent_newsletters_30_days = self::sentAfter(Carbon::now()->subDays(30));
 
@@ -636,7 +639,29 @@ class Newsletter extends Model {
       'sent_newsletters_count' => $newsletters_count,
       'sent_newsletters_3_months' => $sent_newsletters_3_months,
       'sent_newsletters_30_days' => $sent_newsletters_30_days,
+      'first_purchase_emails_count' => $first_purchase_emails_count,
+      'product_purchased_emails_count' => $product_purchased_emails_count,
     );
+  }
+
+  private static function getActiveAutomaticNewslettersCount($event_name) {
+    return NewsletterOption::tableAlias('options')
+      ->join(
+        self::$_table,
+        'newsletters.id = options.newsletter_id',
+        'newsletters'
+      )
+      ->join(
+        MP_NEWSLETTER_OPTION_FIELDS_TABLE,
+        'option_fields.id = options.option_field_id',
+        'option_fields'
+      )
+      ->whereNull('newsletters.deleted_at')
+      ->where('newsletters.type', self::TYPE_AUTOMATIC)
+      ->where('newsletters.status', self::STATUS_ACTIVE)
+      ->where('option_fields.name', 'event')
+      ->where('options.value', $event_name)
+      ->count();
   }
 
   static function sentAfter($date) {
