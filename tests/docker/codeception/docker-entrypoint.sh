@@ -28,7 +28,7 @@ if ! $(wp-su core is-installed); then
 
       echo "Running in single site mode"
 
-      wp-su core install --url=test.localhost --title=tests --admin_user=admin --admin_email=test@test.com
+      wp-su core install --url=test.local --title=tests --admin_user=admin --admin_email=test@test.com
 
       cp /project/tests/_data/acceptanceDump.sql /project/tests/_data/acceptanceGenerated.sql
 
