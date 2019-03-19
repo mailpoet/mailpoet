@@ -156,6 +156,7 @@ class Newsletter {
     }
     $prepared_newsletter = Helpers::splitObject($prepared_newsletter);
     return array(
+      'id' => $newsletter->id,
       'subject' => $prepared_newsletter[0],
       'body' => array(
         'html' => $prepared_newsletter[1],

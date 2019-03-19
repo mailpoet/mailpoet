@@ -377,6 +377,7 @@ class Newsletters extends APIEndpoint {
         $rendered_newsletter['body']['html'],
         $rendered_newsletter['body']['text']
       ) = explode($divider, $shortcodes->replace($body));
+      $rendered_newsletter['id'] = $newsletter->id;
 
       try {
         $mailer = (!empty($data['mailer'])) ?
