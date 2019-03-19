@@ -35,6 +35,7 @@ class CSS {
   */
   function inlineCSS($url, $contents=null) {
     $html = \pQuery::parseStr($contents);
+
     if (!is_object($html)) {
       return false;
     }
@@ -123,7 +124,7 @@ class CSS {
     }
 
     // Let simple_html_dom give us back our HTML with inline CSS!
-    return $html;
+    return (string)$html;
   }
 
   function parseCSS($text) {
