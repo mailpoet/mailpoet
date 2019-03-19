@@ -5,9 +5,11 @@ use MailPoet\Models\UserFlag;
 
 class UserFlagTest extends \MailPoetTest {
 
-  function testCreateOrUpdateCreatesNewFlags() {
-    expect(UserFlag::count())->equals(0);
+  function _before() {
+    UserFlag::deleteMany();
+  }
 
+  function testCreateOrUpdateCreatesNewFlags() {
     $created_flag = UserFlag::createOrUpdate([
       'user_id' => 3,
       'name' => 'first_flag',
@@ -40,7 +42,4 @@ class UserFlagTest extends \MailPoetTest {
     expect(UserFlag::count())->equals(1);
   }
 
-  function _after() {
-    UserFlag::deleteMany();
-  }
 }
