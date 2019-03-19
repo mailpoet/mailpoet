@@ -5,6 +5,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Services\Bridge\API;
 use InvalidArgumentException;
+use MailPoet\Util\FreeDomains;
 use MailPoet\Util\Helpers;
 
 use MailPoet\WP\Functions as WPFunctions;
@@ -25,7 +26,7 @@ class MailPoetMapper {
     );
   }
 
-  function getErrorForResult(array $result, $subscribers, $sender = null) {
+  function getErrorForResult(array $result, $subscribers, $sender = null, $newsletter = null) {
     $level = MailerError::LEVEL_HARD;
     $operation = MailerError::OPERATION_SEND;
     $retry_interval = null;
@@ -57,7 +58,7 @@ class MailPoetMapper {
       case API::RESPONSE_CODE_CAN_NOT_SEND:
         if ($result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED) {
           $operation = MailerError::OPERATION_AUTHORIZATION;
-          $message = $this->getUnauthorizedEmailMessage($sender);
+          $message = $this->getUnauthorizedEmailMessage($sender, $newsletter[0]);
         } else {
           $message = $this->getAccountBannedMessage();
         }
@@ -88,18 +89,37 @@ class MailPoetMapper {
     return $errors;
   }
 
-  private function getUnauthorizedEmailMessage($sender) {
-    $message = sprintf(__('<p>The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.</p>', 'mailpoet'), $sender ? $sender['from_email'] : __('Unknown address'));
-    $message .= '<p>';
-    $message .= Helpers::replaceLinkTags(
-      __('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
-      'https://account.mailpoet.com/authorization',
-      array(
-        'class' => 'button button-primary',
-        'target' => '_blank',
-        'rel' => 'noopener noreferrer',
-      )
-    );
+  private function getUnauthorizedEmailMessage($sender, $newsletter) {
+    $email = $sender ? $sender['from_email'] : null;
+    if ($email && FreeDomains::isEmailOnFreeDomain($email)) {
+      $message = sprintf(__('<p>The MailPoet Sending Service can’t send email with the email address <i>%s</i>. You need to use an address like <i>‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌you@yourdomain.com</i></p>', 'mailpoet'), $email);
+      $message .= '<p>';
+      if ($newsletter && $newsletter['id']) {
+        $message .= Helpers::replaceLinkTags(
+          __('[link]Change my email address[/link]', 'mailpoet'),
+          'admin.php?page=mailpoet-newsletters#/send/' . $newsletter['id'],
+          array('class' => 'button button-primary')
+        );
+      } else {
+        $message .= Helpers::replaceLinkTags(
+          __('[link]Change my email address[/link]', 'mailpoet'),
+          'admin.php?page=mailpoet-settings',
+          array('class' => 'button button-primary')
+        );
+      }
+    } else {
+      $message = sprintf(__('<p>The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.</p>', 'mailpoet'), $email ?: __('Unknown address'));
+      $message .= '<p>';
+      $message .= Helpers::replaceLinkTags(
+        __('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
+        'https://account.mailpoet.com/authorization',
+        array(
+          'class' => 'button button-primary',
+          'target' => '_blank',
+          'rel' => 'noopener noreferrer',
+        )
+      );
+    }
     $message .= ' &nbsp; <button class="button js-button-resume-sending">' . __('Resume sending', 'mailpoet') . '</button>';
     $message .= '</p>';
     $message .= "<script>jQuery('.js-button-resume-sending').on('click', function() { MailPoet.Ajax.post({ api_version: window.mailpoet_api_version, endpoint: 'mailer', action: 'resumeSending' }).done(function() { jQuery('.js-error-unauthorized-email').slideUp(); MailPoet.Notice.success('" . __('Sending has been resumed.') . "'); if (window.mailpoet_listing) { window.mailpoet_listing.forceUpdate(); }}).fail(function(response) { if (response.errors.length > 0) { MailPoet.Notice.error(response.errors.map(function(error) { return error.message }), { scroll: true }); }}); })</script>";

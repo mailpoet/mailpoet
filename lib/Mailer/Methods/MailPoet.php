@@ -39,7 +39,7 @@ class MailPoet {
         $error = $this->error_mapper->getConnectionError($result['message']);
         return Mailer::formatMailerErrorResult($error);
       case API::SENDING_STATUS_SEND_ERROR:
-        $error = $this->processSendError($result, $subscriber);
+        $error = $this->processSendError($result, $subscriber, $newsletter);
         return Mailer::formatMailerErrorResult($error);
       case API::SENDING_STATUS_OK:
       default:
@@ -47,11 +47,11 @@ class MailPoet {
     }
   }
 
-  function processSendError($result, $subscriber) {
+  function processSendError($result, $subscriber, $newsletter) {
     if (!empty($result['code']) && $result['code'] ===  API::RESPONSE_CODE_KEY_INVALID) {
       Bridge::invalidateKey();
     }
-    return $this->error_mapper->getErrorForResult($result, $subscriber, $this->sender);
+    return $this->error_mapper->getErrorForResult($result, $subscriber, $this->sender, $newsletter);
   }
 
   function processSubscriber($subscriber) {
