@@ -26,7 +26,7 @@ class Reporter {
   }
 
   function getData() {
-    global $wpdb, $wp_version;
+    global $wpdb, $wp_version, $woocommerce;
     $mta = $this->settings->get('mta', []);
     $newsletters = Newsletter::getAnalytics();
     $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::$available_methods['wordpress'];
@@ -34,19 +34,8 @@ class Reporter {
     $bounceAddress = $this->settings->get('bounce.address');
     $segments = Segment::getAnalytics();
     $has_wc = $this->woocommerce_helper->isWooCommerceActive();
-    $wc_customers_count = 0;
-    if ($has_wc) {
-      /** @var \stdClass */
-      $wc_customers = Newsletter::rawQuery(
-        "SELECT COUNT(DISTINCT m.meta_value) as count FROM ".$wpdb->prefix."posts p ".
-        "JOIN ".$wpdb->prefix."postmeta m ON m.post_id = p.id ".
-        "WHERE p.post_type = 'shop_order' ".
-        "AND m.meta_key = '_customer_user' AND m.meta_value <> 0"
-      )->findOne();
-      $wc_customers_count = (int)$wc_customers->count;
-    }
 
-    return array(
+    $result = [
       'PHP version' => PHP_VERSION,
       'MySQL version' => $wpdb->db_version(),
       'WordPress version' => $wp_version,
@@ -77,6 +66,7 @@ class Reporter {
       'Number of standard newsletters sent in last 30 days' => $newsletters['sent_newsletters_30_days'],
       'Number of active post notifications' => $newsletters['notifications_count'],
       'Number of active welcome emails' => $newsletters['welcome_newsletters_count'],
+      'Total number of standard newsletters sent' => $newsletters['sent_newsletters_count'],
       'Number of segments' => isset($segments['dynamic']) ? (int)$segments['dynamic'] : 0,
       'Number of lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
       'Plugin > MailPoet Premium' => WPFunctions::get()->isPluginActive('mailpoet-premium/mailpoet-premium.php'),
@@ -98,22 +88,32 @@ class Reporter {
       'Plugin > Formidable Forms' => WPFunctions::get()->isPluginActive('formidable/formidable.php'),
       'Plugin > Contact Form 7' => WPFunctions::get()->isPluginActive('contact-form-7/wp-contact-form-7.php'),
       'Plugin > Easy Digital Downloads' => WPFunctions::get()->isPluginActive('easy-digital-downloads/easy-digital-downloads.php'),
+      'Plugin > WooCommerce Multi-Currency' => WPFunctions::get()->isPluginActive('woocommerce-multi-currency/woocommerce-multi-currency.php'),
+      'Plugin > Multi Currency for WooCommerce' => WPFunctions::get()->isPluginActive('woo-multi-currency/woo-multi-currency.php'),
       'Web host' => $this->settings->get('mta_group') == 'website' ? $this->settings->get('web_host') : null,
-      'Number of WooCommerce subscribers' => $wc_customers_count,
-    );
+    ];
+    if ($has_wc) {
+      $result['WooCommerce version'] = $woocommerce->version;
+      $result['Number of WooCommerce subscribers'] = isset($segments['woocommerce_users']) ? (int)$segments['woocommerce_users'] : 0;
+      $result['WooCommerce: opt-in on checkout is active'] = $this->settings->get('woocommerce.optin_on_checkout.enabled') ?: false;
+      $result['WooCommerce: set old customers as subscribed'] = $this->settings->get('mailpoet_subscribe_old_woocommerce_customers.enabled') ?: false;
+      $result['Number of active WooCommerce first purchase emails'] = $newsletters['first_purchase_emails_count'];
+      $result['Number of active WooCommerce purchased this product emails'] = $newsletters['product_purchased_emails_count'];
+    }
+    return $result;
   }
 
   function getTrackingData() {
-    $newletters = Newsletter::getAnalytics();
+    $newsletters = Newsletter::getAnalytics();
     $segments = Segment::getAnalytics();
     $mta = $this->settings->get('mta', []);
     $installed_at = new Carbon($this->settings->get('installed_at'));
     return [
       'installedAtIso' => $installed_at->format(Carbon::ISO8601),
-      'newslettersSent' => $newletters['sent_newsletters_count'],
-      'welcomeEmails' => $newletters['welcome_newsletters_count'],
-      'postnotificationEmails' => $newletters['notifications_count'],
-      'woocommerceEmails' => $newletters['automatic_emails_count'],
+      'newslettersSent' => $newsletters['sent_newsletters_count'],
+      'welcomeEmails' => $newsletters['welcome_newsletters_count'],
+      'postnotificationEmails' => $newsletters['notifications_count'],
+      'woocommerceEmails' => $newsletters['automatic_emails_count'],
       'subscribers' => Subscriber::getTotalSubscribers(),
       'lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
       'sendingMethod' => isset($mta['method']) ? $mta['method'] : null,
