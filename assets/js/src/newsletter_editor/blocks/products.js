@@ -25,17 +25,17 @@ import 'select2';
 
 var Module = {};
 var base = BaseBlock;
-var PostsDisplayOptionsSettingsView;
-var SinglePostSelectionSettingsView;
-var EmptyPostSelectionSettingsView;
-var PostSelectionSettingsView;
-var PostsSelectionCollectionView;
+var ProductsDisplayOptionsSettingsView;
+var SingleProductSelectionSettingsView;
+var EmptyProductSelectionSettingsView;
+var ProductSelectionSettingsView;
+var ProductSelectionCollectionView;
 
-Module.PostsBlockModel = base.BlockModel.extend({
-  stale: ['_selectedPosts', '_availablePosts', '_transformedPosts'],
+Module.ProductsBlockModel = base.BlockModel.extend({
+  stale: ['_selectedProducts', '_availableProducts', '_transformedProducts'],
   defaults: function productsModelDefaults() {
     return this._getDefaults({
-      type: 'posts',
+      type: 'products',
       withLayout: true,
       amount: '10',
       offset: 0,
@@ -64,125 +64,128 @@ Module.PostsBlockModel = base.BlockModel.extend({
       sortBy: 'newest', // 'newest'|'oldest',
       showDivider: true, // true|false
       divider: {},
-      _selectedPosts: [],
-      _availablePosts: [],
-      _transformedPosts: new (App.getBlockTypeModel('container'))(),
+      _selectedProducts: [],
+      _availableProducts: [],
+      _transformedProducts: new (App.getBlockTypeModel('container'))(),
     }, App.getConfig().get('blockDefaults.posts'));
   },
   relations: function relations() {
     return {
       readMoreButton: App.getBlockTypeModel('button'),
       divider: App.getBlockTypeModel('divider'),
-      _selectedPosts: Backbone.Collection,
-      _availablePosts: Backbone.Collection,
-      _transformedPosts: App.getBlockTypeModel('container'),
+      _selectedProducts: Backbone.Collection,
+      _availableProducts: Backbone.Collection,
+      _transformedProducts: App.getBlockTypeModel('container'),
     };
   },
   initialize: function initialize() {
-    var POST_REFRESH_DELAY_MS = 500;
-    var refreshAvailablePosts = _.debounce(
-      this.fetchAvailablePosts.bind(this),
-      POST_REFRESH_DELAY_MS
+    var PRODUCT_REFRESH_DELAY_MS = 500;
+    var refreshAvailableProducts = _.debounce(
+      this.fetchAvailableProducts.bind(this),
+      PRODUCT_REFRESH_DELAY_MS
     );
-    var refreshTransformedPosts = _.debounce(
-      this._refreshTransformedPosts.bind(this),
-      POST_REFRESH_DELAY_MS
+    var refreshTransformedProducts = _.debounce(
+      this._refreshTransformedProducts.bind(this),
+      PRODUCT_REFRESH_DELAY_MS
     );
 
     // Attach Radio.Requests API primarily for highlighting
     _.extend(this, Radio.Requests);
 
-    this.fetchAvailablePosts();
+    this.fetchAvailableProducts();
     this.on('change', this._updateDefaults, this);
-    this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailablePosts);
-    this.on('loadMorePosts', this._loadMorePosts, this);
+    this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailableProducts);
+    this.on('loadMoreProducts', this._loadMoreProducts, this);
 
-    this.listenTo(this.get('_selectedPosts'), 'add remove reset', refreshTransformedPosts);
-    this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider change:titlePosition', refreshTransformedPosts);
-    this.listenTo(this.get('readMoreButton'), 'change', refreshTransformedPosts);
-    this.listenTo(this.get('divider'), 'change', refreshTransformedPosts);
+    this.listenTo(this.get('_selectedProducts'), 'add remove reset', refreshTransformedProducts);
+    this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider change:titlePosition', refreshTransformedProducts);
+    this.listenTo(this.get('readMoreButton'), 'change', refreshTransformedProducts);
+    this.listenTo(this.get('divider'), 'change', refreshTransformedProducts);
 
-    this.on('insertSelectedPosts', this._insertSelectedPosts, this);
+    this.on('insertSelectedProducts', this._insertSelectedProducts, this);
   },
-  fetchAvailablePosts: function fetchAvailablePosts() {
+  fetchAvailableProducts: function fetchAvailableProducts() {
     var that = this;
     this.set('offset', 0);
-    CommunicationComponent.getPosts(this.toJSON()).done(function getPostsDone(posts) {
-      that.get('_availablePosts').reset(posts);
-      that.get('_selectedPosts').reset(); // Empty out the collection
-      that.trigger('change:_availablePosts');
-    }).fail(function getPostsFail() {
+    CommunicationComponent.getPosts(this.toJSON()).done(function getPostsDone(products) {
+      that.get('_availableProducts').reset(products);
+      that.get('_selectedProducts').reset(); // Empty out the collection
+      that.trigger('change:_availableProducts');
+    }).fail(function getProductsFail() {
       MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
     });
   },
-  _loadMorePosts: function loadMorePosts() {
+  _loadMoreProducts: function loadMoreProducts() {
     var that = this;
-    var postCount = this.get('_availablePosts').length;
+    var productsCount = this.get('_availableProducts').length;
     var nextOffset = this.get('offset') + Number(this.get('amount'));
 
-    if (postCount === 0 || postCount < nextOffset) {
+    if (productsCount === 0 || productsCount < nextOffset) {
       // No more posts to load
       return false;
     }
     this.set('offset', nextOffset);
-    this.trigger('loadingMorePosts');
+    this.trigger('loadingMoreProducts');
 
-    CommunicationComponent.getPosts(this.toJSON()).done(function getPostsDone(posts) {
-      that.get('_availablePosts').add(posts);
-      that.trigger('change:_availablePosts');
-    }).fail(function getPostsFail() {
+    CommunicationComponent.getPosts(this.toJSON()).done(function getPostsDone(products) {
+      that.get('_availableProducts').add(products);
+      that.trigger('change:_availableProducts');
+    }).fail(function getProductsFail() {
       MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
-    }).always(function getPostsAlways() {
-      that.trigger('morePostsLoaded');
+    }).always(function getProductsAlways() {
+      that.trigger('moreProductsLoaded');
     });
     return true;
   },
-  _refreshTransformedPosts: function refreshTransformedPosts() {
+  _refreshTransformedProducts: function refreshTransformedProducts() {
     var that = this;
     var data = this.toJSON();
 
-    data.posts = this.get('_selectedPosts').pluck('ID');
+    data.posts = this.get('_selectedProducts').pluck('ID');
 
     if (data.posts.length === 0) {
-      this.get('_transformedPosts').get('blocks').reset();
+      this.get('_transformedProducts').get('blocks').reset();
       return;
     }
 
-    CommunicationComponent.getTransformedPosts(data).done(function getTransformedPostsDone(posts) {
-      that.get('_transformedPosts').get('blocks').reset(posts, { parse: true });
-    }).fail(function getTransformedPostsFail() {
-      MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
-    });
+    CommunicationComponent.getTransformedPosts(data)
+      .done(function getTransformedPostsDone(products) {
+        that.get('_transformedProducts').get('blocks').reset(products, { parse: true });
+      })
+      .fail(function getTransformedProductsFail() {
+        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
+      });
   },
-  _insertSelectedPosts: function insertSelectedPosts() {
+  _insertSelectedProducts: function insertSelectedProducts() {
     var data = this.toJSON();
     var index = this.collection.indexOf(this);
     var collection = this.collection;
 
-    data.posts = this.get('_selectedPosts').pluck('ID');
+    data.posts = this.get('_selectedProducts').pluck('ID');
 
     if (data.posts.length === 0) return;
 
-    CommunicationComponent.getTransformedPosts(data).done(function getTransformedPostsDone(posts) {
-      collection.add(JSON.parse(JSON.stringify(posts)), { at: index });
-    }).fail(function getTransformedPostsFail() {
-      MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
-    });
+    CommunicationComponent.getTransformedPosts(data)
+      .done(function getTransformedPostsDone(proucts) {
+        collection.add(JSON.parse(JSON.stringify(proucts)), { at: index });
+      }).fail(function getTransformedProductsFail() {
+        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
+      });
   },
 });
 
-Module.PostsBlockView = base.BlockView.extend({
-  className: 'mailpoet_block mailpoet_posts_block mailpoet_droppable_block',
+Module.ProductsBlockView = base.BlockView.extend({
+  className: 'mailpoet_block mailpoet_products_block mailpoet_droppable_block',
   getTemplate: function getTemplate() { return window.templates.productsBlock; },
   modelEvents: {}, // Forcefully disable all events
   regions: _.extend({
-    postsRegion: '.mailpoet_posts_container',
+    productsRegion: '.mailpoet_products_container',
   }, base.BlockView.prototype.regions),
-  onDragSubstituteBy: function onDragSubstituteBy() { return Module.PostsWidgetView; },
+  onDragSubstituteBy: function onDragSubstituteBy() { return Module.ProductsWidgetView; },
   initialize: function initialize() {
     base.BlockView.prototype.initialize.apply(this, arguments);
 
-    this.toolsView = new Module.PostsBlockToolsView({ model: this.model });
+    this.toolsView = new Module.ProductsBlockToolsView({ model: this.model });
     this.model.reply('blockView', this.notifyAboutSelf, this);
   },
   onRender: function onRender() {
@@ -199,7 +202,7 @@ Module.PostsBlockView = base.BlockView.extend({
       disableDragAndDrop: true,
       emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
     };
-    this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
+    this.showChildView('productsRegion', new ContainerView({ model: this.model.get('_transformedProducts'), renderOptions: renderOptions }));
   },
   notifyAboutSelf: function notifyAboutSelf() {
     return this;
@@ -209,20 +212,20 @@ Module.PostsBlockView = base.BlockView.extend({
   },
 });
 
-Module.PostsBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function getSettingsView() { return Module.PostsBlockSettingsView; },
+Module.ProductsBlockToolsView = base.BlockToolsView.extend({
+  getSettingsView: function getSettingsView() { return Module.ProductsBlockSettingsView; },
 });
 
-Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
+Module.ProductsBlockSettingsView = base.BlockSettingsView.extend({
   getTemplate: function getTemplate() { return window.templates.productsBlockSettings; },
   regions: {
-    selectionRegion: '.mailpoet_settings_posts_selection',
-    displayOptionsRegion: '.mailpoet_settings_posts_display_options',
+    selectionRegion: '.mailpoet_settings_products_selection',
+    displayOptionsRegion: '.mailpoet_settings_products_display_options',
   },
   events: {
-    'click .mailpoet_settings_posts_show_display_options': 'switchToDisplayOptions',
-    'click .mailpoet_settings_posts_show_post_selection': 'switchToPostSelection',
-    'click .mailpoet_settings_posts_insert_selected': 'insertPosts',
+    'click .mailpoet_settings_products_show_display_options': 'switchToDisplayOptions',
+    'click .mailpoet_settings_products_show_product_selection': 'switchToProductSelection',
+    'click .mailpoet_settings_products_insert_selected': 'insertProducts',
   },
   templateContext: function templateContext() {
     return {
@@ -231,8 +234,8 @@ Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
   },
   initialize: function initialize() {
     this.model.trigger('startEditing');
-    this.selectionView = new PostSelectionSettingsView({ model: this.model });
-    this.displayOptionsView = new PostsDisplayOptionsSettingsView({ model: this.model });
+    this.selectionView = new ProductSelectionSettingsView({ model: this.model });
+    this.displayOptionsView = new ProductsDisplayOptionsSettingsView({ model: this.model });
   },
   onRender: function onRender() {
     var that = this;
@@ -258,33 +261,33 @@ Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
   },
   switchToDisplayOptions: function switchToDisplayOptions() {
     // Switch content view
-    this.$('.mailpoet_settings_posts_selection').addClass('mailpoet_closed');
-    this.$('.mailpoet_settings_posts_display_options').removeClass('mailpoet_closed');
+    this.$('.mailpoet_settings_products_selection').addClass('mailpoet_closed');
+    this.$('.mailpoet_settings_products_display_options').removeClass('mailpoet_closed');
 
     // Switch controls
-    this.$('.mailpoet_settings_posts_show_display_options').addClass('mailpoet_hidden');
-    this.$('.mailpoet_settings_posts_show_post_selection').removeClass('mailpoet_hidden');
+    this.$('.mailpoet_settings_products_show_display_options').addClass('mailpoet_hidden');
+    this.$('.mailpoet_settings_products_show_product_selection').removeClass('mailpoet_hidden');
   },
-  switchToPostSelection: function switchToPostSelection() {
+  switchToProductSelection: function switchToProductSelection() {
     // Switch content view
-    this.$('.mailpoet_settings_posts_display_options').addClass('mailpoet_closed');
-    this.$('.mailpoet_settings_posts_selection').removeClass('mailpoet_closed');
+    this.$('.mailpoet_settings_products_display_options').addClass('mailpoet_closed');
+    this.$('.mailpoet_settings_products_selection').removeClass('mailpoet_closed');
 
     // Switch controls
-    this.$('.mailpoet_settings_posts_show_post_selection').addClass('mailpoet_hidden');
-    this.$('.mailpoet_settings_posts_show_display_options').removeClass('mailpoet_hidden');
+    this.$('.mailpoet_settings_products_show_product_selection').addClass('mailpoet_hidden');
+    this.$('.mailpoet_settings_products_show_display_options').removeClass('mailpoet_hidden');
   },
-  insertPosts: function insertPosts() {
-    this.model.trigger('insertSelectedPosts');
+  insertProducts: function insertProducts() {
+    this.model.trigger('insertSelectedProducts');
     this.model.destroy();
     this.close();
   },
 });
 
-PostsSelectionCollectionView = Marionette.CollectionView.extend({
+ProductSelectionCollectionView = Marionette.CollectionView.extend({
   className: 'mailpoet_post_scroll_container',
-  childView: function childView() { return SinglePostSelectionSettingsView; },
-  emptyView: function emptyView() { return EmptyPostSelectionSettingsView; },
+  childView: function childView() { return SingleProductSelectionSettingsView; },
+  emptyView: function emptyView() { return EmptyProductSelectionSettingsView; },
   childViewOptions: function childViewOptions() {
     return {
       blockModel: this.blockModel,
@@ -294,18 +297,18 @@ PostsSelectionCollectionView = Marionette.CollectionView.extend({
     this.blockModel = options.blockModel;
   },
   events: {
-    scroll: 'onPostsScroll',
+    scroll: 'onProductsScroll',
   },
-  onPostsScroll: function onPostsScroll(event) {
+  onProductsScroll: function onProductsScroll(event) {
     var $postsBox = jQuery(event.target);
     if ($postsBox.scrollTop() + $postsBox.innerHeight() >= $postsBox[0].scrollHeight) {
       // Load more posts if scrolled to bottom
-      this.blockModel.trigger('loadMorePosts');
+      this.blockModel.trigger('loadMoreProducts');
     }
   },
 });
 
-PostSelectionSettingsView = Marionette.View.extend({
+ProductSelectionSettingsView = Marionette.View.extend({
   getTemplate: function getTemplate() {
     return window.templates.postSelectionProductsBlockSettings;
   },
@@ -326,10 +329,10 @@ PostSelectionSettingsView = Marionette.View.extend({
         this.$('.mailpoet_post_scroll_container').scrollTop(0);
       }
     },
-    loadingMorePosts: function loadingMorePosts() {
+    loadingMoreProducts: function loadingMoreProducts() {
       this.$('.mailpoet_post_selection_loading').css('visibility', 'visible');
     },
-    morePostsLoaded: function morePostsLoaded() {
+    moreProductsLoaded: function moreProductsLoaded() {
       this.$('.mailpoet_post_selection_loading').css('visibility', 'hidden');
     },
   },
@@ -339,15 +342,15 @@ PostSelectionSettingsView = Marionette.View.extend({
     };
   },
   onRender: function onRender() {
-    var postsView;
+    var productsView;
     // Dynamically update available post types
     CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
-    postsView = new PostsSelectionCollectionView({
-      collection: this.model.get('_availablePosts'),
+    productsView = new ProductSelectionCollectionView({
+      collection: this.model.get('_availableProducts'),
       blockModel: this.model,
     });
 
-    this.showChildView('posts', postsView);
+    this.showChildView('posts', productsView);
   },
   onAttach: function onAttach() {
     var that = this;
@@ -424,12 +427,12 @@ PostSelectionSettingsView = Marionette.View.extend({
   changeField: function changeField(field, event) {
     this.model.set(field, jQuery(event.target).val());
   },
-  _updateContentTypes: function updateContentTypes(postTypes) {
+  _updateContentTypes: function updateContentTypes(productTypes) {
     var select = this.$('.mailpoet_settings_posts_content_type');
     var selectedValue = this.model.get('contentType');
 
     select.find('option').remove();
-    _.each(postTypes, function postTypesMap(type) {
+    _.each(productTypes, function productTypesMap(type) {
       select.append(jQuery('<option>', {
         value: type.name,
         text: type.label,
@@ -439,15 +442,15 @@ PostSelectionSettingsView = Marionette.View.extend({
   },
 });
 
-EmptyPostSelectionSettingsView = Marionette.View.extend({
+EmptyProductSelectionSettingsView = Marionette.View.extend({
   getTemplate: function getTemplate() { return window.templates.emptyPostProductsBlockSettings; },
 });
 
-SinglePostSelectionSettingsView = Marionette.View.extend({
+SingleProductSelectionSettingsView = Marionette.View.extend({
   getTemplate: function getTemplate() { return window.templates.singlePostProductsBlockSettings; },
   events: function events() {
     return {
-      'change .mailpoet_select_post_checkbox': 'postSelectionChange',
+      'change .mailpoet_select_product_checkbox': 'productSelectionChange',
     };
   },
   templateContext: function templateContext() {
@@ -459,18 +462,18 @@ SinglePostSelectionSettingsView = Marionette.View.extend({
   initialize: function initialize(options) {
     this.blockModel = options.blockModel;
   },
-  postSelectionChange: function postSelectionChange(event) {
+  productSelectionChange: function productSelectionChange(event) {
     var checkBox = jQuery(event.target);
-    var selectedPostsCollection = this.blockModel.get('_selectedPosts');
+    var selectedProductsCollection = this.blockModel.get('_selectedProducts');
     if (checkBox.prop('checked')) {
-      selectedPostsCollection.add(this.model);
+      selectedProductsCollection.add(this.model);
     } else {
-      selectedPostsCollection.remove(this.model);
+      selectedProductsCollection.remove(this.model);
     }
   },
 });
 
-PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
+ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
   getTemplate: function getTemplate() {
     return window.templates.displayOptionsProductsBlockSettings;
   },
@@ -578,14 +581,14 @@ PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
   },
 });
 
-Module.PostsWidgetView = base.WidgetView.extend({
+Module.ProductsWidgetView = base.WidgetView.extend({
   className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
   getTemplate: function getTemplate() { return window.templates.productsInsertion; },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
       drop: function drop() {
-        return new Module.PostsBlockModel({}, { parse: true });
+        return new Module.ProductsBlockModel({}, { parse: true });
       },
     },
   },
@@ -596,13 +599,13 @@ App.on('before:start', function beforeStartApp(BeforeStartApp) {
     return;
   }
   BeforeStartApp.registerBlockType('products', {
-    blockModel: Module.PostsBlockModel,
-    blockView: Module.PostsBlockView,
+    blockModel: Module.ProductsBlockModel,
+    blockView: Module.ProductsBlockView,
   });
 
   BeforeStartApp.registerWidget({
     name: 'products',
-    widgetView: Module.PostsWidgetView,
+    widgetView: Module.ProductsWidgetView,
     priority: 98,
   });
 });
