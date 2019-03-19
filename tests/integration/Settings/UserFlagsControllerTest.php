@@ -19,6 +19,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
+    UserFlag::deleteMany();
     
     $current_user_id = 1;
     $other_user_id = 2;
@@ -102,6 +103,5 @@ class UserFlagsControllerTest extends \MailPoetTest {
 
   function _after() {
     WPFunctions::set(new WPFunctions);
-    \ORM::raw_execute('TRUNCATE ' . UserFlag::$_table);
   }
 }

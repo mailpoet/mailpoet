@@ -19,6 +19,7 @@ class UserFlagsTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
+    UserFlag::deleteMany();
     $this->user_flags = Stub::make(new UserFlagsController, [
       'defaults' => [
         'flag_1' => 'default_value_1',
@@ -52,9 +53,5 @@ class UserFlagsTest extends \MailPoetTest {
       'flag_2' => 'default_value_2',
       'flag_3' => 'new_value_3',
     ]);
-  }
-
-  function _after() {
-    \ORM::forTable(UserFlag::$_table)->deleteMany();
   }
 }
