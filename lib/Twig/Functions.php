@@ -5,6 +5,7 @@ namespace MailPoet\Twig;
 use Carbon\Carbon;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\FreeDomains;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -110,6 +111,11 @@ class Functions extends \Twig_Extension {
         array($this, 'getTwoLettersLocale'),
         array('is_safe' => array('all'))
       ),
+      new \Twig_SimpleFunction(
+        'mailpoet_free_domains',
+        array($this, 'getFreeDomains'),
+        array('is_safe' => array('all'))
+      ),
     );
   }
 
@@ -198,5 +204,9 @@ class Functions extends \Twig_Extension {
 
   function getTwoLettersLocale() {
     return explode('_', WPFunctions::get()->getLocale())[0];
+  }
+
+  function getFreeDomains() {
+    return FreeDomains::FREE_DOMAINS;
   }
 }
