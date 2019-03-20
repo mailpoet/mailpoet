@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) exit;
 /**
  * @property int $id
  * @property string $type
- * @property object $queue
+ * @property object|boolean $queue
  * @property string $hash
  * @property string $status
  * @property string|object $meta

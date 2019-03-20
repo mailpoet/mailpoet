@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) exit;
  * @property string|null $status
  * @property string|null $type
  * @property int $priority
- * @property string $scheduled_at
+ * @property string|null $scheduled_at
  */
 class ScheduledTask extends Model {
   public static $_table = MP_SCHEDULED_TASKS_TABLE;
@@ -41,11 +41,12 @@ class ScheduledTask extends Model {
 
   /** @return StatsNotification */
   function statsNotification() {
-    return $this->hasOne(
+    $model = $this->hasOne(
       StatsNotification::class,
       'task_id',
       'id'
     );
+    return $model;
   }
 
   function pause() {
