@@ -11,10 +11,16 @@
       "jsx": true
     }
   },
+  "plugins": [
+    "react-hooks"
+  ],
   "settings": {
     "import/resolver": "webpack"
   },
   "rules": {
+    // Hooks
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     // Exceptions
     "comma-dangle": ["error", "always-multiline"],
     "no-script-url": 0,
