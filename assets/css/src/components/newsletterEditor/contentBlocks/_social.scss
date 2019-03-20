@@ -12,8 +12,8 @@ $tool-active-color: #d2d2d4;
 $tool-width: 16px;
 
 .mailpoet_social_block {
-  padding-top: $social-block-vertical-padding;
   padding-bottom: $social-block-vertical-padding;
+  padding-top: $social-block-vertical-padding;
 
   .mailpoet_social {
     text-align: center;
@@ -39,42 +39,42 @@ $tool-width: 16px;
 
 .mailpoet_social_icon_set {
   border: 1px solid transparent;
-  padding: 5px;
   margin-bottom: 5px;
+  padding: 5px;
 
   &:hover {
     border: 1px solid $social-icon-set-hover-border-color;
   }
 
   img {
-    width: $social-icon-width;
     height: $social-icon-width;
-    vertical-align: middle;
     padding: 2px 3px;
+    vertical-align: middle;
+    width: $social-icon-width;
   }
 }
 
 .mailpoet_active_icon_set {
-  border: 1px dashed $active-social-icon-set-border-color;
   background-color: $active-social-icon-set-background-color;
+  border: 1px dashed $active-social-icon-set-border-color;
 }
 
 .mailpoet_social_icon_settings {
-  position: relative;
-
-  padding: 28px 9px (18px - 10px) 9px;
-  margin-bottom: 9px;
 
   background: $white-color;
   border: 1px solid $content-border-color;
+  margin-bottom: 9px;
+
+  padding: 28px 9px (18px - 10px) 9px;
+  position: relative;
 }
 
 .mailpoet_social_icon_settings_row {
   clear: both;
-  overflow: auto;
-  margin-bottom: 10px;
 
   line-height: 30px;
+  margin-bottom: 10px;
+  overflow: auto;
 }
 
 .mailpoet_social_icon_settings_label {
@@ -82,8 +82,8 @@ $tool-width: 16px;
   text-align: left;
 
   .mailpoet_social_icon_image {
-    width: 30px;
     height: 30px;
+    width: 30px;
   }
 
   &.mailpoet_social_icon_image_label {
@@ -96,12 +96,12 @@ $tool-width: 16px;
   width: 100%;
 
   input, select {
-    width: 100%;
-    height: 30px;
     box-sizing: border-box;
+    display: inline-block;
+    height: 30px;
     margin: 0;
     vertical-align: middle;
-    display: inline-block;
+    width: 100%;
   }
 }
 
@@ -111,8 +111,8 @@ $tool-width: 16px;
 
   .mailpoet_tool_icon {
     fill: $tool-inactive-color;
-    width: $tool-width;
     height: $tool-width;
+    width: $tool-width;
 
     &:hover {
       fill: $tool-hover-color;

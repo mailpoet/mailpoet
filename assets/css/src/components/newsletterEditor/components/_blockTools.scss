@@ -11,16 +11,16 @@ $column-icon-size: 15px;
 $column-icon-size-with-padding: 27px;
 
 .mailpoet_tools {
-  position: absolute;
   bottom: 100%;
   left: 50%;
-  z-index: 20;
-  text-align: right;
   overflow: hidden;
+  position: absolute;
+  text-align: right;
   text-align: center;
   transform: translateX(-50%);
   transition: visibility 0s linear 250ms;
   visibility: hidden;
+  z-index: 20;
 
   .mailpoet_tools_slider {
     background: $editor-content-color;
@@ -68,9 +68,9 @@ $column-icon-size-with-padding: 27px;
     }
 
     .mailpoet_tool {
-      width: $column-icon-size-with-padding;
-      height: $column-icon-size-with-padding;
       display: block;
+      height: $column-icon-size-with-padding;
+      width: $column-icon-size-with-padding;
 
       svg {
         height: $column-icon-size;
@@ -98,14 +98,14 @@ $column-icon-size-with-padding: 27px;
     }
 
     .mailpoet_delete_block_activated {
-      width: auto;
       height: auto;
       padding: 0 5px 3px 5px;
+      width: auto;
 
       .mailpoet_delete_block_activate {
-        overflow: hidden;
         max-height: 0;
         opacity: 0;
+        overflow: hidden;
       }
 
       .mailpoet_delete_block_confirm,
@@ -118,8 +118,8 @@ $column-icon-size-with-padding: 27px;
 
 .mailpoet_tool {
   display: inline-block;
-  width: $content-icon-size-with-padding;
   height: $content-icon-size-with-padding;
+  width: $content-icon-size-with-padding;
 
   svg {
     fill: #fff;
@@ -136,8 +136,8 @@ $column-icon-size-with-padding: 27px;
 
   .mailpoet_delete_block_confirmation {
     position: absolute;
-    top: 0;
     right: 0;
+    top: 0;
     width: 200px;
   }
 }
@@ -156,33 +156,33 @@ $column-icon-size-with-padding: 27px;
   }
 
   .mailpoet_delete_block_activate {
-    max-width: $content-icon-size-with-padding;
     display: inline-block;
+    max-width: $content-icon-size-with-padding;
     opacity: 1;
     @include animation-fade-in-and-scale-horizontally();
   }
 
   .mailpoet_delete_block_confirm,
   .mailpoet_delete_block_cancel {
+    display: inline-block;
     max-height: 0;
     max-width: 0;
     opacity: 0;
     overflow: hidden;
-    display: inline-block;
     @include animation-fade-in-and-scale-horizontally();
   }
 }
 
 .mailpoet_delete_block_activated {
-  height: auto;
-  width: auto;
   background-color: $warning-background-color;
+  height: auto;
   padding: 0 5px;
+  width: auto;
 
   .mailpoet_delete_block_activate {
-    overflow: hidden;
     max-width: 0;
     opacity: 0;
+    overflow: hidden;
   }
 
   .mailpoet_delete_block_confirm,

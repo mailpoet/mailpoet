@@ -3,12 +3,12 @@
 }
 
 .mailpoet_automated_latest_content_block_overlay {
-  position: absolute;
-  z-index: 19;
-  width: 100%;
-  height: 100%;
   background: rgba(255, 255, 255, 0);
+  height: 100%;
+  position: absolute;
   transition: background 0.15s ease-out;
+  width: 100%;
+  z-index: 19;
 
   .mailpoet_automated_latest_content_block:hover & {
     background: rgba(255, 255, 255, 0.7);

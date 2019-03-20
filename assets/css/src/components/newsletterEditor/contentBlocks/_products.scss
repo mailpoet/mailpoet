@@ -12,8 +12,8 @@
 }
 
 .mailpoet_product_selection_filter_row {
-  margin-top: 5px;
   margin-bottom: 5px;
+  margin-top: 5px;
 }
 
 .mailpoet_products_categories_and_tags {
@@ -33,27 +33,27 @@
 }
 
 .mailpoet_product_selection_container {
-  margin-top: 20px;
   margin-bottom: 0;
+  margin-top: 20px;
 }
 
 .mailpoet_product_scroll_container {
-  overflow-y: scroll;
-  overflow-x: hidden;
   max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .mailpoet_settings_products_single_product {
+  background-color: $white-color;
+  border: 1px solid $content-border-color;
   border-radius: 1px;
   box-sizing: border-box;
-  width: 100%;
-  margin-top: 5px;
-  margin-bottom: 5px;
   height: 38px;
   line-height: 38px;
+  margin-bottom: 5px;
+  margin-top: 5px;
   overflow: hidden;
-  border: 1px solid $content-border-color;
-  background-color: $white-color;
+  width: 100%;
 
   &:hover {
     border-color: $primary-active-color;

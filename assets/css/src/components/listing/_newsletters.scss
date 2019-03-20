@@ -34,21 +34,21 @@ $video-guide-badge-color: #46b450;
   }
 
   &_link_small {
-    text-decoration: underline !important;
     font-size: 0.75rem;
+    text-decoration: underline !important;
   }
 }
 
 .mailpoet_badge {
-  padding: 4px 6px 3px 6px;
-  margin-right: 4px;
-  text-transform: uppercase;
-  cursor: pointer;
+  border-radius: 3px;
   color: white;
+  cursor: pointer;
   font-size: 0.5625rem;
   font-weight: 500;
-  border-radius: 3px;
   letter-spacing: 1px;
+  margin-right: 4px;
+  padding: 4px 6px 3px 6px;
+  text-transform: uppercase;
   vertical-align: middle;
 
   &_excellent, &_teal {
@@ -76,8 +76,8 @@ $video-guide-badge-color: #46b450;
     vertical-align: top;
 
     &:hover, &:active, &:focus {
-      color: #FFFFFF;
       background: $green-badge-color;
+      color: #FFFFFF;
     }
 
     &_grey {

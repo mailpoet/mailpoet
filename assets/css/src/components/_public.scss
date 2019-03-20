@@ -21,18 +21,18 @@
 
 .mailpoet_form_loading {
   display: none;
-  width: 30px;
   text-align: center;
+  width: 30px;
 }
 
 .mailpoet_form_loading > span {
-  width: 5px;
-  height: 5px;
+  animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
   background-color: #5b5b5b;
 
   border-radius: 100%;
   display: inline-block;
-  animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
+  height: 5px;
+  width: 5px;
 }
 
 .mailpoet_form_loading .mailpoet_bounce1 {

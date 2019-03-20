@@ -60,8 +60,8 @@ $progress-foreground: #69b1e9;
 
 progress {
   background-color: $progress-background;
-  height: 2em;
   border: 0;
+  height: 2em;
   width: 100%;
 }
 
@@ -83,9 +83,9 @@ progress::-moz-progress-bar {
    something wrapping our warning message could override its style */
 p.sender_email_address_warning.sender_email_address_warning,
 p.sender_email_address_warning.sender_email_address_warning a {
+  align-self: flex-start;
   color: #990000;
   text-align: left;
-  align-self: flex-start;
 }
 
 p.sender_email_address_warning:first-child {

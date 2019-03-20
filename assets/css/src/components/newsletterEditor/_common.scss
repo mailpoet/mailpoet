@@ -44,19 +44,19 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_input, .mailpoet_select {
+  appearance: none;
   border-radius: 1px;
   box-shadow: none !important;
-  appearance: none;
-
-  $form-control-padding: 3px;
+  line-height: 28px - $form-control-padding * 2;
 
   padding: $form-control-padding;
-  line-height: 28px - $form-control-padding * 2;
+
+  $form-control-padding: 3px;
 }
 
 .mailpoet_input {
-  width: 283px;
   border: 1px solid $select-border-color;
+  width: 283px;
 }
 
 .mailpoet_input_small {
@@ -74,92 +74,92 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_range {
-  width: 283px;
   -webkit-appearance: none;
   padding: 0;
   vertical-align: middle;
+  width: 283px;
 
   &:focus {
     outline: none;
   }
   &::-webkit-slider-runnable-track {
-    width: 100%;
-    height: $range-track-height;
-    cursor: pointer;
     animate: 0.2s;
     background: $range-track-background-color;
-    border-radius: $range-border-radius;
     border: 1px solid $range-track-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
+    height: $range-track-height;
+    width: 100%;
   }
   &::-webkit-slider-thumb {
-    border: 1px solid $range-thumb-border-color;
-    height: $range-thumb-height;
-    width: $range-thumb-width;
-    border-radius: $range-border-radius;
-    background: $range-thumb-background-color;
-    cursor: pointer;
     -webkit-appearance: none;
+    background: $range-thumb-background-color;
+    border: 1px solid $range-thumb-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
+    height: $range-thumb-height;
     margin-top: -1 * $range-thumb-height / 3;
+    width: $range-thumb-width;
   }
   &:hover::-webkit-slider-thumb {
     background: $range-thumb-hover-background-color;
   }
   &::-moz-range-track {
-    width: 100%;
-    height: $range-track-height;
-    cursor: pointer;
     animate: 0.2s;
     background: $range-track-background-color;
-    border-radius: $range-border-radius;
     border: 1px solid $range-track-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
+    height: $range-track-height;
+    width: 100%;
   }
   &::-moz-range-thumb {
+    background: $range-thumb-background-color;
     border: 1px solid $range-thumb-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
     height: $range-thumb-height;
     width: $range-thumb-width;
-    border-radius: $range-border-radius;
-    background: $range-thumb-background-color;
-    cursor: pointer;
   }
   &:hover::-moz-range-thumb {
     background: $range-thumb-hover-background-color;
   }
   &::-ms-fill-lower {
-    border: 1px solid $range-track-border-color;
     background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
   }
   &::-ms-fill-upper {
-    border: 1px solid $range-track-border-color;
     background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
   }
   &::-ms-track {
-    width: 100%;
-    height: $range-track-height;
-    cursor: pointer;
     animate: 0.2s;
     background: transparent;
     border-color: transparent;
     border-width: $range-track-height * 2 0;
     color: transparent;
+    cursor: pointer;
+    height: $range-track-height;
+    width: 100%;
   }
   &::-ms-thumb {
+    background: $range-thumb-background-color;
     border: 1px solid $range-thumb-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
     height: $range-thumb-height;
     width: $range-thumb-width;
-    border-radius: $range-border-radius;
-    background: $range-thumb-background-color;
-    cursor: pointer;
   }
   &:hover::-ms-thumb {
     background: $range-thumb-hover-background-color;
   }
   &:focus::-ms-fill-lower {
-    border: 1px solid $range-track-border-color;
     background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
   }
   &:focus::-ms-fill-upper {
-    border: 1px solid $range-track-border-color;
     background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
   }
 }
 
@@ -203,19 +203,19 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_button {
-  margin: 0;
-  border: 1px solid $button-default-border-color;
   background-color: $button-default-background-color;
-  padding: 6px 20px;
-  color: $button-default-text-color;
+  border: 1px solid $button-default-border-color;
   border-radius: 3px;
+  color: $button-default-text-color;
   line-height: normal;
+  margin: 0;
+  padding: 6px 20px;
   vertical-align: top;
 }
 
 .mailpoet_button_full {
-  width: 100%;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .tooltip-help-designer-subject-line div, .tooltip-help-designer-preheader div {
@@ -229,9 +229,9 @@ select.mailpoet_font-size {
 
 .tooltip-help-designer-ideal-width {
   color: #656565;
-  text-transform: none;
-  margin-left: 5px;
   font-weight: normal;
+  margin-left: 5px;
+  text-transform: none;
 }
 
 .tooltip-help-designer-full-width .dashicons {
@@ -242,8 +242,8 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_button_primary {
-  border-color: $button-primary-border-color;
   background-color: $button-primary-background-color;
+  border-color: $button-primary-border-color;
   color: $button-primary-text-color;
 
   &:hover {
@@ -255,19 +255,19 @@ select.mailpoet_font-size {
   display: inline;
 
   .mailpoet_button:first-child {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
     margin-right: 0;
     padding: 6px 12px 6px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
   }
 
   .mailpoet_button:last-child {
+    border-bottom-left-radius: 0;
+    border-left: 0;
+    border-top-left-radius: 0;
     margin-left: 0;
     padding-left: 10px;
     padding-right: 10px;
-    border-left: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
   }
 }
 
@@ -299,13 +299,13 @@ span.select2-container--open > span.select2-dropdown li.select2-results__option 
   margin: 0px !important;
 
   & .select2-results__group {
-    font-weight: normal;
     color: #bfbfbf;
+    font-weight: normal;
   }
 
   & .select2-results__option {
-    padding-left: 15px;
     font-size: 13px;
+    padding-left: 15px;
 
     &[aria-selected=true] {
       background-color: #eee;

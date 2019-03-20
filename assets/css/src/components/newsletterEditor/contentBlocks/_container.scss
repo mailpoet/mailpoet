@@ -5,24 +5,24 @@ $three-column-width: $newsletter-width / 3 - (2 * $column-margin);
 $two-column-wider-column-width: (($newsletter-width / 3) - $column-margin) * 2;
 
 .mailpoet_container {
-  width: 100%;
   min-height: 15px;
   position: relative;
+  width: 100%;
 }
 
 .mailpoet_container_block {
+  border: 0;
+  box-sizing: border-box;
   margin-left: 0;
   margin-right: 0;
-  position: relative;
-  box-sizing: border-box;
-  border: 0;
   padding-left: 0;
   padding-right: 0;
+  position: relative;
 }
 
 .mailpoet_container_vertical > * {
-  width: 100%;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .mailpoet_container_horizontal > * {
@@ -36,8 +36,8 @@ $two-column-wider-column-width: (($newsletter-width / 3) - $column-margin) * 2;
     float: left;
   }
   & > .mailpoet_container_block {
-    width: $newsletter-width;
     border: 0;
+    width: $newsletter-width;
   }
 
   & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block {
@@ -79,12 +79,12 @@ $two-column-wider-column-width: (($newsletter-width / 3) - $column-margin) * 2;
 }
 
 .mailpoet_container_empty {
-  text-align: center;
   background-color: #f2f2f2;
-  margin: 20px;
-  padding: 15px;
+  border-radius: 3px;
   box-shadow: inset 1px 2px 1px $primary-inactive-color;
   color: #656565;
-  border-radius: 3px;
+  margin: 20px;
+  padding: 15px;
+  text-align: center;
   @include animation-background-color();
 }

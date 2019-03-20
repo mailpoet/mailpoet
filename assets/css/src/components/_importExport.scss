@@ -23,15 +23,15 @@ span {
   &.mailpoet_mailchimp-key-status {
     &.mailpoet_mailchimp-ok {
       &:before {
-        content: "\2713";
         color: #0e90d2;
+        content: "\2713";
         margin-left: 15px;
       }
     }
     &.mailpoet_mailchimp-error {
       &:before {
-        content: "\2717";
         color: #900;
+        content: "\2717";
         margin-left: 15px;
       }
     }
@@ -59,17 +59,17 @@ span {
     }
   }
   .mailpoet_header {
-    text-transform: uppercase;
     font-weight: 600;
     text-decoration: underline;
+    text-transform: uppercase;
   }
 }
 
 #subscribers_data th:first-child, #subscribers_data td:first-child {
-  width: 10em !important;
-  text-align: center !important;
   padding: 0 1em 0 1em !important;
+  text-align: center !important;
   vertical-align: inherit !important;
+  width: 10em !important;
 }
 
 #subscribers_data {
@@ -114,9 +114,9 @@ span {
 }
 
 .mailpoet_import_validation_step {
-  max-width: 600px;
   display: flex;
   flex-direction: column;
+  max-width: 600px;
 
   .mailpoet_import_step_buttons {
     flex-direction: row;
@@ -128,8 +128,8 @@ span {
   }
 
   label {
-    margin-top: 1.5em;
     margin-bottom: 0.3em;
+    margin-top: 1.5em;
     padding-left: 35px;
     text-indent: -35px;
     input {

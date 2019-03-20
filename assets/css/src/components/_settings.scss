@@ -7,24 +7,24 @@
     width: 20em;
   }
   .mailpoet_sending_methods {
-    margin: 25px 0 0 0;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
+    margin: 25px 0 0 0;
     > li {
-      flex-grow: 1;
-      flex-shrink: 1;
-      display: flex;
-      flex-direction: column;
-      flex-basis: 0;
-      margin: 0 25px 25px 0;
       background-color: #fff;
       border: 2px solid #dcdcdc;
+      display: flex;
+      flex-basis: 0;
+      flex-direction: column;
+      flex-grow: 1;
+      flex-shrink: 1;
+      margin: 0 25px 25px 0;
       max-width: 500px;
       .mailpoet_sending_method_description {
-        padding: 25px;
         flex-grow: 1;
         flex-shrink: 0;
+        padding: 25px;
       }
       &:hover:not(.mailpoet_active) {
         border-color: #c5c5c5;
@@ -34,26 +34,26 @@
       margin-right: 0;
     }
     h3 {
-      text-align: center;
-      height: 54px;
       font-size: 1.5em;
+      height: 54px;
+      text-align: center;
     }
     .mailpoet_description {
       font-size: 14px;
     }
     .mailpoet_status {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
       align-items: center;
       background-color: #dcdcdc;
       color: #fff;
-      text-overflow: ellipsis;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
       min-height: 2em;
       padding: 1em;
+      text-overflow: ellipsis;
       span {
-        visibility: hidden;
         font-weight: bold;
+        visibility: hidden;
       }
       div {
         margin-left: 1em;
@@ -101,9 +101,9 @@
   .sending-free-plan-button {
     background: #FF5301;
     border-color: #e64c03;
-    text-shadow: 0 -1px 1px #e64c03;
     box-shadow: 0 1px 0 #e64c03;
     margin: 10px 0;
+    text-shadow: 0 -1px 1px #e64c03;
     strong {
       text-transform: uppercase;
     }
@@ -127,8 +127,8 @@
       flex-flow: row wrap;
       justify-content: space-around;
       > li {
-        margin-right: 0;
         flex-basis: auto;
+        margin-right: 0;
       }
     }
   }
