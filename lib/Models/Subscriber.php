@@ -77,9 +77,7 @@ class Subscriber extends Model {
 
   function delete() {
     // WP Users cannot be deleted
-    if ($this->isWPUser() || $this->isWooCommerceUser()) {
-      return false;
-    } else {
+    if (!$this->isWPUser() && !$this->isWooCommerceUser()) {
       // delete all relations to segments
       SubscriberSegment::deleteSubscriptions($this);
       // delete all relations to custom fields

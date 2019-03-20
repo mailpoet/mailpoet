@@ -62,7 +62,7 @@ class Engine
     }
 
     /**
-    * @return string The list of usable validator methods
+    * @return array<int, int|string> The list of usable validator methods
     */
     public function getValidators()
     {

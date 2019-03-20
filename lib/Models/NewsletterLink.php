@@ -8,13 +8,14 @@ if (!defined('ABSPATH')) exit;
  * @property int $queue_id
  * @property string $url
  * @property string $hash
+ * @property int|null $clicksCount
  */
 class NewsletterLink extends Model {
   public static $_table = MP_NEWSLETTER_LINKS_TABLE;
 
   /**
    * @param Newsletter $newsletter
-   * @return \stdClass|null
+   * @return NewsletterLink|null
    */
   static function findTopLinkForNewsletter(Newsletter $newsletter) {
     $link = self::selectExpr('links.*')

@@ -486,7 +486,7 @@ class MP2Migrator {
    *
    * @param string $name Parameter name
    * @param array $params MP2 parameters
-   * @return string serialized MP3 custom field params
+   * @return array serialized MP3 custom field params
    */
   private function mapCustomFieldParams($name, $params) {
     if (!isset($params['label'])) {

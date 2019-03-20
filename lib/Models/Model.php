@@ -101,7 +101,7 @@ if (!defined('ABSPATH')) exit;
  * @method static static filter(...$args)
  * @method $this hasMany($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
  * @method $this hasManyThrough($associated_class_name, $join_class_name=null, $key_to_base_table=null, $key_to_associated_table=null,  $key_in_base_table=null, $key_in_associated_table=null, $connection_name=null)
- * @method $this hasOne($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
+ * @method mixed hasOne($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
  * @method $this|bool create($data=null)
  * @method static $this|bool create($data=null)
  * @method int count()
@@ -138,7 +138,7 @@ class Model extends \Sudzy\ValidModel {
    * given, it's used to transform `$data` before creating the new row.
    *
    * @param  array   $data
-   * @param  boolean $keys
+   * @param  array|boolean $keys
    * @param  callable|bool $onCreate
    * @return self
    */
