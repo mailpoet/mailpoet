@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Listing\BulkActionFactory;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -20,14 +21,20 @@ class SubscriberActions {
   /** @var ConfirmationEmailMailer */
   private $confirmation_email_mailer;
 
+  /** @var BulkActionFactory */
+  private $bulk_action_factory;
+
   public function __construct(
     SettingsController $settings,
     NewSubscriberNotificationMailer $new_subscriber_notification_mailer,
-    ConfirmationEmailMailer $confirmation_email_mailer
+    ConfirmationEmailMailer $confirmation_email_mailer,
+    BulkActionFactory $bulk_action_factory
   ) {
     $this->settings = $settings;
     $this->new_subscriber_notification_mailer = $new_subscriber_notification_mailer;
     $this->confirmation_email_mailer = $confirmation_email_mailer;
+    $this->bulk_action_factory = $bulk_action_factory;
+    $this->bulk_action_factory->registerAction('\MailPoet\Models\Subscriber', 'bulkSendConfirmationEmail', $this);
   }
 
   function subscribe($subscriber_data = array(), $segment_ids = array()) {
@@ -92,6 +99,25 @@ class SubscriberActions {
     }
 
     return $subscriber;
+  }
+
+  function bulkSendConfirmationEmail($orm) {
+    $subscribers = $orm
+      ->where('status', Subscriber::STATUS_UNCONFIRMED)
+      ->findMany();
+
+    $emails_sent = 0;
+    if (!empty($subscribers)) {
+      foreach ($subscribers as $subscriber) {
+        if ($this->confirmation_email_mailer->sendConfirmationEmail($subscriber)) {
+          $emails_sent++;
+        }
+      }
+    }
+
+    return array(
+      'count' => $emails_sent
+    );
   }
 
 }
