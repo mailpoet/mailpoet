@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Segment;
 use MailPoet\WP\Functions as WPFunctions;
@@ -41,7 +42,10 @@ class BulkAction {
     if (!$segment
       || in_array($segment['type'], [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS], true)
     ) {
-      $bulk_action = new \MailPoet\Listing\BulkActionController(new Handler());
+      $bulk_action = new \MailPoet\Listing\BulkActionController(
+        ContainerWrapper::getInstance()->get(\MailPoet\Listing\BulkActionFactory::class),
+        new Handler()
+      );
       return $bulk_action->apply('\MailPoet\Models\Subscriber', $this->data);
     } else {
       $handlers = $this->wp->applyFilters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers', array());
