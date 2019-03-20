@@ -13,25 +13,25 @@ $handle_icon: '../../img/handle.png';
 }
 
 #mailpoet_form_editor {
-  padding: 20px;
-  width: 300px;
-  border: 1px solid #ccc;
-  position: relative;
   background-color: #fff;
+  border: 1px solid #ccc;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  position: relative;
+  width: 300px;
 }
 
 #mailpoet_form_editor:before, #mailpoet_form_editor:after {
+  background: transparent;
+  bottom: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  content: ' ';
+  height: 10px;
+  left: 12px;
 
   position: absolute;
-  width: 40%;
-  height: 10px;
-  content: ' ';
-  left: 12px;
-  bottom: 12px;
-  background: transparent;
   transform: skew(-5deg) rotate(-5deg);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  width: 40%;
   z-index: -1;
 }
 
@@ -43,31 +43,31 @@ $handle_icon: '../../img/handle.png';
 
 /* Warnings in blocks*/
 .mailpoet_warning {
-  font-weight: bold;
   color: #900;
+  font-weight: bold;
 }
 
 .block_placeholder {
+  border: 0 none;
   font-weight: bold;
   height: 0;
-  overflow: hidden;
   line-height: 30px;
+  margin: 0 auto;
+  overflow: hidden;
   text-align: center;
-  border: 0 none;
+  text-indent: -9999px;
   width: 298px;
   z-index: 9500;
-  margin: 0 auto;
-  text-indent: -9999px;
 }
 
 .block_placeholder.active {
-  text-indent: 0;
   /*border:1px dashed #dfdfdf;*/
   /*background-color:#f5f5f5;*/
   background-color: #4cb7e1;
   display: block;
-  overflow: auto;
   height: 30px;
+  overflow: auto;
+  text-indent: 0;
 }
 
 .block_placeholder.hover {
@@ -78,8 +78,8 @@ $handle_icon: '../../img/handle.png';
 
 .mailpoet_form_block {
   background-color: #fff;
-  height: 20px;
   border: 0 none;
+  height: 20px;
 }
 
 .mailpoet_form_block.highlighted {
@@ -105,14 +105,14 @@ $handle_icon: '../../img/handle.png';
 
 /* MailPoet Form wrapper */
 #mailpoet_form_wrapper {
-  position: relative;
   margin: 20px 0 0 0;
+  position: relative;
 }
 
 /* MailPoet Form container */
 #mailpoet_form_container {
-  width: 340px;
   margin: 0;
+  width: 340px;
 }
 
 #mailpoet_form_editor.loading, #mailpoet_form_toolbar.loading {
@@ -135,9 +135,9 @@ $handle_icon: '../../img/handle.png';
 }
 
 #mailpoet_form_toolbar {
-  z-index: 999;
   position: absolute;
   width: 400px;
+  z-index: 999;
 }
 
 #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs {
@@ -146,26 +146,26 @@ $handle_icon: '../../img/handle.png';
 }
 
 #mailpoet_form_toolbar .add_custom_field {
-  text-align: center;
   padding: 15px 0 5px 0;
+  text-align: center;
 }
 
 #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs li, #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs a {
-
-  margin: 0;
-  height: 30px;
-  line-height: 30px;
-  padding: 0;
   display: inline-block;
   *display: inline;
   *float: left;
+  height: 30px;
+  line-height: 30px;
+
+  margin: 0;
   outline: 0 none;
+  padding: 0;
 }
 
 #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs a {
+  color: #a6a6a6;
   outline: 0 none;
   text-decoration: none;
-  color: #a6a6a6;
 }
 
 #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs li {
@@ -173,12 +173,12 @@ $handle_icon: '../../img/handle.png';
 }
 
 #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs a {
-  font-family: Georgia, "Times New Roman", "Bitstream Charter", Times, serif;
-  background-color: #F5F5F5;
   background: linear-gradient(center top, #F9F9F9, #F5F5F5);
+  background-color: #F5F5F5;
   border: 1px solid #DFDFDF;
   border-radius: 3px 3px 0 0;
   box-shadow: 0 1px 0 #FFFFFF inset;
+  font-family: Georgia, "Times New Roman", "Bitstream Charter", Times, serif;
   padding: 0 7px;
 }
 
@@ -187,9 +187,9 @@ $handle_icon: '../../img/handle.png';
 }
 
 #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs a.selected {
-  color: #000;
-  border-bottom: 0 none;
   background: #fcfcfc;
+  border-bottom: 0 none;
+  color: #000;
   filter: none;
   padding-bottom: 1px;
 }
@@ -201,10 +201,10 @@ $handle_icon: '../../img/handle.png';
 }
 
 #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs, #mailpoet_form_toolbar #mailpoet_toolbar_fields {
+  margin: 0;
 
   position: relative;
   z-index: 9998;
-  margin: 0;
 }
 
 /* edit form name */
@@ -214,30 +214,30 @@ $handle_icon: '../../img/handle.png';
 
 /* wysija widgets */
 .mailpoet_form_widget {
-  width: 298px;
   height: 25px;
   line-height: 25px;
+  width: 298px;
   z-index: 9999 !important;
 }
 
 .mailpoet_toolbar_section {
-  margin-bottom: 0;
   background: none repeat scroll 0 0 #fff;
   border: 1px solid #e5e5e5;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
-  min-width: 255px;
-  position: relative;
   cursor: pointer;
-  overflow: hidden;
+  margin-bottom: 0;
   max-height: 1000px;
+  min-width: 255px;
+  overflow: hidden;
+  position: relative;
   transition: max-height 0.5s ease-in-out;
 }
 
 .mailpoet_toolbar_section > div {
-  padding: 10px 20px 20px 20px;
-  overflow: auto;
   height: 100%;
   min-width: 255px;
+  overflow: auto;
+  padding: 10px 20px 20px 20px;
 }
 
 .mailpoet_toolbar_section h3 {
@@ -250,28 +250,28 @@ $handle_icon: '../../img/handle.png';
 }
 
 .mailpoet_toolbar_section .mailpoet_toggle {
-  position: absolute;
-  top: 0;
-  right: 0;
   height: 38px;
+  position: absolute;
+  right: 0;
+  top: 0;
   width: 27px;
 }
 
 .mailpoet_toolbar_section .mailpoet_toggle:focus {
-  outline: 0 none !important;
   box-shadow: none !important;
+  outline: 0 none !important;
 }
 
 .mailpoet_toolbar_section .mailpoet_toggle:before {
-  right: 12px;
-  font: 400 20px / 1 dashicons;
-  speak: none;
-  display: inline-block;
-  padding: 8px 10px;
-  top: 0;
-  position: relative;
-  text-decoration: none !important;
   content: '\f142';
+  display: inline-block;
+  font: 400 20px / 1 dashicons;
+  padding: 8px 10px;
+  position: relative;
+  right: 12px;
+  speak: none;
+  text-decoration: none !important;
+  top: 0;
 }
 
 .mailpoet_toolbar_section.closed .mailpoet_toggle:before {
@@ -281,45 +281,45 @@ $handle_icon: '../../img/handle.png';
 #mailpoet_form_styles {
   margin: 10px;
   max-width: 318px;
-  width: 318px;
   min-height: 300px;
   resize: vertical;
+  width: 318px;
 }
 
 #mailpoet_form_toolbar a.mailpoet_form_field,
 .mailpoet_form_widget {
-  height: 25px;
-  line-height: 25px;
-  background-color: #F5F5F5;
   background: linear-gradient(center 0, #F9F9F9, #ececec);
+  background-color: #F5F5F5;
   border: 1px solid #DFDFDF;
   border-radius: 3px;
   box-shadow: 0 1px 0 #FFFFFF inset;
+  color: #222;
+  cursor: move;
   display: block;
   font-size: 12px;
   font-weight: bold;
+  height: 25px;
+  line-height: 25px;
   padding: 0 7px;
-  cursor: move;
-  color: #222;
   text-shadow: 0 1px 0 #FFFFFF;
 }
 
 #mailpoet_form_toolbar a.mailpoet_form_field.disabled {
-  cursor: pointer;
   color: #cccccc;
+  cursor: pointer;
   pointer-events: none;
 }
 
 .mailpoet_form_field_edit {
+  bottom: 13px;
   position: absolute;
   right: 27px;
-  bottom: 13px;
 }
 
 .mailpoet_form_field_delete {
+  bottom: 13px;
   position: absolute;
   right: 7px;
-  bottom: 13px;
 }
 
 /* toolbar: fields */
@@ -329,35 +329,35 @@ $handle_icon: '../../img/handle.png';
 }
 
 #mailpoet_toolbar_fields li.notice {
-  font-style: italic;
-  font-size: 11px;
-  margin: 0 !important;
-  border: 0 none !important;
   background: none !important;
+  border: 0 none !important;
+  font-size: 11px;
+  font-style: italic;
+  margin: 0 !important;
 }
 
 /* blocks */
 .mailpoet_form_block {
-  position: relative;
-  margin: 0;
-  padding: 10px 18px 10px 18px;
   display: inline-table;
   display: block;
   height: 1%;
   margin: 0;
+  margin: 0;
+  padding: 10px 18px 10px 18px;
+  position: relative;
   z-index: 98;
 }
 
 .mailpoet_form_block.dragging {
-  z-index: 99000;
   pointer-events: none;
+  z-index: 99000;
 }
 
 .mailpoet_form_block:after {
+  clear: both;
   content: ".";
   display: block;
   height: 0;
-  clear: both;
   visibility: hidden;
 }
 
@@ -375,27 +375,28 @@ $handle_icon: '../../img/handle.png';
 
 /* controls*/
 .mailpoet_form_block .wysija_controls {
-  background-color: #dfdfdf;
   background: linear-gradient(center 0, #eee, #bbb);
-  border-radius: 2px;
+  background-color: #dfdfdf;
   border: 1px solid #ccc;
-  position: absolute;
-  margin: 0;
-  padding: 0;
-  width: 298px;
+  border-radius: 2px;
   height: 20px;
   left: -1px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
   right: 0;
   top: -22px;
+  width: 298px;
 }
 
 .mailpoet_form_block .wysija_controls li {
   float: left;
-  width: 20px;
   height: 20px;
+  width: 20px;
 }
 
 .mailpoet_form_block .wysija_controls a {
+  color: #000;
   cursor: pointer;
   float: left;
   font-size: 120%;
@@ -404,7 +405,6 @@ $handle_icon: '../../img/handle.png';
   line-height: 20px;
   text-align: center;
   width: 20px;
-  color: #000;
 }
 
 .mailpoet_form_block .wysija_controls a.remove {
@@ -419,8 +419,8 @@ $handle_icon: '../../img/handle.png';
 
 .mailpoet_form_block .handle_container {
   left: 140px;
-  top: 0;
   position: absolute;
+  top: 0;
 }
 
 /* controls & icons */
@@ -437,9 +437,9 @@ $handle_icon: '../../img/handle.png';
 /* toolbar: full width button */
 /* color picker in control bars */
 .wysija_controls span input {
+  color: transparent;
   margin: 2px 0 0 0;
   padding: 0;
-  color: transparent;
 }
 
 /* left alignment button */
@@ -558,33 +558,33 @@ $handle_icon: '../../img/handle.png';
 }
 
 .wysija_settings a {
-  background-color: #F5F5F5;
   background: linear-gradient(center 0, #F9F9F9, #ececec);
+  background-color: #F5F5F5;
   border: 1px solid #DFDFDF;
   border-radius: 3px;
   box-shadow: 0 1px 0 #FFFFFF inset;
+  color: #222;
+  cursor: pointer;
+  display: block;
   font-size: 12px;
   font-weight: normal;
-  cursor: pointer;
-  color: #222;
-  text-shadow: 0 1px 0 #FFFFFF;
-  text-decoration: none;
-  display: block;
   padding: 5px 5px 3px 27px;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #FFFFFF;
 }
 
 .wysija_settings a span {
-  width: 20px;
   height: 20px;
+  left: 5px;
   position: absolute;
   top: 3px;
-  left: 5px;
+  width: 20px;
 }
 
 /* labels */
 .mailpoet_form_block label {
-  margin: 0 5px 0 0;
   display: block;
+  margin: 0 5px 0 0;
 }
 
 /* form settings: success message */
@@ -612,12 +612,12 @@ $handle_icon: '../../img/handle.png';
 
 /* form export */
 #mailpoet_form_export textarea {
-  width: 340px;
+  display: none;
+  font-size: 85%;
   height: 150px;
   min-height: 150px;
   resize: vertical;
-  font-size: 85%;
-  display: none;
+  width: 340px;
 }
 
 /** Styling for WP 3.8 and higher */
@@ -653,6 +653,6 @@ $handle_icon: '../../img/handle.png';
 }
 
 .mailpoet_form_field_settings_text {
-  width: 100%;
   min-height: 100px;
+  width: 100%;
 }

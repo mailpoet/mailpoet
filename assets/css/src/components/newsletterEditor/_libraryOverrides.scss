@@ -30,9 +30,9 @@ div.mce-toolbar-grp.mce-container {
 }
 
 .mce-tinymce.mce-tinymce-inline {
-  border-radius: 3px;
   background-color: $primary-background-color;
   border: 1px solid $content-border-color;
+  border-radius: 3px;
   box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.05);
 }
 
@@ -50,8 +50,8 @@ div.mce-toolbar-grp.mce-container {
 
 /* TinyMCE mailpoet_shortcodes toolbar icon */
 .mce-i-mailpoet_shortcodes:before {
-  font: 400 20px / 1 dashicons !important;
   content: "\f307";
+  font: 400 20px / 1 dashicons !important;
 }
 
 /* TinyMCE remove active border from the editor */
@@ -61,12 +61,12 @@ div.mce-toolbar-grp.mce-container {
 
 /* Style "No search term specified" in TinyMCE link editor */
 #wp-link li, #wp-link div.query-notice {
-  clear: both;
-  margin-bottom: 0;
   border-bottom: 1px solid #f1f1f1;
+  clear: both;
   color: #333;
-  padding: 4px 6px;
   cursor: pointer;
+  margin-bottom: 0;
+  padding: 4px 6px;
   position: relative;
 }
 
@@ -127,17 +127,17 @@ body {
 
 /* Alter Spectrum color picker to leave only the color preview, without arrows */
 .sp-replacer {
-  border-radius: 3px;
-  padding: 0;
   border: 0;
+  border-radius: 3px;
   box-shadow: 1px 2px darken($primary-background-color, 13%);
+  padding: 0;
 }
 
 .sp-preview {
   border-width: 0;
+  height: 25px;
   margin-right: 0;
   width: 25px;
-  height: 25px;
 }
 
 .sp-dd {
@@ -170,14 +170,14 @@ body {
 .mailpoet_button_group {
 
   .button:first-child {
+    border-bottom-right-radius: 0;
     border-right: 0;
     border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
   }
 
   .button:last-child {
+    border-bottom-left-radius: 0;
     border-left: 0;
     border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
   }
 }

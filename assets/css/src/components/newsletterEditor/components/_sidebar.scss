@@ -14,17 +14,17 @@ $widget-icon-hover-color: $primary-active-color;
 $widget-icon-width: 30px;
 
 #mailpoet_editor_sidebar {
-  border-left: $content-border-color;
   border-bottom: $content-border-color;
+  border-left: $content-border-color;
   color: $sidebar-text-color;
   font-size: $sidebar-text-size;
 
   .mailpoet_sidebar_region {
-    margin-bottom: 0;
-    border-left: 1px solid $content-border-color;
     border-bottom: 1px solid $content-border-color;
-    border-top: 0;
+    border-left: 1px solid $content-border-color;
     border-right: 0;
+    border-top: 0;
+    margin-bottom: 0;
 
     &.closed .mailpoet_region_content {
       display: none;
@@ -32,8 +32,8 @@ $widget-icon-width: 30px;
   }
 
   .mailpoet_region_content {
-    padding: 0 20px;
     margin-top: 12px;
+    padding: 0 20px;
   }
 
   &, .postbox {
@@ -54,35 +54,35 @@ $widget-icon-width: 30px;
 
     h3,
     &:hover h3 {
+      color: $sidebar-active-heading-color;
       margin: 0;
       padding: 17px 20px;
       text-transform: uppercase;
-      color: $sidebar-active-heading-color;
     }
 
     h3,
     .handlediv {
-      cursor: auto;
       border: 0;
+      cursor: auto;
     }
 
     .handlediv::before {
-      top: 18px;
-      right: 18px;
-      font: 400 20px / 1 dashicons;
-      speak: none;
+      color: $sidebar-active-heading-color;
+      content: '\f142';
       display: inline-block;
-      position: relative;
+      font: 400 20px / 1 dashicons;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      position: relative;
+      right: 18px;
+      speak: none;
       text-decoration: none !important;
-      content: '\f142';
-      color: $sidebar-active-heading-color;
+      top: 18px;
     }
 
     &.closed .handlediv::before {
-      content: '\f140';
       color: $sidebar-inactive-heading-color;
+      content: '\f140';
     }
 
     &.closed:hover .handlediv::before {
@@ -93,39 +93,39 @@ $widget-icon-width: 30px;
 
 .mailpoet_widget {
   display: inline-block;
-  width: $widget-width;
-  text-align: center;
   float: left;
   padding: 0 13px 15px 13px;
+  text-align: center;
+  width: $widget-width;
   &:nth-child(3n+1) {
     clear: left;
   }
 
   .mailpoet_widget_icon {
-    width: $widget-width;
-    height: $widget-width;
     background-color: $widget-background-color;
     border-radius: 3px;
     box-shadow: 1px 2px $widget-shadow-color;
+    box-sizing: border-box;
     color: $widget-icon-color;
     fill: $widget-icon-color;
-    text-align: center;
+    height: $widget-width;
     line-height: $widget-width;
-    box-sizing: border-box;
     margin-bottom: 9px;
+    text-align: center;
+    width: $widget-width;
 
     /* Vertically align widget icon glyphs */
     & > * {
+      font-size: $widget-icon-width;
+      height: $widget-icon-width;
       vertical-align: middle;
       width: $widget-icon-width;
-      height: $widget-icon-width;
-      font-size: $widget-icon-width;
     }
 
     &:hover {
+      border: 1px solid $widget-icon-hover-color;
       color: $widget-icon-hover-color;
       fill: $widget-icon-hover-color;
-      border: 1px solid $widget-icon-hover-color;
     }
   }
 
@@ -135,9 +135,9 @@ $widget-icon-width: 30px;
 
     .mailpoet_widget_icon {
       border: 1px solid $widget-icon-hover-color;
+      box-shadow: none;
       color: $widget-icon-hover-color;
       fill: $widget-icon-hover-color;
-      box-shadow: none;
     }
 
     .mailpoet_widget_title {
@@ -148,19 +148,19 @@ $widget-icon-width: 30px;
 
 /* Browser preview modal */
 .mailpoet_browser_preview_wrapper {
-  position: absolute;
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  position: absolute;
+  width: 100%;
 }
 
 .mailpoet_browser_preview_toggle {
   flex: 0 1 auto;
   height: 30px;
   padding: 10px 0;
-  text-align: center;
   position: absolute;
+  text-align: center;
   top: -30px;
   width: 100%;
 }
@@ -171,16 +171,16 @@ $widget-icon-width: 30px;
 }
 
 .mailpoet_browser_preview_container {
-  flex: 1 1 auto;
-  margin: 15px auto 0 auto;
-  transition: width 0.5s;
-  box-sizing: border-box;
-  height: 100%;
-  padding: 20px;
   border: 1px solid #979797;
   border-radius: 20px;
+  box-sizing: border-box;
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
+  height: 100%;
+  margin: 15px auto 0 auto;
+  padding: 20px;
+  transition: width 0.5s;
 }
 
 .mailpoet_browser_preview_container_desktop {
@@ -191,14 +191,14 @@ $widget-icon-width: 30px;
   width: 350px;
 }
 .mailpoet_browser_preview_border {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
   border: 1px solid #c3c3c3;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
 }
 
 .mailpoet_browser_preview_iframe {
-  width: calc(100% - 1px);
-  margin: auto;
   display: block;
+  margin: auto;
+  width: calc(100% - 1px);
 }

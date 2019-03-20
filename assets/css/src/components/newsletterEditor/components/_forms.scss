@@ -1,6 +1,6 @@
 .mailpoet_form_field {
-  margin-top: 15px;
   margin-bottom: 15px;
+  margin-top: 15px;
 }
 
 .mailpoet_form_field_title {
@@ -19,16 +19,16 @@
 }
 
 .mailpoet_form_field_optional {
-  font-size: 0.8em;
   color: $primary-inactive-color;
+  font-size: 0.8em;
 }
 
 .mailpoet_form_field_radio_option,
 .mailpoet_form_field_checkbox_option {
   display: inline-block;
-  vertical-align: top;
-  margin-right: 5px;
   line-height: 30px;
+  margin-right: 5px;
+  vertical-align: top;
 
   &:last-child {
     margin-right: 0;

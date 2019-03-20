@@ -4,9 +4,9 @@
 
 .mailpoet_save_wrapper {
   float: right;
-  position: relative;
-  margin-right: 20px;
   margin-bottom: 10px;
+  margin-right: 20px;
+  position: relative;
 
   .mailpoet_save_next {
     margin-left: 5px;
@@ -14,19 +14,19 @@
 }
 
 .mailpoet_save_options {
-  border-radius: 3px;
-
-  position: absolute;
-  right: 0;
-  z-index: 1000;
-  overflow: hidden;
-  margin: 5px 0;
-  clear: both;
-  vertical-align: top;
-  white-space: nowrap;
 
   background: $white-color;
   border: 1px solid $content-border-color;
+  border-radius: 3px;
+  clear: both;
+  margin: 5px 0;
+  overflow: hidden;
+
+  position: absolute;
+  right: 0;
+  vertical-align: top;
+  white-space: nowrap;
+  z-index: 1000;
 }
 
 .mailpoet_save_option {
@@ -34,9 +34,9 @@
 
   & > a {
     display: block;
+    line-height: 2em;
     padding-left: 20px;
     padding-right: 20px;
-    line-height: 2em;
   }
 }
 
@@ -54,24 +54,24 @@
 }
 
 .mailpoet_save_show_options_icon {
-  vertical-align: middle;
   height: 14px;
   margin-top: -6px;
+  vertical-align: middle;
 }
 
 .mailpoet_save_as_template_container,
 .mailpoet_export_template_container {
+  background-color: $white-color;
+  border: 1px solid $structure-border-color;
   border-radius: 3px;
-  display: inline-block;
-  position: absolute;
-  right: 0;
-  z-index: 1000;
   clear: both;
+  display: inline-block;
 
   margin: 5px 0;
   padding: 0 10px;
-  background-color: $white-color;
-  border: 1px solid $structure-border-color;
+  position: absolute;
+  right: 0;
+  z-index: 1000;
 }
 
 .mailpoet_save_as_template_title,
@@ -96,18 +96,18 @@
 }
 
 .mailpoet_save_error {
-  margin-top: 10px;
-  width: $sidebar-width - 20px;
   color: $error-text-color;
+  margin-top: 10px;
   text-align: right;
+  width: $sidebar-width - 20px;
 }
 
 .mailpoet_save_dropdown_down {
   .mailpoet_save_options,
   .mailpoet_save_as_template_container,
   .mailpoet_export_template_container {
-    top: 100%;
     bottom: auto;
+    top: 100%;
   }
 
   .mailpoet_save_show_options {
@@ -129,8 +129,8 @@
   .mailpoet_save_options,
   .mailpoet_save_as_template_container,
   .mailpoet_export_template_container {
-    top: auto;
     bottom: 100%;
+    top: auto;
   }
 
   .mailpoet_save_show_options {

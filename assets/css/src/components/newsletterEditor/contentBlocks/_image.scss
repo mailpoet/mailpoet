@@ -1,16 +1,16 @@
 .mailpoet_image_block {
 
   img {
-    vertical-align: bottom;
-    max-width: 100%;
     height: auto;
+    max-width: 100%;
+    vertical-align: bottom;
   }
 
   &.mailpoet_full_image {
-    padding-left: 0;
-    padding-right: 0;
     margin: auto;
     margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .mailpoet_content  {

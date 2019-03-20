@@ -1,12 +1,12 @@
 .mailpoet_container_layer_active {
   .mailpoet_block {
-    pointer-events: none;
     opacity: 0.4;
+    pointer-events: none;
   }
 
   .mailpoet_container_block {
-    pointer-events: auto;
     opacity: 1;
+    pointer-events: auto;
   }
 
   .mailpoet_container_block > .mailpoet_tools {
@@ -19,21 +19,21 @@
 }
 
 .mailpoet_layer_overlay {
+  background-color: rgba(0, 0, 0, 0.6);
   height: 100%;
   left: 0;
-  overflow-y: auto;
+  margin: 0 !important;
   overflow-x: hidden;
+  overflow-y: auto;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 100000;
-  background-color: rgba(0, 0, 0, 0.6);
-  margin: 0 !important;
 }
 
 .mailpoet_layer_highlight {
-  pointer-events: none;
   background-color: #f1f1f1;
+  pointer-events: none;
   position: relative;
   z-index: 100001 !important;
 }

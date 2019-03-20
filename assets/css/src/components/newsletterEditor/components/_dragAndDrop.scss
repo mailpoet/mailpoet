@@ -7,26 +7,26 @@ $draggable-widget-z-index: 2;
 
 .mailpoet_drop_marker {
   background-color: $primary-active-color;
-  position: absolute;
-  min-width: $marker-width;
-  min-height: $marker-width;
-  z-index: $marker-z-index;
 
   box-shadow: 0px 0px 1px 0px $primary-active-color;
+  min-height: $marker-width;
+  min-width: $marker-width;
+  position: absolute;
+  z-index: $marker-z-index;
 
   &::before, &::after {
-    position: absolute;
-    margin-top: -18px;
-    font: 400 40px / 1 dashicons;
     color: $primary-active-color;
+    font: 400 40px / 1 dashicons;
+    margin-top: -18px;
+    position: absolute;
   }
   &::before {
-    left: -25px;
     content: "\f139";
+    left: -25px;
   }
   &::after {
-    right: -23px;
     content: "\f141";
+    right: -23px;
   }
 }
 .mailpoet_drop_marker.mailpoet_drop_marker_middle,
@@ -52,14 +52,14 @@ $draggable-widget-z-index: 2;
 }
 
 .mailpoet_widget.mailpoet_droppable_active {
-  padding: 0;
   margin: 0;
+  padding: 0;
   z-index: $draggable-widget-z-index;
   @include animation-fade-in();
 
   .mailpoet_widget_icon {
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
 }
 

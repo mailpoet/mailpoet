@@ -4,5 +4,6 @@
     "stylelint-scss"
   ],
   "rules": {
+    "order/properties-alphabetical-order": true,
   },
 }

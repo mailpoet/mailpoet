@@ -33,10 +33,10 @@ $resize-handle-z-index: 2;
 }
 
 .mailpoet_resize_handle_text {
-  line-height: 1.5em;
+  color: $resize-handle-font-color;
   font-size: 11px;
   font-weight: bold;
-  color: $resize-handle-font-color;
+  line-height: 1.5em;
   text-align: center;
 }
 
@@ -62,21 +62,21 @@ $resize-handle-z-index: 2;
 
 
 .mailpoet_image_resize_handle_container {
-  position: absolute;
   bottom: 0;
+  height: 24px;
+  position: absolute;
   right: 0;
   width: 24px;
-  height: 24px;
 }
 
 .mailpoet_image_resize_handle {
-  position: relative;
   background: $editor-content-color;
   border-radius: 6px 0 0 0;
-  display: inline-block;
-  width: 24px;
-  height: 24px;
   cursor: nwse-resize;
+  display: inline-block;
+  height: 24px;
+  position: relative;
+  width: 24px;
   z-index: $resize-handle-z-index;
 
   .mailpoet_image_resize_handle_text,
@@ -91,10 +91,10 @@ $resize-handle-z-index: 2;
   padding: 1px;
 
   & > svg {
-    width: 22px;
-    height: 22px;
     fill: $resize-handle-font-color;
+    height: 22px;
     vertical-align: top;
+    width: 22px;
   }
 }
 

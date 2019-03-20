@@ -18,14 +18,14 @@
   width: 100%;
 
   h1 {
-    text-align: center;
     margin-bottom: 30px;
+    text-align: center;
   }
 
   img, .button {
+    display: block;
     margin-left: auto;
     margin-right: auto;
-    display: block;
   }
 
   .typeform-widget {

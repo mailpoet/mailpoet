@@ -10,15 +10,15 @@ $sidepanel-active-heading-color: $primary-active-color;
   }
 
   h3 {
-    font-size: 1.4em;
     color: $sidepanel-active-heading-color;
+    font-size: 1.4em;
     text-transform: uppercase;
   }
 }
 
 .mailpoet_sidepanel_field {
-  margin-top: 15px;
   margin-bottom: 15px;
+  margin-top: 15px;
 }
 
 .mailpoet_sidepanel_field_title {
@@ -32,22 +32,22 @@ $sidepanel-active-heading-color: $primary-active-color;
 
 .mailpoet_sidepanel_field_title_inline {
   display: inline-block;
-  vertical-align: middle;
   line-height: 30px;
   margin-bottom: 0;
+  vertical-align: middle;
 }
 
 .mailpoet_sidepanel_field_optional {
-  font-size: 0.8em;
   color: $primary-inactive-color;
+  font-size: 0.8em;
 }
 
 .mailpoet_sidepanel_radio_option,
 .mailpoet_sidepanel_checkbox_option {
   display: inline-block;
-  vertical-align: top;
-  margin-right: 15px;
   line-height: 30px;
+  margin-right: 15px;
+  vertical-align: top;
 
   &:last-child {
     margin-right: 0;
