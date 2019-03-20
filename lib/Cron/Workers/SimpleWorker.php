@@ -116,7 +116,7 @@ abstract class SimpleWorker {
     $wp = new WPFunctions();
     $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     // Random day of the next week
-    $date->setISODate($date->format('o'), ((int)$date->format('W')) + 1, mt_rand(1, 7));
+    $date->setISODate((int)$date->format('o'), ((int)$date->format('W')) + 1, mt_rand(1, 7));
     $date->startOfDay();
     return $date;
   }

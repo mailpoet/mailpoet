@@ -10,7 +10,7 @@ class Url {
 
     // Remove WPFunctions::get()->homeUrl() path from add_query_arg
     if (isset($home_url['path'])) {
-      $query_args = str_replace($home_url['path'], null, $query_args);
+      $query_args = str_replace($home_url['path'], '', $query_args);
     }
 
     return WPFunctions::get()->homeUrl($query_args);

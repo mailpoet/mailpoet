@@ -154,7 +154,7 @@ class Renderer {
 
   /**
    * @param string $template
-   * @param string $content
+   * @param string[] $content
    * @return string|string[]|null
    */
   private function injectContentIntoTemplate($template, $content) {

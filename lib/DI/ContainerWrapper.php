@@ -8,16 +8,16 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 
 class ContainerWrapper implements ContainerInterface {
 
-  /** @var ContainerInterface */
+  /** @var Container */
   private $free_container;
 
-  /** @var ContainerInterface|null */
+  /** @var Container|null */
   private $premium_container;
 
   /** @var ContainerWrapper|null */
   private static $instance;
 
-  public function __construct(ContainerInterface $free_container, ContainerInterface $premium_container = null) {
+  public function __construct(Container $free_container, Container $premium_container = null) {
     $this->free_container = $free_container;
     $this->premium_container = $premium_container;
   }
