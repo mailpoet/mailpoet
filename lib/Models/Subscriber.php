@@ -3,7 +3,6 @@ namespace MailPoet\Models;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Util\Helpers;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
@@ -583,26 +582,6 @@ class Subscriber extends Model {
     );
   }
 
-  static function bulkSendConfirmationEmail($orm) {
-    $subscribers = $orm
-      ->where('status', self::STATUS_UNCONFIRMED)
-      ->findMany();
-
-    $emails_sent = 0;
-    if (!empty($subscribers)) {
-      $sender = new ConfirmationEmailMailer();
-      foreach ($subscribers as $subscriber) {
-        if ($sender->sendConfirmationEmail($subscriber)) {
-          $emails_sent++;
-        }
-      }
-    }
-
-    return array(
-      'count' => $emails_sent
-    );
-  }
-
   static function getTotalSubscribers() {
     return self::whereIn('status', array(
       self::STATUS_SUBSCRIBED,
@@ -819,5 +798,14 @@ class Subscriber extends Model {
     trigger_error('Calling Subscriber::subscribe() is deprecated and will be removed. Use MailPoet\API\MP\v1\API instead. ', E_USER_DEPRECATED);
     $service = ContainerWrapper::getInstance()->get(\MailPoet\Subscribers\SubscriberActions::class);
     return $service->subscribe($subscriber_data, $segment_ids);
+  }
+
+  /**
+   * @deprecated
+   */
+  static function bulkSendConfirmationEmail($orm) {
+    trigger_error('Calling Subscriber::bulkSendConfirmationEmail() is deprecated and will be removed. Use MailPoet\API\MP\v1\API instead. ', E_USER_DEPRECATED);
+    $service = ContainerWrapper::getInstance()->get(\MailPoet\Subscribers\SubscriberActions::class);
+    return $service->bulkSendConfirmationEmail($orm);
   }
 }
