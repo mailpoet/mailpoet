@@ -14,7 +14,7 @@ class ContainerWrapper implements ContainerInterface {
   /** @var ContainerInterface|null */
   private $premium_container;
 
-  /** @var ContainerWrapper */
+  /** @var ContainerWrapper|null */
   private static $instance;
 
   public function __construct(ContainerInterface $free_container, ContainerInterface $premium_container = null) {

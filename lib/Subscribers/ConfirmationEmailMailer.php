@@ -13,7 +13,7 @@ class ConfirmationEmailMailer {
 
   const MAX_CONFIRMATION_EMAILS = 3;
 
-  /** @var Mailer */
+  /** @var Mailer|null */
   private $mailer;
 
   /** @var WPFunctions */

@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
 
 class Clicks {
   /**
-   * @param \stdClass $data
+   * @param \stdClass|null $data
    */
   function track($data) {
     if (!$data || empty($data->link)) {

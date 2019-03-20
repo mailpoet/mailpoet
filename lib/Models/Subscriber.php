@@ -149,7 +149,7 @@ class Subscriber extends Model {
   }
 
   static function search($orm, $search = '') {
-    if (strlen(trim($search) === 0)) {
+    if (strlen(trim($search)) === 0) {
       return $orm;
     }
 
