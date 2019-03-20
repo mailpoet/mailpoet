@@ -15,7 +15,8 @@
     "lint5": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0 'assets/js/src/**/*.js'",
     "lint-tests": "eslint -c .eslintrc.tests.json --max-warnings 0 'tests/javascript'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
-    "scss": "node-sass assets/css/src/ --output assets/dist/css/ --output-style compact"
+    "scss": "node-sass assets/css/src/ --output assets/dist/css/ --output-style compact",
+    "stylelint": "stylelint --fix"
   },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
