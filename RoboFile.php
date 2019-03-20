@@ -97,31 +97,8 @@ class RoboFile extends \Robo\Tasks {
     // Clean up folder from previous files
     array_map('unlink', glob("assets/dist/css/*.*"));
 
-    $scss_files = array(
-      'assets/css/src/admin.scss',
-      'assets/css/src/adminGlobal.scss',
-      'assets/css/src/newsletterEditor.scss',
-      'assets/css/src/public.scss',
-      'assets/css/src/rtl.scss',
-      'assets/css/src/importExport.scss',
-    );
-
-    foreach ($scss_files as $file) {
-      $this->_exec(join(' ', array(
-        './node_modules/node-sass/bin/node-sass',
-        $file,
-        '--output assets/dist/css/',
-        '--output-style compact',
-      )));
-    }
-
-    $compilation_result = $this->_exec(join(' ', array(
-      './node_modules/postcss-cli/bin/postcss',
-      'assets/dist/css/*.css',
-      '--use autoprefixer',
-      '--no-map',
-      '--replace',
-    )));
+    $this->_exec('npm run scss');
+    $compilation_result = $this->_exec('npm run autoprefixer');
 
     // Create manifest file
     $manifest = [];
