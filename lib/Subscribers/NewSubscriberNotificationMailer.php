@@ -16,7 +16,7 @@ class NewSubscriberNotificationMailer {
   /** @var Renderer */
   private $renderer;
 
-  /** @var \MailPoet\Mailer\Mailer */
+  /** @var \MailPoet\Mailer\Mailer|null */
   private $mailer;
 
   /** @var Functions */

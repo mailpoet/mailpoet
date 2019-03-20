@@ -1,9 +1,11 @@
 parameters:
-	tmpDir: ../../temp/phpstan
-	bootstrap: bootstrap.php
-	ignoreErrors:
-		- '#Function members_register_.+ not found#'
-		- '#MailPoet\\Premium\\DI\\ContainerConfigurator not found#' # this class is not available when premium is not active
-		- '#Call to an undefined method IdiormResultSet::set()#'
-		- '#Argument of an invalid type pQuery\\IQuery supplied for foreach, only iterables are supported#'
-	reportUnmatchedIgnoredErrors: false
+  tmpDir: ../../temp/phpstan
+  bootstrap: bootstrap.php
+  ignoreErrors:
+    - '#Function members_register_.+ not found#'
+    - '#MailPoet\\Premium\\DI\\ContainerConfigurator not found#' # this class is not available when premium is not active
+    - '#Call to an undefined method IdiormResultSet::set()#'
+    - '#Argument of an invalid type pQuery\\IQuery supplied for foreach, only iterables are supported#'
+  reportUnmatchedIgnoredErrors: false
+  dynamicConstantNames:
+    - WP_DEBUG

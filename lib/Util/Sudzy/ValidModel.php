@@ -80,9 +80,7 @@ abstract class ValidModel extends \Model {
         $params = explode('|', $check);
         $check  = array_shift($params);
 
-        if ($this->_validator->executeOne($check, $value, $params)) {
-          $success = $success && true;
-        } else {
+        if (!$this->_validator->executeOne($check, $value, $params)) {
           $this->addValidationError($v['message'], $field);
           $success = false;
         }

@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) exit;
 
 class RendererFactory {
 
-  /** @var Renderer */
+  /** @var Renderer|null */
   private $renderer;
 
   function getRenderer() {

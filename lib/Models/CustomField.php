@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * @property string $type
- * @property string|array $params
+ * @property string|array|null $params
  */
 
 class CustomField extends Model {
