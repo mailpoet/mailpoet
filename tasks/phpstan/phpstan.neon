@@ -7,6 +7,7 @@ parameters:
     - '#Call to an undefined method IdiormResultSet::set()#'
     - '#Argument of an invalid type pQuery\\IQuery supplied for foreach, only iterables are supported#'
     - '#Parameter \#2 \$prefix of function http_build_query expects string, null given.#'
+    - '#Parameter \#1 \$function of function call_user_func_array expects callable(): mixed, .wc_.*. given.#'
   reportUnmatchedIgnoredErrors: false
   dynamicConstantNames:
     - WP_DEBUG
