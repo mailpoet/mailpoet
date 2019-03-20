@@ -1,26 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
 import ReactDOMServer from 'react-dom/server';
 import ReviewRequest from 'review_request.jsx';
 import getTrackingData from 'analytics.js';
 
-class NpsPoll extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      pollShown: false,
-      modalShown: false,
-    };
-    this.displayPoll = this.displayPoll.bind(this);
-    this.showReviewRequestModal = this.showReviewRequestModal.bind(this);
-    this.callSatismeter = this.callSatismeter.bind(this);
-  }
+const NpsPoll = () => {
+  const [pollShown, setPollShown] = useState(false);
+  const [modalShown, setModalShown] = useState(false);
 
-  showReviewRequestModal() {
-    if (this.state.modalShown) {
+  function showReviewRequestModal() {
+    if (modalShown) {
       return;
     }
-    this.setState({ modalShown: true });
+    setModalShown(true);
     MailPoet.Modal.popup({
       width: 800,
       template: ReactDOMServer.renderToString(
@@ -39,14 +31,7 @@ class NpsPoll extends React.Component {
     });
   }
 
-  displayPoll() {
-    if (!this.state.pollShown) {
-      this.setState({ pollShown: true });
-      getTrackingData().then(data => this.callSatismeter(data.data));
-    }
-  }
-
-  callSatismeter(trackingData) {
+  function callSatismeter(trackingData) {
     const newUsersPollId = '6L479eVPXk7pBn6S';
     const oldUsersPollId = 'k0aJAsQAWI2ERyGv';
     window.satismeter({
@@ -70,29 +55,35 @@ class NpsPoll extends React.Component {
       events: {
         submit: (response) => {
           if (response.rating >= 9 && response.completed) {
-            this.showReviewRequestModal();
+            showReviewRequestModal();
           }
         },
       },
     });
   }
 
-  render() {
-    if (!window.mailpoet_display_nps_poll) {
-      return null;
+  function displayPoll() {
+    if (!pollShown) {
+      setPollShown(true);
+      getTrackingData().then(data => callSatismeter(data.data));
     }
-    if (window.satismeter) {
-      setImmediate(this.displayPoll);
-    } else {
-      const s = document.createElement('script');
-      s.type = 'text/javascript';
-      s.src = 'https://app.satismeter.com/satismeter.js';
-      s.onload = () => this.displayPoll();
-      document.getElementsByTagName('body')[0].appendChild(s);
-    }
+  }
+
+  if (!window.mailpoet_display_nps_poll) {
     return null;
   }
-}
+
+  if (window.satismeter) {
+    setImmediate(displayPoll);
+  } else {
+    const s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.src = 'https://app.satismeter.com/satismeter.js';
+    s.onload = () => displayPoll();
+    document.getElementsByTagName('body')[0].appendChild(s);
+  }
+  return null;
+};
 
 const withNpsPoll = function withNpsPoll(Component) {
   return props => (
