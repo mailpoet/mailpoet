@@ -44,14 +44,13 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_input, .mailpoet_select {
+  $form-control-padding: 3px;
   appearance: none;
   border-radius: 1px;
   box-shadow: none !important;
   line-height: 28px - $form-control-padding * 2;
 
   padding: $form-control-padding;
-
-  $form-control-padding: 3px;
 }
 
 .mailpoet_input {
