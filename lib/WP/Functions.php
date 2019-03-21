@@ -27,6 +27,10 @@ class Functions {
     return call_user_func_array('apply_filters', func_get_args());
   }
 
+  function addAction() {
+    return call_user_func_array('add_action', func_get_args());
+  }
+
   function wcGetCustomerOrderCount($user_id) {
     return call_user_func_array('wc_get_customer_order_count', [$user_id]);
   }
@@ -53,10 +57,6 @@ class Functions {
 
   function x($text, $context, $domain = 'default') {
     return _x($text, $context, $domain);
-  }
-
-  function addAction($tag, callable $function_to_add, $priority = 10, $accepted_args = 1) {
-    return add_action($tag, $function_to_add, $priority, $accepted_args);
   }
 
   function addCommentMeta($comment_id, $meta_key, $meta_value, $unique = false) {
@@ -479,15 +479,15 @@ class Functions {
     return wp_remote_post($url, $args);
   }
 
-  function wpRemoteRetrieveBody(array $response) {
+  function wpRemoteRetrieveBody($response) {
     return wp_remote_retrieve_body($response);
   }
 
-  function wpRemoteRetrieveResponseCode(array $response) {
+  function wpRemoteRetrieveResponseCode($response) {
     return wp_remote_retrieve_response_code($response);
   }
 
-  function wpRemoteRetrieveResponseMessage(array $response) {
+  function wpRemoteRetrieveResponseMessage($response) {
     return wp_remote_retrieve_response_message($response);
   }
 
