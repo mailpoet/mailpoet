@@ -64,6 +64,16 @@ class Settings {
     return $this;
   }
 
+  function withSendingMethodMailPoet() {
+    $mailPoetSendingKey = getenv('WP_TEST_MAILER_MAILPOET_API');
+    $this->settings->set('mta_group', 'mailpoet');
+    $this->settings->set('mta.method', 'MailPoet');
+    $this->settings->set('mta.mailpoet_api_key', $mailPoetSendingKey);
+    $this->settings->set('mta.mailpoet_api_key_state.state', 'valid');
+    $this->settings->set('mta.mailpoet_api_key_state.code', 200);
+    return $this;
+  }
+
   function withSendingError($error_message, $operation = 'send') {
     $this->settings->set('mta_log.status', 'paused');
     $this->settings->set('mta_log.error.operation', $operation);
