@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import MailPoet from 'mailpoet';
 import ReactDOMServer from 'react-dom/server';
+import satismeter from 'satismeter-loader';
 import ReviewRequest from 'review_request.jsx';
 import getTrackingData from 'analytics.js';
 
@@ -34,7 +35,7 @@ const NpsPoll = () => {
   function callSatismeter(trackingData) {
     const newUsersPollId = '6L479eVPXk7pBn6S';
     const oldUsersPollId = 'k0aJAsQAWI2ERyGv';
-    window.satismeter({
+    satismeter({
       writeKey: window.mailpoet_is_new_user ? newUsersPollId : oldUsersPollId,
       userId: window.mailpoet_current_wp_user.ID + window.mailpoet_site_url,
       traits: {
@@ -62,26 +63,13 @@ const NpsPoll = () => {
     });
   }
 
-  function displayPoll() {
-    if (!pollShown) {
+  useLayoutEffect(() => {
+    if (window.mailpoet_display_nps_poll && !pollShown) {
       setPollShown(true);
       getTrackingData().then(data => callSatismeter(data.data));
     }
-  }
+  });
 
-  if (!window.mailpoet_display_nps_poll) {
-    return null;
-  }
-
-  if (window.satismeter) {
-    setImmediate(displayPoll);
-  } else {
-    const s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.src = 'https://app.satismeter.com/satismeter.js';
-    s.onload = () => displayPoll();
-    document.getElementsByTagName('body')[0].appendChild(s);
-  }
   return null;
 };
 
