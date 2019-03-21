@@ -38,35 +38,34 @@ const nthWeekDayField = {
 class NotificationScheduling extends React.Component {
   getCurrentValue = () => this.props.item[this.props.field.name] || {};
 
-  handleValueChange = (name, value) => {
+  handleValueChanges = (changes) => {
     const oldValue = this.getCurrentValue();
-    const newValue = {};
-
-    newValue[name] = value;
 
     return this.props.onValueChange({
       target: {
         name: this.props.field.name,
-        value: _.extend({}, oldValue, newValue),
+        value: _.extend({}, oldValue, changes),
       },
     });
   };
 
   handleIntervalChange = (event) => {
     const intervalType = event.target.value;
-    this.handleValueChange('intervalType', intervalType);
+    const changes = {};
+    changes.intervalType = intervalType;
     if (intervalType === 'monthly') {
-      this.handleValueChange('monthDay', '1');
+      changes.monthDay = '1';
     }
+    this.handleValueChanges(changes);
   }
 
-  handleTimeOfDayChange = event => this.handleValueChange('timeOfDay', event.target.value);
+  handleTimeOfDayChange = event => this.handleValueChanges({ timeOfDay: event.target.value });
 
-  handleWeekDayChange = event => this.handleValueChange('weekDay', event.target.value);
+  handleWeekDayChange = event => this.handleValueChanges({ weekDay: event.target.value });
 
-  handleMonthDayChange = event => this.handleValueChange('monthDay', event.target.value);
+  handleMonthDayChange = event => this.handleValueChanges({ monthDay: event.target.value });
 
-  handleNthWeekDayChange = event => this.handleValueChange('nthWeekDay', event.target.value);
+  handleNthWeekDayChange = event => this.handleValueChanges({ nthWeekDay: event.target.value });
 
   render() {
     const value = this.getCurrentValue();
