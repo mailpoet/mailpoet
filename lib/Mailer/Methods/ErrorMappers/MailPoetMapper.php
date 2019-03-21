@@ -92,21 +92,15 @@ class MailPoetMapper {
   private function getUnauthorizedEmailMessage($sender, $newsletter) {
     $email = $sender ? $sender['from_email'] : null;
     if ($email && FreeDomains::isEmailOnFreeDomain($email)) {
-      $message = sprintf(__('<p>The MailPoet Sending Service can’t send email with the email address <i>%s</i>. You need to use an address like <i>‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌you@yourdomain.com</i></p>', 'mailpoet'), $email);
+      $message = '<p>' . sprintf(__('The MailPoet Sending Service can’t send email with the email address <i>%s</i>. You need to use an address like <i>‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌you@yourdomain.com</i>.', 'mailpoet'), $email) . '</p>';
       $message .= '<p>';
       if ($newsletter && $newsletter['id']) {
-        $message .= Helpers::replaceLinkTags(
-          __('[link]Change my email address[/link]', 'mailpoet'),
-          'admin.php?page=mailpoet-newsletters#/send/' . $newsletter['id'],
-          array('class' => 'button button-primary')
-        );
+        $message .= '<a class="button button-primary" href="admin.php?page=mailpoet-newsletters#/send/' . $newsletter['id'] .'">';
       } else {
-        $message .= Helpers::replaceLinkTags(
-          __('[link]Change my email address[/link]', 'mailpoet'),
-          'admin.php?page=mailpoet-settings',
-          array('class' => 'button button-primary')
-        );
+        $message .= '<a class="button button-primary" href="admin.php?page=mailpoet-settings">';
       }
+      $message .= __('Change my email address', 'mailpoet');
+      $message .= '</a>';
     } else {
       $message = sprintf(__('<p>The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.</p>', 'mailpoet'), $email ?: __('Unknown address'));
       $message .= '<p>';
