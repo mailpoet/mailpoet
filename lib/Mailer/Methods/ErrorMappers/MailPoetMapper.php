@@ -91,7 +91,7 @@ class MailPoetMapper {
 
   private function getUnauthorizedEmailMessage($sender, $newsletter) {
     $email = $sender ? $sender['from_email'] : null;
-    if ($email && FreeDomains::isEmailOnFreeDomain($email)) {
+    if ($email && (new FreeDomains())->isEmailOnFreeDomain($email)) {
       $message = '<p>' . sprintf(__('The MailPoet Sending Service can’t send email with the email address <i>%s</i>. You need to use an address like <i>‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌you@yourdomain.com</i>.', 'mailpoet'), $email) . '</p>';
       $message .= '<p>';
       if ($newsletter && $newsletter['id']) {
