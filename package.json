@@ -43,6 +43,7 @@
     "react-router-dom": "~4.3.1",
     "react-string-replace": "^0.3.2",
     "react-tooltip": "^3.5.1",
+    "satismeter-loader": "^1.1.0",
     "select2": "^4.0.5",
     "setimmediate": "^1.0.5",
     "spectrum-colorpicker": "^1.6.2",
