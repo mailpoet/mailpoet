@@ -50,7 +50,10 @@ class ChangelogController {
   private function renderList(array $issues, $field) {
     $messages = [];
     foreach ($issues as $issue) {
-      if (!isset($issue['fields'][$field])) {
+      if (
+        !isset($issue['fields'][$field])
+        || ($issue['fields']['resolution']['id'] === Jira::WONT_DO_RESOLUTION_ID)
+      ) {
         continue;
       }
       $messages[] = "* " . $this->sanitizePunctuation($issue['fields'][$field], ';');
