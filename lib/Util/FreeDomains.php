@@ -52,7 +52,7 @@ class FreeDomains {
     'yahoo.com.br', 'hotmail.com.br', 'outlook.com.br', 'uol.com.br', 'bol.com.br', 'terra.com.br', 'ig.com.br', 'itelefonica.com.br', 'r7.com', 'zipmail.com.br', 'globo.com', 'globomail.com', 'oi.com.br',
   ];
 
-  static function isEmailOnFreeDomain($email) {
+  function isEmailOnFreeDomain($email) {
     $domain = end(explode('@', $email));
     return in_array($domain, self::FREE_DOMAINS);
   }
