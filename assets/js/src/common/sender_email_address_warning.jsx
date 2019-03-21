@@ -12,14 +12,14 @@ const NewInstallationWithMSSWarning = ({ emailAddress }) => (
     <p className="sender_email_address_warning">
       {ReactStringReplace(
         MailPoet.I18n.t('senderEmailAddressNewInstallWarning1'),
-        /<em>%originalSender<\/em>/,
+        '%originalSender',
         () => <em key="reply-to">{ emailAddress }</em>
       )}
     </p>
     <p className="sender_email_address_warning">
       {ReactStringReplace(
         MailPoet.I18n.t('senderEmailAddressNewInstallWarning2'),
-        /(<em>%suggested<\/em>|<em>%originalSender<\/em>)/,
+        /(%suggested|%originalSender)/,
         (match) => {
           if (match === '<em>%suggested</em>') return <em key="suggested-email">{ suggestedEmailAddress }</em>;
           return <em key="sender-email">{ emailAddress }</em>;
