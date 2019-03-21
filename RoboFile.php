@@ -43,6 +43,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watch() {
+    $this->say('Warning: this lints and compiles all files, not just the changed one. Use separate tasks watch:js and watch:css for faster and more efficient watching.');
     $css_files = $this->rsearch('assets/css/src/', array('scss'));
     $js_files = $this->rsearch('assets/js/src/', array('js', 'jsx'));
 
@@ -103,6 +104,7 @@ class RoboFile extends \Robo\Tasks {
     // Clean up folder from previous files
     array_map('unlink', glob("assets/dist/css/*.*"));
 
+    $this->_exec('npm run stylelint -- "assets/css/src/components/**/*.scss"');
     $this->_exec('npm run scss');
     $compilation_result = $this->_exec('npm run autoprefixer');
 
