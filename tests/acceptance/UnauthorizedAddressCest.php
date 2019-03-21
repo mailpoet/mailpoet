@@ -10,11 +10,13 @@ require_once __DIR__ . '/../DataFactories/Newsletter.php';
 require_once __DIR__ . '/../DataFactories/Settings.php';
 
 class UnauthorizedAddressCest {
-  function unauthorizedFreeAddressError(\AcceptanceTester $I) {
-    $I->wantTo('See proper sending error when using unauthorized free address');
-
+  function _before() {
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
+  }
+
+  function unauthorizedFreeAddressError(\AcceptanceTester $I) {
+    $I->wantTo('See proper sending error when using unauthorized free address');
 
     $newsletter_title = 'Unauthorized free address';
     $newsletter_from = 'random@gmail.com';
@@ -85,11 +87,14 @@ class UnauthorizedAddressCest {
     $href = $I->grabAttributeFrom('//a[text()="Authorize your email in your account now."]', 'href');
     expect($href)->equals('https://account.mailpoet.com/authorization');
 
-    // step 5 - Trash newsletter, resume sending and set sending method back to SMTP
+    // step 5 - Trash newsletter and resume sending
     $I->clickItemRowActionByItemName($newsletter_title, 'Move to trash');
     $I->click('Resume sending');
     $I->waitForText('Sending has been resumed.');
+  }
+
+  function _after() {
     $settings = new Settings();
-    $settings->withSendingMethod(Mailer::METHOD_SMTP);
+    $settings->withSendingMethod(Mailer::METHOD_PHPMAIL);
   }
 }
