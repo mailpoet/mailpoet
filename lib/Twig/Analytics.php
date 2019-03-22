@@ -8,13 +8,17 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
+use \MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class Analytics extends AbstractExtension {
   public function getFunctions() {
     $settings = new SettingsController();
-    $analytics = new AnalyticsGenerator(new Reporter($settings, new WooCommerceHelper), $settings);
+    $analytics = new AnalyticsGenerator(
+      new Reporter($settings, new WooCommerceHelper(new WPFunctions())),
+      $settings
+    );
     return array(
       new TwigFunction(
         'get_analytics_data',
