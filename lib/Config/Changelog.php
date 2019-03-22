@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Url;
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Changelog {
@@ -13,7 +14,15 @@ class Changelog {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings, WPFunctions $wp) {
+  /** @var Helper */
+  private $wooCommerceHelper;
+
+  function __construct(
+    SettingsController $settings,
+    WPFunctions $wp,
+    Helper $wooCommerceHelper
+  ) {
+    $this->wooCommerceHelper = $wooCommerceHelper;
     $this->settings = $settings;
     $this->wp = $wp;
   }
@@ -48,6 +57,7 @@ class Changelog {
       $this->setupNewInstallation();
       $this->checkWelcomeWizard();
     }
+    $this->checkWooCommerceListImportPage();
   }
 
   private function checkMp2Migration($version) {
@@ -75,6 +85,21 @@ class Changelog {
     $skip_wizard = $this->wp->applyFilters('mailpoet_skip_welcome_wizard', false);
     if (!$skip_wizard) {
       $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-welcome-wizard'));
+    }
+  }
+
+  private function checkWooCommerceListImportPage() {
+    if ($this->wp->applyFilters('mailpoet_skip_woocommerce_import_page', false)) {
+      return;
+    }
+    if (
+      !in_array($_GET['page'], ['mailpoet-woocommerce-list-import', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
+      && !$this->settings->get('woocommerce.import_screen_displayed')
+      && $this->wooCommerceHelper->isWooCommerceActive()
+      && $this->wooCommerceHelper->getOrdersCount() >= 1
+      && $this->wp->currentUserCan('administrator')
+    ) {
+      Url::redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-list-import'));
     }
   }
 
