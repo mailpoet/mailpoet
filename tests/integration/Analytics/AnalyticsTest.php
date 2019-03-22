@@ -7,6 +7,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AnalyticsTest extends \MailPoetTest {
 
@@ -21,7 +22,10 @@ class AnalyticsTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->settings = new SettingsController();
-    $this->analytics = new Analytics(new Reporter($this->settings, new WooCommerceHelper), $this->settings);
+    $this->analytics = new Analytics(
+      new Reporter($this->settings, new WooCommerceHelper(new WPFunctions)),
+      $this->settings
+    );
     // Remove premium plugin hooks so that tests pass also with premium active
     remove_all_filters(Analytics::ANALYTICS_FILTER);
   }
