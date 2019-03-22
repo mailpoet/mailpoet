@@ -9,18 +9,19 @@ import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
 import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
 
 const WelcomeWizardStepsController = (props) => {
-  const [stepsCount] = useState(window.is_woocommerce_active ? 4 : 3);
-  const [shouldSetSender] = useState(!window.is_mp2_migration_complete);
+  const stepsCount = window.is_woocommerce_active ? 4 : 3;
+  const shouldSetSender = !window.is_mp2_migration_complete;
+  const step = parseInt(props.match.params.step, 10);
+
   const [loading, setLoading] = useState(false);
   const [sender, setSender] = useState(window.sender_data);
   const [replyTo, setReplyTo] = useState(window.reply_to_data);
 
   useEffect(() => {
-    const step = parseInt(props.match.params.step, 10);
     if (step > stepsCount || step < 1) {
       props.history.push('/steps/1');
     }
-  });
+  }, [step, stepsCount, props.history]);
 
   function finishWizard() {
     setLoading(true);
@@ -72,8 +73,6 @@ const WelcomeWizardStepsController = (props) => {
       reply_to: replyTo,
     }).then(() => (props.history.push('/steps/2')));
   }
-
-  const step = parseInt(props.match.params.step, 10);
 
   return (
     <div className="mailpoet_welcome_wizard_steps mailpoet_welcome_wizard_centered_column">
