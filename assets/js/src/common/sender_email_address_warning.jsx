@@ -24,7 +24,7 @@ const NewInstallationWithMSSWarning = ({ emailAddress }) => (
         MailPoet.I18n.t('senderEmailAddressNewInstallWarning2'),
         /(%suggested|%originalSender)/,
         (match) => {
-          if (match === '<em>%suggested</em>') return <em key="suggested-email">{ suggestedEmailAddress }</em>;
+          if (match === '%suggested') return <em key="suggested-email">{ suggestedEmailAddress }</em>;
           return <em key="sender-email">{ emailAddress }</em>;
         }
       )}
