@@ -19,6 +19,7 @@ class EditExistingPostNotificationEmailCest {
     $newsletter = $form->withSubject($newsletter_title)
       ->withPostNotificationsType()
       ->create();
+    $segment_name = $I->createListWithSubscriber();
 
     // step 2 - Open list of post notifications
     $I->login();
@@ -39,7 +40,7 @@ class EditExistingPostNotificationEmailCest {
     $I->click('Next');
     $I->waitForElement('input.select2-search__field');
     $I->selectOption('[data-automation-id="newsletter_interval_type"]', 'Weekly on...');
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->selectOptionInSelect2($segment_name);
     $newsletter_listing_element = '[data-automation-id="listing_item_' . basename($I->getCurrentUrl()) . '"]';
     $I->click('Activate');
     $I->waitForElement($newsletter_listing_element);

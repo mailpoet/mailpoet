@@ -15,6 +15,7 @@ class ScheduleNewsletterCest {
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($newsletter_title)
       ->create();
+    $segment_name = $I->createListWithSubscriber();
 
     // step 2 - Go to editor
     $I->login();
@@ -23,7 +24,7 @@ class ScheduleNewsletterCest {
 
     // step 4 - Choose list and schedule
     $I->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->selectOptionInSelect2($segment_name);
     $I->checkOption('isScheduled');
     $I->click('select[name=time]');
     $I->selectOption('form select[name=time]', '6:00');

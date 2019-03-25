@@ -1,8 +1,12 @@
 <?php
 
 use MailPoet\Test\DataFactories\Form;
+use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Subscriber;
 
 require_once __DIR__ . '/../DataFactories/Form.php';
+require_once __DIR__ . '/../DataFactories/Segment.php';
+require_once __DIR__ . '/../DataFactories/Subscriber.php';
 
 /**
  * Inherited Methods
@@ -152,6 +156,18 @@ class AcceptanceTester extends \Codeception\Actor {
     }
     $I->fillField($element, $query);
     $I->click($button);
+  }
+
+  public function createListWithSubscriber() {
+    $segment_factory = new Segment();
+    $segment_name = 'List ' . \MailPoet\Util\Security::generateRandomString();
+    $segment = $segment_factory->withName($segment_name)->create();
+
+    $subscriber_factory = new Subscriber();
+    $subscriber_email = \MailPoet\Util\Security::generateRandomString() . '@domain.com';
+    $subscriber_factory->withSegments([$segment])->withEmail($subscriber_email)->create();
+
+    return $segment_name;
   }
 
   public function switchToNextTab($offset = 1) {

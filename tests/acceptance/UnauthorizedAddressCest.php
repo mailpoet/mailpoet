@@ -20,6 +20,7 @@ class UnauthorizedAddressCest {
 
     $newsletter_title = 'Unauthorized free address';
     $newsletter_from = 'random@gmail.com';
+    $segment_name = $I->createListWithSubscriber();
 
     // step 1 - Prepare newsletter data
     $newsletterFactory = new Newsletter();
@@ -35,7 +36,7 @@ class UnauthorizedAddressCest {
 
     // step 3 - Choose list and send
     $I->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->selectOptionInSelect2($segment_name);
     $I->fillField('[name="sender_address"]', $newsletter_from);
     $I->click('Send');
 
@@ -60,6 +61,7 @@ class UnauthorizedAddressCest {
 
     $newsletter_title = 'Unauthorized own address';
     $newsletter_from = 'random@own-domain.com';
+    $segment_name = $I->createListWithSubscriber();
 
     // step 1 - Prepare newsletter data
     $newsletterFactory = new Newsletter();
@@ -75,7 +77,7 @@ class UnauthorizedAddressCest {
 
     // step 3 - Choose list and send
     $I->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->selectOptionInSelect2($segment_name);
     $I->fillField('[name="sender_address"]', $newsletter_from);
     $I->click('Send');
 

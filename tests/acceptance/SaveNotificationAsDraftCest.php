@@ -16,6 +16,7 @@ class SaveNotificationAsDraftCest {
     $newsletter = $newsletterFactory->withSubject($newsletter_title)
       ->withPostNotificationsType()
       ->create();
+    $segment_name = $I->createListWithSubscriber();
     // step 2 - Go to editor
     $I->login();
     $I->amEditingNewsletter($newsletter->id);
@@ -23,7 +24,7 @@ class SaveNotificationAsDraftCest {
     //Save Notification As Draft
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
     $I->waitForElement($send_form_element);
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->selectOptionInSelect2($segment_name);
     $I->click('Save as draft and close');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $I->waitForText('Draft Test Post Notification');
