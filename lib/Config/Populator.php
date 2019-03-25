@@ -48,7 +48,6 @@ class Populator {
       'Sunglasses',
       'RealEstate',
       'AppWelcome',
-      'FashionShop',
       'FoodBox',
       'Poet',
       'PostNotificationsBlank1Column',
@@ -111,6 +110,7 @@ class Populator {
       'HealthyFoodBlog',
       'Software',
       'LifestyleBlogA',
+      'FashionShop',
       'LifestyleBlogB',
       'Painter',
       'FarmersMarket',
@@ -246,7 +246,7 @@ class Populator {
       }
       $this->settings->delete('last_announcement_seen');
     }
-    
+
     $prefix = 'user_seen_editor_tutorial';
     $prefix_length = strlen($prefix);
     $users_seen_editor_tutorial = Setting::whereLike('name', $prefix . '%')->findMany();
