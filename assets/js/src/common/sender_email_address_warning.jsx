@@ -9,7 +9,10 @@ const suggestedEmailAddress = `contact@${userHostDomain}`;
 
 const NewInstallationWithMSSWarning = ({ emailAddress }) => (
   <React.Fragment>
-    <p className="sender_email_address_warning">
+    <p
+      className="sender_email_address_warning"
+      data-acceptance-id="freemail-sender-warning-new-installation"
+    >
       {ReactStringReplace(
         MailPoet.I18n.t('senderEmailAddressNewInstallWarning1'),
         '%originalSender',
@@ -55,7 +58,12 @@ NewInstallationWithMSSWarning.propTypes = {
 
 const OldInstallationWarning = ({ emailAddress }) => (
   <React.Fragment>
-    <p className="sender_email_address_warning">{MailPoet.I18n.t('senderEmailAddressWarning1')}</p>
+    <p
+      className="sender_email_address_warning"
+      data-acceptance-id="freemail-sender-warning-old-installation"
+    >
+      {MailPoet.I18n.t('senderEmailAddressWarning1')}
+    </p>
     <p className="sender_email_address_warning">
       {ReactStringReplace(
         MailPoet.I18n.t('senderEmailAddressWarning2'),

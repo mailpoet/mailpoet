@@ -35,7 +35,8 @@ class AcceptanceTester extends \Codeception\Actor {
     waitForText as _waitForText;
   }
 
-  const WP_URL = 'http://test.local';
+  const WP_DOMAIN = 'test.local';
+  const WP_URL = 'http://' . self::WP_DOMAIN;
   const MAIL_URL = 'http://mailhog:8025';
 
   /**

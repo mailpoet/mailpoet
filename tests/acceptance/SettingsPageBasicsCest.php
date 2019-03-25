@@ -1,8 +1,14 @@
 <?php
 
- namespace MailPoet\Test\Acceptance;
+namespace MailPoet\Test\Acceptance;
+
+use MailPoet\Mailer\Mailer;
+use MailPoet\Test\DataFactories\Settings;
+
+require_once __DIR__ . '/../DataFactories/Settings.php';
 
 class SettingsPageBasicsCest {
+
   function checkSettingsPagesLoad(\AcceptanceTester $I) {
     $I->wantTo('Confirm all settings pages load correctly');
     $I->login();
@@ -27,6 +33,7 @@ class SettingsPageBasicsCest {
     $I->waitForText('Activation Key');
     $I->seeNoJSErrors();
   }
+
   function editDefaultSenderInformation(\AcceptanceTester $I) {
     $I->wantTo('Confirm default sender information can be edited');
     $I->login();
@@ -39,6 +46,7 @@ class SettingsPageBasicsCest {
     $I->click('[data-automation-id="settings-submit-button"]');
     $I->waitForText('Settings saved');
   }
+
   function allowSubscribeInComments(\AcceptanceTester $I) {
     $I->wantTo('Allow users to subscribe to lists in site comments');
     $post_title = 'Hello world!';
@@ -62,6 +70,36 @@ class SettingsPageBasicsCest {
     $I->amOnPage('/');
     $I->waitForText($post_title);
     $I->click($post_title);
-    $I->dontSee("Yes, add me to your mailing list");    
+    $I->dontSee("Yes, add me to your mailing list");
+  }
+
+  function checkSenderFreemailWarning(\AcceptanceTester $I) {
+    $settings = new Settings();
+    $settings->withSendingMethod(Mailer::METHOD_SMTP);
+    $settings->withTodayInstallationDate();
+
+    $I->wantTo('Confirm default sender information can be edited');
+    $I->login();
+    $I->amOnMailPoetPage('Settings');
+    $I->fillField(['name' => 'sender[name]'], 'Sender');
+    $I->fillField(['name' => 'sender[address]'], 'sender@email.com');
+    $I->seeElement('[data-acceptance-id="freemail-sender-warning-old-installation"]');
+    $I->see('contact@' . \AcceptanceTester::WP_DOMAIN);
+    $I->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
+    $I->dontseeElement('[data-acceptance-id="freemail-sender-warning-old-installation"]');
+
+    $settings = new Settings();
+    $settings->withSendingMethodMailPoet();
+    $I->reloadPage();
+
+    $I->fillField(['name' => 'sender[address]'], 'sender2@email.com');
+    $I->seeElement('[data-acceptance-id="freemail-sender-warning-new-installation"]');
+    $I->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
+    $I->dontSeeElement('[data-acceptance-id="freemail-sender-warning-new-installation"]');
+  }
+
+  function _after() {
+    $settings = new Settings();
+    $settings->withSendingMethod(Mailer::METHOD_SMTP);
   }
 }

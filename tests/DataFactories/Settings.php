@@ -50,6 +50,10 @@ class Settings {
     return $this;
   }
 
+  function withTodayInstallationDate() {
+    $this->settings->set('installed_at', date("Y-m-d H:i:s"));
+  }
+
   function withSkippedTutorials() {
     $this->settings->set('show_intro', 0);
     $this->settings->set('display_nps_poll', 0);
