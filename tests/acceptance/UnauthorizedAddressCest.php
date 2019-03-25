@@ -50,6 +50,7 @@ class UnauthorizedAddressCest {
 
     // step 5 - Trash newsletter and resume sending
     $I->clickItemRowActionByItemName($newsletter_title, 'Move to trash');
+    $I->scrollToTop();
     $I->click('Resume sending');
     $I->waitForText('Sending has been resumed.');
   }
@@ -89,6 +90,7 @@ class UnauthorizedAddressCest {
 
     // step 5 - Trash newsletter and resume sending
     $I->clickItemRowActionByItemName($newsletter_title, 'Move to trash');
+    $I->scrollToTop();
     $I->click('Resume sending');
     $I->waitForText('Sending has been resumed.');
   }
