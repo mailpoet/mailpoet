@@ -192,6 +192,10 @@ class AcceptanceTester extends \Codeception\Actor {
     return $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
   }
 
+  public function scrollToTop() {
+    return $this->scrollTo('#wpcontent');
+  }
+
   private function getDefaultTimeout($timeout) {
     return (int)getenv('WAIT_TIMEOUT') ?: $timeout;
   }
