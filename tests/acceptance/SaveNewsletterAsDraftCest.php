@@ -8,6 +8,7 @@ class SaveNewsletterAsDraftCest {
     $I->wantTo('Create standard newsletter and save as a draft');
 
     $newsletter_title = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
+    $segment_name = $I->createListWithSubscriber();
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
@@ -31,7 +32,7 @@ class SaveNewsletterAsDraftCest {
     // step 4 - Choose list and send
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
     $I->waitForElement($send_form_element);
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->selectOptionInSelect2($segment_name);
     $I->click('Save as draft and close');
     $I->waitForText($newsletter_title);
   }

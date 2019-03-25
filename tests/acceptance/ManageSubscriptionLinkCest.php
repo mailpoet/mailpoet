@@ -19,7 +19,9 @@ class ManageSubscriptionLinkCest {
   }
 
   function sendEmail(\AcceptanceTester $I) {
-    $I->wantTo('Create and send new email to WordPress Users list');
+    $I->wantTo('Create and send new email to list');
+    $segment_name = $I->createListWithSubscriber();
+
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id="new_email"]');
@@ -41,7 +43,7 @@ class ManageSubscriptionLinkCest {
     // step 4 - send
     $search_field_element = 'input.select2-search__field';
     $I->waitForElement($search_field_element);
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->selectOptionInSelect2($segment_name);
     $I->click('Send');
     $I->waitForText('Sent to 1 of 1', 60);
   }

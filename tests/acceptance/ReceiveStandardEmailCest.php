@@ -11,6 +11,7 @@ class ReceiveStandardEmailCest {
     $standard_template = '[data-automation-id=\'select_template_0\']';
     $title_element = '[data-automation-id=\'newsletter_title\']';
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
+    $segment_name = $I->createListWithSubscriber();
     $I->wantTo('Receive a standard newsletter as a subscriber');
 
     //create a wp user with wp role subscriber
@@ -28,7 +29,7 @@ class ReceiveStandardEmailCest {
     $I->click('Next');
     //Choose list and send
     $I->waitForElement($send_form_element);
-    $I->selectOptionInSelect2('WordPress Users');
+    $I->selectOptionInSelect2($segment_name);
     $I->click('Send');
     $I->waitForElement('.mailpoet_progress_label', 90);
     //confirm newsletter is received
