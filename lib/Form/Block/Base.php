@@ -76,7 +76,7 @@ abstract class Base {
     if (isset($block['params']['label'])
       && strlen(trim($block['params']['label'])) > 0) {
       $html .= '<label class="mailpoet_'.$block['type'].'_label">';
-      $html .= $block['params']['label'];
+      $html .= htmlspecialchars($block['params']['label']);
 
       if (isset($block['params']['required']) && $block['params']['required']) {
         $html .= ' <span class="mailpoet_required">*</span>';

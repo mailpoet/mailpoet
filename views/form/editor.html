@@ -216,6 +216,9 @@
   )%>
 
   <script type="text/javascript">
+    function encodeHtmlValue(str) {
+      return str.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    }
     var mailpoet_segments = <%= json_encode(segments) %>;
 
     var mailpoet_default_fields = [
@@ -658,7 +661,7 @@
 
               mailpoet_form_fields();
               MailPoet.Notice.success(
-                "<%= __('Removed custom field %$1s') | escape('js') %>".replace('%$1s', '"' + name + '"')
+                "<%= __('Removed custom field %$1s') | escape('js') %>".replace('%$1s', '"' + encodeHtmlValue(name) + '"')
               );
 
               MailPoet.trackEvent('Forms > Delete custom field', {
