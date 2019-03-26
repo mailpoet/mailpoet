@@ -64,6 +64,20 @@ class WooCommerceProduct {
     return json_decode($product_out[0], true);
   }
 
+  /**
+   * @param int $id
+   */
+  function delete($id) {
+    $this->tester->cliToArray("wc product delete $id --force=1 --allow-root --user=admin");
+  }
+
+  function deleteAll() {
+    $list = $this->tester->cliToArray("wc product list --format=json --allow-root --user=admin --fields=id");
+    foreach (json_decode($list[0], true) as $item) {
+      $this->delete($item['id']);
+    }
+  }
+
   private function update($item, $value) {
     $data = $this->data;
     $data[$item] = $value;
