@@ -29,6 +29,7 @@ class DaemonTest extends \MailPoetTest {
       'executeBounceWorker' => null,
       'executeExportFilesCleanupWorker' => null,
       'executeInactiveSubscribersWorker' => null,
+      'executeWooCommerceSyncWorker' => null,
     ), $this);
     $data = array(
       'token' => 123
@@ -49,6 +50,7 @@ class DaemonTest extends \MailPoetTest {
       'executeBounceWorker' => Expected::exactly(1),
       'executeExportFilesCleanupWorker' => Expected::exactly(1),
       'executeInactiveSubscribersWorker' => Expected::exactly(1),
+      'executeWooCommerceSyncWorker' => Expected::exactly(1),
     ), $this);
     $data = array(
       'token' => 123
