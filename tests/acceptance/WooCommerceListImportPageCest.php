@@ -2,10 +2,12 @@
 
 namespace MailPoet\Test\Acceptance;
 
+require_once __DIR__ . '/../DataFactories/Settings.php';
 require_once __DIR__ . '/../DataFactories/WooCommerceProduct.php';
 require_once __DIR__ . '/../DataFactories/WooCommerceCustomer.php';
 require_once __DIR__ . '/../DataFactories/WooCommerceOrder.php';
 
+use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceCustomer;
 use MailPoet\Test\DataFactories\WooCommerceOrder;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
@@ -49,5 +51,17 @@ class WooCommerceListImportPageCest {
     $I->click($submit_button);
     $I->seeNoJSErrors();
     $I->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-newsletters');
+  }
+
+  function importListPageRedirectionTest(\AcceptanceTester $I) {
+    $settings_factory = new Settings();
+    $settings_factory->withWooCommerceListImportPageDisplayed(false);
+    $order = $this->order_factory->create();
+    $I->login();
+    $I->amOnMailpoetPage('Emails');
+    $I->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
+    $I->amOnMailpoetPage('Emails');
+    $I->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
+    $this->order_factory->delete($order['id']);
   }
 }
