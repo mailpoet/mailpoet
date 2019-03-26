@@ -15,6 +15,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
+use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 
 if (!defined('ABSPATH')) exit;
 
@@ -103,6 +104,12 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
     ]);
+    // WooCommerce sync
+    $woo_commerce_sync_tasks = self::getTasksCount([
+      'type' => WooCommerceSyncWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+    ]);
 
     // check requirements for each worker
     $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);
@@ -119,6 +126,7 @@ class WordPress {
       || $premium_key_check_active
       || $stats_notifications_tasks
       || $inactive_subscribers_tasks
+      || $woo_commerce_sync_tasks
     );
   }
 
