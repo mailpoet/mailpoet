@@ -60,6 +60,20 @@ class WooCommerceCustomer {
     return json_decode($customer_out[0], true);
   }
 
+  /**
+   * @param int $id
+   */
+  function delete($id) {
+    $this->tester->cliToArray("wc customer delete $id --force=1 --allow-root --user=admin");
+  }
+
+  function deleteAll() {
+    $list = $this->tester->cliToArray("wc customer list --format=json --allow-root --user=admin --fields=id");
+    foreach (json_decode($list[0], true) as $item) {
+      $this->delete($item['id']);
+    }
+  }
+
   private function update($item, $value) {
     $data = $this->data;
     $data[$item] = $value;

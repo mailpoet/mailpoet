@@ -85,6 +85,20 @@ class WooCommerceOrder {
     return json_decode($order_out[0], true);
   }
 
+  /**
+   * @param int $id
+   */
+  function delete($id) {
+    $this->tester->cliToArray("wc shop_order delete $id --force=1 --allow-root --user=admin");
+  }
+
+  function deleteAll() {
+    $list = $this->tester->cliToArray("wc shop_order list --format=json --allow-root --user=admin --fields=id");
+    foreach (json_decode($list[0], true) as $item) {
+      $this->delete($item['id']);
+    }
+  }
+
   private function update($update_data) {
     $data = $this->data;
     foreach ($update_data as $item => $value) {
