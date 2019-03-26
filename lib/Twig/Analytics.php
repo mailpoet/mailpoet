@@ -9,27 +9,27 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 if (!defined('ABSPATH')) exit;
 
-class Analytics extends \Twig_Extension {
+class Analytics extends \MailPoetVendor\Twig_Extension {
   public function getFunctions() {
     $settings = new SettingsController();
     $analytics = new AnalyticsGenerator(new Reporter($settings, new WooCommerceHelper), $settings);
     return array(
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'get_analytics_data',
         array($analytics, 'generateAnalytics'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'is_analytics_enabled',
         array($analytics, 'isEnabled'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'get_analytics_public_id',
         array($analytics, 'getPublicId'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'is_analytics_public_id_new',
         array($analytics, 'isPublicIdNew'),
         array('is_safe' => array('all'))

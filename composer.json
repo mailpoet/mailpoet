@@ -11,7 +11,6 @@
   ],
   "require": {
     "php": ">=5.6",
-    "twig/twig": "1.*",
     "cerdic/css-tidy": "^1.6",
     "tburry/pquery": "^1.1.1",
     "j4mie/paris": "1.5.6",

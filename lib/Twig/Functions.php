@@ -10,7 +10,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
-class Functions extends \Twig_Extension {
+class Functions extends \MailPoetVendor\Twig_Extension {
 
   /** @var SettingsController */
   private $settings;
@@ -21,97 +21,97 @@ class Functions extends \Twig_Extension {
 
   function getFunctions() {
     return array(
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'json_encode',
         'json_encode',
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'json_decode',
         'json_decode',
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'wp_nonce_field',
         'wp_nonce_field',
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'params',
         array($this, 'params'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'admin_url',
         'admin_url',
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'get_option',
         'get_option',
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'get_option',
         'get_option',
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'sending_frequency',
         array($this, 'getSendingFrequency'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'wp_date_format',
         array($this, 'getWPDateFormat'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'mailpoet_version',
         array($this, 'getMailPoetVersion'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'mailpoet_premium_version',
         array($this, 'getMailPoetPremiumVersion'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'mailpoet_has_valid_premium_key',
         array($this, 'hasValidPremiumKey'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'wp_time_format',
         array($this, 'getWPTimeFormat'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'wp_datetime_format',
         array($this, 'getWPDateTimeFormat'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'do_action',
         'do_action',
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'is_rtl',
         array($this, 'isRtl'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'number_format_i18n',
         'number_format_i18n',
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'mailpoet_locale',
         array($this, 'getTwoLettersLocale'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'mailpoet_free_domains',
         array($this, 'getFreeDomains'),
         array('is_safe' => array('all'))
