@@ -193,7 +193,9 @@ const itemActions = [
     name: 'view_subscribers',
     link: function link(item) {
       return (
-        <a href={item.subscribers_url}>{MailPoet.I18n.t('viewSubscribers')}</a>
+        <a href={item.subscribers_url} data-automation-id={`view_subscribers_${item.name}`}>
+          {MailPoet.I18n.t('viewSubscribers')}
+        </a>
       );
     },
   },
@@ -240,7 +242,7 @@ class SegmentList extends React.Component {
 
     return (
       <div>
-        <td className={rowClasses}>
+        <td className={rowClasses} data-automation-id={`segment_name_${segment.name}`}>
           <strong>
             { segmentName }
           </strong>
