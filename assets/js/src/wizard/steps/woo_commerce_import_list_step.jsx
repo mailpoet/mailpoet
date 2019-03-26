@@ -45,6 +45,7 @@ class WizardWooCommerceImportListStep extends React.Component {
               checked={this.state.importType === 'subscribed'}
               onChange={this.handleOptionChange}
               value="subscribed"
+              data-automation-id="import_as_subscribed"
             />
             {ReactHtmlParser(MailPoet.I18n.t('wooCommerceListImportCheckboxSubscribed'))}
           </label>
@@ -56,6 +57,7 @@ class WizardWooCommerceImportListStep extends React.Component {
               checked={this.state.importType === 'unsubscribed'}
               onChange={this.handleOptionChange}
               value="unsubscribed"
+              data-automation-id="import_as_unsubscribed"
             />
             {ReactHtmlParser(MailPoet.I18n.t('wooCommerceListImportCheckboxUnsubscribed'))}
           </label>
@@ -65,6 +67,7 @@ class WizardWooCommerceImportListStep extends React.Component {
             type="submit"
             value={MailPoet.I18n.t('wooCommerceListImportSubmit')}
             disabled={!this.state.importType || this.props.loading}
+            data-automation-id="submit_woo_commerce_list_import"
           />
         </form>
       </div>
