@@ -14,6 +14,7 @@ use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCh
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
@@ -38,6 +39,9 @@ class WorkersFactory {
   /** @var InactiveSubscribersController */
   private $inactive_subscribers_controller;
 
+  /** @var WooCommerceHelper */
+  private $woocommerce_helper;
+
   /**
    * @var Renderer
    */
@@ -50,7 +54,8 @@ class WorkersFactory {
     Renderer $renderer,
     SettingsController $settings,
     WooCommerceSegment $woocommerce_segment,
-    InactiveSubscribersController $inactive_subscribers_controller
+    InactiveSubscribersController $inactive_subscribers_controller,
+    WooCommerceHelper $woocommerce_helper
   ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->scheduler = $scheduler;
@@ -59,6 +64,7 @@ class WorkersFactory {
     $this->settings = $settings;
     $this->woocommerce_segment = $woocommerce_segment;
     $this->inactive_subscribers_controller = $inactive_subscribers_controller;
+    $this->woocommerce_helper = $woocommerce_helper;
   }
 
   /** @return SchedulerWorker */
@@ -97,7 +103,7 @@ class WorkersFactory {
 
   /** @return WooCommerceSyncWorker */
   function createWooCommerceSyncWorker($timer) {
-    return new WooCommerceSyncWorker($this->woocommerce_segment, $timer);
+    return new WooCommerceSyncWorker($this->woocommerce_segment, $this->woocommerce_helper, $timer);
   }
 
   /** @return ExportFilesCleanup */
