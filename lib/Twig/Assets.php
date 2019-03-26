@@ -5,7 +5,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
-class Assets extends \Twig_Extension {
+class Assets extends \MailPoetVendor\Twig_Extension {
   const CDN_URL = 'https://ps.w.org/mailpoet/';
   private $_globals;
 
@@ -15,22 +15,22 @@ class Assets extends \Twig_Extension {
 
   function getFunctions() {
     return array(
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'stylesheet',
         array($this, 'generateStylesheet'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'javascript',
         array($this, 'generateJavascript'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'image_url',
         array($this, 'generateImageUrl'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'cdn_url',
         array($this, 'generateCdnUrl'),
         array('is_safe' => array('all'))

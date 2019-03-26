@@ -6,7 +6,7 @@ use MailPoet\Settings\SettingsController;
 
 if (!defined('ABSPATH')) exit;
 
-class Polls extends \Twig_Extension {
+class Polls extends \MailPoetVendor\Twig_Extension {
 
   /** @var SettingsController */
   private $settings;
@@ -17,12 +17,12 @@ class Polls extends \Twig_Extension {
 
   public function getFunctions() {
     return array(
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'get_polls_data',
         array($this, 'getPollsData'),
         array('is_safe' => array('all'))
       ),
-      new \Twig_SimpleFunction(
+      new \MailPoetVendor\Twig_SimpleFunction(
         'get_polls_visiblity',
         array($this, 'getPollsVisibility'),
         array('is_safe' => array('all'))

@@ -7,7 +7,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
-class I18n extends \Twig_Extension {
+class I18n extends \MailPoetVendor\Twig_Extension {
 
   private $_text_domain;
 
@@ -30,7 +30,7 @@ class I18n extends \Twig_Extension {
     );
 
     foreach ($functions as $twig_function => $function) {
-      $twig_functions[] = new \Twig_SimpleFunction(
+      $twig_functions[] = new \MailPoetVendor\Twig_SimpleFunction(
         $twig_function,
         array($this, $function),
         array('is_safe' => array('all'))

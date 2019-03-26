@@ -15,17 +15,11 @@ class RequirementsChecker {
   const TEST_MBSTRING_EXTENSION = 'MbstringExtension';
   const TEST_XML_EXTENSION = 'XmlExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
-  const TWIG_SUPPORTED_VERSIONS = '1.26.0-1.34.4';
 
   public $display_error_notice;
   public $vendor_classes = array(
     '\ORM',
     '\Model',
-    '\Twig_Environment',
-    '\Twig_Loader_Filesystem',
-    '\Twig_Lexer',
-    '\Twig_Extension',
-    '\Twig_SimpleFunction',
     '\Swift_Mailer',
     '\Swift_SmtpTransport',
     '\Swift_Message',
@@ -131,28 +125,11 @@ class RequirementsChecker {
           $dependency_path
         );
 
-        $return_error = true;
-
-        // if a Twig dependency is loaded by another plugin, check for valid version
-        if (strpos($dependency, '\Twig_') === 0) {
-          $return_error = ($this->isValidTwigVersion()) ? false : $return_error;
-        }
-
-        if ($return_error) return $this->processError($error);
+        return $this->processError($error);
       }
     }
 
     return true;
-  }
-
-  function isValidTwigVersion() {
-    list($minimum_version, $maximum_version) = explode('-', self::TWIG_SUPPORTED_VERSIONS);
-    return (
-      class_exists('\Twig_Environment') &&
-      defined('\Twig_Environment::VERSION') &&
-      version_compare(\Twig_Environment::VERSION, $minimum_version, '>=') &&
-      version_compare(\Twig_Environment::VERSION, $maximum_version, '<=')
-    );
   }
 
   private function getDependencyPath($namespaced_class) {

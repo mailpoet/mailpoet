@@ -5,6 +5,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Env;
 use MailPoet\Config\Renderer;
+use MailPoetVendor\Twig_Environment;
 
 class RendererTest extends \MailPoetTest {
   function _before() {
@@ -75,7 +76,7 @@ class RendererTest extends \MailPoetTest {
       $this->renderer,
       array(),
       array(
-        'renderer' => Stub::makeEmpty('Twig_Environment',
+        'renderer' => Stub::makeEmpty(Twig_Environment::class,
           array(
             'render' => Expected::atLeastOnce(function() {
               return 'test render';
@@ -95,7 +96,7 @@ class RendererTest extends \MailPoetTest {
       $this->renderer,
       array(true, false),
       array(
-        'renderer' => Stub::makeEmpty('Twig_Environment',
+        'renderer' => Stub::makeEmpty(Twig_Environment::class,
           array(
             'render' => Expected::atLeastOnce(function() use ($exception_message) {
               throw new \RuntimeException($exception_message);
