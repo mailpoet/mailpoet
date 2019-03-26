@@ -94,4 +94,8 @@ class Settings {
     $this->settings->set('accept_cookie_revenue_tracking', true);
     return $this;
   }
+
+  function withWooCommerceListImportPageDisplayed($was_shown) {
+    $this->settings->set('woocommerce.import_screen_displayed', $was_shown ? 1 : 0);
+  }
 }
