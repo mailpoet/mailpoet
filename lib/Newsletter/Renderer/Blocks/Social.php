@@ -10,10 +10,15 @@ class Social {
           continue;
         }
 
-        $icons_block .= '
-        <a href="' . $icon['link'] . '" style="text-decoration:none!important;">
-          <img src="' . $icon['image'] . '" width="' . (int)$icon['width'] . '" height="' . (int)$icon['height'] . '" style="width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;" alt="' . $icon['iconType'] . '">
-        </a>';
+        $icons_block .= '<a 
+          href="' . $icon['link'] . '" style="text-decoration:none!important;"
+        ><img 
+          src="' . $icon['image'] . '" 
+          width="' . (int)$icon['width'] . '" 
+          height="' . (int)$icon['height'] . '" 
+          style="width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;" 
+          alt="' . $icon['iconType'] . '"
+        ></a>&nbsp;';
       }
     }
     $alignment = isset($element['styles']['block']['textAlign']) ? $element['styles']['block']['textAlign'] : 'center';
