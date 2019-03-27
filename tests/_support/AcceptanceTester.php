@@ -243,4 +243,75 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->cli('plugin deactivate woocommerce --allow-root');
   }
 
+  /**
+   * Order a product and create an account within the order process
+   */
+  public function orderProduct(array $product, $user_email, $do_register = true) {
+    $I = $this;
+    $I->addProductToCart($product);
+    $I->goToCheckout();
+    $I->fillCustomerInfo($user_email);
+    if ($do_register) {
+      $I->optInForRegistration();
+    }
+    $I->selectPaymentMethod();
+    $I->placeOrder();
+  }
+  /**
+   * WooCommerce ordering process methods, should be used sequentially
+   */
+  /**
+   * Add a product to cart
+   */
+  public function addProductToCart(array $product) {
+    $I = $this;
+    $I->amOnPage('product/' . $product['slug']);
+    $I->click('Add to cart');
+    $I->waitForText("“{$product['name']}” has been added to your cart.");
+  }
+  /**
+   * Go to the checkout page
+   */
+  public function goToCheckout() {
+    $I = $this;
+    $I->amOnPage('checkout');
+  }
+  /**
+   * Fill the customer info
+   */
+  public function fillCustomerInfo($user_email) {
+    $I = $this;
+    $I->fillField('billing_first_name', 'John');
+    $I->fillField('billing_last_name', 'Doe');
+    $I->fillField('billing_address_1', 'Address 1');
+    $I->fillField('billing_city', 'Paris');
+    $I->fillField('billing_email', $user_email);
+    $I->fillField('billing_postcode', '75000');
+    $I->fillField('billing_phone', '123456');
+  }
+  /**
+   * Check the option for creating an account
+   */
+  public function optInForRegistration() {
+    $I = $this;
+    $I->scrollTo(['css' => '#createaccount'], 0, -40);
+    $I->click('#createaccount');
+  }
+  /**
+   * Select a payment method (cheque, cod, ppec_paypal)
+   */
+  public function selectPaymentMethod($method = 'cod') {
+    $I = $this;
+    $I->scrollTo('#payment_method_' . $method);
+    $I->waitForElementNotVisible('.blockOverlay', 20); // wait for payment method loading overlay to disappear
+    $I->click('#payment_method_' . $method);
+  }
+  /**
+   * Place the order
+   */
+  public function placeOrder() {
+    $I = $this;
+    $I->click('Place order');
+    $I->waitForText('Your order has been received');
+  }
 }
