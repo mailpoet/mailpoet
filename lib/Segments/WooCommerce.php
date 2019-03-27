@@ -24,10 +24,6 @@ class WooCommerce {
   }
 
   function synchronizeRegisteredCustomer($wp_user_id, $current_filter = null) {
-    if (!$current_filter && !$this->settings->get('enable_wc_hooks_testing')) {
-      return false; // temporarily disable hooks (except for testing)
-    }
-
     $wc_segment = Segment::getWooCommerceSegment();
 
     if ($wc_segment === false) return;
@@ -76,10 +72,6 @@ class WooCommerce {
   }
 
   function synchronizeGuestCustomer($order_id, $current_filter = null) {
-    if (!$current_filter && !$this->settings->get('enable_wc_hooks_testing')) {
-      return false; // temporarily disable hooks (except for testing)
-    }
-
     $wc_order = $this->wp->getPost($order_id);
     $wc_segment = Segment::getWooCommerceSegment();
 
