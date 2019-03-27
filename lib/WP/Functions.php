@@ -19,15 +19,32 @@ class Functions {
     self::$instance = $instance;
   }
 
-  function doAction() {
+  /**
+   * @param string $tag
+   * @param mixed ...$args
+   * @return mixed
+   */
+  function doAction($tag, ...$args) {
     return call_user_func_array('do_action', func_get_args());
   }
 
-  function applyFilters() {
+  /**
+   * @param string $tag
+   * @param mixed ...$args
+   * @return mixed
+   */
+  function applyFilters($tag, ...$args) {
     return call_user_func_array('apply_filters', func_get_args());
   }
 
-  function addAction() {
+  /**
+   * @param string $tag
+   * @param callable $function_to_add
+   * @param int $priority
+   * @param int $accepted_args
+   * @return boolean
+   */
+  function addAction($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
     return call_user_func_array('add_action', func_get_args());
   }
 
