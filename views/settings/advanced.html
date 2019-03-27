@@ -288,21 +288,25 @@
       <td>
         <select
           name="logging"
+          data-automation-id="logging-select-box"
         >
           <option
             value="everything"
+            data-automation-id="log-everything"
             <% if settings.logging == "everything" %>
               selected
             <% endif %>
           ><%= _x('Everything', 'In settings: "Logging: Everything"') %>
           <option
             value="errors"
+            data-automation-id="log-errors"
             <% if settings.logging != "nothing" and settings.logging != "everything" %>
               selected
             <% endif %>
           ><%= _x('Errors only', 'In settings: "Logging: Errors only"') %>
           <option
             value="nothing"
+            data-automation-id="log-nothing"
             <% if settings.logging == "nothing" %>
               selected
             <% endif %>
