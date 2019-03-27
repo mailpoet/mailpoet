@@ -19,16 +19,13 @@ class SubscriberSegment extends Model {
     $subscriber->save();
 
     $wp_segment = Segment::getWPSegment();
-    $wc_segment = Segment::getWooCommerceSegment();
 
     if (!empty($segment_ids)) {
       // unsubscribe from segments
       foreach ($segment_ids as $segment_id) {
 
-        // do not remove subscriptions to the WP Users or WooCommerce Customers segments
-        if (($wp_segment !== false && (int)$wp_segment->id === (int)$segment_id)
-          || ($wc_segment !== false && (int)$wc_segment->id === (int)$segment_id)
-        ) {
+        // do not remove subscriptions to the WP Users segment
+        if ($wp_segment !== false && (int)$wp_segment->id === (int)$segment_id) {
           continue;
         }
 
@@ -47,11 +44,6 @@ class SubscriberSegment extends Model {
       if ($wp_segment !== false) {
         $subscriptions = $subscriptions->whereNotEqual(
           'segment_id', $wp_segment->id
-        );
-      }
-      if ($wc_segment !== false) {
-        $subscriptions = $subscriptions->whereNotEqual(
-          'segment_id', $wc_segment->id
         );
       }
 
