@@ -31,18 +31,6 @@ class Functions {
     return call_user_func_array('add_action', func_get_args());
   }
 
-  function wcGetCustomerOrderCount($user_id) {
-    return call_user_func_array('wc_get_customer_order_count', [$user_id]);
-  }
-
-  function wcGetOrder($order = false) {
-    return call_user_func_array('wc_get_order', [$order]);
-  }
-
-  function wcPrice($price, array $args = array()) {
-    return call_user_func_array('wc_price', [$price, $args]);
-  }
-
   function __($text, $domain = 'default') {
     return __($text, $domain);
   }
