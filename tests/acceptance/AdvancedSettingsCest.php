@@ -102,4 +102,42 @@ class AdvancedSettingsCest {
     $I->waitForText('The information below is useful');
     $I->waitForText($systemInfoWordPressCron);
   }
+
+  function toggleLogging(\AcceptanceTester $I) {
+    $I->wantTo('Toggle logging options and confirm output');
+    $loggingSelectBox = '[data-automation-id="logging-select-box"]';
+    $chooseLogEverything = '[data-automation-id="log-everything"]';
+    $chooseLogErrors = '[data-automation-id="log-errors"]';
+    $chooseLogNothing = '[data-automation-id="log-nothing"]';
+    $submitButton = '[data-automation-id="settings-submit-button"]';
+    $successMessage = "Settings saved";
+    //choose to log everything
+    $I->login();
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->waitForElement($loggingSelectBox);
+    $I->click($loggingSelectBox);
+    $I->click($chooseLogEverything);
+    $I->click($submitButton);
+    $I->waitForText($successMessage);
+    $I->waitForElement($chooseLogEverything);
+    //chose to log nothing
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->click($loggingSelectBox);
+    $I->click($chooseLogNothing);
+    $I->click($submitButton);
+    $I->waitForText($successMessage);
+    $I->waitForElement($chooseLogNothing);
+    //choose to log errors only, this is the default
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->waitForElement($loggingSelectBox);
+    $I->click($loggingSelectBox);
+    $I->click($chooseLogErrors);
+    $I->click($submitButton);
+    $I->waitForText($successMessage);
+    $I->waitForElement($chooseLogErrors);
+  }
+
 }
