@@ -1,15 +1,62 @@
 <table class="form-table">
   <tr>
     <th scope="row">
+      <label for="settings[woocommerce_optin_on_checkout]">
+        <%= _x('Opt-in on checkout', "settings area: add an email opt-in checkbox on the checkout page (e-commerce websites)") %>
+      </label>
+      <p class="description">
+        <%= __('Customers can subscribe to the "WooCommerce Customers" list via a checkbox on the checkout page.') %>
+      </p>
+    </th>
+    <td>
+      <p>
+        <input
+        data-toggle="mailpoet_woocommerce_optin_on_checkout"
+        type="checkbox"
+        value="1"
+        id="settings[woocommerce_optin_on_checkout]"
+        name="woocommerce[optin_on_checkout][enabled]"
+        <% if(settings.woocommerce.optin_on_checkout.enabled) %>checked="checked"<% endif %>
+        >
+      </p>
+    </td>
+  </tr>
+  <tr id="mailpoet_woocommerce_optin_on_checkout">
+    <th scope="row">
+      <label for="settings[woocommerce_checkbox_optin_message]">
+        <%= _x('Checkbox opt-in message', "settings area: set the email opt-in message on the checkout page (e-commerce websites)") %>
+      </label>
+      <p class="description">
+        <%= __('This is the checkbox message your customers will see on your WooCommerce checkout page to subscribe to the "WooCommerce Customers" list.') %>
+      </p>
+    </th>
+    <td>
+      <p>
+        <input type="text"
+          id="woocommerce_checkbox_optin_message"
+          name="woocommerce[optin_on_checkout][message]"
+          value="<%= settings.woocommerce.optin_on_checkout.message %>"
+          placeholder="<%= _x('Checkbox opt-in message', "placeholder text for the WooCommerce checkout opt-in message") %>"
+          class="regular-text" />
+          <br>
+          <div id="settings_woocommerce_optin_on_checkout_error" class="mailpoet_error_item mailpoet_error">
+            <%= __('The checkbox opt-in message cannot be empty.') %>
+          </div>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <th scope="row">
       <label for="settings[mailpoet_subscribe_old_woocommerce_customers]">
         <%= __('Subscribe old WooCommerce customers') %>
       </label>
       <p class="description">
         <%= __('Subscribe all my past customers to this list because they agreed to receive marketing emails from me.') %>
+      </p>
+    </th>
     <td>
       <p>
         <input
-        data-toggle="mailpoet_subscribe_old_woocommerce_customers"
         type="checkbox"
         value="1"
         id="settings[mailpoet_subscribe_old_woocommerce_customers]"
@@ -30,5 +77,7 @@
           value="1"
           name="mailpoet_subscribe_old_woocommerce_customers[dummy]"
         >
+      </p>
+    </td>
+  </tr>
 </table>
-
