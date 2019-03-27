@@ -1,11 +1,11 @@
 /**
- * Posts block.
+ * Products block.
  *
  * This block works slightly differently compared to any other block.
  * The difference is that once the user changes settings of this block,
  * it will be removed and replaced with other blocks. So this block will
  * not appear in the final JSON structure, it serves only as a placeholder
- * for posts, that will be comprised of container, image, button and text blocks
+ * for products, that will be comprised of container, image, button and text blocks
  *
  * This block depends on blocks.button and blocks.divider for block model and
  * block settings view.
@@ -39,7 +39,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
       withLayout: true,
       amount: '10',
       offset: 0,
-      contentType: 'post', // 'post'|'page'|'mailpoet_page'
+      contentType: 'product',
       postStatus: 'publish', // 'draft'|'pending'|'private'|'publish'|'future'
       terms: [], // List of category and tag objects
       search: '', // Search keyword term
@@ -94,7 +94,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
 
     this.fetchAvailableProducts();
     this.on('change', this._updateDefaults, this);
-    this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailableProducts);
+    this.on('change:amount change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailableProducts);
     this.on('loadMoreProducts', this._loadMoreProducts, this);
 
     this.listenTo(this.get('_selectedProducts'), 'add remove reset', refreshTransformedProducts);
@@ -107,6 +107,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
   fetchAvailableProducts: function fetchAvailableProducts() {
     var that = this;
     this.set('offset', 0);
+    this.set('contentType', 'product');
     CommunicationComponent.getPosts(this.toJSON()).done(function getPostsDone(products) {
       that.get('_availableProducts').reset(products);
       that.get('_selectedProducts').reset(); // Empty out the collection
@@ -313,13 +314,12 @@ ProductSelectionSettingsView = Marionette.View.extend({
     return window.templates.postSelectionProductsBlockSettings;
   },
   regions: {
-    posts: '.mailpoet_post_selection_container',
+    posts: '.mailpoet_product_selection_container',
   },
   events: function events() {
     return {
-      'change .mailpoet_settings_posts_content_type': _.partial(this.changeField, 'contentType'),
-      'change .mailpoet_posts_post_status': _.partial(this.changeField, 'postStatus'),
-      'input .mailpoet_posts_search_term': _.partial(this.changeField, 'search'),
+      'change .mailpoet_products_post_status': _.partial(this.changeField, 'postStatus'),
+      'input .mailpoet_products_search_term': _.partial(this.changeField, 'search'),
     };
   },
   modelEvents: {
@@ -330,10 +330,10 @@ ProductSelectionSettingsView = Marionette.View.extend({
       }
     },
     loadingMoreProducts: function loadingMoreProducts() {
-      this.$('.mailpoet_post_selection_loading').css('visibility', 'visible');
+      this.$('.mailpoet_product_selection_loading').css('visibility', 'visible');
     },
     moreProductsLoaded: function moreProductsLoaded() {
-      this.$('.mailpoet_post_selection_loading').css('visibility', 'hidden');
+      this.$('.mailpoet_product_selection_loading').css('visibility', 'hidden');
     },
   },
   templateContext: function templateContext() {
@@ -344,7 +344,6 @@ ProductSelectionSettingsView = Marionette.View.extend({
   onRender: function onRender() {
     var productsView;
     // Dynamically update available post types
-    CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
     productsView = new ProductSelectionCollectionView({
       collection: this.model.get('_availableProducts'),
       blockModel: this.model,
@@ -355,7 +354,7 @@ ProductSelectionSettingsView = Marionette.View.extend({
   onAttach: function onAttach() {
     var that = this;
 
-    this.$('.mailpoet_posts_categories_and_tags').select2({
+    this.$('.mailpoet_products_categories_and_tags').select2({
       multiple: true,
       allowClear: true,
       placeholder: MailPoet.I18n.t('categoriesAndTags'),
@@ -427,19 +426,6 @@ ProductSelectionSettingsView = Marionette.View.extend({
   changeField: function changeField(field, event) {
     this.model.set(field, jQuery(event.target).val());
   },
-  _updateContentTypes: function updateContentTypes(productTypes) {
-    var select = this.$('.mailpoet_settings_posts_content_type');
-    var selectedValue = this.model.get('contentType');
-
-    select.find('option').remove();
-    _.each(productTypes, function productTypesMap(type) {
-      select.append(jQuery('<option>', {
-        value: type.name,
-        text: type.label,
-      }));
-    });
-    select.val(selectedValue);
-  },
 });
 
 EmptyProductSelectionSettingsView = Marionette.View.extend({
@@ -487,7 +473,6 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_posts_title_as_links': _.partial(this.changeBoolField, 'titleIsLink'),
       'change .mailpoet_posts_show_divider': _.partial(this.changeBoolField, 'showDivider'),
       'input .mailpoet_posts_show_amount': _.partial(this.changeField, 'amount'),
-      'change .mailpoet_posts_content_type': _.partial(this.changeField, 'contentType'),
       'change .mailpoet_posts_include_or_exclude': _.partial(this.changeField, 'inclusionType'),
       'change .mailpoet_posts_title_alignment': _.partial(this.changeField, 'titleAlignment'),
       'change .mailpoet_posts_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
