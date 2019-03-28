@@ -236,3 +236,16 @@ foreach ($replacements as $single_file) {
   $data = str_replace($single_file['find'], $single_file['replace'], $data);
   file_put_contents($single_file['file'], $data);
 }
+
+// Remove unwanted class aliases
+// Files in twig/lib directory contain class aliases which makes namespaced classes global
+// e.g. \class_alias('MailPoetVendor\\Twig_CompilerInterface', 'Twig_CompilerInterface', \false);
+$iterator = new RecursiveDirectoryIterator("../vendor-prefixed/twig/twig/lib", RecursiveDirectoryIterator::SKIP_DOTS);
+$files = new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::SELF_FIRST);
+foreach ($files as $file) {
+  if (substr($file, -3) === 'php') {
+    $data = file_get_contents($file);
+    $data = preg_replace('/\\\\class.alias.*MailPoetVendor.*\);/', '', $data, -1, $count);
+    file_put_contents($file, $data);
+  }
+}
