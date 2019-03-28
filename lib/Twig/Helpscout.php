@@ -2,12 +2,14 @@
 
 namespace MailPoet\Twig;
 
+use MailPoetVendor\Twig\TwigFunction;
+
 if (!defined('ABSPATH')) exit;
 
-class Helpscout extends \MailPoetVendor\Twig_Extension {
+class Helpscout extends \MailPoetVendor\Twig\Extension\AbstractExtension {
   public function getFunctions() {
     return array(
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'get_helpscout_data',
         '\MailPoet\Helpscout\Beacon::getData',
         array('is_safe' => array('all'))

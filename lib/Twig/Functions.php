@@ -7,10 +7,12 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\FreeDomains;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Twig\Extension\AbstractExtension;
+use MailPoetVendor\Twig\TwigFunction;
 
 if (!defined('ABSPATH')) exit;
 
-class Functions extends \MailPoetVendor\Twig_Extension {
+class Functions extends AbstractExtension {
 
   /** @var SettingsController */
   private $settings;
@@ -21,97 +23,97 @@ class Functions extends \MailPoetVendor\Twig_Extension {
 
   function getFunctions() {
     return array(
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'json_encode',
         'json_encode',
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'json_decode',
         'json_decode',
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'wp_nonce_field',
         'wp_nonce_field',
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'params',
         array($this, 'params'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'admin_url',
         'admin_url',
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'get_option',
         'get_option',
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'get_option',
         'get_option',
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'sending_frequency',
         array($this, 'getSendingFrequency'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'wp_date_format',
         array($this, 'getWPDateFormat'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'mailpoet_version',
         array($this, 'getMailPoetVersion'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'mailpoet_premium_version',
         array($this, 'getMailPoetPremiumVersion'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'mailpoet_has_valid_premium_key',
         array($this, 'hasValidPremiumKey'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'wp_time_format',
         array($this, 'getWPTimeFormat'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'wp_datetime_format',
         array($this, 'getWPDateTimeFormat'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'do_action',
         'do_action',
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'is_rtl',
         array($this, 'isRtl'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'number_format_i18n',
         'number_format_i18n',
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'mailpoet_locale',
         array($this, 'getTwoLettersLocale'),
         array('is_safe' => array('all'))
       ),
-      new \MailPoetVendor\Twig_SimpleFunction(
+      new TwigFunction(
         'mailpoet_free_domains',
         array($this, 'getFreeDomains'),
         array('is_safe' => array('all'))
