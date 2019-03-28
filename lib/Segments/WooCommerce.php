@@ -283,17 +283,20 @@ class WooCommerce {
       $status = Subscriber::STATUS_SUBSCRIBED;
     }
     $subscribers_table = Subscriber::$_table;
+    $subscriber_segment_table = SubscriberSegment::$_table;
+    $wc_segment = Segment::getWooCommerceSegment();
 
     $sql = sprintf('
-      UPDATE %1$s
-      SET status = "%2$s"
+      UPDATE %1$s mpss
+        JOIN %2$s mps ON mpss.subscriber_id = mps.id
+      SET mpss.status = "%3$s"
         WHERE
-          `confirmed_at` IS NULL
-          AND `confirmed_ip` IS NULL
-          AND `is_woocommerce_user` = 1
-    ', $subscribers_table, $status);
+          mpss.segment_id = %4$s
+          AND mps.confirmed_at IS NULL
+          AND mps.confirmed_ip IS NULL
+          AND mps.is_woocommerce_user = 1
+    ', $subscriber_segment_table, $subscribers_table, $status, $wc_segment->id);
 
     Subscriber::rawExecute($sql);
-
   }
 }
