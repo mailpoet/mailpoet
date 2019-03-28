@@ -21,7 +21,7 @@ class WooCommerceProduct {
     $this->data = [
       'name' => 'Product',
       'type' => self::TYPE_SIMPLE,
-      'sku' => 'WC_PR_'. uniqid(),
+      'sku' => null,
       'price' => 10,
       'categoryId' => null,
       'tagId' => null
@@ -53,13 +53,6 @@ class WooCommerceProduct {
   }
 
   /**
-   * @return $this
-   */
-  function withRandomSku() {
-    return $this->update('sku', 'WC_PR_'. uniqid());
-  }
-
-  /**
    * @param int $price
    * @return $this
    */
@@ -86,9 +79,13 @@ class WooCommerceProduct {
   function create() {
     $create_command = "wc product create --porcelain --allow-root --user=admin";
     $create_command .= " --name=\"{$this->data['name']}\"";
-    $create_command .= " --sku=\"{$this->data['sku']}\"";
     $create_command .= " --type=\"{$this->data['type']}\"";
     $create_command .= " --regular_price={$this->data['price']}";
+    if ($this->data['sku']) {
+      $create_command .= " --sku=\"{$this->data['sku']}\"";
+    } else {
+      $create_command .= ' --sku="WC_PR_' . uniqid() . '"';
+    }
     if ($this->data['categoryId']) {
       $create_command .= " --categories='[{ \"id\": {$this->data['categoryId']} }]'";
     }
