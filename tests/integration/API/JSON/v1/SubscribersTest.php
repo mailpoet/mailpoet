@@ -601,6 +601,32 @@ class SubscribersTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(1);
   }
 
+  function testItDoesNotSchedulesWelcomeEmailNotificationWhenNoNewSegmentIsAdded() {
+    $this->_createWelcomeNewsletter();
+    $subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'raul.doe@mailpoet.com',
+      'first_name' => 'Jane',
+      'last_name' => 'Doe',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'segments' => [
+        $this->segment_1->id
+      ],
+      'source' => Source::IMPORTED,
+    ));
+    $subscriber_data = array(
+      'id' => $subscriber->id(),
+      'email' => 'raul.doe@mailpoet.com',
+      'first_name' => 'Raul',
+      'last_name' => 'Doe',
+      'segments' => array(
+        $this->segment_1->id
+      )
+    );
+
+    $this->endpoint->save($subscriber_data);
+    expect(SendingQueue::findMany())->count(0);
+  }
+
   private function _createWelcomeNewsletter() {
     $welcome_newsletter = Newsletter::create();
     $welcome_newsletter->type = Newsletter::TYPE_WELCOME;

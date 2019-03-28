@@ -10,6 +10,7 @@ use MailPoet\Listing;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
@@ -229,6 +230,7 @@ class Subscribers extends APIEndpoint {
     if (empty($data['segments'])) {
       $data['segments'] = array();
     }
+    $new_segments = $this->findNewSegments($data);
     $subscriber = Subscriber::createOrUpdate($data);
     $errors = $subscriber->getErrors();
 
@@ -241,13 +243,24 @@ class Subscribers extends APIEndpoint {
       $subscriber->save();
     }
 
-    if (!empty($data['segments'])) {
-      Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $data['segments']);
+    if (!empty($new_segments)) {
+      Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $new_segments);
     }
 
     return $this->successResponse(
       Subscriber::findOne($subscriber->id)->asArray()
     );
+  }
+
+  private function findNewSegments(array $data) {
+    $old_segment_ids = [];
+    if (isset($data['id']) && (int)$data['id'] > 0) {
+      $old_segments = SubscriberSegment::where('subscriber_id', $data['id'])->findMany();
+      foreach ($old_segments as $old_segment) {
+        $old_segment_ids[] = $old_segment->segment_id;
+      }
+    }
+    return array_diff($data['segments'], $old_segment_ids);
   }
 
   function restore($data = array()) {
