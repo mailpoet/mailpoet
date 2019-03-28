@@ -22,7 +22,9 @@ class WooCommerceProduct {
       'name' => 'Product',
       'type' => self::TYPE_SIMPLE,
       'sku' => 'WC_PR_'. uniqid(),
-      'price' => 10
+      'price' => 10,
+      'categoryId' => null,
+      'tagId' => null
     ];
   }
 
@@ -51,6 +53,13 @@ class WooCommerceProduct {
   }
 
   /**
+   * @return $this
+   */
+  function withRandomSku() {
+    return $this->update('sku', 'WC_PR_'. uniqid());
+  }
+
+  /**
    * @param int $price
    * @return $this
    */
@@ -58,10 +67,47 @@ class WooCommerceProduct {
     return $this->update('price', $price);
   }
 
+  /**
+   * @param int $id
+   * @return $this
+   */
+  function withCategory($id) {
+    return $this->update('categoryId', $id);
+  }
+
+  /**
+   * @param int $id
+   * @return $this
+   */
+  function withTag($id) {
+    return $this->update('tagId', $id);
+  }
+
   function create() {
-    $create_output = $this->tester->cliToArray("wc product create --porcelain --allow-root --user=admin --name=\"{$this->data['name']}\" --sku=\"{$this->data['sku']}\" --type=\"{$this->data['type']}\" --regular_price={$this->data['price']}");
+    $create_command = "wc product create --porcelain --allow-root --user=admin";
+    $create_command .= " --name=\"{$this->data['name']}\"";
+    $create_command .= " --sku=\"{$this->data['sku']}\"";
+    $create_command .= " --type=\"{$this->data['type']}\"";
+    $create_command .= " --regular_price={$this->data['price']}";
+    if ($this->data['categoryId']) {
+      $create_command .= " --categories='[{ \"id\": {$this->data['categoryId']} }]'";
+    }
+    if ($this->data['tagId']) {
+      $create_command .= " --tags='[{ \"id\": {$this->data['tagId']} }]'";
+    }
+    $create_output = $this->tester->cliToArray($create_command);
     $product_out = $this->tester->cliToArray("wc product get $create_output[0] --format=json --allow-root --user=admin");
     return json_decode($product_out[0], true);
+  }
+
+  function createCategory($name) {
+    $create_output = $this->tester->cliToArray("wc product_cat create --porcelain --allow-root --user=admin --name=\"{$name}\"");
+    return $create_output[0];
+  }
+
+  function createTag($name) {
+    $create_output = $this->tester->cliToArray("wc product_tag create --porcelain --allow-root --user=admin --name=\"{$name}\"");
+    return $create_output[0];
   }
 
   /**

@@ -18,7 +18,7 @@ modules:
             url: 'http://test.local'
             browser: chrome
             port: 4444
-            window_size: '1024x768'
+            window_size: '1280x980'
             restart: true
             wait: 0
             adminUsername: admin
