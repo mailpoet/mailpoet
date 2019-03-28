@@ -257,9 +257,11 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->selectPaymentMethod();
     $I->placeOrder();
   }
+
   /**
    * WooCommerce ordering process methods, should be used sequentially
    */
+
   /**
    * Add a product to cart
    */
@@ -269,6 +271,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->click('Add to cart');
     $I->waitForText("“{$product['name']}” has been added to your cart.");
   }
+
   /**
    * Go to the checkout page
    */
@@ -276,6 +279,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $I = $this;
     $I->amOnPage('checkout');
   }
+
   /**
    * Fill the customer info
    */
@@ -289,6 +293,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->fillField('billing_postcode', '75000');
     $I->fillField('billing_phone', '123456');
   }
+
   /**
    * Check the option for creating an account
    */
@@ -297,15 +302,17 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->scrollTo(['css' => '#createaccount'], 0, -40);
     $I->click('#createaccount');
   }
+
   /**
    * Select a payment method (cheque, cod, ppec_paypal)
    */
   public function selectPaymentMethod($method = 'cod') {
     $I = $this;
     $I->scrollTo('#payment_method_' . $method);
-    $I->waitForElementNotVisible('.blockOverlay', 20); // wait for payment method loading overlay to disappear
+    $I->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
     $I->click('#payment_method_' . $method);
   }
+
   /**
    * Place the order
    */
