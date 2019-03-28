@@ -29,6 +29,9 @@ class SetupTest extends \MailPoetTest {
     $signup_confirmation = $settings->fetch('signup_confirmation.enabled');
     expect($signup_confirmation)->true();
 
+    $woocommerce_optin_on_checkout = $settings->fetch('woocommerce.optin_on_checkout');
+    expect($woocommerce_optin_on_checkout['enabled'])->true();
+
     $hook_name = 'mailpoet_setup_reset';
     expect(WPHooksHelper::isActionDone($hook_name))->true();
   }

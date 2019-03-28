@@ -146,7 +146,7 @@ class WooCommerceTest extends \MailPoetTest  {
     $random_number = 12345;
     $subscriber = Subscriber::createOrUpdate(array(
       'email' => 'user-sync-test' . $random_number . '@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED
+      'status' => Subscriber::STATUS_UNSUBSCRIBED
     ));
     $user = $this->insertRegisteredCustomer($random_number);
     $this->woocommerce_segment->synchronizeCustomers();
@@ -156,13 +156,14 @@ class WooCommerceTest extends \MailPoetTest  {
       ->findOne();
     expect($wp_subscriber)->notEmpty();
     expect($wp_subscriber->id)->equals($subscriber->id);
+    expect($wp_subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
   function testItSynchronizesPresubscribedGuestCustomers() {
     $random_number = 12345;
     $subscriber = Subscriber::createOrUpdate(array(
       'email' => 'user-sync-test' . $random_number . '@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED
+      'status' => Subscriber::STATUS_UNSUBSCRIBED
     ));
     $guest = $this->insertGuestCustomer($random_number);
     $this->woocommerce_segment->synchronizeCustomers();
@@ -172,6 +173,7 @@ class WooCommerceTest extends \MailPoetTest  {
       ->findOne();
     expect($wp_subscriber)->notEmpty();
     expect($wp_subscriber->email)->equals($subscriber->email);
+    expect($wp_subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
   function testItDoesNotSynchronizeEmptyEmailsForNewUsers() {
