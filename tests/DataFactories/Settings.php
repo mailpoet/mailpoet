@@ -97,10 +97,24 @@ class Settings {
 
   function withWooCommerceListImportPageDisplayed($was_shown) {
     $this->settings->set('woocommerce.import_screen_displayed', $was_shown ? 1 : 0);
+    return $this;
   }
 
   function withWooCommerceListSyncEnabled() {
     $this->settings->set('woo_commerce_list_sync_enabled', 1);
+    return $this;
+  }
+
+  function withWooCommerceCheckoutOptinEnabled() {
+    $this->settings->set('woocommerce.optin_on_checkout.enabled', true);
+    $this->settings->set('woocommerce.optin_on_checkout.message', 'Yes, I would like to be added to your mailing list');
+    return $this;
+  }
+
+  function withWooCommerceCheckoutOptinDisabled() {
+    $this->settings->set('woocommerce.optin_on_checkout.enabled', false);
+    $this->settings->set('woocommerce.optin_on_checkout.message', '');
+    return $this;
   }
 
   function withDeactivateSubscriberAfter3Months() {

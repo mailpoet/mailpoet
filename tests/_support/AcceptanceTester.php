@@ -246,7 +246,7 @@ class AcceptanceTester extends \Codeception\Actor {
   /**
    * Order a product and create an account within the order process
    */
-  public function orderProduct(array $product, $user_email, $do_register = true) {
+  public function orderProduct(array $product, $user_email, $do_register = true, $do_subscribe = true) {
     $I = $this;
     $I->addProductToCart($product);
     $I->goToCheckout();
@@ -255,6 +255,11 @@ class AcceptanceTester extends \Codeception\Actor {
       $I->optInForRegistration();
     }
     $I->selectPaymentMethod();
+    if ($do_subscribe) {
+      $I->optInForSubscription();
+    } else {
+      $I->optOutOfSubscription();
+    }
     $I->placeOrder();
   }
 
@@ -301,6 +306,22 @@ class AcceptanceTester extends \Codeception\Actor {
     $I = $this;
     $I->scrollTo(['css' => '#createaccount'], 0, -40);
     $I->click('#createaccount');
+  }
+
+  /**
+   * Check the option for subscribing to the WC list
+   */
+  public function optInForSubscription() {
+    $I = $this;
+    $I->checkOption('#mailpoet_woocommerce_checkout_optin');
+  }
+
+  /**
+   * Uncheck the option for subscribing to the WC list
+   */
+  public function optOutOfSubscription() {
+    $I = $this;
+    $I->uncheckOption('#mailpoet_woocommerce_checkout_optin');
   }
 
   /**
