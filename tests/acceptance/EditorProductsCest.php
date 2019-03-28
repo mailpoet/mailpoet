@@ -41,11 +41,9 @@ class EditorProductsCest {
     // Create products for multiple results
     for ($i = 0; $i < self::PRODUCTS_COUNT; $i++) {
       $this->product_factory
-        ->withRandomSku()
         ->withName(self::KEYWORD_MULTIPLE_RESULTS . ' ' . Security::generateRandomString())
         ->create();
       $this->product_factory
-        ->withRandomSku()
         ->withName(self::PRODUCT_PREFIX_CATEGORY . ' ' . Security::generateRandomString())
         ->withCategory($category_multiple_results_id)
         ->create();
