@@ -23,8 +23,8 @@ class WooCommerceProduct {
       'type' => self::TYPE_SIMPLE,
       'sku' => null,
       'price' => 10,
-      'categoryId' => null,
-      'tagId' => null
+      'categoryIds' => null,
+      'tagIds' => null
     ];
   }
 
@@ -61,19 +61,25 @@ class WooCommerceProduct {
   }
 
   /**
-   * @param int $id
+   * @param array $ids
    * @return $this
    */
-  function withCategory($id) {
-    return $this->update('categoryId', $id);
+  function withCategoryIds($ids) {
+    $ids = array_map(function($id){
+      return ['id' => $id];
+    }, $ids);
+    return $this->update('categoryIds', $ids);
   }
 
   /**
-   * @param int $id
+   * @param array $ids
    * @return $this
    */
-  function withTag($id) {
-    return $this->update('tagId', $id);
+  function withTagIds($ids) {
+    $ids = array_map(function($id){
+      return ['id' => $id];
+    }, $ids);
+    return $this->update('tagIds', $id);
   }
 
   function create() {
@@ -86,11 +92,11 @@ class WooCommerceProduct {
     } else {
       $create_command .= ' --sku="WC_PR_' . uniqid() . '"';
     }
-    if ($this->data['categoryId']) {
-      $create_command .= " --categories='[{ \"id\": {$this->data['categoryId']} }]'";
+    if ($this->data['categoryIds']) {
+      $create_command .= " --categories='" . json_encode($this->data['categoryIds']) . "'";
     }
-    if ($this->data['tagId']) {
-      $create_command .= " --tags='[{ \"id\": {$this->data['tagId']} }]'";
+    if ($this->data['tagIds']) {
+      $create_command .= " --tags='" . json_encode($this->data['tagIds']) . "'";
     }
     $create_output = $this->tester->cliToArray($create_command);
     $product_out = $this->tester->cliToArray("wc product get $create_output[0] --format=json --allow-root --user=admin");

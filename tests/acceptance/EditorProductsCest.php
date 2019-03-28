@@ -45,7 +45,7 @@ class EditorProductsCest {
         ->create();
       $this->product_factory
         ->withName(self::PRODUCT_PREFIX_CATEGORY . ' ' . Security::generateRandomString())
-        ->withCategory($category_multiple_results_id)
+        ->withCategoryIds([$category_multiple_results_id])
         ->create();
     }
   }
