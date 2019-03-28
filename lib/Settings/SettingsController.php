@@ -28,7 +28,7 @@ class SettingsController {
       $default = $this->getDefaultValue($key_parts);
     }
     foreach ($key_parts as $key_part) {
-      if (array_key_exists($key_part, $setting)) {
+      if (is_array($setting) && array_key_exists($key_part, $setting)) {
         $setting = $setting[$key_part];
       } else {
         return $default;
@@ -120,7 +120,7 @@ class SettingsController {
   private function getDefaultValue($keys) {
     $default = $this->getAllDefaults();
     foreach ($keys as $key) {
-      if (array_key_exists($key, $default)) {
+      if (is_array($default) && array_key_exists($key, $default)) {
         $default = $default[$key];
       } else {
         return null;
