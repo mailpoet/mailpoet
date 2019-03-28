@@ -4,6 +4,13 @@ namespace MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * @property int $id
+ * @property int $subscriber_id
+ * @property int $segment_id
+ * @property string $status
+ */
+
 class SubscriberSegment extends Model {
   public static $_table = MP_SUBSCRIBER_SEGMENT_TABLE;
 

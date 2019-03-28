@@ -8,6 +8,7 @@ use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Registration;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
+use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Hooks {
@@ -27,6 +28,9 @@ class Hooks {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var WooCommerceSubscription */
+  private $woocommerce_subscription;
+
   /** @var WooCommerceSegment */
   private $woocommerce_segment;
 
@@ -39,6 +43,7 @@ class Hooks {
     Registration $subscription_registration,
     SettingsController $settings,
     WPFunctions $wp,
+    WooCommerceSubscription $woocommerce_subscription,
     WooCommerceSegment $woocommerce_segment,
     WooCommercePurchases $woocommerce_purchases
   ) {
@@ -47,6 +52,7 @@ class Hooks {
     $this->subscription_registration = $subscription_registration;
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->woocommerce_subscription = $woocommerce_subscription;
     $this->woocommerce_segment = $woocommerce_segment;
     $this->woocommerce_purchases = $woocommerce_purchases;
   }
@@ -58,6 +64,7 @@ class Hooks {
     $this->setupImageSize();
     $this->setupListing();
     $this->setupSubscriptionEvents();
+    $this->setupWooCommerceSubscriptionEvents();
     $this->setupPostNotifications();
   }
 
@@ -146,6 +153,25 @@ class Hooks {
     $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_form',
       [$this->subscription_form, 'onSubmit']
+    );
+  }
+
+  function setupWooCommerceSubscriptionEvents() {
+
+    $woocommerce = $this->settings->get('woocommerce', []);
+    // WooCommerce: subscribe on checkout
+    if (!empty($woocommerce['optin_on_checkout']['enabled'])) {
+      $this->wp->addAction(
+        'woocommerce_checkout_before_terms_and_conditions',
+        [$this->woocommerce_subscription, 'extendWooCommerceCheckoutForm']
+      );
+    }
+
+    $this->wp->addAction(
+      'woocommerce_checkout_update_order_meta',
+      [$this->woocommerce_subscription, 'subscribeOnCheckout'],
+      10, // this should execute after the WC sync call on the same hook
+      2
     );
   }
 
