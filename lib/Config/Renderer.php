@@ -3,9 +3,10 @@
 namespace MailPoet\Config;
 
 use MailPoet\Twig;
-use MailPoetVendor\Twig_Environment as TwigEnv;
-use MailPoetVendor\Twig_Lexer as TwigLexer;
-use MailPoetVendor\Twig_Loader_Filesystem as TwigFileSystem;
+use MailPoetVendor\Twig\Environment as TwigEnv;
+use MailPoetVendor\Twig\Extension\DebugExtension;
+use MailPoetVendor\Twig\Lexer as TwigLexer;
+use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -102,7 +103,7 @@ class Renderer {
 
   function setupDebug() {
     if ($this->debugging_enabled) {
-      $this->renderer->addExtension(new \MailPoetVendor\Twig_Extension_Debug());
+      $this->renderer->addExtension(new DebugExtension());
     }
   }
 
