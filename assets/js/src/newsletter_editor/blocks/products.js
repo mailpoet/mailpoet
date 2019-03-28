@@ -568,6 +568,7 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
 
 Module.ProductsWidgetView = base.WidgetView.extend({
   className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+  id: 'automation_editor_block_products',
   getTemplate: function getTemplate() { return window.templates.productsInsertion; },
   behaviors: {
     DraggableBehavior: {
