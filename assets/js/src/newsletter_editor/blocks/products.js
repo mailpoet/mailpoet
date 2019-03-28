@@ -40,7 +40,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
       amount: '10',
       offset: 0,
       contentType: 'product',
-      postStatus: 'publish', // 'draft'|'pending'|'private'|'publish'|'future'
+      postStatus: 'publish', // 'draft'|'pending'|'publish'
       terms: [], // List of category and tag objects
       search: '', // Search keyword term
       inclusionType: 'include', // 'include'|'exclude'
@@ -67,7 +67,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
       _selectedProducts: [],
       _availableProducts: [],
       _transformedProducts: new (App.getBlockTypeModel('container'))(),
-    }, App.getConfig().get('blockDefaults.posts'));
+    }, App.getConfig().get('blockDefaults.products'));
   },
   relations: function relations() {
     return {
@@ -107,7 +107,6 @@ Module.ProductsBlockModel = base.BlockModel.extend({
   fetchAvailableProducts: function fetchAvailableProducts() {
     var that = this;
     this.set('offset', 0);
-    this.set('contentType', 'product');
     CommunicationComponent.getPosts(this.toJSON()).done(function getPostsDone(products) {
       that.get('_availableProducts').reset(products);
       that.get('_selectedProducts').reset(); // Empty out the collection
