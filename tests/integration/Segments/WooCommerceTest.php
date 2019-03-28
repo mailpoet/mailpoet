@@ -373,50 +373,88 @@ class WooCommerceTest extends \MailPoetTest  {
     expect(SubscriberSegment::findOne($association->id))->isEmpty();
   }
 
-  function testItSubscribesSubscribersWhenSettingsIsEnabled() {
+  function testItSubscribesSubscribersToWCListWhenSettingIsEnabled() {
+    $wc_segment = Segment::getWooCommerceSegment();
     $user1 = $this->insertRegisteredCustomer();
     $user2 = $this->insertRegisteredCustomer();
+
     $subscriber1 = Subscriber::createOrUpdate([
       'email' => $user1->user_email,
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_UNSUBSCRIBED,
     ]);
+    $association1 = SubscriberSegment::create();
+    $association1->subscriber_id = $subscriber1->id;
+    $association1->segment_id = $wc_segment->id;
+    $association1->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $association1->save();
+
     $subscriber2 = Subscriber::createOrUpdate([
       'email' => $user2->user_email,
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_UNSUBSCRIBED,
       'confirmed_ip' => '123'
     ]);
+    $association2 = SubscriberSegment::create();
+    $association2->subscriber_id = $subscriber2->id;
+    $association2->segment_id = $wc_segment->id;
+    $association2->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $association2->save();
+
     $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1', 'enabled' => '1']);
     $this->woocommerce_segment->synchronizeCustomers();
 
     $subscriber1_after_update = Subscriber::where('email', $subscriber1->email)->findOne();
     $subscriber2_after_update = Subscriber::where('email', $subscriber2->email)->findOne();
-    expect($subscriber1_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber1_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
     expect($subscriber2_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+
+    $association1_after_update = SubscriberSegment::findOne($association1->id);
+    $association2_after_update = SubscriberSegment::findOne($association2->id);
+    expect($association1_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($association2_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItUnsubscribesSubscribersWhenSettingsIsDisabled() {
+  function testItUnsubscribesSubscribersFromWCListWhenSettingIsDisabled() {
+    $wc_segment = Segment::getWooCommerceSegment();
     $user1 = $this->insertRegisteredCustomer();
     $user2 = $this->insertRegisteredCustomer();
+
     $subscriber1 = Subscriber::createOrUpdate([
       'email' => $user1->user_email,
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_SUBSCRIBED,
     ]);
+    $association1 = SubscriberSegment::create();
+    $association1->subscriber_id = $subscriber1->id;
+    $association1->segment_id = $wc_segment->id;
+    $association1->status = Subscriber::STATUS_SUBSCRIBED;
+    $association1->save();
+
     $subscriber2 = Subscriber::createOrUpdate([
       'email' => $user2->user_email,
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'confirmed_ip' => '123'
     ]);
+    $association2 = SubscriberSegment::create();
+    $association2->subscriber_id = $subscriber2->id;
+    $association2->segment_id = $wc_segment->id;
+    $association2->status = Subscriber::STATUS_SUBSCRIBED;
+    $association2->save();
+
     $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1']);
     $this->woocommerce_segment->synchronizeCustomers();
 
     $subscriber1_after_update = Subscriber::where('email', $subscriber1->email)->findOne();
     $subscriber2_after_update = Subscriber::where('email', $subscriber2->email)->findOne();
-    expect($subscriber1_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    expect($subscriber1_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($subscriber2_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+
+    $association1_after_update = SubscriberSegment::findOne($association1->id);
+    $association2_after_update = SubscriberSegment::findOne($association2->id);
+    expect($association1_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    expect($association2_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   function _after() {
