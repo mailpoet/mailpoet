@@ -20,13 +20,10 @@ class WooCommerceCustomerListCest {
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->product_factory = new WooCommerceProduct($I);
-    $customer_factory = new WooCommerceCustomer($I);
-    $order_factory = new WooCommerceOrder($I);
     $settings_factory = new Settings();
     $settings_factory->withWooCommerceListImportPageDisplayed(true);
-    $this->product_factory->deleteAll();
+    $customer_factory = new WooCommerceCustomer($I);
     $customer_factory->deleteAll();
-    $order_factory->deleteAll();
   }
 
   function newCustomerIsAddedToListTest(\AcceptanceTester $I) {
