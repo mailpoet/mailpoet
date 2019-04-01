@@ -39,6 +39,15 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals('default', $this->controller->get('test_key.wrong_subkey', 'default'));
   }
 
+  function testItCanFetchValuesFromDB() {
+    $this->assertEquals(null, $this->controller->fetch('test_key'));
+    $this->assertEquals(null, $this->controller->fetch('test_key.sub_key'));
+    $this->assertEquals('default', $this->controller->fetch('test_key.wrong_subkey', 'default'));
+    Setting::createOrUpdate(['name' => 'test_key', 'value' => serialize(['sub_key' => 'value'])]);
+    $this->assertEquals('default', $this->controller->get('test_key.sub_key', 'default'));
+    $this->assertEquals('value', $this->controller->fetch('test_key.sub_key', 'default'));
+  }
+
   function testItReturnsDefaultValueAsFallback() {
     $settings = Stub::make($this->controller, [
       'getAllDefaults' => function () {
