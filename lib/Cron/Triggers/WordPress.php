@@ -132,7 +132,7 @@ class WordPress {
       from %s 
       where deleted_at is null
       group by type, status, scheduled_in
-      ", 
+      ",
       date('Y-m-d H:i:s', $wp->currentTime('timestamp')),
       self::SCHEDULED_IN_THE_PAST,
       self::SCHEDULED_IN_THE_FUTURE,

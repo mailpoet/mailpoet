@@ -27,6 +27,7 @@ class DaemonTest extends \MailPoetTest {
       'executeSendingServiceKeyCheckWorker' => null,
       'executePremiumKeyCheckWorker' => null,
       'executeBounceWorker' => null,
+      'executeExportFilesCleanupWorker' => null,
     ), $this);
     $data = array(
       'token' => 123
@@ -44,7 +45,8 @@ class DaemonTest extends \MailPoetTest {
       'executeStatsNotificationsWorker' => Expected::exactly(1),
       'executeSendingServiceKeyCheckWorker' => Expected::exactly(1),
       'executePremiumKeyCheckWorker' => Expected::exactly(1),
-      'executeBounceWorker' => Expected::exactly(1)
+      'executeBounceWorker' => Expected::exactly(1),
+      'executeExportFilesCleanupWorker' => Expected::exactly(1),
     ), $this);
     $data = array(
       'token' => 123

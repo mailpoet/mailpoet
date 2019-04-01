@@ -94,4 +94,9 @@ class WorkersFactory {
     return new WooCommerceSyncWorker($this->woocommerce_segment, $timer);
   }
 
+  /** @return ExportFilesCleanup */
+  function createExportFilesCleanupWorker($timer) {
+    return new ExportFilesCleanup($timer);
+  }
+
 }
