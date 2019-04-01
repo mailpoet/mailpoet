@@ -44,8 +44,8 @@ Module.ProductsBlockModel = base.BlockModel.extend({
       terms: [], // List of category and tag objects
       search: '', // Search keyword term
       inclusionType: 'include', // 'include'|'exclude'
-      displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
-      titleFormat: 'h1', // 'h1'|'h2'|'h3'|'ul'
+      displayType: 'titleOnly', // 'short'|'full'|'titleOnly'
+      titleFormat: 'h1', // 'h1'|'h2'|'h3'
       titleAlignment: 'left', // 'left'|'center'|'right'
       titleIsLink: false, // false|true
       imageFullWidth: false, // true|false
@@ -467,13 +467,13 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'click .mailpoet_posts_select_button': 'showButtonSettings',
       'click .mailpoet_posts_select_divider': 'showDividerSettings',
       'change .mailpoet_posts_read_more_type': 'changeReadMoreType',
-      'change .mailpoet_posts_display_type': 'changeDisplayType',
-      'change .mailpoet_posts_title_format': 'changeTitleFormat',
-      'change .mailpoet_posts_title_as_links': _.partial(this.changeBoolField, 'titleIsLink'),
+      'change .mailpoet_products_display_type': 'changeDisplayType',
+      'change .mailpoet_products_title_format': 'changeTitleFormat',
+      'change .mailpoet_products_title_as_links': _.partial(this.changeBoolField, 'titleIsLink'),
       'change .mailpoet_posts_show_divider': _.partial(this.changeBoolField, 'showDivider'),
       'input .mailpoet_posts_show_amount': _.partial(this.changeField, 'amount'),
       'change .mailpoet_posts_include_or_exclude': _.partial(this.changeField, 'inclusionType'),
-      'change .mailpoet_posts_title_alignment': _.partial(this.changeField, 'titleAlignment'),
+      'change .mailpoet_products_title_alignment': _.partial(this.changeField, 'titleAlignment'),
       'change .mailpoet_posts_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
       'change .mailpoet_posts_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
       'change .mailpoet_posts_show_author': _.partial(this.changeField, 'showAuthor'),
@@ -482,7 +482,7 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'input .mailpoet_posts_categories': _.partial(this.changeField, 'categoriesPrecededBy'),
       'input .mailpoet_posts_read_more_text': _.partial(this.changeField, 'readMoreText'),
       'change .mailpoet_posts_sort_by': _.partial(this.changeField, 'sortBy'),
-      'change .mailpoet_automated_latest_content_title_position': _.partial(this.changeField, 'titlePosition'),
+      'change .mailpoet_products_title_position': _.partial(this.changeField, 'titlePosition'),
     };
   },
   templateContext: function templateContext() {
@@ -524,21 +524,12 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
   },
   changeDisplayType: function changeDisplayType(event) {
     var value = jQuery(event.target).val();
-    if (value === 'titleOnly') {
-      this.$('.mailpoet_posts_title_as_list').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_posts_image_full_width_option').addClass('mailpoet_hidden');
-      this.$('.mailpoet_posts_image_separator').addClass('mailpoet_hidden');
+    if (value !== 'titleOnly') {
+      this.$('.mailpoet_products_title_position').removeClass('mailpoet_hidden');
+      this.$('.mailpoet_products_title_position_separator').removeClass('mailpoet_hidden');
     } else {
-      this.$('.mailpoet_posts_title_as_list').addClass('mailpoet_hidden');
-      this.$('.mailpoet_posts_image_full_width_option').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_posts_image_separator').removeClass('mailpoet_hidden');
-
-      // Reset titleFormat if it was set to List when switching away from displayType=titleOnly
-      if (this.model.get('titleFormat') === 'ul') {
-        this.model.set('titleFormat', 'h1');
-        this.$('.mailpoet_posts_title_format').val(['h1']);
-        this.$('.mailpoet_posts_title_as_link').removeClass('mailpoet_hidden');
-      }
+      this.$('.mailpoet_products_title_position').addClass('mailpoet_hidden');
+      this.$('.mailpoet_products_title_position_separator').addClass('mailpoet_hidden');
     }
 
     if (value === 'excerpt') {
@@ -551,16 +542,6 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
   },
   changeTitleFormat: function changeTitleFormat(event) {
     var value = jQuery(event.target).val();
-    if (value === 'ul') {
-      this.$('.mailpoet_posts_non_title_list_options').addClass('mailpoet_hidden');
-
-      this.model.set('titleIsLink', true);
-      this.$('.mailpoet_posts_title_as_link').addClass('mailpoet_hidden');
-      this.$('.mailpoet_posts_title_as_links').val(['true']);
-    } else {
-      this.$('.mailpoet_posts_non_title_list_options').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_posts_title_as_link').removeClass('mailpoet_hidden');
-    }
     this.changeField('titleFormat', event);
   },
 });
