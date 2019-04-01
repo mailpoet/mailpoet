@@ -52,18 +52,15 @@ class Subscription {
 
   private function isCurrentUserSubscribed() {
     $subscriber = Subscriber::getCurrentWPUser();
-    if ($subscriber instanceof Subscriber) {
-      $wc_segment = Segment::getWooCommerceSegment();
-      $subscriber_segment = SubscriberSegment::where('subscriber_id', $subscriber->id)
-        ->where('segment_id', $wc_segment->id)
-        ->findOne();
-      if ($subscriber_segment instanceof SubscriberSegment
-        && $subscriber_segment->status === Subscriber::STATUS_SUBSCRIBED
-      ) {
-        return true;
-      }
+    if (!$subscriber instanceof Subscriber) {
+      return false;
     }
-    return false;
+    $wc_segment = Segment::getWooCommerceSegment();
+    $subscriber_segment = SubscriberSegment::where('subscriber_id', $subscriber->id)
+      ->where('segment_id', $wc_segment->id)
+      ->findOne();
+    return $subscriber_segment instanceof SubscriberSegment
+      && $subscriber_segment->status === Subscriber::STATUS_SUBSCRIBED;
   }
 
   function subscribeOnCheckout($order_id, $data) {
@@ -83,30 +80,29 @@ class Subscription {
     $checkout_optin_enabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
     $wc_segment = Segment::getWooCommerceSegment();
 
-    if ($checkout_optin_enabled) {
-      if (!empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
-        // checkbox is checked
-        $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
-        $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-        if (empty($subscriber->confirmed_ip) && empty($subscriber->confirmed_at)) {
-          $subscriber->confirmed_ip = Helpers::getIP();
-          $subscriber->setExpr('confirmed_at', 'NOW()');
-        }
-        $subscriber->save();
-
-        SubscriberSegment::subscribeToSegments(
-          $subscriber,
-          array($wc_segment->id)
-        );
-        return true;
-      }
+    if (!$checkout_optin_enabled || empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
+      // Opt-in is disabled or checkbox is unchecked
+      SubscriberSegment::unsubscribeFromSegments(
+        $subscriber,
+        array($wc_segment->id)
+      );
+      return false;
     }
 
-    // Opt-in is disabled or checkbox is unchecked
-    SubscriberSegment::unsubscribeFromSegments(
+    // checkbox is checked
+    $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    if (empty($subscriber->confirmed_ip) && empty($subscriber->confirmed_at)) {
+      $subscriber->confirmed_ip = Helpers::getIP();
+      $subscriber->setExpr('confirmed_at', 'NOW()');
+    }
+    $subscriber->save();
+
+    SubscriberSegment::subscribeToSegments(
       $subscriber,
       array($wc_segment->id)
     );
-    return false;
+
+    return true;
   }
 }

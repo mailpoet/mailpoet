@@ -239,7 +239,7 @@ class Populator {
     if (empty($woocommerce_optin_on_checkout)) {
       $this->settings->set('woocommerce.optin_on_checkout', [
         'enabled' => empty($settings_db_version), // enable on new installs only
-        'message' => _x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites"),
+        'message' => WPFunctions::get()->x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites"),
       ]);
     }
 
