@@ -27,6 +27,7 @@ class Daemon {
       $this->executeSendingServiceKeyCheckWorker();
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
+      $this->executeExportFilesCleanupWorker();
       // TODO: execute WooCommerceSync worker
     } catch (\Exception $e) {
       CronHelper::saveDaemonLastError($e->getMessage());
@@ -73,6 +74,11 @@ class Daemon {
   function executeMigrationWorker() {
     $migration = $this->workers_factory->createMigrationWorker($this->timer);
     return $migration->process();
+  }
+
+  function executeExportFilesCleanupWorker() {
+    $worker = $this->workers_factory->createExportFilesCleanupWorker($this->timer);
+    return $worker->process();
   }
 
 }

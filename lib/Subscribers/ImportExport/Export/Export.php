@@ -45,9 +45,17 @@ class Export {
       $this->subscriber_fields,
       $this->subscriber_custom_fields
     );
-    $this->export_path = Env::$temp_path;
+    $this->export_path = self::getExportPath();
     $this->export_file = $this->getExportFile($this->export_format_option);
     $this->export_file_URL = $this->getExportFileURL($this->export_file);
+  }
+
+  static function getFilePrefix() {
+    return 'MailPoet_export_';
+  }
+
+  static function getExportPath() {
+    return Env::$temp_path;
   }
 
   function process() {
@@ -183,7 +191,7 @@ class Export {
 
   function getExportFile($format) {
     return sprintf(
-      $this->export_path . '/MailPoet_export_%s.%s',
+      $this->export_path . '/' . self::getFilePrefix() . '%s.%s',
       Security::generateRandomString(15),
       $format
     );
