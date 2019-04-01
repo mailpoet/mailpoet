@@ -25,15 +25,7 @@ class WooCommerceImportController extends React.Component {
       endpoint: 'settings',
       action: 'set',
       data,
-    }).fail((response) => {
-      this.setState({ loading: false });
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map(error => error.message),
-          { scroll: true }
-        );
-      }
-    });
+    }).fail(this.handleApiError);
   }
 
   scheduleImport() {
@@ -41,15 +33,16 @@ class WooCommerceImportController extends React.Component {
       api_version: window.mailpoet_api_version,
       endpoint: 'importExport',
       action: 'setupWooCommerceInitialImport',
-    }).then(() => this.setState({ loading: false })).fail((response) => {
-      this.setState({ loading: false });
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map(error => error.message),
-          { scroll: true }
-        );
-      }
-    });
+    }).then(() => this.setState({ loading: false })).fail(this.handleApiError);
+  }
+
+  handleApiError(response) {
+    this.setState({ loading: false });
+    let errorMessage = MailPoet.I18n.t('unknownError');
+    if (response && response.errors && response.errors.length > 0) {
+      errorMessage = response.errors.map(error => error.message);
+    }
+    MailPoet.Notice.error(errorMessage, { scroll: true });
   }
 
   submit(importType) {
