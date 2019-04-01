@@ -102,51 +102,51 @@
 <hr class="mailpoet_separator mailpoet_products_title_position_separator {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}" />
 
 <div> <!-- empty div for better git diff -->
-    <div class="mailpoet_form_field mailpoet_posts_featured_image_position_container">
-        <div class="mailpoet_form_field_title"><%= __('Featured image position') %></div>
+    <div class="mailpoet_form_field mailpoet_products_featured_image_position_container">
+        <div class="mailpoet_form_field_title"><%= __('Product image position') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="centered" {{#ifCond model.featuredImagePosition '==' 'centered' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_products_featured_image_position" class="mailpoet_products_featured_image_position" value="centered" {{#ifCond model.featuredImagePosition '==' 'centered' }}CHECKED{{/ifCond}}/>
                 <%= __('Centered') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="left" {{#ifCond model.featuredImagePosition '==' 'left' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_products_featured_image_position" class="mailpoet_products_featured_image_position" value="left" {{#ifCond model.featuredImagePosition '==' 'left' }}CHECKED{{/ifCond}}/>
                 <%= __('Left') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="right" {{#ifCond model.featuredImagePosition '==' 'right' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_products_featured_image_position" class="mailpoet_products_featured_image_position" value="right" {{#ifCond model.featuredImagePosition '==' 'right' }}CHECKED{{/ifCond}}/>
                 <%= __('Right') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="alternate" {{#ifCond model.featuredImagePosition '==' 'alternate' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_products_featured_image_position" class="mailpoet_products_featured_image_position" value="alternate" {{#ifCond model.featuredImagePosition '==' 'alternate' }}CHECKED{{/ifCond}}/>
                 <%= __('Alternate') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_featured_image_position" class="mailpoet_posts_featured_image_position" value="none" {{#ifCond model.featuredImagePosition '==' 'none' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_products_featured_image_position" class="mailpoet_products_featured_image_position" value="none" {{#ifCond model.featuredImagePosition '==' 'none' }}CHECKED{{/ifCond}}/>
                 <%= __('None') %>
             </label>
         </div>
     </div>
 
-    <div class="mailpoet_form_field mailpoet_posts_image_full_width_option {{#ifCond model.displayType '==' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
+    <div class="mailpoet_form_field mailpoet_products_image_full_width_option {{#ifCond model.displayType '==' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
         <div class="mailpoet_form_field_title"><%= __('Image width') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="imageFullWidth" class="mailpoet_posts_image_full_width" value="true" {{#if model.imageFullWidth}}CHECKED{{/if}}/>
+                <input type="radio" name="imageFullWidth" class="mailpoet_products_image_full_width" value="true" {{#if model.imageFullWidth}}CHECKED{{/if}}/>
                 <%= __('Full width') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="imageFullWidth" class="mailpoet_posts_image_full_width" value="false" {{#unless model.imageFullWidth}}CHECKED{{/unless}}/>
+                <input type="radio" name="imageFullWidth" class="mailpoet_products_image_full_width" value="false" {{#unless model.imageFullWidth}}CHECKED{{/unless}}/>
                 <%= __('Padded') %>
             </label>
         </div>
