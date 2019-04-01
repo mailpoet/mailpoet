@@ -8,9 +8,12 @@ import html2canvas from 'html2canvas';
  * @param  {DOMElement}      element
  * @return {Promise<String>} DataURL of the generated image.
  */
-export const fromDom = element => html2canvas(element, {
-  logging: false,
-}).then(canvas => canvas.toDataURL('image/jpeg'));
+export const fromDom = async (element) => {
+  const canvas = await html2canvas(element, {
+    logging: false,
+  });
+  return canvas.toDataURL('image/jpeg');
+};
 
 /**
  * Generates a thumbnail from an URL.
@@ -24,18 +27,17 @@ export const fromUrl = url => new Promise((resolve, reject) => {
   iframe.src = protocol + url.replace(/^https?:/, '');
   iframe.style.opacity = 0;
   iframe.scrolling = 'no';
-  iframe.onload = () => {
-    const container = iframe.contentDocument.documentElement
-    container.style.padding = '10px 20px'
-    fromDom(container)
-      .then((image) => {
-        document.body.removeChild(iframe);
-        resolve(image);
-      })
-      .catch(() => {
-        document.body.removeChild(iframe);
-        reject(MailPoet.I18n.t('errorWhileTakingScreenshot'));
-      });
+  iframe.onload = async () => {
+    const container = iframe.contentDocument.documentElement;
+    container.style.padding = '10px 20px';
+    try {
+      const image = await fromDom(container);
+      document.body.removeChild(iframe);
+      resolve(image);
+    } catch (err) {
+      document.body.removeChild(iframe);
+      reject(MailPoet.I18n.t('errorWhileTakingScreenshot'));
+    }
   };
   const onError = () => {
     document.body.removeChild(iframe);
