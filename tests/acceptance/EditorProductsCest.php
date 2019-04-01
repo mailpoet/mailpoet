@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 use MailPoet\Util\Security;
@@ -29,10 +28,6 @@ class EditorProductsCest {
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->product_factory = new WooCommerceProduct($I);
-
-    // Temporary requirement so products widget is displayed
-    $this->settings = new SettingsController();
-    $this->settings->set('display_wc_products_widget', 1);
 
     // Create categories
     $this->product_factory->createCategory(self::CATEGORY_ZERO_RESULTS);
