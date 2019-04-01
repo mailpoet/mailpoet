@@ -25,7 +25,9 @@ export const fromUrl = url => new Promise((resolve, reject) => {
   iframe.style.opacity = 0;
   iframe.scrolling = 'no';
   iframe.onload = () => {
-    fromDom(iframe.contentDocument.documentElement)
+    const container = iframe.contentDocument.documentElement
+    container.style.padding = '10px 20px'
+    fromDom(container)
       .then((image) => {
         document.body.removeChild(iframe);
         resolve(image);
