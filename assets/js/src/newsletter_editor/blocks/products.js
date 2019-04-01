@@ -580,9 +580,6 @@ Module.ProductsWidgetView = base.WidgetView.extend({
 });
 
 App.on('before:start', function beforeStartApp(BeforeStartApp) {
-  if (_.isEmpty(window.config.displayWcProductsWidget)) {
-    return;
-  }
   BeforeStartApp.registerBlockType('products', {
     blockModel: Module.ProductsBlockModel,
     blockView: Module.ProductsBlockView,
