@@ -108,12 +108,13 @@ class Pages {
   }
 
   function unsubscribe() {
-    if ($this->subscriber !== false) {
-      if ($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
-        $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-        $this->subscriber->save();
-        SubscriberSegment::unsubscribeFromSegments($this->subscriber);
-      }
+    if (!$this->isPreview()
+      && ($this->subscriber !== false)
+      && ($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED)
+    ) {
+      $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+      $this->subscriber->save();
+      SubscriberSegment::unsubscribeFromSegments($this->subscriber);
     }
   }
 

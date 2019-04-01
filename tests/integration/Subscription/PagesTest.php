@@ -18,6 +18,9 @@ class PagesTest extends \MailPoetTest {
 
   private $test_data = [];
 
+  /** @var Subscriber */
+  private $subscriber;
+
   function _before() {
     parent::_before();
     $this->subscriber = Subscriber::create();
@@ -98,6 +101,21 @@ class PagesTest extends \MailPoetTest {
       ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
       ->findOne();
     expect($scheduled_notification)->notEmpty();
+  }
+
+  function testItUnsubscribes() {
+    $pages = new Pages($action = 'unsubscribe', $this->test_data);
+    $pages->unsubscribe();
+    $updated_subscriber = Subscriber::findOne($this->subscriber->id);
+    expect($updated_subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+  }
+
+  function testItDoesntUnsubscribeWhenPreviewing() {
+    $this->test_data['preview'] = 1;
+    $pages = new Pages($action = 'unsubscribe', $this->test_data);
+    $pages->unsubscribe();
+    $updated_subscriber = Subscriber::findOne($this->subscriber->id);
+    expect($updated_subscriber->status)->notEquals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
   function _after() {
