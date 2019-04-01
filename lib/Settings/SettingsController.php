@@ -120,7 +120,7 @@ class SettingsController {
   private function getDefaultValue($keys) {
     $default = $this->getAllDefaults();
     foreach ($keys as $key) {
-      if (is_array($default) && array_key_exists($key, $default)) {
+      if (array_key_exists($key, $default)) {
         $default = $default[$key];
       } else {
         return null;
