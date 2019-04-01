@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 3.22.0
+Stable tag: 3.23.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -171,6 +171,16 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.23.0 - 2019-04-02 =
+* Added: 12 fresh new templates;
+* Improved: mouse over highlights entire text block instead of partially;
+* Fixed: post titles with single and double quotes break email rendering in ALC and Post blocks;
+* Fixed: "import again" subscriber import errors fixed;
+* Fixed: Twig conflicts with third party plugins.
+* Fixed: import subscribers with custom fields no longer fails;
+* Fixed: social icon margins;
+* Fixed: updating an imported subscriber no longer triggers welcome email.
 
 = 3.22.0 - 2019-03-26 =
 * Improved: minor tweaks and fixes, special thanks to valdrinkoshi for a very helpful PR;
