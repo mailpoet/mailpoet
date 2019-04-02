@@ -51,6 +51,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
       imageFullWidth: false, // true|false
       titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
       featuredImagePosition: 'centered', // 'centered'|'right'|'left'|'alternate'|'none'
+      pricePosition: 'hidden', // 'hidden'|'above'|'below'
       readMoreType: 'link', // 'link'|'button'
       readMoreText: 'Read more', // 'link'|'button'
       readMoreButton: {
@@ -94,7 +95,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
     this.on('loadMoreProducts', this._loadMoreProducts, this);
 
     this.listenTo(this.get('_selectedProducts'), 'add remove reset', refreshTransformedProducts);
-    this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:readMoreType change:readMoreText change:showDivider change:titlePosition', refreshTransformedProducts);
+    this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:readMoreType change:readMoreText change:showDivider change:titlePosition', refreshTransformedProducts);
     this.listenTo(this.get('readMoreButton'), 'change', refreshTransformedProducts);
     this.listenTo(this.get('divider'), 'change', refreshTransformedProducts);
 
@@ -472,6 +473,7 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_products_title_alignment': _.partial(this.changeField, 'titleAlignment'),
       'change .mailpoet_products_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
       'change .mailpoet_products_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
+      'change .mailpoet_products_price_position': _.partial(this.changeField, 'pricePosition'),
       'input .mailpoet_posts_read_more_text': _.partial(this.changeField, 'readMoreText'),
       'change .mailpoet_posts_sort_by': _.partial(this.changeField, 'sortBy'),
       'change .mailpoet_products_title_position': _.partial(this.changeField, 'titlePosition'),
@@ -527,7 +529,6 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
     this.changeField('displayType', event);
   },
   changeTitleFormat: function changeTitleFormat(event) {
-    var value = jQuery(event.target).val();
     this.changeField('titleFormat', event);
   },
 });

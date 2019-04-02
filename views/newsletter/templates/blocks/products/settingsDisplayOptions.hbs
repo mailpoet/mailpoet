@@ -155,6 +155,30 @@
     <hr class="mailpoet_separator" />
 
     <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field_title"><%= __('Price') %></div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_products_price_position" class="mailpoet_products_price_position" value="hidden" {{#ifCond model.pricePosition '==' 'hidden'}}CHECKED{{/ifCond}} />
+                <%= __('No') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_products_price_position" class="mailpoet_products_price_position" value="above" {{#ifCond model.pricePosition '==' 'above'}}CHECKED{{/ifCond}} />
+                <%= __('Above text') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_products_price_position" class="mailpoet_products_price_position" value="below" {{#ifCond model.pricePosition '==' 'below'}}CHECKED{{/ifCond}} />
+                <%= __('Below text') %>
+            </label>
+        </div>
+    </div>
+
+    <hr class="mailpoet_separator" />
+
+    <div class="mailpoet_form_field">
         <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('"Read more" text') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
