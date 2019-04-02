@@ -66,7 +66,7 @@
 </div>
 
 <div class="mailpoet_form_field">
-    <div class="mailpoet_form_field_title"><%= __('Make the post title into a link') %></div>
+    <div class="mailpoet_form_field_title"><%= _x('Make the product title into a link', 'Display the product title into a link') %></div>
     <div class="mailpoet_form_field_radio_option">
         <label>
             <input type="radio" name="mailpoet_products_title_as_links" class="mailpoet_products_title_as_links" value="true" {{#if model.titleIsLink}}CHECKED{{/if}}/>
@@ -84,17 +84,17 @@
 <hr class="mailpoet_separator" />
 
 <div class="mailpoet_form_field mailpoet_products_title_position {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
-    <div class="mailpoet_form_field_title"><%= _x('Product title position', 'Setting in the email designer to position the blog post title') %></div>
+    <div class="mailpoet_form_field_title"><%= _x('Product title position', 'Setting in the email designer to position an ecommerce product title') %></div>
     <div class="mailpoet_form_field_radio_option">
         <label>
             <input type="radio" name="mailpoet_products_title_position" class="mailpoet_products_title_position" value="abovePost" {{#ifCond model.titlePosition '!=' 'aboveExcerpt'}}CHECKED{{/ifCond}}/>
-            <%= _x('Above the product', 'Display the post title above the post block') %>
+            <%= _x('Above the product', 'Display the product title above the product block') %>
         </label>
     </div>
     <div class="mailpoet_form_field_radio_option">
         <label>
             <input type="radio" name="mailpoet_products_title_position" class="mailpoet_products_title_position" value="aboveExcerpt" {{#ifCond model.titlePosition '==' 'aboveExcerpt'}}CHECKED{{/ifCond}}/>
-            <%= _x('Above the product description', 'Display the post title above the post excerpt') %>
+            <%= _x('Above the product description', 'Display the product title above the product description') %>
         </label>
     </div>
 </div>

@@ -1345,9 +1345,9 @@
           featuredImagePosition: 'alternate', // 'centered'|'left'|'right'|'alternate'|'none',
           pricePosition: 'hidden', // 'hidden'|'above'|'below'
           readMoreType: 'link', // 'link'|'button'
-          readMoreText: '<%= __('Buy now') | escape('js') %>',
+          readMoreText: '<%= _x('Buy now', 'Text of a button which links to an ecommerce product page') | escape('js') %>',
           readMoreButton: {
-            text: '<%= __('Buy now') | escape('js') %>',
+            text: '<%= _x('Buy now', 'Text of a button which links to an ecommerce product page') | escape('js') %>',
             url: '[postLink]',
             context: 'posts.readMoreButton',
             styles: {
