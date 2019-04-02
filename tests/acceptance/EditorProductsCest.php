@@ -25,7 +25,30 @@ class EditorProductsCest {
   /** @var WooCommerceProduct */
   private $product_factory;
 
-  function _before(\AcceptanceTester $I) {
+  private $newsletterTitle = 'Editor Products Test';
+
+  private function initializeNewsletter(\AcceptanceTester $I) {
+    $this->newsletterTitle = 'Newsletter Title';
+    (new Newsletter())
+      ->withSubject($this->newsletterTitle)
+      ->loadBodyFrom('newsletterWithText.json')
+      ->create();
+  }
+
+  private function productsWidgetNotVisible(\AcceptanceTester $I) {
+    $I->wantTo('Not see products widget');
+    $I->deactivateWooCommerce();
+
+    $I->login();
+    $I->amOnMailpoetPage('Emails');
+    $I->waitForText($this->newsletterTitle);
+    $I->clickItemRowActionByItemName($this->newsletterTitle, 'Edit');
+
+    $I->waitForText('Spacer');
+    $I->waitForElementVisible('#automation_editor_block_products');
+  }
+
+  private function initializeWooCommerce(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->product_factory = new WooCommerceProduct($I);
 
@@ -45,19 +68,18 @@ class EditorProductsCest {
     }
   }
 
+  /**
+   * @before initializeNewsletter
+   * @before productsWidgetNotVisible
+   * @before initializeWooCommerce
+   */
   function filterProducts(\AcceptanceTester $I) {
     $I->wantTo('Filter products');
 
-    $newsletterTitle = 'Newsletter Title';
-    (new Newsletter())
-      ->withSubject($newsletterTitle)
-      ->loadBodyFrom('newsletterWithText.json')
-      ->create();
-
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->waitForText($newsletterTitle);
-    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
+    $I->waitForText($this->newsletterTitle);
+    $I->clickItemRowActionByItemName($this->newsletterTitle, 'Edit');
 
     // Create products block
     $I->waitForText('Products');
@@ -101,13 +123,12 @@ class EditorProductsCest {
     // Searching for existing post should return zero results
     $I->fillField('.mailpoet_products_search_term', self::POST_TITLE);
     $I->waitForText('No products available');
+
+    $I->deactivateWooCommerce();
   }
 
   private function clearCategories(\AcceptanceTester $I) {
     $I->click('.select2-selection__clear');
   }
 
-  function _after(\AcceptanceTester $I) {
-    $I->deactivateWooCommerce();
-  }
 }
