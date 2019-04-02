@@ -191,10 +191,6 @@ class Renderer {
       $image->src = str_replace(' ', '%20', $image->src);
     }
     $template = $template_dom->query('.mailpoet_template');
-    // replace all !important tags except for in the body tag
-    $template->html(
-      str_replace('!important', '', $template->html())
-    );
     // encode ampersand
     $template->html(
       str_replace('&', '&amp;', $template->html())
