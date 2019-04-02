@@ -47,7 +47,14 @@ class PostTransformer {
     $featured_image = $this->getFeaturedImage($post);
     $featured_image_position = $this->args['featuredImagePosition'];
 
-    if ($featured_image && $featured_image_position === 'belowTitle' && $this->args['displayType'] === 'excerpt') {
+    if (
+      $featured_image
+      && $featured_image_position === 'belowTitle'
+      && (
+        $this->args['displayType'] === 'excerpt'
+        || $this->isProduct($post)
+      )
+    ) {
       array_unshift($content, $title, $featured_image);
       return $content;
     }
@@ -73,7 +80,14 @@ class PostTransformer {
 
     $featured_image_position = $this->args['featuredImagePosition'];
 
-    if (!$featured_image || $featured_image_position === 'none' || $this->args['displayType'] !== 'excerpt') {
+    if (
+      !$featured_image
+      || $featured_image_position === 'none'
+      || (
+        $this->args['displayType'] !== 'excerpt'
+        && !$this->isProduct($post)
+      )
+    ) {
       array_unshift($content, $title);
 
       return array(
@@ -293,6 +307,10 @@ class PostTransformer {
       'type' => 'text',
       'text' => $price,
     );
+  }
+
+  private function isProduct($post) {
+    return $post->post_type === 'product';
   }
 
   /**

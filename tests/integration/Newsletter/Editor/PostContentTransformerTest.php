@@ -274,6 +274,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     Mock::double($transformer, array('getContent' => $content));
     Mock::double($transformer, array('getFeaturedImage' => $image));
     Mock::double($transformer, array('getTitle' => $title));
+    Mock::double($transformer, array('isProduct' => false));
     return $transformer;
   }
 
