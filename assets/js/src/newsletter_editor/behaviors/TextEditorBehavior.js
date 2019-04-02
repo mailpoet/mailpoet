@@ -14,7 +14,7 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
     selector: '.mailpoet_content',
     toolbar1: 'bold italic link unlink forecolor mailpoet_shortcodes',
     toolbar2: '',
-    validElements: 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br',
+    validElements: 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br,del',
     invalidElements: 'script',
     blockFormats: 'Paragraph=p',
     plugins: 'link textcolor colorpicker mailpoet_shortcodes',

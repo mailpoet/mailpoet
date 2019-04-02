@@ -298,7 +298,7 @@ class PostTransformer {
       $product = wc_get_product($post->ID);
     }
     if ($product) {
-      $price = '<h2>' . $product->get_price_html() . '</h2>';
+      $price = '<h2>' . strip_tags($product->get_price_html(), '<span><del>') . '</h2>';
     } else {
       $price = '';
     }
