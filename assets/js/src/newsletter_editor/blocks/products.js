@@ -44,7 +44,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
       terms: [], // List of category and tag objects
       search: '', // Search keyword term
       inclusionType: 'include', // 'include'|'exclude'
-      displayType: 'titleOnly', // 'short'|'full'|'titleOnly'
+      displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
       titleFormat: 'h1', // 'h1'|'h2'|'h3'
       titleAlignment: 'left', // 'left'|'center'|'right'
       titleIsLink: false, // false|true

@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Newsletter\Editor;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -10,23 +11,35 @@ class PostContentManager {
 
   public $max_excerpt_length = 60;
 
+  /** @var WooCommerceHelper */
+  private $woocommerce_helper;
 
   function __construct() {
     $wp = new WPFunctions;
     $this->max_excerpt_length = $wp->applyFilters('mailpoet_newsletter_post_excerpt_length', $this->max_excerpt_length);
+    $this->woocommerce_helper = new WooCommerceHelper();
   }
 
   function getContent($post, $displayType) {
+    $product = null;
+    if ($this->woocommerce_helper->isWooCommerceActive() && $post->post_type === 'product') {
+      $product = wc_get_product($post->ID);
+    }
     if ($displayType === 'titleOnly') {
       return '';
     } elseif ($displayType === 'excerpt') {
-      // get excerpt
+      if ($product) {
+        return $product->get_short_description();
+      }
       if (!empty($post->post_excerpt)) {
         return self::stripShortCodes($post->post_excerpt);
       } else {
         return $this->generateExcerpt(self::stripShortCodes($post->post_content));
       }
     } else {
+      if ($product) {
+        return $product->get_description();
+      }
       return self::stripShortCodes($post->post_content);
     }
   }
