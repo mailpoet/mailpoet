@@ -72,7 +72,7 @@ class StylesHelper {
     $styles = array_map(function($attribute, $style) use ($ignore_specific_styles) {
       if (!$ignore_specific_styles || !in_array($attribute, $ignore_specific_styles)) {
         $style = StylesHelper::applyFontFamily($attribute, $style);
-        return StylesHelper::translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
+        return StylesHelper::translateCSSAttribute($attribute) . ': ' . $style . ';';
       }
     }, array_keys($data[$type]), $data[$type]);
     return implode('', $styles);
