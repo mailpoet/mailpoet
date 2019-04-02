@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Editor;
 
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Config\Env;
 
@@ -13,11 +14,15 @@ class PostTransformer {
   private $image_position;
   private $wp;
 
+  /** @var WooCommerceHelper */
+  private $woocommerce_helper;
+
   function __construct($args) {
     $this->args = $args;
     $this->with_layout = isset($args['withLayout']) ? (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN) : false;
     $this->image_position = 'left';
     $this->wp = new WPFunctions();
+    $this->woocommerce_helper = new WooCommerceHelper();
   }
 
   function getDivider() {
@@ -148,6 +153,20 @@ class PostTransformer {
     $structure_transformer = new StructureTransformer();
     $content = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
 
+    if (isset($this->args['pricePosition']) && $this->args['pricePosition'] !== 'hidden') {
+      $price = $this->getPrice($post);
+      $blocks_count = count($content);
+      if ($blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
+        if ($this->args['pricePosition'] === 'below') {
+          $content[$blocks_count - 1]['text'] .= $price['text'];
+        } else {
+          $content[$blocks_count - 1]['text'] = $price['text'] . $content[$blocks_count - 1]['text'];
+        }
+      } else {
+        $content[] = $price;
+      }
+    }
+
     $read_more_btn = $this->getReadMoreButton($post);
     $blocks_count = count($content);
     if ($read_more_btn['type'] === 'text' && $blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
@@ -256,6 +275,23 @@ class PostTransformer {
     return array(
       'type' => 'text',
       'text' => $title,
+    );
+  }
+
+  private function getPrice($post) {
+    $product = null;
+    if ($this->woocommerce_helper->isWooCommerceActive()) {
+      $product = wc_get_product($post->ID);
+    }
+    if ($product) {
+      $price = '<h2>' . $product->get_price_html() . '</h2>';
+    } else {
+      $price = '';
+    }
+
+    return array(
+      'type' => 'text',
+      'text' => $price,
     );
   }
 
