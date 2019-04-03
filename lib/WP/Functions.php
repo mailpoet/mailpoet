@@ -145,6 +145,10 @@ class Functions {
     return esc_html($text);
   }
 
+  function escSql($sql) {
+    return esc_sql($sql);
+  }
+
   function getBloginfo($show = '', $filter = 'raw') {
     return get_bloginfo($show, $filter);
   }
@@ -270,6 +274,10 @@ class Functions {
 
   function getUserdata($user_id) {
     return get_userdata($user_id);
+  }
+
+  function getUserBy($field, $value) {
+    return get_user_by($field, $value);
   }
 
   function hasFilter($tag, $function_to_check = false) {
