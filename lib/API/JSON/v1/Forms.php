@@ -97,7 +97,7 @@ class Forms extends APIEndpoint {
       ),
       'settings' => array(
         'on_success' => 'message',
-        'success_message' => WPFunctions::get()->__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'),
+        'success_message' => Form::getDefaultSuccessMessage(),
         'segments' => null,
         'segments_selected_by' => 'admin'
       )

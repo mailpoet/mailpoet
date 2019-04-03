@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -13,6 +14,9 @@ if (!defined('ABSPATH')) exit;
 
 class Form extends Model {
   public static $_table = MP_FORMS_TABLE;
+
+  const MESSAGE_WHEN_CONFIRMATION_ENABLED = 'Check your inbox or spam folder to confirm your subscription.';
+  const MESSAGE_WHEN_CONFIRMATION_DISABLED = "You've been successfully subscribed to our newsletter!";
 
   function __construct() {
     parent::__construct();
@@ -118,6 +122,14 @@ class Form extends Model {
       return $orm->whereNotNull('deleted_at');
     }
     return $orm->whereNull('deleted_at');
+  }
+
+  static function getDefaultSuccessMessage() {
+    $settings = new SettingsController;
+    if ($settings->get('signup_confirmation.enabled')) {
+      return WPFunctions::get()->__(self::MESSAGE_WHEN_CONFIRMATION_ENABLED, 'mailpoet');
+    }
+    return WPFunctions::get()->__(self::MESSAGE_WHEN_CONFIRMATION_DISABLED, 'mailpoet');
   }
 
 }
