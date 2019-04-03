@@ -161,7 +161,7 @@ class Subscribers extends APIEndpoint {
     $data = $this->deobfuscateFormPayload($data);
 
     try {
-      $this->required_custom_field_validator->validate($data);
+      $this->required_custom_field_validator->validate($data, $form);
     } catch (\Exception $e) {
       return $this->badRequest([APIError::BAD_REQUEST => $e->getMessage()]);
     }

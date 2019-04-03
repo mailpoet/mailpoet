@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Models\CustomField;
+use MailPoet\Models\Form;
 
 class RequiredCustomFieldValidatorTest extends \MailPoetTest {
 
@@ -44,6 +45,28 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     $validator = new RequiredCustomFieldValidator();
     $this->setExpectedException('Exception');
     $validator->validate(['cf_' . $this->custom_field->id() => '']);
+  }
+
+  function testItValidatesOnlyFieldPresentInForm() {
+    CustomField::createOrUpdate([
+      'name' => 'custom field 2',
+      'type' => 'text',
+      'params' => ['required' => '1']
+    ]);
+    $form = Form::createOrUpdate([
+      'name' => 'form',
+      'body' => [[
+        'type' => 'text',
+        'name' => 'mandatory',
+        'id' => $this->custom_field->id(),
+        'unique' => '1',
+        'static' => '0',
+        'params' => ['required' => '1'],
+        'position' => '0',
+      ]],
+    ]);
+    $validator = new RequiredCustomFieldValidator();
+    $validator->validate(['cf_' . $this->custom_field->id() => 'value'], $form);
   }
 
 }
