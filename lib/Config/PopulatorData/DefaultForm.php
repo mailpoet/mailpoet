@@ -4,6 +4,7 @@ namespace MailPoet\Config\PopulatorData;
 
 use MailPoet\Form\Util\Styles;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Form;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DefaultForm {
@@ -60,7 +61,7 @@ class DefaultForm {
     return [
       'segments' => [$default_segment->id()],
       'on_success' => 'message',
-      'success_message' => WPFunctions::get()->__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'),
+      'success_message' => Form::getDefaultSuccessMessage(),
       'success_page' => '5',
       'segments_selected_by' => 'admin',
     ];
