@@ -19,6 +19,8 @@ Schedule your newsletters, send them right away or set it up to send new blog po
 
 Trusted by 300,000 WordPress websites since 2011.
 
+[Visit our website to see the templates or try the demo](https://www.mailpoet.com/)
+
 = All features =
 
 * Create and add a newsletter subscription form to your website
