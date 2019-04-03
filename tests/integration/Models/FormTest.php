@@ -2,10 +2,15 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\Form;
+use MailPoet\Settings\SettingsController;
 
 class FormTest extends \MailPoetTest {
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
     parent::_before();
+    $this->settings = new SettingsController();
     $this->form = Form::createOrUpdate(array(
       'name' => 'My Form'
     ));
@@ -114,6 +119,40 @@ class FormTest extends \MailPoetTest {
       )
     ));
     expect($form->getFieldList())->equals(array('email', 'cf_2'));
+  }
+
+  function testItUpdatesSuccessMessagesWhenConfirmationIsDisabled() {
+    $default = Form::createOrUpdate([
+      'name' => 'with default message',
+      'settings' => ['success_message' => Form::MESSAGE_WHEN_CONFIRMATION_ENABLED]
+    ]);
+    $custom = Form::createOrUpdate([
+      'name' => 'with custom message',
+      'settings' => ['success_message' => 'Thanks for joining us!']
+    ]);
+    $this->settings->set('signup_confirmation.enabled', '0');
+    Form::updateSuccessMessages();
+    $default = Form::findOne($default->id)->asArray();
+    $custom = Form::findOne($custom->id)->asArray();
+    expect($default['settings']['success_message'])->equals(Form::MESSAGE_WHEN_CONFIRMATION_DISABLED);
+    expect($custom['settings']['success_message'])->equals('Thanks for joining us!');
+  }
+
+  function testItUpdatesSuccessMessagesWhenConfirmationIsEnabled() {
+    $default = Form::createOrUpdate([
+      'name' => 'with default message',
+      'settings' => ['success_message' => Form::MESSAGE_WHEN_CONFIRMATION_DISABLED]
+    ]);
+    $custom = Form::createOrUpdate([
+      'name' => 'with custom message',
+      'settings' => ['success_message' => 'Thanks for joining us!']
+    ]);
+    $this->settings->set('signup_confirmation.enabled', '1');
+    Form::updateSuccessMessages();
+    $default = Form::findOne($default->id)->asArray();
+    $custom = Form::findOne($custom->id)->asArray();
+    expect($default['settings']['success_message'])->equals(Form::MESSAGE_WHEN_CONFIRMATION_ENABLED);
+    expect($custom['settings']['success_message'])->equals('Thanks for joining us!');
   }
 
   function _after() {

@@ -3,6 +3,7 @@
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
+use Mailpoet\Models\Form as FormModel;
 
 require_once __DIR__ . '/../DataFactories/Form.php';
 require_once __DIR__ . '/../DataFactories/Segment.php';
@@ -140,7 +141,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->amOnUrl(self::WP_URL);
     $I->fillField('[data-automation-id="form_email"]', 'subscriber@example.com');
     $I->click('[data-automation-id="subscribe-submit-button"]');
-    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', 30, '.mailpoet_validate_success');
+    $I->waitForText(FormModel::getDefaultSuccessMessage(), 30, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
   }
 

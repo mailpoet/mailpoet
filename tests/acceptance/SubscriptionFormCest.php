@@ -5,6 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\Models\Form as FormModel;
 
 require_once __DIR__ . '/../DataFactories/Settings.php';
 require_once __DIR__ . '/../DataFactories/Form.php';
@@ -40,7 +41,7 @@ class SubscriptionFormCest {
     $I->amOnPage('/');
     $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
     $I->click('.mailpoet_submit');
-    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+    $I->waitForText(FormModel::MESSAGE_WHEN_CONFIRMATION_ENABLED, self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
 
     $I->cli('widget reset sidebar-1 --allow-root');
@@ -53,7 +54,7 @@ class SubscriptionFormCest {
     $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
     $I->scrollTo('.mailpoet_submit');
     $I->click('.mailpoet_submit');
-    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+    $I->waitForText(FormModel::MESSAGE_WHEN_CONFIRMATION_ENABLED, self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
     $I->seeCurrentUrlEquals('/form-test/');
   }
@@ -65,7 +66,7 @@ class SubscriptionFormCest {
     $I->switchToIframe('mailpoet_form_iframe');
     $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
     $I->click('.mailpoet_submit');
-    $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+    $I->waitForText(FormModel::MESSAGE_WHEN_CONFIRMATION_ENABLED, self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
   }
 
@@ -86,6 +87,25 @@ class SubscriptionFormCest {
     $I->amOnMailpoetPage('Subscribers');
     $I->waitForText($this->subscriber_email);
     $I->see('Subscribed', Locator::contains('tr', $this->subscriber_email));
+  }
+
+  function subscriptionAfterDisablingConfirmation(\AcceptanceTester $I) {
+    $I->wantTo('Disable sign-up confirmation then subscribe and see a different message');
+    $I->login();
+
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="signup_settings_tab"]');
+    $I->waitForText('Enable sign-up confirmation');
+    $I->click('[data-automation-id="disable_signup_confirmation"]');
+    $I->acceptPopup();
+    $I->click('[data-automation-id="settings-submit-button"]');
+
+    $I->amOnPage('/form-test');
+    $I->switchToIframe('mailpoet_form_iframe');
+    $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
+    $I->click('.mailpoet_submit');
+    $I->waitForText(FormModel::MESSAGE_WHEN_CONFIRMATION_DISABLED, self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+    $I->seeNoJSErrors();
   }
 
   function _after(\AcceptanceTester $I) {

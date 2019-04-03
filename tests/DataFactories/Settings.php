@@ -4,6 +4,7 @@ namespace MailPoet\Test\DataFactories;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Models\Form as FormModel;
 
 class Settings {
   /** @var SettingsController */
@@ -32,6 +33,7 @@ class Settings {
 
   function withConfirmationEmailEnabled() {
     $this->settings->set('signup_confirmation.enabled', '1');
+    FormModel::updateSuccessMessages();
     return $this;
   }
 
@@ -42,6 +44,7 @@ class Settings {
 
   function withConfirmationEmailDisabled() {
     $this->settings->set('signup_confirmation.enabled', '');
+    FormModel::updateSuccessMessages();
     return $this;
   }
 
