@@ -38,10 +38,17 @@ ul.mailpoet_boxes {
 
 .mailpoet_boxes .mailpoet_template_boxes {
   box-sizing: border-box;
+  flex-direction: column;
   height: auto;
   margin: 0 0 $box-margin-big;
   padding: 0;
   width: 30.5%;
+
+  .mailpoet_template_content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
 
   @media screen and (max-width: 1178px) {
     width: 47%;
@@ -80,7 +87,6 @@ ul.mailpoet_boxes {
   background: #fafafa;
   border-top: 1px solid #e1e1e1;
   padding: 12px 5%;
-  width: 90%;
 }
 
 .mailpoet_boxes .mailpoet_template_boxes .mailpoet_description h3 {
@@ -89,7 +95,6 @@ ul.mailpoet_boxes {
   line-height: 20px;
   margin: 0;
   max-width: 100%;
-  white-space: nowrap;
 }
 
 .mailpoet_boxes .mailpoet_template_boxes .mailpoet_actions {
@@ -97,6 +102,7 @@ ul.mailpoet_boxes {
   border-left: 1px solid #e8e8e8;
   border-top: 1px solid #d6d6d6;
   bottom: 0px;
+  margin: 0;
   padding: 8px 16px;
   right: 0px;
 

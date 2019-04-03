@@ -119,31 +119,33 @@ class TemplateBox extends React.Component {
           { preview }
         </div>
 
-        <div className="mailpoet_description">
-          <h3>{ name }</h3>
-        </div>
+        <div className="mailpoet_template_content">
+          <div className="mailpoet_description">
+            <h3>{ name }</h3>
+          </div>
 
-        <div className="mailpoet_actions">
-          { readonly === '1' ? false : deleteLink }
-          <a
-            className="button button-primary"
-            data-automation-id={`select_template_${index}`}
-            onClick={this.onSelect}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(event) => {
-              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-              ) {
-                event.preventDefault();
-                this.onSelect();
-              }
-            }}
-          >
-            {' '}
-            {MailPoet.I18n.t('select')}
-            {' '}
+          <div className="mailpoet_actions">
+            { readonly === '1' ? false : deleteLink }
+            <a
+              className="button button-primary"
+              data-automation-id={`select_template_${index}`}
+              onClick={this.onSelect}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                ) {
+                  event.preventDefault();
+                  this.onSelect();
+                }
+              }}
+            >
+              {' '}
+              {MailPoet.I18n.t('select')}
+              {' '}
 
-          </a>
+            </a>
+          </div>
         </div>
       </li>
     );
