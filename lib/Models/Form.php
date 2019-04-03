@@ -132,4 +132,21 @@ class Form extends Model {
     return WPFunctions::get()->__(self::MESSAGE_WHEN_CONFIRMATION_DISABLED, 'mailpoet');
   }
 
+  static function updateSuccessMessages() {
+    $right_message = self::getDefaultSuccessMessage();
+    $wrong_message = (
+      $right_message === self::MESSAGE_WHEN_CONFIRMATION_ENABLED
+      ? self::MESSAGE_WHEN_CONFIRMATION_DISABLED
+      : self::MESSAGE_WHEN_CONFIRMATION_ENABLED
+    );
+    $forms = self::findMany();
+    foreach ($forms as $form) {
+      $data = $form->asArray();
+      if (isset($data['settings']['success_message']) && $data['settings']['success_message'] === $wrong_message) {
+        $data['settings']['success_message'] = $right_message;
+        self::createOrUpdate($data);
+      }
+    }
+  }
+
 }

@@ -11,6 +11,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Models\Form;
 
 if (!defined('ABSPATH')) exit;
 
@@ -40,6 +41,7 @@ class Settings extends APIEndpoint {
         ));
     } else {
       $original_inactivation_interval = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
+      $signup_confirmation = $this->settings->get('signup_confirmation.enabled');
       foreach ($settings as $name => $value) {
         $this->settings->set($name, $value);
       }
@@ -50,6 +52,9 @@ class Settings extends APIEndpoint {
       }
       $bridge = new Bridge();
       $bridge->onSettingsSave($settings);
+      if ($signup_confirmation != $this->settings->get('signup_confirmation.enabled')) {
+        Form::updateSuccessMessages();
+      }
       return $this->successResponse($this->settings->getAll());
     }
   }
