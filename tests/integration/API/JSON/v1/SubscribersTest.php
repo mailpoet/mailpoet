@@ -468,14 +468,26 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCannotSubscribeWithoutMandatoryCustomField() {
-    CustomField::createOrUpdate([
+    $custom_field = CustomField::createOrUpdate([
       'name' => 'custom field',
       'type' => 'text',
       'params' => ['required' => '1']
     ]);
+    $form = Form::createOrUpdate([
+      'name' => 'form',
+      'body' => [[
+        'type' => 'text',
+        'name' => 'mandatory',
+        'id' => $custom_field->id(),
+        'unique' => '1',
+        'static' => '0',
+        'params' => ['required' => '1'],
+        'position' => '0',
+      ]],
+    ]);
     $response = $this->endpoint->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
-      'form_id' => $this->form->id,
+      'form_id' => $form->id,
       $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
     ));
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
