@@ -134,6 +134,7 @@ class Populator {
     $this->createSourceForSubscribers();
     $this->updateNewsletterCategories();
     $this->scheduleInitialInactiveSubscribersCheck();
+    Form::updateSuccessMessages();
   }
 
   private function createMailPoetPage() {
