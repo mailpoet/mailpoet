@@ -177,10 +177,10 @@ class NewsletterTypes extends React.Component {
         <ul className="mailpoet_boxes mailpoet_boxes_types">
           {types.map(type => (
             <li key={type.slug} data-type={type.slug} className="mailpoet_newsletter_types">
-              <div>
-                <div className="mailpoet_thumbnail">
-                  {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
-                </div>
+              <div className="mailpoet_thumbnail">
+                {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
+              </div>
+              <div className="mailpoet_boxes_content">
                 <div className="mailpoet_description">
                   <h3>
                     {type.title}

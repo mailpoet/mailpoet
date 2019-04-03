@@ -15,14 +15,25 @@ $box-description-font-size: $box-description-line-height;
   opacity: 0.2;
 }
 
+ul.mailpoet_boxes {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .mailpoet_boxes li {
+  align-items: center;
   background-color: #fff;
   border: 1px solid #dedede;
-  float: left;
+  display: flex;
   margin: 15px 25px 0 0;
   padding: 15px;
-  position: relative;
   width: $box-width;
+}
+
+.mailpoet_boxes .mailpoet_boxes_content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .mailpoet_boxes .mailpoet_template_boxes {
@@ -97,9 +108,8 @@ $box-description-font-size: $box-description-line-height;
 .mailpoet_boxes .mailpoet_thumbnail {
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 50% 50%;
+  background-size: 100% 100%;
   border: 0;
-  float: left;
   height: $thumbnail-height;
   overflow: hidden;
   position: relative;
@@ -114,19 +124,13 @@ $box-description-font-size: $box-description-line-height;
 
 .woocommerce .mailpoet_thumbnail,
 .mailpoet_boxes .mailpoet_newsletter_types .mailpoet_thumbnail {
-  border: 1px solid #ccc;
-  float: left;
   height: $box-height;
   margin-right: 15px;
   overflow: hidden;
-  position: relative;
   width: $box-height;
 
   img {
-    left: 50%;
     min-width: $box-height;
-    position: relative;
-    top: 50%;
     transform: translate(-50%, -50%);
     width: 110%;
   }
@@ -176,7 +180,7 @@ $box-description-font-size: $box-description-line-height;
 }
 
 .mailpoet_boxes .mailpoet_description {
-  float: left;
+  flex-grow: 1;
   overflow-wrap: break-word;
   padding-bottom: 0;
   width: 258px;
@@ -184,23 +188,21 @@ $box-description-font-size: $box-description-line-height;
 
   h3 {
     font-size: $box-heading-font-size;
+    font-weight: 700;
     line-height: $box-heading-line-height;
     margin: 0 0 $box-description-space-between-heading-and-paragraph 0;
     max-width: 223px;
-    overflow: hidden;
   }
 
   p {
     font-size: $box-description-font-size;
-    line-height: $box-description-line-height;
     margin: 0;
   }
 }
 
 .mailpoet_boxes .mailpoet_actions {
-  bottom: 15px;
-  position: absolute;
-  right: 15px;
+  margin-top: 8px;
+  text-align: right;
 }
 
 .mailpoet_boxes .mailpoet_delete {
@@ -227,15 +229,11 @@ $box-description-font-size: $box-description-line-height;
   }
 
   .mailpoet_description {
-    position: relative;
 
-    p { margin-bottom: 40px; }
+    p { margin-bottom: 10px; }
   }
 
   .mailpoet_badge {
-    bottom: 1px;
-    left: 0;
-    position: absolute;
   }
 }
 
