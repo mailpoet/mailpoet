@@ -30,7 +30,7 @@ class TemplatesPagesLoadCest {
     $I->click('WooCommerce Emails');
     $I->see('WooCommerce Emails', ['css' => 'a.current']);
     $I->waitForElement('[data-automation-id="select_template_5"]');
-    $I->waitForElement('[data-automation-id="select_template_9"]');
+    $I->waitForElement('[data-automation-id="select_template_2"]');
   }
 
 }
