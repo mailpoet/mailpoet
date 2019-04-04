@@ -142,6 +142,15 @@ class EditorProductsCest {
     $I->click('.mailpoet_settings_products_show_display_options');
     $I->waitForElementVisible('.mailpoet_settings_products_show_product_selection');
 
+    // Test "Display Type"
+    $I->see(self::PRODUCT_SHORT_DESCRIPTION, self::EDITOR_PRODUCT_SELECTOR);
+    $I->clickLabelWithInput('mailpoet_products_display_type', 'titleOnly');
+    $this->waitForChange($I);
+    $I->dontSeeElement(self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post');
+    $I->clickLabelWithInput('mailpoet_products_display_type', 'full');
+    $this->waitForChange($I);
+    $I->see(self::PRODUCT_DESCRIPTION, self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post');
+
     // Test "Title Format"
     $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h1');
     $I->clickLabelWithInput('mailpoet_products_title_format', 'h2');
