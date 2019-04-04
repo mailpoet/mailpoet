@@ -8,6 +8,8 @@ import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
 import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
 import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
 
+import CreateSenderSettings from './create_sender_settings.jsx'
+
 const WelcomeWizardStepsController = (props) => {
   const stepsCount = window.is_woocommerce_active ? 4 : 3;
   const shouldSetSender = !window.is_mp2_migration_complete;
@@ -63,9 +65,8 @@ const WelcomeWizardStepsController = (props) => {
   }
 
   function submitSender() {
-    updateSettings({
-      sender,
-    }).then(() => (props.history.push('/steps/2')));
+    updateSettings(CreateSenderSettings(sender))
+      .then(() => (props.history.push('/steps/2')));
   }
 
   return (
