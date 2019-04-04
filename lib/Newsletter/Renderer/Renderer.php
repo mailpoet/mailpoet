@@ -7,6 +7,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 if (!defined('ABSPATH')) exit;
 
@@ -64,7 +65,7 @@ class Renderer {
       htmlspecialchars($newsletter['subject']),
       $rendered_styles,
       $custom_fonts_links,
-      $newsletter['preheader'],
+      EHelper::escapeHtmlText($newsletter['preheader']),
       $rendered_body
     ));
     $template = $this->inlineCSSStyles($template);
