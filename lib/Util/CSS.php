@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Util;
+
 use csstidy;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 /*
   Copyright 2013-2014, François-Marie de Jouvencel
@@ -257,6 +259,7 @@ class CSS {
   * into an array of properties (like: array("border" => "1px solid black", "color" => "red"))
   */
   private function styleToArray($str) {
+    $str = EHelper::unescapeHtmlStyleAttr($str);
     $array = array();
 
     if (trim($str) === '') return $array;
@@ -265,7 +268,6 @@ class CSS {
       if ($kv === '') {
         continue;
       }
-
       list($selector, $rule) = explode(':', $kv, 2);
       $array[trim($selector)] = trim($rule);
     }
@@ -282,6 +284,6 @@ class CSS {
     foreach ($array as $k => $v) {
       $parts[] = "$k:$v";
     }
-    return implode(';', $parts);
+    return EHelper::escapeHtmlStyleAttr(implode(';', $parts));
   }
 }
