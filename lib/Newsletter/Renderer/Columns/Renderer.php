@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\Columns;
 
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
+
 class Renderer {
 
   function render($content_block, $columns_data) {
@@ -22,10 +24,10 @@ class Renderer {
   }
 
   function getOneColumnTemplate($styles, $image) {
-    $background_css = $this->getBackgroundCss($styles, $image);
+    $background_css = EHelper::escapeHtmlStyleAttr($this->getBackgroundCss($styles, $image));
     $template['content_start'] = '
       <tr>
-        <td class="mailpoet_content" align="center" style="border-collapse:collapse;' . $background_css . '">
+        <td class="mailpoet_content" align="center" style="border-collapse:collapse;' . $background_css . '" ' . $this->getBgColorAttribute($styles, $image) .'>
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
             <tbody>
               <tr>
@@ -65,7 +67,7 @@ class Renderer {
   private function getMultipleColumnsContainerStart($class, $styles, $image) {
     return '
       <tr>
-        <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;' . $this->getBackgroundCss($styles, $image) . '">
+        <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;' . EHelper::escapeHtmlStyleAttr($this->getBackgroundCss($styles, $image)) . '" ' . $this->getBgColorAttribute($styles, $image) .'>
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
             <tbody>
               <tr>
@@ -117,8 +119,18 @@ class Renderer {
       if (!isset($styles['backgroundColor'])) return false;
       $background_color = $styles['backgroundColor'];
       return ($background_color !== 'transparent') ?
-        sprintf('background-color:%s!important;" bgcolor="%s', $background_color, $background_color) :
+        sprintf('background-color:%s!important;', $background_color) :
         false;
     }
+  }
+
+  private function getBgColorAttribute($styles, $image) {
+    if (($image === null || $image['src'] === null)
+      && isset($styles['backgroundColor'])
+      && $styles['backgroundColor'] !== 'transparent'
+    ) {
+      return 'bgcolor="' . EHelper::escapeHtmlStyleAttr($styles['backgroundColor']) . '"';
+    }
+    return null;
   }
 }
