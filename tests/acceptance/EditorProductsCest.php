@@ -11,6 +11,7 @@ require_once __DIR__ . '/../DataFactories/WooCommerceProduct.php';
 
 class EditorProductsCest {
 
+  const EDITOR_PRODUCT_SELECTOR = '.mailpoet_products_container > .mailpoet_block > .mailpoet_container > .mailpoet_block';
   const POST_TITLE = 'Hello World';
 
   const PRODUCT_NAME = 'Display Settings Product';
@@ -132,6 +133,7 @@ class EditorProductsCest {
     $I->waitForElementVisible('#mailpoet_select_post_0');
     $I->click('#mailpoet_select_post_0');
     $I->seeCheckboxIsChecked('#mailpoet_select_post_0');
+    $I->waitForElement(self::EDITOR_PRODUCT_SELECTOR);
   }
 
   private function changeDisplaySettings(\AcceptanceTester $I) {
@@ -140,11 +142,20 @@ class EditorProductsCest {
     $I->click('.mailpoet_settings_products_show_display_options');
     $I->waitForElementVisible('.mailpoet_settings_products_show_product_selection');
 
-
+    // Test "Title Format"
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h1');
+    $I->clickLabelWithInput('mailpoet_products_title_format', 'h2');
+    $this->waitForChange($I);
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h2');
   }
 
   private function clearCategories(\AcceptanceTester $I) {
     $I->click('.select2-selection__clear');
+  }
+
+  private function waitForChange(\AcceptanceTester $I) {
+    $productClass = $I->grabAttributeFrom(self::EDITOR_PRODUCT_SELECTOR, 'class');
+    $I->waitForElementNotVisible('.' . implode('.', explode(' ', $productClass)));
   }
 
   /**
