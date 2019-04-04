@@ -126,6 +126,7 @@ Module.DividerBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.DividerWidgetView = base.WidgetView.extend({
+  id: 'automation_editor_block_divider',
   getTemplate: function getTemplate() { return window.templates.dividerInsertion; },
   behaviors: {
     DraggableBehavior: {
