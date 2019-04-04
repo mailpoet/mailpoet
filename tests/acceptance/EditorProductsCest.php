@@ -147,6 +147,12 @@ class EditorProductsCest {
     $I->clickLabelWithInput('mailpoet_products_title_format', 'h2');
     $this->waitForChange($I);
     $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h2');
+
+    // Test "Title Alignment"
+    $I->assertAttributeContains(self::EDITOR_PRODUCT_SELECTOR . ' h2', 'style', 'left');
+    $I->clickLabelWithInput('mailpoet_products_title_alignment', 'right');
+    $this->waitForChange($I);
+    $I->assertAttributeContains(self::EDITOR_PRODUCT_SELECTOR . ' h2', 'style', 'right');
   }
 
   private function clearCategories(\AcceptanceTester $I) {
@@ -154,6 +160,7 @@ class EditorProductsCest {
   }
 
   private function waitForChange(\AcceptanceTester $I) {
+    $I->waitForElementNotVisible('.velocity-animating');
     $productClass = $I->grabAttributeFrom(self::EDITOR_PRODUCT_SELECTOR, 'class');
     $I->waitForElementNotVisible('.' . implode('.', explode(' ', $productClass)));
   }

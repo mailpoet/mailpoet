@@ -154,6 +154,12 @@ class AcceptanceTester extends \Codeception\Actor {
     $I->click("//label[.//input[@name='{$inputName}'][@value='{$inputValue}']]");
   }
 
+  public function assertAttributeContains($selector, $attribute, $contains) {
+    $I = $this;
+    $attributeValue = $I->grabAttributeFrom($selector, $attribute);
+    expect($attributeValue)->contains($contains);
+  }
+
   public function searchFor($query, $delay = 0, $element = '#search_input', $button = 'Search') {
     $I = $this;
     $I->waitForElement($element);
