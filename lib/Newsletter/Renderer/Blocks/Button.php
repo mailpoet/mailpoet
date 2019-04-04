@@ -2,10 +2,13 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Renderer\StylesHelper;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Button {
   static function render($element, $column_base_width) {
     $element['styles']['block']['width'] = self::calculateWidth($element, $column_base_width);
+    $styles = 'display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none !important;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = array('textAlign'));
+    $styles = EHelper::escapeHtmlStyleAttr($styles);
     $template = '
       <tr>
         <td class="mailpoet_padded_vertical mailpoet_padded_side" valign="top">
@@ -14,22 +17,22 @@ class Button {
               <tr>
                 <td class="mailpoet_button-container" style="text-align:' . $element['styles']['block']['textAlign'] . ';"><!--[if mso]>
                   <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
-                    href="' . $element['url'] . '"
-                    style="height:' . $element['styles']['block']['lineHeight'] . ';
-                           width:' . $element['styles']['block']['width'] . ';
+                    href="' . EHelper::escapeHtmlLinkAttr($element['url']) . '"
+                    style="height:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['lineHeight']) . ';
+                           width:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['width']) . ';
                            v-text-anchor:middle;"
                     arcsize="' . round((int)$element['styles']['block']['borderRadius'] / (int)$element['styles']['block']['lineHeight'] * 100) . '%"
-                    strokeweight="' . $element['styles']['block']['borderWidth'] . '"
-                    strokecolor="' . $element['styles']['block']['borderColor'] . '"
-                    fillcolor="' . $element['styles']['block']['backgroundColor'] . '">
+                    strokeweight="' . EHelper::escapeHtmlAttr($element['styles']['block']['borderWidth']) . '"
+                    strokecolor="' . EHelper::escapeHtmlAttr($element['styles']['block']['borderColor']) . '"
+                    fillcolor="' . EHelper::escapeHtmlAttr($element['styles']['block']['backgroundColor']) . '">
                   <w:anchorlock/>
-                  <center style="color:' . $element['styles']['block']['fontColor'] . ';
-                    font-family:' . $element['styles']['block']['fontFamily'] . ';
-                    font-size:' . $element['styles']['block']['fontSize'] . ';
-                    font-weight:bold;">' . $element['text'] . '
+                  <center style="color:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontColor']) . ';
+                    font-family:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontFamily']) . ';
+                    font-size:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontSize']) . ';
+                    font-weight:bold;">' . EHelper::escapeHtmlStyleAttr($element['text']) . '
                   </center>
                   </v:roundrect>
-                  <![endif]--><a class="mailpoet_button" href="' . $element['url'] . '" style="display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none!important;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = array('textAlign')) . '"> ' . $element['text'] . '
+                  <![endif]--><a class="mailpoet_button" href="' . EHelper::escapeHtmlLinkAttr($element['url']) . '" style="' . $styles . '"> ' . EHelper::escapeHtmlText($element['text']) . '</a>
                 </td>
               </tr>
             </table>
