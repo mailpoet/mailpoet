@@ -15,7 +15,6 @@ const WelcomeWizardStepsController = (props) => {
 
   const [loading, setLoading] = useState(false);
   const [sender, setSender] = useState(window.sender_data);
-  const [replyTo, setReplyTo] = useState(window.reply_to_data);
 
   useEffect(() => {
     if (step > stepsCount || step < 1) {
@@ -63,14 +62,9 @@ const WelcomeWizardStepsController = (props) => {
     setSender({ ...sender, ...data });
   }
 
-  function updateReplyTo(data) {
-    setReplyTo({ ...replyTo, ...data });
-  }
-
   function submitSender() {
     updateSettings({
       sender,
-      reply_to: replyTo,
     }).then(() => (props.history.push('/steps/2')));
   }
 
@@ -86,11 +80,9 @@ const WelcomeWizardStepsController = (props) => {
           <WelcomeWizardSenderStep
             update_sender={updateSender}
             submit_sender={submitSender}
-            update_reply_to={updateReplyTo}
             finish={finishWizard}
             loading={loading}
             sender={sender}
-            reply_to={replyTo}
             pluginInstalledAt={window.mailpoet_installed_at}
             mssActive={window.mailpoet_mss_active}
           />
