@@ -424,7 +424,7 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  function svnPublish($opts = ['force' => false]) {
+  function svnPublish() {
     $this->loadEnv();
 
     $svn_dir = ".mp_svn";
@@ -508,44 +508,32 @@ class RoboFile extends \Robo\Tasks {
     $result = $collection->run();
 
     if ($result->wasSuccessful()) {
-      // Run or suggest release command depending on a flag
       $repo_url = "https://plugins.svn.wordpress.org/$plugin_dist_name";
       $release_cmd = "svn ci -m \"Release $plugin_version\"";
       $tag_cmd = "svn copy $repo_url/trunk $repo_url/tags/$plugin_version -m \"Tag $plugin_version\"";
-      if (!empty($opts['force'])) {
-        $svn_login = getenv('WP_SVN_USERNAME');
-        $svn_password = getenv('WP_SVN_PASSWORD');
-        if ($svn_login && $svn_password) {
-          $release_cmd .= " --username $svn_login --password $svn_password";
-        } else {
-          $release_cmd .= ' --force-interactive';
-        }
-        $result = $this->taskExecStack()
-          ->stopOnFail()
-          ->dir($svn_dir)
-          ->exec($release_cmd)
-          ->exec($tag_cmd)
-          ->run();
+      $svn_login = getenv('WP_SVN_USERNAME');
+      $svn_password = getenv('WP_SVN_PASSWORD');
+      if ($svn_login && $svn_password) {
+        $release_cmd .= " --username $svn_login --password $svn_password";
       } else {
-        $this->yell(
-          "Go to '$svn_dir' and run '$release_cmd' to publish the release"
-        );
-        $this->yell(
-          "Run '$tag_cmd' to tag the release"
-        );
+        $release_cmd .= ' --force-interactive';
       }
+      $result = $this->taskExecStack()
+        ->stopOnFail()
+        ->dir($svn_dir)
+        ->exec($release_cmd)
+        ->exec($tag_cmd)
+        ->run();
     }
 
     return $result;
   }
 
-  public function publish($opts = ['force' => false]) {
+  public function publish() {
     return $this->collectionBuilder()
       ->addCode(array($this, 'pushpot'))
       ->addCode(array($this, 'svnCheckout'))
-      ->addCode(function () use ($opts) {
-        return $this->svnPublish($opts);
-      })
+      ->addCode(array($this, 'svnPublish'))
       ->run();
   }
 
