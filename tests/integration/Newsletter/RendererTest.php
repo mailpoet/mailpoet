@@ -74,6 +74,7 @@ class RendererTest extends \MailPoetTest {
       $rendered_column_content[] = trim($column->text());
     };
     expect($rendered_column_content)->equals($column_content);
+    expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
   function testItRendersTwoColumns() {
@@ -99,6 +100,7 @@ class RendererTest extends \MailPoetTest {
       $rendered_column_content[] = trim($column->text());
     };
     expect($rendered_column_content)->equals($column_content);
+    expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
   function testItRendersThreeColumns() {
@@ -125,6 +127,7 @@ class RendererTest extends \MailPoetTest {
       $rendered_column_content[] = trim($column->text());
     };
     expect($rendered_column_content)->equals($column_content);
+    expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
   function testItRendersScaledColumnBackgroundImage() {
