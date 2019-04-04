@@ -20,6 +20,8 @@ class WooCommerceProduct {
     $this->tester = $tester;
     $this->data = [
       'name' => 'Product',
+      'description' => null,
+      'shortDescription' => null,
       'type' => self::TYPE_SIMPLE,
       'sku' => null,
       'price' => 10,
@@ -34,6 +36,22 @@ class WooCommerceProduct {
    */
   function withName($name) {
     return $this->update('name', $name);
+  }
+
+  /**
+   * @param string $description
+   * @return $this
+   */
+  function withDescription($description) {
+    return $this->update('description', $description);
+  }
+
+  /**
+   * @param string $shortDescription
+   * @return $this
+   */
+  function withShortDescription($shortDescription) {
+    return $this->update('shortDescription', $shortDescription);
   }
 
   /**
@@ -87,6 +105,12 @@ class WooCommerceProduct {
     $create_command .= " --name=\"{$this->data['name']}\"";
     $create_command .= " --type=\"{$this->data['type']}\"";
     $create_command .= " --regular_price={$this->data['price']}";
+    if ($this->data['description']) {
+      $create_command .= " --description=\"{$this->data['description']}\"";
+    }
+    if ($this->data['shortDescription']) {
+      $create_command .= " --short_description=\"{$this->data['shortDescription']}\"";
+    }
     if ($this->data['sku']) {
       $create_command .= " --sku=\"{$this->data['sku']}\"";
     } else {
