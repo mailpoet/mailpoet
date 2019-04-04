@@ -32,15 +32,11 @@ use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 */
 
 class CSS {
-  /*
-  * The core of the algorithm, takes a URL and returns the HTML found there with the CSS inlined.
-  * If you pass $contents then the original HTML is not downloaded and $contents is used instead.
-  * $url is mandatory as it is used to resolve the links to the stylesheets found in the HTML.
-  */
   /**
+   * @param string $contents
    * @return DomNode
    */
-  function inlineCSS($url, $contents = null) {
+  function inlineCSS($contents) {
     $html = pQuery::parseStr($contents);
 
     if (!$html instanceof DomNode) {

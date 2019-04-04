@@ -167,7 +167,7 @@ class Renderer {
    * @return DomNode
    */
   private function inlineCSSStyles($template) {
-    return $this->CSS_inliner->inlineCSS(null, $template);
+    return $this->CSS_inliner->inlineCSS($template);
   }
 
   /**
