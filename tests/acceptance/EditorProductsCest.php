@@ -80,15 +80,9 @@ class EditorProductsCest {
 
   }
 
-  /**
-   * @before initializeNewsletter
-   * @before productsWidgetNotVisible
-   * @before initializeWooCommerce
-   */
-  function filterProducts(\AcceptanceTester $I) {
+  private function filterProducts(\AcceptanceTester $I) {
     $I->wantTo('Filter products');
 
-    $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->waitForText($this->newsletterTitle);
     $I->clickItemRowActionByItemName($this->newsletterTitle, 'Edit');
@@ -128,19 +122,40 @@ class EditorProductsCest {
     $I->waitForText(self::KEYWORD_MULTIPLE_RESULTS, 10, '.mailpoet_post_scroll_container');
     $I->seeNumberOfElements('.mailpoet_post_scroll_container > div', self::PRODUCTS_COUNT);
 
-    // Product is clickable
-    $I->click('#mailpoet_select_post_0');
-    $I->seeCheckboxIsChecked('#mailpoet_select_post_0');
-
     // Searching for existing post should return zero results
     $I->fillField('.mailpoet_products_search_term', self::POST_TITLE);
     $I->waitForText('No products available');
 
-    $I->deactivateWooCommerce();
+    // Product is clickable
+    $I->fillField('.mailpoet_products_search_term', self::PRODUCT_NAME);
+    $I->waitForText(self::PRODUCT_NAME, 10, '.mailpoet_post_scroll_container');
+    $I->waitForElementVisible('#mailpoet_select_post_0');
+    $I->click('#mailpoet_select_post_0');
+    $I->seeCheckboxIsChecked('#mailpoet_select_post_0');
+  }
+
+  private function changeDisplaySettings(\AcceptanceTester $I) {
+    // Changing display options
+    $I->wantTo('Change products settings');
+    $I->click('.mailpoet_settings_products_show_display_options');
+    $I->waitForElementVisible('.mailpoet_settings_products_show_product_selection');
+
+
   }
 
   private function clearCategories(\AcceptanceTester $I) {
     $I->click('.select2-selection__clear');
+  }
+
+  /**
+   * @before initializeNewsletter
+   * @before productsWidgetNotVisible
+   * @before initializeWooCommerce
+   * @before filterProducts
+   * @before changeDisplaySettings
+   */
+  function testProductsWidget(\AcceptanceTester $I) {
+    $I->deactivateWooCommerce();
   }
 
 }
