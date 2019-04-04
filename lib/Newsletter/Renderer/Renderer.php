@@ -190,11 +190,6 @@ class Renderer {
     foreach ($template_dom->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
     }
-    $template = $template_dom->query('.mailpoet_template');
-    // encode ampersand
-    $template->html(
-      str_replace('&', '&amp;', $template->html())
-    );
     $template = WPFunctions::get()->applyFilters(
       self::FILTER_POST_PROCESS,
       $template_dom->__toString()

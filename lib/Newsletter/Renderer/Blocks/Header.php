@@ -33,7 +33,7 @@ class Header {
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_header" ' . $background_color . '
         style="line-height: ' . $line_height  . ';' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
-          ' . $DOM->html() . '
+          ' . str_replace('&', '&amp;', $DOM->html()) . '
         </td>
       </tr>';
     return $template;
