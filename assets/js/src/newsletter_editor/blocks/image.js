@@ -140,6 +140,7 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 ImageWidgetView = base.WidgetView.extend({
+  id: 'automation_editor_block_image',
   getTemplate: function () { return window.templates.imageInsertion; },
   behaviors: {
     DraggableBehavior: {
