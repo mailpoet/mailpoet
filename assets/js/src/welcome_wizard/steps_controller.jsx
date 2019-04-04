@@ -8,7 +8,7 @@ import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
 import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
 import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
 
-import CreateSenderSettings from './create_sender_settings.jsx'
+import CreateSenderSettings from './create_sender_settings.jsx';
 
 const WelcomeWizardStepsController = (props) => {
   const stepsCount = window.is_woocommerce_active ? 4 : 3;
@@ -69,6 +69,12 @@ const WelcomeWizardStepsController = (props) => {
       .then(() => (props.history.push('/steps/2')));
   }
 
+  function skipSenderStep() {
+    setLoading(true);
+    updateSettings(CreateSenderSettings({ address: window.admin_email, name: '' }))
+      .then(finishWizard);
+  }
+
   return (
     <div className="mailpoet_welcome_wizard_steps mailpoet_welcome_wizard_centered_column">
       <WelcomeWizardHeader
@@ -81,7 +87,7 @@ const WelcomeWizardStepsController = (props) => {
           <WelcomeWizardSenderStep
             update_sender={updateSender}
             submit_sender={submitSender}
-            finish={finishWizard}
+            finish={skipSenderStep}
             loading={loading}
             sender={sender}
           />
