@@ -3,6 +3,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Newsletter\Renderer\StylesHelper;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Util\pQuery\pQuery;
 
 class Text {
@@ -125,7 +126,7 @@ class Text {
       }
       $paragraph->html('
         <tr>
-          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . $style . '">
+          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . EHelper::escapeHtmlStyleAttr($style) . '">
             ' . $contents . $line_breaks . '
           </td>
          </tr>'
@@ -149,6 +150,7 @@ class Text {
       }
       $list->style = StylesHelper::applyTextAlignment($list->style);
       $list->style .= 'margin-bottom:10px;';
+      $list->style = EHelper::escapeHtmlStyleAttr($list->style);
     }
     return $DOM->__toString();
   }
@@ -161,6 +163,7 @@ class Text {
     foreach ($headings as $heading) {
       $heading->style = StylesHelper::applyTextAlignment($heading->style);
       $heading->style .= 'padding:0;font-style:normal;font-weight:normal;';
+      $heading->style = EHelper::escapeHtmlStyleAttr($heading->style);
     }
     return $DOM->__toString();
   }
