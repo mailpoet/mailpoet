@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\Util\CSS;
 use MailPoet\Util\pQuery\pQuery;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Footer {
   static function render($element) {
@@ -29,10 +30,12 @@ class Footer {
       'bgcolor="' . $background_color . '"' :
       false;
     if (!$background_color) unset($element['styles']['block']['backgroundColor']);
+    $style = 'line-height: ' . $line_height  . ';' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text');
+    $style = EHelper::escapeHtmlStyleAttr($style);
     $template = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_footer" ' . $background_color . '
-        style="line-height: ' . $line_height  . ';' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
+        style="' . $style . '">
           ' . str_replace('&', '&amp;', $DOM->html()) . '
         </td>
       </tr>';
