@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
+
 class Social {
   static function render($element) {
     $icons_block = '';
@@ -10,14 +12,15 @@ class Social {
           continue;
         }
 
+        $style = 'width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;';
         $icons_block .= '<a 
-          href="' . $icon['link'] . '" style="text-decoration:none!important;"
+          href="' . EHelper::escapeHtmlLinkAttr($icon['link']) . '" style="text-decoration:none!important;"
         ><img 
-          src="' . $icon['image'] . '" 
+          src="' . EHelper::escapeHtmlLinkAttr($icon['image']) . '"
           width="' . (int)$icon['width'] . '" 
           height="' . (int)$icon['height'] . '" 
-          style="width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;" 
-          alt="' . $icon['iconType'] . '"
+          style="' . EHelper::escapeHtmlStyleAttr($style) . '"
+          alt="' . EHelper::escapeHtmlAttr($icon['iconType']) . '"
         ></a>&nbsp;';
       }
     }
@@ -25,7 +28,7 @@ class Social {
     if (!empty($icons_block)) {
       $template = '
       <tr>
-        <td class="mailpoet_padded_side mailpoet_padded_vertical" valign="top" align="'. $alignment . '">
+        <td class="mailpoet_padded_side mailpoet_padded_vertical" valign="top" align="'. EHelper::escapeHtmlAttr($alignment) . '">
           ' . $icons_block . '
         </td>
       </tr>';
