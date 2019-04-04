@@ -36,7 +36,7 @@ class Text {
         if (preg_match('/h\d/', $paragraph->getTag())) {
           $contents[] = $paragraph->getOuterText();
         } else {
-          $contents[] = $paragraph->html();
+          $contents[] = str_replace('&', '&amp;', $paragraph->html());
         }
           if ($index + 1 < $paragraphs->count()) $contents[] = '<br />';
           $paragraph->remove();
@@ -102,7 +102,7 @@ class Text {
       if (!preg_match('/text-align/i', $style)) {
         $style = 'text-align: left;' . $style;
       }
-      $contents = $paragraph->html();
+      $contents =  str_replace('&', '&amp;', $paragraph->html());
       $paragraph->setTag('table');
       $paragraph->style = 'border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;';
       $paragraph->width = '100%';
@@ -141,7 +141,7 @@ class Text {
     if (!$lists->count()) return $html;
     foreach ($lists as $list) {
       if ($list->tag === 'li') {
-        $list->setInnertext($list->html());
+        $list->setInnertext(str_replace('&', '&amp;', $list->html()));
         $list->class = 'mailpoet_paragraph';
       } else {
         $list->class = 'mailpoet_paragraph';
