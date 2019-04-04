@@ -389,9 +389,7 @@ class Menu {
       'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
       'finish_wizard_url' => WPFunctions::get()->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
       'sender' => $this->settings->get('sender'),
-      'reply_to' => $this->settings->get('reply_to'),
-      'installed_at' => $this->settings->get('installed_at'),
-      'mss_active' => Bridge::isMPSendingServiceEnabled(),
+      'admin_email' => get_option('admin_email'),
     ];
     $this->displayPage('welcome_wizard.html', $data);
   }
@@ -642,7 +640,7 @@ class Menu {
 
     $last_announcement_seen = $this->user_flags->get('last_announcement_seen');
     $data['feature_announcement_has_news'] = (
-      empty($last_announcement_seen) || 
+      empty($last_announcement_seen) ||
       $last_announcement_seen < strtotime(self::LAST_ANNOUNCEMENT_DATE)
     );
     $data['last_announcement_seen'] = $last_announcement_seen;
