@@ -45,7 +45,7 @@ class EditorProductsCest {
     $I->clickItemRowActionByItemName($this->newsletterTitle, 'Edit');
 
     $I->waitForText('Spacer');
-    $I->waitForElementVisible('#automation_editor_block_products');
+    $I->waitForElementNotVisible('#automation_editor_block_products');
   }
 
   private function initializeWooCommerce(\AcceptanceTester $I) {
