@@ -3,6 +3,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Image {
   static function render($element, $column_base_width) {
@@ -30,11 +31,11 @@ class Image {
     }
 
     $image_template = '
-      <img src="' . $element['src'] . '"
-      width="' . $element['width'] . '" alt="' . $element['alt'] . '"' . $style . '/>
+      <img src="' . EHelper::escapeHtmlLinkAttr($element['src']) . '"
+      width="' . EHelper::escapeHtmlAttr($element['width']) . '" alt="' . EHelper::escapeHtmlAttr($element['alt']) . '"' . $style . '/>
       ';
     if (!empty($element['link'])) {
-      $image_template = '<a href="' . $element['link'] . '">' . $image_template . '</a>';
+      $image_template = '<a href="' . EHelper::escapeHtmlLinkAttr($element['link']) . '">' . $image_template . '</a>';
     }
     $align = 'center';
     if (!empty($element['styles']['block']['textAlign']) && in_array($element['styles']['block']['textAlign'], array('left', 'right'))) {
@@ -43,7 +44,7 @@ class Image {
 
     $template = '
       <tr>
-        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_vertical mailpoet_padded_side' : '') . '" align="' . $align . '" valign="top">
+        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_vertical mailpoet_padded_side' : '') . '" align="' . EHelper::escapeHtmlAttr($align) . '" valign="top">
           ' . $image_template . '
         </td>
       </tr>';
