@@ -83,8 +83,6 @@ const WelcomeWizardStepsController = (props) => {
             finish={finishWizard}
             loading={loading}
             sender={sender}
-            pluginInstalledAt={window.mailpoet_installed_at}
-            mssActive={window.mailpoet_mss_active}
           />
         ) : null
       }
