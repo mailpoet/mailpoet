@@ -5,7 +5,7 @@ use MailPoet\Config\Env;
 use MailPoet\Models\Newsletter;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
-use MailPoet\Util\pQuery\pQuery;
+use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
@@ -14,7 +14,6 @@ if (!defined('ABSPATH')) exit;
 class Renderer {
   public $blocks_renderer;
   public $columns_renderer;
-  public $DOM_parser;
   public $CSS_inliner;
   public $newsletter;
   public $preview;
@@ -32,7 +31,6 @@ class Renderer {
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
-    $this->DOM_parser = new pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
     $this->premium_activated = License::getLicense();
@@ -68,8 +66,8 @@ class Renderer {
       EHelper::escapeHtmlText($newsletter['preheader']),
       $rendered_body
     ));
-    $template = $this->inlineCSSStyles($template);
-    $template = $this->postProcessTemplate($template);
+    $template_dom = $this->inlineCSSStyles($template);
+    $template = $this->postProcessTemplate($template_dom);
 
     $rendered_newsletter = array(
       'html' => $template,
@@ -166,7 +164,7 @@ class Renderer {
 
   /**
    * @param string $template
-   * @return \pQuery\DomNode
+   * @return DomNode
    */
   private function inlineCSSStyles($template) {
     return $this->CSS_inliner->inlineCSS(null, $template);
@@ -182,11 +180,10 @@ class Renderer {
   }
 
   /**
-   * @param string $template
+   * @param DomNode $template_dom
    * @return string
    */
-  private function postProcessTemplate($template) {
-    $template_dom = $this->DOM_parser->parseStr($template);
+  private function postProcessTemplate(DomNode $template_dom) {
     // replace spaces in image tag URLs
     foreach ($template_dom->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
