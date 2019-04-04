@@ -2,6 +2,8 @@
 namespace MailPoet\Util;
 
 use csstidy;
+use MailPoet\Util\pQuery\DomNode;
+use MailPoet\Util\pQuery\pQuery;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 /*
@@ -35,11 +37,14 @@ class CSS {
   * If you pass $contents then the original HTML is not downloaded and $contents is used instead.
   * $url is mandatory as it is used to resolve the links to the stylesheets found in the HTML.
   */
-  function inlineCSS($url, $contents=null) {
-    $html = \pQuery::parseStr($contents);
+  /**
+   * @return DomNode
+   */
+  function inlineCSS($url, $contents = null) {
+    $html = pQuery::parseStr($contents);
 
-    if (!is_object($html)) {
-      return false;
+    if (!$html instanceof DomNode) {
+      throw new \InvalidArgumentException('Error parsing contents.');
     }
 
     $css_blocks = '';
@@ -125,8 +130,7 @@ class CSS {
       }
     }
 
-    // Let simple_html_dom give us back our HTML with inline CSS!
-    return (string)$html;
+    return $html;
   }
 
   function parseCSS($text) {
