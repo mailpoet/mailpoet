@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\FreeDomains;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
@@ -17,8 +18,12 @@ class Functions extends AbstractExtension {
   /** @var SettingsController */
   private $settings;
 
+  /** @var WooCommerceHelper */
+  private $woocommerce_helper;
+
   public function __construct() {
     $this->settings = new SettingsController();
+    $this->woocommerce_helper = new WooCommerceHelper();
   }
 
   function getFunctions() {
@@ -118,6 +123,11 @@ class Functions extends AbstractExtension {
         array($this, 'getFreeDomains'),
         array('is_safe' => array('all'))
       ),
+      new TwigFunction(
+        'is_woocommerce_active',
+        array($this, 'isWoocommerceActive'),
+        array('is_safe' => array('all'))
+      ),
     );
   }
 
@@ -210,5 +220,9 @@ class Functions extends AbstractExtension {
 
   function getFreeDomains() {
     return FreeDomains::FREE_DOMAINS;
+  }
+
+  function isWoocommerceActive() {
+    return $this->woocommerce_helper->isWooCommerceActive();
   }
 }
