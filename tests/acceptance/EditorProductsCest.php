@@ -13,6 +13,10 @@ class EditorProductsCest {
 
   const POST_TITLE = 'Hello World';
 
+  const PRODUCT_NAME = 'Display Settings Product';
+  const PRODUCT_DESCRIPTION = 'Full description';
+  const PRODUCT_SHORT_DESCRIPTION = 'Short description';
+
   const KEYWORD_ZERO_RESULTS = '0Non-existent product';
   const KEYWORD_MULTIPLE_RESULTS = '1Multiple products ';
 
@@ -66,6 +70,14 @@ class EditorProductsCest {
         ->withCategoryIds([$category_multiple_results_id])
         ->create();
     }
+
+    // Create product for testing display settings
+    $this->product_factory
+      ->withName(self::PRODUCT_NAME)
+      ->withDescription(self::PRODUCT_DESCRIPTION)
+      ->withShortDescription(self::PRODUCT_SHORT_DESCRIPTION)
+      ->create();
+
   }
 
   /**
