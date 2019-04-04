@@ -153,6 +153,12 @@ class EditorProductsCest {
     $I->clickLabelWithInput('mailpoet_products_title_alignment', 'right');
     $this->waitForChange($I);
     $I->assertAttributeContains(self::EDITOR_PRODUCT_SELECTOR . ' h2', 'style', 'right');
+
+    // Test "Title as a Link"
+    $I->dontSeeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h2 a');
+    $I->clickLabelWithInput('mailpoet_products_title_as_links', 'true');
+    $this->waitForChange($I);
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h2 a');
   }
 
   private function clearCategories(\AcceptanceTester $I) {
