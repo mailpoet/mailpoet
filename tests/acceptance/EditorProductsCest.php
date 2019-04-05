@@ -151,7 +151,7 @@ class EditorProductsCest {
     $I->dontSeeElement('.mailpoet_products_title_position');
     $I->clickLabelWithInput('mailpoet_products_display_type', 'full');
     $this->waitForChange($I);
-    $I->see(self::PRODUCT_DESCRIPTION, self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post');
+    $I->see(self::PRODUCT_DESCRIPTION, self::EDITOR_PRODUCT_SELECTOR);
 
     // Test "Title Format"
     $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h1');
@@ -180,6 +180,7 @@ class EditorProductsCest {
     $I->waitForElementNotVisible('.velocity-animating');
     $productClass = $I->grabAttributeFrom(self::EDITOR_PRODUCT_SELECTOR, 'class');
     $I->waitForElementNotVisible('.' . implode('.', explode(' ', $productClass)));
+    $I->waitForElementVisible(self::EDITOR_PRODUCT_SELECTOR);
   }
 
   /**
