@@ -26,7 +26,8 @@ class WooCommerceProduct {
       'sku' => null,
       'price' => 10,
       'categoryIds' => null,
-      'tagIds' => null
+      'tagIds' => null,
+      'images' => null
     ];
   }
 
@@ -100,6 +101,17 @@ class WooCommerceProduct {
     return $this->update('tagIds', $id);
   }
 
+  /**
+   * @param array $images
+   * @return $this
+   */
+  function withImages($images) {
+    $images = array_map(function($src){
+      return ['src' => $src];
+    }, $images);
+    return $this->update('images', $images);
+  }
+
   function create() {
     $create_command = "wc product create --porcelain --allow-root --user=admin";
     $create_command .= " --name=\"{$this->data['name']}\"";
@@ -121,6 +133,9 @@ class WooCommerceProduct {
     }
     if ($this->data['tagIds']) {
       $create_command .= " --tags='" . json_encode($this->data['tagIds']) . "'";
+    }
+    if ($this->data['images']) {
+      $create_command .= " --images='" . json_encode($this->data['images']) . "'";
     }
     $create_output = $this->tester->cliToArray($create_command);
     $product_out = $this->tester->cliToArray("wc product get $create_output[0] --format=json --allow-root --user=admin");
