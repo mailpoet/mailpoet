@@ -12,6 +12,7 @@ require_once __DIR__ . '/../DataFactories/WooCommerceProduct.php';
 class EditorProductsCest {
 
   const EDITOR_PRODUCT_SELECTOR = '.mailpoet_products_container > .mailpoet_block > .mailpoet_container > .mailpoet_block';
+  const PRICE_XPATH = '//*[name()="h2"][.//*[name()="span"][contains(@class, "woocommerce-Price-amount")]]';
   const POST_TITLE = 'Hello World';
 
   const PRODUCT_NAME = 'Display Settings Product';
@@ -170,6 +171,15 @@ class EditorProductsCest {
     $I->clickLabelWithInput('mailpoet_products_title_as_links', 'true');
     $this->waitForChange($I);
     $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h2 a');
+
+    // Test "Price"
+    $I->dontSeeElementInDOM(self::PRICE_XPATH);
+    $I->clickLabelWithInput('mailpoet_products_price_position', 'below');
+    $this->waitForChange($I);
+    $I->seeElementInDOM(self::PRICE_XPATH . '/preceding::*[name()="p"][@class="mailpoet_wp_post"]');
+    $I->clickLabelWithInput('mailpoet_products_price_position', 'above');
+    $this->waitForChange($I);
+    $I->seeElementInDOM(self::PRICE_XPATH . '/following::*[name()="p"][@class="mailpoet_wp_post"]');
   }
 
   private function clearCategories(\AcceptanceTester $I) {
