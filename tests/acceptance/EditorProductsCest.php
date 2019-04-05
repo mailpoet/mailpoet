@@ -11,6 +11,7 @@ require_once __DIR__ . '/../DataFactories/WooCommerceProduct.php';
 
 class EditorProductsCest {
 
+  const EDITOR_PRODUCTS_SELECTOR = '.mailpoet_products_container > .mailpoet_block > .mailpoet_container';
   const EDITOR_PRODUCT_SELECTOR = '.mailpoet_products_container > .mailpoet_block > .mailpoet_container > .mailpoet_block';
   const PRICE_XPATH = '//*[name()="h2"][.//*[name()="span"][contains(@class, "woocommerce-Price-amount")]]';
   const POST_TITLE = 'Hello World';
@@ -73,7 +74,12 @@ class EditorProductsCest {
         ->create();
     }
 
-    // Create product for testing display settings
+    // Create products for testing display settings
+    $this->product_factory
+      ->withName(self::PRODUCT_NAME . ' 2')
+      ->withDescription(self::PRODUCT_DESCRIPTION . ' 2')
+      ->withShortDescription(self::PRODUCT_SHORT_DESCRIPTION . ' 2')
+      ->create();
     $this->product_factory
       ->withName(self::PRODUCT_NAME)
       ->withDescription(self::PRODUCT_DESCRIPTION)
@@ -134,6 +140,7 @@ class EditorProductsCest {
     $I->waitForElementVisible('#mailpoet_select_post_0');
     $I->click('#mailpoet_select_post_0');
     $I->seeCheckboxIsChecked('#mailpoet_select_post_0');
+    $I->click('#mailpoet_select_post_1');
     $I->waitForElement(self::EDITOR_PRODUCT_SELECTOR);
   }
 
@@ -192,6 +199,18 @@ class EditorProductsCest {
     $this->waitForChange($I);
     $I->dontSeeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
     $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_editor_button');
+
+    // Test "Divider"
+    $I->seeElementInDOM(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider_block');
+    $I->assertAttributeContains(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider', 'style', '3px');
+    $I->click('.mailpoet_posts_select_divider');
+    $I->fillField('.mailpoet_field_divider_border_width_input', 10);
+    $this->waitForChange($I);
+    $I->click('.mailpoet_done_editing');
+    $I->assertAttributeContains(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider', 'style', '10px');
+    $I->clickLabelWithInput('mailpoet_posts_show_divider', 'false');
+    $this->waitForChange($I);
+    $I->dontSeeElementInDOM(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider_block');
   }
 
   private function clearCategories(\AcceptanceTester $I) {
