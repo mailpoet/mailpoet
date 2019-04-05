@@ -180,6 +180,17 @@ class EditorProductsCest {
     $I->clickLabelWithInput('mailpoet_products_price_position', 'above');
     $this->waitForChange($I);
     $I->seeElementInDOM(self::PRICE_XPATH . '/following::*[name()="p"][@class="mailpoet_wp_post"]');
+
+    // Test "Buy now" button
+    $I->see('Buy now', self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
+    $I->fillField('.mailpoet_posts_read_more_text', 'Go Shopping');
+    $this->waitForChange($I);
+    $I->dontSee('Buy now', self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
+    $I->see('Go Shopping', self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
+    $I->clickLabelWithInput('mailpoet_posts_read_more_type', 'button');
+    $this->waitForChange($I);
+    $I->dontSeeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_editor_button');
   }
 
   private function clearCategories(\AcceptanceTester $I) {
