@@ -151,7 +151,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function clickLabelWithInput($inputName, $inputValue) {
     $I = $this;
-    $I->click("//label[.//input[@name='{$inputName}'][@value='{$inputValue}']]");
+    $I->click("//*[name()='label'][.//*[name()='input'][@name='{$inputName}'][@value='{$inputValue}']]");
   }
 
   public function assertAttributeContains($selector, $attribute, $contains) {

@@ -142,6 +142,7 @@ class EditorProductsCest {
     $I->wantTo('Change products settings');
     $I->click('.mailpoet_settings_products_show_display_options');
     $I->waitForElementVisible('.mailpoet_settings_products_show_product_selection');
+    $I->wait(0.35); // Animation
 
     // Test "Display Type"
     $I->see(self::PRODUCT_SHORT_DESCRIPTION, self::EDITOR_PRODUCT_SELECTOR);
@@ -198,10 +199,10 @@ class EditorProductsCest {
   }
 
   private function waitForChange(\AcceptanceTester $I) {
-    $I->waitForElementNotVisible('.velocity-animating');
     $productClass = $I->grabAttributeFrom(self::EDITOR_PRODUCT_SELECTOR, 'class');
     $I->waitForElementNotVisible('.' . implode('.', explode(' ', $productClass)));
     $I->waitForElementVisible(self::EDITOR_PRODUCT_SELECTOR);
+    $I->waitForElementNotVisible('.velocity-animating');
   }
 
   /**
