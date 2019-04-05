@@ -500,4 +500,6 @@ workflows:
             - build_release_zip
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - release
