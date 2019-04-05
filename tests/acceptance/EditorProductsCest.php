@@ -144,9 +144,11 @@ class EditorProductsCest {
 
     // Test "Display Type"
     $I->see(self::PRODUCT_SHORT_DESCRIPTION, self::EDITOR_PRODUCT_SELECTOR);
+    $I->seeElement('.mailpoet_products_title_position');
     $I->clickLabelWithInput('mailpoet_products_display_type', 'titleOnly');
     $this->waitForChange($I);
     $I->dontSeeElement(self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post');
+    $I->dontSeeElement('.mailpoet_products_title_position');
     $I->clickLabelWithInput('mailpoet_products_display_type', 'full');
     $this->waitForChange($I);
     $I->see(self::PRODUCT_DESCRIPTION, self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post');
