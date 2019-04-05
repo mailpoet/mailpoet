@@ -388,7 +388,7 @@ class Pages {
     '" />';
 
     $form_html .= '<p class="mailpoet_paragraph">';
-    $form_html .= '<label>Email *<br /><strong>'.$subscriber->email.'</strong></label>';
+    $form_html .= '<label>'.__('Email', 'mailpoet').' *<br /><strong>'.$subscriber->email.'</strong></label>';
     $form_html .= '<br /><span style="font-size:85%;">';
     // special case for WP users as they cannot edit their subscriber's email
     if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
