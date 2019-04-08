@@ -182,23 +182,23 @@
         <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('"Buy now" text') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_read_more_type" class="mailpoet_posts_read_more_type" value="link" {{#ifCond model.readMoreType '==' 'link'}}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_products_read_more_type" class="mailpoet_products_read_more_type" value="link" {{#ifCond model.readMoreType '==' 'link'}}CHECKED{{/ifCond}}/>
                 <%= __('Link') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_read_more_type" class="mailpoet_posts_read_more_type" value="button" {{#ifCond model.readMoreType '==' 'button'}}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_products_read_more_type" class="mailpoet_products_read_more_type" value="button" {{#ifCond model.readMoreType '==' 'button'}}CHECKED{{/ifCond}}/>
                 <%= __('Button') %>
             </label>
         </div>
 
         <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
-            <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_posts_read_more_text {{#ifCond model.readMoreType '!=' 'link'}}mailpoet_hidden{{/ifCond}}" value="{{ model.readMoreText }}" />
+            <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_products_read_more_text {{#ifCond model.readMoreType '!=' 'link'}}mailpoet_hidden{{/ifCond}}" value="{{ model.readMoreText }}" />
         </div>
 
         <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
-            <a href="javascript:;" class="mailpoet_posts_select_button {{#ifCond model.readMoreType '!=' 'button'}}mailpoet_hidden{{/ifCond}}"><%= __('Design a button') %></a>
+            <a href="javascript:;" class="mailpoet_products_select_button {{#ifCond model.readMoreType '!=' 'button'}}mailpoet_hidden{{/ifCond}}"><%= __('Design a button') %></a>
         </div>
     </div>
 
@@ -208,18 +208,18 @@
         <div class="mailpoet_form_field_title mailpoet_form_field_title_small mailpoet_form_field_title_inline"><%= __('Show divider between posts') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_show_divider" class="mailpoet_posts_show_divider" value="true" {{#if model.showDivider}}CHECKED{{/if}}/>
+                <input type="radio" name="mailpoet_products_show_divider" class="mailpoet_products_show_divider" value="true" {{#if model.showDivider}}CHECKED{{/if}}/>
                 <%= __('Yes') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_posts_show_divider"class="mailpoet_posts_show_divider" value="false" {{#unless model.showDivider}}CHECKED{{/unless}}/>
+                <input type="radio" name="mailpoet_products_show_divider"class="mailpoet_products_show_divider" value="false" {{#unless model.showDivider}}CHECKED{{/unless}}/>
                 <%= __('No') %>
             </label>
         </div>
         <div class="mailpoet_form_field_input_option">
-            <a href="javascript:;" class="mailpoet_posts_select_divider"><%= __('Select divider') %></a>
+            <a href="javascript:;" class="mailpoet_products_select_divider"><%= __('Select divider') %></a>
         </div>
     </div>
 </div>
