@@ -47,7 +47,19 @@ ul.mailpoet_boxes {
   .mailpoet_template_content {
     display: flex;
     flex-direction: row;
+    flex-grow: 1;
     width: 100%;
+  }
+
+  .mailpoet_actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .mailpoet_description {
+    align-items: center;
+    display: flex;
   }
 
   @media screen and (max-width: 1178px) {
