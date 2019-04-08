@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 3.23.0
+Stable tag: 3.23.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -173,6 +173,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.23.1 - 2019-04-08 =
+* Added: new email type icons;
+* Improved: clearer steps in welcome wizard;
+* Fixed: added missing translation string;
+* Fixed: previewing unsubscribe page no longer unsubscribes the viewer;
+* Fixed: form validation error message translation strings.
 
 = 3.23.0 - 2019-04-02 =
 * Added: 12 fresh new templates;
