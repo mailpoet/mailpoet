@@ -91,7 +91,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
 
     this.fetchAvailableProducts();
     this.on('change', this._updateDefaults, this);
-    this.on('change:amount change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailableProducts);
+    this.on('change:terms change:postStatus change:search', refreshAvailableProducts);
     this.on('loadMoreProducts', this._loadMoreProducts, this);
 
     this.listenTo(this.get('_selectedProducts'), 'add remove reset', refreshTransformedProducts);
@@ -282,7 +282,7 @@ Module.ProductsBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 ProductSelectionCollectionView = Marionette.CollectionView.extend({
-  className: 'mailpoet_post_scroll_container',
+  className: 'mailpoet_products_scroll_container',
   childView: function childView() { return SingleProductSelectionSettingsView; },
   emptyView: function emptyView() { return EmptyProductSelectionSettingsView; },
   childViewOptions: function childViewOptions() {
@@ -297,8 +297,8 @@ ProductSelectionCollectionView = Marionette.CollectionView.extend({
     scroll: 'onProductsScroll',
   },
   onProductsScroll: function onProductsScroll(event) {
-    var $postsBox = jQuery(event.target);
-    if ($postsBox.scrollTop() + $postsBox.innerHeight() >= $postsBox[0].scrollHeight) {
+    var $productsBox = jQuery(event.target);
+    if ($productsBox.scrollTop() + $productsBox.innerHeight() >= $productsBox[0].scrollHeight) {
       // Load more posts if scrolled to bottom
       this.blockModel.trigger('loadMoreProducts');
     }
@@ -322,7 +322,7 @@ ProductSelectionSettingsView = Marionette.View.extend({
     'change:offset': function changeOffset(model, value) {
       // Scroll posts view to top if settings are changed
       if (value === 0) {
-        this.$('.mailpoet_post_scroll_container').scrollTop(0);
+        this.$('.mailpoet_products_scroll_container').scrollTop(0);
       }
     },
     loadingMoreProducts: function loadingMoreProducts() {
@@ -461,21 +461,18 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
   },
   events: function events() {
     return {
-      'click .mailpoet_posts_select_button': 'showButtonSettings',
-      'click .mailpoet_posts_select_divider': 'showDividerSettings',
-      'change .mailpoet_posts_read_more_type': 'changeReadMoreType',
+      'click .mailpoet_products_select_button': 'showButtonSettings',
+      'click .mailpoet_products_select_divider': 'showDividerSettings',
+      'change .mailpoet_products_read_more_type': 'changeReadMoreType',
       'change .mailpoet_products_display_type': 'changeDisplayType',
       'change .mailpoet_products_title_format': 'changeTitleFormat',
       'change .mailpoet_products_title_as_links': _.partial(this.changeBoolField, 'titleIsLink'),
-      'change .mailpoet_posts_show_divider': _.partial(this.changeBoolField, 'showDivider'),
-      'input .mailpoet_posts_show_amount': _.partial(this.changeField, 'amount'),
-      'change .mailpoet_posts_include_or_exclude': _.partial(this.changeField, 'inclusionType'),
+      'change .mailpoet_products_show_divider': _.partial(this.changeBoolField, 'showDivider'),
       'change .mailpoet_products_title_alignment': _.partial(this.changeField, 'titleAlignment'),
       'change .mailpoet_products_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
       'change .mailpoet_products_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
       'change .mailpoet_products_price_position': _.partial(this.changeField, 'pricePosition'),
-      'input .mailpoet_posts_read_more_text': _.partial(this.changeField, 'readMoreText'),
-      'change .mailpoet_posts_sort_by': _.partial(this.changeField, 'sortBy'),
+      'input .mailpoet_products_read_more_text': _.partial(this.changeField, 'readMoreText'),
       'change .mailpoet_products_title_position': _.partial(this.changeField, 'titlePosition'),
     };
   },
@@ -508,11 +505,11 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
   changeReadMoreType: function changeReadMoreType(event) {
     var value = jQuery(event.target).val();
     if (value === 'link') {
-      this.$('.mailpoet_posts_read_more_text').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_posts_select_button').addClass('mailpoet_hidden');
+      this.$('.mailpoet_products_read_more_text').removeClass('mailpoet_hidden');
+      this.$('.mailpoet_products_select_button').addClass('mailpoet_hidden');
     } else if (value === 'button') {
-      this.$('.mailpoet_posts_read_more_text').addClass('mailpoet_hidden');
-      this.$('.mailpoet_posts_select_button').removeClass('mailpoet_hidden');
+      this.$('.mailpoet_products_read_more_text').addClass('mailpoet_hidden');
+      this.$('.mailpoet_products_select_button').removeClass('mailpoet_hidden');
     }
     this.changeField('readMoreType', event);
   },

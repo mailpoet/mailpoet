@@ -95,7 +95,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
 
     this.fetchAvailablePosts();
     this.on('change', this._updateDefaults, this);
-    this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailablePosts);
+    this.on('change:contentType change:terms change:postStatus change:search', refreshAvailablePosts);
     this.on('loadMorePosts', this._loadMorePosts, this);
 
     this.listenTo(this.get('_selectedPosts'), 'add remove reset', refreshTransformedPosts);
@@ -480,9 +480,7 @@ PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_posts_title_format': 'changeTitleFormat',
       'change .mailpoet_posts_title_as_links': _.partial(this.changeBoolField, 'titleIsLink'),
       'change .mailpoet_posts_show_divider': _.partial(this.changeBoolField, 'showDivider'),
-      'input .mailpoet_posts_show_amount': _.partial(this.changeField, 'amount'),
       'change .mailpoet_posts_content_type': _.partial(this.changeField, 'contentType'),
-      'change .mailpoet_posts_include_or_exclude': _.partial(this.changeField, 'inclusionType'),
       'change .mailpoet_posts_title_alignment': _.partial(this.changeField, 'titleAlignment'),
       'change .mailpoet_posts_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
       'change .mailpoet_posts_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
@@ -491,7 +489,6 @@ PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_posts_show_categories': _.partial(this.changeField, 'showCategories'),
       'input .mailpoet_posts_categories': _.partial(this.changeField, 'categoriesPrecededBy'),
       'input .mailpoet_posts_read_more_text': _.partial(this.changeField, 'readMoreText'),
-      'change .mailpoet_posts_sort_by': _.partial(this.changeField, 'sortBy'),
       'change .mailpoet_automated_latest_content_title_position': _.partial(this.changeField, 'titlePosition'),
     };
   },

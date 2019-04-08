@@ -114,9 +114,9 @@ class EditorProductsCest {
 
     // Multiple result for category
     $I->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-    $I->waitForElementNotVisible('.mailpoet_post_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
-    $I->waitForText(self::PRODUCT_PREFIX_CATEGORY, 10, '.mailpoet_post_scroll_container');
-    $I->seeNumberOfElements('.mailpoet_post_scroll_container > div', self::PRODUCTS_COUNT);
+    $I->waitForElementNotVisible('.mailpoet_products_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
+    $I->waitForText(self::PRODUCT_PREFIX_CATEGORY, 10, '.mailpoet_products_scroll_container');
+    $I->seeNumberOfElements('.mailpoet_products_scroll_container > div', self::PRODUCTS_COUNT);
     $this->clearCategories($I);
 
     // Click select2 to hide results
@@ -128,9 +128,9 @@ class EditorProductsCest {
 
     // Multiple result for keyword
     $I->fillField('.mailpoet_products_search_term', self::KEYWORD_MULTIPLE_RESULTS);
-    $I->waitForElementNotVisible('.mailpoet_post_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
-    $I->waitForText(self::KEYWORD_MULTIPLE_RESULTS, 10, '.mailpoet_post_scroll_container');
-    $I->seeNumberOfElements('.mailpoet_post_scroll_container > div', self::PRODUCTS_COUNT);
+    $I->waitForElementNotVisible('.mailpoet_products_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
+    $I->waitForText(self::KEYWORD_MULTIPLE_RESULTS, 10, '.mailpoet_products_scroll_container');
+    $I->seeNumberOfElements('.mailpoet_products_scroll_container > div', self::PRODUCTS_COUNT);
 
     // Searching for existing post should return zero results
     $I->fillField('.mailpoet_products_search_term', self::POST_TITLE);
@@ -138,11 +138,11 @@ class EditorProductsCest {
 
     // Product is clickable
     $I->fillField('.mailpoet_products_search_term', self::PRODUCT_NAME);
-    $I->waitForText(self::PRODUCT_NAME, 10, '.mailpoet_post_scroll_container');
-    $I->waitForElementVisible('#mailpoet_select_post_0');
-    $I->click('#mailpoet_select_post_0');
-    $I->seeCheckboxIsChecked('#mailpoet_select_post_0');
-    $I->click('#mailpoet_select_post_1');
+    $I->waitForText(self::PRODUCT_NAME, 10, '.mailpoet_products_scroll_container');
+    $I->waitForElementVisible('#mailpoet_select_product_0');
+    $I->click('#mailpoet_select_product_0');
+    $I->seeCheckboxIsChecked('#mailpoet_select_product_0');
+    $I->click('#mailpoet_select_product_1');
     $I->waitForElement(self::EDITOR_PRODUCT_SELECTOR);
   }
 
@@ -193,11 +193,11 @@ class EditorProductsCest {
 
     // Test "Buy now" button
     $I->see('Buy now', self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
-    $I->fillField('.mailpoet_posts_read_more_text', 'Go Shopping');
+    $I->fillField('.mailpoet_products_read_more_text', 'Go Shopping');
     $this->waitForChange($I);
     $I->dontSee('Buy now', self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
     $I->see('Go Shopping', self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
-    $I->clickLabelWithInput('mailpoet_posts_read_more_type', 'button');
+    $I->clickLabelWithInput('mailpoet_products_read_more_type', 'button');
     $this->waitForChange($I);
     $I->dontSeeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
     $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_editor_button');
@@ -205,12 +205,12 @@ class EditorProductsCest {
     // Test "Divider"
     $I->seeElementInDOM(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider_block');
     $I->assertAttributeContains(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider', 'style', '3px');
-    $I->click('.mailpoet_posts_select_divider');
+    $I->click('.mailpoet_products_select_divider');
     $I->fillField('.mailpoet_field_divider_border_width_input', 10);
     $this->waitForChange($I);
     $I->click('.mailpoet_done_editing');
     $I->assertAttributeContains(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider', 'style', '10px');
-    $I->clickLabelWithInput('mailpoet_posts_show_divider', 'false');
+    $I->clickLabelWithInput('mailpoet_products_show_divider', 'false');
     $this->waitForChange($I);
     $I->dontSeeElementInDOM(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider_block');
 
