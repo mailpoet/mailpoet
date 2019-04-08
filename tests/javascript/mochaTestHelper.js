@@ -136,6 +136,14 @@ testHelpers.loadTemplate('blocks/posts/settingsSelection.hbs', window, { id: 'ne
 testHelpers.loadTemplate('blocks/posts/settingsSelectionEmpty.hbs', window, { id: 'newsletter_editor_template_posts_settings_selection_empty' });
 testHelpers.loadTemplate('blocks/posts/settingsSinglePost.hbs', window, { id: 'newsletter_editor_template_posts_settings_single_post' });
 
+testHelpers.loadTemplate('blocks/products/block.hbs', window, { id: 'newsletter_editor_template_products_block' });
+testHelpers.loadTemplate('blocks/products/widget.hbs', window, { id: 'newsletter_editor_template_products_widget' });
+testHelpers.loadTemplate('blocks/products/settings.hbs', window, { id: 'newsletter_editor_template_products_settings' });
+testHelpers.loadTemplate('blocks/products/settingsDisplayOptions.hbs', window, { id: 'newsletter_editor_template_products_settings_display_options' });
+testHelpers.loadTemplate('blocks/products/settingsSelection.hbs', window, { id: 'newsletter_editor_template_products_settings_selection' });
+testHelpers.loadTemplate('blocks/products/settingsSelectionEmpty.hbs', window, { id: 'newsletter_editor_template_products_settings_selection_empty' });
+testHelpers.loadTemplate('blocks/products/settingsSinglePost.hbs', window, { id: 'newsletter_editor_template_products_settings_single_post' });
+
 testHelpers.loadTemplate('blocks/social/block.hbs', window, { id: 'newsletter_editor_template_social_block' });
 testHelpers.loadTemplate('blocks/social/blockIcon.hbs', window, { id: 'newsletter_editor_template_social_block_icon' });
 testHelpers.loadTemplate('blocks/social/widget.hbs', window, { id: 'newsletter_editor_template_social_widget' });
@@ -229,6 +237,14 @@ global.templates = {
   emptyPostPostsBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_posts_settings_selection_empty').html()),
   singlePostPostsBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_posts_settings_single_post').html()),
   displayOptionsPostsBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_posts_settings_display_options').html()),
+
+  productsBlock: Handlebars.compile(jQuery('#newsletter_editor_template_products_block').html()),
+  productsInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_products_widget').html()),
+  productsBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_products_settings').html()),
+  postSelectionProductsBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_products_settings_selection').html()),
+  emptyPostProductsBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_products_settings_selection_empty').html()),
+  singlePostProductsBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_products_settings_single_post').html()),
+  displayOptionsProductsBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_products_settings_display_options').html()),
 
   textBlock: Handlebars.compile(jQuery('#newsletter_editor_template_text_block').html()),
   textInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_text_widget').html()),
