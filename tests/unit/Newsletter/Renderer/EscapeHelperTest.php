@@ -20,7 +20,13 @@ class EscapeHelperTest extends \MailPoetUnitTest {
       ->equals("Text&lt;tag&gt;&#039;&quot;Hello&lt;/tag&gt;");
     expect(EHelper::escapeHtmlLinkAttr('javaScRipt:Text<tag>\'"Hello</tag>'))
       ->equals("");
+    expect(EHelper::escapeHtmlLinkAttr(' javaScRipt:Text<tag>\'"Hello</tag>'))
+      ->equals("");
     expect(EHelper::escapeHtmlLinkAttr('DAta:Text<tag>\'"Hello</tag>'))
+      ->equals("");
+    expect(EHelper::escapeHtmlLinkAttr('    DAta:Text<tag>\'"Hello</tag>'))
+      ->equals("");
+    expect(EHelper::escapeHtmlLinkAttr('DAta:appliCation<tag>\'"Hello</tag>'))
       ->equals("");
   }
 }

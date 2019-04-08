@@ -42,7 +42,7 @@ class EscapeHelper {
    */
   static function escapeHtmlLinkAttr($string) {
     $string = self::escapeHtmlAttr($string);
-    if (preg_match('~^javascript:|^data:text|^data:application~i', $string) === 1) {
+    if (preg_match('/\s*(javascript:|data:text|data:application)/ui', $string) === 1) {
       return '';
     }
     return $string;
