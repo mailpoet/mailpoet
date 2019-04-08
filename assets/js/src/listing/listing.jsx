@@ -12,6 +12,7 @@ import ListingSearch from 'listing/search.jsx';
 import ListingGroups from 'listing/groups.jsx';
 import ListingFilters from 'listing/filters.jsx';
 import ListingItems from 'listing/listing_items.jsx';
+import MailerError from 'listing/notices.jsx';
 import { withRouter } from 'react-router-dom';
 
 const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
@@ -636,97 +637,100 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     }
 
     return (
-      <div>
-        { groups }
-        { search }
-        <div className="tablenav top clearfix">
-          <ListingBulkActions
-            count={this.state.count}
-            bulk_actions={bulkActions}
-            selection={this.state.selection}
-            selected_ids={this.state.selected_ids}
-            onBulkAction={this.handleBulkAction}
-          />
-          <ListingFilters
-            filters={this.state.filters}
-            filter={this.state.filter}
-            group={this.state.group}
-            onBeforeSelectFilter={this.props.onBeforeSelectFilter || null}
-            onSelectFilter={this.handleFilter}
-            onEmptyTrash={this.handleEmptyTrash}
-          />
-          {extraActions}
-          <ListingPages
-            count={this.state.count}
-            page={this.state.page}
-            limit={this.state.limit}
-            onSetPage={this.handleSetPage}
-          />
-        </div>
-        <table className={tableClasses}>
-          <thead>
-            <ListingHeader
-              onSort={this.handleSort}
-              onSelectItems={this.handleSelectItems}
+      <>
+        { this.state.meta.mta_method && <MailerError {...this.state.meta} /> }
+        <div>
+          { groups }
+          { search }
+          <div className="tablenav top clearfix">
+            <ListingBulkActions
+              count={this.state.count}
+              bulk_actions={bulkActions}
               selection={this.state.selection}
-              sort_by={sortBy}
-              sort_order={sortOrder}
+              selected_ids={this.state.selected_ids}
+              onBulkAction={this.handleBulkAction}
+            />
+            <ListingFilters
+              filters={this.state.filters}
+              filter={this.state.filter}
+              group={this.state.group}
+              onBeforeSelectFilter={this.props.onBeforeSelectFilter || null}
+              onSelectFilter={this.handleFilter}
+              onEmptyTrash={this.handleEmptyTrash}
+            />
+            {extraActions}
+            <ListingPages
+              count={this.state.count}
+              page={this.state.page}
+              limit={this.state.limit}
+              onSetPage={this.handleSetPage}
+            />
+          </div>
+          <table className={tableClasses}>
+            <thead>
+              <ListingHeader
+                onSort={this.handleSort}
+                onSelectItems={this.handleSelectItems}
+                selection={this.state.selection}
+                sort_by={sortBy}
+                sort_order={sortOrder}
+                columns={columns}
+                is_selectable={bulkActions.length > 0}
+              />
+            </thead>
+
+            <ListingItems
+              onRenderItem={this.handleRenderItem}
+              getListingItemKey={this.props.getListingItemKey}
+              onDeleteItem={this.handleDeleteItem}
+              onRestoreItem={this.handleRestoreItem}
+              onTrashItem={this.handleTrashItem}
+              onRefreshItems={this.handleRefreshItems}
               columns={columns}
               is_selectable={bulkActions.length > 0}
-            />
-          </thead>
-
-          <ListingItems
-            onRenderItem={this.handleRenderItem}
-            getListingItemKey={this.props.getListingItemKey}
-            onDeleteItem={this.handleDeleteItem}
-            onRestoreItem={this.handleRestoreItem}
-            onTrashItem={this.handleTrashItem}
-            onRefreshItems={this.handleRefreshItems}
-            columns={columns}
-            is_selectable={bulkActions.length > 0}
-            onSelectItem={this.handleSelectItem}
-            onSelectAll={this.handleSelectAll}
-            selection={this.state.selection}
-            selected_ids={this.state.selected_ids}
-            loading={this.state.loading}
-            group={this.state.group}
-            count={this.state.count}
-            limit={this.state.limit}
-            item_actions={itemActions}
-            messages={messages}
-            items={items}
-          />
-
-          <tfoot>
-            <ListingHeader
-              onSort={this.handleSort}
-              onSelectItems={this.handleSelectItems}
+              onSelectItem={this.handleSelectItem}
+              onSelectAll={this.handleSelectAll}
               selection={this.state.selection}
-              sort_by={sortBy}
-              sort_order={sortOrder}
-              columns={columns}
-              is_selectable={bulkActions.length > 0}
+              selected_ids={this.state.selected_ids}
+              loading={this.state.loading}
+              group={this.state.group}
+              count={this.state.count}
+              limit={this.state.limit}
+              item_actions={itemActions}
+              messages={messages}
+              items={items}
             />
-          </tfoot>
 
-        </table>
-        <div className="tablenav bottom">
-          <ListingBulkActions
-            count={this.state.count}
-            bulk_actions={bulkActions}
-            selection={this.state.selection}
-            selected_ids={this.state.selected_ids}
-            onBulkAction={this.handleBulkAction}
-          />
-          <ListingPages
-            count={this.state.count}
-            page={this.state.page}
-            limit={this.state.limit}
-            onSetPage={this.handleSetPage}
-          />
+            <tfoot>
+              <ListingHeader
+                onSort={this.handleSort}
+                onSelectItems={this.handleSelectItems}
+                selection={this.state.selection}
+                sort_by={sortBy}
+                sort_order={sortOrder}
+                columns={columns}
+                is_selectable={bulkActions.length > 0}
+              />
+            </tfoot>
+
+          </table>
+          <div className="tablenav bottom">
+            <ListingBulkActions
+              count={this.state.count}
+              bulk_actions={bulkActions}
+              selection={this.state.selection}
+              selected_ids={this.state.selected_ids}
+              onBulkAction={this.handleBulkAction}
+            />
+            <ListingPages
+              count={this.state.count}
+              page={this.state.page}
+              limit={this.state.limit}
+              onSetPage={this.handleSetPage}
+            />
+          </div>
         </div>
-      </div>
+      </>
     );
   },
 });
