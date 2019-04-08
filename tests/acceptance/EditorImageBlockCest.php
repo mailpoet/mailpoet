@@ -25,6 +25,7 @@ class EditorImageBlockCest {
     $I->dragAndDrop('#automation_editor_block_image', '#mce_0');
     $I->waitForText('Add images');
     $I->click('Media Library');
+    $I->waitForElementClickable('.thumbnail');
     $I->click('.thumbnail');
     $I->waitForElementClickable('.media-button-insert', 10);
     $I->click('Select Image');
