@@ -640,6 +640,26 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function releasePublishSlack($version = null) {
+    require_once __DIR__ . '/tasks/release/JiraController.php';
+    require_once __DIR__ . '/tasks/release/SlackNotifier.php';
+    $this->loadEnv();
+
+    $jira_controller = new \MailPoetTasks\Release\JiraController(
+      getenv('WP_JIRA_TOKEN'),
+      getenv('WP_JIRA_USER'),
+      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
+    );
+    $version = $jira_controller->getVersion($version);
+    $changelog = $this->getChangelogController()->get($version['name']);
+
+    $slack_notifier = new \MailPoetTasks\Release\SlackNotifier(
+      getenv('WP_SLACK_WEBHOOK_URL'),
+      \MailPoetTasks\Release\SlackNotifier::PROJECT_MAILPOET
+    );
+    $slack_notifier->notify($version['name'], $changelog[1], $version['id']);
+  }
+
   protected function validateVersion($version) {
     if (!preg_match('/\d+\.\d+\.\d+/', $version)) {
       $this->yell('Incorrect version format', 40, 'red');
