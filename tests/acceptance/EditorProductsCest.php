@@ -213,6 +213,28 @@ class EditorProductsCest {
     $I->clickLabelWithInput('mailpoet_posts_show_divider', 'false');
     $this->waitForChange($I);
     $I->dontSeeElementInDOM(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_divider_block');
+
+    // Test "Image width"
+    $I->assertAttributeNotContains(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_image_block', 'class', 'mailpoet_full_image');
+    $I->clickLabelWithInput('imageFullWidth', 'true');
+    $this->waitForChange($I);
+    $I->assertAttributeContains(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_image_block', 'class', 'mailpoet_full_image');
+
+    // Test "Image position"
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ':nth-child(2) .mailpoet_block:nth-child(2) .mailpoet_image_block');
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ':nth-child(4) .mailpoet_block:nth-child(1) .mailpoet_image_block');
+    $I->clickLabelWithInput('mailpoet_products_featured_image_position', 'none');
+    $this->waitForChange($I);
+    $I->dontSeeElementInDOM(self::EDITOR_PRODUCTS_SELECTOR . ' .mailpoet_image_block');
+    $I->clickLabelWithInput('mailpoet_products_featured_image_position', 'left');
+    $this->waitForChange($I);
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ':nth-child(2) .mailpoet_block:nth-child(1) .mailpoet_image_block');
+    $I->clickLabelWithInput('mailpoet_products_featured_image_position', 'right');
+    $this->waitForChange($I);
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ':nth-child(2) .mailpoet_block:nth-child(2) .mailpoet_image_block');
+    $I->clickLabelWithInput('mailpoet_products_featured_image_position', 'centered');
+    $this->waitForChange($I);
+    $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ':nth-child(1) .mailpoet_image_block');
   }
 
   private function clearCategories(\AcceptanceTester $I) {
