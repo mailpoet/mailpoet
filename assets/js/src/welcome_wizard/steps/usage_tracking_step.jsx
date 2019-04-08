@@ -1,29 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
-import ReactStringReplace from 'react-string-replace';
 
 const WelcomeWizardUsageTrackingStep = props => (
   <div className="mailpoet_welcome_wizard_step_content mailpoet_welcome_wizard_centered_column">
     <h1>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepTitle')}</h1>
-    <p>
-      {
-        ReactStringReplace(
-          MailPoet.I18n.t('welcomeWizardTrackingText'),
-          /\[link\](.*?)\[\/link\]/g,
-          match => (
-            <a
-              key="docs_link"
-              href="https://beta.docs.mailpoet.com/article/130-sharing-your-data-with-us"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              { match }
-            </a>
-          )
-        )
-      }
-    </p>
+    <p>{MailPoet.I18n.t('welcomeWizardTrackingText')}</p>
+    <h2 className="welcome_wizard_tracking_sub_title">{MailPoet.I18n.t('welcomeWizardUsageTrackingStepSubTitle')}</h2>
+    <ul className="welcome_wizard_tracking_list">
+      <li>{MailPoet.I18n.t('welcomeWizardTrackingList1')}</li>
+      <li>{MailPoet.I18n.t('welcomeWizardTrackingList2')}</li>
+      <li>{MailPoet.I18n.t('welcomeWizardTrackingList3')}</li>
+      <li>{MailPoet.I18n.t('welcomeWizardTrackingList4')}</li>
+      <li>{MailPoet.I18n.t('welcomeWizardTrackingList5')}</li>
+    </ul>
+    <a
+      href=" https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {MailPoet.I18n.t('welcomeWizardTrackingLink')}
+    </a>
     <div
       className={
         `mailpoet_welcome_wizard_step_controls
