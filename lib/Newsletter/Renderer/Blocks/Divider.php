@@ -6,12 +6,12 @@ use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Divider {
   static function render($element) {
-    $background_color = EHelper::escapeHtmlStyleAttr($element['styles']['block']['backgroundColor']);
+    $background_color = $element['styles']['block']['backgroundColor'];
     $template = '
       <tr>
         <td class="mailpoet_divider" valign="top" ' .
         (($element['styles']['block']['backgroundColor'] !== 'transparent') ?
-          'bgColor="' . $background_color . '" style="background-color:' . $background_color . ';' :
+          'bgColor="' . EHelper::escapeHtmlAttr($background_color) . '" style="background-color:' . EHelper::escapeHtmlStyleAttr($background_color) . ';' :
           'style="'
         ) .
       sprintf('padding: %s %spx %s %spx;',

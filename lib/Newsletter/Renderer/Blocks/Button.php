@@ -29,7 +29,7 @@ class Button {
                   <center style="color:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontColor']) . ';
                     font-family:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontFamily']) . ';
                     font-size:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontSize']) . ';
-                    font-weight:bold;">' . EHelper::escapeHtmlStyleAttr($element['text']) . '
+                    font-weight:bold;">' . EHelper::escapeHtmlText($element['text']) . '
                   </center>
                   </v:roundrect>
                   <![endif]--><a class="mailpoet_button" href="' . EHelper::escapeHtmlLinkAttr($element['url']) . '" style="' . $styles . '"> ' . EHelper::escapeHtmlText($element['text']) . '</a>
