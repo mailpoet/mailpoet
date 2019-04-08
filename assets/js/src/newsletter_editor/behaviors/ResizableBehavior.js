@@ -6,7 +6,6 @@
 import Marionette from 'backbone.marionette';
 import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 import interact from 'interact';
-import { isEventInsideElement } from 'newsletter_editor/utils';
 
 var BL = BehaviorsLookup;
 
@@ -26,16 +25,9 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
       this.view.model.set(this.options.modelField, newLength + 'px');
     },
   },
-  events: {
-    mouseenter: 'showResizeHandle',
-    mouseleave: 'hideResizeHandle',
-  },
   onRender: function onRender() {
     this.attachResize();
-
-    if (this.isBeingResized !== true) {
-      this.hideResizeHandle();
-    }
+    this.view.$el.addClass('mailpoet_resizable_block');
   },
   attachResize: function attachResize() {
     var domElement;
@@ -56,33 +48,13 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
     })
       .on('resizestart', function resizestart() {
         that.view.model.trigger('startResizing');
-        that.isBeingResized = true;
-        that.$el.addClass('mailpoet_resize_active');
       }).on('resizemove', function resizemove(event) {
         var onResize = that.options.onResize.bind(that);
         return onResize(event);
       })
       .on('resizeend', function resizeend(event) {
         that.view.model.trigger('stopResizing', event);
-        that.isBeingResized = null;
-        if (!isEventInsideElement(event, that.view.$el)) {
-          that.hideResizeHandle();
-        }
         that.$el.removeClass('mailpoet_resize_active');
       });
-  },
-  showResizeHandle: function showResizeHandle(mouseEvent) {
-    // Skip if user is dragging/resizing
-    if (!this.isBeingResized && mouseEvent && mouseEvent.buttons > 0) {
-      return;
-    }
-    if (typeof this.options.resizeHandleSelector === 'string') {
-      this.view.$(this.options.resizeHandleSelector).removeClass('mailpoet_hidden');
-    }
-  },
-  hideResizeHandle: function hideResizeHandle() {
-    if (typeof this.options.resizeHandleSelector === 'string') {
-      this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden');
-    }
   },
 });

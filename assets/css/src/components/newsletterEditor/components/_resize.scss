@@ -16,7 +16,7 @@ $resize-handle-z-index: 2;
   background: $editor-content-color;
   border-radius: 10px;
   cursor: ns-resize;
-  display: flex;
+  display: none;
   justify-content: space-between;
   min-width: 60px;
   padding: 7px 10px;
@@ -27,8 +27,8 @@ $resize-handle-z-index: 2;
     pointer-events: none;
   }
 
-  .mailpoet_resize_active & {
-    display: flex !important;
+  .mailpoet_resizable_block.mailpoet_highlight & {
+    display: flex;
   }
 }
 
@@ -52,15 +52,6 @@ $resize-handle-z-index: 2;
   }
 }
 
-.mailpoet_block.mailpoet_resize_active > .mailpoet_block_highlight {
-  border: 2px solid $resize-active-color;
-
-  .mailpoet_resize_handle {
-    display: inline-block;
-  }
-}
-
-
 .mailpoet_image_resize_handle_container {
   bottom: 0;
   height: 24px;
@@ -73,11 +64,15 @@ $resize-handle-z-index: 2;
   background: $editor-content-color;
   border-radius: 6px 0 0 0;
   cursor: nwse-resize;
-  display: inline-block;
+  display: none;
   height: 24px;
   position: relative;
   width: 24px;
   z-index: $resize-handle-z-index;
+
+  .mailpoet_resizable_block.mailpoet_highlight & {
+    display: inline-block;
+  }
 
   .mailpoet_image_resize_handle_text,
   .mailpoet_image_resize_handle_icon {
