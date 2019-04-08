@@ -2,6 +2,8 @@
 
 namespace MailPoetTasks\Release;
 
+require_once __DIR__ . '/HttpClient.php';
+
 class Jira {
 
   const CHANGELOG_FIELD_ID = 'customfield_10500';
@@ -24,17 +26,27 @@ class Jira {
   /** @var string */
   private $project;
 
+  /** @var HttpClient */
+  private $http_client;
+
   public function __construct($token, $user, $project) {
     $this->token = $token;
     $this->user = $user;
     $this->project = $project;
+
+    $url_user = urlencode($this->user);
+    $url_token = urlencode($this->token);
+    $jira_domain = self::JIRA_DOMAIN;
+    $jira_api_version = self::JIRA_API_VERSION;
+    $base_uri = "https://$url_user:$url_token@$jira_domain/rest/api/$jira_api_version/";
+    $this->http_client = new HttpClient($base_uri);
   }
 
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-project-projectIdOrKey-versions-get
    */
   function getVersion($version_name = null) {
-    $versions = $this->makeJiraRequest("project/$this->project/versions");
+    $versions = $this->http_client->get("project/$this->project/versions");
     if ($version_name === null) {
       return end($versions);
     }
@@ -56,7 +68,7 @@ class Jira {
       'released' => false,
       'project' => $this->project,
     ];
-    return $this->makeJiraRequest('/version', 'POST', $data);
+    return $this->http_client->post('/version', $data);
   }
 
   function getIssuesDataForVersion($version) {
@@ -83,38 +95,13 @@ class Jira {
     if ($fields) {
       $params['fields'] = join(',', $fields);
     }
-    return $this->makeJiraRequest("/search?" . http_build_query($params));
+    return $this->http_client->get('/search?' . http_build_query($params));
   }
 
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-issue-issueIdOrKey-put
    */
   function updateIssue($key, $data) {
-    return $this->makeJiraRequest("/issue/$key", 'PUT', $data);
-  }
-
-  private function makeJiraRequest($path, $method = 'GET', array $data = null) {
-    $url_user = urlencode($this->user);
-    $url_token = urlencode($this->token);
-    $jira_domain = self::JIRA_DOMAIN;
-    $jira_api_version = self::JIRA_API_VERSION;
-    $jira_url = "https://$url_user:$url_token@$jira_domain/rest/api/$jira_api_version/$path";
-    $options = [];
-    if ($method === 'POST' || $method === 'PUT') {
-      $options = [
-        'http' => [
-          'method' => $method,
-          'header' => "Content-type: application/json\r\n",
-          'content' => json_encode($data),
-        ]
-      ];
-    }
-    $context  = stream_context_create($options);
-    $result = file_get_contents($jira_url, false, $context);
-    if ($result === false) {
-      $error = error_get_last();
-      throw new \Exception('JIRA request error: ' . $error['message']);
-    }
-    return json_decode($result, true);
+    $this->http_client->put("/issue/$key", $data);
   }
 }
