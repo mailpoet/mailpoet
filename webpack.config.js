@@ -364,6 +364,7 @@ const testConfig = {
       'blocks/header.spec.js',
       'blocks/image.spec.js',
       'blocks/posts.spec.js',
+      'blocks/products.spec.js',
       'blocks/social.spec.js',
       'blocks/spacer.spec.js',
       'blocks/text.spec.js',
