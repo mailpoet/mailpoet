@@ -4,14 +4,12 @@ import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 
 const WelcomeWizardSenderStep = props => (
-  <div className="mailpoet_welcome_wizard_step_content mailpoet_welcome_wizard_centered_column">
+  <div className="mailpoet_welcome_wizard_step_content">
     <h1>{MailPoet.I18n.t('welcomeWizardLetsStartTitle')}</h1>
     <p>{MailPoet.I18n.t('welcomeWizardSenderText')}</p>
     <form
       id="mailpoet_sender_form"
-      className={
-        `mailpoet_welcome_wizard_centered_column ${(props.loading ? 'mailpoet_sender_form_loading' : '')}`
-      }
+      className={props.loading ? 'mailpoet_sender_form_loading' : ''}
       onSubmit={(e) => {
         e.preventDefault();
         if (!jQuery('#mailpoet_sender_form').parsley().validate()) { return; }
