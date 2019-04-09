@@ -17,4 +17,8 @@ class Helper {
   function wcPrice($price, array $args = array()) {
     return wc_price($price, $args);
   }
+
+  function wcGetProduct($the_product = false) {
+    return wc_get_product($the_product);
+  }
 }

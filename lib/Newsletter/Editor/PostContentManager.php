@@ -23,7 +23,7 @@ class PostContentManager {
   function getContent($post, $displayType) {
     $product = null;
     if ($this->woocommerce_helper->isWooCommerceActive() && $post->post_type === 'product') {
-      $product = wc_get_product($post->ID);
+      $product = $this->woocommerce_helper->wcGetProduct($post->ID);
     }
     if ($displayType === 'titleOnly') {
       return '';

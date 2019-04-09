@@ -295,7 +295,7 @@ class PostTransformer {
   private function getPrice($post) {
     $product = null;
     if ($this->woocommerce_helper->isWooCommerceActive()) {
-      $product = wc_get_product($post->ID);
+      $product = $this->woocommerce_helper->wcGetProduct($post->ID);
     }
     if ($product) {
       $price = '<h2>' . strip_tags($product->get_price_html(), '<span><del>') . '</h2>';
