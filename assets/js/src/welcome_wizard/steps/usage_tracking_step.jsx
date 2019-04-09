@@ -3,7 +3,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 
 const WelcomeWizardUsageTrackingStep = props => (
-  <div className="mailpoet_welcome_wizard_step_content mailpoet_welcome_wizard_centered_column">
+  <div className="mailpoet_welcome_wizard_step_content">
     <h1>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepTitle')}</h1>
     <p>{MailPoet.I18n.t('welcomeWizardTrackingText')}</p>
     <h2 className="welcome_wizard_tracking_sub_title">{MailPoet.I18n.t('welcomeWizardUsageTrackingStepSubTitle')}</h2>

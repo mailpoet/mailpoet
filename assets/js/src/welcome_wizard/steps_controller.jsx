@@ -76,7 +76,7 @@ const WelcomeWizardStepsController = (props) => {
   }
 
   return (
-    <div className="mailpoet_welcome_wizard_steps mailpoet_welcome_wizard_centered_column">
+    <div className="mailpoet_welcome_wizard_steps">
       <WelcomeWizardHeader
         current_step={step}
         steps_count={stepsCount}

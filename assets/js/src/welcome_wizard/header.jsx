@@ -3,7 +3,7 @@ import React from 'react';
 import SteppedProgressBar from '../common/stepped_progess_bar.jsx';
 
 const WelcomeWizardHeader = props => (
-  <div className="mailpoet_welcome_wizard_centered_column mailpoet_welcome_wizard_header">
+  <div className="mailpoet_welcome_wizard_header">
     <img src={props.logo_src} width="200" height="87" alt="MailPoet logo" />
     {
       props.current_step <= props.steps_count
