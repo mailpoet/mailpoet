@@ -45,7 +45,7 @@ class Subscription {
   private function getSubscriptionField($input_name, $checked, $label_string) {
     return '<p class="form-row">
       <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
-      <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="'.$this->wp->escAttr($input_name).'" id="'.$this->wp->escAttr($input_name).'" ' . ($checked ? 'checked' : '') . ' />
+      <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="' . $this->wp->escAttr($input_name) . '" id="' . $this->wp->escAttr($input_name) . '" ' . ($checked ? 'checked' : '') . ' />
         <span class="woocommerce-terms-and-conditions-checkbox-text">' . $this->wp->escHtml($label_string) . '</label>
     </p>';
   }
