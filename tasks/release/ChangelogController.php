@@ -6,7 +6,7 @@ require_once __DIR__ . '/JiraController.php';
 
 class ChangelogController {
 
-  const FALLBACK_RECORD = "* Improved: minor changes and fixes.\n";
+  const FALLBACK_RECORD = "* Improved: minor changes and fixes.";
   const HEADING_GLUE = ' - ';
 
   /** @var string */
