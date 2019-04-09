@@ -167,18 +167,8 @@ class PostTransformer {
     $structure_transformer = new StructureTransformer();
     $content = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
 
-    if (isset($this->args['pricePosition']) && $this->args['pricePosition'] !== 'hidden') {
-      $price = $this->getPrice($post);
-      $blocks_count = count($content);
-      if ($blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
-        if ($this->args['pricePosition'] === 'below') {
-          $content[$blocks_count - 1]['text'] .= $price['text'];
-        } else {
-          $content[$blocks_count - 1]['text'] = $price['text'] . $content[$blocks_count - 1]['text'];
-        }
-      } else {
-        $content[] = $price;
-      }
+    if ($this->isProduct($post)) {
+      $content = $this->addProductDataToContent($content, $post);
     }
 
     $read_more_btn = $this->getReadMoreButton($post);
@@ -293,20 +283,36 @@ class PostTransformer {
   }
 
   private function getPrice($post) {
+    $price = null;
     $product = null;
     if ($this->woocommerce_helper->isWooCommerceActive()) {
       $product = $this->woocommerce_helper->wcGetProduct($post->ID);
     }
     if ($product) {
       $price = '<h2>' . strip_tags($product->get_price_html(), '<span><del>') . '</h2>';
-    } else {
-      $price = '';
     }
+    return $price;
+  }
 
-    return array(
-      'type' => 'text',
-      'text' => $price,
-    );
+  private function addProductDataToContent($content, $post) {
+    if (!isset($this->args['pricePosition']) || $this->args['pricePosition'] === 'hidden') {
+      return $content;
+    }
+    $price = $this->getPrice($post);
+    $blocks_count = count($content);
+    if ($blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
+      if ($this->args['pricePosition'] === 'below') {
+        $content[$blocks_count - 1]['text'] = $content[$blocks_count - 1]['text'] . $price;
+      } else {
+        $content[$blocks_count - 1]['text'] = $price . $content[$blocks_count - 1]['text'];
+      }
+    } else {
+      $content[] = array(
+        'type' => 'text',
+        'text' => $price,
+      );
+    }
+    return $content;
   }
 
   private function isProduct($post) {
