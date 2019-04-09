@@ -20,10 +20,13 @@ class BulkActionController {
     unset($data['action']);
 
     $action_class = $this->factory->getActionClass($model_class, $bulk_action_method);
+    $callback = [$action_class, $bulk_action_method];
 
-    return call_user_func_array(
-      array($action_class, $bulk_action_method),
-      array($this->handler->getSelection($model_class, $data['listing']), $data)
-    );
+    if (is_callable($callback)) {
+      return call_user_func_array(
+        $callback,
+        array($this->handler->getSelection($model_class, $data['listing']), $data)
+      );
+    }
   }
 }

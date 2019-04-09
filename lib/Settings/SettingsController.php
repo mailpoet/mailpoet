@@ -129,7 +129,7 @@ class SettingsController {
 
   private function fetchValue($key) {
     $setting = Setting::where('name', $key)->findOne();
-    if ($setting === false) {
+    if (!$setting instanceof Setting) {
       return null;
     }
     if (is_serialized($setting->value)) {

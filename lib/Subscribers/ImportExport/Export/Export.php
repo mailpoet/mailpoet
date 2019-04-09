@@ -59,6 +59,7 @@ class Export {
   }
 
   function process() {
+    $processed_subscribers = 0;
     $this->default_subscribers_getter->reset();
     try {
       if (is_writable($this->export_path) === false) {
@@ -67,12 +68,13 @@ class Export {
       if (!extension_loaded('zip')) {
         throw new \Exception(__('Export requires a ZIP extension to be installed on the host.', 'mailpoet'));
       }
-      $processed_subscribers = call_user_func(
-        array(
-          $this,
-          'generate' . strtoupper($this->export_format_option)
-        )
-      );
+      $callback = [
+        $this,
+        'generate' . strtoupper($this->export_format_option)
+      ];
+      if (is_callable($callback)) {
+        $processed_subscribers = call_user_func($callback);
+      }
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
     }

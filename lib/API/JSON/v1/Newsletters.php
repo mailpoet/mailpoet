@@ -58,11 +58,7 @@ class Newsletters extends APIEndpoint {
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
-    if ($newsletter === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($newsletter instanceof Newsletter) {
       $newsletter = $newsletter
         ->withSegments()
         ->withOptions()
@@ -76,6 +72,10 @@ class Newsletters extends APIEndpoint {
 
       $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter->asArray());
       return $this->successResponse($newsletter, ['preview_url' => $preview_url]);
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -96,7 +96,7 @@ class Newsletters extends APIEndpoint {
 
     if (!empty($data['template_id'])) {
       $template = NewsletterTemplate::whereEqual('id', $data['template_id'])->findOne();
-      if (!empty($template)) {
+      if ($template instanceof NewsletterTemplate) {
         $template = $template->asArray();
         $data['body'] = $template['body'];
       }
@@ -110,6 +110,7 @@ class Newsletters extends APIEndpoint {
     // Re-fetch newsletter to sync changes made by DB
     // updated_at column use CURRENT_TIMESTAMP for update and this change is not updated automatically by ORM
     $newsletter = Newsletter::findOne($newsletter->id);
+    if(!$newsletter instanceof Newsletter) return $this->errorResponse();
 
     if (!empty($segments)) {
       NewsletterSegment::where('newsletter_id', $newsletter->id)
@@ -146,6 +147,7 @@ class Newsletters extends APIEndpoint {
       }
       // reload newsletter with updated options
       $newsletter = Newsletter::filter('filterWithOptions', $newsletter->type)->findOne($newsletter->id);
+      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
       // if this is a post notification, process newsletter options and update its schedule
       if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         // generate the new schedule from options and get the new "next run" date
@@ -226,54 +228,62 @@ class Newsletters extends APIEndpoint {
       Scheduler::createPostNotificationSendingTask($newsletter);
     }
 
-
+    $newsletter = Newsletter::findOne($newsletter->id);
+    if(!$newsletter instanceof Newsletter) return $this->errorResponse();
     return $this->successResponse(
-      Newsletter::findOne($newsletter->id)->asArray()
+      $newsletter->asArray()
     );
   }
 
   function restore($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
-    if ($newsletter === false) {
+    if ($newsletter instanceof Newsletter) {
+      $newsletter->restore();
+
+      $newsletter = Newsletter::findOne($newsletter->id);
+      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
+
+      return $this->successResponse(
+        $newsletter->asArray(),
+        array('count' => 1)
+      );
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
       ));
-    } else {
-      $newsletter->restore();
-      return $this->successResponse(
-        Newsletter::findOne($newsletter->id)->asArray(),
-        array('count' => 1)
-      );
     }
   }
 
   function trash($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
-    if ($newsletter === false) {
+    if ($newsletter instanceof Newsletter) {
+      $newsletter->trash();
+
+      $newsletter = Newsletter::findOne($newsletter->id);
+      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
+      return $this->successResponse(
+        $newsletter->asArray(),
+        array('count' => 1)
+      );
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
       ));
-    } else {
-      $newsletter->trash();
-      return $this->successResponse(
-        Newsletter::findOne($newsletter->id)->asArray(),
-        array('count' => 1)
-      );
     }
   }
 
   function delete($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
-    if ($newsletter === false) {
+    if ($newsletter instanceof Newsletter) {
+      $newsletter->delete();
+      return $this->successResponse(null, array('count' => 1));
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
       ));
-    } else {
-      $newsletter->delete();
-      return $this->successResponse(null, array('count' => 1));
     }
   }
 
@@ -281,11 +291,7 @@ class Newsletters extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
 
-    if ($newsletter === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($newsletter instanceof Newsletter) {
       $data = array(
         'subject' => sprintf(__('Copy of %s', 'mailpoet'), $newsletter->subject)
       );
@@ -296,11 +302,17 @@ class Newsletters extends APIEndpoint {
         return $this->errorResponse($errors);
       } else {
         $this->wp->doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
+        $duplicate = Newsletter::findOne($duplicate->id);
+        if(!$duplicate instanceof Newsletter) return $this->errorResponse();
         return $this->successResponse(
-          Newsletter::findOne($duplicate->id)->asArray(),
+          $duplicate->asArray(),
           array('count' => 1)
         );
       }
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -314,11 +326,7 @@ class Newsletters extends APIEndpoint {
     $id = (isset($data['id'])) ? (int)$data['id'] : false;
     $newsletter = Newsletter::findOne($id);
 
-    if ($newsletter === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($newsletter instanceof Newsletter) {
       $newsletter->body = $data['body'];
       $newsletter->save();
       $subscriber = Subscriber::getCurrentWPUser();
@@ -330,10 +338,16 @@ class Newsletters extends APIEndpoint {
       // strip protocol to avoid mix content error
       $preview_url = preg_replace('{^https?:}i', '', $preview_url);
 
+      $newsletter = Newsletter::findOne($newsletter->id);
+      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
       return $this->successResponse(
-        Newsletter::findOne($newsletter->id)->asArray(),
+        $newsletter->asArray(),
         array('preview_url' => $preview_url)
       );
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -347,11 +361,7 @@ class Newsletters extends APIEndpoint {
     $id = (isset($data['id'])) ? (int)$data['id'] : false;
     $newsletter = Newsletter::findOne($id);
 
-    if ($newsletter === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($newsletter instanceof Newsletter) {
       $renderer = new Renderer($newsletter, $preview = true);
       $rendered_newsletter = $renderer->render();
       $divider = '***MailPoet***';
@@ -376,7 +386,7 @@ class Newsletters extends APIEndpoint {
         $rendered_newsletter['subject'],
         $rendered_newsletter['body']['html'],
         $rendered_newsletter['body']['text']
-      ) = explode($divider, $shortcodes->replace($body));
+        ) = explode($divider, $shortcodes->replace($body));
       $rendered_newsletter['id'] = $newsletter->id;
 
       try {
@@ -386,7 +396,7 @@ class Newsletters extends APIEndpoint {
             $mailer = false,
             $sender = false,
             $reply_to = false
-        );
+          );
         $extra_params = array('unsubscribe_url' => WPFunctions::get()->homeUrl());
         $result = $mailer->send($rendered_newsletter, $data['subscriber'], $extra_params);
 
@@ -397,8 +407,11 @@ class Newsletters extends APIEndpoint {
           );
           return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
         } else {
+          $newsletter = Newsletter::findOne($newsletter->id);
+          if(!$newsletter instanceof Newsletter) return $this->errorResponse();
+
           return $this->successResponse(
-            Newsletter::findOne($id)->asArray()
+            $newsletter->asArray()
           );
         }
       } catch (\Exception $e) {
@@ -406,6 +419,10 @@ class Newsletters extends APIEndpoint {
           $e->getCode() => $e->getMessage()
         ));
       }
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -494,10 +511,10 @@ class Newsletters extends APIEndpoint {
       // try to load template data
       $template_id = (isset($data['template']) ? (int)$data['template'] : false);
       $template = NewsletterTemplate::findOne($template_id);
-      if ($template === false) {
-        $newsletter->body = array();
-      } else {
+      if ($template instanceof NewsletterTemplate) {
         $newsletter->body = $template->body;
+      } else {
+        $newsletter->body = array();
       }
     }
 
@@ -533,8 +550,10 @@ class Newsletters extends APIEndpoint {
         Scheduler::processPostNotificationSchedule($newsletter);
       }
 
+      $newsletter = Newsletter::findOne($newsletter->id);
+      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
       return $this->successResponse(
-        Newsletter::findOne($newsletter->id)->asArray()
+        $newsletter->asArray()
       );
     }
   }

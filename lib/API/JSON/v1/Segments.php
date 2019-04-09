@@ -40,12 +40,12 @@ class Segments extends APIEndpoint {
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
-    if ($segment === false) {
+    if ($segment instanceof Segment) {
+      return $this->successResponse($segment->asArray());
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
-    } else {
-      return $this->successResponse($segment->asArray());
     }
   }
 
@@ -77,8 +77,10 @@ class Segments extends APIEndpoint {
     if (!empty($errors)) {
       return $this->badRequest($errors);
     } else {
+      $segment = Segment::findOne($segment->id);
+      if(!$segment instanceof Segment) return $this->errorResponse();
       return $this->successResponse(
-        Segment::findOne($segment->id)->asArray()
+        $segment->asArray()
       );
     }
   }
@@ -86,45 +88,49 @@ class Segments extends APIEndpoint {
   function restore($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
-    if ($segment === false) {
+    if ($segment instanceof Segment) {
+      $segment->restore();
+      $segment = Segment::findOne($segment->id);
+      if(!$segment instanceof Segment) return $this->errorResponse();
+      return $this->successResponse(
+        $segment->asArray(),
+        array('count' => 1)
+      );
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
-    } else {
-      $segment->restore();
-      return $this->successResponse(
-        Segment::findOne($segment->id)->asArray(),
-        array('count' => 1)
-      );
     }
   }
 
   function trash($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
-    if ($segment === false) {
+    if ($segment instanceof Segment) {
+      $segment->trash();
+      $segment = Segment::findOne($segment->id);
+      if(!$segment instanceof Segment) return $this->errorResponse();
+      return $this->successResponse(
+        $segment->asArray(),
+        array('count' => 1)
+      );
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
-    } else {
-      $segment->trash();
-      return $this->successResponse(
-        Segment::findOne($segment->id)->asArray(),
-        array('count' => 1)
-      );
     }
   }
 
   function delete($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
-    if ($segment === false) {
+    if ($segment instanceof Segment) {
+      $segment->delete();
+      return $this->successResponse(null, array('count' => 1));
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
       ));
-    } else {
-      $segment->delete();
-      return $this->successResponse(null, array('count' => 1));
     }
   }
 
@@ -132,11 +138,7 @@ class Segments extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
 
-    if ($segment === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($segment instanceof Segment) {
       $data = array(
         'name' => sprintf(__('Copy of %s', 'mailpoet'), $segment->name)
       );
@@ -146,11 +148,17 @@ class Segments extends APIEndpoint {
       if (!empty($errors)) {
         return $this->errorResponse($errors);
       } else {
+        $duplicate = Segment::findOne($duplicate->id);
+        if(!$duplicate instanceof Segment) return $this->errorResponse();
         return $this->successResponse(
-          Segment::findOne($duplicate->id)->asArray(),
+          $duplicate->asArray(),
           array('count' => 1)
         );
       }
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
+      ));
     }
   }
 

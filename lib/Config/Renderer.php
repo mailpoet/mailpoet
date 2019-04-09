@@ -121,9 +121,13 @@ class Renderer {
   }
 
   function getAssetManifest($manifest_file) {
-    return (is_readable($manifest_file)) ?
-      json_decode(file_get_contents($manifest_file), true) :
-      false;
+    if (is_readable($manifest_file)) {
+      $contents = file_get_contents($manifest_file);
+      if (is_string($contents)) {
+        return json_decode($contents, true);
+      }
+    }
+    return false;
   }
 
   function getJsAsset($asset) {

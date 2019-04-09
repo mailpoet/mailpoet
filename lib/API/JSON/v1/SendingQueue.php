@@ -28,7 +28,7 @@ class SendingQueue extends APIEndpoint {
     // check that the newsletter exists
     $newsletter = Newsletter::findOneWithOptions($newsletter_id);
 
-    if ($newsletter === false) {
+    if (!$newsletter instanceof Newsletter) {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
       ));
@@ -59,7 +59,7 @@ class SendingQueue extends APIEndpoint {
       ->where('queues.newsletter_id', $newsletter->id)
       ->where('tasks.status', SendingQueueModel::STATUS_SCHEDULED)
       ->findOne();
-    if ($scheduled_queue) {
+    if ($scheduled_queue instanceof SendingQueueModel) {
       $queue = SendingTask::createFromQueue($scheduled_queue);
     } else {
       $queue = SendingTask::create();
@@ -108,11 +108,7 @@ class SendingQueue extends APIEndpoint {
     );
     $newsletter = Newsletter::findOne($newsletter_id);
 
-    if ($newsletter === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($newsletter instanceof Newsletter) {
       $queue = $newsletter->getQueue();
 
       if ($queue === false) {
@@ -125,6 +121,10 @@ class SendingQueue extends APIEndpoint {
           $newsletter->getQueue()->asArray()
         );
       }
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -134,11 +134,7 @@ class SendingQueue extends APIEndpoint {
       : false
     );
     $newsletter = Newsletter::findOne($newsletter_id);
-    if ($newsletter === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($newsletter instanceof Newsletter) {
       $queue = $newsletter->getQueue();
 
       if ($queue === false) {
@@ -151,6 +147,10 @@ class SendingQueue extends APIEndpoint {
           $newsletter->getQueue()->asArray()
         );
       }
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet')
+      ));
     }
   }
 }

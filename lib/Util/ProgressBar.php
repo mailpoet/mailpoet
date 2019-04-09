@@ -51,12 +51,14 @@ if (!class_exists('ProgressBar', false)) {
      * @return array|false Array of counters
      */
     private function readProgress() {
-      if (file_exists($this->filename)) {
-        $json_content = file_get_contents($this->filename);
-        return json_decode($json_content);
-      } else {
+      if (!file_exists($this->filename)) {
         return false;
       }
+      $json_content = file_get_contents($this->filename);
+      if (is_string($json_content)) {
+        return json_decode($json_content);
+      }
+      return false;
     }
 
     /**

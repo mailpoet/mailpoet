@@ -28,9 +28,9 @@ class Updater {
   function init() {
     WPFunctions::get()->addFilter('pre_set_site_transient_update_plugins', array($this, 'checkForUpdate'));
   }
-  
+
   function checkForUpdate($update_transient) {
-    if (!is_object($update_transient)) {
+    if (!$update_transient instanceof \stdClass) {
       $update_transient = new \stdClass;
     }
 

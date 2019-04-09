@@ -27,14 +27,14 @@ class CustomFields extends APIEndpoint {
   function delete($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
     $custom_field = CustomField::findOne($id);
-    if ($custom_field === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($custom_field instanceof CustomField) {
       $custom_field->delete();
 
       return $this->successResponse($custom_field->asArray());
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -44,22 +44,20 @@ class CustomFields extends APIEndpoint {
 
     if (!empty($errors)) {
       return $this->badRequest($errors);
-    } else {
-      return $this->successResponse(
-        CustomField::findOne($custom_field->id)->asArray()
-      );
     }
+    $custom_field = CustomField::findOne($custom_field->id);
+    if(!$custom_field instanceof CustomField) return $this->errorResponse();
+    return $this->successResponse($custom_field->asArray());
   }
 
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
     $custom_field = CustomField::findOne($id);
-    if ($custom_field === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($custom_field instanceof CustomField) {
       return $this->successResponse($custom_field->asArray());
     }
+    return $this->errorResponse(array(
+      APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet')
+    ));
   }
 }

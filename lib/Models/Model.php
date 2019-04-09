@@ -22,8 +22,8 @@ if (!defined('ABSPATH')) exit;
  * @method $this useIdColumn($id_column)
  * @method $this|bool findOne($id=null)
  * @method static static|bool findOne($id=null)
- * @method array|\IdiormResultSet findMany()
- * @method static array|\IdiormResultSet findMany()
+ * @method array findMany()
+ * @method static array findMany()
  * @method \IdiormResultSet findResultSet()
  * @method array findArray()
  * @method static array findArray()
@@ -162,7 +162,7 @@ class Model extends \Sudzy\ValidModel {
     }
 
     if ($model === false) {
-      if (!empty($onCreate)) {
+      if (!empty($onCreate) && is_callable($onCreate)) {
         $data = $onCreate($data);
       }
       $model = static::create();

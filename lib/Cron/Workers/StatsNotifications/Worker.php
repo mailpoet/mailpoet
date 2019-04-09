@@ -9,6 +9,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
 use MailPoet\WP\Functions as WPFunctions;
@@ -81,8 +82,11 @@ class Worker {
 
   private function getNewsletter(ScheduledTask $task) {
     $statsNotificationModel = $task->statsNotification()->findOne();
+    if (!$statsNotificationModel instanceof StatsNotification) {
+      throw new \Exception('Newsletter not found');
+    }
     $newsletter = $statsNotificationModel->newsletter()->findOne();
-    if (!$newsletter) {
+    if (!$newsletter instanceof Newsletter) {
       throw new \Exception('Newsletter not found');
     }
     return $newsletter

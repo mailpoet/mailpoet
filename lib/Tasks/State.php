@@ -73,7 +73,7 @@ class State
     $queue = $newsletter = null;
     if ($task->type === Sending::TASK_TYPE) {
       $queue = SendingQueue::where('task_id', $task->id)->findOne();
-      $newsletter = $queue ? $queue->newsletter()->findOne() : null;
+      $newsletter = $queue instanceof SendingQueue ? $queue->newsletter()->findOne() : null;
     }
     return [
       'id' => (int)$task->id,

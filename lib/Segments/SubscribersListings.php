@@ -23,7 +23,7 @@ class SubscribersListings {
       throw new \InvalidArgumentException('Missing segment id');
     }
     $segment = Segment::findOne($data['filter']['segment']);
-    return $this->getListings($data, $segment ?: null);
+    return $this->getListings($data, $segment instanceof Segment ? $segment : null);
 
   }
 
