@@ -30,7 +30,7 @@ class HttpClient {
         'http' => [
           'method' => $method,
           'header' => "Content-type: application/json\r\n",
-          'content' => json_encode($data),
+          'content' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         ]
       ];
     }
