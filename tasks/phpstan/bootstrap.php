@@ -4,6 +4,9 @@ define('ABSPATH', getenv('WP_ROOT') . '/');
 
 require_once ABSPATH . 'wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/admin.php';
+if(!class_exists('\MailPoet\Premium\DI\ContainerConfigurator')) {
+  require_once './PremiumContainerConfigurator.php';
+}
 
 function wc_get_customer_order_count(int $user_id): int {
   return 0;
@@ -20,3 +23,4 @@ function wc_get_order($order = false) {
 function wc_price(float $price, array $args = []): string {
   return '';
 }
+

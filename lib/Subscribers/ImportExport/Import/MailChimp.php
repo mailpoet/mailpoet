@@ -25,7 +25,8 @@ class MailChimp {
       return $this->throwException('API');
     }
 
-    $connection = @fopen(sprintf($this->lists_url, $this->data_center, $this->api_key), 'r');
+    $url = sprintf($this->lists_url, $this->data_center, $this->api_key);
+    $connection = @fopen($url, 'r');
 
     if (!$connection) {
       return $this->throwException('connection');
@@ -87,7 +88,7 @@ class MailChimp {
             }
             if (!isset($header_hash)) {
               $header_hash = md5(implode(',', $header));
-            } elseif (md5(implode(',', $header) !== $header_hash)) {
+            } elseif (md5(implode(',', $header)) !== $header_hash) {
               return $this->throwException('headers');
             }
           } else {

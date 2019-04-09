@@ -53,7 +53,8 @@ class FreeDomains {
   ];
 
   function isEmailOnFreeDomain($email) {
-    $domain = end(explode('@', $email));
+    $email_parts = explode('@', $email);
+    $domain = end($email_parts);
     return in_array($domain, self::FREE_DOMAINS);
   }
 
