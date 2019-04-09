@@ -2,23 +2,23 @@
 
 namespace MailPoetTasks\Release;
 
-require_once __DIR__ . '/Jira.php';
+require_once __DIR__ . '/JiraController.php';
 
 class ReleaseVersionController {
 
-  /** @var Jira */
+  /** @var JiraController */
   private $jira;
 
   /** @var string */
   private $project;
 
-  function __construct(Jira $jira, $project) {
+  function __construct(JiraController $jira, $project) {
     $this->jira = $jira;
     $this->project = $project;
   }
 
   static function createWithJiraCredentials($token, $user, $project) {
-    return new self(new Jira($token, $user, $project), $project);
+    return new self(new JiraController($token, $user, $project), $project);
   }
 
   function assignVersionToCompletedTickets($version = null) {

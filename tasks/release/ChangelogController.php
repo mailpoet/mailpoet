@@ -2,7 +2,7 @@
 
 namespace MailPoetTasks\Release;
 
-require_once __DIR__ . '/Jira.php';
+require_once __DIR__ . '/JiraController.php';
 
 class ChangelogController {
 
@@ -12,16 +12,16 @@ class ChangelogController {
   /** @var string */
   private $readme_file;
 
-  /** @var Jira */
+  /** @var JiraController */
   private $jira;
 
-  function __construct(Jira $jira, $readme_file) {
+  function __construct(JiraController $jira, $readme_file) {
     $this->jira = $jira;
     $this->readme_file = $readme_file;
   }
 
   static function createWithJiraCredentials($token, $user, $project, $readme_file) {
-    return new self(new Jira($token, $user, $project), $readme_file);
+    return new self(new JiraController($token, $user, $project), $readme_file);
   }
 
   function update($version_name = null) {
@@ -34,11 +34,11 @@ class ChangelogController {
     $version = $this->jira->getVersion($version_name);
     $issues = $this->jira->getIssuesDataForVersion($version);
     $heading = $this->renderHeading($version);
-    $changelog = $this->renderList($issues, Jira::CHANGELOG_FIELD_ID);
+    $changelog = $this->renderList($issues, JiraController::CHANGELOG_FIELD_ID);
     if (!$changelog) {
       $changelog = self::FALLBACK_RECORD;
     }
-    $notes = $this->renderList($issues, Jira::RELEASENOTE_FIELD_ID);
+    $notes = $this->renderList($issues, JiraController::RELEASENOTE_FIELD_ID);
     return [$heading, $changelog, $notes];
   }
 
@@ -52,7 +52,7 @@ class ChangelogController {
     foreach ($issues as $issue) {
       if (
         !isset($issue['fields'][$field])
-        || ($issue['fields']['resolution']['id'] === Jira::WONT_DO_RESOLUTION_ID)
+        || ($issue['fields']['resolution']['id'] === JiraController::WONT_DO_RESOLUTION_ID)
       ) {
         continue;
       }
