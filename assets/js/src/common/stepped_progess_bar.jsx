@@ -10,9 +10,10 @@ const SteppedProgressBar = (props) => {
       {
         [...Array(props.steps_count).keys()].map(step => (
           <div
-            className={`mailpoet_stepped_progress_bar_step ${(step < props.step ? 'active' : '')}`}
+            className={`
+              mailpoet_stepped_progress_bar_step ${(step < props.step ? 'active' : '')} ${(step === (props.step - 1) ? 'current' : '')}
+             `}
             key={`step_${step}`}
-            style={{ width: `${Math.floor(100 / props.steps_count)}%` }}
           />
         ))
       }
