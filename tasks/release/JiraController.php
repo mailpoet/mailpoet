@@ -2,8 +2,6 @@
 
 namespace MailPoetTasks\Release;
 
-require_once __DIR__ . '/HttpClient.php';
-
 class JiraController {
 
   const CHANGELOG_FIELD_ID = 'customfield_10500';

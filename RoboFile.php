@@ -295,7 +295,7 @@ class RoboFile extends \Robo\Tasks {
       $this->yell('WP_ROOT env variable does not contain valid path to wordpress root.', 40, 'red');
       exit(1);
     }
-    require_once __DIR__ . '/vendor/autoload.php';
+
     $configurator = new \MailPoet\DI\ContainerConfigurator();
     $dump_file = __DIR__ .  '/generated/' . $configurator->getDumpClassname() . '.php';
     $this->say('Deleting DI Container');
@@ -562,7 +562,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function getChangelogController() {
-    require_once './tasks/release/ChangelogController.php';
     $this->loadEnv();
     return \MailPoetTasks\Release\ChangelogController::createWithJiraCredentials(
       getenv('WP_JIRA_TOKEN'),
@@ -573,7 +572,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function getReleaseVersionController() {
-    require_once './tasks/release/ReleaseVersionController.php';
     $this->loadEnv();
     return \MailPoetTasks\Release\ReleaseVersionController::createWithJiraCredentials(
       getenv('WP_JIRA_TOKEN'),
@@ -641,8 +639,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePublishSlack($version = null) {
-    require_once __DIR__ . '/tasks/release/JiraController.php';
-    require_once __DIR__ . '/tasks/release/SlackNotifier.php';
     $this->loadEnv();
 
     $jira_controller = new \MailPoetTasks\Release\JiraController(

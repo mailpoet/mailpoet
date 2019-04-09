@@ -2,8 +2,6 @@
 
 namespace MailPoetTasks\Release;
 
-require_once __DIR__ . '/HttpClient.php';
-
 class SlackNotifier {
   const PROJECT_MAILPOET = 'MAILPOET';
   const PROJECT_PREMIUM = 'PREMIUM';

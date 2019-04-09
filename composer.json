@@ -53,6 +53,11 @@
       "MailPoetGenerated\\": "generated/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "MailPoetTasks\\Release\\": "tasks/release"
+    }
+  },
   "scripts": {
     "post-update-cmd": [
       "@fixPHPUnit57CodeCoverageForPHP72",

@@ -2,8 +2,6 @@
 
 namespace MailPoetTasks\Release;
 
-require_once __DIR__ . '/JiraController.php';
-
 class ReleaseVersionController {
 
   /** @var JiraController */
