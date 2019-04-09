@@ -567,7 +567,7 @@ class RoboFile extends \Robo\Tasks {
     return \MailPoetTasks\Release\ChangelogController::createWithJiraCredentials(
       getenv('WP_JIRA_TOKEN'),
       getenv('WP_JIRA_USER'),
-      \MailPoetTasks\Release\Jira::PROJECT_MAILPOET,
+      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET,
       __DIR__ . '/readme.txt'
     );
   }
@@ -578,7 +578,7 @@ class RoboFile extends \Robo\Tasks {
     return \MailPoetTasks\Release\ReleaseVersionController::createWithJiraCredentials(
       getenv('WP_JIRA_TOKEN'),
       getenv('WP_JIRA_USER'),
-      \MailPoetTasks\Release\Jira::PROJECT_MAILPOET
+      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
     );
   }
 
