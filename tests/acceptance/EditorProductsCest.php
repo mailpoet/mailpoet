@@ -248,14 +248,12 @@ class EditorProductsCest {
     $I->waitForElementNotVisible('.velocity-animating');
   }
 
-  /**
-   * @before initializeNewsletter
-   * @before productsWidgetNotVisible
-   * @before initializeWooCommerce
-   * @before filterProducts
-   * @before changeDisplaySettings
-   */
   function testProductsWidget(\AcceptanceTester $I) {
+    $this->initializeNewsletter($I);
+    $this->productsWidgetNotVisible($I);
+    $this->initializeWooCommerce($I);
+    $this->filterProducts($I);
+    $this->changeDisplaySettings($I);
     $I->deactivateWooCommerce();
   }
 
