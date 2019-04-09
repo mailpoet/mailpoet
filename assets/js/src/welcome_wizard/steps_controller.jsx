@@ -82,7 +82,7 @@ const WelcomeWizardStepsController = (props) => {
       </div>
       <div className="mailpoet_welcome_wizard_flex">
         <div className="mailpoet_welcome_wizard_illustration">
-          <img src={window['step_' + step + '_illustration_url']} alt="" />
+          <img src={window[`step_${step}_illustration_url`]} alt="" />
         </div>
         <div className="mailpoet_welcome_wizard_step">
           { step <= stepsCount
