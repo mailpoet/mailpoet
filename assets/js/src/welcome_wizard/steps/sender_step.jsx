@@ -41,7 +41,9 @@ const WelcomeWizardSenderStep = props => (
           onChange={e => props.update_sender({ address: e.target.value })}
         />
       </label>
-      <input className="button button-primary" type="submit" value={MailPoet.I18n.t('next')} />
+      <div className="mailpoet_welcome_wizard_step_controls">
+        <input className="button button-primary" type="submit" value={MailPoet.I18n.t('next')} />
+      </div>
       <a onClick={props.finish} href="#finish" className="sender_form_small">{MailPoet.I18n.t('noThanksSkip')}</a>
     </form>
   </div>
