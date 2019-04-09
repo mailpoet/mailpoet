@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a402f5bec299fce8da4a2973560f610",
+    "content-hash": "2a7a51c0258d1b80c886a6743742c935",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -4252,6 +4252,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2017-06-30T09:13:00+00:00"
         },
         {
