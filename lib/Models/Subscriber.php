@@ -218,7 +218,7 @@ class Subscriber extends Model {
           return self::filter('withoutSegments');
         } else {
           $segment = Segment::findOne($value);
-          if ($segment !== false) {
+          if ($segment instanceof Segment) {
             return $segment->subscribers();
           }
         }
@@ -459,10 +459,10 @@ class Subscriber extends Model {
       ->where('subscriber_id', $this->id())
       ->findOne();
 
-    if ($custom_field === false) {
-      return $default;
-    } else {
+    if ($custom_field instanceof SubscriberCustomField) {
       return $custom_field->value;
+    } else {
+      return $default;
     }
   }
 
@@ -495,7 +495,10 @@ class Subscriber extends Model {
 
   function setUnconfirmedData(array $subscriber_data) {
     $subscriber_data = self::filterOutReservedColumns($subscriber_data);
-    $this->unconfirmed_data = json_encode($subscriber_data);
+    $encoded = json_encode($subscriber_data);
+    if (is_string($encoded)) {
+      $this->unconfirmed_data = $encoded;
+    }
   }
 
   function getUnconfirmedData() {
@@ -511,7 +514,7 @@ class Subscriber extends Model {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if ($segment === false) return false;
+    if (!$segment instanceof Segment) return false;
 
     $count = parent::bulkAction($orm,
       function($subscriber_ids) use($segment) {
@@ -531,7 +534,7 @@ class Subscriber extends Model {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if ($segment === false) return false;
+    if (!$segment instanceof Segment) return false;
 
     $count = parent::bulkAction($orm,
       function($subscriber_ids) use($segment) {
@@ -552,7 +555,7 @@ class Subscriber extends Model {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if ($segment === false) return false;
+    if (!$segment instanceof Segment) return false;
 
     $count = $orm->count();
 

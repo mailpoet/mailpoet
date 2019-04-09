@@ -120,7 +120,7 @@ class Subscribers extends APIEndpoint {
 
     $recaptcha = $this->settings->get('re_captcha');
 
-    if (!$form) {
+    if (!$form instanceof Form) {
       return $this->badRequest(array(
         APIError::BAD_REQUEST => WPFunctions::get()->__('Please specify a valid form ID.', 'mailpoet')
       ));
@@ -266,45 +266,49 @@ class Subscribers extends APIEndpoint {
   function restore($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
-    if ($subscriber === false) {
+    if ($subscriber instanceof Subscriber) {
+      $subscriber->restore();
+      $subscriber = Subscriber::findOne($subscriber->id);
+      if(!$subscriber instanceof Subscriber) return $this->errorResponse();
+      return $this->successResponse(
+        $subscriber->asArray(),
+        array('count' => 1)
+      );
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
       ));
-    } else {
-      $subscriber->restore();
-      return $this->successResponse(
-        Subscriber::findOne($subscriber->id)->asArray(),
-        array('count' => 1)
-      );
     }
   }
 
   function trash($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
-    if ($subscriber === false) {
+    if ($subscriber instanceof Subscriber) {
+      $subscriber->trash();
+      $subscriber = Subscriber::findOne($subscriber->id);
+      if(!$subscriber instanceof Subscriber) return $this->errorResponse();
+      return $this->successResponse(
+        $subscriber->asArray(),
+        array('count' => 1)
+      );
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
       ));
-    } else {
-      $subscriber->trash();
-      return $this->successResponse(
-        Subscriber::findOne($subscriber->id)->asArray(),
-        array('count' => 1)
-      );
     }
   }
 
   function delete($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
-    if ($subscriber === false) {
+    if ($subscriber instanceof Subscriber) {
+      $subscriber->delete();
+      return $this->successResponse(null, array('count' => 1));
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
       ));
-    } else {
-      $subscriber->delete();
-      return $this->successResponse(null, array('count' => 1));
     }
   }
 

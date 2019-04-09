@@ -268,6 +268,9 @@ class API {
 
     // reload list to get the saved created|updated|delete dates/other fields
     $new_list = Segment::findOne($new_list->id);
+    if (!$new_list instanceof Segment) {
+      throw new \Exception(WPFunctions::get()->__('Failed to add list', 'mailpoet'));
+    }
 
     return $new_list->asArray();
   }

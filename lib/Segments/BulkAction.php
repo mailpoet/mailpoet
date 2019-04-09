@@ -26,14 +26,14 @@ class BulkAction {
       throw new \InvalidArgumentException('Missing segment id');
     }
     $segment = Segment::findOne($this->data['listing']['filter']['segment']);
-    if ($segment) {
+    if ($segment instanceof Segment) {
       $segment = $segment->asArray();
     }
     return $this->applySegment($segment);
   }
 
   /**
-   * @param array $segment
+   * @param array|bool $segment
    *
    * @return array
    * @throws \Exception

@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\WP;
 
+use WP_Error;
+
 class Functions {
 
   static private $instance;
@@ -240,14 +242,16 @@ class Functions {
   }
 
   /**
-   * @param  string|array $deprecated
+   * @param string|array $args
+   * @param string|array $deprecated
+   * @return array|int|WP_Error
    */
   function getTerms($args = array(), $deprecated = '') {
     return get_terms($args, $deprecated);
   }
 
   /**
-   * @param  int|boolean $user_id
+   * @param int|boolean $user_id
    */
   function getTheAuthorMeta($field = '', $user_id = false) {
     return get_the_author_meta($field, $user_id);

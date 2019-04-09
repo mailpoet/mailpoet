@@ -29,6 +29,8 @@ if (!defined('ABSPATH')) exit;
  * @property string $subject
  * @property string $body
  * @property string|null $schedule
+ * @property boolean|null $isScheduled
+ * @property string|null $scheduledAt
  */
 
 class Newsletter extends Model {

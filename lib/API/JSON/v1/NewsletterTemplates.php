@@ -18,14 +18,14 @@ class NewsletterTemplates extends APIEndpoint {
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
-    if ($template === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($template instanceof NewsletterTemplate) {
       return $this->successResponse(
         $template->asArray()
       );
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -47,7 +47,7 @@ class NewsletterTemplates extends APIEndpoint {
     ignore_user_abort(true);
     if (!empty($data['newsletter_id'])) {
       $template = NewsletterTemplate::whereEqual('newsletter_id', $data['newsletter_id'])->findOne();
-      if (!empty($template)) {
+      if ($template instanceof NewsletterTemplate) {
         $data['id'] = $template->id;
       }
     }
@@ -60,8 +60,10 @@ class NewsletterTemplates extends APIEndpoint {
     if (!empty($errors)) {
       return $this->errorResponse($errors);
     } else {
+      $template = NewsletterTemplate::findOne($template->id);
+      if(!$template instanceof NewsletterTemplate) return $this->errorResponse();
       return $this->successResponse(
-        NewsletterTemplate::findOne($template->id)->asArray()
+        $template->asArray()
       );
     }
   }
@@ -69,13 +71,13 @@ class NewsletterTemplates extends APIEndpoint {
   function delete($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
-    if ($template === false) {
+    if ($template instanceof NewsletterTemplate) {
+      $template->delete();
+      return $this->successResponse(null, array('count' => 1));
+    } else {
       return $this->errorResponse(array(
         APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
       ));
-    } else {
-      $template->delete();
-      return $this->successResponse(null, array('count' => 1));
     }
   }
 }

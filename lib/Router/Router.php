@@ -55,13 +55,13 @@ class Router {
       return $this->terminateRequest(self::RESPONE_FORBIDDEN, WPFunctions::get()->__('You do not have the required permissions.', 'mailpoet'));
     }
     WPFunctions::get()->doAction('mailpoet_conflict_resolver_router_url_query_parameters');
-    return call_user_func(
-      [
-        $endpoint,
-        $this->endpoint_action,
-      ],
-      $this->data
-    );
+    $callback = [
+      $endpoint,
+      $this->endpoint_action,
+    ];
+    if (is_callable($callback)) {
+      return call_user_func($callback, $this->data);
+    }
   }
 
   static function decodeRequestData($data) {

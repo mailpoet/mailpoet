@@ -201,7 +201,7 @@ class XLSXWriter
     $max_cell_tag = '<dimension ref="A1:' . $max_cell . '"/>';
     $padding_length = $sheet->max_cell_tag_end - $sheet->max_cell_tag_start - strlen($max_cell_tag);
     $sheet->file_writer->fseek($sheet->max_cell_tag_start);
-    $sheet->file_writer->write($max_cell_tag.str_repeat(" ", $padding_length));
+    $sheet->file_writer->write($max_cell_tag . str_repeat(" ", (int)$padding_length));
     $sheet->file_writer->close();
     $sheet->finalized=true;
   }

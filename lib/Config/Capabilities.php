@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
+use WP_Role;
 
 class Capabilities {
   const MEMBERS_CAP_GROUP_NAME = 'mailpoet';
@@ -35,7 +36,7 @@ class Capabilities {
         if (!isset($role_objects[$role])) {
           $role_objects[$role] = WPFunctions::get()->getRole($role);
         }
-        if (!is_object($role_objects[$role])) continue;
+        if (!$role_objects[$role] instanceof WP_Role) continue;
         $role_objects[$role]->add_cap($name);
       }
     }
@@ -49,7 +50,7 @@ class Capabilities {
         if (!isset($role_objects[$role])) {
           $role_objects[$role] = WPFunctions::get()->getRole($role);
         }
-        if (!is_object($role_objects[$role])) continue;
+        if (!$role_objects[$role] instanceof WP_Role) continue;
         $role_objects[$role]->remove_cap($name);
       }
     }

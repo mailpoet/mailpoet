@@ -45,9 +45,9 @@ class ImportExport extends APIEndpoint {
     if (!empty($errors)) {
       return $this->errorResponse($errors);
     } else {
-      return $this->successResponse(
-        Segment::findOne($segment->id)->asArray()
-      );
+      $segment = Segment::findOne($segment->id);
+      if(!$segment instanceof Segment) return $this->errorResponse();
+      return $this->successResponse($segment->asArray());
     }
   }
 

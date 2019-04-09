@@ -748,7 +748,7 @@ class Menu {
   function formEditor() {
     $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $form = Form::findOne($id);
-    if ($form !== false) {
+    if ($form instanceof Form) {
       $form = $form->asArray();
     }
 
