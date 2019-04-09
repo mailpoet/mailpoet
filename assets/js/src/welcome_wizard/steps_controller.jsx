@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import MailPoet from 'mailpoet';
-import WelcomeWizardHeader from './header.jsx';
+import SteppedProgressBar from '../common/stepped_progess_bar.jsx';
 import WelcomeWizardSenderStep from './steps/sender_step.jsx';
 import WelcomeWizardMigratedUserStep from './steps/migrated_user_step.jsx';
 import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
@@ -77,17 +77,20 @@ const WelcomeWizardStepsController = (props) => {
 
   return (
     <div className="mailpoet_welcome_wizard_steps">
-      <WelcomeWizardHeader
-        current_step={step}
-        steps_count={stepsCount}
-        logo_src={window.mailpoet_logo_url}
-      />
+      <div className="mailpoet_welcome_wizard_header">
+        <img src={window.mailpoet_logo_url} width="200" height="87" alt="MailPoet logo" />
+      </div>
       <div className="mailpoet_welcome_wizard_flex">
-
         <div className="mailpoet_welcome_wizard_illustration">
           <img src={window['step_' + step + '_illustration_url']} alt="" />
         </div>
         <div className="mailpoet_welcome_wizard_step">
+          { step <= stepsCount
+            ? (
+              <SteppedProgressBar steps_count={stepsCount} step={step} />
+            ) : null
+          }
+
           { step === 1 && shouldSetSender
             ? (
               <WelcomeWizardSenderStep
