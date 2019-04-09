@@ -21,27 +21,22 @@ class PostContentManager {
   }
 
   function getContent($post, $displayType) {
-    $product = null;
-    if ($this->woocommerce_helper->isWooCommerceActive() && $post->post_type === 'product') {
-      $product = $this->woocommerce_helper->wcGetProduct($post->ID);
-    }
     if ($displayType === 'titleOnly') {
       return '';
-    } elseif ($displayType === 'excerpt') {
+    }
+    if ($this->woocommerce_helper->isWooCommerceActive() && $post->post_type === 'product') {
+      $product = $this->woocommerce_helper->wcGetProduct($post->ID);
       if ($product) {
-        return $product->get_short_description();
+        return $this->getContentForProduct($product, $displayType);
       }
+    }
+    if ($displayType === 'excerpt') {
       if (!empty($post->post_excerpt)) {
         return self::stripShortCodes($post->post_excerpt);
-      } else {
-        return $this->generateExcerpt(self::stripShortCodes($post->post_content));
       }
-    } else {
-      if ($product) {
-        return $product->get_description();
-      }
-      return self::stripShortCodes($post->post_content);
+      return $this->generateExcerpt(self::stripShortCodes($post->post_content));
     }
+    return self::stripShortCodes($post->post_content);
   }
 
   function filterContent($content, $display_type, $with_post_class = true) {
@@ -75,6 +70,13 @@ class PostContentManager {
     $content = trim($content);
 
     return $content;
+  }
+
+  private function getContentForProduct($product, $displayType) {
+    if ($displayType === 'excerpt') {
+      return $product->get_short_description();
+    }
+    return $product->get_description();
   }
 
   private function generateExcerpt($content) {
