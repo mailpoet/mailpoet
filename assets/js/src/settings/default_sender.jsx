@@ -24,7 +24,7 @@ class DefaultSender extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <p>
           <label htmlFor="settings[from_name]">{MailPoet.I18n.t('from')}</label>
           <input
@@ -46,6 +46,13 @@ class DefaultSender extends React.Component {
             placeholder="from@mydomain.com"
           />
         </p>
+        <div className="regular-text">
+          <SenderEmailAddressWarning
+            emailAddress={this.state.senderAddress}
+            mssActive={this.props.mssActive}
+            pluginInstalledAt={this.props.pluginInstalledAt}
+          />
+        </div>
         <p>
           <label htmlFor="settings[reply_name]">{MailPoet.I18n.t('replyTo')}</label>
           <input
@@ -65,14 +72,7 @@ class DefaultSender extends React.Component {
             placeholder="reply_to@mydomain.com"
           />
         </p>
-        <div className="regular-text">
-          <SenderEmailAddressWarning
-            emailAddress={this.state.senderAddress}
-            mssActive={this.props.mssActive}
-            pluginInstalledAt={this.props.pluginInstalledAt}
-          />
-        </div>
-      </React.Fragment>
+      </>
     );
   }
 }
