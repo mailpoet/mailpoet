@@ -7,12 +7,6 @@ const WelcomeWizardEmailCourseStep = props => (
     <h1>{MailPoet.I18n.t('welcomeWizardEmailCourseTitle')}</h1>
     <p>{MailPoet.I18n.t('welcomeWizardEmailCourseText')}</p>
     <div className="mailpoet_welcome_wizard_course_form_box">
-      <img
-        src={props.illustration_url}
-        alt=""
-        width="155"
-        height="155"
-      />
       <iframe
         id="mailpoet_form_iframe"
         width="100%"
@@ -31,7 +25,6 @@ const WelcomeWizardEmailCourseStep = props => (
 
 WelcomeWizardEmailCourseStep.propTypes = {
   next: PropTypes.func.isRequired,
-  illustration_url: PropTypes.string.isRequired,
 };
 
 export default WelcomeWizardEmailCourseStep;
