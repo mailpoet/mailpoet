@@ -65,14 +65,14 @@ class MailChimpTest extends \MailPoetTest {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
 
     try {
-      $subscribers = $this->mailchimp->getSubscribers();
+      $this->mailchimp->getSubscribers();
       $this->fail('MailChimp getSubscribers() did not throw an exception');
     } catch (\Exception $e) {
       expect($e->getMessage())->contains('Did not find any valid lists');
     }
 
     try {
-      $subscribers = $this->mailchimp->getSubscribers(array(12));
+      $this->mailchimp->getSubscribers(array(12));
       $this->fail('MailChimp getSubscribers() did not throw an exception');
     } catch (\Exception $e) {
       expect($e->getMessage())->contains('Did not find any valid lists');
@@ -93,18 +93,6 @@ class MailChimpTest extends \MailPoetTest {
     expect($subscribers['header'])->notEmpty();
     expect($subscribers['subscribers'])->count(1);
     expect($subscribers['subscribersCount'])->equals(1);
-  }
-
-  function testItFailsWhenListHeadersDontMatch() {
-    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-
-    try {
-      $subscribers = $this->mailchimp->getSubscribers($this->lists);
-      $this->fail('MailChimp getSubscribers() did not throw an exception');
-    } catch (\Exception $e) {
-      expect($e->getMessage())
-        ->contains('The selected lists do not have matching columns (headers)');
-    }
   }
 
   function testItFailsWhenSubscribersDataTooLarge() {
