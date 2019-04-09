@@ -2,6 +2,8 @@
 
 namespace MailPoetTasks\Release;
 
+use GuzzleHttp\Client;
+
 class SlackNotifier {
   const PROJECT_MAILPOET = 'MAILPOET';
   const PROJECT_PREMIUM = 'PREMIUM';
@@ -12,13 +14,13 @@ class SlackNotifier {
   /** @var string */
   private $project;
 
-  /** @var HttpClient */
+  /** @var Client */
   private $http_client;
 
   public function __construct($webhook_url, $project) {
     $this->webhook_url = $webhook_url;
     $this->project = $project;
-    $this->http_client = new HttpClient();
+    $this->http_client = new Client();
   }
 
   public function notify($version, $changelog, $release_id) {
@@ -50,8 +52,10 @@ class SlackNotifier {
     $message = preg_replace(['/&/u', '/</u', '/>/u'], ['&amp;', '&lt;', '&gt;'], $message);
 
     $this->http_client->post($this->webhook_url, [
-      'text' => $message,
-      'unfurl_links' => false,
+      'json' => [
+        'text' => $message,
+        'unfurl_links' => false,
+      ],
     ]);
   }
 }

@@ -2,6 +2,8 @@
 
 namespace MailPoetTasks\Release;
 
+use GuzzleHttp\Client;
+
 class JiraController {
 
   const CHANGELOG_FIELD_ID = 'customfield_10500';
@@ -24,7 +26,7 @@ class JiraController {
   /** @var string */
   private $project;
 
-  /** @var HttpClient */
+  /** @var Client */
   private $http_client;
 
   public function __construct($token, $user, $project) {
@@ -37,14 +39,15 @@ class JiraController {
     $jira_domain = self::JIRA_DOMAIN;
     $jira_api_version = self::JIRA_API_VERSION;
     $base_uri = "https://$url_user:$url_token@$jira_domain/rest/api/$jira_api_version/";
-    $this->http_client = new HttpClient($base_uri);
+    $this->http_client = new Client(['base_uri' => $base_uri]);
   }
 
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-project-projectIdOrKey-versions-get
    */
   function getVersion($version_name = null) {
-    $versions = $this->http_client->get("project/$this->project/versions");
+    $response = $this->http_client->get("project/$this->project/versions");
+    $versions = json_decode($response->getBody()->getContents(), true);
     if ($version_name === null) {
       return end($versions);
     }
@@ -66,7 +69,8 @@ class JiraController {
       'released' => false,
       'project' => $this->project,
     ];
-    return $this->http_client->post('/version', $data);
+    $response = $this->http_client->post('version', ['json' => $data]);
+    return json_decode($response->getBody()->getContents(), true);
   }
 
   function getIssuesDataForVersion($version) {
@@ -93,13 +97,14 @@ class JiraController {
     if ($fields) {
       $params['fields'] = join(',', $fields);
     }
-    return $this->http_client->get('/search?' . http_build_query($params));
+    $response = $this->http_client->get('search', ['query' => $params]);
+    return json_decode($response->getBody()->getContents(), true);
   }
 
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-issue-issueIdOrKey-put
    */
   function updateIssue($key, $data) {
-    $this->http_client->put("/issue/$key", $data);
+    $this->http_client->put("issue/$key", ['json' => $data]);
   }
 }
