@@ -35,45 +35,52 @@
 }
 
 .mailpoet_stepped_progress_bar {
-  margin: auto;
-  width: 400px;
-
-  &:before {
-    background-color: #d8d8d8;
-    border-radius: 2px;
-    content: "";
-    display: block;
-    height: 2px;
-    margin: auto;
-    position: relative;
-    top: 9px;
-    width: 100%;
-  }
+  display: flex;
+  max-width: 100%;
+  width: 350px;
 }
 
 .mailpoet_stepped_progress_bar_step {
-  display: inline-block;
+  flex-grow: 1;
 
   &:before {
-    background-color: #d8d8d8;
+    background-color: #f1f1f1;
+    border: 2px solid #dbdbdb;
     border-radius: 14px;
-    content: "";
+    content: '';
     display: block;
-    height: 14px;
-    margin: auto;
+    height: 12px;
     position: relative;
-    width: 14px;
+    width: 12px;
+    z-index: 1;
   }
 
-  &.active {
-    &:before {
-      background-color: #979797;
-    }
+  &:after {
+    background-color: #dbdbdb;
+    content: '';
+    display: block;
+    height: 4px;
+    left: 4px;
+    position: relative;
+    top: -10px;
+    width: 100%;
   }
-}
 
-@media screen and (max-width: 520px) {
-  .mailpoet_stepped_progress_bar {
-    width: 360px;
+  &:last-of-type{
+    flex-grow: 0;
+    width: 18px;
+
+    &:after { display: none; }
+  }
+
+  &.active:before,
+  &.active:after {
+    background-color: #23282d;
+    border-color: #23282d;
+  }
+
+  &.current {
+    &:before { background-color: #fff; }
+    &:after { background-color: #dbdbdb; }
   }
 }
