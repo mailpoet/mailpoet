@@ -12,20 +12,19 @@
 }
 
 .mailpoet_welcome_wizard_flex {
-  align-items: center;
   display: flex;
 }
 
 .mailpoet_welcome_wizard_illustration {
   flex-grow: 1;
+  height: 500px;
   padding: 60px 40px 40px 60px;
   text-align: right;
   width: 50%;
 
   img {
-    height: 400px;
+    max-height: 100%;
     max-width: 100%;
-    width: auto;
   }
 
   @media screen and (max-width: 782px) {
