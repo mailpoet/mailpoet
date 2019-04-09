@@ -27,10 +27,17 @@ echo '[BUILD] Building DI Container cache'
 ./composer.phar install
 ./do container:dump
 
+# Backup dev libraries
+echo '[BUILD] Backup dev dependencies'
+if [ -d 'vendor' ]; then
+	mv vendor vendor-backup
+fi
+if [ -d 'vendor-prefixed' ]; then
+	mv vendor-prefixed vendor-prefixed-backup
+fi
+
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
-rm -rf vendor
-rm -rf vendor-prefixed
 mkdir vendor-prefixed
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
@@ -134,8 +141,15 @@ zip -r $plugin_name.zip $plugin_name
 echo '[BUILD] Removing temp directory'
 rm -rf $plugin_name
 
-# Reinstall dev dependencies.
-echo '[BUILD] Reinstalling dev dependencies'
-./composer.phar install
+# Restore dev dependencies.
+echo '[BUILD] Restoring dev dependencies'
+if [ -d 'vendor-backup' ]; then
+	rm -rf vendor
+	mv vendor-backup vendor
+fi
+if [ -d 'vendor-prefixed-backup' ]; then
+	rm -rf vendor-prefixed
+	mv vendor-prefixed-backup vendor-prefixed
+fi
 
 echo '[BUILD] Build finished!'
