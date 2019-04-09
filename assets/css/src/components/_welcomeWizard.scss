@@ -17,6 +17,40 @@
   }
 }
 
+.mailpoet_welcome_wizard_flex {
+  align-items: center;
+  display: flex;
+}
+
+.mailpoet_welcome_wizard_illustration {
+  flex-grow: 1;
+  padding: 60px 40px 40px 60px;
+  text-align: right;
+  width: 50%;
+
+  img {
+    height: 400px;
+    max-width: 100%;
+    width: auto;
+  }
+
+  @media screen and (max-width: 782px) {
+    display: none;
+  }
+}
+
+.mailpoet_welcome_wizard_step {
+  flex-grow: 1;
+  padding: 60px 60px 40px 40px;
+  text-align: left;
+  width: 50%;
+
+  @media screen and (max-width: 782px) {
+    padding: 30px;
+    width: 100%;
+  }
+}
+
 .mailpoet_welcome_wizard_step_content {
   margin-top: 40px;
   max-width: 620px;
