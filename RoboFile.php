@@ -646,6 +646,20 @@ class RoboFile extends \Robo\Tasks {
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path)/pow(1024, 2)));
   }
 
+  public function releasePublishGithub($version = null) {
+    $this->loadEnv();
+
+    $jira_controller = $this->createJiraController();
+    $version = $jira_controller->getVersion($version);
+    $changelog = $this->getChangelogController()->get($version['name']);
+
+    $circleci_controller = $this->createCircleCiController();
+    $path = $circleci_controller->downloadLatestBuild(__DIR__ . '/mailpoet.zip');
+
+    $github_controller = $this->createGitHubController();
+    $github_controller->publishRelease($version['name'], $changelog[1], $path);
+  }
+
   public function releasePublishSlack($version = null) {
     $this->loadEnv();
     $jira_controller = $this->createJiraController();
