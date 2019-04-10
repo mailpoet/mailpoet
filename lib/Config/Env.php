@@ -61,31 +61,32 @@ class Env {
    * @see https://codex.wordpress.org/Editing_wp-config.php#Set_Database_Host for possible DB_HOSTS values
    */
   private static function initDbParameters($db_host, $db_user, $db_password, $db_name) {
+    $parsed_host = WPFunctions::get()->parseDbHost($db_host);
+    if ($parsed_host === false) {
+      throw new \InvalidArgumentException('Invalid db host configuration.');
+    }
+    list($host, $port, $socket, $is_ipv6) = $parsed_host;
+
     global $wpdb;
     self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
-    self::$db_host = $db_host;
-    self::$db_port = 3306;
-    self::$db_socket = false;
-    // Peel off the port parameter
-    if (preg_match('/(?=:\d+$)/', $db_host)) {
-      list(self::$db_host, self::$db_port) = explode(':', $db_host);
-    }
-    // Peel off the socket parameter
-    if (preg_match('/:\//', self::$db_host)) {
-      list(self::$db_host, self::$db_socket) = explode(':', $db_host);
-    }
+    self::$db_host = $host;
+    self::$db_port = $port ?: 3306;
+    self::$db_socket = $socket;
     self::$db_name = $db_name;
     self::$db_username = $db_user;
     self::$db_password = $db_password;
     self::$db_charset = $wpdb->charset;
     self::$db_collation = $wpdb->collate;
     self::$db_charset_collate = $wpdb->get_charset_collate();
-    self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port, self::$db_charset, self::$db_name);
+    self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port, self::$db_charset, self::$db_name, $is_ipv6);
     self::$db_timezone_offset = self::getDbTimezoneOffset();
   }
 
-  private static function dbSourceName($host, $socket, $port, $charset, $db_name) {
-    $source_name = array(
+  private static function dbSourceName($host, $socket, $port, $charset, $db_name, $is_ipv6) {
+    if ($is_ipv6) {
+      $host = "[$host]";
+    }
+    $source_name = [
       'mysql:host=',
       $host,
       ';',
@@ -94,7 +95,7 @@ class Env {
       ';',
       'dbname=',
       $db_name
-    );
+    ];
     if (!empty($socket)) {
       $source_name[] = ';unix_socket=' . $socket;
     }

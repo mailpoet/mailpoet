@@ -523,4 +523,13 @@ class Functions {
   function wpautop($pee, $br = true) {
     return wpautop($pee, $br);
   }
+
+  /**
+   * @param string $host
+   * @return array|bool
+   */
+  function parseDbHost($host) {
+    global $wpdb;
+    return $wpdb->parse_db_host($host);
+  }
 }
