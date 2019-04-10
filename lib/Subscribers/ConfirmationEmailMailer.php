@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
@@ -72,13 +73,16 @@ class ConfirmationEmailMailer {
       'activation_link'
     );
 
+    //create a text version. @ is important here, Html2Text throws warnings
+    $text = @Html2Text::convert((mb_detect_encoding($body, 'UTF-8', true)) ? $body : utf8_encode($body));
+
     // build email data
     $email = array(
       'subject' => $signup_confirmation['subject'],
-      'body' => array(
+      'body' => [
         'html' => $body,
-        'text' => $body
-      )
+        'text' => $text,
+      ]
     );
 
     // set from
