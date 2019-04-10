@@ -43,6 +43,19 @@ class GitHubController {
     $this->publishDraftAsRelease($release_info['id']);
   }
 
+  public function getLatestCommitRevisionOnBranch($branch) {
+    try {
+      $response = $this->http_client->get('commits/' . urlencode($branch));
+      $data = json_decode($response->getBody()->getContents(), true);
+    } catch (ClientException $e) {
+      if ($e->getCode() === 404) {
+        return null;
+      }
+      throw $e;
+    }
+    return $data['sha'];
+  }
+
   private function ensureNoDraftReleaseExists() {
     $response = $this->http_client->get('releases');
     $data = json_decode($response->getBody()->getContents(), true);
