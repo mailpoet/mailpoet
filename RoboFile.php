@@ -640,12 +640,7 @@ class RoboFile extends \Robo\Tasks {
 
   public function releasePublishSlack($version = null) {
     $this->loadEnv();
-
-    $jira_controller = new \MailPoetTasks\Release\JiraController(
-      getenv('WP_JIRA_TOKEN'),
-      getenv('WP_JIRA_USER'),
-      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
-    );
+    $jira_controller = $this->createJiraController();
     $version = $jira_controller->getVersion($version);
     $changelog = $this->getChangelogController()->get($version['name']);
 
@@ -661,5 +656,14 @@ class RoboFile extends \Robo\Tasks {
       $this->yell('Incorrect version format', 40, 'red');
       exit(1);
     }
+  }
+
+  protected function createJiraController() {
+    $this->loadEnv();
+    return new \MailPoetTasks\Release\JiraController(
+      getenv('WP_JIRA_TOKEN'),
+      getenv('WP_JIRA_USER'),
+      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
+    );
   }
 }
