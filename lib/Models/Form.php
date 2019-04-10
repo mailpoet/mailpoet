@@ -16,13 +16,13 @@ class Form extends Model {
   public static $_table = MP_FORMS_TABLE;
 
   const MESSAGE_WHEN_CONFIRMATION_ENABLED = 'Check your inbox or spam folder to confirm your subscription.';
-  const MESSAGE_WHEN_CONFIRMATION_DISABLED = "You've been successfully subscribed to our newsletter!";
+  const MESSAGE_WHEN_CONFIRMATION_DISABLED = "You’ve been successfully subscribed to our newsletter!";
 
   function __construct() {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
+      'required' => __('Please specify a name.', 'mailpoet')
     ));
   }
 
@@ -106,12 +106,12 @@ class Form extends Model {
     return array(
       array(
         'name' => 'all',
-        'label' => WPFunctions::get()->__('All', 'mailpoet'),
+        'label' => __('All', 'mailpoet'),
         'count' => Form::getPublished()->count()
       ),
       array(
         'name' => 'trash',
-        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
+        'label' => __('Trash', 'mailpoet'),
         'count' => Form::getTrashed()->count()
       )
     );
@@ -127,9 +127,9 @@ class Form extends Model {
   static function getDefaultSuccessMessage() {
     $settings = new SettingsController;
     if ($settings->get('signup_confirmation.enabled')) {
-      return WPFunctions::get()->__(self::MESSAGE_WHEN_CONFIRMATION_ENABLED, 'mailpoet');
+      return __(self::MESSAGE_WHEN_CONFIRMATION_ENABLED, 'mailpoet');
     }
-    return WPFunctions::get()->__(self::MESSAGE_WHEN_CONFIRMATION_DISABLED, 'mailpoet');
+    return __(self::MESSAGE_WHEN_CONFIRMATION_DISABLED, 'mailpoet');
   }
 
   static function updateSuccessMessages() {
@@ -141,10 +141,11 @@ class Form extends Model {
     );
     $forms = self::findMany();
     foreach ($forms as $form) {
-      $data = $form->asArray();
-      if (isset($data['settings']['success_message']) && $data['settings']['success_message'] === $wrong_message) {
-        $data['settings']['success_message'] = $right_message;
-        self::createOrUpdate($data);
+      $settings = $form->getSettings();
+      if (isset($settings['success_message']) && $settings['success_message'] === $wrong_message) {
+        $settings['success_message'] = $right_message;
+        $form->set('settings', serialize($settings));
+        $form->save();
       }
     }
   }

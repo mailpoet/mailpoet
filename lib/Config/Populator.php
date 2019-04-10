@@ -134,7 +134,7 @@ class Populator {
     $this->createSourceForSubscribers();
     $this->updateNewsletterCategories();
     $this->scheduleInitialInactiveSubscribersCheck();
-    Form::updateSuccessMessages();
+    $this->updateFormsSuccessMessages();
   }
 
   private function createMailPoetPage() {
@@ -525,5 +525,12 @@ class Populator {
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->scheduled_at = $datetime->addHour();
     $task->save();
+  }
+
+  private function updateFormsSuccessMessages() {
+    if (version_compare($this->settings->get('db_version', '3.23.2'), '3.23.1', '>')) {
+      return;
+    }
+    Form::updateSuccessMessages();
   }
 }

@@ -59,4 +59,7 @@ class Form {
     return FormModel::createOrUpdate($this->data);
   }
 
+  public function withDefaultSuccessMessage() {
+    FormModel::updateSuccessMessages();
+  }
 }
