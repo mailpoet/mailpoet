@@ -52,7 +52,7 @@ class Settings extends APIEndpoint {
       }
       $bridge = new Bridge();
       $bridge->onSettingsSave($settings);
-      if ($signup_confirmation != $this->settings->get('signup_confirmation.enabled')) {
+      if ($signup_confirmation !== $this->settings->get('signup_confirmation.enabled')) {
         Form::updateSuccessMessages();
       }
       return $this->successResponse($this->settings->getAll());
