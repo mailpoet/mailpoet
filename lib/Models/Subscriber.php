@@ -35,6 +35,7 @@ class Subscriber extends Model {
   const STATUS_UNSUBSCRIBED = 'unsubscribed';
   const STATUS_UNCONFIRMED = 'unconfirmed';
   const STATUS_BOUNCED = 'bounced';
+  const STATUS_INACTIVE = 'inactive';
   const SUBSCRIBER_TOKEN_LENGTH = 6;
 
   /** @var string|bool */
@@ -253,6 +254,11 @@ class Subscriber extends Model {
         'name' => self::STATUS_BOUNCED,
         'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
         'count' => self::filter(self::STATUS_BOUNCED)->count()
+      ),
+      array(
+        'name' => self::STATUS_INACTIVE,
+        'label' => WPFunctions::get()->__('Inactive', 'mailpoet'),
+        'count' => self::filter(self::STATUS_INACTIVE)->count()
       ),
       array(
         'name' => 'trash',
@@ -648,6 +654,12 @@ class Subscriber extends Model {
     return $orm
       ->whereNull('deleted_at')
       ->where('status', self::STATUS_BOUNCED);
+  }
+
+  static function inactive($orm) {
+    return $orm
+      ->whereNull('deleted_at')
+      ->where('status', self::STATUS_INACTIVE);
   }
 
   static function withoutSegments($orm) {
