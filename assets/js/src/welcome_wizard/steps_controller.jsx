@@ -82,7 +82,7 @@ const WelcomeWizardStepsController = (props) => {
           <WelcomeWizardStepLayout
             step={step}
             stepsCount={stepsCount}
-            illustrationUrl={window[`step_${step}_illustration_url`]}
+            illustrationUrl={window.wizard_sender_illustration_url}
           >
             <WelcomeWizardSenderStep
               update_sender={updateSender}
@@ -100,7 +100,7 @@ const WelcomeWizardStepsController = (props) => {
           <WelcomeWizardStepLayout
             step={step}
             stepsCount={stepsCount}
-            illustrationUrl={window[`step_${step}_illustration_url`]}
+            illustrationUrl={window.wizard_sender_illustration_url}
           >
             <WelcomeWizardMigratedUserStep
               next={() => props.history.push('/steps/2')}
@@ -114,7 +114,7 @@ const WelcomeWizardStepsController = (props) => {
           <WelcomeWizardStepLayout
             step={step}
             stepsCount={stepsCount}
-            illustrationUrl={window[`step_${step}_illustration_url`]}
+            illustrationUrl={window.wizard_email_course_illustration_url}
           >
             <WelcomeWizardEmailCourseStep
               next={() => props.history.push('/steps/3')}
@@ -128,7 +128,7 @@ const WelcomeWizardStepsController = (props) => {
           <WelcomeWizardStepLayout
             step={step}
             stepsCount={stepsCount}
-            illustrationUrl={window[`step_${step}_illustration_url`]}
+            illustrationUrl={window.wizard_tracking_illustration_url}
           >
             <WelcomeWizardUsageTrackingStep
               skip_action={showWooCommerceStepOrFinish}
@@ -146,7 +146,7 @@ const WelcomeWizardStepsController = (props) => {
           <WelcomeWizardStepLayout
             step={step}
             stepsCount={stepsCount}
-            illustrationUrl={window[`step_${step}_illustration_url`]}
+            illustrationUrl={window.wizard_woocommerce_illustration_url}
           >
             <WelcomeWizardWooCommerceStep
               next={finishWizard}
