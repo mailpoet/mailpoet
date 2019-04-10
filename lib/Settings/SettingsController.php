@@ -12,6 +12,7 @@ class SettingsController {
   const DEFAULT_SENDING_METHOD = 'PHPMail';
   const DEFAULT_SENDING_FREQUENCY_EMAILS = 25;
   const DEFAULT_SENDING_FREQUENCY_INTERVAL = 5; // in minutes
+  const DEFAULT_INACTIVE_SUBSCRIBER_DAYS = 180;
 
   private static $loaded = false;
 
@@ -65,6 +66,7 @@ class SettingsController {
           'enabled' => false,
         ],
         'display_nps_poll' => true,
+        'inactive_subscriber_days' => self::DEFAULT_INACTIVE_SUBSCRIBER_DAYS,
       ];
     }
     return $this->defaults;

@@ -9,7 +9,7 @@
         <p class="description">
           <%= __('Your bounced emails will be sent to this address.') %>
           <a href="http://beta.docs.mailpoet.com/article/180-how-bounce-management-works-in-mailpoet-3"
-             target="_blank" 
+             target="_blank"
           ><%= _x('Read more.', 'support article link label') %></a>
         </p>
       </th>
@@ -155,6 +155,59 @@
               checked="checked"
               <% endif %>
             /><%= __('No') %>
+          </label>
+        </p>
+      </td>
+    </tr>
+    <!-- inactive subscribers -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Stop sending to inactive subscribers') %>
+        </label>
+        <p class="description">
+          <%= __("Gmail, Yahoo and other email providers will treat your emails like spam if your subscribers don't open your emails in the long run. This option will mark your subscribers as Inactive and MailPoet will stop sending to them.") %>
+        </p>
+      </th>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="inactive_subscriber_days"
+              value=""
+              <% if not(settings.inactive_subscriber_days) %>checked="checked"<% endif %>
+            /><%= __('Never') %>
+          </label>
+        </p>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="inactive_subscriber_days"
+              value="90"
+              <% if (settings.inactive_subscriber_days == 90) %>checked="checked"<% endif %>
+            /><%= __('After 3 months (recommended if you send once a day)') %>
+          </label>
+        </p>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="inactive_subscriber_days"
+              value="180"
+              <% if (settings.inactive_subscriber_days == 180) %>checked="checked"<% endif %>
+            /><%= __('After 6 months (default, recommended if you send at least once a month)')%>
+          </label>
+        </p>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="inactive_subscriber_days"
+              value="365"
+              <% if (settings.inactive_subscriber_days == 365) %>checked="checked"<% endif %>
+            /><%= __('After 12 months') %>
           </label>
         </p>
       </td>
