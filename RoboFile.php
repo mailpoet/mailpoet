@@ -638,6 +638,14 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function releaseDownloadZip() {
+    $this->loadEnv();
+    $circleci_controller = $this->createCircleCiController();
+    $path = $circleci_controller->downloadLatestBuild(__DIR__ . '/mailpoet.zip');
+    $this->say('Release ZIP downloaded to: ' . $path);
+    $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path)/pow(1024, 2)));
+  }
+
   public function releasePublishSlack($version = null) {
     $this->loadEnv();
     $jira_controller = $this->createJiraController();
@@ -664,6 +672,25 @@ class RoboFile extends \Robo\Tasks {
       getenv('WP_JIRA_TOKEN'),
       getenv('WP_JIRA_USER'),
       \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
+    );
+  }
+
+  protected function createCircleCiController() {
+    $this->loadEnv();
+    return new \MailPoetTasks\Release\CircleCiController(
+      getenv('WP_CIRCLECI_USERNAME'),
+      getenv('WP_CIRCLECI_TOKEN'),
+      \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET,
+      $this->createGitHubController()
+    );
+  }
+
+  protected function createGitHubController() {
+    $this->loadEnv();
+    return new \MailPoetTasks\Release\GitHubController(
+      getenv('WP_GITHUB_USERNAME'),
+      getenv('WP_GITHUB_TOKEN'),
+      \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET
     );
   }
 }
