@@ -38,6 +38,7 @@ class CircleCiController {
       ],
       'base_uri' => 'https://circleci.com/api/v1.1/project/github/' . urlencode($username) . "/$circle_ci_project/",
     ]);
+    $this->github_controller = $github_controller;
   }
 
   public function downloadLatestBuild($target_path) {
@@ -74,6 +75,14 @@ class CircleCiController {
 
     if ($job['has_artifacts'] === false) {
       throw new \Exception('Job has no artifacts');
+    }
+
+    // ensure we're downloading latest revision on given branch
+    $revision = $this->github_controller->getLatestCommitRevisionOnBranch(self::RELEASE_BRANCH);
+    if ($revision === null || $job['vcs_revision'] !== $revision) {
+      throw new \Exception(
+        "Found ZIP was built from revision '$revision' but the latest one is '$job[vcs_revision]'"
+      );
     }
   }
 
