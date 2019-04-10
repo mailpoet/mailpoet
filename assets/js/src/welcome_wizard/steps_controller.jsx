@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import MailPoet from 'mailpoet';
-import SteppedProgressBar from '../common/stepped_progess_bar.jsx';
 import WelcomeWizardSenderStep from './steps/sender_step.jsx';
 import WelcomeWizardMigratedUserStep from './steps/migrated_user_step.jsx';
 import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
 import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
 import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
+import WelcomeWizardStepLayout from './steps/step_layout.jsx';
 
 import CreateSenderSettings from './create_sender_settings.jsx';
 
@@ -77,71 +77,85 @@ const WelcomeWizardStepsController = (props) => {
 
   return (
     <div className="mailpoet_welcome_wizard_steps">
-      <div className="mailpoet_welcome_wizard_header">
-        <img src={window.mailpoet_logo_url} width="200" height="87" alt="MailPoet logo" />
-      </div>
-      <div className="mailpoet_welcome_wizard_flex">
-        <div className="mailpoet_welcome_wizard_illustration">
-          <img src={window[`step_${step}_illustration_url`]} alt="" />
-        </div>
-        <div className="mailpoet_welcome_wizard_step">
-          { step <= stepsCount
-            ? (
-              <SteppedProgressBar steps_count={stepsCount} step={step} />
-            ) : null
-          }
+      {step === 1 && shouldSetSender
+        ? (
+          <WelcomeWizardStepLayout
+            step={step}
+            stepsCount={stepsCount}
+            illustrationUrl={window[`step_${step}_illustration_url`]}
+          >
+            <WelcomeWizardSenderStep
+              update_sender={updateSender}
+              submit_sender={submitSender}
+              finish={skipSenderStep}
+              loading={loading}
+              sender={sender}
+            />
+          </WelcomeWizardStepLayout>
+        ) : null
+      }
 
-          { step === 1 && shouldSetSender
-            ? (
-              <WelcomeWizardSenderStep
-                update_sender={updateSender}
-                submit_sender={submitSender}
-                finish={skipSenderStep}
-                loading={loading}
-                sender={sender}
-              />
-            ) : null
-          }
+      { step === 1 && !shouldSetSender
+        ? (
+          <WelcomeWizardStepLayout
+            step={step}
+            stepsCount={stepsCount}
+            illustrationUrl={window[`step_${step}_illustration_url`]}
+          >
+            <WelcomeWizardMigratedUserStep
+              next={() => props.history.push('/steps/2')}
+            />
+          </WelcomeWizardStepLayout>
+        ) : null
+      }
 
-          { step === 1 && !shouldSetSender
-            ? (
-              <WelcomeWizardMigratedUserStep
-                next={() => props.history.push('/steps/2')}
-              />
-            ) : null
-          }
+      { step === 2
+        ? (
+          <WelcomeWizardStepLayout
+            step={step}
+            stepsCount={stepsCount}
+            illustrationUrl={window[`step_${step}_illustration_url`]}
+          >
+            <WelcomeWizardEmailCourseStep
+              next={() => props.history.push('/steps/3')}
+            />
+          </WelcomeWizardStepLayout>
+        ) : null
+      }
 
-          { step === 2
-            ? (
-              <WelcomeWizardEmailCourseStep
-                next={() => props.history.push('/steps/3')}
-              />
-            ) : null
-          }
+      { step === 3
+        ? (
+          <WelcomeWizardStepLayout
+            step={step}
+            stepsCount={stepsCount}
+            illustrationUrl={window[`step_${step}_illustration_url`]}
+          >
+            <WelcomeWizardUsageTrackingStep
+              skip_action={showWooCommerceStepOrFinish}
+              allow_action={activateTracking}
+              allow_text={stepsCount === 4
+                ? MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
+              loading={loading}
+            />
+          </WelcomeWizardStepLayout>
+        ) : null
+      }
 
-          { step === 3
-            ? (
-              <WelcomeWizardUsageTrackingStep
-                skip_action={showWooCommerceStepOrFinish}
-                allow_action={activateTracking}
-                allow_text={stepsCount === 4
-                  ? MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
-                loading={loading}
-              />
-            ) : null
-          }
-
-          { step === 4
-            ? (
-              <WelcomeWizardWooCommerceStep
-                next={finishWizard}
-                screenshot_src={window.step_4_woocommerce_box_url}
-                loading={loading}
-              />
-            ) : null
-          }
-        </div>
-      </div>
+      { step === 4
+        ? (
+          <WelcomeWizardStepLayout
+            step={step}
+            stepsCount={stepsCount}
+            illustrationUrl={window[`step_${step}_illustration_url`]}
+          >
+            <WelcomeWizardWooCommerceStep
+              next={finishWizard}
+              screenshot_src={window.step_4_woocommerce_box_url}
+              loading={loading}
+            />
+          </WelcomeWizardStepLayout>
+        ) : null
+      }
     </div>
   );
 };
