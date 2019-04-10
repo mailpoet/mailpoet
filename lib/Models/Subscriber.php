@@ -592,7 +592,8 @@ class Subscriber extends Model {
   static function getTotalSubscribers() {
     return self::whereIn('status', array(
       self::STATUS_SUBSCRIBED,
-      self::STATUS_UNCONFIRMED
+      self::STATUS_UNCONFIRMED,
+      self::STATUS_INACTIVE
     ))
     ->whereNull('deleted_at')
     ->count();
