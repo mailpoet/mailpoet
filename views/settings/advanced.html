@@ -183,9 +183,9 @@
           <label>
             <input
               type="radio"
-              name="inactive_subscriber_days"
+              name="deactivate_subscriber_after_inactive_days"
               value=""
-              <% if not(settings.inactive_subscriber_days) %>checked="checked"<% endif %>
+              <% if not(settings.deactivate_subscriber_after_inactive_days) %>checked="checked"<% endif %>
             /><%= __('Never') %>
           </label>
         </p>
@@ -193,9 +193,9 @@
           <label>
             <input
               type="radio"
-              name="inactive_subscriber_days"
+              name="deactivate_subscriber_after_inactive_days"
               value="90"
-              <% if (settings.inactive_subscriber_days == 90) %>checked="checked"<% endif %>
+              <% if (settings.deactivate_subscriber_after_inactive_days == 90) %>checked="checked"<% endif %>
             /><%= __('After 3 months (recommended if you send once a day)') %>
           </label>
         </p>
@@ -203,10 +203,10 @@
           <label>
             <input
               type="radio"
-              name="inactive_subscriber_days"
+              name="deactivate_subscriber_after_inactive_days"
               value="180"
               data-automation-id="inactive-subscribers-default"
-              <% if (settings.inactive_subscriber_days == 180) %>checked="checked"<% endif %>
+              <% if (settings.deactivate_subscriber_after_inactive_days == 180) %>checked="checked"<% endif %>
             /><%= __('After 6 months (default, recommended if you send at least once a month)')%>
           </label>
         </p>
@@ -214,9 +214,9 @@
           <label>
             <input
               type="radio"
-              name="inactive_subscriber_days"
+              name="deactivate_subscriber_after_inactive_days"
               value="365"
-              <% if (settings.inactive_subscriber_days == 365) %>checked="checked"<% endif %>
+              <% if (settings.deactivate_subscriber_after_inactive_days == 365) %>checked="checked"<% endif %>
             /><%= __('After 12 months') %>
           </label>
         </p>
