@@ -6,6 +6,8 @@ phpstan.phar
 /vendor
 /vendor-prefixed
 /vendor_backup
+/vendor-backup
+/vendor-prefixed-backup
 tests/_output/*
 tests/_support/_generated/*
 node_modules
