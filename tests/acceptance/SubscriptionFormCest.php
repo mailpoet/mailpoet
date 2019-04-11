@@ -98,6 +98,7 @@ class SubscriptionFormCest {
     $I->click('[data-automation-id="disable_signup_confirmation"]');
     $I->acceptPopup();
     $I->click('[data-automation-id="settings-submit-button"]');
+    $I->waitForText('Settings saved');
 
     $I->amOnPage('/form-test');
     $I->switchToIframe('mailpoet_form_iframe');
