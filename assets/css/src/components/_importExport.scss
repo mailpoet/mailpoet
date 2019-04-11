@@ -2,23 +2,6 @@
   display: none;
 }
 
-.form-table {
-  th {
-    width: 300px;
-  }
-}
-
-#paste_input {
-  width: 100%;
-}
-
-input[type="radio"] {
-  margin-right: 0.5em !important;
-  & + span {
-    margin-right: 2.5em;
-  }
-}
-
 span {
   &.mailpoet_mailchimp-key-status {
     &.mailpoet_mailchimp-ok {
@@ -134,6 +117,25 @@ span {
     text-indent: -35px;
     input {
       margin-right: 0.5em;
+    }
+  }
+}
+
+.method_selection_step {
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    margin: 20px 0px;
+  }
+
+  .import-selection-form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    > * {
+      margin-right: 2.5em;
     }
   }
 }

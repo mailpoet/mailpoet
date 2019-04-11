@@ -8,10 +8,9 @@ function SelectImportMethod({
   activeMethod,
   onMethodChange,
 }) {
-
   const renderSelection = () => (
-    <form>
-      {MailPoet.I18n.t('methodSelectionHead')}
+    <form className="import-selection-form">
+      <span>{MailPoet.I18n.t('methodSelectionHead')}</span>
       <label htmlFor="import-paste-method">
         <input
           type="radio"
