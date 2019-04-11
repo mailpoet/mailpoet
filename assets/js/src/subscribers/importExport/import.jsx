@@ -117,52 +117,7 @@ jQuery(document).ready(() => {
       mailChimpListsContainerElement.show();
     }
 
-    /*
-     *  MailChimp
-     */
-    mailChimpKeyInputElement.keyup((event) => {
-      if (event.currentTarget.value.trim() === ''
-        || !/[a-zA-Z0-9]{32}-/.exec(event.currentTarget.value.trim())) {
-        mailChimpListsContainerElement.hide();
-        jQuery('.mailpoet_mailchimp-key-status')
-          .html('')
-          .removeClass('mailpoet_mailchimp-ok mailpoet_mailchimp-error');
-        toggleNextStepButton(mailChimpProcessButtonElement, 'off');
-      }
-    });
 
-    mailChimpKeyVerifyButtonElement.click(() => {
-      MailPoet.Modal.loading(true);
-      MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'importExport',
-        action: 'getMailChimpLists',
-        data: {
-          api_key: mailChimpKeyInputElement.val(),
-        },
-      }).always(() => {
-        MailPoet.Modal.loading(false);
-      }).done((response) => {
-        jQuery('.mailpoet_mailchimp-key-status')
-          .html('')
-          .removeClass()
-          .addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-ok');
-        if (response.data.length === 0) {
-          jQuery('.mailpoet_mailchimp-key-status').html(MailPoet.I18n.t('noMailChimpLists'));
-          mailChimpListsContainerElement.hide();
-          toggleNextStepButton(mailChimpProcessButtonElement, 'off');
-        } else {
-          displayMailChimpLists(response.data);
-        }
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map(error => error.message),
-            { scroll: true }
-          );
-        }
-      });
-    });
 
     mailChimpProcessButtonElement.click(() => {
       if (mailChimpProcessButtonElement.closest('table a').hasClass('button-disabled')) {
