@@ -81,17 +81,7 @@ jQuery(document).ready(() => {
       );
     }
     return;
-    // render process button for each method
-    const methodProcessContainerTemplate = Handlebars.compile(jQuery('#method_process_template').html());
-    jQuery('.mailpoet_method_process').html(methodProcessContainerTemplate());
 
-    // define reusable variables
-    const currentStepE = jQuery(window.location.hash);
-    const methodSelectionElement = jQuery('#select_method');
-    const pasteInputElement = jQuery('#paste_input');
-    const pasteInputPlaceholderElement = pasteInputElement.data('placeholder').replace(/\\n/g, '\n');
-    const pasteProcessButtonElement = jQuery('#method_paste > div.mailpoet_method_process')
-      .find('a.mailpoet_process');
     const mailChimpKeyInputElement = jQuery('#mailchimp_key');
     const mailChimpKeyVerifyButtonElement = jQuery('#mailchimp_key_verify');
     const mailChimpListsContainerElement = jQuery('#mailchimp_lists');
@@ -100,35 +90,6 @@ jQuery(document).ready(() => {
     const uploadElement = jQuery('#file_local');
     const uploadProcessButtonElement = jQuery('#method_file > div.mailpoet_method_process')
       .find('a.mailpoet_process');
-
-    // define method change behavior
-    methodSelectionElement.change(() => {
-      const availableMethods = jQuery(':radio[name="select_method"]');
-      const selectedMethod = availableMethods.index(availableMethods.filter(':checked'));
-      MailPoet.Notice.hide();
-      // hide all methods
-      currentStepE.find('.inside')
-        .children('div[id^="method_"]')
-        .hide();
-      // show selected method
-      currentStepE.find('.inside')
-        .children(`div[id^="method_"]:eq(${selectedMethod})`)
-        .show()
-        .find('table')
-        .show();
-    });
-
-    // start step 1
-    showCurrentStep();
-
-    function toggleNextStepButton(element, condition) {
-      const disabled = 'button-disabled';
-      if (condition === 'on') {
-        element.closest('table a').removeClass(disabled);
-        return;
-      }
-      element.closest('table a').addClass(disabled);
-    }
 
     function papaParserConfig(isFile) {
       return {
@@ -190,47 +151,6 @@ jQuery(document).ready(() => {
       }
       mailChimpListsContainerElement.show();
     }
-
-    /*
-     *  Paste
-     */
-    pasteInputElement
-      .attr('value', pasteInputPlaceholderElement).css('color', '#999')
-      .focus((event) => {
-        if (jQuery(event.currentTarget).val() === pasteInputPlaceholderElement) {
-          jQuery(event.currentTarget).attr('value', '').css('color', '#222');
-        }
-      })
-      .blur((event) => {
-        if (jQuery(event.currentTarget).val() === '') {
-          jQuery(event.currentTarget).attr('value', pasteInputPlaceholderElement).css('color', '#999');
-        }
-        toggleNextStepButton(
-          pasteProcessButtonElement,
-          (event.currentTarget.value.trim() !== '') ? 'on' : 'off'
-        );
-      })
-      .keyup((event) => {
-        toggleNextStepButton(
-          pasteProcessButtonElement,
-          (event.currentTarget.value.trim() !== '') ? 'on' : 'off'
-        );
-      });
-
-    pasteProcessButtonElement.click(() => {
-      const pasteSize = encodeURI(pasteInputElement.val()).split(/%..|./).length - 1;
-      MailPoet.Notice.hide();
-      // get an approximate size of textarea paste in bytes
-      if (pasteSize > window.maxPostSizeBytes) {
-        MailPoet.Notice.error(MailPoet.I18n.t('maxPostSizeNotice'));
-        return;
-      }
-      // delay loading indicator for 10ms or else it's just too fast :)
-      MailPoet.Modal.loading(true);
-      setTimeout(() => {
-        Papa.parse(pasteInputElement.val(), papaParserConfig(false));
-      }, 10);
-    });
 
     /*
      *  CSV file

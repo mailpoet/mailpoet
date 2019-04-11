@@ -7,13 +7,14 @@ const kbLink = 'http://docs.mailpoet.com/article/126-importing-subscribers-with-
 
 const placeholder = 'Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker';
 
-const MethodPaste = ({ setInputValid, setInputInvalid }) => {
+const MethodPaste = ({ setInputValid, setInputInvalid, onValueChange }) => {
   const onChange = (e) => {
     if (e.target.value) {
       setInputValid();
     } else {
       setInputInvalid();
     }
+    onValueChange(e.target.value);
   };
 
   return (
@@ -53,6 +54,7 @@ const MethodPaste = ({ setInputValid, setInputInvalid }) => {
 MethodPaste.propTypes = {
   setInputValid: PropTypes.func,
   setInputInvalid: PropTypes.func,
+  onValueChange: PropTypes.func.isRequired,
 };
 
 MethodPaste.defaultProps = {
