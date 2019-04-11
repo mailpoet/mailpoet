@@ -345,6 +345,17 @@ class Pages {
               'is_hidden' => (
                 $subscriber->status !== Subscriber::STATUS_BOUNCED
               )
+            ),
+            array(
+              'value' => array(
+                Subscriber::STATUS_INACTIVE => WPFunctions::get()->__('Inactive', 'mailpoet')
+              ),
+              'is_checked' => (
+                $subscriber->status === Subscriber::STATUS_INACTIVE
+              ),
+              'is_hidden' => (
+                $subscriber->status !== Subscriber::STATUS_INACTIVE
+              )
             )
           )
         )
