@@ -604,6 +604,24 @@ class SendingQueueTest extends \MailPoetTest {
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
+  function testItDoesNotSendToInactiveSubscribers() {
+    $sending_queue_worker = $this->sending_queue_worker;
+    $sending_queue_worker->mailer_task = Stub::make(
+      new MailerTask(),
+      array('send' => true)
+    );
+
+    // newsletter is not sent to inactive subscriber
+    $this->_after();
+    $this->_before();
+    $subscriber = $this->subscriber;
+    $subscriber->status = Subscriber::STATUS_INACTIVE;
+    $subscriber->save();
+    $sending_queue_worker->process();
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
+    expect((int)$updated_queue->count_total)->equals(0);
+  }
+
   function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
     $sending_task = Mock::double(SendingTask::create(), array(
       'updateProcessedSubscribers' => false
