@@ -87,41 +87,6 @@ jQuery(document).ready(() => {
     const mailChimpListsContainerElement = jQuery('#mailchimp_lists');
     const mailChimpProcessButtonElement = jQuery('#method_mailchimp > div.mailpoet_method_process')
       .find('a.mailpoet_process');
-    const uploadElement = jQuery('#file_local');
-    const uploadProcessButtonElement = jQuery('#method_file > div.mailpoet_method_process')
-      .find('a.mailpoet_process');
-
-    function papaParserConfig(isFile) {
-      return {
-        skipEmptyLines: true,
-        error() {
-          MailPoet.Notice.hide();
-          MailPoet.Notice.error(MailPoet.I18n.t('dataProcessingError'));
-        },
-        complete(CSV) {
-          const sanitizedData = sanitizeCSVData(CSV.data);
-          if (sanitizedData) {
-            // since we assume that the header line is always present, we need
-            // to detect the header by checking if it contains a valid e-mail address
-            window.importData.step_method_selection = sanitizedData;
-            MailPoet.trackEvent('Subscribers import started', {
-              source: isFile ? 'file upload' : 'pasted data',
-              'MailPoet Free version': window.mailpoet_version,
-            });
-            router.navigate(
-              getMethodSelectionNextStepLink(window.importData.step_method_selection),
-              { trigger: true }
-            );
-          } else {
-            MailPoet.Modal.loading(false);
-            let errorNotice = MailPoet.I18n.t('noValidRecords');
-            errorNotice = errorNotice.replace('[link]', MailPoet.I18n.t('csvKBLink'));
-            errorNotice = errorNotice.replace('[/link]', '</a>');
-            MailPoet.Notice.error(errorNotice);
-          }
-        },
-      };
-    }
 
     function displayMailChimpLists(data) {
       const listSelectElement = mailChimpListsContainerElement.find('select');
@@ -151,35 +116,6 @@ jQuery(document).ready(() => {
       }
       mailChimpListsContainerElement.show();
     }
-
-    /*
-     *  CSV file
-     */
-    uploadElement.change((event) => {
-      const ext = event.currentTarget.value.match(/[^.]+$/);
-      MailPoet.Notice.hide();
-      if (ext === null || ext[0].toLowerCase() !== 'csv') {
-        event.currentTarget.value.val('');
-        MailPoet.Notice.error(MailPoet.I18n.t('wrongFileFormat'));
-      }
-
-      toggleNextStepButton(
-        uploadProcessButtonElement,
-        (event.currentTarget.value.trim() !== '') ? 'on' : 'off'
-      );
-    });
-
-    uploadProcessButtonElement.click(() => {
-      if (uploadElement.val().trim() !== '') {
-        // delay loading indicator for 10ms or else it's just too fast :)
-        MailPoet.Modal.loading(true);
-        setTimeout(() => {
-          uploadElement.parse({
-            config: papaParserConfig(true),
-          });
-        }, 10);
-      }
-    });
 
     /*
      *  MailChimp
