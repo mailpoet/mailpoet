@@ -8,9 +8,10 @@ import MailPoet from 'mailpoet';
 import Handlebars from 'handlebars';
 import Papa from 'papaparse';
 import Moment from 'moment';
-import sanitizeCSVData from './sanitize_csv_data.jsx';
-import StepInputValidation from './step_input_validation.jsx';
-import StepResults from './step_results.jsx';
+import sanitizeCSVData from './import/sanitize_csv_data.jsx';
+import StepInputValidation from './import/step_input_validation.jsx';
+import StepMethodSelection from './import/step_method_selection.jsx';
+import StepResults from './import/step_results.jsx';
 
 const SUBSCRIBERS_LIMIT_FOR_VALIDATION = 500;
 
@@ -67,18 +68,19 @@ jQuery(document).ready(() => {
   }
 
   router.on('route:step_method_selection', () => {
-    // set or reset temporary validation rule on all columns
-    window.mailpoetColumns = jQuery.map(window.mailpoetColumns, (column) => {
-      const col = column;
-      col.validation_rule = false;
-      return col;
-    });
+    showCurrentStep();
 
-    if (typeof (window.importData.step_method_selection) !== 'undefined') {
-      showCurrentStep();
-      return;
+    const container = document.getElementById('step_method_selection');
+
+    if (container) {
+      ReactDOM.render(
+        <StepMethodSelection
+          navigate={router.navigate}
+        />,
+        container
+      );
     }
-
+    return;
     // render process button for each method
     const methodProcessContainerTemplate = Handlebars.compile(jQuery('#method_process_template').html());
     jQuery('.mailpoet_method_process').html(methodProcessContainerTemplate());
