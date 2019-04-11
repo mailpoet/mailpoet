@@ -1,26 +1,7 @@
 <div id="step_method_selection" class="mailpoet_hidden">
   <div class="inside">
     <!-- Method selection -->
-    <table class="mailpoet_subscribers form-table">
-      <tbody>
-      <tr>
-        <th scope="row">
-          <%= __('How would you like to import subscribers?') %>
-        </th>
-        <td>
-          <div id="select_method">
-            <label>
-              <input type="radio" name="select_method" data-automation-id="import-paste-method"><span><%= __('Paste the data into a text box') %></span>
-            </label> <label>
-            <input type="radio" name="select_method" data-automation-id="import-csv-method"><span><%= __('Upload a file') %></span>
-          </label> <label>
-            <input type="radio" name="select_method" data-automation-id="import-mailchimp-method"><span><%= __('Import from MailChimp') %></php></span>
-          </label>
-          </div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+
 
     <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
     <a class="<%= badgeClassName %>" href="https://beta.docs.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file" target="_blank">

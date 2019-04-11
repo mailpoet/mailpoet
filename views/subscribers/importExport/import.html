@@ -27,6 +27,8 @@
     mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
     mailpoetColumns = <%= subscriberFields|raw %>,
     mailpoetSegments = <%= segments|raw %>
+    <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
+    var mailpoet_is_new_user = <%= newUser %>;
 </script>
 <% endblock %>
 
@@ -89,7 +91,12 @@
 'weWillSuspend': __('If you send with the MailPoet Sending Service, we will automatically suspend your account if our systems detect bad behavior.'),
 'previousStep': __('Previous step'),
 'nextStep': __('Next step'),
+'seeVideo': __(' See video guide'),
 'importAgain': __('Import again'),
-'viewSubscribers': __('View subscribers')
+'viewSubscribers': __('View subscribers'),
+'methodPaste': __('Paste the data into a text box'),
+'methodUpload': __('Upload a file'),
+'methodMailChimp': __('Import from MailChimp'),
+'methodSelectionHead': __('How would you like to import subscribers?')
 }) %>
 <% endblock %>
