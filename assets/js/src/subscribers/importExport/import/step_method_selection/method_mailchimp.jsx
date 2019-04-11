@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
-const MethodMailChimp = () => {
+const MethodMailChimp = ({ setInputValid }) => {
   return (
     <div>
       MethodMailChimp
@@ -11,9 +11,11 @@ const MethodMailChimp = () => {
 };
 
 MethodMailChimp.propTypes = {
+  setInputValid: PropTypes.func,
 };
 
 MethodMailChimp.defaultProps = {
+  setInputValid: () => {},
 };
 
 export default MethodMailChimp;

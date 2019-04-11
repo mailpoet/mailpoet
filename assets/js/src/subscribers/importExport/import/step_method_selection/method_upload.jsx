@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
-const MethodUpload = () => {
+const MethodUpload = ({ setInputValid }) => {
   return (
     <div>
       MethodUpload
@@ -11,9 +11,11 @@ const MethodUpload = () => {
 };
 
 MethodUpload.propTypes = {
+  setInputValid: PropTypes.func,
 };
 
 MethodUpload.defaultProps = {
+  setInputValid: () => {},
 };
 
 export default MethodUpload;

@@ -1,28 +1,5 @@
 <div id="step_method_selection" class="mailpoet_hidden method_selection_step">
   <div class="inside">
-    <!-- Paste -->
-    <div id="method_paste" class="mailpoet_hidden">
-      <table class="mailpoet_subscribers form-table">
-        <tbody>
-        <tr>
-          <th scope="row">
-            <label for="paste_input"> <%= __('Copy and paste your subscribers from Excel/Spreadsheets') %>
-              <p class="description">
-                <%= csvDescription|replaceLinkTags(csvKBLink, {'target' : '_blank'})|raw %>
-              </p>
-            </label>
-          </th>
-          <td>
-            <textarea id="paste_input" rows="15" data-placeholder="Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker" class="regular-text code"></textarea>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <div class="mailpoet_method_process">
-        <!-- Template data -->
-      </div>
-    </div>
-
     <!-- CSV file -->
     <div id="method_file" class="mailpoet_hidden">
       <table class="mailpoet_subscribers form-table">
