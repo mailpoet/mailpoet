@@ -98,6 +98,7 @@ Module.FooterBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.FooterWidgetView = base.WidgetView.extend({
+  id: 'automation_editor_block_footer',
   getTemplate: function getTemplate() { return window.templates.footerInsertion; },
   behaviors: {
     DraggableBehavior: {
