@@ -28,8 +28,8 @@ function SelectImportMethod({
           name="select_method"
           data-automation-id="import-csv-method"
           id="import-csv-method"
-          checked={activeMethod === 'csv-method'}
-          onChange={() => onMethodChange('csv-method')}
+          checked={activeMethod === 'file-method'}
+          onChange={() => onMethodChange('file-method')}
         />
         {MailPoet.I18n.t('methodUpload')}
       </label>

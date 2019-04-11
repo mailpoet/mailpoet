@@ -1,29 +1,5 @@
 <div id="step_method_selection" class="mailpoet_hidden method_selection_step">
   <div class="inside">
-    <!-- CSV file -->
-    <div id="method_file" class="mailpoet_hidden">
-      <table class="mailpoet_subscribers form-table">
-        <tbody>
-        <tr>
-          <th scope="row">
-            <label for="file_local">
-              <%= __('Upload a file') %>
-              <p class="description">
-                <%= csvDescription|replaceLinkTags(csvKBLink, {'target' : '_blank'})|raw %>
-              </p>
-            </label>
-          </th>
-          <td>
-            <input type="file" id="file_local" accept=".csv"  data-automation-id="import-file-upload-input" />
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <div class="mailpoet_method_process">
-        <!-- Template data -->
-      </div>
-    </div>
-
     <!-- Mailchimp -->
     <div id="method_mailchimp" class="mailpoet_hidden">
       <table class="mailpoet_subscribers form-table">
