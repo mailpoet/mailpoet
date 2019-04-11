@@ -9,8 +9,16 @@ import MethodMailChimp from './step_method_selection/method_mailchimp.jsx';
 function StepMethodSelection({
   navigate,
 }) {
-  const canGoNext = false;
+  const [canGoNext, setCanGoNext] = useState(false);
   const [method, setMethod] = useState(undefined);
+
+  const setInputValid = () => {
+    setCanGoNext(true);
+  };
+
+  const setInputInValid = () => {
+    setCanGoNext(false);
+  };
 
   const showNextButton = () => {
     if (method) {
@@ -33,17 +41,24 @@ function StepMethodSelection({
       />
       { method === 'paste-method'
         ? (
-          <MethodPaste />
+          <MethodPaste
+            setInputValid={setInputValid}
+            setInputInvalid={setInputInValid}
+          />
         ) : null
       }
       { method === 'csv-method'
         ? (
-          <MethodUpload />
+          <MethodUpload
+            setInputValid={setInputValid}
+          />
         ) : null
       }
       { method === 'mailchimp-method'
         ? (
-          <MethodMailChimp />
+          <MethodMailChimp
+            setInputValid={setInputValid}
+          />
         ) : null
       }
       {showNextButton()}
