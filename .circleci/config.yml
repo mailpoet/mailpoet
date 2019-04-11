@@ -25,6 +25,7 @@ jobs:
             ./composer.phar validate --no-check-all --no-check-publish
             ./composer.phar validate --no-check-all --no-check-publish --working-dir=prefixer
             ./composer.phar install
+            touch .env
             ./do install
             ./do compile:all --env production
       - save_cache:

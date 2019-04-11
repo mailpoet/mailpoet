@@ -4,6 +4,11 @@ class RoboFile extends \Robo\Tasks {
 
   use \Codeception\Task\SplitTestsByGroups;
 
+  public function __construct() {
+    $dotenv = new Dotenv\Dotenv(__DIR__);
+    $dotenv->load();
+  }
+
   function install() {
     return $this->taskExecStack()
       ->stopOnFail()
@@ -151,13 +156,10 @@ class RoboFile extends \Robo\Tasks {
 
   function txinit() {
     // Define WP_TRANSIFEX_API_TOKEN env. variable
-    $this->loadEnv();
     return $this->_exec('./tasks/transifex_init.sh');
   }
 
   function testUnit(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
-    $this->loadEnv();
-
     $command = 'vendor/bin/codecept run unit';
 
     if ($opts['file']) {
@@ -176,8 +178,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testIntegration(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
-    $this->loadEnv();
-
     $command = 'vendor/bin/codecept run integration';
 
     if ($opts['multisite']) {
@@ -204,7 +204,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testCoverage($opts=['file' => null, 'xml' => false]) {
-    $this->loadEnv();
     $command = join(' ', array(
       'vendor/bin/codecept run -s acceptance',
       (($opts['file']) ? $opts['file'] : ''),
@@ -277,19 +276,16 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testFailedUnit() {
-    $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
     return $this->_exec('vendor/bin/codecept run unit -g failed');
   }
 
   function testFailedIntegration() {
-    $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
     return $this->_exec('vendor/bin/codecept run integration -g failed');
   }
 
   function containerDump() {
-    $this->loadEnv();
     define('ABSPATH', getenv('WP_ROOT') . '/');
     if (!file_exists(ABSPATH . 'wp-config.php')) {
       $this->yell('WP_ROOT env variable does not contain valid path to wordpress root.', 40, 'red');
@@ -368,7 +364,6 @@ class RoboFile extends \Robo\Tasks {
     // PHPStan must be run out of main plugin directory to avoid its autoloading
     // from vendor/autoload.php where some dev dependencies cause conflicts.
     $dir = __DIR__;
-    $this->loadEnv();
     return $this->collectionBuilder()
       ->taskExec('rm -rf ' . __DIR__ . '/vendor/goaop')
       ->taskExec('rm -rf ' . __DIR__ . '/vendor/nikic')
@@ -425,8 +420,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function svnPublish() {
-    $this->loadEnv();
-
     $svn_dir = ".mp_svn";
     $plugin_version = $this->getPluginVersion('mailpoet.php');
     $plugin_dist_name = 'mailpoet';
@@ -550,11 +543,6 @@ class RoboFile extends \Robo\Tasks {
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
 
-  protected function loadEnv() {
-    $dotenv = new Dotenv\Dotenv(__DIR__);
-    $dotenv->load();
-  }
-
   protected function getPluginVersion($file) {
     $data = file_get_contents($file);
     preg_match('/^[ \t*]*Version:(.*)$/mi', $data, $m);
@@ -562,7 +550,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function getChangelogController() {
-    $this->loadEnv();
     return \MailPoetTasks\Release\ChangelogController::createWithJiraCredentials(
       getenv('WP_JIRA_TOKEN'),
       getenv('WP_JIRA_USER'),
@@ -572,7 +559,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function getReleaseVersionController() {
-    $this->loadEnv();
     return \MailPoetTasks\Release\ReleaseVersionController::createWithJiraCredentials(
       getenv('WP_JIRA_TOKEN'),
       getenv('WP_JIRA_USER'),
@@ -639,7 +625,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releaseDownloadZip() {
-    $this->loadEnv();
     $circleci_controller = $this->createCircleCiController();
     $path = $circleci_controller->downloadLatestBuild(__DIR__ . '/mailpoet.zip');
     $this->say('Release ZIP downloaded to: ' . $path);
@@ -647,8 +632,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePublishGithub($version = null) {
-    $this->loadEnv();
-
     $jira_controller = $this->createJiraController();
     $version = $jira_controller->getVersion($version);
     $changelog = $this->getChangelogController()->get($version['name']);
@@ -661,7 +644,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePublishSlack($version = null) {
-    $this->loadEnv();
     $jira_controller = $this->createJiraController();
     $version = $jira_controller->getVersion($version);
     $changelog = $this->getChangelogController()->get($version['name']);
@@ -681,7 +663,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function createJiraController() {
-    $this->loadEnv();
     return new \MailPoetTasks\Release\JiraController(
       getenv('WP_JIRA_TOKEN'),
       getenv('WP_JIRA_USER'),
@@ -690,7 +671,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function createCircleCiController() {
-    $this->loadEnv();
     return new \MailPoetTasks\Release\CircleCiController(
       getenv('WP_CIRCLECI_USERNAME'),
       getenv('WP_CIRCLECI_TOKEN'),
@@ -700,7 +680,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function createGitHubController() {
-    $this->loadEnv();
     return new \MailPoetTasks\Release\GitHubController(
       getenv('WP_GITHUB_USERNAME'),
       getenv('WP_GITHUB_TOKEN'),
