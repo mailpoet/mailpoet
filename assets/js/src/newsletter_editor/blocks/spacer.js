@@ -72,6 +72,7 @@ Module.SpacerBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.SpacerWidgetView = base.WidgetView.extend({
+  id: 'automation_editor_block_spacer',
   getTemplate: function getTemplate() { return window.templates.spacerInsertion; },
   behaviors: {
     DraggableBehavior: {
