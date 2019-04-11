@@ -277,6 +277,10 @@ class SubscriberList extends React.Component {
         status = MailPoet.I18n.t('unsubscribed');
         break;
 
+      case 'inactive':
+        status = MailPoet.I18n.t('inactive');
+        break;
+
       case 'bounced':
         status = MailPoet.I18n.t('bounced');
         break;
