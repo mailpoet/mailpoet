@@ -26,7 +26,7 @@
     importData = {},
     mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
     mailpoetColumns = <%= subscriberFields|raw %>,
-    mailpoetSegments = <%= segments|raw %>
+    mailpoetSegments = <%= segments|raw %>;
     <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     var mailpoet_is_new_user = <%= newUser %>;
 </script>
@@ -97,6 +97,8 @@
 'methodPaste': __('Paste the data into a text box'),
 'methodUpload': __('Upload a file'),
 'methodMailChimp': __('Import from MailChimp'),
+'methodMailChimpLabel': __('Enter your MailChimp API key'),
+'methodMailChimpVerify': __('Verify'),
 'pasteLabel': __('Copy and paste your subscribers from Excel/Spreadsheets'),
 'pasteDescription': __('This file needs to be formatted in a CSV style (comma-separated-values.) Look at some [link]examples on our support site[/link].'),
 'methodSelectionHead': __('How would you like to import subscribers?')
