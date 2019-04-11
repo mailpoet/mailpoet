@@ -149,5 +149,10 @@ class SubscriberManagementCest {
     $I->click('[data-automation-id="filters_inactive"]');
     $I->waitForListingItemsToLoad();
     $I->seeNumberOfElements('[data-automation-id^="listing_item_"]', self::INACTIVE_SUBSCRIBERS_COUNT);
+
+    // Check inactive status in subscriber detail
+    $I->click('@example.com');
+    $I->waitForText('Subscriber');
+    $I->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Inactive');
   }
 }
