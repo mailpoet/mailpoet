@@ -33,6 +33,10 @@ const columns = [
     label: MailPoet.I18n.t('unsubscribed'),
   },
   {
+    name: 'inactive',
+    label: MailPoet.I18n.t('inactive'),
+  },
+  {
     name: 'bounced',
     label: MailPoet.I18n.t('bounced'),
   },
@@ -212,6 +216,7 @@ class SegmentList extends React.Component {
     const subscribed = Number(segment.subscribers_count.subscribed || 0);
     const unconfirmed = Number(segment.subscribers_count.unconfirmed || 0);
     const unsubscribed = Number(segment.subscribers_count.unsubscribed || 0);
+    const inactive = Number(segment.subscribers_count.inactive || 0);
     const bounced = Number(segment.subscribers_count.bounced || 0);
 
     let segmentName;
@@ -252,6 +257,9 @@ class SegmentList extends React.Component {
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('unsubscribed')}>
           <abbr>{ unsubscribed.toLocaleString() }</abbr>
+        </td>
+        <td className="column-date" data-colname={MailPoet.I18n.t('inactive')}>
+          <abbr>{ inactive.toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('bounced')}>
           <abbr>{ bounced.toLocaleString() }</abbr>
