@@ -140,4 +140,22 @@ class AdvancedSettingsCest {
     $I->waitForElement($chooseLogErrors);
   }
 
+  function checkInactiveSubscribers(\AcceptanceTester $I) {
+    $I->wantTo('Check that inactive subsribers has default value');
+    $inactiveSubscribersDefault = '[data-automation-id="inactive-subscribers-default"]';
+    $I->login();
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="settings-advanced-tab"]');
+    $I->waitForElement($inactiveSubscribersDefault);
+    $I->seeCheckboxIsChecked($inactiveSubscribersDefault);
+
+    $I->wantTo('See that inactive subsribers is disabled when tracking is disabled');
+    $trackingDisabled = '[data-automation-id="tracking-disabled-radio"]';
+    $inactiveSubscribersDisabled = '.mailpoet_inactive_subscribers_disabled';
+    $inactiveSubscribersEnabled = '.mailpoet_inactive_subscribers_enabled';
+    $I->click($trackingDisabled);
+    $I->waitForElement($inactiveSubscribersDisabled);
+    $I->dontSee($inactiveSubscribersEnabled);
+  }
+
 }
