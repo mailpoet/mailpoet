@@ -12,6 +12,7 @@ class SubscriberManagementCest {
 
   const ACTIVE_SUBSCRIBERS_COUNT = 3;
   const INACTIVE_SUBSCRIBERS_COUNT = 4;
+  const INACTIVE_LIST_NAME = 'Inactivity';
 
   /** @var \MailPoet\Models\Segment */
   private $segment;
@@ -46,7 +47,7 @@ class SubscriberManagementCest {
   }
 
   private function prepareInactiveSubscribersData() {
-    $segment = (new Segment())->withName('Inactivity')->create();
+    $segment = (new Segment())->withName(self::INACTIVE_LIST_NAME)->create();
     for ($i = 0; $i < self::ACTIVE_SUBSCRIBERS_COUNT; $i++) {
       (new Subscriber())->withSegments([$segment])->create();
     }
@@ -154,5 +155,16 @@ class SubscriberManagementCest {
     $I->click('@example.com');
     $I->waitForText('Subscriber');
     $I->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Inactive');
+
+    // Check correct list counts
+    $I->amOnMailpoetPage('Lists');
+    $I->waitForListingItemsToLoad();
+    $I->see(self::INACTIVE_LIST_NAME);
+    $this->seeListCountByStatus($I, self::INACTIVE_SUBSCRIBERS_COUNT, self::INACTIVE_LIST_NAME, 'Inactive');
+    $this->seeListCountByStatus($I, self::ACTIVE_SUBSCRIBERS_COUNT, self::INACTIVE_LIST_NAME, 'Subscribed');
+  }
+
+  private function seeListCountByStatus(\AcceptanceTester $I, $count, $listName, $status) {
+    $I->see($count, "//*[@class='row-title'][contains(text(), '$listName')]/ancestor::tr/td[@data-colname='$status']");
   }
 }
