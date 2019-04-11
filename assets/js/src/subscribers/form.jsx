@@ -34,6 +34,7 @@ const fields = [
     name: 'status',
     label: MailPoet.I18n.t('status'),
     type: 'select',
+    automationId: 'subscriber-status',
     values: {
       subscribed: MailPoet.I18n.t('subscribed'),
       unconfirmed: MailPoet.I18n.t('unconfirmed'),
