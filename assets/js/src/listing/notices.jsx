@@ -21,49 +21,49 @@ const resumeMailerSending = () => {
   });
 };
 
-function MailerError(props) {
-  if (props.mta_log.error && props.mta_log.status === 'paused' && props.mta_log.error.operation !== 'authorization') {
-    if (props.mta_log.error.operation === 'migration') {
-      return (
-        <div className="mailpoet_notice notice notice-warning">
-          <p>{ props.mta_log.error.error_message }</p>
-        </div>
-      );
-    }
-
-    let message = props.mta_log.error.error_message;
-    const code = props.mta_log.error.error_code;
-    if (code) {
-      message += message ? ', ' : '';
-      message += MailPoet.I18n.t('mailerErrorCode').replace('%$1s', code);
-    }
+const MailerError = (props) => {
+  if (!props.mta_log.error || props.mta_log.status !== 'paused' || props.mta_log.error.operation === 'authorization') {
+    return null;
+  }
+  if (props.mta_log.error.operation === 'migration') {
     return (
-      <div className="mailpoet_notice notice notice-error">
-        <p>
-          {
-            props.mta_log.error.operation === 'send'
-              ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%$1s', props.mta_method)
-              : MailPoet.I18n.t('mailerConnectionErrorNotice')
-          }
-          :
-          {' '}
-          <i>{ message }</i>
-        </p>
-        { props.mta_method === 'PHPMail' ? <PHPMailerCheckSettingsNotice /> : <MailerCheckSettingsNotice /> }
-        <p>
-          <a
-            href="javascript:;"
-            className="button button-primary"
-            onClick={resumeMailerSending}
-          >
-            { MailPoet.I18n.t('mailerResumeSendingButton') }
-          </a>
-        </p>
+      <div className="mailpoet_notice notice notice-warning">
+        <p>{ props.mta_log.error.error_message }</p>
       </div>
     );
   }
-  return null;
-}
+
+  let message = props.mta_log.error.error_message;
+  const code = props.mta_log.error.error_code;
+  if (code) {
+    message += message ? ', ' : '';
+    message += MailPoet.I18n.t('mailerErrorCode').replace('%$1s', code);
+  }
+  return (
+    <div className="mailpoet_notice notice notice-error">
+      <p>
+        {
+          props.mta_log.error.operation === 'send'
+            ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%$1s', props.mta_method)
+            : MailPoet.I18n.t('mailerConnectionErrorNotice')
+        }
+        :
+        {' '}
+        <i>{ message }</i>
+      </p>
+      { props.mta_method === 'PHPMail' ? <PHPMailerCheckSettingsNotice /> : <MailerCheckSettingsNotice /> }
+      <p>
+        <a
+          href="javascript:;"
+          className="button button-primary"
+          onClick={resumeMailerSending}
+        >
+          { MailPoet.I18n.t('mailerResumeSendingButton') }
+        </a>
+      </p>
+    </div>
+  );
+};
 
 MailerError.propTypes = {
   mta_method: PropTypes.string.isRequired,
