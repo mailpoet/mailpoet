@@ -26,6 +26,7 @@ class EditorDividerBlockCest {
     $I->waitForText('Divider');
     $I->wait(1); // just to be sure
     $I->dragAndDrop('#automation_editor_block_divider', '#mce_0');
+    $I->wait(1); // just to be sure
     //Open settings
     $I->moveMouseOver($dividerInEditor);
     $I->waitForElementVisible($dividerResizeHandle);
