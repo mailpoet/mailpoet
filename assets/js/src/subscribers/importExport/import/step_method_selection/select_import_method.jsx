@@ -18,6 +18,8 @@ function SelectImportMethod({
           name="select_method"
           data-automation-id="import-paste-method"
           id="import-paste-method"
+          checked={activeMethod === 'import-paste-method'}
+          onChange={() => onMethodChange('import-paste-method')}
         />
         {MailPoet.I18n.t('methodPaste')}
       </label>
@@ -27,6 +29,8 @@ function SelectImportMethod({
           name="select_method"
           data-automation-id="import-csv-method"
           id="import-csv-method"
+          checked={activeMethod === 'import-csv-method'}
+          onChange={() => onMethodChange('import-csv-method')}
         />
         {MailPoet.I18n.t('methodUpload')}
       </label>
@@ -36,6 +40,8 @@ function SelectImportMethod({
           name="select_method"
           data-automation-id="import-mailchimp-method"
           id="import-mailchimp-method"
+          checked={activeMethod === 'import-mailchimp-method'}
+          onChange={() => onMethodChange('import-mailchimp-method')}
         />
         {MailPoet.I18n.t('methodMailChimp')}
       </label>

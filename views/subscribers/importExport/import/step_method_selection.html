@@ -1,13 +1,5 @@
-<div id="step_method_selection" class="mailpoet_hidden">
+<div id="step_method_selection" class="mailpoet_hidden method_selection_step">
   <div class="inside">
-    <!-- Method selection -->
-
-
-    <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
-    <a class="<%= badgeClassName %>" href="https://beta.docs.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file" target="_blank">
-        <span class="dashicons dashicons-format-video"></span><%= __('See video guide') %>
-    </a>
-
     <!-- Paste -->
     <div id="method_paste" class="mailpoet_hidden">
       <table class="mailpoet_subscribers form-table">
@@ -87,20 +79,5 @@
         <!-- Template data -->
       </div>
     </div>
-
-    <!-- Next button  -->
-    <script id="method_process_template" type="text/x-handlebars-template">
-      <table class="mailpoet_subscribers form-table">
-        <tbody>
-        <tr>
-          <th scope="row">
-            <a href="javascript:;"
-             data-automation-id="import-next-step"
-             class="button-primary button-disabled wysija mailpoet_process"><%= __('Next step') %> </a>
-          </th>
-        </tr>
-        </tbody>
-      </table>
-    </script>
   </div>
 </div>
