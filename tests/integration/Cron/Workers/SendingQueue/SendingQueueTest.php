@@ -576,8 +576,6 @@ class SendingQueueTest extends \MailPoetTest {
     );
 
     // newsletter is not sent to globally unsubscribed subscriber
-    $this->_after();
-    $this->_before();
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber->save();
@@ -594,8 +592,6 @@ class SendingQueueTest extends \MailPoetTest {
     );
 
     // newsletter is not sent to subscriber unsubscribed from segment
-    $this->_after();
-    $this->_before();
     $subscriber_segment = $this->subscriber_segment;
     $subscriber_segment->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber_segment->save();
@@ -612,8 +608,6 @@ class SendingQueueTest extends \MailPoetTest {
     );
 
     // newsletter is not sent to inactive subscriber
-    $this->_after();
-    $this->_before();
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_INACTIVE;
     $subscriber->save();
