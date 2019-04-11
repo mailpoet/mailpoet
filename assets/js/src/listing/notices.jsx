@@ -1,6 +1,6 @@
+import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
 import ReactStringReplace from 'react-string-replace';
 
 const resumeMailerSending = () => {
@@ -71,7 +71,7 @@ MailerError.propTypes = {
 };
 
 const PHPMailerCheckSettingsNotice = () => (
-  <Fragment>
+  <>
     <p>{ MailPoet.I18n.t('mailerSendErrorCheckConfiguration') }</p>
     <br />
     <p>
@@ -93,7 +93,7 @@ const PHPMailerCheckSettingsNotice = () => (
       </a>
     </p>
     <br />
-  </Fragment>
+  </>
 );
 
 const MailerCheckSettingsNotice = () => (
