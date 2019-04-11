@@ -251,14 +251,14 @@ class Subscriber extends Model {
         'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count()
       ),
       array(
-        'name' => self::STATUS_BOUNCED,
-        'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
-        'count' => self::filter(self::STATUS_BOUNCED)->count()
-      ),
-      array(
         'name' => self::STATUS_INACTIVE,
         'label' => WPFunctions::get()->__('Inactive', 'mailpoet'),
         'count' => self::filter(self::STATUS_INACTIVE)->count()
+      ),
+      array(
+        'name' => self::STATUS_BOUNCED,
+        'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
+        'count' => self::filter(self::STATUS_BOUNCED)->count()
       ),
       array(
         'name' => 'trash',
