@@ -214,6 +214,7 @@ class Form extends React.Component {
           item={this.getValues()}
           onValueChange={onValueChange}
           key={`field-${field.name}`}
+          automationId={field.automationId}
         />
       );
     });
