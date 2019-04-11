@@ -10,6 +10,9 @@ require_once __DIR__ . '/../DataFactories/Subscriber.php';
 
 class SubscriberManagementCest {
 
+  const ACTIVE_SUBSCRIBERS_COUNT = 3;
+  const INACTIVE_SUBSCRIBERS_COUNT = 4;
+
   /** @var \MailPoet\Models\Segment */
   private $segment;
 
@@ -40,6 +43,16 @@ class SubscriberManagementCest {
     $segment_factory1->withName('Cooking')->create();
     $segment_factory2 = new Segment();
     $segment_factory2->withName('Camping')->create();
+  }
+
+  private function prepareInactiveSubscribersData() {
+    $segment = (new Segment())->withName('Inactivity')->create();
+    for ($i = 0; $i < self::ACTIVE_SUBSCRIBERS_COUNT; $i++) {
+      (new Subscriber())->withSegments([$segment])->create();
+    }
+    for ($i = 0; $i < self::INACTIVE_SUBSCRIBERS_COUNT; $i++) {
+      (new Subscriber())->withStatus('inactive')->withSegments([$segment])->create();
+    }
   }
 
   function viewSubscriberList(\AcceptanceTester $I) {
@@ -126,4 +139,15 @@ class SubscriberManagementCest {
     $I->waitForText('Subscriber');
   }
 
+  function inactiveSubscribers(\AcceptanceTester $I) {
+    $I->wantTo('Check inactive subscribers');
+    $this->prepareInactiveSubscribersData();
+    $I->login();
+    $I->amOnMailPoetPage ('Subscribers');
+
+    // Filter inactive subscribers
+    $I->click('[data-automation-id="filters_inactive"]');
+    $I->waitForListingItemsToLoad();
+    $I->seeNumberOfElements('[data-automation-id^="listing_item_"]', self::INACTIVE_SUBSCRIBERS_COUNT);
+  }
 }

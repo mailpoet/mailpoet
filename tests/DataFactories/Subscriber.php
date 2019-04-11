@@ -48,6 +48,15 @@ class Subscriber {
   }
 
   /**
+   * @param string $status
+   * @return $this
+   */
+  public function withStatus($status) {
+    $this->data['status'] = $status;
+    return $this;
+  }
+
+  /**
    * @param \MailPoet\Models\Segment[] $segments
    * @return $this
    */
