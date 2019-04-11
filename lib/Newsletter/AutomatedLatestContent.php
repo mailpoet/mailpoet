@@ -125,7 +125,9 @@ class AutomatedLatestContent {
         $taxonomies_query['relation'] = ($args['inclusionType'] === 'exclude') ? 'AND' : 'OR';
       }
     }
-    return $taxonomies_query;
+
+    // make $taxonomies_query nested to avoid conflicts with plugins that use taxonomies
+    return empty($taxonomies_query) ? [] : [$taxonomies_query];
   }
 
   private function _attachSentPostsFilter() {

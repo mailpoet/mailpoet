@@ -30,16 +30,18 @@ class AutomatedLatestContentTest extends \MailPoetTest {
 
     expect($this->alc->constructTaxonomiesQuery($args))->equals(array(
       array(
-        'taxonomy' => 'post_tag',
-        'field' => 'id',
-        'terms' => array(1, 3)
-      ),
-      array(
-        'taxonomy' => 'product_tag',
-        'field' => 'id',
-        'terms' => array(2)
-      ),
-      'relation' => 'OR'
+        array(
+          'taxonomy' => 'post_tag',
+          'field' => 'id',
+          'terms' => array(1, 3)
+        ),
+        array(
+          'taxonomy' => 'product_tag',
+          'field' => 'id',
+          'terms' => array(2)
+        ),
+        'relation' => 'OR'
+      )
     ));
   }
 
@@ -60,7 +62,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
 
     $query = $this->alc->constructTaxonomiesQuery($args);
 
-    expect($query[0]['operator'])->equals('NOT IN');
-    expect($query['relation'])->equals('AND');
+    expect($query[0][0]['operator'])->equals('NOT IN');
+    expect($query[0]['relation'])->equals('AND');
   }
 }
