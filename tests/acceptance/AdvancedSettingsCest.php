@@ -151,8 +151,8 @@ class AdvancedSettingsCest {
 
     $I->wantTo('See that inactive subsribers is disabled when tracking is disabled');
     $trackingDisabled = '[data-automation-id="tracking-disabled-radio"]';
-    $inactiveSubscribersDisabled = '.mailpoet_inactive_subscribers_disabled';
-    $inactiveSubscribersEnabled = '.mailpoet_inactive_subscribers_enabled';
+    $inactiveSubscribersDisabled = '[data-automation-id="inactive-subscribers-disabled"]';
+    $inactiveSubscribersEnabled = '[data-automation-id="inactive-subscribers-enabled"]';
     $I->click($trackingDisabled);
     $I->waitForElement($inactiveSubscribersDisabled);
     $I->dontSee($inactiveSubscribersEnabled);
