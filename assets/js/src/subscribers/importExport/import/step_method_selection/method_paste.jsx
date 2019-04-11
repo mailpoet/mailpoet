@@ -17,25 +17,27 @@ const MethodPaste = ({ setInputValid, setInputInvalid }) => {
   };
 
   return (
-    <div>
-      <label htmlFor="paste_input">
-        <span>{MailPoet.I18n.t('pasteLabel')}</span>
-        <p className="description">
-          {ReactStringReplace(
-            MailPoet.I18n.t('pasteDescription'),
-            /\[link\](.*?)\[\/link\]/,
-            match => (
-              <a
-                href={`${kbLink}`}
-                key="kb-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                { match }
-              </a>
-            )
-          )}
-        </p>
+    <>
+      <label htmlFor="paste_input" className="import_method_paste">
+        <div className="import_paste_texts">
+          <span className="import_heading">{MailPoet.I18n.t('pasteLabel')}</span>
+          <p className="description">
+            {ReactStringReplace(
+              MailPoet.I18n.t('pasteDescription'),
+              /\[link\](.*?)\[\/link\]/,
+              match => (
+                <a
+                  href={`${kbLink}`}
+                  key="kb-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  { match }
+                </a>
+              )
+            )}
+          </p>
+        </div>
         <textarea
           id="paste_input"
           rows="15"
@@ -44,7 +46,7 @@ const MethodPaste = ({ setInputValid, setInputInvalid }) => {
           onChange={onChange}
         />
       </label>
-    </div>
+    </>
   );
 };
 
