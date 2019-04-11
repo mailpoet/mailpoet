@@ -129,7 +129,7 @@ span {
     margin: 20px 0px;
   }
 
-  .import-selection-form {
+  .import_selection_form {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -137,5 +137,31 @@ span {
     > * {
       margin-right: 2.5em;
     }
+  }
+
+  .import_heading {
+    color: #23282d;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .description {
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 600;
+    margin: 2px 0 5px;
+  }
+
+  .import_paste_texts {
+    margin-right: 25px;
+    width: 300px;
+  }
+
+  .import_method_paste {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
 }

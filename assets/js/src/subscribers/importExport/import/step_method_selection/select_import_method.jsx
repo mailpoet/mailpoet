@@ -9,7 +9,7 @@ function SelectImportMethod({
   onMethodChange,
 }) {
   const renderSelection = () => (
-    <form className="import-selection-form">
+    <form className="import_selection_form">
       <span>{MailPoet.I18n.t('methodSelectionHead')}</span>
       <label htmlFor="import-paste-method">
         <input
