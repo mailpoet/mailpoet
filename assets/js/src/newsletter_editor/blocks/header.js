@@ -98,6 +98,7 @@ Module.HeaderBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.HeaderWidgetView = base.WidgetView.extend({
+  id: 'automation_editor_block_header',
   getTemplate: function getTemplate() { return window.templates.headerInsertion; },
   behaviors: {
     DraggableBehavior: {
