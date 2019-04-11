@@ -80,6 +80,7 @@ Module.TextBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.TextWidgetView = base.WidgetView.extend({
+  id: 'automation_editor_block_text',
   getTemplate: function getTemplate() { return window.templates.textInsertion; },
   behaviors: {
     DraggableBehavior: {
