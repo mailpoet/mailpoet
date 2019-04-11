@@ -270,6 +270,7 @@ SocialBlockSettingsStylesView = Marionette.View.extend({
 });
 
 Module.SocialWidgetView = base.WidgetView.extend({
+  id: 'automation_editor_block_social',
   getTemplate: function () { return window.templates.socialInsertion; },
   behaviors: {
     DraggableBehavior: {
