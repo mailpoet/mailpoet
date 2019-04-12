@@ -30,6 +30,14 @@ class AutomatedLatestContent {
     return $where . $wherePostUnsent;
   }
 
+  public function ensureConsistentQueryType(\WP_Query $query) {
+    // Queries with taxonomies are autodetected as 'is_archive=true' and 'is_home=false'
+    // while queries without them end up being 'is_archive=false' and 'is_home=true'.
+    // This is to fix that by always enforcing constistent behavior.
+    $query->is_archive = true;
+    $query->is_home = false;
+  }
+
   function getPosts($args, $posts_to_exclude = array()) {
     Logger::getLogger('post-notifications')->addInfo(
       'loading automated latest content',
@@ -75,6 +83,9 @@ class AutomatedLatestContent {
       );
     }
 
+    // set low priority to execute 'ensureConstistentQueryType' before any other filter
+    $filter_priority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
+    WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filter_priority);
     $this->_attachSentPostsFilter();
 
     Logger::getLogger('post-notifications')->addInfo(
@@ -84,6 +95,7 @@ class AutomatedLatestContent {
     $posts = WPFunctions::get()->getPosts($parameters);
     $this->logPosts($posts);
 
+    WPFunctions::get()->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filter_priority);
     $this->_detachSentPostsFilter();
     return $posts;
   }
