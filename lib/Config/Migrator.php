@@ -43,6 +43,7 @@ class Migrator {
       'statistics_opens',
       'statistics_unsubscribes',
       'statistics_forms',
+      'statistics_woocommerce_orders',
       'mapping_to_external_entities',
       'log',
       'user_flags',
@@ -445,6 +446,26 @@ class Migrator {
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY form_subscriber (form_id,subscriber_id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function statisticsWoocommerceOrders() {
+    $attributes = array(
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'queue_id int(11) unsigned NOT NULL,',
+      'click_id int(11) unsigned NOT NULL,',
+      'order_id bigint(20) unsigned NOT NULL,',
+      'order_currency varchar(10) NOT NULL,',
+      'order_price_total float NOT NULL COMMENT "With shipping and taxes in order_currency",',
+      'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id),',
+      'KEY newsletter_id (newsletter_id),',
+      'KEY queue_id (queue_id),',
+      'KEY subscriber_id (subscriber_id),',
+      'UNIQUE KEY click_id_order_id (click_id, order_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
