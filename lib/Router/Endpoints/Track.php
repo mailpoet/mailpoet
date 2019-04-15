@@ -27,14 +27,23 @@ class Track {
     'global' => AccessControl::NO_ACCESS_RESTRICTION
   );
 
+  /** @var Clicks */
+  private $clicks;
+
+  /** @var Opens */
+  private $opens;
+
+  public function __construct(Clicks $clicks, Opens $opens) {
+    $this->clicks = $clicks;
+    $this->opens = $opens;
+  }
+
   function click($data) {
-    $click_event = new Clicks();
-    return $click_event->track($this->_processTrackData($data));
+    return $this->clicks->track($this->_processTrackData($data));
   }
 
   function open($data) {
-    $open_event = new Opens();
-    return $open_event->track($this->_processTrackData($data));
+    return $this->opens->track($this->_processTrackData($data));
   }
 
   function _processTrackData($data) {
