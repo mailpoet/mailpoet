@@ -9,6 +9,9 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Track;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Clicks;
+use MailPoet\Statistics\Track\Opens;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class TrackTest extends \MailPoetTest {
@@ -47,7 +50,7 @@ class TrackTest extends \MailPoetTest {
       'preview' => false
     );
     // instantiate class
-    $this->track = new Track($this->track_data);
+    $this->track = new Track(new Clicks(new SettingsController()), new Opens());
   }
 
   function testItReturnsFalseWhenTrackDataIsMissing() {
@@ -75,7 +78,7 @@ class TrackTest extends \MailPoetTest {
       )
     );
     $data->subscriber->email = 'random@email.com';
-    $track = Stub::make(new Track(), ['terminate' => function($code) {
+    $track = Stub::make(Track::class, ['terminate' => function($code) {
       expect($code)->equals(403);
     }]);
     $track->_validateTrackData($data);

@@ -50,6 +50,11 @@ class Settings {
     return $this;
   }
 
+  function withTrackingEnabled() {
+    $this->settings->set('tracking.enabled', true);
+    return $this;
+  }
+
   function withTodayInstallationDate() {
     $this->settings->set('installed_at', date("Y-m-d H:i:s"));
   }
@@ -82,6 +87,11 @@ class Settings {
     $this->settings->set('mta_log.status', 'paused');
     $this->settings->set('mta_log.error.operation', $operation);
     $this->settings->set('mta_log.error.error_message', $error_message);
+    return $this;
+  }
+
+  function withCookieRevenueTracking() {
+    $this->settings->set('accept_cookie_revenue_tracking', true);
     return $this;
   }
 }
