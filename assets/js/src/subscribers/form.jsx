@@ -39,8 +39,8 @@ const fields = [
       subscribed: MailPoet.I18n.t('subscribed'),
       unconfirmed: MailPoet.I18n.t('unconfirmed'),
       unsubscribed: MailPoet.I18n.t('unsubscribed'),
-      bounced: MailPoet.I18n.t('bounced'),
       inactive: MailPoet.I18n.t('inactive'),
+      bounced: MailPoet.I18n.t('bounced'),
     },
     filter: function filter(subscriber, value) {
       if ((Number(subscriber.wp_user_id) > 0 || Number(subscriber.is_woocommerce_user) === 1) && value === 'unconfirmed') {
