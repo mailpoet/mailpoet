@@ -129,7 +129,7 @@ span {
     margin: 20px 0px;
   }
 
-  .import_selection_form {
+  .mailpoet_import_selection_form {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -139,7 +139,7 @@ span {
     }
   }
 
-  .import_heading {
+  .mailpoet_import_heading {
     color: #23282d;
     font-size: 14px;
     font-weight: 600;
@@ -154,12 +154,12 @@ span {
     margin: 2px 0 5px;
   }
 
-  .import_paste_texts {
+  .mailpoet_import_paste_texts {
     margin-right: 25px;
     width: 300px;
   }
 
-  .import_method_paste {
+  .mailpoet_import_method_paste {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -177,7 +177,7 @@ span {
       display: flex;
       margin-right: 20px;
     }
-    .import_heading {
+    .mailpoet_import_heading {
       display: block;
       width: 300px;
     }
