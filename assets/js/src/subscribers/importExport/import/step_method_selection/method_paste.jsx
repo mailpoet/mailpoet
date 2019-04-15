@@ -16,9 +16,9 @@ const MethodPaste = ({ onValueChange, canFinish, onFinish }) => {
 
   return (
     <>
-      <label htmlFor="paste_input" className="import_method_paste">
-        <div className="import_paste_texts">
-          <span className="import_heading">{MailPoet.I18n.t('pasteLabel')}</span>
+      <label htmlFor="paste_input" className="mailpoet_import_method_paste">
+        <div className="mailpoet_import_paste_texts">
+          <span className="mailpoet_import_heading">{MailPoet.I18n.t('pasteLabel')}</span>
           <p className="description">
             {ReactStringReplace(
               MailPoet.I18n.t('pasteDescription'),

@@ -70,7 +70,7 @@ const MethodMailChimp = ({ onFinish }) => {
     if (!mailChimpLoadedLists) return null;
     return (
       <div className="mailpoet_mailchimp_lists">
-        <span className="import_heading">{MailPoet.I18n.t('methodMailChimpSelectList')}</span>
+        <span className="mailpoet_import_heading">{MailPoet.I18n.t('methodMailChimpSelectList')}</span>
         <Selection
           field={{
             id: 'segments',
@@ -95,7 +95,7 @@ const MethodMailChimp = ({ onFinish }) => {
     <div className="mailpoet_import_mailchimp">
       <div className="mailpoet_mailchimp_key">
         <label htmlFor="mailpoet_mailchimp_key_input" className="mailpoet_mailchimp_key_input">
-          <span className="import_heading">{MailPoet.I18n.t('methodMailChimpLabel')}</span>
+          <span className="mailpoet_import_heading">{MailPoet.I18n.t('methodMailChimpLabel')}</span>
           <input
             id="mailpoet_mailchimp_key_input"
             type="text"
