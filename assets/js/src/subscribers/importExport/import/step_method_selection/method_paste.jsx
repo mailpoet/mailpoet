@@ -4,12 +4,11 @@ import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
-const kbLink = 'http://docs.mailpoet.com/article/126-importing-subscribers-with-csv-files'
+const kbLink = 'http://docs.mailpoet.com/article/126-importing-subscribers-with-csv-files';
 
 const placeholder = 'Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker';
 
 const MethodPaste = ({ onValueChange, canFinish, onFinish }) => {
-
   const onChange = (e) => {
     onValueChange(e.target.value);
   };
