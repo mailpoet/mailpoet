@@ -164,4 +164,23 @@ span {
     flex-direction: row;
     flex-wrap: nowrap;
   }
+
+  .mailpoet_import_mailchimp {
+    .mailpoet_mailchimp_key, .mailpoet_mailchimp_lists {
+      align-items: center;
+      display: flex;
+      flex-wrap: nowrap;
+      margin-bottom: 40px;
+    }
+    .mailpoet_mailchimp_key_input {
+      align-items: center;
+      display: flex;
+      margin-right: 20px;
+    }
+    .import_heading {
+      display: block;
+      width: 300px;
+    }
+
+  }
 }
