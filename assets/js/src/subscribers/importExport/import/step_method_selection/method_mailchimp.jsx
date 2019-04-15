@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import Selection from '../../../../form/fields/selection.jsx';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
+import Selection from '../../../../form/fields/selection.jsx';
+import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
-const MethodMailChimp = ({ setInputValid, setInputInvalid, onValueChange }) => {
+const MethodMailChimp = ({ onFinish }) => {
   const [key, setKey] = useState('');
   const [mailChimpLoadedLists, setMailChimpLoadedLists] = useState(undefined);
   const [selectedLists, setSelectedLists] = useState([]);
@@ -13,16 +14,6 @@ const MethodMailChimp = ({ setInputValid, setInputInvalid, onValueChange }) => {
     setKey(e.target.value);
     if (e.target.value.trim() === '') {
       setMailChimpLoadedLists(undefined);
-      setInputInvalid();
-    }
-  };
-
-  const listSelected = (lists) => {
-    setSelectedLists(lists);
-    if (Array.isArray(lists) && lists.length === 0) {
-      setInputInvalid();
-    } else {
-      setInputValid();
     }
   };
 
@@ -35,22 +26,44 @@ const MethodMailChimp = ({ setInputValid, setInputInvalid, onValueChange }) => {
       data: {
         api_key: key,
       },
-    }).always(() => {
-      MailPoet.Modal.loading(false);
-    }).done((response) => {
-      setMailChimpLoadedLists(response.data);
-      if (response.data.length === 0) {
-        setInputInvalid();
-      }
-    }).fail((response) => {
-      setInputInvalid();
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map(error => error.message),
-          { scroll: true }
-        );
-      }
-    });
+    })
+      .always(() => {
+        MailPoet.Modal.loading(false);
+      })
+      .done(response => setMailChimpLoadedLists(response.data))
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(error => error.message),
+            { scroll: true }
+          );
+        }
+      });
+  };
+
+  const process = () => {
+    MailPoet.Modal.loading(true);
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'importExport',
+      action: 'getMailChimpSubscribers',
+      data: {
+        api_key: key,
+        lists: selectedLists,
+      },
+    })
+      .always(() => {
+        MailPoet.Modal.loading(false);
+      })
+      .done(response => onFinish(response.data))
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(error => error.message),
+            { scroll: true }
+          );
+        }
+      });
   };
 
   const showListsSelection = () => {
@@ -69,7 +82,7 @@ const MethodMailChimp = ({ setInputValid, setInputInvalid, onValueChange }) => {
             forceSelect2: true,
             values: mailChimpLoadedLists,
           }}
-          onValueChange={e => listSelected(e.target.value)}
+          onValueChange={e => setSelectedLists(e.target.value)}
         />
       </>
     );
@@ -102,19 +115,21 @@ const MethodMailChimp = ({ setInputValid, setInputInvalid, onValueChange }) => {
         </span>
         {showListsSelection()}
       </label>
+      <PreviousNextStepButtons
+        canGoNext={Array.isArray(selectedLists) && selectedLists.length > 0}
+        hidePrevious
+        onNextAction={process}
+      />
     </>
   );
 };
 
 MethodMailChimp.propTypes = {
-  setInputValid: PropTypes.func,
-  setInputInvalid: PropTypes.func,
-  onValueChange: PropTypes.func.isRequired,
+  onFinish: PropTypes.func,
 };
 
 MethodMailChimp.defaultProps = {
-  setInputValid: () => {},
-  setInputInvalid: () => {},
+  onFinish: () => {},
 };
 
 export default MethodMailChimp;
