@@ -69,10 +69,8 @@ const MethodMailChimp = ({ onFinish }) => {
   const showListsSelection = () => {
     if (!mailChimpLoadedLists) return null;
     return (
-      <>
-        <div>
-          <span className="import_heading">{MailPoet.I18n.t('methodMailChimpSelectList')}</span>
-        </div>
+      <div className="mailpoet_mailchimp_lists">
+        <span className="import_heading">{MailPoet.I18n.t('methodMailChimpSelectList')}</span>
         <Selection
           field={{
             id: 'segments',
@@ -84,7 +82,7 @@ const MethodMailChimp = ({ onFinish }) => {
           }}
           onValueChange={e => setSelectedLists(e.target.value)}
         />
-      </>
+      </div>
     );
   };
 
@@ -94,16 +92,16 @@ const MethodMailChimp = ({ onFinish }) => {
   );
 
   return (
-    <>
-      <label htmlFor="paste_input" className="import_method_paste">
-        <div>
+    <div className="mailpoet_import_mailchimp">
+      <div className="mailpoet_mailchimp_key">
+        <label htmlFor="mailpoet_mailchimp_key_input" className="mailpoet_mailchimp_key_input">
           <span className="import_heading">{MailPoet.I18n.t('methodMailChimpLabel')}</span>
-        </div>
-        <input
-          id="paste_input"
-          type="text"
-          onChange={keyChange}
-        />
+          <input
+            id="mailpoet_mailchimp_key_input"
+            type="text"
+            onChange={keyChange}
+          />
+        </label>
         <button className="button" type="button" onClick={verifyButtonClicked}>
           {MailPoet.I18n.t('methodMailChimpVerify')}
         </button>
@@ -113,14 +111,14 @@ const MethodMailChimp = ({ onFinish }) => {
             : null
           }
         </span>
-        {showListsSelection()}
-      </label>
+      </div>
+      {showListsSelection()}
       <PreviousNextStepButtons
         canGoNext={Array.isArray(selectedLists) && selectedLists.length > 0}
         hidePrevious
         onNextAction={process}
       />
-    </>
+    </div>
   );
 };
 
