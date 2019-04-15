@@ -46,7 +46,7 @@ class SubscriberManageImportExportCest {
     $I->waitForText('Upload a file');
     $I->click('[data-automation-id="import-csv-method"]');
     $I->attachFile('[data-automation-id="import-file-upload-input"]', 'MailPoetImportList.csv');
-    $I->click('#method_file [data-automation-id="import-next-step"]');
+    $I->click('[data-automation-id="import-next-step"]');
   }
 
   private function chooseListAndConfirm(\AcceptanceTester $I) {
