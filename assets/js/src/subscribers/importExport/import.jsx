@@ -6,27 +6,12 @@ import jQuery from 'jquery';
 import 'asyncqueue';
 import MailPoet from 'mailpoet';
 import Handlebars from 'handlebars';
-import Papa from 'papaparse';
 import Moment from 'moment';
-import sanitizeCSVData from './import/sanitize_csv_data.jsx';
 import StepInputValidation from './import/step_input_validation.jsx';
 import StepMethodSelection from './import/step_method_selection.jsx';
 import StepResults from './import/step_results.jsx';
 
 const SUBSCRIBERS_LIMIT_FOR_VALIDATION = 500;
-
-function getMethodSelectionNextStepLink(importData) {
-  if (importData === undefined) {
-    return 'step_data_manipulation';
-  }
-  if (importData.subscribersCount === undefined) {
-    return 'step_data_manipulation';
-  }
-  if (importData.subscribersCount < SUBSCRIBERS_LIMIT_FOR_VALIDATION) {
-    return 'step_data_manipulation';
-  }
-  return 'step_input_validation';
-}
 
 function getDataManipulationPreviousStepLink(importData) {
   if (importData === undefined) {
