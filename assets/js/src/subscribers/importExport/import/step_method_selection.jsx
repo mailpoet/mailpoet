@@ -33,7 +33,8 @@ function StepMethodSelection({
     setCsvData('');
   };
 
-  const navigateToNextStep = () => {
+  const finish = (parsedData) => {
+    window.importData.step_method_selection = parsedData;
     navigate(
       getNextStepLink(window.importData.step_method_selection),
       { trigger: true }
@@ -42,12 +43,11 @@ function StepMethodSelection({
 
   const processLocal = () => {
     processCsv(csvData, (sanitizedData) => {
-      window.importData.step_method_selection = sanitizedData;
       MailPoet.trackEvent('Subscribers import started', {
         source: method === 'file-method' ? 'file upload' : 'pasted data',
         'MailPoet Free version': window.mailpoet_version,
       });
-      navigateToNextStep();
+      finish(sanitizedData);
     });
   };
 
@@ -78,7 +78,13 @@ function StepMethodSelection({
       { method === 'mailchimp-method'
         ? (
           <MethodMailChimp
-            onFinish={navigateToNextStep}
+            onFinish={(data) => {
+              MailPoet.trackEvent('Subscribers import started', {
+                source: 'MailChimp',
+                'MailPoet Free version': window.mailpoet_version,
+              });
+              finish(data);
+            }}
           />
         ) : null
       }
