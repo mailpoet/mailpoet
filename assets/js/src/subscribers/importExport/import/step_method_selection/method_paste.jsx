@@ -2,18 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
+import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
 const kbLink = 'http://docs.mailpoet.com/article/126-importing-subscribers-with-csv-files'
 
 const placeholder = 'Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker';
 
-const MethodPaste = ({ setInputValid, setInputInvalid, onValueChange }) => {
+const MethodPaste = ({ onValueChange, canFinish, onFinish }) => {
+
   const onChange = (e) => {
-    if (e.target.value) {
-      setInputValid();
-    } else {
-      setInputInvalid();
-    }
     onValueChange(e.target.value);
   };
 
@@ -47,19 +44,23 @@ const MethodPaste = ({ setInputValid, setInputInvalid, onValueChange }) => {
           onChange={onChange}
         />
       </label>
+      <PreviousNextStepButtons
+        canGoNext={canFinish}
+        hidePrevious
+        onNextAction={onFinish}
+      />
     </>
   );
 };
 
 MethodPaste.propTypes = {
-  setInputValid: PropTypes.func,
-  setInputInvalid: PropTypes.func,
+  onFinish: PropTypes.func,
+  canFinish: PropTypes.bool.isRequired,
   onValueChange: PropTypes.func.isRequired,
 };
 
 MethodPaste.defaultProps = {
-  setInputValid: () => {},
-  setInputInvalid: () => {},
+  onFinish: () => {},
 };
 
 export default MethodPaste;
