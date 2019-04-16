@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 3.23.1
+Stable tag: 3.23.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -173,6 +173,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.23.2 - 2019-04-16 =
+* Improved: UI clarity and user-friendliness;
+* Improved: security of the plugin. Thanks to Jan van der Put and Harm Blankers of REQON Security for the report!
+* Improved: UX for stats reporting emails;
+* Fixed: subscription confirmation email to include a plain text version of the email. Thanks Mathieu!
 
 = 3.23.1 - 2019-04-08 =
 * Added: new email type icons;
