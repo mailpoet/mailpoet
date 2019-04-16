@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Segments;
 
+use MailPoet\Config\Env;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
@@ -244,33 +245,85 @@ class WooCommerce {
     $wc_segment = Segment::getWooCommerceSegment();
 
     // Unmark registered customers
-    $set = $wc_segment->subscribers()
-      ->leftOuterJoin(
-        $wpdb->postmeta,
-        'wppm.meta_key = "_billing_email" AND ' . MP_SUBSCRIBERS_TABLE . '.email = wppm.meta_value',
-        'wppm'
+
+    // Insert WC customer IDs to a temporary table for left join to use an index
+    $tmp_table_name = Env::$db_prefix . 'tmp_wc_ids';
+    // Registered users with orders
+    Subscriber::rawExecute(sprintf('
+      CREATE TEMPORARY TABLE %1$s
+        (`id` int(11) unsigned NOT NULL, UNIQUE(`id`)) AS
+      SELECT DISTINCT wppm.meta_value AS id FROM %2$s wppm
+        JOIN %3$s wpp ON wppm.post_id = wpp.ID
+        AND wpp.post_type = "shop_order"
+        WHERE wppm.meta_key = "_customer_user"
+    ', $tmp_table_name, $wpdb->postmeta, $wpdb->posts));
+    // Registered users with a customer role
+    Subscriber::rawExecute(sprintf('
+      INSERT IGNORE INTO %1$s
+      SELECT DISTINCT wpum.user_id AS id FROM %2$s wpum
+      WHERE wpum.meta_key = "%3$s" AND wpum.meta_value LIKE "%%\"customer\"%%"
+    ', $tmp_table_name, $wpdb->usermeta, $wpdb->prefix . 'capabilities'));
+
+    // Unmark WC list registered users which aren't WC customers anymore
+    Subscriber::tableAlias('mps')
+      ->select('mps.*')
+      ->join(
+        MP_SUBSCRIBER_SEGMENT_TABLE,
+        'mps.`id` = mpss.`subscriber_id` AND mpss.`segment_id` = "' . $wc_segment->id . '"',
+        'mpss'
       )
-      ->leftOuterJoin($wpdb->posts, 'wppm.post_id = wpp.ID AND wpp.post_type = "shop_order"', 'wpp')
-      ->join($wpdb->usermeta, 'wp_user_id = wpum.user_id AND wpum.meta_key = "' . $wpdb->prefix . 'capabilities"', 'wpum')
-      ->whereRaw('(wppm.meta_value IS NULL AND wpum.meta_value NOT LIKE "%\"customer\"%")')
+      ->leftOuterJoin(
+        $tmp_table_name,
+        'mps.`wp_user_id` = wctmp.`id`',
+        'wctmp'
+      )
+      ->where('is_woocommerce_user', 1)
+      ->whereNull('wctmp.id')
       ->whereNotNull('wp_user_id')
       ->findResultSet()
       ->set('is_woocommerce_user', 0)
       ->save();
 
+    Subscriber::rawExecute('DROP TABLE ' . $tmp_table_name);
+
     // Remove guest customers
-    $wc_segment->subscribers()
-      ->leftOuterJoin(
-        $wpdb->postmeta,
-        'wppm.meta_key = "_billing_email" AND ' . MP_SUBSCRIBERS_TABLE . '.email = wppm.meta_value',
-        'wppm'
+
+    // Insert WC customer emails to a temporary table and ensure matching collations
+    // between MailPoet and WooCommerce emails for left join to use an index
+    $mailpoet_email_column = $wpdb->get_row(
+      'SHOW FULL COLUMNS FROM ' . MP_SUBSCRIBERS_TABLE . ' WHERE Field = "email"'
+    );
+    $tmp_table_name = Env::$db_prefix . 'tmp_wc_emails';
+    Subscriber::rawExecute(sprintf('
+      CREATE TEMPORARY TABLE %1$s
+        (`email` varchar(150) NOT NULL, UNIQUE(`email`)) COLLATE %2$s AS
+      SELECT DISTINCT wppm.meta_value AS email FROM %3$s wppm
+        JOIN %4$s wpp ON wppm.post_id = wpp.ID
+        AND wpp.post_type = "shop_order"
+        WHERE wppm.meta_key = "_billing_email"
+    ', $tmp_table_name, $mailpoet_email_column->Collation, $wpdb->postmeta, $wpdb->posts));
+
+    // Remove WC list guest users which aren't WC customers anymore
+    Subscriber::tableAlias('mps')
+      ->select('mps.*')
+      ->join(
+        MP_SUBSCRIBER_SEGMENT_TABLE,
+        'mps.`id` = mpss.`subscriber_id` AND mpss.`segment_id` = "' . $wc_segment->id . '"',
+        'mpss'
       )
-      ->leftOuterJoin($wpdb->posts, 'wppm.post_id = wpp.ID AND wpp.post_type = "shop_order"', 'wpp')
-      ->whereRaw('(wppm.meta_value IS NULL OR wpp.ID IS NULL OR ' . MP_SUBSCRIBERS_TABLE . '.email = "")')
+      ->leftOuterJoin(
+        $tmp_table_name,
+        'mps.`email` = wctmp.`email`',
+        'wctmp'
+      )
+      ->where('is_woocommerce_user', 1)
+      ->whereNull('wctmp.email')
       ->whereNull('wp_user_id')
       ->findResultSet()
       ->set('is_woocommerce_user', 0)
       ->delete();
+
+    Subscriber::rawExecute('DROP TABLE ' . $tmp_table_name);
   }
 
   private function updateStatus() {
