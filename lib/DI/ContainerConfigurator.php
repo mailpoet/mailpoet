@@ -82,6 +82,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\Track\Clicks::class);
     $container->autowire(\MailPoet\Statistics\Track\Opens::class);
+    $container->autowire(\MailPoet\Statistics\Track\WooCommerceOrders::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Router::class)
       ->setArgument('$container', new Reference(ContainerWrapper::class));
     // Mailer

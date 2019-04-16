@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Models;
 
+use DateTime;
+
 if (!defined('ABSPATH')) exit;
 
 /**
@@ -50,5 +52,32 @@ class StatisticsClicks extends Model {
       )
       ->where('clicks.subscriber_id', $subscriber->id())
       ->orderByAsc('url');
+  }
+
+  static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTime $before, $since_days_ago) {
+    // subquery to find latest click IDs for each newsletter
+    $table = self::$_table;
+    $latest_click_ids_per_newsletter_query = "
+      SELECT (
+        SELECT id
+        FROM $table
+        WHERE newsletter_id = c.newsletter_id
+        ORDER BY updated_at DESC
+        LIMIT 1
+      )
+      FROM $table c
+      WHERE c.subscriber_id = :subscriber_id
+      AND c.updated_at < :before
+      AND c.updated_at > DATE_SUB(NOW(), INTERVAL :since_days_ago DAY)
+      GROUP BY c.newsletter_id
+    ";
+
+    return static::tableAlias('clicks')
+      ->whereRaw("clicks.id IN ($latest_click_ids_per_newsletter_query)", [
+        'subscriber_id' => $subscriber->id,
+        'before' => $before->format('Y-m-d H:i:s'),
+        'since_days_ago' => $since_days_ago,
+      ])
+      ->findMany();
   }
 }
