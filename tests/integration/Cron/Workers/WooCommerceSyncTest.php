@@ -7,6 +7,9 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
+require_once('ScheduledTaskStub.php');
+use MailPoet\Models\ScheduledTaskStub;
+
 class WooCommerceSyncTest extends \MailPoetTest {
   function _before() {
     $this->woocommerce_segment = $this->createMock(WooCommerceSegment::class);
@@ -31,5 +34,16 @@ class WooCommerceSyncTest extends \MailPoetTest {
       ->method('synchronizeCustomers');
     $task = Stub::make(ScheduledTask::class);
     expect($this->worker->processTaskStrategy($task))->equals(true);
+  }
+
+  function testItWillNotRunInMultipleInstances() {
+    $this->woocommerce_segment->expects($this->once())
+      ->method('synchronizeCustomers');
+    $task = new ScheduledTaskStub;
+    $task->status = ScheduledTask::STATUS_SCHEDULED;
+    expect($this->worker->prepareTask($task))->equals(true);
+    expect($this->worker->processTaskStrategy($task))->equals(true);
+    expect($this->worker->prepareTask($task))->equals(false);
+    expect($this->worker->processTaskStrategy($task))->equals(false);
   }
 }
