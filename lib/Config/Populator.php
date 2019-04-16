@@ -1,11 +1,14 @@
 <?php
 namespace MailPoet\Config;
 
+use Carbon\Carbon;
 use MailPoet\Config\PopulatorData\DefaultForm;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\Form;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
@@ -130,6 +133,7 @@ class Populator {
     $this->createMailPoetPage();
     $this->createSourceForSubscribers();
     $this->updateNewsletterCategories();
+    $this->scheduleInitialInactiveSubscribersCheck();
   }
 
   private function createMailPoetPage() {
@@ -496,5 +500,20 @@ class Populator {
       NewsletterTemplate::$_table
     ));
     return true;
+  }
+
+  private function scheduleInitialInactiveSubscribersCheck() {
+    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
+      ->whereRaw('status = ? OR status IS NULL', [ScheduledTask::STATUS_SCHEDULED])
+      ->findOne();
+    if ($task) {
+      return true;
+    }
+    $datetime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task = ScheduledTask::create();
+    $task->type = InactiveSubscribers::TASK_TYPE;
+    $task->status = ScheduledTask::STATUS_SCHEDULED;
+    $task->scheduled_at = $datetime->addHour();
+    $task->save();
   }
 }
