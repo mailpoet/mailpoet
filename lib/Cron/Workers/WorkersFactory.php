@@ -16,6 +16,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\InactiveSubscribersController;
 
 class WorkersFactory {
 
@@ -34,6 +35,9 @@ class WorkersFactory {
   /** @var WooCommerceSegment */
   private $woocommerce_segment;
 
+  /** @var InactiveSubscribersController */
+  private $inactive_subscribers_controller;
+
   /**
    * @var Renderer
    */
@@ -45,7 +49,8 @@ class WorkersFactory {
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
-    WooCommerceSegment $woocommerce_segment
+    WooCommerceSegment $woocommerce_segment,
+    InactiveSubscribersController $inactive_subscribers_controller
   ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->scheduler = $scheduler;
@@ -53,6 +58,7 @@ class WorkersFactory {
     $this->renderer = $renderer;
     $this->settings = $settings;
     $this->woocommerce_segment = $woocommerce_segment;
+    $this->inactive_subscribers_controller = $inactive_subscribers_controller;
   }
 
   /** @return SchedulerWorker */
@@ -97,6 +103,11 @@ class WorkersFactory {
   /** @return ExportFilesCleanup */
   function createExportFilesCleanupWorker($timer) {
     return new ExportFilesCleanup($timer);
+  }
+
+  /** @return InactiveSubscribers */
+  function createInactiveSubscribersWorker($timer) {
+    return new InactiveSubscribers($this->inactive_subscribers_controller, $this->settings, $timer);
   }
 
 }
