@@ -60,7 +60,7 @@ function SelectImportMethod({
             {renderSelection()}
             <a
               className={badgeClasses}
-              href="https://beta.docs.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file"
+              href="https://kb.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file"
               target="_blank"
               rel="noopener noreferrer"
             >
