@@ -129,6 +129,51 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
+  function testItActivatesSubscriberWhoRecentlyOpenedEmail() {
+    list($task, $queue) = $this->createCompletedSendingTask(2);
+    $subscriber = $this->createSubscriber('s1@email.com', 10, Subscriber::STATUS_INACTIVE);
+    $this->addSubcriberToTask($subscriber, $task);
+    $this->addEmailOpenedRecord($subscriber, $queue, 2);
+    $result = $this->controller->markActiveSubscribers(5, 100);
+    expect($result)->equals(1);
+    $subscriber = Subscriber::findOne($subscriber->id);
+    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
+  function testItActivatesLimitedNumberOfSubscribers() {
+    list($task, $queue) = $this->createCompletedSendingTask(2);
+    $subscriber1 = $this->createSubscriber('s1@email.com', 10, Subscriber::STATUS_INACTIVE);
+    $subscriber2 = $this->createSubscriber('s2@email.com', 10, Subscriber::STATUS_INACTIVE);
+    $this->addSubcriberToTask($subscriber1, $task);
+    $this->addSubcriberToTask($subscriber2, $task);
+    $this->addEmailOpenedRecord($subscriber1, $queue, 2);
+    $this->addEmailOpenedRecord($subscriber2, $queue, 2);
+
+    $result = $this->controller->markActiveSubscribers(5, 1);
+    expect($result)->equals(1);
+    $subscriber1 = Subscriber::findOne($subscriber1->id);
+    $subscriber2 = Subscriber::findOne($subscriber2->id);
+    expect($subscriber1->status === Subscriber::STATUS_INACTIVE || $subscriber2->status === Subscriber::STATUS_INACTIVE)->true();
+    expect($subscriber1->status === Subscriber::STATUS_SUBSCRIBED || $subscriber2->status === Subscriber::STATUS_SUBSCRIBED)->true();
+
+    $result = $this->controller->markActiveSubscribers(5, 1);
+    expect($result)->equals(1);
+    $subscriber1 = Subscriber::findOne($subscriber1->id);
+    $subscriber2 = Subscriber::findOne($subscriber2->id);
+    expect($subscriber1->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber2->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
+  function testItDoesNotActivateOldSubscribersWithUnopenedEmail() {
+    list($task) = $this->createCompletedSendingTask(2);
+    $subscriber = $this->createSubscriber('s1@email.com', 10, Subscriber::STATUS_INACTIVE);
+    $this->addSubcriberToTask($subscriber, $task);
+    $result = $this->controller->markActiveSubscribers(5, 100);
+    expect($result)->equals(0);
+    $subscriber = Subscriber::findOne($subscriber->id);
+    expect($subscriber->status)->equals(Subscriber::STATUS_INACTIVE);
+  }
+
   /**
    * @param $email
    * @param int $created_days_ago

@@ -25,6 +25,16 @@ class InactiveSubscribersController {
 
   /**
    * @param int $days_to_inactive
+   * @param int $batch_size
+   * @return int
+   */
+  function markActiveSubscribers($days_to_inactive, $batch_size) {
+    $threshold_date = $this->getThresholdDate($days_to_inactive);
+    return $this->activateSubscribers($threshold_date, $batch_size);
+  }
+
+  /**
+   * @param int $days_to_inactive
    * @return Carbon
    */
   private function getThresholdDate($days_to_inactive) {
@@ -84,5 +94,39 @@ class InactiveSubscribersController {
       implode(',', $ids_to_deactivate)
     ));
     return count($ids_to_deactivate);
+  }
+
+  /**
+   * @param Carbon $threshold_date
+   * @param int $batch_size
+   * @return int
+   */
+  private function activateSubscribers(Carbon $threshold_date, $batch_size) {
+    $subscribers_table = Subscriber::$_table;
+    $stats_opens_table = StatisticsOpens::$_table;
+
+    $ids_to_activate = \ORM::forTable($subscribers_table)->select("$subscribers_table.id")
+      ->leftOuterJoin($stats_opens_table, "$subscribers_table.id = $stats_opens_table.subscriber_id AND $stats_opens_table.created_at > '$threshold_date'")
+      ->whereLt("$subscribers_table.created_at", $threshold_date)
+      ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
+      ->whereRaw("$stats_opens_table.id IS NOT NULL")
+      ->limit($batch_size)
+      ->groupByExpr("$subscribers_table.id")
+      ->findArray();
+
+    $ids_to_activate = array_map(
+      function($id) {
+        return (int)$id['id'];
+      }, $ids_to_activate
+    );
+    if (!count($ids_to_activate)) {
+      return 0;
+    }
+    \ORM::rawExecute(sprintf(
+      "UPDATE %s SET status='" . Subscriber::STATUS_SUBSCRIBED . "' WHERE id IN (%s);",
+      $subscribers_table,
+      implode(',', $ids_to_activate)
+    ));
+    return count($ids_to_activate);
   }
 }
