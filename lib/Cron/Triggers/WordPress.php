@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Cron\Triggers;
 
-use Carbon\Carbon;
+use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Services\Bridge;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\MailerLog;
@@ -97,6 +97,12 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
     ]);
+    // inactive subscribers check
+    $inactive_subscribers_tasks = self::getTasksCount([
+      'type' => InactiveSubscribers::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+    ]);
 
     // check requirements for each worker
     $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);
@@ -112,6 +118,7 @@ class WordPress {
       || $sending_service_key_check_active
       || $premium_key_check_active
       || $stats_notifications_tasks
+      || $inactive_subscribers_tasks
     );
   }
 
