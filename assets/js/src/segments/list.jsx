@@ -273,7 +273,7 @@ class SegmentList extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="mailpoet-segments-listing">
         <h1 className="title">
           {MailPoet.I18n.t('pageTitle')}
           {' '}

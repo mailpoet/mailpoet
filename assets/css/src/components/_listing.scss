@@ -32,13 +32,17 @@
   thead th.column-primary,
   tfoot th.column-primary {
     width: 25em;
+
+    .mailpoet-segments-listing & {
+      width: 18em;
+    }
   }
 
 
   @media screen and (max-width: 782px) {
     thead th.column-primary,
     tfoot th.column-primary {
-      width: 100%;
+      width: 100% !important;
     }
   }
 }
