@@ -28,6 +28,7 @@ class Daemon {
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
       $this->executeExportFilesCleanupWorker();
+      $this->executeInactiveSubscribersWorker();
       // TODO: execute WooCommerceSync worker
     } catch (\Exception $e) {
       CronHelper::saveDaemonLastError($e->getMessage());
@@ -81,4 +82,8 @@ class Daemon {
     return $worker->process();
   }
 
+  function executeInactiveSubscribersWorker() {
+    $worker = $this->workers_factory->createInactiveSubscribersWorker($this->timer);
+    return $worker->process();
+  }
 }
