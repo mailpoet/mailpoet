@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\WooCommerceOrders;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Registration;
@@ -29,13 +30,17 @@ class Hooks {
   /** @var WooCommerceSegment */
   private $woocommerce_segment;
 
+  /** @var WooCommerceOrders */
+  private $woocommerce_orders;
+
   function __construct(
     Form $subscription_form,
     Comment $subscription_comment,
     Registration $subscription_registration,
     SettingsController $settings,
     WPFunctions $wp,
-    WooCommerceSegment $woocommerce_segment
+    WooCommerceSegment $woocommerce_segment,
+    WooCommerceOrders $woocommerce_orders
   ) {
     $this->subscription_form = $subscription_form;
     $this->subscription_comment = $subscription_comment;
@@ -43,11 +48,13 @@ class Hooks {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->woocommerce_segment = $woocommerce_segment;
+    $this->woocommerce_orders = $woocommerce_orders;
   }
 
   function init() {
     $this->setupWPUsers();
     $this->setupWooCommerceUsers();
+    $this->setupWooCommerceOrders();
     $this->setupImageSize();
     $this->setupListing();
     $this->setupSubscriptionEvents();
@@ -203,6 +210,14 @@ class Hooks {
       'woocommerce_process_shop_order_meta',
       [$this->woocommerce_segment, 'synchronizeGuestCustomer'],
       7
+    );
+  }
+
+
+  function setupWooCommerceOrders() {
+    $this->wp->addAction(
+      'woocommerce_payment_complete',
+      [$this->woocommerce_orders, 'trackPaidOrder']
     );
   }
 
