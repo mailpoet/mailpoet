@@ -14,7 +14,7 @@
     var mailpoet_lists = <%= json_encode(lists) %>;
     var mailpoet_roles = <%= json_encode(roles) %>;
     var mailpoet_current_date = <%= json_encode(current_date) %>;
-    var mailpoet_current_time = <%= json_encode(current_time) %>;
+    var mailpoet_server_time_zone = <%= json_encode(current_time_zone) %>;
     var mailpoet_schedule_time_of_day = <%= json_encode(schedule_time_of_day) %>;
     var mailpoet_date_display_format = "<%= wp_date_format() %>";
     var mailpoet_site_url = "<%= site_url %>";
@@ -208,7 +208,6 @@
     'helpTooltipSendEmail': __('You cannot send the same email twice, as that would be considered spam. <br /> If you must send the same email more than one time, simply duplicate this email first.'),
     'orSimply': __('or simply'),
     'goBackToDesign': __('go back to the Design page'),
-    'websiteTimeIs': __("Your website’s time is"),
     'noScheduledDateError': __('Please enter the scheduled date.'),
     'schedule': __('Schedule'),
 

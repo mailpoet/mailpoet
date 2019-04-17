@@ -67,7 +67,13 @@ const QueueMixin = {
         <span>
           { MailPoet.I18n.t('scheduledFor') }
           {' '}
-          { MailPoet.Date.format(newsletter.queue.scheduled_at) }
+          {
+            MailPoet.Date.format(
+              MailPoet.Date.convertToUserTimeZone(
+                newsletter.queue.scheduled_at, window.mailpoet_server_time_zone
+              )
+            )
+          }
         </span>
       );
     }
