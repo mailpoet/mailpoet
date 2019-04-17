@@ -52,7 +52,7 @@ class TemplateBox extends React.Component {
   onPreview() {
     MailPoet.Modal.popup({
       title: this.props.name,
-      template: '<div class="mailpoet_boxes_preview" style="background-color: {{ body.globalStyles.body.backgroundColor }}"><img src="{{ thumbnail }}" /></div>',
+      template: '<img src="{{ thumbnail }}" />',
       data: this.props,
     });
   }
