@@ -4,6 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice;
 
 class PHPVersionWarnings {
 
@@ -11,7 +12,6 @@ class PHPVersionWarnings {
   const OPTION_NAME = 'dismissed-php-version-outdated-notice';
 
   function init($php_version, $should_display) {
-
     if ($should_display && $this->isOutdatedPHPVersion($php_version)) {
       return $this->display($php_version);
     }
@@ -22,15 +22,18 @@ class PHPVersionWarnings {
   }
 
   function display($php_version) {
-    $error_string = WPFunctions::get()->__('Your website is running on PHP %s which will not be supported by WordPress starting in April 2019. Read our [link]simple PHP upgrade guide[/link] or let MailPoet\'s support team upgrade it for you for free.', 'mailpoet');
+    $error_string = __('Your website is running on PHP %s which MailPoet does not officially support. Read our [link]simple PHP upgrade guide[/link] or let MailPoet’s support team upgrade it for you.', 'mailpoet');
     $error_string = sprintf($error_string, $php_version);
-    $get_in_touch_string = WPFunctions::get()->x('[link]Get in touch.[/link]', 'A link with an offer to upgrade PHP version for free', 'mailpoet');
-    $error = Helpers::replaceLinkTags($error_string, 'https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version', array('target' => '_blank'));
-    $error .= ' ' . Helpers::replaceLinkTags($get_in_touch_string, 'https://www.mailpoet.com/let-us-handle-your-php-upgrade/', array('target' => '_blank'));
+    $get_in_touch_string = __('[link]Yes, I want MailPoet to help me upgrade for free[/link]', 'mailpoet');
+    $error = Helpers::replaceLinkTags($error_string, 'https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version', ['target' => '_blank']);
+    $error .= '<br><br>' . Helpers::replaceLinkTags($get_in_touch_string, 'https://www.mailpoet.com/let-us-handle-your-php-upgrade/', [
+      'target' => '_blank',
+      'class' => 'button',
+    ]);
 
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
 
-    return \MailPoet\WP\Notice::displayWarning($error, $extra_classes, self::OPTION_NAME);
+    return Notice::displayWarning($error, $extra_classes, self::OPTION_NAME);
   }
 
   function disable() {
