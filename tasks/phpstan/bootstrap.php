@@ -27,3 +27,14 @@ function wc_price(float $price, array $args = []): string {
 function wc_get_product($the_product = false, $deprecated = array()) {
 	return null;
 }
+
+class WC_DateTime extends \DateTime {}
+
+/**
+ * @method int get_id()
+ * @method WC_DateTime|null get_date_created(string $context = 'view')
+ * @method string get_billing_email(string $context = 'view')
+ * @method string get_currency(string $context = 'view')
+ * @method float get_total(string $context = 'view')
+ */
+class WC_Order {}
