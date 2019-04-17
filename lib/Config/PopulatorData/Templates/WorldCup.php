@@ -780,7 +780,7 @@ class WorldCup {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/world-cup.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
 }

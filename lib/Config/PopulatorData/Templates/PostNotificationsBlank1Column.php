@@ -345,7 +345,7 @@ class PostNotificationsBlank1Column {
   }
 
   private function getThumbnail() {
-    return $this->external_template_image_url . '/screenshot.jpg';
+    return $this->external_template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
 }

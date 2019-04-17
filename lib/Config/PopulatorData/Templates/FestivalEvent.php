@@ -522,7 +522,7 @@ class FestivalEvent {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/festival-event.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
 }
