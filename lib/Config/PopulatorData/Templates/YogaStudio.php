@@ -788,7 +788,7 @@ class YogaStudio {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/yoga-studio.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
 }

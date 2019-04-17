@@ -1,4 +1,4 @@
-<?php
+`<?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
 use MailPoet\WP\Functions as WPFunctions;
@@ -27,7 +27,7 @@ class LifestyleBlogB {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/thumbnail.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {

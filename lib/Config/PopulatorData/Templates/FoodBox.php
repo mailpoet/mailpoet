@@ -754,7 +754,7 @@ class FoodBox {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/welcome-to-foodbox.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
 }

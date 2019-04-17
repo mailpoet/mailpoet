@@ -24,7 +24,7 @@ class WineCity {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/wine-city.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {

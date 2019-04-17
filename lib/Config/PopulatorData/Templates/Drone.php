@@ -27,7 +27,7 @@ class Drone {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/drone.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {

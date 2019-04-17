@@ -442,7 +442,7 @@ class PieceOfCake {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/piece-of-cake.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
 }

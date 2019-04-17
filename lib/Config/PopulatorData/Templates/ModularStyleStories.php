@@ -27,7 +27,7 @@ class ModularStyleStories {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/modular-style-stories-1558.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {

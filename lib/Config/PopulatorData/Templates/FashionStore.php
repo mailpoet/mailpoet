@@ -27,7 +27,7 @@ class FashionStore {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/fashion.jpeg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpeg';
   }
 
   private function getBody() {

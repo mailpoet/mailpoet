@@ -486,7 +486,7 @@ class Faith {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/faith.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
 }
