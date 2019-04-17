@@ -150,7 +150,7 @@ const WelcomeWizardStepsController = (props) => {
           >
             <WelcomeWizardWooCommerceStep
               next={finishWizard}
-              screenshot_src={window.step_4_woocommerce_box_url}
+              screenshot_src={window.wizard_woocommerce_box_url}
               loading={loading}
             />
           </WelcomeWizardStepLayout>
