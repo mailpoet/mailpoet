@@ -53,7 +53,7 @@ function SelectImportMethod({
         const badgeClasses = classNames(
           'mailpoet_badge',
           'mailpoet_badge_video',
-          { mailpoet_badge_video_grey: isNewUser }
+          { mailpoet_badge_video_grey: !isNewUser }
         );
         return (
           <>
