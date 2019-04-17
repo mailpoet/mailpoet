@@ -664,16 +664,6 @@ class Menu {
             )
           ),
           array(
-            'slug' => 'woocommerce_big_spender',
-            'title' => WPFunctions::get()->__('Big Spender', 'mailpoet'),
-            'description' => WPFunctions::get()->__('Let MailPoet send an email to customers who have spent a certain amount to thank them, possibly with a coupon.', 'mailpoet'),
-            'soon' => true,
-            'badge' => array(
-              'text' => WPFunctions::get()->__('Smart to have', 'mailpoet'),
-              'style' => 'teal'
-            )
-          ),
-          array(
             'slug' => 'woocommerce_first_purchase',
             'title' => WPFunctions::get()->__('First Purchase', 'mailpoet'),
             'description' => WPFunctions::get()->__('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet'),
