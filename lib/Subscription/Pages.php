@@ -68,7 +68,11 @@ class Pages {
       return Subscriber::where('wp_user_id', $wp_user->ID)->findOne();
     }
 
-    return (Subscriber::generateToken($email) === $token) ?
+    if (!$email) {
+      return false;
+    }
+
+    return (Subscriber::verifyToken($email, $token)) ?
       Subscriber::findOne($email) :
       false;
   }
