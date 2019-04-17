@@ -28,11 +28,6 @@ function StepMethodSelection({
   const [method, setMethod] = useState(undefined);
   const [csvData, setCsvData] = useState('');
 
-  const methodChanged = (newMethod) => {
-    setMethod(newMethod);
-    setCsvData('');
-  };
-
   const finish = (parsedData) => {
     window.importData.step_method_selection = parsedData;
     navigate(
@@ -55,7 +50,7 @@ function StepMethodSelection({
     <>
       <SelectMethod
         activeMethod={method}
-        onMethodChange={methodChanged}
+        onMethodChange={setMethod}
       />
       { method === 'paste-method'
         ? (
