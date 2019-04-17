@@ -16,7 +16,7 @@ class Form extends Model {
   public static $_table = MP_FORMS_TABLE;
 
   const MESSAGE_WHEN_CONFIRMATION_ENABLED = 'Check your inbox or spam folder to confirm your subscription.';
-  const MESSAGE_WHEN_CONFIRMATION_DISABLED = "You’ve been successfully subscribed to our newsletter!";
+  const MESSAGE_WHEN_CONFIRMATION_DISABLED = 'You’ve been successfully subscribed to our newsletter!';
 
   function __construct() {
     parent::__construct();
