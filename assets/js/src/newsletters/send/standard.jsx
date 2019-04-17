@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import DateTime from 'newsletters/send/date_time.jsx';
 import SenderField from 'newsletters/send/sender_address_field.jsx';
 
-const currentTime = window.mailpoet_current_time || '00:00';
+const serverTimezone = window.mailpoet_server_time_zone;
 const defaultDateTime = `${window.mailpoet_current_date} 00:00:00`;
 const timeOfDayItems = window.mailpoet_schedule_time_of_day;
 const dateDisplayFormat = window.mailpoet_date_display_format;
@@ -17,7 +17,7 @@ class StandardScheduling extends React.Component {
   getCurrentValue = () => {
     const schedulingOptions = {
       isScheduled: '0',
-      scheduledAt: defaultDateTime,
+      scheduledAt: MailPoet.Date.convertToServerTimeZone(defaultDateTime, serverTimezone),
     };
     return _.defaults(
       this.props.item[this.props.field.name] || {},
@@ -33,16 +33,23 @@ class StandardScheduling extends React.Component {
 
   isScheduled = () => this.getCurrentValue().isScheduled === '1';
 
-  handleCheckboxChange = (event) => {
-    const changeEvent = event;
-    changeEvent.target.value = event.target.checked ? '1' : '0';
-    return this.handleValueChange(changeEvent);
+  handleCheckboxChange = event => this.handleValueChange({
+    name: event.target.name,
+    value: event.target.checked ? '1' : '0',
+  });
+
+  handleTimeChange = (event) => {
+    const value = MailPoet.Date.convertToServerTimeZone(event.target.value, serverTimezone);
+    return this.handleValueChange({
+      name: event.target.name,
+      value,
+    });
   };
 
-  handleValueChange = (event) => {
+  handleValueChange = (value) => {
     const oldValue = this.getCurrentValue();
     const newValue = {};
-    newValue[event.target.name] = event.target.value;
+    newValue[value.name] = value.value;
 
     return this.props.onValueChange({
       target: {
@@ -60,8 +67,12 @@ class StandardScheduling extends React.Component {
         <span id="mailpoet_scheduling">
           <DateTime
             name="scheduledAt"
-            value={this.getCurrentValue().scheduledAt}
-            onChange={this.handleValueChange}
+            value={
+              MailPoet.Date.convertToUserTimeZone(
+                this.getCurrentValue().scheduledAt, serverTimezone
+              )
+            }
+            onChange={this.handleTimeChange}
             disabled={this.props.field.disabled}
             dateValidation={this.getDateValidation()}
             defaultDateTime={defaultDateTime}
@@ -69,12 +80,6 @@ class StandardScheduling extends React.Component {
             dateDisplayFormat={dateDisplayFormat}
             dateStorageFormat={dateStorageFormat}
           />
-          &nbsp;
-          <span>
-            {MailPoet.I18n.t('websiteTimeIs')}
-            {' '}
-            <code>{currentTime}</code>
-          </span>
         </span>
       );
     }
