@@ -27,7 +27,7 @@ class ReleaseVersionController {
 
     $output = [];
     $output[] = "Setting version $version to completed tickets in $this->project...";
-    $issues = $this->getDoneIssuesWithoutVersion();
+    $issues = $this->getUnreleasedDoneIssues();
     $result = array_map(function ($issue) use ($version) {
       return $this->setIssueFixVersion($issue['key'], $version);
     }, $issues);
@@ -36,15 +36,50 @@ class ReleaseVersionController {
     return [$version, join("\n", $output)];
   }
 
-  private function getDoneIssuesWithoutVersion() {
-    $jql = "project = $this->project AND status = Done AND fixVersion = EMPTY AND updated >= -52w";
-    $result = $this->jira->search($jql, ['key']);
-    return array_map(function ($issue) {
-      return [
-        'id' => $issue['id'],
-        'key' => $issue['key'],
-      ];
-    }, $result['issues']);
+  function determineNextVersion() {
+    $last_version = $this->jira->getLastReleasedVersion();
+    $parsed_last_version = VersionHelper::parseVersion($last_version['name']);
+
+    $version_to_increment = VersionHelper::PATCH;
+
+    if ($this->project === JiraController::PROJECT_MAILPOET) {
+      $free_increment = $this->checkProjectVersionIncrement(JiraController::PROJECT_MAILPOET);
+      $premium_increment = $this->checkProjectVersionIncrement(JiraController::PROJECT_PREMIUM);
+
+      if (in_array(VersionHelper::MINOR, [$free_increment, $premium_increment])) {
+        $version_to_increment = VersionHelper::MINOR;
+      }
+    }
+
+    $parsed_last_version[$version_to_increment]++;
+    $next_version = VersionHelper::buildVersion($parsed_last_version);
+    return $next_version;
+  }
+
+  private function checkProjectVersionIncrement($project) {
+    $this->jira->setProject($project);
+    $issues = $this->getUnreleasedDoneIssues();
+    $this->jira->setProject(JiraController::PROJECT_MAILPOET); // restore project
+
+    $version_to_increment = VersionHelper::PATCH;
+    $field_id = JiraController::VERSION_INCREMENT_FIELD_ID;
+
+    foreach ($issues as $issue) {
+      if (!empty($issue['fields'][$field_id]['value'])
+        && $issue['fields'][$field_id]['value'] === VersionHelper::MINOR
+      ) {
+        $version_to_increment = VersionHelper::MINOR;
+        break;
+      }
+    }
+
+    return $version_to_increment;
+  }
+
+  private function getUnreleasedDoneIssues() {
+    $jql = "project = $this->project AND status = Done AND (fixVersion = EMPTY OR fixVersion IN unreleasedVersions()) AND updated >= -52w";
+    $result = $this->jira->search($jql, ['key', JiraController::VERSION_INCREMENT_FIELD_ID]);
+    return $result['issues'];
   }
 
   private function ensureCorrectVersion($version) {
