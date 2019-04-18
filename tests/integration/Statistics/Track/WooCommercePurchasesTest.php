@@ -29,6 +29,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
+    $this->cleanup();
 
     $this->subscriber = $this->createSubscriber('test@example.com');
     $this->newsletter = $this->createNewsletter();
@@ -141,6 +142,10 @@ class WooCommercePurchasesTest extends \MailPoetTest {
   }
 
   function _after() {
+    $this->cleanup();
+  }
+
+  private function cleanup() {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
