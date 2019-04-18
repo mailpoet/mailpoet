@@ -183,13 +183,15 @@ class EditorProductsCest {
     $I->seeElementInDOM(self::EDITOR_PRODUCT_SELECTOR . ' h2 a');
 
     // Test "Price"
-    $I->dontSeeElementInDOM(self::PRICE_XPATH);
-    $I->clickLabelWithInput('mailpoet_products_price_position', 'below');
-    $this->waitForChange($I);
-    $I->seeElementInDOM(self::PRICE_XPATH . '/preceding::*[name()="p"][@class="mailpoet_wp_post"]');
     $I->clickLabelWithInput('mailpoet_products_price_position', 'above');
     $this->waitForChange($I);
     $I->seeElementInDOM(self::PRICE_XPATH . '/following::*[name()="p"][@class="mailpoet_wp_post"]');
+    $I->clickLabelWithInput('mailpoet_products_price_position', 'below');
+    $this->waitForChange($I);
+    $I->seeElementInDOM(self::PRICE_XPATH . '/preceding::*[name()="p"][@class="mailpoet_wp_post"]');
+    $I->clickLabelWithInput('mailpoet_products_price_position', 'hidden');
+    $this->waitForChange($I);
+    $I->dontSeeElementInDOM(self::PRICE_XPATH);
 
     // Test "Buy now" button
     $I->see('Buy now', self::EDITOR_PRODUCT_SELECTOR . ' .mailpoet_wp_post + p');
