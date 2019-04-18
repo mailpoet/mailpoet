@@ -214,10 +214,21 @@ class Hooks {
   }
 
   function setupWooCommercePurchases() {
-    $this->wp->addAction(
-      'woocommerce_payment_complete',
-      [$this->woocommerce_purchases, 'trackPurchase']
+    // use both 'processing' and 'completed' states since payment hook and 'processing' status
+    // may be skipped with some payment methods (cheque) or when state transitioned manually
+    $accepted_order_states = WPFunctions::get()->applyFilters(
+      'mailpoet_purchase_order_states',
+      ['processing', 'completed']
     );
+
+    foreach ($accepted_order_states as $status) {
+      WPFunctions::get()->addAction(
+        'woocommerce_order_status_' . $status,
+        [$this->woocommerce_purchases, 'trackPurchase'],
+        10,
+        1
+      );
+    }
   }
 
   function setupImageSize() {
