@@ -31,7 +31,8 @@ class InactiveSubscribers extends SimpleWorker {
 
   function processTaskStrategy(ScheduledTask $task) {
     $days_to_inactive = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
-    if ($days_to_inactive === 0) {
+    $tracking_enabled = (bool)$this->settings->get('tracking.enabled');
+    if ($days_to_inactive === 0 || !$tracking_enabled) {
       self::schedule();
       return true;
     }
