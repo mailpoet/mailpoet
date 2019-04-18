@@ -21,7 +21,7 @@ class WooCommercePurchases {
 
   function trackPurchase($id) {
     $order = $this->woocommerce_helper->wcGetOrder($id);
-    if (!$order instanceof WC_Order || floatval($order->get_total()) <= 0) {
+    if (!$order instanceof WC_Order) {
       return;
     }
 
