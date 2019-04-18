@@ -416,7 +416,8 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
       'KEY queue_id (queue_id),',
-      'KEY subscriber_id (subscriber_id)',
+      'KEY subscriber_id (subscriber_id),',
+      'KEY created_at (created_at)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
