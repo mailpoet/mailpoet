@@ -461,6 +461,7 @@ class Migrator {
       'order_currency char(3) NOT NULL,',
       'order_price_total float NOT NULL COMMENT "With shipping and taxes in order_currency",',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'KEY newsletter_id (newsletter_id),',
       'KEY queue_id (queue_id),',
