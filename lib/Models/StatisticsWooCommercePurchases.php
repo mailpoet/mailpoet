@@ -14,8 +14,8 @@ if (!defined('ABSPATH')) exit;
  * @property string $order_currency
  * @property float $order_price_total
  */
-class StatisticsWooCommerceOrders extends Model {
-  public static $_table = MP_STATISTICS_WOOCOMMERCE_ORDERS_TABLE;
+class StatisticsWooCommercePurchases extends Model {
+  public static $_table = MP_STATISTICS_WOOCOMMERCE_PURCHASES_TABLE;
 
   static function createOrUpdateByClickAndOrder(StatisticsClicks $click, WC_Order $order) {
     $statistics = self::where('click_id', $click->id)

@@ -3,7 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\Track\WooCommerceOrders;
+use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Registration;
@@ -30,8 +30,8 @@ class Hooks {
   /** @var WooCommerceSegment */
   private $woocommerce_segment;
 
-  /** @var WooCommerceOrders */
-  private $woocommerce_orders;
+  /** @var WooCommercePurchases */
+  private $woocommerce_purchases;
 
   function __construct(
     Form $subscription_form,
@@ -40,7 +40,7 @@ class Hooks {
     SettingsController $settings,
     WPFunctions $wp,
     WooCommerceSegment $woocommerce_segment,
-    WooCommerceOrders $woocommerce_orders
+    WooCommercePurchases $woocommerce_purchases
   ) {
     $this->subscription_form = $subscription_form;
     $this->subscription_comment = $subscription_comment;
@@ -48,13 +48,13 @@ class Hooks {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->woocommerce_segment = $woocommerce_segment;
-    $this->woocommerce_orders = $woocommerce_orders;
+    $this->woocommerce_purchases = $woocommerce_purchases;
   }
 
   function init() {
     $this->setupWPUsers();
     $this->setupWooCommerceUsers();
-    $this->setupWooCommerceOrders();
+    $this->setupWooCommercePurchases();
     $this->setupImageSize();
     $this->setupListing();
     $this->setupSubscriptionEvents();
@@ -213,11 +213,10 @@ class Hooks {
     );
   }
 
-
-  function setupWooCommerceOrders() {
+  function setupWooCommercePurchases() {
     $this->wp->addAction(
       'woocommerce_payment_complete',
-      [$this->woocommerce_orders, 'trackPaidOrder']
+      [$this->woocommerce_purchases, 'trackPurchase']
     );
   }
 

@@ -43,7 +43,7 @@ class Migrator {
       'statistics_opens',
       'statistics_unsubscribes',
       'statistics_forms',
-      'statistics_woocommerce_orders',
+      'statistics_woocommerce_purchases',
       'mapping_to_external_entities',
       'log',
       'user_flags',
@@ -450,7 +450,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statisticsWoocommerceOrders() {
+  function statisticsWoocommercePurchases() {
     $attributes = array(
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
