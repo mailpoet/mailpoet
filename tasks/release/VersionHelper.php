@@ -9,6 +9,23 @@ class VersionHelper {
   const MINOR = 'Minor';
   const PATCH = 'Patch';
 
+  static function incrementVersion($version, $part_to_increment = self::PATCH) {
+    $parsed_version = is_array($version) ? $version : self::parseVersion($version);
+
+    switch ($part_to_increment) {
+      case self::MINOR:
+        $parsed_version[self::MINOR]++;
+        $parsed_version[self::PATCH] = 0;
+        break;
+      case self::PATCH:
+      default:
+        $parsed_version[self::PATCH]++;
+        break;
+    }
+
+    return is_array($version) ? $parsed_version : self::buildVersion($parsed_version);
+  }
+
   static function parseVersion($version) {
     if (!preg_match(self::VERSION_REGEXP, $version, $matches)) {
       throw new \Exception('Incorrect version format');
