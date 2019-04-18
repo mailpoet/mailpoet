@@ -458,7 +458,7 @@ class Migrator {
       'queue_id int(11) unsigned NOT NULL,',
       'click_id int(11) unsigned NOT NULL,',
       'order_id bigint(20) unsigned NOT NULL,',
-      'order_currency varchar(10) NOT NULL,',
+      'order_currency char(3) NOT NULL,',
       'order_price_total float NOT NULL COMMENT "With shipping and taxes in order_currency",',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
