@@ -119,8 +119,4 @@ class JiraController {
   function updateIssue($key, $data) {
     $this->http_client->put("issue/$key", ['json' => $data]);
   }
-
-  function setProject($project) {
-    $this->project = $project;
-  }
 }
