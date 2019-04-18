@@ -10,7 +10,7 @@ use MailPoet\Models\StatisticsWooCommerceOrders;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\WooCommerceOrders;
 use MailPoet\Tasks\Sending;
-use MailPoet\WooCommerce\Helper;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use PHPUnit_Framework_MockObject_MockObject;
 use WC_Order;
 
@@ -191,7 +191,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   }
 
   private function createWooCommerceHelperMock(PHPUnit_Framework_MockObject_MockObject $order_mock) {
-    $mock = $this->createMock(Helper::class);
+    $mock = $this->createMock(WooCommerceHelper::class);
     $mock->method('wcGetOrder')->willReturn($order_mock);
     return $mock;
   }
