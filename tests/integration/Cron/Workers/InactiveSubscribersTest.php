@@ -17,6 +17,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
   function _before() {
     $this->settings = new SettingsController();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->settings->set('tracking.enabled', true);
     parent::_before();
   }
 
@@ -36,6 +37,18 @@ class InactiveSubscribersTest extends \MailPoetTest {
 
     expect($task)->isInstanceOf(ScheduledTask::class);
     expect($task->scheduled_at)->greaterThan(new Carbon());
+  }
+
+  function testItDoesNotRunWhenTrackingIsDisabled() {
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 10);
+    $this->settings->set('tracking.enabled', false);
+    $controller_mock = Stub::make(InactiveSubscribersController::class, [
+      'markInactiveSubscribers' => Stub\Expected::never(),
+      'markActiveSubscribers' => Stub\Expected::never(),
+    ], $this);
+
+    $worker = new InactiveSubscribers($controller_mock, $this->settings);
+    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
   }
 
   function testItSchedulesNextRunWhenFinished() {
