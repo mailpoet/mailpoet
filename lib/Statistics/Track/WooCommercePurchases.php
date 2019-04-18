@@ -2,14 +2,14 @@
 namespace MailPoet\Statistics\Track;
 
 use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\StatisticsWooCommerceOrders;
+use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Models\Subscriber;
 use MailPoet\WooCommerce\Helper;
 use WC_Order;
 
 if (!defined('ABSPATH')) exit;
 
-class WooCommerceOrders {
+class WooCommercePurchases {
   const USE_CLICKS_SINCE_DAYS_AGO = 14;
 
   /** @var Helper */
@@ -19,7 +19,7 @@ class WooCommerceOrders {
     $this->woocommerce_helper = $woocommerce_helper;
   }
 
-  function trackPaidOrder($id) {
+  function trackPurchase($id) {
     $order = $this->woocommerce_helper->wcGetOrder($id);
     if (!$order instanceof WC_Order || floatval($order->get_total()) <= 0) {
       return;
@@ -37,7 +37,7 @@ class WooCommerceOrders {
     );
 
     foreach ($clicks as $click) {
-      StatisticsWooCommerceOrders::createOrUpdateByClickAndOrder($click, $order);
+      StatisticsWooCommercePurchases::createOrUpdateByClickAndOrder($click, $order);
     }
   }
 }

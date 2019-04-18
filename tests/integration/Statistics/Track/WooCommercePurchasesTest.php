@@ -6,15 +6,15 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\StatisticsWooCommerceOrders;
+use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Models\Subscriber;
-use MailPoet\Statistics\Track\WooCommerceOrders;
+use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Tasks\Sending;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use PHPUnit_Framework_MockObject_MockObject;
 use WC_Order;
 
-class WooCommerceOrdersTest extends \MailPoetTest {
+class WooCommercePurchasesTest extends \MailPoetTest {
   /** @var Subscriber */
   private $subscriber;
 
@@ -39,17 +39,17 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   function testItTracksPayment() {
     $click = $this->createClick($this->link, $this->subscriber);
     $order_mock = $this->createOrderMock($this->subscriber->email);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
-    $order_stats = StatisticsWooCommerceOrders::findMany();
-    expect(count($order_stats))->equals(1);
-    expect($order_stats[0]->newsletter_id)->equals($this->newsletter->id);
-    expect($order_stats[0]->subscriber_id)->equals($this->subscriber->id);
-    expect($order_stats[0]->queue_id)->equals($this->queue->id);
-    expect($order_stats[0]->click_id)->equals($click->id);
-    expect($order_stats[0]->order_id)->equals($order_mock->get_id());
-    expect($order_stats[0]->order_currency)->equals($order_mock->get_currency());
-    expect($order_stats[0]->order_price_total)->equals($order_mock->get_total());
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    $purchase_stats = StatisticsWooCommercePurchases::findMany();
+    expect(count($purchase_stats))->equals(1);
+    expect($purchase_stats[0]->newsletter_id)->equals($this->newsletter->id);
+    expect($purchase_stats[0]->subscriber_id)->equals($this->subscriber->id);
+    expect($purchase_stats[0]->queue_id)->equals($this->queue->id);
+    expect($purchase_stats[0]->click_id)->equals($click->id);
+    expect($purchase_stats[0]->order_id)->equals($order_mock->get_id());
+    expect($purchase_stats[0]->order_currency)->equals($order_mock->get_currency());
+    expect($purchase_stats[0]->order_price_total)->equals($order_mock->get_total());
   }
 
   function testItTracksPaymentForMultipleNewsletters() {
@@ -62,9 +62,9 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->createClick($link, $this->subscriber, 1);
 
     $order_mock = $this->createOrderMock($this->subscriber->email);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
-    expect(count(StatisticsWooCommerceOrders::findMany()))->equals(2);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(2);
   }
 
   function testItTracksPaymentForMultipleOrders() {
@@ -72,15 +72,15 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     // first order
     $order_mock = $this->createOrderMock($this->subscriber->email, 10.0, 123);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
 
     // second order
     $order_mock = $this->createOrderMock($this->subscriber->email, 20.0, 456);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
 
-    expect(count(StatisticsWooCommerceOrders::findMany()))->equals(2);
+    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(2);
   }
 
   function testItTracksPaymentOnlyForLatestClick() {
@@ -88,53 +88,53 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->createClick($this->link, $this->subscriber, 3);
     $this->createClick($this->link, $this->subscriber, 5);
     $order_mock = $this->createOrderMock($this->subscriber->email);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
 
-    $order_stats = StatisticsWooCommerceOrders::findMany();
-    expect(count($order_stats))->equals(1);
-    expect($order_stats[0]->click_id)->equals($latest_click->id);
+    $purchase_stats = StatisticsWooCommercePurchases::findMany();
+    expect(count($purchase_stats))->equals(1);
+    expect($purchase_stats[0]->click_id)->equals($latest_click->id);
   }
 
   function testItTracksPaymentOnlyOnce() {
     $this->createClick($this->link, $this->subscriber);
     $order_mock = $this->createOrderMock($this->subscriber->email);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
-    expect(count(StatisticsWooCommerceOrders::findMany()))->equals(1);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(1);
   }
 
   function testItDoesNotTrackPaymentWhenClickTooOld() {
     $this->createClick($this->link, $this->subscriber, 20);
     $order_mock = $this->createOrderMock($this->subscriber->email);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
-    expect(count(StatisticsWooCommerceOrders::findMany()))->equals(0);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(0);
   }
 
   function testItDoesNotTrackPaymentForDifferentEmail() {
     $this->createClick($this->link, $this->subscriber);
     $order_mock = $this->createOrderMock('different.email@example.com');
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
-    expect(count(StatisticsWooCommerceOrders::findMany()))->equals(0);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(0);
   }
 
   function testItDoesNotTrackPaymentWithZeroCost() {
     $this->createClick($this->link, $this->subscriber);
     $order_mock = $this->createOrderMock($this->subscriber->email, 0);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
-    expect(count(StatisticsWooCommerceOrders::findMany()))->equals(0);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(0);
   }
 
   function testItDoesNotTrackPaymentWhenClickNewerThanOrder() {
     $this->createClick($this->link, $this->subscriber, 0);
     $order_mock = $this->createOrderMock($this->subscriber->email);
-    $woocommerce_orders = new WooCommerceOrders($this->createWooCommerceHelperMock($order_mock));
-    $woocommerce_orders->trackPaidOrder($order_mock->get_id());
-    expect(count(StatisticsWooCommerceOrders::findMany()))->equals(0);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(0);
   }
 
   function _after() {
@@ -142,7 +142,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsWooCommerceOrders::$_table);
+    \ORM::raw_execute('TRUNCATE ' . StatisticsWooCommercePurchases::$_table);
   }
 
   private function createNewsletter() {

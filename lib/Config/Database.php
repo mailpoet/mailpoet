@@ -84,7 +84,7 @@ class Database {
       define('MP_STATISTICS_OPENS_TABLE', Env::$db_prefix . 'statistics_opens');
       define('MP_STATISTICS_UNSUBSCRIBES_TABLE', Env::$db_prefix . 'statistics_unsubscribes');
       define('MP_STATISTICS_FORMS_TABLE', Env::$db_prefix . 'statistics_forms');
-      define('MP_STATISTICS_WOOCOMMERCE_ORDERS_TABLE', Env::$db_prefix . 'statistics_woocommerce_orders');
+      define('MP_STATISTICS_WOOCOMMERCE_PURCHASES_TABLE', Env::$db_prefix . 'statistics_woocommerce_purchases');
       define('MP_MAPPING_TO_EXTERNAL_ENTITIES_TABLE', Env::$db_prefix . 'mapping_to_external_entities');
       define('MP_LOG_TABLE', Env::$db_prefix . 'log');
       define('MP_STATS_NOTIFICATIONS_TABLE', Env::$db_prefix . 'stats_notifications');
