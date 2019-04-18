@@ -53,18 +53,29 @@ class WooCommercePurchasesTest extends \MailPoetTest {
   }
 
   function testItTracksPaymentForMultipleNewsletters() {
-    $this->createClick($this->link, $this->subscriber);
+    $click_1 = $this->createClick($this->link, $this->subscriber);
 
     // create click in other newsletter
     $newsletter = $this->createNewsletter();
     $queue = $this->createQueue($newsletter, $this->subscriber);
     $link = $this->createLink($newsletter, $queue);
-    $this->createClick($link, $this->subscriber, 1);
+    $click_2 = $this->createClick($link, $this->subscriber, 1);
 
     $order_mock = $this->createOrderMock($this->subscriber->email);
     $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
     $woocommerce_purchases->trackPurchase($order_mock->get_id());
-    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(2);
+    $purchase_stats = StatisticsWooCommercePurchases::findMany();
+    expect(count($purchase_stats))->equals(2);
+
+    $stats_1 = StatisticsWooCommercePurchases::where('newsletter_id', $this->newsletter->id)->findOne();
+    expect($stats_1->click_id)->equals($click_1->id);
+    expect($stats_1->subscriber_id)->equals($this->subscriber->id);
+    expect($stats_1->queue_id)->equals($this->queue->id);
+
+    $stats_2 = StatisticsWooCommercePurchases::where('newsletter_id', $newsletter->id)->findOne();
+    expect($stats_2->click_id)->equals($click_2->id);
+    expect($stats_2->subscriber_id)->equals($this->subscriber->id);
+    expect($stats_2->queue_id)->equals($queue->id);
   }
 
   function testItTracksPaymentForMultipleOrders() {
