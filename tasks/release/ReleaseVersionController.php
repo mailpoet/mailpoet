@@ -57,9 +57,7 @@ class ReleaseVersionController {
   }
 
   private function checkProjectVersionIncrement($project) {
-    $this->jira->setProject($project);
-    $issues = $this->getUnreleasedDoneIssues();
-    $this->jira->setProject(JiraController::PROJECT_MAILPOET); // restore project
+    $issues = $this->getUnreleasedDoneIssues($project);
 
     $version_to_increment = VersionHelper::PATCH;
     $field_id = JiraController::VERSION_INCREMENT_FIELD_ID;
@@ -76,8 +74,9 @@ class ReleaseVersionController {
     return $version_to_increment;
   }
 
-  private function getUnreleasedDoneIssues() {
-    $jql = "project = $this->project AND status = Done AND (fixVersion = EMPTY OR fixVersion IN unreleasedVersions()) AND updated >= -52w";
+  private function getUnreleasedDoneIssues($project = null) {
+    $project = $project ?: $this->project;
+    $jql = "project = $project AND status = Done AND (fixVersion = EMPTY OR fixVersion IN unreleasedVersions()) AND updated >= -52w";
     $result = $this->jira->search($jql, ['key', JiraController::VERSION_INCREMENT_FIELD_ID]);
     return $result['issues'];
   }
