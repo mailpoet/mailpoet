@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-use DateTime;
+use DateTimeInterface;
 
 if (!defined('ABSPATH')) exit;
 
@@ -54,7 +54,7 @@ class StatisticsClicks extends Model {
       ->orderByAsc('url');
   }
 
-  static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTime $before, $since_days_ago) {
+  static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTimeInterface $before, $since_days_ago) {
     // subquery to find latest click IDs for each newsletter
     $table = self::$_table;
     $latest_click_ids_per_newsletter_query = "
