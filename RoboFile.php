@@ -594,10 +594,17 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function jiraReleaseVersion($version = null, $opts = []) {
-    if ($version) {
-      $this->validateVersion($version);
+  public function nextReleaseVersion($version = null) {
+    if (!$version) {
+      $version = $this->getReleaseVersionController()
+        ->determineNextVersion();
     }
+    $this->validateVersion($version);
+    return $version;
+  }
+
+  public function jiraReleaseVersion($version = null, $opts = []) {
+    $version = $this->nextReleaseVersion($version);
     try {
       list($version, $output) = $this->getReleaseVersionController()
         ->assignVersionToCompletedTickets($version);
@@ -656,7 +663,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function validateVersion($version) {
-    if (!preg_match('/\d+\.\d+\.\d+/', $version)) {
+    if (!\MailPoetTasks\Release\VersionHelper::validateVersion($version)) {
       $this->yell('Incorrect version format', 40, 'red');
       exit(1);
     }

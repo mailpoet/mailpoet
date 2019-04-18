@@ -8,6 +8,7 @@ class JiraController {
 
   const CHANGELOG_FIELD_ID = 'customfield_10500';
   const RELEASENOTE_FIELD_ID = 'customfield_10504';
+  const VERSION_INCREMENT_FIELD_ID = 'customfield_10509';
 
   const WONT_DO_RESOLUTION_ID = '10001';
 
@@ -59,6 +60,17 @@ class JiraController {
     throw new \Exception('Unknown project version');
   }
 
+  function getLastReleasedVersion() {
+    $response = $this->http_client->get("project/$this->project/versions");
+    $versions = json_decode($response->getBody()->getContents(), true);
+    foreach (array_reverse($versions) as $version) {
+      if ($version['released']) {
+        return $version;
+      }
+    }
+    throw new \Exception('No released versions found');
+  }
+
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-version-post
    */
@@ -106,5 +118,9 @@ class JiraController {
    */
   function updateIssue($key, $data) {
     $this->http_client->put("issue/$key", ['json' => $data]);
+  }
+
+  function setProject($project) {
+    $this->project = $project;
   }
 }
