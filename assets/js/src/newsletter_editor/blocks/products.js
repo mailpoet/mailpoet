@@ -51,7 +51,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
       imageFullWidth: false, // true|false
       titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
       featuredImagePosition: 'alternate', // 'centered'|'right'|'left'|'alternate'|'none'
-      pricePosition: 'hidden', // 'hidden'|'above'|'below'
+      pricePosition: 'below', // 'hidden'|'above'|'below'
       readMoreType: 'link', // 'link'|'button'
       readMoreText: 'Buy now', // 'link'|'button'
       readMoreButton: {
