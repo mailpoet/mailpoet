@@ -85,6 +85,16 @@ class JiraController {
     return json_decode($response->getBody()->getContents(), true);
   }
 
+  function releaseVersion($version_name) {
+    $version = $this->getVersion($version_name);
+    $response = $this->http_client->put("version/$version[id]", [
+      'json' => [
+        'released' => true,
+      ],
+    ]);
+    return json_decode($response->getBody()->getContents(), true);
+  }
+
   function getIssuesDataForVersion($version) {
     $changelog_id = self::CHANGELOG_FIELD_ID;
     $release_note_id = self::RELEASENOTE_FIELD_ID;

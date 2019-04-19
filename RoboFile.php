@@ -662,6 +662,13 @@ class RoboFile extends \Robo\Tasks {
     $slack_notifier->notify($version['name'], $changelog[1], $version['id']);
   }
 
+  public function releasePublishJira($version = null) {
+    $version = $this->nextReleaseVersion($version);
+    $jira_controller = $this->createJiraController();
+    $jira_version = $jira_controller->releaseVersion($version);
+    $this->say("JIRA version '$jira_version[name]' was released.");
+  }
+
   protected function validateVersion($version) {
     if (!\MailPoetTasks\Release\VersionHelper::validateVersion($version)) {
       $this->yell('Incorrect version format', 40, 'red');
