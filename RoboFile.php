@@ -505,14 +505,6 @@ class RoboFile extends \Robo\Tasks {
     return $result;
   }
 
-  public function publish() {
-    return $this->collectionBuilder()
-      ->addCode(array($this, 'pushpot'))
-      ->addCode(array($this, 'svnCheckout'))
-      ->addCode(array($this, 'svnPublish'))
-      ->run();
-  }
-
   public function testAcceptanceGroupTests() {
     return $this->taskSplitTestFilesByGroups(4)
       ->projectRoot('.')
@@ -530,6 +522,36 @@ class RoboFile extends \Robo\Tasks {
       })
       ->addCode(function () use ($version) {
         return $this->releaseChangelogWrite(['version-name' => $version]);
+      })
+      ->run();
+  }
+
+  public function releasePublish($version = null) {
+    $version = $this->releaseVersionGetNext($version);
+    return $this->collectionBuilder()
+      ->addCode(function () {
+        return $this->releaseDownloadZip();
+      })
+      ->addCode(function () {
+        return $this->translationsBuild();
+      })
+      ->addCode(function () {
+        return $this->translationsPush();
+      })
+      ->addCode(function () {
+        return $this->svnCheckout();
+      })
+      ->addCode(function () {
+        return $this->svnPublish();
+      })
+      ->addCode(function () use ($version) {
+        return $this->releasePublishGithub($version);
+      })
+      ->addCode(function () use ($version) {
+        return $this->releasePublishJira($version);
+      })
+      ->addCode(function () use ($version) {
+        return $this->releasePublishSlack($version);
       })
       ->run();
   }
