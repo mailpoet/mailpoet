@@ -113,28 +113,28 @@ class RoboFile extends \Robo\Tasks {
     return $compilation_result;
   }
 
-  function makepot() {
+  function translationsBuild() {
     return $this->_exec('./node_modules/.bin/grunt makepot'.
       ' --gruntfile='.__DIR__.'/tasks/makepot/makepot.js'.
       ' --base_path='.__DIR__
     );
   }
 
-  function pushpot() {
+  function translationsPush() {
     return $this->collectionBuilder()
-      ->addCode(array($this, 'txinit'))
+      ->addCode([$this, 'translationsInit'])
       ->taskExec('tx push -s')
       ->run();
   }
 
-  function packtranslations() {
+  function translationsPack() {
     return $this->collectionBuilder()
-      ->addCode(array($this, 'txinit'))
+      ->addCode([$this, 'translationsInit'])
       ->taskExec('./tasks/pack_translations.sh')
       ->run();
   }
 
-  function txinit() {
+  function translationsInit() {
     // Define WP_TRANSIFEX_API_TOKEN env. variable
     return $this->_exec('./tasks/transifex_init.sh');
   }
