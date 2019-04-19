@@ -521,7 +521,7 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function prepareRelease($version = null) {
+  public function releasePrepare($version = null) {
     $version = $this->releaseVersionAssign($version, ['return' => true]);
 
     return $this->collectionBuilder()
