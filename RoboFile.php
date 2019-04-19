@@ -113,18 +113,16 @@ class RoboFile extends \Robo\Tasks {
     return $compilation_result;
   }
 
+  function translationsInit() {
+    // Define WP_TRANSIFEX_API_TOKEN env. variable
+    return $this->_exec('./tasks/transifex_init.sh');
+  }
+
   function translationsBuild() {
     return $this->_exec('./node_modules/.bin/grunt makepot'.
       ' --gruntfile='.__DIR__.'/tasks/makepot/makepot.js'.
       ' --base_path='.__DIR__
     );
-  }
-
-  function translationsPush() {
-    return $this->collectionBuilder()
-      ->addCode([$this, 'translationsInit'])
-      ->taskExec('tx push -s')
-      ->run();
   }
 
   function translationsPack() {
@@ -134,9 +132,11 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  function translationsInit() {
-    // Define WP_TRANSIFEX_API_TOKEN env. variable
-    return $this->_exec('./tasks/transifex_init.sh');
+  function translationsPush() {
+    return $this->collectionBuilder()
+      ->addCode([$this, 'translationsInit'])
+      ->taskExec('tx push -s')
+      ->run();
   }
 
   function testUnit(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
