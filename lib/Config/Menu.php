@@ -410,7 +410,7 @@ class Menu {
   function wooCommerceListImport() {
     if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
-
+      'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
     ];
     $this->displayPage('woocommerce_list_import.html', $data);
   }
