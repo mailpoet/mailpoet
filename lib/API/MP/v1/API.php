@@ -69,6 +69,7 @@ class API {
 
   function subscribeToLists($subscriber_id, array $segments_ids, $options = array()) {
     $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
+    $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
 
     if (empty($segments_ids)) {
       throw new \Exception(__('At least one segment ID is required.', 'mailpoet'));
@@ -114,6 +115,20 @@ class API {
     // schedule welcome email
     if ($schedule_welcome_email && $subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
       $this->_scheduleWelcomeNotification($subscriber, $found_segments_ids);
+    }
+
+    // send confirmation email
+    if (
+      $send_confirmation_email
+      && $subscriber->status === Subscriber::STATUS_UNCONFIRMED
+      && (int)$subscriber->count_confirmations === 0
+    ) {
+      $result = $this->_sendConfirmationEmail($subscriber);
+      if (!$result && $subscriber->getErrors()) {
+        throw new \Exception(
+          WPFunctions::get()->__(sprintf('Subscriber added to lists, but confirmation email failed to send: %s', strtolower(implode(', ', $subscriber->getErrors()))), 'mailpoet')
+        );
+      }
     }
 
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
@@ -217,17 +232,9 @@ class API {
 
     // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
     if (!empty($segments)) {
-      $this->subscribeToLists($new_subscriber->id, $segments);
-
-      // send confirmation email
-      if ($send_confirmation_email && $new_subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
-        $result = $this->_sendConfirmationEmail($new_subscriber);
-        if (!$result && $new_subscriber->getErrors()) {
-          throw new \Exception(
-            WPFunctions::get()->__(sprintf('Subscriber added, but confirmation email failed to send: %s', strtolower(implode(', ', $new_subscriber->getErrors()))), 'mailpoet')
-          );
-        }
-      }
+      $this->subscribeToLists($new_subscriber->id, $segments, [
+        'send_confirmation_email' => $send_confirmation_email,
+      ]);
 
       // schedule welcome email(s)
       if ($schedule_welcome_email && $new_subscriber->status === Subscriber::STATUS_SUBSCRIBED) {

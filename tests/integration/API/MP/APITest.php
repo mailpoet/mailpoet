@@ -191,6 +191,42 @@ class APITest extends \MailPoetTest {
     expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 
+  function testItSendsConfirmationEmailToASubscriberWhenBeingAddedToList() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
+    $subscriber->save();
+    $segment = Segment::createOrUpdate([
+      'name' => 'Default',
+      'type' => Segment::TYPE_DEFAULT,
+    ]);
+    $segment->save();
+
+    $sent = false;
+    $API = $this->makeEmptyExcept(\MailPoet\API\MP\v1\API::class, 'subscribeToLists', [
+      '_sendConfirmationEmail' => function () use (&$sent) {
+        $sent = true;
+      },
+    ]);
+
+    $segments = [$segment->id];
+
+    // should not send
+    $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false]);
+    expect($sent)->equals(false);
+
+    // should send
+    $API->subscribeToLists($subscriber->email, $segments);
+    expect($sent)->equals(true);
+
+    // should not send
+    $sent = false;
+    $subscriber->count_confirmations = 1;
+    $subscriber->save();
+    $API->subscribeToLists($subscriber->email, $segments);
+    expect($sent)->equals(false);
+  }
+
   function testItSubscribesSubscriberWithEmailIdentifier() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -464,14 +500,18 @@ class APITest extends \MailPoetTest {
   }
 
   function testByDefaultItSendsConfirmationEmailAfterAddingSubscriber() {
-    $API = Stub::makeEmptyExcept(
+    $API = $this->makeEmptyExcept(
       \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
-      array(
-        '_sendConfirmationEmail' => Expected::once(),
+      [
+        'subscribeToLists' => Expected::once(function ($subscriber_id, $segments_ids, $options) {
+          expect($options)->contains('send_confirmation_email');
+          expect($options['send_confirmation_email'])->equals(true);
+        }),
         'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
         'new_subscriber_notification_mailer'=> Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send'])
-      ), $this);
+      ]
+    );
     $subscriber = array(
       'email' => 'test@example.com'
     );
@@ -500,7 +540,7 @@ class APITest extends \MailPoetTest {
     $subscriber = array(
       'email' => 'test@example.com'
     );
-    $this->setExpectedException('\Exception', 'Subscriber added, but confirmation email failed to send: big error');
+    $this->setExpectedException('\Exception', 'Subscriber added to lists, but confirmation email failed to send: big error');
     $API->addSubscriber($subscriber, array($segment->id), array('send_confirmation_email' => true));
   }
 
