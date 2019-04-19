@@ -513,14 +513,14 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  function changelogUpdate($opts = ['version-name' => null]) {
+  function releaseChangelogWrite($opts = ['version-name' => null]) {
     $this->say("Updating changelog");
     $outputs = $this->getChangelogController()->update($opts['version-name']);
     $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n\n");
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
 
-  function changelogGet($opts = ['version-name' => null]) {
+  function releaseChangelogGet($opts = ['version-name' => null]) {
     $outputs = $this->getChangelogController()->get($opts['version-name']);
     $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n");
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
@@ -534,7 +534,7 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function writeReleaseVersion($version) {
+  public function releaseVersionWrite($version) {
     $version = trim($version);
     $this->validateVersion($version);
 
@@ -554,7 +554,7 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function nextReleaseVersion($version = null) {
+  public function releaseVersionGetNext($version = null) {
     if (!$version) {
       $version = $this->getReleaseVersionController()
         ->determineNextVersion();
@@ -563,8 +563,8 @@ class RoboFile extends \Robo\Tasks {
     return $version;
   }
 
-  public function jiraReleaseVersion($version = null, $opts = []) {
-    $version = $this->nextReleaseVersion($version);
+  public function releaseVersionAssign($version = null, $opts = []) {
+    $version = $this->releaseVersionGetNext($version);
     try {
       list($version, $output) = $this->getReleaseVersionController()
         ->assignVersionToCompletedTickets($version);
@@ -579,14 +579,14 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function prepareRelease($version = null) {
-    $version = $this->jiraReleaseVersion($version, ['return' => true]);
+    $version = $this->releaseVersionAssign($version, ['return' => true]);
 
     return $this->collectionBuilder()
       ->addCode(function () use ($version) {
-        return $this->writeReleaseVersion($version);
+        return $this->releaseVersionWrite($version);
       })
       ->addCode(function () use ($version) {
-        return $this->changelogUpdate(['version-name' => $version]);
+        return $this->releaseChangelogWrite(['version-name' => $version]);
       })
       ->run();
   }
@@ -623,7 +623,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePublishJira($version = null) {
-    $version = $this->nextReleaseVersion($version);
+    $version = $this->releaseVersionGetNext($version);
     $jira_controller = $this->createJiraController();
     $jira_version = $jira_controller->releaseVersion($version);
     $this->say("JIRA version '$jira_version[name]' was released.");
