@@ -513,19 +513,6 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  function releaseChangelogWrite($opts = ['version-name' => null]) {
-    $this->say("Updating changelog");
-    $outputs = $this->getChangelogController()->update($opts['version-name']);
-    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n\n");
-    $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
-  }
-
-  function releaseChangelogGet($opts = ['version-name' => null]) {
-    $outputs = $this->getChangelogController()->get($opts['version-name']);
-    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n");
-    $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
-  }
-
   public function testAcceptanceGroupTests() {
     return $this->taskSplitTestFilesByGroups(4)
       ->projectRoot('.')
@@ -534,23 +521,16 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function releaseVersionWrite($version) {
-    $version = trim($version);
-    $this->validateVersion($version);
+  public function prepareRelease($version = null) {
+    $version = $this->releaseVersionAssign($version, ['return' => true]);
 
-    $this->taskReplaceInFile(__DIR__ . '/readme.txt')
-      ->regex('/Stable tag:\s*\d+\.\d+\.\d+/i')
-      ->to('Stable tag: ' . $version)
-      ->run();
-
-    $this->taskReplaceInFile(__DIR__ . '/mailpoet.php')
-      ->regex('/Version:\s*\d+\.\d+\.\d+/i')
-      ->to('Version: ' . $version)
-      ->run();
-
-    $this->taskReplaceInFile(__DIR__ . '/mailpoet.php')
-      ->regex("/['\"]version['\"]\s*=>\s*['\"]\d+\.\d+\.\d+['\"],/i")
-      ->to(sprintf("'version' => '%s',", $version))
+    return $this->collectionBuilder()
+      ->addCode(function () use ($version) {
+        return $this->releaseVersionWrite($version);
+      })
+      ->addCode(function () use ($version) {
+        return $this->releaseChangelogWrite(['version-name' => $version]);
+      })
       ->run();
   }
 
@@ -578,17 +558,37 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
-  public function prepareRelease($version = null) {
-    $version = $this->releaseVersionAssign($version, ['return' => true]);
+  public function releaseVersionWrite($version) {
+    $version = trim($version);
+    $this->validateVersion($version);
 
-    return $this->collectionBuilder()
-      ->addCode(function () use ($version) {
-        return $this->releaseVersionWrite($version);
-      })
-      ->addCode(function () use ($version) {
-        return $this->releaseChangelogWrite(['version-name' => $version]);
-      })
+    $this->taskReplaceInFile(__DIR__ . '/readme.txt')
+      ->regex('/Stable tag:\s*\d+\.\d+\.\d+/i')
+      ->to('Stable tag: ' . $version)
       ->run();
+
+    $this->taskReplaceInFile(__DIR__ . '/mailpoet.php')
+      ->regex('/Version:\s*\d+\.\d+\.\d+/i')
+      ->to('Version: ' . $version)
+      ->run();
+
+    $this->taskReplaceInFile(__DIR__ . '/mailpoet.php')
+      ->regex("/['\"]version['\"]\s*=>\s*['\"]\d+\.\d+\.\d+['\"],/i")
+      ->to(sprintf("'version' => '%s',", $version))
+      ->run();
+  }
+
+  function releaseChangelogGet($opts = ['version-name' => null]) {
+    $outputs = $this->getChangelogController()->get($opts['version-name']);
+    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n");
+    $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
+  }
+
+  function releaseChangelogWrite($opts = ['version-name' => null]) {
+    $this->say("Updating changelog");
+    $outputs = $this->getChangelogController()->update($opts['version-name']);
+    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n\n");
+    $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
 
   public function releaseDownloadZip() {
@@ -610,6 +610,13 @@ class RoboFile extends \Robo\Tasks {
     $github_controller->publishRelease($version['name'], $changelog[1], $path);
   }
 
+  public function releasePublishJira($version = null) {
+    $version = $this->releaseVersionGetNext($version);
+    $jira_controller = $this->createJiraController();
+    $jira_version = $jira_controller->releaseVersion($version);
+    $this->say("JIRA version '$jira_version[name]' was released.");
+  }
+
   public function releasePublishSlack($version = null) {
     $jira_controller = $this->createJiraController();
     $version = $jira_controller->getVersion($version);
@@ -620,13 +627,6 @@ class RoboFile extends \Robo\Tasks {
       \MailPoetTasks\Release\SlackNotifier::PROJECT_MAILPOET
     );
     $slack_notifier->notify($version['name'], $changelog[1], $version['id']);
-  }
-
-  public function releasePublishJira($version = null) {
-    $version = $this->releaseVersionGetNext($version);
-    $jira_controller = $this->createJiraController();
-    $jira_version = $jira_controller->releaseVersion($version);
-    $this->say("JIRA version '$jira_version[name]' was released.");
   }
 
   protected function rsearch($folder, $extensions = array()) {
