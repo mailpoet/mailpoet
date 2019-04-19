@@ -76,7 +76,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   function testItDoesNotDeactivateNewSubscriberWithUnopenedEmail() {
-    list($task) = $this->createCompletedSendingTaskWithOneOpen(1);
+    list($task) = $this->createCompletedSendingTaskWithOneOpen(3);
 
     $subscriber = $this->createSubscriber('s1@email.com', 2);
     $this->addSubcriberToTask($subscriber, $task);
@@ -87,8 +87,22 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
+  function testItDoesNotDeactivateNewlyConfirmedSubscriberWithUnopenedEmail() {
+    list($task) = $this->createCompletedSendingTaskWithOneOpen(3);
+
+    $subscriber = $this->createSubscriber('s1@email.com', 10);
+    $subscriber->confirmed_at = (new Carbon())->subDays(2)->toDateTimeString();
+    $subscriber->save();
+    $this->addSubcriberToTask($subscriber, $task);
+
+    $result = $this->controller->markInactiveSubscribers(5, 100);
+    expect($result)->equals(0);
+    $subscriber = Subscriber::findOne($subscriber->id);
+    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
   function testItDoesNotDeactivateSubscriberWithoutSentEmail() {
-    $this->createCompletedSendingTaskWithOneOpen(1);
+    $this->createCompletedSendingTaskWithOneOpen(3);
     $subscriber = $this->createSubscriber('s1@email.com', 10);
     $result = $this->controller->markInactiveSubscribers(5, 100);
     expect($result)->equals(0);

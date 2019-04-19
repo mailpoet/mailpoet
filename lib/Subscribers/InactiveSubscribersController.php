@@ -74,9 +74,9 @@ class InactiveSubscribersController {
         JOIN $scheduled_task_subcribres_table as sts ON s.id = sts.subscriber_id
         JOIN ($scheduled_task_ids_query) task_ids ON task_ids.id = sts.task_id
         LEFT OUTER JOIN $statistics_opens_table as so ON s.id = so.subscriber_id AND so.created_at > ?
-      WHERE s.created_at < ? AND s.status = ? AND so.id IS NULL
+      WHERE s.created_at < ? AND (s.confirmed_at IS NULL OR s.confirmed_at < ?) AND s.status = ? AND so.id IS NULL
       GROUP BY s.id LIMIT ?",
-      [$threshold_date_iso, $threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $batch_size]
+      [$threshold_date_iso, $threshold_date_iso, $threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $batch_size]
     )->findArray();
 
     $ids_to_deactivate = array_map(
