@@ -121,3 +121,20 @@
   position: absolute;
   top: -1000px;
 }
+
+.mailpoet_welcome_wizard_centered_column {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mailpoet_wizard_woocommerce_list {
+  text-align: center;
+
+  label {
+    color: #595c65;
+    display: block;
+    margin-top: 10px;
+  }
+}
