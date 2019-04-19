@@ -2,8 +2,8 @@
 
 # Translations (npm ci & composer install need to be run before)
 echo '[BUILD] Generating translations'
-./do makepot
-./do packtranslations
+./do translations:build
+./do translations:pack
 
 plugin_name='mailpoet'
 
