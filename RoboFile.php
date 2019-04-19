@@ -27,26 +27,6 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  protected function rsearch($folder, $extensions = array()) {
-    $dir = new RecursiveDirectoryIterator($folder);
-    $iterator = new RecursiveIteratorIterator($dir);
-
-    $pattern = '/^.+\.('.join($extensions, '|').')$/i';
-
-    $files = new RegexIterator(
-      $iterator,
-      $pattern,
-      RecursiveRegexIterator::GET_MATCH
-    );
-
-    $list = array();
-    foreach ($files as $file) {
-      $list[] = $file[0];
-    }
-
-    return $list;
-  }
-
   function watch() {
     $this->say('Warning: this lints and compiles all files, not just the changed one. Use separate tasks watch:js and watch:css for faster and more efficient watching.');
     $css_files = $this->rsearch('assets/css/src/', array('scss'));
@@ -546,29 +526,6 @@ class RoboFile extends \Robo\Tasks {
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
 
-  protected function getPluginVersion($file) {
-    $data = file_get_contents($file);
-    preg_match('/^[ \t*]*Version:(.*)$/mi', $data, $m);
-    return !empty($m[1]) ? trim($m[1]) : false;
-  }
-
-  protected function getChangelogController() {
-    return \MailPoetTasks\Release\ChangelogController::createWithJiraCredentials(
-      getenv('WP_JIRA_TOKEN'),
-      getenv('WP_JIRA_USER'),
-      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET,
-      __DIR__ . '/readme.txt'
-    );
-  }
-
-  protected function getReleaseVersionController() {
-    return \MailPoetTasks\Release\ReleaseVersionController::createWithJiraCredentials(
-      getenv('WP_JIRA_TOKEN'),
-      getenv('WP_JIRA_USER'),
-      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
-    );
-  }
-
   public function testAcceptanceGroupTests() {
     return $this->taskSplitTestFilesByGroups(4)
       ->projectRoot('.')
@@ -672,11 +629,54 @@ class RoboFile extends \Robo\Tasks {
     $this->say("JIRA version '$jira_version[name]' was released.");
   }
 
+  protected function rsearch($folder, $extensions = array()) {
+    $dir = new RecursiveDirectoryIterator($folder);
+    $iterator = new RecursiveIteratorIterator($dir);
+
+    $pattern = '/^.+\.('.join($extensions, '|').')$/i';
+
+    $files = new RegexIterator(
+      $iterator,
+      $pattern,
+      RecursiveRegexIterator::GET_MATCH
+    );
+
+    $list = array();
+    foreach ($files as $file) {
+      $list[] = $file[0];
+    }
+
+    return $list;
+  }
+
+  protected function getPluginVersion($file) {
+    $data = file_get_contents($file);
+    preg_match('/^[ \t*]*Version:(.*)$/mi', $data, $m);
+    return !empty($m[1]) ? trim($m[1]) : false;
+  }
+
   protected function validateVersion($version) {
     if (!\MailPoetTasks\Release\VersionHelper::validateVersion($version)) {
       $this->yell('Incorrect version format', 40, 'red');
       exit(1);
     }
+  }
+
+  protected function getChangelogController() {
+    return \MailPoetTasks\Release\ChangelogController::createWithJiraCredentials(
+      getenv('WP_JIRA_TOKEN'),
+      getenv('WP_JIRA_USER'),
+      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET,
+      __DIR__ . '/readme.txt'
+    );
+  }
+
+  protected function getReleaseVersionController() {
+    return \MailPoetTasks\Release\ReleaseVersionController::createWithJiraCredentials(
+      getenv('WP_JIRA_TOKEN'),
+      getenv('WP_JIRA_USER'),
+      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
+    );
   }
 
   protected function createJiraController() {
