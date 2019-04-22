@@ -8,7 +8,12 @@ const kbLink = 'https://kb.mailpoet.com/article/126-importing-subscribers-with-c
 
 const placeholder = 'Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker';
 
-const MethodPaste = ({ onValueChange, canFinish, onFinish }) => {
+const MethodPaste = ({
+  onValueChange,
+  canFinish,
+  onFinish,
+  data,
+}) => {
   const onChange = (e) => {
     onValueChange(e.target.value);
   };
@@ -41,6 +46,7 @@ const MethodPaste = ({ onValueChange, canFinish, onFinish }) => {
           placeholder={placeholder}
           className="regular-text code"
           onChange={onChange}
+          defaultValue={data}
         />
       </label>
       <PreviousNextStepButtons
@@ -56,10 +62,12 @@ MethodPaste.propTypes = {
   onFinish: PropTypes.func,
   canFinish: PropTypes.bool.isRequired,
   onValueChange: PropTypes.func.isRequired,
+  data: PropTypes.string,
 };
 
 MethodPaste.defaultProps = {
   onFinish: () => {},
+  data: '',
 };
 
 export default MethodPaste;
