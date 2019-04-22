@@ -29,22 +29,23 @@ class WooCommerceSync extends SimpleWorker {
     return $this->woocommerce_helper->isWooCommerceActive();
   }
 
-  function prepareTask(ScheduledTask $task) {
-    if (is_null($task->status)) {
-      $this->taskAlreadyInProgress = true;
-      return false;
-    }
-
-    return parent::prepareTask($task);
-  }
-
   function processTaskStrategy(ScheduledTask $task) {
-    if ($this->taskAlreadyInProgress) {
+    $meta = $task->getMeta();
+    if (!empty($meta['in_progress'])) {
+      // Do not run multiple instances of the task
       return false;
     }
+
+    $task->meta = ['in_progress' => true];
+    $task->save();
 
     $this->woocommerce_segment->synchronizeCustomers();
 
     return true;
+  }
+
+  function complete(ScheduledTask $task) {
+    $task->meta = null;
+    return parent::complete($task);
   }
 }

@@ -6,6 +6,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Util\Helpers;
 
 class ScheduledTaskTest extends \MailPoetTest {
   function _before() {
@@ -108,6 +109,20 @@ class ScheduledTaskTest extends \MailPoetTest {
     $this->task->delete();
     $count = ScheduledTaskSubscriber::where('task_id', $task_id)->count();
     expect($count)->equals(0);
+  }
+
+  function testItJsonEncodesMetaWhenSaving() {
+    $task = ScheduledTask::create();
+    $meta = array(
+      'some' => 'value'
+    );
+    $task->meta = $meta;
+    $task->save();
+
+    $task = ScheduledTask::findOne($task->id);
+
+    expect(Helpers::isJson($task->meta))->true();
+    expect(json_decode($task->meta, true))->equals($meta);
   }
 
   function _after() {

@@ -129,6 +129,7 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
+      'meta longtext,',
       'PRIMARY KEY  (id),',
       'KEY type (type),',
       'KEY status (status)',
