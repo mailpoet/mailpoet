@@ -177,6 +177,7 @@ class SimpleWorkerTest extends \MailPoetTest {
     $scheduled_at = $task->scheduled_at;
     $this->worker->reschedule($task, 10);
     expect($scheduled_at < $task->scheduled_at)->true();
+    expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
   }
 
   function testItCalculatesNextRunDateWithinNextWeekBoundaries() {

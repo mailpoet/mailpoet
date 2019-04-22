@@ -109,6 +109,7 @@ abstract class SimpleWorker {
   function reschedule(ScheduledTask $task, $timeout) {
     $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     $task->scheduled_at = $scheduled_at->addMinutes($timeout);
+    $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->save();
   }
 

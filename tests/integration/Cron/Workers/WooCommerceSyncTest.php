@@ -42,6 +42,21 @@ class WooCommerceSyncTest extends \MailPoetTest {
     expect($task->getMeta())->notEmpty();
   }
 
+  function testItWillRescheduleTaskIfItIsRunningForTooLong() {
+    $this->woocommerce_segment->expects($this->once())
+      ->method('synchronizeCustomers');
+    $task = $this->createScheduledTask();
+    $task = ScheduledTask::findOne($task->id); // make sure `updated_at` is set by the DB
+    expect($this->worker->processTaskStrategy($task))->equals(true);
+    $scheduled_at = $task->scheduled_at;
+    $task->updated_at = Carbon::createFromTimestamp(strtotime($task->updated_at))
+      ->subMinutes(WooCommerceSync::TASK_RUN_TIMEOUT + 1);
+    expect($this->worker->processTaskStrategy($task))->equals(false);
+    expect($scheduled_at < $task->scheduled_at)->true();
+    expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+    expect($task->getMeta())->isEmpty();
+  }
+
   private function createScheduledTask() {
     $task = ScheduledTask::create();
     $task->type = WooCommerceSync::TASK_TYPE;
