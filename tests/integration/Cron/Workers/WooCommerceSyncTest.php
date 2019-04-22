@@ -1,14 +1,11 @@
 <?php
 namespace MailPoet\Test\Cron\Workers;
 
-use Codeception\Util\Stub;
+use Carbon\Carbon;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-
-require_once('ScheduledTaskStub.php');
-use MailPoet\Models\ScheduledTaskStub;
 
 class WooCommerceSyncTest extends \MailPoetTest {
   function _before() {
@@ -32,18 +29,29 @@ class WooCommerceSyncTest extends \MailPoetTest {
   function testItCallsWooCommerceSync() {
     $this->woocommerce_segment->expects($this->once())
       ->method('synchronizeCustomers');
-    $task = Stub::make(ScheduledTask::class);
+    $task = $this->createScheduledTask();
     expect($this->worker->processTaskStrategy($task))->equals(true);
   }
 
   function testItWillNotRunInMultipleInstances() {
     $this->woocommerce_segment->expects($this->once())
       ->method('synchronizeCustomers');
-    $task = new ScheduledTaskStub;
-    $task->status = ScheduledTask::STATUS_SCHEDULED;
-    expect($this->worker->prepareTask($task))->equals(true);
+    $task = $this->createScheduledTask();
     expect($this->worker->processTaskStrategy($task))->equals(true);
-    expect($this->worker->prepareTask($task))->equals(false);
     expect($this->worker->processTaskStrategy($task))->equals(false);
+    expect($task->getMeta())->notEmpty();
+  }
+
+  private function createScheduledTask() {
+    $task = ScheduledTask::create();
+    $task->type = WooCommerceSync::TASK_TYPE;
+    $task->status = null;
+    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->save();
+    return $task;
+  }
+
+  function _after() {
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }
