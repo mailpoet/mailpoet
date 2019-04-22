@@ -26,7 +26,8 @@ function StepMethodSelection({
   navigate,
 }) {
   const [method, setMethod] = useState(undefined);
-  const [csvData, setCsvData] = useState('');
+  const [pastedCsvData, setPastedCsvData] = useState('');
+  const [file, setFile] = useState(undefined);
 
   const finish = (parsedData) => {
     window.importData.step_method_selection = parsedData;
@@ -37,7 +38,8 @@ function StepMethodSelection({
   };
 
   const processLocal = () => {
-    processCsv(csvData, (sanitizedData) => {
+    const data = method === 'paste-method' ? pastedCsvData : file;
+    processCsv(data, (sanitizedData) => {
       MailPoet.trackEvent('Subscribers import started', {
         source: method === 'file-method' ? 'file upload' : 'pasted data',
         'MailPoet Free version': window.mailpoet_version,
@@ -55,18 +57,20 @@ function StepMethodSelection({
       { method === 'paste-method'
         ? (
           <MethodPaste
-            onValueChange={setCsvData}
+            onValueChange={setPastedCsvData}
             onFinish={processLocal}
-            canFinish={!!csvData.trim()}
+            canFinish={!!pastedCsvData.trim()}
+            data={pastedCsvData}
           />
         ) : null
       }
       { method === 'file-method'
         ? (
           <MethodUpload
-            onValueChange={setCsvData}
+            onValueChange={setFile}
             onFinish={processLocal}
-            canFinish={!!csvData}
+            canFinish={!!file}
+            data={file}
           />
         ) : null
       }
