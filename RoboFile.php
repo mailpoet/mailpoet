@@ -644,10 +644,7 @@ class RoboFile extends \Robo\Tasks {
     $version = $jira_controller->getVersion($version);
     $changelog = $this->getChangelogController()->get($version['name']);
 
-    $slack_notifier = new \MailPoetTasks\Release\SlackNotifier(
-      getenv('WP_SLACK_WEBHOOK_URL'),
-      \MailPoetTasks\Release\SlackNotifier::PROJECT_MAILPOET
-    );
+    $slack_notifier = $this->createSlackNotifier();
     $slack_notifier->notify($version['name'], $changelog[1], $version['id']);
   }
 
@@ -699,27 +696,51 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function createJiraController() {
+    $help = 'Use your JIRA username and a token from https://id.atlassian.com/manage/api-tokens.';
     return new \MailPoetTasks\Release\JiraController(
-      getenv('WP_JIRA_TOKEN'),
-      getenv('WP_JIRA_USER'),
+      $this->getEnv('WP_JIRA_TOKEN', $help),
+      $this->getEnv('WP_JIRA_USER', $help),
       \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
     );
   }
 
   protected function createCircleCiController() {
+    $help = "Use 'mailpoet' username and a token from https://circleci.com/gh/mailpoet/mailpoet/edit#api.";
     return new \MailPoetTasks\Release\CircleCiController(
-      getenv('WP_CIRCLECI_USERNAME'),
-      getenv('WP_CIRCLECI_TOKEN'),
+      $this->getEnv('WP_CIRCLECI_USERNAME', $help),
+      $this->getEnv('WP_CIRCLECI_TOKEN', $help),
       \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET,
       $this->createGitHubController()
     );
   }
 
   protected function createGitHubController() {
+    $help = "Use your GitHub username and a token from https://github.com/settings/tokens with 'repo' scopes.";
     return new \MailPoetTasks\Release\GitHubController(
-      getenv('WP_GITHUB_USERNAME'),
-      getenv('WP_GITHUB_TOKEN'),
+      $this->getEnv('WP_GITHUB_USERNAME', $help),
+      $this->getEnv('WP_GITHUB_TOKEN', $help),
       \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET
     );
+  }
+
+  protected function createSlackNotifier() {
+    $help = 'Use Webhook URL from https://mailpoet.slack.com/services/BHRB9AHSQ.';
+    return new \MailPoetTasks\Release\SlackNotifier(
+      $this->getEnv('WP_SLACK_WEBHOOK_URL', $help),
+      \MailPoetTasks\Release\SlackNotifier::PROJECT_MAILPOET
+    );
+  }
+
+  protected function getEnv($name, $help = null) {
+    $env = getenv($name);
+    if ($env === false || $env === '') {
+      $this->yell("Environment variable '$name' was not set.", 40, 'red');
+      if ($help !== null) {
+        $this->say('');
+        $this->say($help);
+      }
+      exit(1);
+    }
+    return $env;
   }
 }
