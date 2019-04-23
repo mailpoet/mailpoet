@@ -648,7 +648,7 @@ class SubscriberTest extends \MailPoetTest {
 
   function testItGeneratesSubscriberToken() {
     $token = Subscriber::generateToken($this->test_data['email']);
-    expect(strlen($token))->equals(Subscriber::SUBSCRIBER_TOKEN_LENGTH);
+    expect(strlen($token))->equals(32);
   }
 
   function testItVerifiesSubscriberToken() {
@@ -658,8 +658,7 @@ class SubscriberTest extends \MailPoetTest {
   }
 
   function testItVerifiesTokensOfDifferentLengths() {
-    $token = md5(AUTH_KEY . $this->test_data['email']);
-    expect(strlen($token))->notEquals(Subscriber::SUBSCRIBER_TOKEN_LENGTH);
+    $token = Subscriber::generateToken($this->test_data['email'], 6);
     expect(Subscriber::verifyToken($this->test_data['email'], $token))->true();
   }
 
