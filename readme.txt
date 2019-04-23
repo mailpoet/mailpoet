@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 3.23.2
+Stable tag: 3.24.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -173,6 +173,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.24.0 - 2019-04-23 =
+* Added: add WooCommerce product blocks to your email;
+* Added: an optional way to automatically deactivate inactive subscribers who don't read your emails;
+* Added: setting to stop sending for inactive subscribers who haven't opened newsletters in a span of time.
 
 = 3.23.2 - 2019-04-16 =
 * Improved: UI clarity and user-friendliness;
