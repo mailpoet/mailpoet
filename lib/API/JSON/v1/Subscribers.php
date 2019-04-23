@@ -95,22 +95,44 @@ class Subscribers extends APIEndpoint {
       $listing_data = $this->subscribers_listings->getListingsInSegment($data);
     }
 
-    $data = array();
+    $result = array();
     foreach ($listing_data['items'] as $subscriber) {
-      $data[] = $subscriber
+      $subscriber_result = $subscriber
         ->withSubscriptions()
         ->asArray();
+      if (isset($data['filter']['segment'])) {
+        $subscriber_result = $this->preferUnsubscribedStatusFromSegment($subscriber_result, $data['filter']['segment']);
+      }
+      $result[] = $subscriber_result;
     }
 
     $listing_data['filters']['segment'] = $this->wp->applyFilters(
       'mailpoet_subscribers_listings_filters_segments',
       $listing_data['filters']['segment']
     );
-    return $this->successResponse($data, array(
+
+    return $this->successResponse($result, array(
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
       'groups' => $listing_data['groups']
     ));
+  }
+
+  private function preferUnsubscribedStatusFromSegment(array $subscriber, $segment_id) {
+    $segment_status = $this->findSegmentStatus($subscriber, $segment_id);
+
+    if ($segment_status === Subscriber::STATUS_UNSUBSCRIBED) {
+      $subscriber['status'] = $segment_status;
+    }
+    return $subscriber;
+  }
+
+  private function findSegmentStatus(array $subscriber, $segment_id) {
+    foreach ($subscriber['subscriptions'] as $segment) {
+      if ($segment['segment_id'] === $segment_id) {
+        return $segment['status'];
+      }
+    }
   }
 
   function subscribe($data = array()) {

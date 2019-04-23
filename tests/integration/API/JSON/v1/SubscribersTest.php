@@ -322,6 +322,30 @@ class SubscribersTest extends \MailPoetTest {
     );
   }
 
+  function testItCorrectSubscriptionStatus() {
+    $segment = Segment::createOrUpdate(array('name' => 'Segment185245'));
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'third@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'segments' => array(
+        $segment->id,
+      ),
+      'source' => Source::API,
+    ]);
+    SubscriberSegment::createOrUpdate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => $segment->id,
+      'status' => Subscriber::STATUS_UNSUBSCRIBED,
+    ]);
+    $response = $this->endpoint->listing([
+      'filter' => [
+        'segment' => $segment->id,
+      ],
+    ]);
+
+    expect($response->data[0]['status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
+  }
+
   function testItCanSortAndLimitListing() {
     // get 1st page (limit items per page to 1)
     $response = $this->endpoint->listing(array(

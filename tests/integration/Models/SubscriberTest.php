@@ -241,9 +241,6 @@ class SubscriberTest extends \MailPoetTest {
     $subscribers = Subscriber::filter('filterBy', array('segment' => 'none'))
       ->findMany();
     expect($subscribers)->count(1);
-    $subscribers = Subscriber::filter('filterBy', array('segment' => $segment->id))
-      ->findMany();
-    expect($subscribers)->count(0);
 
     // subscribed to trashed segments
     SubscriberSegment::subscribeToSegments(
