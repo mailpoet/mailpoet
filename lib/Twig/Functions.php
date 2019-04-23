@@ -123,6 +123,11 @@ class Functions extends AbstractExtension {
         array($this, 'isWoocommerceActive'),
         array('is_safe' => array('all'))
       ),
+      new TwigFunction(
+        'wp_start_of_week',
+        array($this, 'getWPStartOfWeek'),
+        array('is_safe' => array('all'))
+      ),
     );
   }
 
@@ -164,6 +169,10 @@ class Functions extends AbstractExtension {
 
   function getWPDateFormat() {
     return WPFunctions::get()->getOption('date_format') ?: 'F j, Y';
+  }
+
+  function getWPStartOfWeek() {
+    return WPFunctions::get()->getOption('start_of_week') ?: 0;
   }
 
   function getMailPoetVersion() {
