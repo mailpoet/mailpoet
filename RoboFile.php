@@ -628,6 +628,7 @@ class RoboFile extends \Robo\Tasks {
 
     $github_controller = $this->createGitHubController();
     $github_controller->publishRelease($version['name'], $changelog[1], self::ZIP_BUILD_PATH);
+    $this->say("Release '$version[name]' was published to GitHub.");
   }
 
   public function releasePublishJira($version = null) {
@@ -644,6 +645,7 @@ class RoboFile extends \Robo\Tasks {
 
     $slack_notifier = $this->createSlackNotifier();
     $slack_notifier->notify($version['name'], $changelog[1], $version['id']);
+    $this->say("Release '$version[name]' info was published on Slack.");
   }
 
   protected function rsearch($folder, $extensions = array()) {
