@@ -168,9 +168,7 @@ class Functions extends AbstractExtension {
   }
 
   function getWPDateFormat() {
-    return (get_option('date_format')) ?
-      WPFunctions::get()->getOption('date_format') :
-      'F j, Y';
+    return WPFunctions::get()->getOption('date_format') ?: 'F j, Y';
   }
 
   function getMailPoetVersion() {
@@ -182,9 +180,7 @@ class Functions extends AbstractExtension {
   }
 
   function getWPTimeFormat() {
-    return (get_option('time_format')) ?
-      WPFunctions::get()->getOption('time_format') :
-      'g:i a';
+    return WPFunctions::get()->getOption('time_format') ?: 'g:i a';
   }
 
   function getWPDateTimeFormat() {
