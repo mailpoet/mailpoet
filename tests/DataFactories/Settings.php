@@ -98,4 +98,8 @@ class Settings {
   function withWooCommerceListImportPageDisplayed($was_shown) {
     $this->settings->set('woocommerce.import_screen_displayed', $was_shown ? 1 : 0);
   }
+
+  function withWooCommerceListSyncEnabled() {
+    $this->settings->set('woo_commerce_list_sync_enabled', 1);
+  }
 }

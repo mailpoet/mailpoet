@@ -27,6 +27,7 @@ class WooCommerceTest extends \MailPoetTest  {
   function _before() {
     $this->woocommerce_segment = ContainerWrapper::getInstance()->get(WooCommerceSegment::class);
     $this->settings = ContainerWrapper::getInstance()->get(SettingsController::class);
+    $this->settings->set('woo_commerce_list_sync_enabled', 1);
     $this->cleanData();
     $this->addCustomerRole();
   }

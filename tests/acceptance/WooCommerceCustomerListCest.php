@@ -22,6 +22,7 @@ class WooCommerceCustomerListCest {
     $this->product_factory = new WooCommerceProduct($I);
     $settings_factory = new Settings();
     $settings_factory->withWooCommerceListImportPageDisplayed(true);
+    $settings_factory->withWooCommerceListSyncEnabled();
     $customer_factory = new WooCommerceCustomer($I);
     $customer_factory->deleteAll();
   }
