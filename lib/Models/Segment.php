@@ -47,7 +47,7 @@ class Segment extends Model {
       __NAMESPACE__.'\SubscriberSegment',
       'segment_id',
       'subscriber_id'
-    )->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', Subscriber::STATUS_SUBSCRIBED);
+    );
   }
 
   function duplicate($data = array()) {
