@@ -15,10 +15,6 @@ class ReleaseVersionController {
     $this->project = $project;
   }
 
-  static function createWithJiraCredentials($token, $user, $project) {
-    return new self(new JiraController($token, $user, $project), $project);
-  }
-
   function assignVersionToCompletedTickets($version = null) {
     $version = $this->ensureCorrectVersion($version);
     if (!$version) {

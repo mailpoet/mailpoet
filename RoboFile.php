@@ -685,18 +685,15 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function getChangelogController() {
-    return \MailPoetTasks\Release\ChangelogController::createWithJiraCredentials(
-      getenv('WP_JIRA_TOKEN'),
-      getenv('WP_JIRA_USER'),
-      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET,
+    return new \MailPoetTasks\Release\ChangelogController(
+      $this->createJiraController(),
       __DIR__ . '/readme.txt'
     );
   }
 
   protected function getReleaseVersionController() {
-    return \MailPoetTasks\Release\ReleaseVersionController::createWithJiraCredentials(
-      getenv('WP_JIRA_TOKEN'),
-      getenv('WP_JIRA_USER'),
+    return new \MailPoetTasks\Release\ReleaseVersionController(
+      $this->createJiraController(),
       \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
     );
   }

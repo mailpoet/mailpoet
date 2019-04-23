@@ -18,10 +18,6 @@ class ChangelogController {
     $this->readme_file = $readme_file;
   }
 
-  static function createWithJiraCredentials($token, $user, $project, $readme_file) {
-    return new self(new JiraController($token, $user, $project), $readme_file);
-  }
-
   function update($version_name = null) {
     $changelog_data = $this->get($version_name);
     $this->updateReadme($changelog_data[0], $changelog_data[1]);
