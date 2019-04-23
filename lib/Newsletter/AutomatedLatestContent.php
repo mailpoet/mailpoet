@@ -31,6 +31,10 @@ class AutomatedLatestContent {
   }
 
   function getPosts($args, $posts_to_exclude = array()) {
+    // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
+    $current_user_id = WPFunctions::get()->getCurrentUserId();
+    WPFunctions::get()->wpSetCurrentUser(0);
+
     Logger::getLogger('post-notifications')->addInfo(
       'loading automated latest content',
       ['args' => $args, 'posts_to_exclude' => $posts_to_exclude, 'newsletter_id' => $this->newsletter_id, 'newer_than_timestamp' => $this->newer_than_timestamp]
@@ -85,6 +89,7 @@ class AutomatedLatestContent {
     $this->logPosts($posts);
 
     $this->_detachSentPostsFilter();
+    WPFunctions::get()->wpSetCurrentUser($current_user_id);
     return $posts;
   }
 
