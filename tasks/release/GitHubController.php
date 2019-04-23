@@ -12,7 +12,7 @@ class GitHubController {
   const FREE_ZIP_FILENAME = 'mailpoet.zip';
   const PREMIUM_ZIP_FILENAME = 'mailpoet-premium.zip';
 
-  const RELEASE_SOURCE_BRANCH = 'master';
+  const RELEASE_SOURCE_BRANCH = 'release';
 
   /** @var string */
   private $zip_filename;
