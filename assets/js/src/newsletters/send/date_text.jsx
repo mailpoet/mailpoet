@@ -94,6 +94,7 @@ class DateText extends React.Component {
 
       $element.datepicker(_.extend({
         dateFormat: this.props.displayFormat,
+        firstDay: window.mailpoet_start_of_week,
         isRTL: false,
         onSelect: function onSelect(value) {
           that.onChange({
