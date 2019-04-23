@@ -59,11 +59,6 @@ class Functions extends AbstractExtension {
         array('is_safe' => array('all'))
       ),
       new TwigFunction(
-        'get_option',
-        'get_option',
-        array('is_safe' => array('all'))
-      ),
-      new TwigFunction(
         'sending_frequency',
         array($this, 'getSendingFrequency'),
         array('is_safe' => array('all'))
