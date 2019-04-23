@@ -1,6 +1,7 @@
 <?php
 
 class RoboFile extends \Robo\Tasks {
+  const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
 
   use \Codeception\Task\SplitTestsByGroups;
 
@@ -615,7 +616,7 @@ class RoboFile extends \Robo\Tasks {
 
   public function releaseDownloadZip() {
     $circleci_controller = $this->createCircleCiController();
-    $path = $circleci_controller->downloadLatestBuild(__DIR__ . '/mailpoet.zip');
+    $path = $circleci_controller->downloadLatestBuild(self::ZIP_BUILD_PATH);
     $this->say('Release ZIP downloaded to: ' . $path);
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path)/pow(1024, 2)));
   }
@@ -625,11 +626,8 @@ class RoboFile extends \Robo\Tasks {
     $version = $jira_controller->getVersion($version);
     $changelog = $this->getChangelogController()->get($version['name']);
 
-    $circleci_controller = $this->createCircleCiController();
-    $path = $circleci_controller->downloadLatestBuild(__DIR__ . '/mailpoet.zip');
-
     $github_controller = $this->createGitHubController();
-    $github_controller->publishRelease($version['name'], $changelog[1], $path);
+    $github_controller->publishRelease($version['name'], $changelog[1], self::ZIP_BUILD_PATH);
   }
 
   public function releasePublishJira($version = null) {
