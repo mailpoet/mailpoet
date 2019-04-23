@@ -41,6 +41,10 @@ class VersionHelper {
     return sprintf('%d.%d.%d', $parts[self::MAJOR], $parts[self::MINOR], $parts[self::PATCH]);
   }
 
+  static function buildMinorVersion(array $parts) {
+    return sprintf('%d.%d', $parts[self::MAJOR], $parts[self::MINOR]);
+  }
+
   static function validateVersion($version) {
     return preg_match(self::VERSION_REGEXP, $version);
   }
