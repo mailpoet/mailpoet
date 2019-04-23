@@ -57,7 +57,9 @@ class Changelog {
       $this->setupNewInstallation();
       $this->checkWelcomeWizard();
     }
-    $this->checkWooCommerceListImportPage();
+    if ($this->settings->get('woo_commerce_list_sync_enabled')) {
+      $this->checkWooCommerceListImportPage();
+    }
   }
 
   private function checkMp2Migration($version) {

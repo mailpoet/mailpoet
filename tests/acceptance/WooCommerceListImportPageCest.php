@@ -27,6 +27,9 @@ class WooCommerceListImportPageCest {
     // Cleanup
     $this->customer_factory->deleteAll();
     $this->order_factory->deleteAll();
+    // Feature switch
+    $settings_factory = new Settings();
+    $settings_factory->withWooCommerceListSyncEnabled();
   }
 
   function importListPageImportTest(\AcceptanceTester $I) {

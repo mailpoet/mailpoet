@@ -2,6 +2,7 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\WorkersFactory;
+use MailPoet\Settings\SettingsController;
 
 if (!defined('ABSPATH')) exit;
 
@@ -29,7 +30,10 @@ class Daemon {
       $this->executeBounceWorker();
       $this->executeExportFilesCleanupWorker();
       $this->executeInactiveSubscribersWorker();
-      $this->executeWooCommerceSyncWorker();
+      $settings = new SettingsController();
+      if ($settings->get('woo_commerce_list_sync_enabled')) {
+        $this->executeWooCommerceSyncWorker();
+      }
     } catch (\Exception $e) {
       CronHelper::saveDaemonLastError($e->getMessage());
     }
