@@ -36,7 +36,6 @@ class Subscriber extends Model {
   const STATUS_UNCONFIRMED = 'unconfirmed';
   const STATUS_BOUNCED = 'bounced';
   const STATUS_INACTIVE = 'inactive';
-  const SUBSCRIBER_TOKEN_LENGTH = 6;
 
   /** @var string|bool */
   public $token;
@@ -108,13 +107,13 @@ class Subscriber extends Model {
     return self::where('wp_user_id', $wp_user->ID)->findOne();
   }
 
-  static function generateToken($email = null) {
+  static function generateToken($email = null, $length = 32) {
     if ($email !== null) {
       $auth_key = '';
       if (defined('AUTH_KEY')) {
         $auth_key = AUTH_KEY;
       }
-      return substr(md5($auth_key . $email), 0, self::SUBSCRIBER_TOKEN_LENGTH);
+      return substr(md5($auth_key . $email), 0, $length);
     }
     return false;
   }
@@ -122,8 +121,8 @@ class Subscriber extends Model {
   static function verifyToken($email, $token) {
     return call_user_func(
       'hash_equals',
-      self::generateToken($email),
-      substr($token, 0, self::SUBSCRIBER_TOKEN_LENGTH)
+      self::generateToken($email, strlen($token)),
+      $token
     );
   }
 
