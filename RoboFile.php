@@ -521,7 +521,7 @@ class RoboFile extends \Robo\Tasks {
         return $this->releaseVersionWrite($version);
       })
       ->addCode(function () use ($version) {
-        return $this->releaseChangelogWrite(['version-name' => $version]);
+        return $this->releaseChangelogWrite($version);
       })
       ->run();
   }
@@ -600,15 +600,15 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  function releaseChangelogGet($opts = ['version-name' => null]) {
-    $outputs = $this->getChangelogController()->get($opts['version-name']);
+  function releaseChangelogGet($version = null) {
+    $outputs = $this->getChangelogController()->get($version);
     $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n");
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
 
-  function releaseChangelogWrite($opts = ['version-name' => null]) {
+  function releaseChangelogWrite($version = null) {
     $this->say("Updating changelog");
-    $outputs = $this->getChangelogController()->update($opts['version-name']);
+    $outputs = $this->getChangelogController()->update($version);
     $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n\n");
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
