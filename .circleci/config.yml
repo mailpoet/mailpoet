@@ -128,7 +128,7 @@ jobs:
     - run:
         name: "PHP Integration tests"
         command: |
-          WP_ROOT="/home/circleci/mailpoet/wordpress" ./do t:i --xml
+          WP_ROOT="/home/circleci/mailpoet/wordpress" ./do test:integration --xml
     - store_test_results:
         path: test-results/mocha
     - store_artifacts:
@@ -339,7 +339,7 @@ jobs:
       - run:
           name: "PHP Integration tests"
           command: |
-            ./do t:i --xml
+            ./do test:integration --xml
       - store_test_results:
           path: tests/_output
       - store_artifacts:
