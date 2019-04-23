@@ -504,6 +504,10 @@ class Functions {
     return wp_safe_redirect($location, $status);
   }
 
+  function wpSetCurrentUser($id, $name = '') {
+    return wp_set_current_user($id, $name);
+  }
+
   function wpStaticizeEmoji($text) {
     return wp_staticize_emoji($text);
   }
