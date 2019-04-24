@@ -9,6 +9,9 @@ if (!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
+// The "created_at" column must be NULL in some tables to avoid "there can be only one
+// TIMESTAMP column with CURRENT_TIMESTAMP" error on MySQL version < 5.6.5 that occurs
+// even when other timestamp is simply "NOT NULL".
 class Migrator {
 
   public $prefix;
@@ -79,7 +82,7 @@ class Migrator {
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL DEFAULT "default",',
       'description varchar(250) NOT NULL DEFAULT "",',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'PRIMARY KEY  (id),',
@@ -93,7 +96,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(50) NOT NULL,',
       'value longtext,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)'
@@ -107,7 +110,7 @@ class Migrator {
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL,',
       'params longtext NOT NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)'
@@ -123,7 +126,7 @@ class Migrator {
       'priority mediumint(9) NOT NULL DEFAULT 0,',
       'scheduled_at timestamp NULL,',
       'processed_at timestamp NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'PRIMARY KEY  (id),',
@@ -138,7 +141,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'task_id int(11) unsigned NOT NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'UNIQUE KEY newsletter_id_task_id (newsletter_id, task_id),',
@@ -173,7 +176,7 @@ class Migrator {
       'count_processed int(11) unsigned NOT NULL DEFAULT 0,',
       'count_to_process int(11) unsigned NOT NULL DEFAULT 0,',
       'meta longtext,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'PRIMARY KEY  (id),',
@@ -195,7 +198,7 @@ class Migrator {
       'subscribed_ip varchar(45) NULL,',
       'confirmed_ip varchar(45) NULL,',
       'confirmed_at timestamp NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'unconfirmed_data longtext,',
@@ -216,7 +219,7 @@ class Migrator {
       'subscriber_id int(11) unsigned NOT NULL,',
       'segment_id int(11) unsigned NOT NULL,',
       'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_SUBSCRIBED . '",',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY subscriber_segment (subscriber_id,segment_id),',
@@ -231,7 +234,7 @@ class Migrator {
       'subscriber_id int(11) unsigned NOT NULL,',
       'custom_field_id int(11) unsigned NOT NULL,',
       'value text NOT NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY subscriber_id_custom_field_id (subscriber_id,custom_field_id)'
@@ -264,7 +267,7 @@ class Migrator {
       'preheader varchar(250) NOT NULL DEFAULT "",',
       'body longtext,',
       'sent_at timestamp NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'PRIMARY KEY  (id),',
@@ -283,7 +286,7 @@ class Migrator {
       'body longtext,',
       'thumbnail longtext,',
       'readonly tinyint(1) DEFAULT 0,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'
     );
@@ -295,7 +298,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'newsletter_type varchar(90) NOT NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name_newsletter_type (newsletter_type,name)'
@@ -309,7 +312,7 @@ class Migrator {
       'newsletter_id int(11) unsigned NOT NULL,',
       'option_field_id int(11) unsigned NOT NULL,',
       'value longtext,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY newsletter_id_option_field_id (newsletter_id,option_field_id)'
@@ -322,7 +325,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'segment_id int(11) unsigned NOT NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY newsletter_segment (newsletter_id,segment_id)'
@@ -337,7 +340,7 @@ class Migrator {
       'queue_id int(11) unsigned NOT NULL,',
       'url varchar(2083) NOT NULL,',
       'hash varchar(20) NOT NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
@@ -352,7 +355,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'post_id int(11) unsigned NOT NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id)',
@@ -367,7 +370,7 @@ class Migrator {
       'body longtext,',
       'settings longtext,',
       'styles longtext,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'PRIMARY KEY  (id)'
@@ -397,7 +400,7 @@ class Migrator {
       'queue_id int(11) unsigned NOT NULL,',
       'link_id int(11) unsigned NOT NULL,',
       'count int(11) unsigned NOT NULL,',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
@@ -460,7 +463,7 @@ class Migrator {
       'order_id bigint(20) unsigned NOT NULL,',
       'order_currency char(3) NOT NULL,',
       'order_price_total float NOT NULL COMMENT "With shipping and taxes in order_currency",',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'KEY newsletter_id (newsletter_id),',
@@ -501,7 +504,7 @@ class Migrator {
       'user_id bigint(20) NOT NULL,',
       'name varchar(50) NOT NULL,',
       'value varchar(255),',
-      'created_at timestamp NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'UNIQUE KEY user_id_name (user_id, name)',
