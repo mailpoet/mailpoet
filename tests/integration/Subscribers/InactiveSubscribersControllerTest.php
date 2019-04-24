@@ -188,6 +188,15 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_INACTIVE);
   }
 
+  function testItDoesReactivateInactiveSubscribers() {
+    list($task) = $this->createCompletedSendingTask(2);
+    $subscriber = $this->createSubscriber('s1@email.com', 10, Subscriber::STATUS_INACTIVE);
+    $this->addSubcriberToTask($subscriber, $task);
+    $this->controller->reactivateInactiveSubscribers();
+    $subscriber = Subscriber::findOne($subscriber->id);
+    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
   /**
    * @param $email
    * @param int $created_days_ago
