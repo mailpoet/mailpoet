@@ -21,11 +21,12 @@ class InactiveSubscribersTest extends \MailPoetTest {
     parent::_before();
   }
 
-  function testItSchedulesNextRunWhenThereIsNothingToDo() {
+  function testItReactivateInactiveSubscribersWhenIntervalIsSetToNever() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 0);
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub\Expected::never(),
       'markActiveSubscribers' => Stub\Expected::never(),
+      'reactivateInactiveSubscribers' => Stub\Expected::once(),
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
@@ -45,6 +46,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub\Expected::never(),
       'markActiveSubscribers' => Stub\Expected::never(),
+      'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
@@ -56,6 +58,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub\Expected::once(1),
       'markActiveSubscribers' => Stub\Expected::once(1),
+      'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
@@ -74,6 +77,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub::consecutive(InactiveSubscribers::BATCH_SIZE, InactiveSubscribers::BATCH_SIZE, 1, 'ok'),
       'markActiveSubscribers' => Stub::consecutive(InactiveSubscribers::BATCH_SIZE, 1, 'ok'),
+      'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
@@ -88,6 +92,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub\Expected::once(InactiveSubscribers::BATCH_SIZE),
       'markActiveSubscribers' => Stub\Expected::never(),
+      'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings, microtime(true) - (CronHelper::DAEMON_EXECUTION_LIMIT - 1));

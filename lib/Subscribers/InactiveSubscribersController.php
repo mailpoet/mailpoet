@@ -34,6 +34,17 @@ class InactiveSubscribersController {
   }
 
   /**
+   * @return void
+   */
+  function reactivateInactiveSubscribers() {
+    $reactivate_all_inactive_query = sprintf(
+      "UPDATE %s SET status = '%s' WHERE status = '%s';",
+     Subscriber::$_table, Subscriber::STATUS_SUBSCRIBED, Subscriber::STATUS_INACTIVE
+    );
+    \ORM::rawExecute($reactivate_all_inactive_query);
+  }
+
+  /**
    * @param int $days_to_inactive
    * @return Carbon
    */
