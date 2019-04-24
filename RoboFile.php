@@ -237,7 +237,10 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function securityComposer() {
-    return $this->_exec('vendor/bin/security-checker security:check --format=simple');
+    return $this->collectionBuilder()
+      ->taskExec('vendor/bin/security-checker security:check --format=simple')
+      ->taskExec('vendor/bin/security-checker security:check --format=simple prefixer/composer.lock')
+      ->run();
   }
 
   function testDebugUnit($opts=['file' => null, 'xml' => false, 'debug' => true]) {
