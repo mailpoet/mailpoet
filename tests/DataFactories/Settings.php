@@ -102,4 +102,9 @@ class Settings {
   function withWooCommerceListSyncEnabled() {
     $this->settings->set('woo_commerce_list_sync_enabled', 1);
   }
+
+  function withDeactivateSubscriberAfter3Months() {
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 180);
+    return $this;
+  }
 }
