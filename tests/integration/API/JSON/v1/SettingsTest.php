@@ -1,9 +1,12 @@
 <?php
 namespace MailPoet\Test\API\JSON\v1;
 
+use Carbon\Carbon;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\v1\Settings;
+use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 
@@ -17,6 +20,7 @@ class SettingsTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->settings = new SettingsController();
     $this->settings->set('some.setting.key', true);
     $this->endpoint = new Settings($this->settings);
@@ -58,6 +62,23 @@ class SettingsTest extends \MailPoetTest {
     expect($response->data['some']['setting'])->hasntKey('key');
     expect($response->data['some']['setting']['new_key'])->true();
     expect($response->data['some']['new_setting'])->true();
+  }
+
+  function testItSchedulesInactiveSubscribersCheckIfIntervalSettingChanges() {
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 30);
+    $settings = ['deactivate_subscriber_after_inactive_days' => 30];
+    $this->endpoint->set($settings);
+    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
+      ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
+      ->findOne();
+    expect($task)->false();
+
+    $settings = ['deactivate_subscriber_after_inactive_days' => 0];
+    $this->endpoint->set($settings);
+    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
+      ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
+      ->findOne();
+    expect($task->scheduled_at)->lessThan(Carbon::now());
   }
 
   function _after() {
