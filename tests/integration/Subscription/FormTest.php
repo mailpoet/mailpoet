@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Test\Subscription;
 
-use AspectMock\Test as Mock;
+use Codeception\Stub;
+use MailPoet\API\JSON\API;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form as FormModel;
@@ -11,6 +12,7 @@ use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Form;
 use MailPoet\Util\Security;
+use MailPoet\Util\Url as UrlHelper;
 
 class FormTest extends \MailPoetTest {
 
@@ -68,18 +70,17 @@ class FormTest extends \MailPoetTest {
       )
     );
     $this->settings->set('signup_confirmation.enabled', false);
-    $this->form_controller = ContainerWrapper::getInstance()->get(Form::class);
   }
 
   function testItSubscribesAndRedirectsBackWithSuccessResponse() {
-    $mock = Mock::double('MailPoet\Util\Url', [
+    $url_helper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params) {
         return $params;
       }
-    ]);
-    $result = $this->form_controller->onSubmit($this->request_data);
+    ], $this);
+    $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
+    $result = $form_controller->onSubmit($this->request_data);
     expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
-    $mock->verifyInvoked('redirectBack');
     expect($result['mailpoet_success'])->equals($this->form->id);
     expect($result['mailpoet_error'])->null();
   }
@@ -92,17 +93,17 @@ class FormTest extends \MailPoetTest {
     $form_settings['success_page'] = $this->post;
     $form->settings = serialize($form_settings);
     $form->save();
-    $mock = Mock::double('MailPoet\Util\Url', [
+    $url_helper = Stub::make(UrlHelper::class, [
       'redirectTo' => function($params) {
         return $params;
       },
       'redirectBack' => function($params) {
         return $params;
       }
-    ]);
-    $result = $this->form_controller->onSubmit($this->request_data);
+    ], $this);
+    $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
+    $result = $form_controller->onSubmit($this->request_data);
     expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
-    $mock->verifyInvoked('redirectTo');
     expect($result)->regExp('/http.*?sample-post/i');
   }
 
@@ -110,20 +111,19 @@ class FormTest extends \MailPoetTest {
     // clear subscriber email so that subscription fails
     $request_data = $this->request_data;
     $request_data['data']['email'] = false;
-    $mock = Mock::double('MailPoet\Util\Url', [
+    $url_helper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params) {
         return $params;
       }
-    ]);
-    $result = $this->form_controller->onSubmit($request_data);
+    ], $this);
+    $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
+    $result = $form_controller->onSubmit($request_data);
     expect(SubscriberModel::findMany())->isEmpty();
-    $mock->verifyInvoked('redirectBack');
     expect($result['mailpoet_error'])->equals($this->form->id);
     expect($result['mailpoet_success'])->null();
   }
 
   function _after() {
-    Mock::clean();
     wp_delete_post($this->post);
     \ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
     \ORM::raw_execute('TRUNCATE ' . FormModel::$_table);

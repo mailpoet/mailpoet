@@ -6,6 +6,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
+use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
@@ -18,6 +19,9 @@ class Hooks {
 
   /** @var Comment */
   private $subscription_comment;
+
+  /** @var Manage */
+  private $subscription_manage;
 
   /** @var Registration */
   private $subscription_registration;
@@ -40,6 +44,7 @@ class Hooks {
   function __construct(
     Form $subscription_form,
     Comment $subscription_comment,
+    Manage $subscription_manage,
     Registration $subscription_registration,
     SettingsController $settings,
     WPFunctions $wp,
@@ -49,6 +54,7 @@ class Hooks {
   ) {
     $this->subscription_form = $subscription_form;
     $this->subscription_comment = $subscription_comment;
+    $this->subscription_manage = $subscription_manage;
     $this->subscription_registration = $subscription_registration;
     $this->settings = $settings;
     $this->wp = $wp;
@@ -138,11 +144,11 @@ class Hooks {
     // Manage subscription
     $this->wp->addAction(
       'admin_post_mailpoet_subscription_update',
-      '\MailPoet\Subscription\Manage::onSave'
+      [$this->subscription_manage, 'onSave']
     );
     $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_update',
-      '\MailPoet\Subscription\Manage::onSave'
+      [$this->subscription_manage, 'onSave']
     );
 
     // Subscription form
