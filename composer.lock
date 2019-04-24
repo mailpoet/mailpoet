@@ -323,12 +323,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mailpoet/html2text.git",
-                "reference": "95c5f266e7ea1a79b3879555cf27289985b1e4c7"
+                "reference": "d907c8fc20605135b4ac29b7a2f43d8c1c6cddb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mailpoet/html2text/zipball/95c5f266e7ea1a79b3879555cf27289985b1e4c7",
-                "reference": "95c5f266e7ea1a79b3879555cf27289985b1e4c7",
+                "url": "https://api.github.com/repos/mailpoet/html2text/zipball/d907c8fc20605135b4ac29b7a2f43d8c1c6cddb8",
+                "reference": "d907c8fc20605135b4ac29b7a2f43d8c1c6cddb8",
                 "shasum": ""
             },
             "require": {
@@ -368,7 +368,7 @@
                 "email": "support@jevon.org",
                 "source": "https://github.com/mailpoet/html2text/tree/master"
             },
-            "time": "2018-04-08T14:18:46+00:00"
+            "time": "2019-04-24T12:03:33+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -4252,7 +4252,6 @@
                 "mock",
                 "xunit"
             ],
-            "abandoned": true,
             "time": "2017-06-30T09:13:00+00:00"
         },
         {
