@@ -134,7 +134,8 @@ class Populator {
     $this->createSourceForSubscribers();
     $this->updateNewsletterCategories();
     $this->scheduleInitialInactiveSubscribersCheck();
-    $this->updateFormsSuccessMessages();
+    // Will be uncommented on task [MAILPOET-1998]
+    // $this->updateFormsSuccessMessages();
   }
 
   private function createMailPoetPage() {
