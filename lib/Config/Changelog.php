@@ -17,14 +17,19 @@ class Changelog {
   /** @var Helper */
   private $wooCommerceHelper;
 
+  /** @var Url */
+  private $url_helper;
+
   function __construct(
     SettingsController $settings,
     WPFunctions $wp,
-    Helper $wooCommerceHelper
+    Helper $wooCommerceHelper,
+    Url $url_helper
   ) {
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->url_helper = $url_helper;
   }
 
   function init() {
@@ -101,13 +106,13 @@ class Changelog {
       && $this->wooCommerceHelper->getOrdersCount() >= 1
       && $this->wp->currentUserCan('administrator')
     ) {
-      Url::redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-list-import'));
+      $this->url_helper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-list-import'));
     }
   }
 
   private function terminateWithRedirect($redirect_url) {
     // save version number
     $this->settings->set('version', Env::$version);
-    Url::redirectWithReferer($redirect_url);
+    $this->url_helper->redirectWithReferer($redirect_url);
   }
 }

@@ -29,6 +29,9 @@ class Pages {
   /** @var SettingsController */
   private $settings;
 
+  /** @var UrlHelper */
+  private $url_helper;
+
   function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false, $new_subscriber_notification_sender = null) {
     $this->action = $action;
     $this->data = $data;
@@ -41,6 +44,7 @@ class Pages {
       $this->new_subscriber_notification_sender = new NewSubscriberNotificationMailer();
     }
     $this->settings = new SettingsController();
+    $this->url_helper = new UrlHelper(new WPFunctions());
   }
 
   private function isPreview() {
@@ -395,7 +399,7 @@ class Pages {
       ' value="mailpoet_subscription_update" />';
     $form_html .= '<input type="hidden" name="data[segments]" value="" />';
     $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
-      'value="' . htmlspecialchars(UrlHelper::getCurrentUrl(), ENT_QUOTES) . '" />';
+      'value="' . htmlspecialchars($this->url_helper->getCurrentUrl(), ENT_QUOTES) . '" />';
     $form_html .= '<input type="hidden" name="data[email]" value="'.
       $subscriber->email.
     '" />';

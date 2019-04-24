@@ -116,6 +116,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
   }
 
   function _after() {
+    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
