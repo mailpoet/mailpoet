@@ -41,7 +41,8 @@ class Settings extends APIEndpoint {
         ));
     } else {
       $original_inactivation_interval = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
-      $signup_confirmation = $this->settings->get('signup_confirmation.enabled');
+      // Will be uncommented on task [MAILPOET-1998]
+      // $signup_confirmation = $this->settings->get('signup_confirmation.enabled');
       foreach ($settings as $name => $value) {
         $this->settings->set($name, $value);
       }
@@ -52,9 +53,10 @@ class Settings extends APIEndpoint {
       }
       $bridge = new Bridge();
       $bridge->onSettingsSave($settings);
-      if ($signup_confirmation !== $this->settings->get('signup_confirmation.enabled')) {
-        Form::updateSuccessMessages();
-      }
+      // Will be uncommented on task [MAILPOET-1998]
+      // if ($signup_confirmation !== $this->settings->get('signup_confirmation.enabled')) {
+      //   Form::updateSuccessMessages();
+      // }
       return $this->successResponse($this->settings->getAll());
     }
   }
