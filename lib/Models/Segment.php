@@ -99,7 +99,7 @@ class Segment extends Model {
       )
       ->select_expr(
         'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_INACTIVE . '"
-        OR relation.status = "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
+        AND relation.status != "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
         Subscriber::STATUS_INACTIVE
       )
       ->select_expr(
