@@ -185,6 +185,7 @@
               type="radio"
               name="deactivate_subscriber_after_inactive_days"
               value=""
+              data-automation-id="inactive-subscribers-option-never"
               <% if not(settings.deactivate_subscriber_after_inactive_days) %>checked="checked"<% endif %>
             /><%= __('Never') %>
           </label>
