@@ -27,7 +27,7 @@ class SettingsInactiveSubscribersChangeCest {
   function inactiveSubscribersSettingsChange(\AcceptanceTester $I) {
     $I->wantTo('Change inactive users settings and reactivate all subscribers');
     $I->login();
-    $I->amOnMailPoetPage ('Settings');
+    $I->amOnMailPoetPage('Settings');
     $I->click('[data-automation-id="settings-advanced-tab"]');
     $I->waitForElement('[data-automation-id="inactive-subscribers-enabled"]');
     $I->click('[data-automation-id="inactive-subscribers-option-never"]');

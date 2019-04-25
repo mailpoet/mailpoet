@@ -39,7 +39,7 @@ class InactiveSubscribersController {
   function reactivateInactiveSubscribers() {
     $reactivate_all_inactive_query = sprintf(
       "UPDATE %s SET status = '%s' WHERE status = '%s';",
-     Subscriber::$_table, Subscriber::STATUS_SUBSCRIBED, Subscriber::STATUS_INACTIVE
+      Subscriber::$_table, Subscriber::STATUS_SUBSCRIBED, Subscriber::STATUS_INACTIVE
     );
     \ORM::rawExecute($reactivate_all_inactive_query);
   }
