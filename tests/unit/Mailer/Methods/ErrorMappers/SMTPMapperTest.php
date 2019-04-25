@@ -1,11 +1,13 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 
+use Codeception\Stub;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
+use MailPoet\WP\Functions as WPFunctions;
 
-class SMTPMapperTest extends \MailPoetTest {
+class SMTPMapperTest extends \MailPoetUnitTest {
 
   /** @var SMTPMapper */
   private $mapper;
@@ -13,6 +15,11 @@ class SMTPMapperTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->mapper = new SMTPMapper();
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      '__' => function ($value) {
+        return $value;
+      }
+    ]));
   }
 
   function testItCanProcessExceptionMessage() {
@@ -54,5 +61,9 @@ class SMTPMapperTest extends \MailPoetTest {
     expect($error->getMessage())
       ->equals(Mailer::METHOD_SMTP . ' has returned an unknown error.');
     expect($error->getSubscriberErrors()[0]->getEmail('moi@mrcasual.com'));
+  }
+
+  function _after() {
+    WPFunctions::set(new WPFunctions);
   }
 }

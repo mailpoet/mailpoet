@@ -3,8 +3,6 @@ namespace MailPoet\Mailer;
 
 use MailPoet\Settings\SettingsController;
 
-if (!defined('ABSPATH')) exit;
-
 class MailerLog {
   const SETTING_NAME = 'mta_log';
   const STATUS_PAUSED = 'paused';

@@ -4,6 +4,7 @@ namespace MailPoet\Mailer\Methods\ErrorMappers;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\SubscriberError;
+use MailPoet\WP\Functions as WPFunctions;
 
 class PHPMailMapper {
   use ConnectionErrorMapperTrait;
@@ -19,7 +20,7 @@ class PHPMailMapper {
   }
 
   function getErrorForSubscriber($subscriber) {
-    $message = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_PHPMAIL);
+    $message = sprintf(WPFunctions::get()->__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_PHPMAIL);
     $subscriber_errors = [new SubscriberError($subscriber, null)];
     return new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, $message, null, $subscriber_errors);
   }

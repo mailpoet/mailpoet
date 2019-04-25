@@ -5,7 +5,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use SimpleXMLElement;
 
-class AmazonSESMapperTest extends \MailPoetTest {
+class AmazonSESMapperTest extends \MailPoetUnitTest {
 
   /** @var AmazonSESMapper*/
   private $mapper;

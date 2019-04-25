@@ -4,7 +4,7 @@ namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 
-class SendGridMapperTest extends \MailPoetTest {
+class SendGridMapperTest extends \MailPoetUnitTest {
 
   /** @var SendGridMapper*/
   private $mapper;

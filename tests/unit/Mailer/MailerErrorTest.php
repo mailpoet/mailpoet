@@ -1,10 +1,20 @@
 <?php
 namespace MailPoet\Test\Mailer;
 
+use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
+use MailPoet\WP\Functions as WPFunctions;
 
-class MailerErrorTest extends \MailPoetTest {
+class MailerErrorTest extends \MailPoetUnitTest {
+
+  function _before() {
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      '__' => function ($value) {
+        return $value;
+      }
+    ]));
+  }
 
   function testItCanComposeErrorMessageWithoutSubscribers() {
     $error = new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, 'Some Message');
@@ -36,5 +46,9 @@ class MailerErrorTest extends \MailPoetTest {
     expect($error->getMessageWithFailedSubscribers())->equals(
       'Some Message Unprocessed subscribers: (email1@example.com: Subscriber 1 message), (email2@example.com)'
     );
+  }
+
+  function _after() {
+    WPFunctions::set(new WPFunctions);
   }
 }
