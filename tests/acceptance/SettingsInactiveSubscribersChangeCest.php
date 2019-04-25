@@ -34,12 +34,12 @@ class SettingsInactiveSubscribersChangeCest {
     $I->click('[data-automation-id="settings-submit-button"]');
     $I->waitForText('Settings saved');
     $I->amOnMailPoetPage('Subscribers');
-    $I->waitForListingItemsToLoad();
     // Subscribers are activated in background so we do a couple of reloads
     for ($i = 0; $i < 10; $i++) {
       try {
         $I->wait(2);
         $I->reloadPage();
+        $I->waitForListingItemsToLoad();
         $I->see('Inactive (0)');
         return;
       } catch (\PHPUnit_Framework_Exception $e) {
