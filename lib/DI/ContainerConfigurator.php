@@ -91,6 +91,11 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->register(\MailPoet\Config\Renderer::class)
       ->setPublic(true)
       ->setFactory([new Reference(\MailPoet\Config\RendererFactory::class), 'getRenderer']);
+    // Doctrine
+    $container->autowire(\MailPoet\Doctrine\ConnectionFactory::class);
+    $container->autowire(\MailPoetVendor\Doctrine\DBAL\Connection::class)
+      ->setFactory([new Reference(\MailPoet\Doctrine\ConnectionFactory::class), 'createConnection'])
+      ->setPublic(true);
     // Cron
     $container->autowire(\MailPoet\Cron\Daemon::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\DaemonHttpRunner::class)->setPublic(true);
