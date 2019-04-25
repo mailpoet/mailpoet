@@ -5,7 +5,7 @@ use Codeception\Stub;
 use MailPoet\WP\DateTime as WPDateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
-class DateTimeTest extends \MailPoetTest {
+class DateTimeTest extends \MailPoetUnitTest {
 
   function testGetTimeFormat() {
     $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
@@ -40,17 +40,29 @@ class DateTimeTest extends \MailPoetTest {
   }
 
   function testGetCurrentDate() {
-    $date_time = new WPDateTime();
+    $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
+      'currentTime' => function($format) {
+        return date($format);
+      }
+    ]));
     expect($date_time->getCurrentDate("Y-m"))->equals(date("Y-m"));
   }
 
   function testGetCurrentTime() {
-    $date_time = new WPDateTime();
+    $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
+      'currentTime' => function($format) {
+        return date($format);
+      }
+    ]));
     expect($date_time->getCurrentTime("i:s"))->regExp('/\d\d:\d\d/');
   }
 
   function testFormatTime() {
-    $date_time = new WPDateTime();
+    $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
+      'getOption' => function($key) {
+        return 'H:i';
+      }
+    ]));
     $timestamp = 1234567;
     $format = "H:i:s";
     expect($date_time->formatTime($timestamp))->equals(date($date_time->getTimeFormat(), $timestamp));
@@ -58,7 +70,11 @@ class DateTimeTest extends \MailPoetTest {
   }
 
   function testFormatDate() {
-    $date_time = new WPDateTime();
+    $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
+      'getOption' => function($key) {
+        return 'm-d';
+      }
+    ]));
     $timestamp = 1234567;
     $format = "Y-m-d";
     expect($date_time->formatDate($timestamp))->equals(date($date_time->getDateFormat(), $timestamp));
@@ -66,7 +82,11 @@ class DateTimeTest extends \MailPoetTest {
   }
 
   function testTimeInterval() {
-    $date_time = new WPDateTime();
+    $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
+      'getOption' => function($key) {
+        return 'H:i';
+      }
+    ]));
     $one_hour_interval = array_keys($date_time->getTimeInterval(
       '00:00:00',
       '+1 hour',

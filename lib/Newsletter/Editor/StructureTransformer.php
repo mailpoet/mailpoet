@@ -5,8 +5,6 @@ use pQuery;
 use pQuery\DomNode;
 use MailPoet\Util\DOM as DOMUtil;
 
-if (!defined('ABSPATH')) exit;
-
 class StructureTransformer {
 
   function transform($content, $image_full_width) {

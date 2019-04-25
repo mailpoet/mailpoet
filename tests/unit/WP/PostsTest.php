@@ -54,4 +54,7 @@ class PostsTest extends \MailPoetUnitTest {
     expect($result['arguments'][1])->equals(array_diff_key($args, array('taxonomy' => '')));
   }
 
+  function _after() {
+    WPFunctions::set(new WPFunctions);
+  }
 }

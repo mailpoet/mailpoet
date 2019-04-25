@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Form\Block;
 
-if (!defined('ABSPATH')) exit;
-
 use Carbon\Carbon;
 use MailPoet\WP\Functions as WPFunctions;
 

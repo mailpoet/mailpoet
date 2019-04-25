@@ -3,7 +3,7 @@ namespace MailPoet\Test\Newsletter\Editor;
 
 use MailPoet\Newsletter\Editor\StructureTransformer;
 
-class StructureTransformerTest extends \MailPoetTest {
+class StructureTransformerTest extends \MailPoetUnitTest {
 
   function _before() {
     parent::_before();

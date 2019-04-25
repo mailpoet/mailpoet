@@ -3,15 +3,7 @@ namespace MailPoet\Test\Util;
 
 use MailPoet\Util\Security;
 
-class SecurityTest extends \MailPoetTest {
-
-  function testItCanGenerateWPNonce() {
-    $wp_nonce = Security::generateToken();
-    // expect length of nonce to be exactly 10
-    expect(strlen($wp_nonce))->equals(10);
-    // expect only alphanumerical characters
-    expect(ctype_alnum($wp_nonce))->true();
-  }
+class SecurityTest extends \MailPoetUnitTest {
 
   function testItCanGenerateARandomString() {
     // it has a default length of 5

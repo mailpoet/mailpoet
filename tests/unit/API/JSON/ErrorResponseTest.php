@@ -2,10 +2,17 @@
 
 namespace MailPoet\Test\API\JSON;
 
+use Codeception\Stub;
 use MailPoet\API\JSON\ErrorResponse;
+use MailPoet\WP\Functions as WPFunctions;
 
-class ErrorResponseTest extends \MailPoetTest {
+class ErrorResponseTest extends \MailPoetUnitTest {
   function testItSanitizesSqlErrorsWhenReturningResponse() {
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      '__' => function ($value) {
+        return $value;
+      }
+    ]));
     $errors = array(
       'valid error',
       'SQLSTATE[22001]: Some SQL error',
@@ -30,5 +37,9 @@ class ErrorResponseTest extends \MailPoetTest {
         )
       )
     );
+  }
+
+  function _after() {
+    WPFunctions::set(new WPFunctions);
   }
 }

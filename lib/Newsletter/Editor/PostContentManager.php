@@ -4,8 +4,6 @@ namespace MailPoet\Newsletter\Editor;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class PostContentManager {
   const WP_POST_CLASS = 'mailpoet_wp_post';
 

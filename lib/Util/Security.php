@@ -3,8 +3,6 @@ namespace MailPoet\Util;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Security {
   const HASH_LENGTH = 12;
 
