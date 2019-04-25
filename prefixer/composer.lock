@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "12db0ff7da561923463454e3da7f3b32",
+    "content-hash": "ad7d36b8532fdc088a8da2d688167bbb",
     "packages": [
         {
             "name": "gregwar/captcha",
@@ -442,7 +442,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
