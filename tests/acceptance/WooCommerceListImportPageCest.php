@@ -6,11 +6,12 @@ require_once __DIR__ . '/../DataFactories/Settings.php';
 require_once __DIR__ . '/../DataFactories/WooCommerceProduct.php';
 require_once __DIR__ . '/../DataFactories/WooCommerceCustomer.php';
 require_once __DIR__ . '/../DataFactories/WooCommerceOrder.php';
+require_once __DIR__ . '/../DataFactories/ScheduledTask.php';
 
+use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceCustomer;
 use MailPoet\Test\DataFactories\WooCommerceOrder;
-use MailPoet\Test\DataFactories\WooCommerceProduct;
 
 class WooCommerceListImportPageCest {
 
@@ -30,6 +31,8 @@ class WooCommerceListImportPageCest {
     // Feature switch
     $settings_factory = new Settings();
     $settings_factory->withWooCommerceListSyncEnabled();
+    $scheduled_tasks_factory = new ScheduledTask();
+    $scheduled_tasks_factory->deleteAll();
   }
 
   function importListPageImportTest(\AcceptanceTester $I) {
