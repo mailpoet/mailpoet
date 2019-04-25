@@ -38,6 +38,8 @@ class ConfigurationFactory {
   }
 
   private function configureMetadata(Configuration $configuration) {
+    $configuration->setClassMetadataFactoryName(TablePrefixMetadataFactory::class);
+
     // metadata cache (for production cache is pre-generated at build time)
     $metadata_storage = new MetadataCache(self::METADATA_DIR);
     $configuration->setMetadataCacheImpl($metadata_storage);
