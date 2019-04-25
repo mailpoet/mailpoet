@@ -1,6 +1,9 @@
 {
   "require": {
     "php": ">=5.6",
+    "doctrine/common": "2.7.3",
+    "doctrine/dbal": "2.5.13",
+    "doctrine/orm": "2.5.14",
     "gregwar/captcha": "^1.1",
     "monolog/monolog": "^1.23",
     "sabberworm/php-css-parser": "^8.1",
@@ -17,7 +20,8 @@
       "mkdir ../vendor-prefixed",
       "../php-scoper.phar add-prefix",
       "mv ./build/* ../vendor-prefixed",
-      "php fix-twig.php"
+      "php fix-twig.php",
+      "php fix-doctrine.php"
     ]
   },
   "config": {
