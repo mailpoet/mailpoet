@@ -5,8 +5,6 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Config\Env;
 
-if (!defined('ABSPATH')) exit;
-
 class PostTransformer {
 
   private $args;

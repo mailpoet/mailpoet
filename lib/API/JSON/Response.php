@@ -2,8 +2,6 @@
 namespace MailPoet\API\JSON;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 abstract class Response {
   const STATUS_OK = 200;
   const STATUS_BAD_REQUEST = 400;

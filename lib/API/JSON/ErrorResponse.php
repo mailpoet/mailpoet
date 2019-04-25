@@ -3,8 +3,6 @@
 namespace MailPoet\API\JSON;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class ErrorResponse extends Response {
   public $errors;
 

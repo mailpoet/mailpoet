@@ -1,14 +1,24 @@
 <?php
 namespace MailPoet\Test\Subscribers\ImportExport\Import;
 
+use Codeception\Stub;
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
+use MailPoet\WP\Functions as WPFunctions;
 
-class MailChimpTest extends \MailPoetTest {
+class MailChimpTest extends \MailPoetUnitTest {
   function __construct() {
     parent::__construct();
     $this->api_key = getenv('WP_TEST_IMPORT_MAILCHIMP_API');
     $this->mailchimp = new MailChimp($this->api_key);
     $this->lists = explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));
+  }
+
+  function _before() {
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      '__' => function ($value) {
+        return $value;
+      }
+    ]));
   }
 
   function testItCanGetAPIKey() {
@@ -107,5 +117,9 @@ class MailChimpTest extends \MailPoetTest {
       expect($e->getMessage())
         ->contains('The information received from MailChimp is too large for processing');
     }
+  }
+
+  function _after() {
+    WPFunctions::set(new WPFunctions);
   }
 }
