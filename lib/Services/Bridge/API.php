@@ -3,8 +3,6 @@
 namespace MailPoet\Services\Bridge;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class API {
   const SENDING_STATUS_OK = 'ok';
   const SENDING_STATUS_CONNECTION_ERROR = 'connection_error';

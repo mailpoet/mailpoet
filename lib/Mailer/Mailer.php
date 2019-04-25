@@ -8,8 +8,6 @@ use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Settings\SettingsController;
 
-if (!defined('ABSPATH')) exit;
-
 class Mailer {
   public $mailer_config;
   public $sender;
@@ -154,7 +152,7 @@ class Mailer {
       $return_path :
       $this->settings->get('bounce.address');
   }
-  
+
   /**
    * @param  \MailPoet\Models\Subscriber|array $subscriber
    */

@@ -1,4 +1,5 @@
 <?php
+__halt_compiler();
 namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 
 use MailPoet\Mailer\MailerError;
@@ -6,7 +7,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Util\Helpers;
 
-class MailPoetMapperTest extends \MailPoetTest {
+class MailPoetMapperTest extends \MailPoetUnitTest {
   /** @var MailPoetMapper */
   private $mapper;
 

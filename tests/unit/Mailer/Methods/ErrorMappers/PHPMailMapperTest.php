@@ -1,10 +1,12 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 
+use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
+use MailPoet\WP\Functions as WPFunctions;
 
-class PHPMailMapperTest extends \MailPoetTest {
+class PHPMailMapperTest extends \MailPoetUnitTest {
 
   /** @var PHPMailMapper*/
   private $mapper;
@@ -12,6 +14,11 @@ class PHPMailMapperTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->mapper = new PHPMailMapper();
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      '__' => function ($value) {
+        return $value;
+      }
+    ]));
   }
 
   function testGetProperErrorForSubscriber() {
@@ -31,5 +38,9 @@ class PHPMailMapperTest extends \MailPoetTest {
   function testGetSoftErrorFromExceptionForInvalidEmail() {
     $error = $this->mapper->getErrorFromException(new \Exception('Invalid address. (Add ...'), 'john@rambo.com');
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
+  }
+
+  function _after() {
+    WPFunctions::set(new WPFunctions);
   }
 }
