@@ -647,7 +647,7 @@ class Menu {
 
     $date_time = new DateTime();
     $data['current_date'] = $date_time->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
-    $data['current_time_zone'] = (new Carbon())->getTimezone()->getName();
+    $data['current_time'] = $date_time->getCurrentTime();
     $data['schedule_time_of_day'] = $date_time->getTimeInterval(
       '00:00:00',
       '+1 hour',

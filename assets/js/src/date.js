@@ -1,7 +1,6 @@
 import mp from 'mailpoet';
 import jQuery from 'jquery';
 import Moment from 'moment';
-import MomentTZ from 'moment-timezone';
 
 var MailPoet = mp;
 
@@ -63,12 +62,6 @@ MailPoet.Date = {
     return this.format(date, {
       format: 'H:i:s',
     });
-  },
-  convertToServerTimeZone: function convertToServerTimeZone(date, serverTimezone) {
-    return MomentTZ(date).tz(serverTimezone).format('YYYY-MM-DD HH:mm:ss');
-  },
-  convertToUserTimeZone: function convertToUserTimeZone(date, serverTimezone) {
-    return MomentTZ.tz(date, serverTimezone).local().format('YYYY-MM-DD HH:mm:ss');
   },
   convertFormat: function convertFormat(format) {
     var replacements;
