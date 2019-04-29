@@ -345,7 +345,7 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
       'KEY queue_id (queue_id),',
-      'KEY url (url(255))',
+      'KEY url (url(100))',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
