@@ -28,7 +28,7 @@ class UnitTester extends \Codeception\Actor {
 
   function generateSubscriber($data = array()) {
     $subscriber_data = array(
-      'email' => sprintf('user%s@mailpoet.com', uniqid()),
+      'email' => sprintf('user%s@mailpoet.com', bin2hex(random_bytes(7))), // phpcs:ignore
       'first_name' => $this->generateName(),
       'last_name' => $this->generateName()
     );

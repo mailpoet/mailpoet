@@ -10,7 +10,7 @@ class Segment {
 
   public function __construct() {
     $this->data = [
-      'name' => 'List ' . uniqid(),
+      'name' => 'List ' . bin2hex(random_bytes(7)), // phpcs:ignore
     ];
   }
 
