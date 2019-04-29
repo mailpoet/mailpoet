@@ -1,4 +1,5 @@
 <table class="form-table">
+  <% if settings.woo_commerce_list_sync_enabled %>
   <tr>
     <th scope="row">
       <label for="settings[woocommerce_optin_on_checkout]">
@@ -45,6 +46,7 @@
       </p>
     </td>
   </tr>
+  <% endif %>
   <tr>
     <th scope="row">
       <label for="settings[mailpoet_subscribe_old_woocommerce_customers]">
