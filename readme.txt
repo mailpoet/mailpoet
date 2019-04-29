@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 3.24.0
+Stable tag: 3.25.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -173,6 +173,18 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.25.0 - 2019-04-29 =
+* Improved: ALC post fetching consistency;
+* Improved: template preview display;
+* Improved: now able to turn off inactive subscribers feature;
+* Improved: WooCommerce product widget shows price by default now;
+* Improved: updated links to knowledge base for bounced and inactive users;
+* Improved: clarified how subscribers display within lists when unsubscribed;
+* Fixed: issue where bounce task would not run after a failure;
+* Fixed: scheduling calendar respects "week starts on" WordPress setting;
+* Fixed: links with special characters in email body no longer break sending;
+* Fixed: conflict with third-party plugins that was displaying private posts in ALC blocks.
 
 = 3.24.0 - 2019-04-23 =
 * Added: add WooCommerce product blocks to your email;
