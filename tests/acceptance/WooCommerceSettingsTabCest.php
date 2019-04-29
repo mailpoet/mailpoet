@@ -2,10 +2,17 @@
 
 namespace MailPoet\Test\Acceptance;
 
+require_once __DIR__ . '/../DataFactories/Settings.php';
+
+use MailPoet\Test\DataFactories\Settings;
+
 class WooCommerceSettingsTabCest {
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
+    $this->settings_factory = new Settings();
+    $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
+    $this->settings_factory->withWooCommerceListSyncEnabled();
   }
 
   function checkWooCommerceTabExists(\AcceptanceTester $I) {
