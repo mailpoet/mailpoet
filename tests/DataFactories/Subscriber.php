@@ -14,7 +14,7 @@ class Subscriber {
 
   public function __construct() {
     $this->data = [
-      'email' => uniqid() . '@example.com',
+      'email' => bin2hex(random_bytes(7)) . '@example.com', // phpcs:ignore
       'status' => 'subscribed'
     ];
     $this->segments = [];

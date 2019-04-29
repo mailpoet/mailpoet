@@ -126,7 +126,7 @@ class WooCommerceProduct {
     if ($this->data['sku']) {
       $create_command .= " --sku=\"{$this->data['sku']}\"";
     } else {
-      $create_command .= ' --sku="WC_PR_' . uniqid() . '"';
+      $create_command .= ' --sku="WC_PR_' . bin2hex(random_bytes(7)) . '"'; // phpcs:ignore
     }
     if ($this->data['categoryIds']) {
       $create_command .= " --categories='" . json_encode($this->data['categoryIds']) . "'";

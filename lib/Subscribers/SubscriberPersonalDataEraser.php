@@ -16,7 +16,6 @@ class SubscriberPersonalDataEraser {
         'done' => true,
       );
     }
-
     $subscriber = Subscriber::findOne(trim($email));
     $item_removed = false;
     $items_retained = true;
@@ -44,7 +43,7 @@ class SubscriberPersonalDataEraser {
   }
 
   private function anonymizeSubscriberData($subscriber) {
-    $subscriber->email = sprintf('deleted-%s@site.invalid', uniqid('', true));
+    $subscriber->email = sprintf('deleted-%s@site.invalid', bin2hex(random_bytes(12))); // phpcs:ignore
     $subscriber->first_name = 'Anonymous';
     $subscriber->last_name = 'Anonymous';
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;

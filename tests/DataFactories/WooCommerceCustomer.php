@@ -11,7 +11,7 @@ class WooCommerceCustomer {
   private $data;
 
   function __construct(\AcceptanceTester $tester) {
-    $unique_id = uniqid();
+    $unique_id = bin2hex(random_bytes(7)); // phpcs:ignore
     $this->tester = $tester;
     $this->data = [
       'first_name' => "FirstName_$unique_id",

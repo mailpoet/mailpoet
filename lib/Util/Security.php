@@ -13,9 +13,8 @@ class Security {
   }
 
   static function generateRandomString($length = 5) {
-    // non-cryptographically strong random generator
     return substr(
-      md5(uniqid((string)mt_rand(), true)),
+      bin2hex(random_bytes(16)), // phpcs:ignore
       0,
       min(max(5, (int)$length), 32)
     );
