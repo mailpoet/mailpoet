@@ -37,8 +37,6 @@ class SubscribeToMultipleListsCest {
       ->withConfirmationEmailBody()
       ->withConfirmationEmailSubject('Subscribe to multiple test subject');
 
-    $form_factory->withDefaultSuccessMessage();
-
     //Add this form to a widget
     $I->createFormAndSubscribe($form);
     //Subscribe via that form
