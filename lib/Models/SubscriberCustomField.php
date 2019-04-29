@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 
 if (!defined('ABSPATH')) exit;
 
@@ -63,15 +64,15 @@ class SubscriberCustomField extends Model {
   }
 
   static function updateMultiple($values) {
+    $subscriber_ids = array_unique(array_column($values, 1));
+    $query = sprintf(
+      "UPDATE `%s` SET value = (CASE %s ELSE value END) WHERE subscriber_id IN (%s)",
+      self::$_table,
+      str_repeat('WHEN custom_field_id = ? AND subscriber_id = ? THEN ? ', count($values)),
+      implode(',', $subscriber_ids)
+    );
     self::rawExecute(
-      'UPDATE `' . self::$_table . '` ' .
-      'SET value = ' .
-      '(CASE ' .
-      str_repeat(
-        'WHEN custom_field_id = ? AND subscriber_id = ? THEN ? ',
-        count($values)
-      ) .
-      'ELSE value END) ',
+      $query,
       Helpers::flattenArray($values)
     );
   }
