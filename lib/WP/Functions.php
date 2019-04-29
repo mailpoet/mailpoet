@@ -534,7 +534,22 @@ class Functions {
    */
   function parseDbHost($host) {
     global $wpdb;
-    return $wpdb->parse_db_host($host);
+    if (method_exists($wpdb, 'parse_db_host')) {
+      return $wpdb->parse_db_host($host);
+    } else {
+      // Backward compatibility for WP 4.7 and 4.8
+      $port = 3306;
+      $socket = null;
+      // Peel off the port parameter
+      if (preg_match('/(?=:\d+$)/', $host)) {
+        list($host, $port) = explode(':', $host);
+      }
+      // Peel off the socket parameter
+      if (preg_match('/:\//', $host)) {
+        list($host, $socket) = explode(':', $host);
+      }
+      return [$host, $port, $socket, false];
+    }
   }
 
   /**
