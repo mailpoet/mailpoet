@@ -37,7 +37,6 @@
     "intro.js": "2.9.0",
     "jquery": "3.3.1",
     "moment": "^2.22.1",
-    "moment-timezone": "^0.5.23",
     "papaparse": "4.1.1",
     "parsleyjs": "^2.8.1",
     "prop-types": "^15.6.2",
