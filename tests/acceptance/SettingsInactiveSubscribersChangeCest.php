@@ -21,7 +21,7 @@ class SettingsInactiveSubscribersChangeCest {
     for ($i = 0; $i < self::INACTIVE_SUBSCRIBERS_COUNT; $i++) {
       (new Subscriber())->withStatus('inactive')->withSegments([$segment])->create();
     }
-    (new Settings())->withDeactivateSubscriberAfter3Months();
+    (new Settings)->withDeactivateSubscriberAfter3Months()->withTrackingEnabled();
   }
 
   function inactiveSubscribersSettingsChange(\AcceptanceTester $I) {
