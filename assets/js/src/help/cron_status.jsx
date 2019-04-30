@@ -10,6 +10,22 @@ const CronStatus = (props) => {
     active: MailPoet.I18n.t('running'),
     inactive: MailPoet.I18n.t('cronWaiting'),
   };
+  const lastError = Array.isArray(status.last_error)
+    ? (
+      <>
+        {
+          status.last_error.map(error => (
+            <div key={error.worker}>
+              {error.worker}
+              :
+              {' '}
+              <i>{error.message}</i>
+            </div>
+          ))
+        }
+      </>
+    )
+    : status.last_error;
   return (
     <div>
       <h2>{MailPoet.I18n.t('systemStatusCronStatusTitle')}</h2>
@@ -38,7 +54,7 @@ const CronStatus = (props) => {
           },
           {
             key: MailPoet.I18n.t('lastSeenError'),
-            value: status.last_error || MailPoet.I18n.t('none'),
+            value: lastError || MailPoet.I18n.t('none'),
           },
         ]}
       />
