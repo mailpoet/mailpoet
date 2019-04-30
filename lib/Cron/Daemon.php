@@ -20,74 +20,32 @@ class Daemon {
   function run($settings_daemon_data) {
     $settings_daemon_data['run_started_at'] = time();
     CronHelper::saveDaemon($settings_daemon_data);
-    try {
-      $this->executeMigrationWorker();
-      $this->executeStatsNotificationsWorker();
-      $this->executeScheduleWorker();
-      $this->executeQueueWorker();
-      $this->executeSendingServiceKeyCheckWorker();
-      $this->executePremiumKeyCheckWorker();
-      $this->executeBounceWorker();
-      $this->executeExportFilesCleanupWorker();
-      $this->executeInactiveSubscribersWorker();
-      $settings = new SettingsController();
-      if ($settings->get('woo_commerce_list_sync_enabled')) {
-        $this->executeWooCommerceSyncWorker();
+
+    foreach ($this->getWorkers() as $worker) {
+      try {
+        $worker->process();
+      } catch (\Exception $e) {
+        CronHelper::saveDaemonLastError($e->getMessage());
       }
-    } catch (\Exception $e) {
-      CronHelper::saveDaemonLastError($e->getMessage());
     }
+
     // Log successful execution
     CronHelper::saveDaemonRunCompleted(time());
   }
 
-  function executeScheduleWorker() {
-    $scheduler = $this->workers_factory->createScheduleWorker($this->timer);
-    return $scheduler->process();
-  }
-
-  function executeQueueWorker() {
-    $queue = $this->workers_factory->createQueueWorker($this->timer);
-    return $queue->process();
-  }
-
-  function executeStatsNotificationsWorker() {
-    $worker = $this->workers_factory->createStatsNotificationsWorker($this->timer);
-    return $worker->process();
-  }
-
-  function executeSendingServiceKeyCheckWorker() {
-    $worker = $this->workers_factory->createSendingServiceKeyCheckWorker($this->timer);
-    return $worker->process();
-  }
-
-  function executePremiumKeyCheckWorker() {
-    $worker = $this->workers_factory->createPremiumKeyCheckWorker($this->timer);
-    return $worker->process();
-  }
-
-  function executeBounceWorker() {
-    $bounce = $this->workers_factory->createBounceWorker($this->timer);
-    return $bounce->process();
-  }
-
-  function executeWooCommerceSyncWorker() {
-    $worker = $this->workers_factory->createWooCommerceSyncWorker($this->timer);
-    return $worker->process();
-  }
-
-  function executeMigrationWorker() {
-    $migration = $this->workers_factory->createMigrationWorker($this->timer);
-    return $migration->process();
-  }
-
-  function executeExportFilesCleanupWorker() {
-    $worker = $this->workers_factory->createExportFilesCleanupWorker($this->timer);
-    return $worker->process();
-  }
-
-  function executeInactiveSubscribersWorker() {
-    $worker = $this->workers_factory->createInactiveSubscribersWorker($this->timer);
-    return $worker->process();
+  private function getWorkers() {
+    yield $this->workers_factory->createMigrationWorker($this->timer);
+    yield $this->workers_factory->createStatsNotificationsWorker($this->timer);
+    yield $this->workers_factory->createScheduleWorker($this->timer);
+    yield $this->workers_factory->createQueueWorker($this->timer);
+    yield $this->workers_factory->createSendingServiceKeyCheckWorker($this->timer);
+    yield $this->workers_factory->createPremiumKeyCheckWorker($this->timer);
+    yield $this->workers_factory->createBounceWorker($this->timer);
+    yield $this->workers_factory->createExportFilesCleanupWorker($this->timer);
+    yield $this->workers_factory->createInactiveSubscribersWorker($this->timer);
+    $settings = new SettingsController();
+    if ($settings->get('woo_commerce_list_sync_enabled')) {
+      yield $this->workers_factory->createWooCommerceSyncWorker($this->timer);
+    }
   }
 }
