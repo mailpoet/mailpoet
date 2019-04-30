@@ -25,12 +25,21 @@ class Daemon {
     $settings_daemon_data['run_started_at'] = time();
     CronHelper::saveDaemon($settings_daemon_data);
 
+    $errors = [];
     foreach ($this->getWorkers() as $worker) {
       try {
         $worker->process();
       } catch (\Exception $e) {
-        CronHelper::saveDaemonLastError($e->getMessage());
+        $worker_class_name_parts = explode('\\', get_class($worker));
+        $errors[] = [
+          'worker' => end($worker_class_name_parts),
+          'message' => $e->getMessage(),
+        ];
       }
+    }
+
+    if (!empty($errors)) {
+      CronHelper::saveDaemonLastError($errors);
     }
 
     // Log successful execution
