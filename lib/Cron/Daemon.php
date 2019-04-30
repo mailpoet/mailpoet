@@ -9,11 +9,15 @@ if (!defined('ABSPATH')) exit;
 class Daemon {
   public $timer;
 
+  /** @var SettingsController */
+  private $settings_controller;
+
   /** @var WorkersFactory */
   private $workers_factory;
 
-  function __construct(WorkersFactory $workers_factory) {
+  function __construct(SettingsController $settings_controller, WorkersFactory $workers_factory) {
     $this->timer = microtime(true);
+    $this->settings_controller = $settings_controller;
     $this->workers_factory = $workers_factory;
   }
 
@@ -43,8 +47,7 @@ class Daemon {
     yield $this->workers_factory->createBounceWorker($this->timer);
     yield $this->workers_factory->createExportFilesCleanupWorker($this->timer);
     yield $this->workers_factory->createInactiveSubscribersWorker($this->timer);
-    $settings = new SettingsController();
-    if ($settings->get('woo_commerce_list_sync_enabled')) {
+    if ($this->settings_controller->get('woo_commerce_list_sync_enabled')) {
       yield $this->workers_factory->createWooCommerceSyncWorker($this->timer);
     }
   }
