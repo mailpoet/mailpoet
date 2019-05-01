@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Test\Cron;
 
-use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Daemon;
@@ -32,7 +31,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function testItDoesNotRunWithoutRequestData() {
-    $daemon = Stub::make(
+    $daemon = $this->make(
       DaemonHttpRunner::class,
       [
         'abortWithError' => function($message) {
@@ -44,7 +43,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function testItDoesNotRunWhenThereIsInvalidOrMissingToken() {
-    $daemon = Stub::make(
+    $daemon = $this->make(
       DaemonHttpRunner::class,
       [
         'abortWithError' => function($message) {
@@ -64,12 +63,12 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     );
 
     $workers_factory_mock = $this->createWorkersFactoryMock([
-      'createScheduleWorker' => Stub::makeEmpty(SimpleWorker::class, [
+      'createScheduleWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           throw new \Exception('Message');
         }
       ]),
-      'createQueueWorker' => Stub::makeEmpty(SimpleWorker::class, [
+      'createQueueWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           throw new \Exception();
         }
@@ -77,10 +76,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     ]);
 
     $daemon = new Daemon($this->settings, $workers_factory_mock);
-    $daemon_http_runner = Stub::make(new DaemonHttpRunner($daemon), array(
+    $daemon_http_runner = $this->make(new DaemonHttpRunner($daemon), array(
       'pauseExecution' => null,
       'callSelf' => null
-    ), $this);
+    ));
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon_http_runner->__construct($daemon);
     $daemon_http_runner->run($data);
@@ -90,15 +89,15 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function testItCanPauseExecution() {
-    $daemon = Stub::makeEmpty(Daemon::class);
-    $daemon_http_runner = Stub::make(DaemonHttpRunner::class, array(
+    $daemon = $this->makeEmpty(Daemon::class);
+    $daemon_http_runner = $this->make(DaemonHttpRunner::class, array(
       'pauseExecution' => Expected::exactly(1, function($pause_delay) {
         expect($pause_delay)->lessThan(CronHelper::DAEMON_EXECUTION_LIMIT);
         expect($pause_delay)->greaterThan(CronHelper::DAEMON_EXECUTION_LIMIT - 1);
       }),
       'callSelf' => null,
       'terminateRequest' => null,
-    ), $this);
+    ));
     $data = array(
       'token' => 123
     );
@@ -110,17 +109,17 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
 
   function testItTerminatesExecutionWhenDaemonIsDeleted() {
     $workers_factory_mock = $this->createWorkersFactoryMock([
-      'createScheduleWorker' => Stub::makeEmpty(SimpleWorker::class, [
+      'createScheduleWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           $this->settings->delete(CronHelper::DAEMON_SETTING);
         }
       ]),
     ]);
-    $daemon = Stub::make(DaemonHttpRunner::class, array(
+    $daemon = $this->make(DaemonHttpRunner::class, array(
       'pauseExecution' => null,
       'terminateRequest' => Expected::exactly(1),
       'callSelf' => Expected::never(),
-    ), $this);
+    ));
     $data = array(
       'token' => 123
     );
@@ -131,7 +130,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
 
   function testItTerminatesExecutionWhenDaemonTokenChangesAndKeepsChangedToken() {
     $workers_factory_mock = $this->createWorkersFactoryMock([
-      'createScheduleWorker' => Stub::makeEmpty(SimpleWorker::class, [
+      'createScheduleWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           $this->settings->set(
             CronHelper::DAEMON_SETTING,
@@ -140,11 +139,11 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
         }
       ]),
     ]);
-    $daemon = Stub::make(DaemonHttpRunner::class, array(
+    $daemon = $this->make(DaemonHttpRunner::class, array(
       'pauseExecution' => null,
       'terminateRequest' => Expected::exactly(1),
       'callSelf' => Expected::never(),
-    ), $this);
+    ));
     $data = array(
       'token' => 123
     );
@@ -156,26 +155,26 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function testItTerminatesExecutionWhenDaemonIsDeactivated() {
-    $daemon = Stub::make(DaemonHttpRunner::class, [
+    $daemon = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       'terminateRequest' => Expected::exactly(1),
       'callSelf' => Expected::never(),
-    ], $this);
+    ]);
     $data = [
       'token' => 123,
       'status' => CronHelper::DAEMON_STATUS_INACTIVE,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(Stub::makeEmpty(Daemon::class));
+    $daemon->__construct($this->makeEmpty(Daemon::class));
     $daemon->run($data);
   }
 
   function testItUpdatesDaemonTokenDuringExecution() {
-    $daemon_http_runner = Stub::make(DaemonHttpRunner::class, array(
+    $daemon_http_runner = $this->make(DaemonHttpRunner::class, array(
       'pauseExecution' => null,
       'callSelf' => null,
       'terminateRequest' => null,
-    ), $this);
+    ));
     $data = array(
       'token' => 123
     );
@@ -188,12 +187,12 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
 
   function testItUpdatesTimestampsDuringExecution() {
     $workers_factory_mock = $this->createWorkersFactoryMock([
-      'createScheduleWorker' => Stub::makeEmpty(SimpleWorker::class, [
+      'createScheduleWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           sleep(2);
         }
       ]),
-      'createQueueWorker' => Stub::makeEmpty(SimpleWorker::class, [
+      'createQueueWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           throw new \Exception();
         }
@@ -201,10 +200,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     ]);
 
     $daemon = new Daemon($this->settings, $workers_factory_mock);
-    $daemon_http_runner = Stub::make(new DaemonHttpRunner($daemon), array(
+    $daemon_http_runner = $this->make(new DaemonHttpRunner($daemon), array(
       'pauseExecution' => null,
       'callSelf' => null
-    ), $this);
+    ));
     $data = array(
       'token' => 123,
     );
@@ -222,12 +221,12 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   function testItCanRun() {
     ignore_user_abort(0);
     expect(ignore_user_abort())->equals(0);
-    $daemon = Stub::make(DaemonHttpRunner::class, array(
+    $daemon = $this->make(DaemonHttpRunner::class, array(
       'pauseExecution' => null,
       // daemon should call itself
       'callSelf' => Expected::exactly(1),
       'terminateRequest' => null,
-    ), $this);
+    ));
     $data = array(
       'token' => 123
     );
@@ -238,11 +237,11 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function testItRespondsToPingRequest() {
-    $daemon = Stub::make(DaemonHttpRunner::class, array(
+    $daemon = $this->make(DaemonHttpRunner::class, array(
       'terminateRequest' => Expected::exactly(1, function($message) {
         expect($message)->equals('pong');
       })
-    ), $this);
+    ));
     $daemon->ping();
   }
 
