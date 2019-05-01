@@ -22,9 +22,8 @@ class SecurityTest extends \MailPoetTest {
     $short_hash = Security::generateRandomString(1);
     expect(strlen($short_hash))->equals(5);
 
-    // it has a max length of 32
     $long_hash = Security::generateRandomString(64);
-    expect(strlen($long_hash))->equals(32);
+    expect(strlen($long_hash))->equals(64);
 
     // expect only alphanumerical characters
     expect(ctype_alnum($hash))->true();
