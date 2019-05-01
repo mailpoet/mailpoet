@@ -80,6 +80,7 @@ class JiraController {
       'archived' => false,
       'released' => false,
       'project' => $this->project,
+      'startDate' => (new \DateTime())->format('Y-m-d'),
     ];
     $response = $this->http_client->post('version', ['json' => $data]);
     return json_decode($response->getBody()->getContents(), true);
@@ -90,6 +91,7 @@ class JiraController {
     $response = $this->http_client->put("version/$version[id]", [
       'json' => [
         'released' => true,
+        'releaseDate' => (new \DateTime())->format('Y-m-d'),
       ],
     ]);
     return json_decode($response->getBody()->getContents(), true);
