@@ -109,50 +109,57 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
 
 
   function testItTerminatesExecutionWhenDaemonIsDeleted() {
+    $workers_factory_mock = $this->createWorkersFactoryMock([
+      'createScheduleWorker' => Stub::makeEmpty(SimpleWorker::class, [
+        'process' => function () {
+          $this->settings->delete(CronHelper::DAEMON_SETTING);
+        }
+      ]),
+    ]);
     $daemon = Stub::make(DaemonHttpRunner::class, array(
-      'executeScheduleWorker' => function() {
-        $this->settings->delete(CronHelper::DAEMON_SETTING);
-      },
-      'executeQueueWorker' => null,
       'pauseExecution' => null,
-      'terminateRequest' => Expected::exactly(1)
+      'terminateRequest' => Expected::exactly(1),
+      'callSelf' => Expected::never(),
     ), $this);
     $data = array(
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(Stub::makeEmpty(Daemon::class));
+    $daemon->__construct(new Daemon($this->settings, $workers_factory_mock));
     $daemon->run($data);
   }
 
   function testItTerminatesExecutionWhenDaemonTokenChangesAndKeepsChangedToken() {
+    $workers_factory_mock = $this->createWorkersFactoryMock([
+      'createScheduleWorker' => Stub::makeEmpty(SimpleWorker::class, [
+        'process' => function () {
+          $this->settings->set(
+            CronHelper::DAEMON_SETTING,
+            array('token' => 567)
+          );
+        }
+      ]),
+    ]);
     $daemon = Stub::make(DaemonHttpRunner::class, array(
-      'executeScheduleWorker' => function() {
-        $this->settings->set(
-          CronHelper::DAEMON_SETTING,
-          array('token' => 567)
-        );
-      },
-      'executeQueueWorker' => null,
       'pauseExecution' => null,
-      'terminateRequest' => Expected::exactly(1)
+      'terminateRequest' => Expected::exactly(1),
+      'callSelf' => Expected::never(),
     ), $this);
     $data = array(
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(Stub::makeEmpty(Daemon::class));
+    $daemon->__construct(new Daemon($this->settings, $workers_factory_mock));
     $daemon->run($data);
     $data_after_run = $this->settings->get(CronHelper::DAEMON_SETTING);
-    expect($data_after_run['token'], 567);
+    expect($data_after_run['token'])->equals(567);
   }
 
   function testItTerminatesExecutionWhenDaemonIsDeactivated() {
     $daemon = Stub::make(DaemonHttpRunner::class, [
-      'executeScheduleWorker' => null,
-      'executeQueueWorker' => null,
       'pauseExecution' => null,
-      'terminateRequest' => Expected::exactly(1)
+      'terminateRequest' => Expected::exactly(1),
+      'callSelf' => Expected::never(),
     ], $this);
     $data = [
       'token' => 123,
