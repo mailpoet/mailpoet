@@ -19,26 +19,6 @@ class DaemonTest extends \MailPoetTest {
     $this->settings->set('woo_commerce_list_sync_enabled', 1);
   }
 
-  function testItCanExecuteWorkers() {
-    $daemon = Stub::make(Daemon::class, array(
-      'executeScheduleWorker' => Expected::exactly(1),
-      'executeQueueWorker' => Expected::exactly(1),
-      'executeMigrationWorker' => null,
-      'executeStatsNotificationsWorker' => null,
-      'executeSendingServiceKeyCheckWorker' => null,
-      'executePremiumKeyCheckWorker' => null,
-      'executeBounceWorker' => null,
-      'executeExportFilesCleanupWorker' => null,
-      'executeInactiveSubscribersWorker' => null,
-      'executeWooCommerceSyncWorker' => null,
-    ), $this);
-    $data = array(
-      'token' => 123
-    );
-    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->run([]);
-  }
-
   function testItCanRun() {
     $daemon = Stub::make(Daemon::class, array(
       // workers should be executed
