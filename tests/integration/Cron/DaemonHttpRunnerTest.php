@@ -6,6 +6,8 @@ use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\DaemonHttpRunner;
+use MailPoet\Cron\Workers\SimpleWorker;
+use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 
@@ -60,19 +62,21 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $data = array(
       'token' => 123
     );
-    $daemon = Stub::make(
-      Daemon::class,
-      [
-        'executeScheduleWorker' => function() {
+
+    $workers_factory_mock = $this->createWorkersFactoryMock([
+      'createScheduleWorker' => Stub::makeEmpty(SimpleWorker::class, [
+        'process' => function () {
           throw new \Exception('Message');
-        },
-        'executeQueueWorker' => function() {
+        }
+      ]),
+      'createQueueWorker' => Stub::makeEmpty(SimpleWorker::class, [
+        'process' => function () {
           throw new \Exception();
-        },
-        'executeMigrationWorker' => null,
-        'executeStatsNotificationsWorker' => null,
-      ]
-    );
+        }
+      ]),
+    ]);
+
+    $daemon = new Daemon($this->settings, $workers_factory_mock);
     $daemon_http_runner = Stub::make(new DaemonHttpRunner($daemon), array(
       'pauseExecution' => null,
       'callSelf' => null
@@ -81,7 +85,8 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon_http_runner->__construct($daemon);
     $daemon_http_runner->run($data);
     $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
-    expect($updated_daemon['last_error'])->greaterOrEquals('Message');
+    expect($updated_daemon['last_error'][0]['message'])->equals('Message');
+    expect($updated_daemon['last_error'][1]['message'])->equals('');
   }
 
   function testItCanPauseExecution() {
@@ -170,24 +175,27 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon_http_runner->__construct(Stub::makeEmptyExcept(Daemon::class, 'run'));
+    $daemon_http_runner->__construct(new Daemon($this->settings, $this->createWorkersFactoryMock()));
     $daemon_http_runner->run($data);
     $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['token'])->equals($daemon_http_runner->token);
   }
 
   function testItUpdatesTimestampsDuringExecution() {
-    $daemon = Stub::make(Daemon::class, [
-        'executeScheduleWorker' => function() {
+    $workers_factory_mock = $this->createWorkersFactoryMock([
+      'createScheduleWorker' => Stub::makeEmpty(SimpleWorker::class, [
+        'process' => function () {
           sleep(2);
-        },
-        'executeQueueWorker' => function() {
+        }
+      ]),
+      'createQueueWorker' => Stub::makeEmpty(SimpleWorker::class, [
+        'process' => function () {
           throw new \Exception();
-        },
-        'executeMigrationWorker' => null,
-        'executeStatsNotificationsWorker' => null,
-      ]
-    );
+        }
+      ]),
+    ]);
+
+    $daemon = new Daemon($this->settings, $workers_factory_mock);
     $daemon_http_runner = Stub::make(new DaemonHttpRunner($daemon), array(
       'pauseExecution' => null,
       'callSelf' => null
@@ -222,7 +230,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(Stub::makeEmptyExcept(Daemon::class, 'run'));
+    $daemon->__construct(new Daemon($this->settings, $this->createWorkersFactoryMock()));
     $daemon->run($data);
     expect(ignore_user_abort())->equals(1);
   }
@@ -238,5 +246,23 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
 
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+  }
+
+  private function createWorkersFactoryMock(array $workers = []) {
+    $worker = $this->makeEmpty(SimpleWorker::class, [
+      'process' => null,
+    ]);
+    return $this->make(WorkersFactory::class, $workers + [
+      'createScheduleWorker' => $worker,
+      'createQueueWorker' => $worker,
+      'createStatsNotificationsWorker' => $worker,
+      'createSendingServiceKeyCheckWorker' => $worker,
+      'createPremiumKeyCheckWorker' => $worker,
+      'createBounceWorker' => $worker,
+      'createMigrationWorker' => $worker,
+      'createWooCommerceSyncWorker' => $worker,
+      'createExportFilesCleanupWorker' => $worker,
+      'createInactiveSubscribersWorker' => $worker,
+    ]);
   }
 }
