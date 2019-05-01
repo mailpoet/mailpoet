@@ -172,8 +172,6 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
 
   function testItUpdatesDaemonTokenDuringExecution() {
     $daemon_http_runner = Stub::make(DaemonHttpRunner::class, array(
-      'executeScheduleWorker' => null,
-      'executeQueueWorker' => null,
       'pauseExecution' => null,
       'callSelf' => null,
       'terminateRequest' => null,
@@ -226,9 +224,6 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect(ignore_user_abort())->equals(0);
     $daemon = Stub::make(DaemonHttpRunner::class, array(
       'pauseExecution' => null,
-      // workers should be executed
-      'executeScheduleWorker' => Expected::exactly(1),
-      'executeQueueWorker' => Expected::exactly(1),
       // daemon should call itself
       'callSelf' => Expected::exactly(1),
       'terminateRequest' => null,
