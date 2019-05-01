@@ -66,7 +66,8 @@ MailPoet.Modal = {
     height: 'auto',
 
     // display overlay
-    overlay: false,
+    overlay: false, // Controls background of overlay, false means transparent
+    overlayRender: true, // Controls display property, false means hidden
 
     // focus upon displaying
     focus: true,
@@ -133,7 +134,7 @@ MailPoet.Modal = {
     this.initOverlay();
 
     // toggle overlay
-    this.toggleOverlay(this.options.overlay);
+    this.setOverlay(this.options.overlay);
 
     if (this.options.type !== null) {
       // insert modal depending on its type
@@ -193,15 +194,14 @@ MailPoet.Modal = {
     }
     return this;
   },
-  toggleOverlay: function (toggle) {
-    if (toggle === true) {
+  setOverlay: function (showBackground) {
+    if (showBackground === true) {
       jQuery('#mailpoet_modal_overlay')
-        .removeClass('mailpoet_overlay_hidden');
+        .removeClass('mailpoet_overlay_transparent');
     } else {
       jQuery('#mailpoet_modal_overlay')
-        .addClass('mailpoet_overlay_hidden');
+        .addClass('mailpoet_overlay_transparent');
     }
-
     return this;
   },
   setupEvents: function () {
@@ -453,6 +453,9 @@ MailPoet.Modal = {
     return this;
   },
   showOverlay: function () {
+    if (!this.options.overlayRender) {
+      return this;
+    }
     jQuery('#mailpoet_modal_overlay').show();
     jQuery('body').addClass('mailpoet_modal_opened');
     return this;
