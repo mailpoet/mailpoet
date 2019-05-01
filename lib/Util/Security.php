@@ -13,11 +13,9 @@ class Security {
   }
 
   static function generateRandomString($length = 5) {
-    return substr(
-      bin2hex(random_bytes(16)), // phpcs:ignore
-      0,
-      min(max(5, (int)$length), 32)
-    );
+    $length = max(5, (int)$length);
+    $string = bin2hex(random_bytes($length)); // phpcs:ignore
+    return substr($string, 0, $length);
   }
 
   static function generateHash($length = false) {
