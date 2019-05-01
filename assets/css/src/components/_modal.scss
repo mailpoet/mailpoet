@@ -37,7 +37,7 @@ body.mailpoet_modal_opened {
   z-index: 100001 !important;
 }
 
-.mailpoet_modal_overlay.mailpoet_overlay_hidden {
+.mailpoet_modal_overlay.mailpoet_overlay_transparent {
   background-color: transparent;
 }
 
@@ -73,7 +73,7 @@ body.mailpoet_modal_opened {
   z-index: 0;
 }
 
-.mailpoet_overlay_hidden .mailpoet_popup_wrapper {
+.mailpoet_overlay_transparent .mailpoet_popup_wrapper {
   border: 1px solid #333;
 }
 
