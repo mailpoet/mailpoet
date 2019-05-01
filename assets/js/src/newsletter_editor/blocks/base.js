@@ -267,6 +267,7 @@ Module.BlockSettingsView = Marionette.View.extend({
       element: this.$el,
       template: '',
       position: 'right',
+      overlayRender: false,
       width: App.getConfig().get('sidepanelWidth'),
       onCancel: function onCancel() {
         this.destroy();
