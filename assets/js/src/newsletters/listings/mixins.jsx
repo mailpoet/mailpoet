@@ -253,13 +253,13 @@ const StatisticsMixin = {
     const minNewslettersSent = 20;
     const minNewsletterOpens = 5;
 
-    let content;
+    let openedAndClickedStats;
     if (totalSent >= minNewslettersSent
       && newsletter.statistics.opened >= minNewsletterOpens
       && !tooEarlyForStats
     ) {
       // display stats with badges
-      content = (
+      openedAndClickedStats = (
         <div className="mailpoet_stats_text">
           <div>
             <span>
@@ -295,7 +295,7 @@ const StatisticsMixin = {
       );
     } else {
       // display simple stats
-      content = (
+      openedAndClickedStats = (
         <div>
           <span className="mailpoet_stats_text">
             { percentageOpenedDisplay }
@@ -310,15 +310,30 @@ const StatisticsMixin = {
               %
             </span>
           </span>
-          { tooEarlyForStats && (
-            <div className="mailpoet_badge mailpoet_badge_green">
-              {MailPoet.I18n.t('checkBackInHours')
-                .replace('%$1d', showStatsTimeout - sentHoursAgo)}
-            </div>
-          ) }
         </div>
       );
     }
+
+    const wrapContentInLink = (content, idPrefix) => wrapInLink(
+      content,
+      params,
+      `${idPrefix}-${newsletter.id}`,
+      totalSent
+    );
+
+    const content = (
+      <>
+        { wrapContentInLink(openedAndClickedStats, 'opened-and-clicked') }
+        { tooEarlyForStats && wrapContentInLink(
+          (
+            <div className="mailpoet_badge mailpoet_badge_green">
+              {MailPoet.I18n.t('checkBackInHours').replace('%$1d', showStatsTimeout - sentHoursAgo)}
+            </div>
+          ),
+          'check-back'
+        ) }
+      </>
+    );
 
     // thresholds to display bad open rate help
     const maxPercentageOpened = 5;
@@ -346,11 +361,9 @@ const StatisticsMixin = {
       );
     }
 
-    const wrappedContent = wrapInLink(content, params, newsletter.id, totalSent);
-
     return (
       <div>
-        {wrappedContent}
+        {content}
         {afterContent}
       </div>
     );
