@@ -61,6 +61,8 @@ global.stubChannel = function (EditorApplication, returnObject) {
     },
     on: function () {
     },
+    off: function () {
+    },
   }));
 };
 global.stubConfig = function (EditorApplication, opts) {
