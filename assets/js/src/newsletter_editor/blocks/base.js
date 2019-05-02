@@ -66,6 +66,7 @@ Module.BlockView = AugmentedView.extend({
       onDrop: function onDrop(options) {
         // After a clone of model has been dropped, cleanup
         // and destroy self
+        App.getChannel().trigger('hideSettings');
         options.dragBehavior.view.model.destroy();
       },
       onDragSubstituteBy: function onDragSubstituteBy(behavior) {
@@ -247,11 +248,13 @@ Module.BlockToolsView = AugmentedView.extend({
   deleteBlock: function deleteBlock(event) {
     event.preventDefault();
     this.model.trigger('delete');
+    App.getChannel().trigger('hideSettings');
     return false;
   },
   duplicateBlock: function duplicateBlock(event) {
     event.preventDefault();
     this.model.trigger('duplicate');
+    App.getChannel().trigger('hideSettings');
     return false;
   },
 });
@@ -280,6 +283,7 @@ Module.BlockSettingsView = Marionette.View.extend({
     } else {
       MailPoet.Modal.panel(panelParams);
     }
+    this.listenTo(App.getChannel(), 'hideSettings', this.close);
   },
   templateContext: function templateContext() {
     return {
