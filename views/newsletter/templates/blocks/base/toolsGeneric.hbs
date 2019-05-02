@@ -23,7 +23,7 @@
 		</div>
 	{{/if}}
 	{{#if tools.duplicate}}
-		<a href="javascript:;" class="mailpoet_tool mailpoet_duplicate_block" title="<%= __('Duplicate') %>">
+		<a href="javascript:;" data-automation-id="duplicate_tool" class="mailpoet_tool mailpoet_duplicate_block" title="<%= __('Duplicate') %>">
 			<%= source('newsletter/templates/svg/block-tools/duplicate.svg') %>
 		</a>
 	{{/if}}
