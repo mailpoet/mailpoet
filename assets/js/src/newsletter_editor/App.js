@@ -1,5 +1,6 @@
 import Marionette from 'backbone.marionette';
 import BackboneRadio from 'backbone.radio';
+import jQuery from 'jquery';
 
 var Radio = BackboneRadio;
 
@@ -12,6 +13,17 @@ var AppView = Marionette.View.extend({
     bottomRegion: '#mailpoet_editor_bottom',
     headingRegion: '#mailpoet_editor_heading',
     topRegion: '#mailpoet_editor_top',
+  },
+
+  events: {
+    click: 'onClickOutsideContentHideSettings',
+  },
+
+  onClickOutsideContentHideSettings: function onClickOutsideContentHideSettings(event) {
+    if (jQuery(event.target).parents('#mailpoet_editor_content').length) {
+      return;
+    }
+    window.EditorApplication.getChannel().trigger('hideSettings');
   },
 });
 
