@@ -22,6 +22,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WooCommerce\Helper as WCHelper;
 
 if (!defined('ABSPATH')) exit;
 
@@ -36,6 +37,9 @@ class Newsletters extends APIEndpoint {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var WCHelper */
+  private $woocommerce_helper;
+
   /** @var SettingsController */
   private $settings;
 
@@ -47,11 +51,13 @@ class Newsletters extends APIEndpoint {
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
     WPFunctions $wp,
+    WCHelper $woocommerce_helper,
     SettingsController $settings
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
     $this->wp = $wp;
+    $this->woocommerce_helper = $woocommerce_helper;
     $this->settings = $settings;
   }
 
@@ -437,13 +443,13 @@ class Newsletters extends APIEndpoint {
         $newsletter
           ->withSegments(true)
           ->withSendingQueue()
-          ->withStatistics();
+          ->withStatistics($this->woocommerce_helper);
       } else if ($newsletter->type === Newsletter::TYPE_WELCOME || $newsletter->type === Newsletter::TYPE_AUTOMATIC) {
         $newsletter
           ->withOptions()
           ->withTotalSent()
           ->withScheduledToBeSent()
-          ->withStatistics();
+          ->withStatistics($this->woocommerce_helper);
       } else if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withOptions()
@@ -453,7 +459,7 @@ class Newsletters extends APIEndpoint {
         $newsletter
           ->withSegments(true)
           ->withSendingQueue()
-          ->withStatistics();
+          ->withStatistics($this->woocommerce_helper);
       }
 
       if ($newsletter->status === Newsletter::STATUS_SENT ||

@@ -14,6 +14,7 @@ use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
 use PHPUnit\Framework\MockObject\MockObject;
+use MailPoet\WooCommerce\Helper as WCHelper;
 
 class WorkerTest extends \MailPoetTest {
 
@@ -38,7 +39,7 @@ class WorkerTest extends \MailPoetTest {
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = new SettingsController();
-    $this->stats_notifications = new Worker($this->mailer, $this->renderer, $this->settings);
+    $this->stats_notifications = new Worker($this->mailer, $this->renderer, $this->settings, $this->makeEmpty(WCHelper::class));
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
       'address' => 'email@example.com'

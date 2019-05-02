@@ -549,8 +549,8 @@ class Newsletter extends Model {
     return $this;
   }
 
-  function withStatistics() {
-    $statistics = $this->getStatistics();
+  function withStatistics(WCHelper $woocommerce_helper) {
+    $statistics = $this->getStatistics($woocommerce_helper);
     $this->statistics = $statistics;
     return $this;
   }
@@ -560,7 +560,7 @@ class Newsletter extends Model {
     return $renderer->render();
   }
 
-  function getStatistics() {
+  function getStatistics(WCHelper $woocommerce_helper) {
     if (($this->type !== self::TYPE_WELCOME) && ($this->queue === false)) {
       return false;
     }
@@ -589,7 +589,6 @@ class Newsletter extends Model {
     }
 
     // WooCommerce revenues
-    $woocommerce_helper = new WCHelper();
     if ($woocommerce_helper->isWooCommerceActive()) {
       $currency = $woocommerce_helper->getWoocommerceCurrency();
       $row = StatisticsWooCommercePurchases::selectExpr('SUM(order_price_total) AS total')

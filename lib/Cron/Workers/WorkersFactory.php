@@ -78,7 +78,7 @@ class WorkersFactory {
   }
 
   function createStatsNotificationsWorker($timer) {
-    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $timer);
+    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $timer);
   }
 
   /** @return SendingServiceKeyCheckWorker */
