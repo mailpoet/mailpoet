@@ -35,10 +35,19 @@ class Helper {
     return wc_get_product($the_product);
   }
 
+  function getWoocommerceCurrency() {
+    return get_woocommerce_currency();
+  }
+
   function getOrdersCount() {
     $counts = $this->wp->wpCountPosts('shop_order');
     return array_reduce((array)$counts, function($sum, $count_for_state) {
       return $sum + (int)$count_for_state;
     });
+  }
+
+  function getRawPrice($price, array $args = []) {
+    $html_price = $this->wcPrice($price, $args);
+    return html_entity_decode(strip_tags($html_price));
   }
 }

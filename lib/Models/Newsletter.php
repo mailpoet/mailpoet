@@ -6,6 +6,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
+use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
@@ -585,6 +586,27 @@ class Newsletter extends Model {
       }
 
       $result[$name] = !empty($row->cnt) ? (int)$row->cnt : 0;
+    }
+
+    // WooCommerce revenues
+    $woocommerce_helper = new WCHelper();
+    if ($woocommerce_helper->isWooCommerceActive()) {
+      $currency = $woocommerce_helper->getWoocommerceCurrency();
+      $row = StatisticsWooCommercePurchases::selectExpr('SUM(order_price_total) AS total')
+        ->where([
+          'newsletter_id' => $this->id,
+          'order_currency' => $currency,
+        ])
+        ->findOne();
+
+      $revenue = !empty($row->total) ? (float)$row->total : 0.0;
+      $result['revenue'] = [
+        'currency' => $currency,
+        'value' => $revenue,
+        'formatted' => $woocommerce_helper->getRawPrice($revenue, ['currency' => $currency]),
+      ];
+    } else {
+      $result['revenue'] = null;
     }
 
     return $result;
