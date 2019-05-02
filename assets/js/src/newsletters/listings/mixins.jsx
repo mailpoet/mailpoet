@@ -9,6 +9,7 @@ import jQuery from 'jquery';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 import StatsBadge from 'newsletters/badges/stats.jsx';
+import HelpTooltip from 'help-tooltip.jsx';
 
 const QueueMixin = {
   pauseSending: function pauseSending(newsletter) {
@@ -216,11 +217,13 @@ const StatisticsMixin = {
     let percentageClicked = 0;
     let percentageOpened = 0;
     let percentageUnsubscribed = 0;
+    let revenue = null;
 
     if (totalSent > 0) {
       percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
       percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
       percentageUnsubscribed = (newsletter.statistics.unsubscribed * 100) / totalSent;
+      revenue = newsletter.statistics.revenue;
     }
 
     // format to 1 decimal place
@@ -324,6 +327,17 @@ const StatisticsMixin = {
     const content = (
       <>
         { wrapContentInLink(openedAndClickedStats, 'opened-and-clicked') }
+        { revenue !== null && revenue.value > 0 && (
+          <div className="mailpoet_stats_text">
+            { wrapContentInLink(revenue.formatted, 'revenue') }
+            {' '}
+            <HelpTooltip
+              tooltip={MailPoet.I18n.t('revenueStatsTooltip')}
+              place="left"
+              tooltipId="helpTooltipStatsRevenue"
+            />
+          </div>
+        ) }
         { tooEarlyForStats && wrapContentInLink(
           (
             <div className="mailpoet_badge mailpoet_badge_green">
