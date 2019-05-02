@@ -225,6 +225,7 @@ Module.BlockToolsView = AugmentedView.extend({
   },
   changeSettings: function changeSettings(options) {
     var ViewType = this.getSettingsView();
+    App.getChannel().trigger('settingsShowed', this.model.cid);
     (new ViewType(_.extend({ model: this.model }, options || {}))).render();
   },
   showDeletionConfirmation: function showDeletionConfirmation() {
@@ -313,6 +314,7 @@ Module.BlockSettingsView = Marionette.View.extend({
   onBeforeDestroy: function onBeforeDestroy() {
     MailPoet.Modal.close();
     this.model.trigger('stopEditing');
+    App.getChannel().trigger('settingsShowed', null);
   },
 });
 
