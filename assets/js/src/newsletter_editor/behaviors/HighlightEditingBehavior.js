@@ -55,7 +55,9 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
   },
   onStopResizing: function onStopResizing(event) {
     this.isFocusedByPointer = isEventInsideElement(event, this.view.$el);
-    this.onStopEditing();
+    if (!App.getShowedSettingsId()) {
+      this.onStopEditing();
+    }
     this.view.triggerMethod('resizeStop', event);
   },
   onDomRefresh: function onDomRefresh() {
