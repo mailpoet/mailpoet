@@ -71,6 +71,9 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
         });
 
         editor.on('click', function onClick(e) {
+          if (App.getShowedSettingsId()) {
+            App.getChannel().trigger('hideSettings');
+          }
           // if caret not in editor, place it there (triggers focus on editor)
           if (document.activeElement !== editor.targetElm) {
             editor.selection.placeCaretAt(e.clientX, e.clientY);
