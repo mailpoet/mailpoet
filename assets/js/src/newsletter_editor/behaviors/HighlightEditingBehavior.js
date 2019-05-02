@@ -5,6 +5,7 @@
  */
 import Marionette from 'backbone.marionette';
 import BL from 'newsletter_editor/behaviors/BehaviorsLookup';
+import App from 'newsletter_editor/App';
 import { isEventInsideElement } from 'newsletter_editor/utils';
 
 BL.HighlightEditingBehavior = Marionette.Behavior.extend({
@@ -22,6 +23,10 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
     this.isFocusedByPointer = true;
     // Ignore mouse events when dragging
     if (mouseEvent && mouseEvent.buttons > 0) {
+      return;
+    }
+    // Ignore mouse events when settings panel is showed
+    if (App.getShowedSettingsId()) {
       return;
     }
     this.view.addHighlight();
