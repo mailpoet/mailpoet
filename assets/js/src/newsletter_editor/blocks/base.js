@@ -226,6 +226,14 @@ Module.BlockToolsView = AugmentedView.extend({
   },
   changeSettings: function changeSettings(options) {
     var ViewType = this.getSettingsView();
+    var showedSettingsId = App.getShowedSettingsId();
+    if (showedSettingsId) {
+      if (showedSettingsId === this.model.cid) {
+        return;
+      }
+      App.getChannel().trigger('hideSettings');
+      return;
+    }
     App.getChannel().trigger('settingsShowed', this.model.cid);
     (new ViewType(_.extend({ model: this.model }, options || {}))).render();
   },
