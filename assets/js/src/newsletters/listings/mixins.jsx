@@ -164,6 +164,33 @@ function trackStatsCTAClicked() {
   );
 }
 
+function wrapInLink(content, params, id, totalSent) {
+  if (totalSent <= 0 || !params.link) {
+    return content;
+  }
+
+  if (params.externalLink) {
+    return (
+      <a
+        key={`stats-${id}`}
+        href={params.link}
+        onClick={params.onClick || null}
+      >
+        {content}
+      </a>
+    );
+  }
+  return (
+    <Link
+      key={`stats-${id}`}
+      to={params.link}
+      onClick={params.onClick || null}
+    >
+      {content}
+    </Link>
+  );
+}
+
 const StatisticsMixin = {
   renderStatistics: function renderStatistics(newsletter, isSent, currentTime) {
     let sent = isSent;
@@ -319,39 +346,11 @@ const StatisticsMixin = {
       );
     }
 
-    if (totalSent > 0 && params.link) {
-      // wrap content in a link
-      if (params.externalLink) {
-        return (
-          <div>
-            <a
-              key={`stats-${newsletter.id}`}
-              href={params.link}
-              onClick={params.onClick || null}
-            >
-              {content}
-            </a>
-            {afterContent}
-          </div>
-        );
-      }
-      return (
-        <div>
-          <Link
-            key={`stats-${newsletter.id}`}
-            to={params.link}
-            onClick={params.onClick || null}
-          >
-            {content}
-          </Link>
-          {afterContent}
-        </div>
-      );
-    }
+    const wrappedContent = wrapInLink(content, params, newsletter.id, totalSent);
 
     return (
       <div>
-        {content}
+        {wrappedContent}
         {afterContent}
       </div>
     );
