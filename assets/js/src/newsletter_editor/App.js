@@ -1,5 +1,5 @@
 import Marionette from 'backbone.marionette';
-import BackboneRadio from 'backbone.radio'; // eslint-disable-line func-names
+import BackboneRadio from 'backbone.radio';
 
 var Radio = BackboneRadio;
 
@@ -18,12 +18,12 @@ var AppView = Marionette.View.extend({
 var EditorApplication = Marionette.Application.extend({
   region: '#mailpoet_editor',
 
-  onStart: function () { // eslint-disable-line func-names
+  onStart: function onStart() {
     this._appView = new AppView();
     this.showView(this._appView);
   },
 
-  getChannel: function (channel) { // eslint-disable-line func-names
+  getChannel: function getChannel(channel) {
     if (channel === undefined) {
       return Radio.channel('global');
     }
