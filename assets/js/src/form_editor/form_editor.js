@@ -265,36 +265,36 @@ WysijaHistory = {
     // check if the field is unique
     if (parseInt(clone.readAttribute('wysija_unique'), 10) === 1) {
       // check if the field is already in the queue
-      window.$(WysijaHistory.container).select('[wysija_name="' + clone.readAttribute('wysija_name') + '"]').invoke('remove');
+      window.PJS$(WysijaHistory.container).select('[wysija_name="' + clone.readAttribute('wysija_name') + '"]').invoke('remove');
     }
 
     // check history size
-    if (window.$(WysijaHistory.container).select('> div').length >= WysijaHistory.size) {
+    if (window.PJS$(WysijaHistory.container).select('> div').length >= WysijaHistory.size) {
       // remove oldest element (last in the list)
-      window.$(WysijaHistory.container).select('> div').last().remove();
+      window.PJS$(WysijaHistory.container).select('> div').last().remove();
     }
 
     // store block in history
-    window.$(WysijaHistory.container).insert({
+    window.PJS$(WysijaHistory.container).insert({
       top: clone,
     });
   },
   dequeue: function () {
     // pop last block off the history
-    var block = window.$(WysijaHistory.container).select('div').first();
+    var block = window.PJS$(WysijaHistory.container).select('div').first();
 
     if (block !== undefined) {
       // insert block back into the editor
-      window.$(WysijaForm.options.body).insert({
+      window.PJS$(WysijaForm.options.body).insert({
         top: block,
       });
     }
   },
   clear: function () {
-    window.$(WysijaHistory.container).innerHTML = '';
+    window.PJS$(WysijaHistory.container).innerHTML = '';
   },
   remove: function (field) {
-    window.$(WysijaHistory.container).select('[wysija_name="' + field + '"]').invoke('remove');
+    window.PJS$(WysijaHistory.container).select('[wysija_name="' + field + '"]').invoke('remove');
   },
 };
 
@@ -338,17 +338,17 @@ WysijaForm = {
   },
   loading: function (isLoading) {
     if (isLoading) {
-      window.$(WysijaForm.options.editor).addClassName('loading');
-      window.$(WysijaForm.options.toolbar).addClassName('loading');
+      window.PJS$(WysijaForm.options.editor).addClassName('loading');
+      window.PJS$(WysijaForm.options.toolbar).addClassName('loading');
     } else {
-      window.$(WysijaForm.options.editor).removeClassName('loading');
-      window.$(WysijaForm.options.toolbar).removeClassName('loading');
+      window.PJS$(WysijaForm.options.editor).removeClassName('loading');
+      window.PJS$(WysijaForm.options.toolbar).removeClassName('loading');
     }
   },
   loadStatic: function (blocks) {
     window.$A(blocks).each(function (block) {
       // create block
-      WysijaForm.Block.create(block, window.$('block_placeholder'));
+      WysijaForm.Block.create(block, window.PJS$('block_placeholder'));
     });
   },
   load: function (data) {
@@ -359,11 +359,11 @@ WysijaForm = {
     if (data.body !== undefined) {
       window.$A(data.body).each(function (block) {
         // create block
-        WysijaForm.Block.create(block, window.$('block_placeholder'));
+        WysijaForm.Block.create(block, window.PJS$('block_placeholder'));
       });
 
       // load settings
-      settingsElements = window.$('mailpoet_form_settings').getElements();
+      settingsElements = window.PJS$('mailpoet_form_settings').getElements();
       settingsElements.each(function (setting) {
         // skip lists
         if (setting.name === 'segments') {
@@ -373,7 +373,7 @@ WysijaForm = {
           // if the input value is equal to the one stored in the settings
           if (setting.value === data.settings[setting.name]) {
             // check selected value
-            window.$(setting).checked = true;
+            window.PJS$(setting).checked = true;
           }
         } else if (data.settings[setting.name] !== undefined) {
           if (typeof data.settings[setting.name] === 'string') {
@@ -395,7 +395,7 @@ WysijaForm = {
     }
     data = {
       name: window.$F('mailpoet_form_name'),
-      settings: window.$('mailpoet_form_settings').serialize(true),
+      settings: window.PJS$('mailpoet_form_settings').serialize(true),
       body: [],
       styles: styles,
     };
@@ -486,11 +486,11 @@ WysijaForm = {
     hasSegmentSelection = WysijaForm.hasSegmentSelection();
 
     if (hasSegmentSelection) {
-      window.$('mailpoet_form_segments').writeAttribute('required', false).disable();
-      window.$('mailpoet_settings_segment_selection').hide();
+      window.PJS$('mailpoet_form_segments').writeAttribute('required', false).disable();
+      window.PJS$('mailpoet_settings_segment_selection').hide();
     } else {
-      window.$('mailpoet_form_segments').writeAttribute('required', true).enable();
-      window.$('mailpoet_settings_segment_selection').show();
+      window.PJS$('mailpoet_form_segments').writeAttribute('required', true).enable();
+      window.PJS$('mailpoet_settings_segment_selection').show();
     }
   },
   hasSegmentSelection: function () {
@@ -528,7 +528,7 @@ WysijaForm = {
 
     if (target !== undefined) {
       // get placeholders (previous placeholder matches the placeholder linked to the next block)
-      blockPlaceholder = window.$(target.element.readAttribute('wysija_placeholder'));
+      blockPlaceholder = window.PJS$(target.element.readAttribute('wysija_placeholder'));
       previousPlaceholder = target.element.previous('.block_placeholder');
 
       if (blockPlaceholder !== null) {
@@ -550,13 +550,13 @@ WysijaForm = {
     WysijaForm.scroll = document.viewport.getScrollOffsets();
   },
   hideSettings: function () {
-    window.$(WysijaForm.options.container).select('.wysija_settings').invoke('hide');
+    window.PJS$(WysijaForm.options.container).select('.wysija_settings').invoke('hide');
   },
   setSettingsPosition: function () {
     // get viewport offsets and dimensions
     var viewportHeight = document.viewport.getHeight();
 
-    window.$(WysijaForm.options.container).select('.wysija_settings').each(function (element) {
+    window.PJS$(WysijaForm.options.container).select('.wysija_settings').each(function (element) {
       // get parent dimensions and position
       var parentDim = element.up('.mailpoet_form_block').getDimensions();
       var parentPos = element.up('.mailpoet_form_block').cumulativeOffset();
@@ -569,7 +569,7 @@ WysijaForm = {
         relativeTop = parseInt((parentDim.height / 2) - (element.getHeight() / 2), 10);
       }
       // set position for button
-      window.$(element).setStyle({
+      window.PJS$(element).setStyle({
         left: parseInt((parentDim.width / 2) - (element.getWidth() / 2), 10) + 'px',
         top: relativeTop + 'px',
       });
@@ -578,7 +578,7 @@ WysijaForm = {
   initToolbarPosition: function () {
     if (WysijaForm.toolbar.top === null) {
       WysijaForm.toolbar.top = parseInt(
-        window.$(WysijaForm.options.container).positionedOffset().top, 10
+        window.PJS$(WysijaForm.options.container).positionedOffset().top, 10
       );
     }
     if (WysijaForm.toolbar.y === null) {
@@ -589,13 +589,13 @@ WysijaForm = {
       if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = 0;
     } else if (WysijaForm.toolbar.left === null) {
       WysijaForm.toolbar.left = parseInt(
-        window.$(WysijaForm.options.container).positionedOffset().left, 10
+        window.PJS$(WysijaForm.options.container).positionedOffset().left, 10
       );
     }
     if (WysijaForm.toolbar.x === null) {
       WysijaForm.toolbar.x = parseInt(
         WysijaForm.toolbar.left
-          + window.$(WysijaForm.options.container).getDimensions().width
+          + window.PJS$(WysijaForm.options.container).getDimensions().width
           + 15,
         10
       );
@@ -616,7 +616,7 @@ WysijaForm = {
       position.left = WysijaForm.toolbar.x + 'px';
     }
 
-    window.$(WysijaForm.options.toolbar).setStyle(position);
+    window.PJS$(WysijaForm.options.toolbar).setStyle(position);
   },
   updateToolbarPosition: function () {
     // init toolbar position (updates scroll and toolbar y)
@@ -635,7 +635,7 @@ WysijaForm = {
         duration: 0.2,
       });
     } else {
-      window.$(WysijaForm.options.toolbar).setStyle({
+      window.PJS$(WysijaForm.options.toolbar).setStyle({
         left: WysijaForm.toolbar.x + 'px',
         top: WysijaForm.toolbar.top + 'px',
       });
@@ -644,15 +644,15 @@ WysijaForm = {
   blockDropOptions: {
     accept: window.$w('mailpoet_form_field'), // acceptable items (classes array)
     onEnter: function (draggable, droppable) {
-      window.$(droppable).addClassName('hover');
+      window.PJS$(droppable).addClassName('hover');
     },
     onLeave: function (draggable, droppable) {
-      window.$(droppable).removeClassName('hover');
+      window.PJS$(droppable).removeClassName('hover');
     },
     onDrop: function (draggable, droppable) {
       // custom data for images
       droppable.fire('wjfe:item:drop', WysijaForm.getFieldData(draggable));
-      window.$(droppable).removeClassName('hover');
+      window.PJS$(droppable).removeClassName('hover');
     },
   },
   hideControls: function () {
@@ -683,7 +683,7 @@ WysijaForm = {
     window.Droppables.add('block_placeholder', WysijaForm.blockDropOptions);
   },
   makeSortable: function () {
-    var body = window.$(WysijaForm.options.body);
+    var body = window.PJS$(WysijaForm.options.body);
     window.Sortable.create(body, {
       tag: 'div',
       only: 'mailpoet_form_block',
@@ -709,7 +709,7 @@ WysijaForm = {
     });
   },
   getBlockElements: function () {
-    return window.$(WysijaForm.options.container).select('.mailpoet_form_block');
+    return window.PJS$(WysijaForm.options.container).select('.mailpoet_form_block');
   },
   startBlockPositions: function (event, target) {
     if (target.element.hasClassName('mailpoet_form_block')) {
@@ -761,8 +761,8 @@ WysijaForm = {
 
 WysijaForm.DraggableItem = window.Class.create({
   initialize: function (element) {
-    this.elementType = window.$(element).readAttribute('wysija_type');
-    this.element = window.$(element).down() || window.$(element);
+    this.elementType = window.PJS$(element).readAttribute('wysija_type');
+    this.element = window.PJS$(element).down() || window.PJS$(element);
     this.clone = this.cloneElement();
     this.insert();
   },
@@ -824,7 +824,7 @@ WysijaForm.Block = window.Class.create({
   initialize: function (element) {
     info('block -> init');
 
-    this.element = window.$(element);
+    this.element = window.PJS$(element);
     this.block = new WysijaForm.Widget(this.element);
 
     // enable block placeholder
@@ -882,7 +882,7 @@ WysijaForm.Block = window.Class.create({
   createBlockDroppable: function () {
     info('block -> createBlockDroppable');
     this.element.insert({
-      before: '<div class="block_placeholder">' + window.$('block_placeholder').innerHTML + '</div>',
+      before: '<div class="block_placeholder">' + window.PJS$('block_placeholder').innerHTML + '</div>',
     });
     return this.element.previous('.block_placeholder');
   },
@@ -951,7 +951,7 @@ WysijaForm.Block = window.Class.create({
       if (this.settingsButton !== null) {
         this.settingsButton.observe('click', function (event) {
           // TODO: refactor
-          block = window.$(event.target).up('.mailpoet_form_block') || null;
+          block = window.PJS$(event.target).up('.mailpoet_form_block') || null;
           if (block !== null) {
             this.editSettings();
           }
@@ -1003,13 +1003,13 @@ WysijaForm.Block.create = function (createBlock, target) {
   var template;
   var output;
   var settingsSegments;
-  if (window.$('form_template_' + block.type) === null) {
+  if (window.PJS$('form_template_' + block.type) === null) {
     return false;
   }
 
-  body = window.$(WysijaForm.options.body);
-  blockTemplate = window.Handlebars.compile(window.$('form_template_block').innerHTML);
-  template = window.Handlebars.compile(window.$('form_template_' + block.type).innerHTML);
+  body = window.PJS$(WysijaForm.options.body);
+  blockTemplate = window.Handlebars.compile(window.PJS$('form_template_block').innerHTML);
+  template = window.Handlebars.compile(window.PJS$('form_template_' + block.type).innerHTML);
   output = '';
 
   if (block.type === 'segment') {
@@ -1074,7 +1074,7 @@ document.observe('wjfe:item:drop', function (event) {
 WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
   initialize: function (element) {
     info('widget -> init');
-    this.element = window.$(element);
+    this.element = window.PJS$(element);
     return this;
   },
   setup: function () {
@@ -1126,8 +1126,8 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
     this.setData(data);
     options = this.getData();
     // redraw block
-    blockTemplate = window.Handlebars.compile(window.$('form_template_block').innerHTML);
-    template = window.Handlebars.compile(window.$('form_template_' + options.type).innerHTML);
+    blockTemplate = window.Handlebars.compile(window.PJS$('form_template_block').innerHTML);
+    template = window.Handlebars.compile(window.PJS$('form_template_' + options.type).innerHTML);
     params = window.$H(options).merge({
       template: template(options),
     }).toObject();
