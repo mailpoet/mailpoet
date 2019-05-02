@@ -31,6 +31,10 @@ var EditorApplication = Marionette.Application.extend({
     return Radio.channel(channel);
   },
 
+  getShowedSettingsId: function getShowedSettingsId() {
+    return this.showedSettingsId;
+  },
+
   setShowedSettingsId: function setShowedSettingsId(id) {
     this.showedSettingsId = id;
   },
