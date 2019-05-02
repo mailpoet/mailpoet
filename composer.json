@@ -19,8 +19,7 @@
     "nesbot/carbon": "^1.21",
     "soundasleep/html2text": "dev-master",
     "symfony/polyfill-php72": "^1.9",
-    "symfony/polyfill-mbstring": "^1.9",
-    "redcomponent/teststatistics": "^2.2"
+    "symfony/polyfill-mbstring": "^1.9"
   },
   "require-dev": {
     "codeception/aspect-mock": "2.0.1",
@@ -35,6 +34,7 @@
     "lucatume/wp-browser": "2.2.0",
     "phpcompatibility/php-compatibility": "^9.0",
     "phpunit/phpunit": "5.7.27",
+    "redcomponent/teststatistics": "^2.2",
     "sensiolabs/security-checker": "^5.0",
     "squizlabs/php_codesniffer": "^3.3",
     "umpirsky/twig-gettext-extractor": "1.1.*",
