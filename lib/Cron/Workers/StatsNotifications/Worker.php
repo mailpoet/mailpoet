@@ -13,6 +13,7 @@ use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WooCommerce\Helper as WCHelper;
 
 class Worker {
 
@@ -31,11 +32,21 @@ class Worker {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(Mailer $mailer, Renderer $renderer, SettingsController $settings, $timer = false) {
+  /** @var WCHelper */
+  private $woocommerce_helper;
+
+  function __construct(
+    Mailer $mailer,
+    Renderer $renderer,
+    SettingsController $settings,
+    WCHelper $woocommerce_helper,
+    $timer = false
+  ) {
     $this->timer = $timer ?: microtime(true);
     $this->renderer = $renderer;
     $this->mailer = $mailer;
     $this->settings = $settings;
+    $this->woocommerce_helper = $woocommerce_helper;
   }
 
   /** @throws \Exception */
@@ -92,7 +103,7 @@ class Worker {
     return $newsletter
       ->withSendingQueue()
       ->withTotalSent()
-      ->withStatistics();
+      ->withStatistics($this->woocommerce_helper);
   }
 
   /**

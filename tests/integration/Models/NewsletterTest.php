@@ -15,6 +15,7 @@ use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Util\Security;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WooCommerce\Helper as WCHelper;
 
 class NewsletterTest extends \MailPoetTest {
   function _before() {
@@ -169,7 +170,7 @@ class NewsletterTest extends \MailPoetTest {
     $unsubscribes->save();
 
     $newsletter->queue = $newsletter->getQueue()->asArray();
-    $statistics = $newsletter->getStatistics( $sending_queue->id);
+    $statistics = $newsletter->getStatistics($this->makeEmpty(WCHelper::class));
     expect($statistics['opened'])->equals(1);
     expect($statistics['clicked'])->equals(1);
     expect($statistics['unsubscribed'])->equals(1);

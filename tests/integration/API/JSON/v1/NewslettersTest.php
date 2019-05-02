@@ -26,6 +26,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WooCommerce\Helper as WCHelper;
 
 class NewslettersTest extends \MailPoetTest {
   /** @var Newsletters */
@@ -110,6 +111,7 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
+      $this->makeEmpty(WCHelper::class),
       new SettingsController()
     );
     $response = $this->endpoint->get(array('id' => $this->newsletter->id));
@@ -148,6 +150,7 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
+      $this->makeEmpty(WCHelper::class),
       new SettingsController()
     );
 
@@ -513,6 +516,7 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
+      $this->makeEmpty(WCHelper::class),
       new SettingsController()
     );
 
