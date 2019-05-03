@@ -22,7 +22,7 @@ class EditorSocialBlockCest {
     $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
     // Create social block
     $I->waitForText('Social');
-    $I->wait(1); // just to be sure
+    $I->waitForElementNotVisible('.velocity-animating');
     $I->dragAndDrop('#automation_editor_block_social', '#mce_1');
     //Open settings by clicking on block
     $I->moveMouseOver($socialBlockInEditor, 3, 2);

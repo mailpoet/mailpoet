@@ -23,7 +23,7 @@ class EditorSpacerBlockCest {
     $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
     // Create divider block
     $I->waitForText('Spacer');
-    $I->wait(1); // just to be sure
+    $I->waitForElementNotVisible('.velocity-animating');
     $I->dragAndDrop('#automation_editor_block_spacer', '#mce_1');
     //Open settings by clicking on block
     $I->moveMouseOver($spacerInEditor, 3, 2);

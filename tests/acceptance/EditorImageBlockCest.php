@@ -21,7 +21,7 @@ class EditorImageBlockCest {
     $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
     // Create image block
     $I->waitForText('Image');
-    $I->wait(1); // just to be sure
+    $I->waitForElementNotVisible('.velocity-animating');
     $I->dragAndDrop('#automation_editor_block_image', '#mce_0');
     $I->waitForText('Add images');
     $I->click('Media Library');

@@ -21,7 +21,7 @@ class EditorTextBlockCest {
     $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
     // Create Text block
     $I->waitForText('Text');
-    $I->wait(1); // just to be sure
+    $I->waitForElementNotVisible('.velocity-animating');
     $I->dragAndDrop('#automation_editor_block_text', '#mce_1');
     $I->waitForText('Edit this to insert text.');
   }
