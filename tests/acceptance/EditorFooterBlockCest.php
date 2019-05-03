@@ -23,7 +23,7 @@ class EditorFooterBlockCest {
     $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
     // Create Footer block
     $I->waitForText('Footer');
-    $I->wait(1); // just to be sure
+    $I->waitForElementNotVisible('.velocity-animating');
     $I->dragAndDrop('#automation_editor_block_footer', '#mce_0');
     //Open settings by clicking on block
     $I->moveMouseOver($footerInEditor, 3, 2);

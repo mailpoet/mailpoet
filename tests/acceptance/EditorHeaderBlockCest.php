@@ -23,7 +23,7 @@ class EditorHeaderBlockCest {
     $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
     // Create header block
     $I->waitForText('Header');
-    $I->wait(1); // just to be sure
+    $I->waitForElementNotVisible('.velocity-animating');
     $I->dragAndDrop('#automation_editor_block_header', '#mce_0');
     //Open settings by clicking on block
     $I->moveMouseOver($headerInEditor, 3, 2);

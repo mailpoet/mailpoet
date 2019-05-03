@@ -99,7 +99,7 @@ class EditorProductsCest {
 
     // Create products block
     $I->waitForText('Products');
-    $I->wait(1); // just to be sure
+    $I->waitForElementNotVisible('.velocity-animating');
     $I->dragAndDrop('#automation_editor_block_products', '#mce_0');
     $I->waitForText('PRODUCT SELECTION');
 
