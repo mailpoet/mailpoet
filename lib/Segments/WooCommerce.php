@@ -25,9 +25,6 @@ class WooCommerce {
   }
 
   function synchronizeRegisteredCustomer($wp_user_id, $current_filter = null) {
-    if (!$this->settings->get('woo_commerce_list_sync_enabled')) {
-      return false;
-    }
     $wc_segment = Segment::getWooCommerceSegment();
 
     if ($wc_segment === false) return;
@@ -76,9 +73,6 @@ class WooCommerce {
   }
 
   function synchronizeGuestCustomer($order_id, $current_filter = null) {
-    if (!$this->settings->get('woo_commerce_list_sync_enabled')) {
-      return false;
-    }
     $wc_order = $this->wp->getPost($order_id);
     $wc_segment = Segment::getWooCommerceSegment();
 

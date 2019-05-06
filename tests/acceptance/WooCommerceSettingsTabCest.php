@@ -12,7 +12,6 @@ class WooCommerceSettingsTabCest {
     $I->activateWooCommerce();
     $this->settings_factory = new Settings();
     $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
-    $this->settings_factory->withWooCommerceListSyncEnabled();
   }
 
   function checkWooCommerceTabExists(\AcceptanceTester $I) {

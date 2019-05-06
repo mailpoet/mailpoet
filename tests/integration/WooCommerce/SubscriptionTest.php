@@ -15,7 +15,6 @@ class SubscriptionTest extends \MailPoetTest {
     $this->order_id = 123; // dummy
     $this->subscription = ContainerWrapper::getInstance()->get(Subscription::class);
     $this->settings = new SettingsController();
-    $this->settings->set('woo_commerce_list_sync_enabled', 1);
     $this->wc_segment = Segment::getWooCommerceSegment();
 
     $subscriber = Subscriber::create();

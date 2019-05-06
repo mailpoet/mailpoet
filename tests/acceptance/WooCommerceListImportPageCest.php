@@ -27,9 +27,6 @@ class WooCommerceListImportPageCest {
     // Cleanup
     $this->customer_factory->deleteAll();
     $this->order_factory->deleteAll();
-    // Feature switch
-    $settings_factory = new Settings();
-    $settings_factory->withWooCommerceListSyncEnabled();
     $scheduled_tasks_factory = new ScheduledTask();
     $scheduled_tasks_factory->deleteAll();
   }

@@ -56,8 +56,6 @@ class Daemon {
     yield $this->workers_factory->createBounceWorker($this->timer);
     yield $this->workers_factory->createExportFilesCleanupWorker($this->timer);
     yield $this->workers_factory->createInactiveSubscribersWorker($this->timer);
-    if ($this->settings_controller->get('woo_commerce_list_sync_enabled')) {
-      yield $this->workers_factory->createWooCommerceSyncWorker($this->timer);
-    }
+    yield $this->workers_factory->createWooCommerceSyncWorker($this->timer);
   }
 }

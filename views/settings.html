@@ -117,7 +117,7 @@
           } else {
             $('#settings_stats_notifications_error').hide();
           }
-          <% if is_woocommerce_active and settings.woo_commerce_list_sync_enabled %>
+          <% if is_woocommerce_active %>
             // if WooCommerce opt-in on checkout is enabled but the checkbox message is empty, show an error
             var woocommerce_optin_on_checkout_enabled = $('input[name="woocommerce[optin_on_checkout][enabled]"]:checked').val(),
               woocommerce_optin_on_checkout_message = $('input[name="woocommerce[optin_on_checkout][message]"]').val().trim();
