@@ -33,6 +33,7 @@ class WooCommerceOrder {
         'last_name' => "Guest_Last_$unique_id",
         'email' => "guest_$unique_id@example.com",
       ],
+      'currency' => 'EUR',
       'products' => null,
     ];
   }
@@ -53,6 +54,10 @@ class WooCommerceOrder {
     return $this->update(['customer_id' => $customer_data['id'], 'billing' => $billing]);
   }
 
+  function withCurrency($currency) {
+    return $this->update(['currency' => $currency]);
+  }
+
   /**
    * @param array $products array of Products created via WooCommerceProduct factory
    * @param int[] $quantities
@@ -65,7 +70,7 @@ class WooCommerceOrder {
         'product_id' => $product['id'],
         'name' => $product['name'],
         'qty' => isset($quantities[$key]) ? (int)$quantities[$key] : 1,
-
+        'total' => (string)(isset($product['total']) ? $product['total'] : 10),
       ];
     }
     return $this->update(['products' => $products_data]);
@@ -77,6 +82,7 @@ class WooCommerceOrder {
     $cmd .= ' --status=' . $this->data['status'];
     $cmd .= ' --customer_id=' . $this->data['customer_id'];
     $cmd .= " --billing='" . json_encode($this->data['billing']) . "'";
+    $cmd .= ' --currency=' . $this->data['currency'];
     if (is_array($this->data['products']) && !empty($this->data['products'])) {
       $cmd .= " --line_items='" . json_encode($this->data['products']) . "'";
     }
