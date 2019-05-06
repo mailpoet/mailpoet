@@ -24,6 +24,13 @@ function wc_price(float $price, array $args = []): string {
   return '';
 }
 
+/**
+ * @return string
+ */
+function get_woocommerce_currency() {
+  return '';
+}
+
 function wc_get_product($the_product = false, $deprecated = array()) {
 	return null;
 }
