@@ -34,6 +34,8 @@ class Reporter {
     $bounceAddress = $this->settings->get('bounce.address');
     $segments = Segment::getAnalytics();
     $has_wc = $this->woocommerce_helper->isWooCommerceActive();
+    $inactive_subscribers_months = (int)round((int)$this->settings->get('deactivate_subscriber_after_inactive_days') / 30);
+    $inactive_subscribers_status = $inactive_subscribers_months === 0 ? 'never' : "$inactive_subscribers_months months";
 
     $result = [
       'PHP version' => PHP_VERSION,
@@ -69,6 +71,7 @@ class Reporter {
       'Total number of standard newsletters sent' => $newsletters['sent_newsletters_count'],
       'Number of segments' => isset($segments['dynamic']) ? (int)$segments['dynamic'] : 0,
       'Number of lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
+      'Stop sending to inactive subscribers' => $inactive_subscribers_status,
       'Plugin > MailPoet Premium' => WPFunctions::get()->isPluginActive('mailpoet-premium/mailpoet-premium.php'),
       'Plugin > bounce add-on' => WPFunctions::get()->isPluginActive('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
       'Plugin > Bloom' => WPFunctions::get()->isPluginActive('bloom-for-publishers/bloom.php'),
