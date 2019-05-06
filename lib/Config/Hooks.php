@@ -163,10 +163,6 @@ class Hooks {
   }
 
   function setupWooCommerceSubscriptionEvents() {
-    if (!$this->settings->get('woo_commerce_list_sync_enabled')) {
-      return false;
-    }
-
     $woocommerce = $this->settings->get('woocommerce', []);
     // WooCommerce: subscribe on checkout
     if (!empty($woocommerce['optin_on_checkout']['enabled'])) {

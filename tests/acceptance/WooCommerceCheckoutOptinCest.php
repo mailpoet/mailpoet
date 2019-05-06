@@ -21,7 +21,6 @@ class WooCommerceCheckoutOptinCest {
     $this->product_factory = new WooCommerceProduct($I);
     $this->settings_factory = new Settings();
     $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
-    $this->settings_factory->withWooCommerceListSyncEnabled();
     $this->settings_factory->withWooCommerceCheckoutOptinEnabled();
   }
 

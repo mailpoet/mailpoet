@@ -408,9 +408,6 @@ class Menu {
   }
 
   function wooCommerceListImport() {
-    if (!$this->settings->get('woo_commerce_list_sync_enabled')) {
-      return;
-    }
     if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),

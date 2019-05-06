@@ -17,7 +17,6 @@ class DaemonTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = new SettingsController();
-    $this->settings->set('woo_commerce_list_sync_enabled', 1);
   }
 
   function testItCanRun() {
