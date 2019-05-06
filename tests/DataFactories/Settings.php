@@ -96,7 +96,7 @@ class Settings {
   }
 
   function withWooCommerceListImportPageDisplayed($was_shown) {
-    $this->settings->set('woocommerce.import_screen_displayed', $was_shown ? 1 : 0);
+    $this->settings->set('woocommerce_import_screen_displayed', $was_shown ? 1 : 0);
     return $this;
   }
 
