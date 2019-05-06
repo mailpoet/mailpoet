@@ -101,7 +101,7 @@ class Changelog {
     }
     if (
       !in_array($_GET['page'], ['mailpoet-woocommerce-list-import', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
-      && !$this->settings->get('woocommerce.import_screen_displayed')
+      && !$this->settings->get('woocommerce_import_screen_displayed')
       && $this->wooCommerceHelper->isWooCommerceActive()
       && $this->wooCommerceHelper->getOrdersCount() >= 1
       && $this->wp->currentUserCan('administrator')

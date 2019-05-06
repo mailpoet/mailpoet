@@ -48,7 +48,7 @@ class WooCommerceImportController extends React.Component {
   submit(importType) {
     this.setState({ loading: true });
     const settings = {
-      'woocommerce.import_screen_displayed': 1,
+      woocommerce_import_screen_displayed: 1,
       'mailpoet_subscribe_old_woocommerce_customers.enabled': importType === 'subscribed' ? 1 : 0,
     };
     this.updateSettings(settings).then(this.scheduleImport).then(this.finishWizard);
