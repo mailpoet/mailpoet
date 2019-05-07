@@ -52,7 +52,6 @@ class SignupConfirmationSender extends React.Component {
             <SenderEmailAddressWarning
               emailAddress={this.state.senderAddress}
               mssActive={this.props.mssActive}
-              pluginInstalledAt={this.props.pluginInstalledAt}
             />
           </div>
         </td>
@@ -65,7 +64,6 @@ SignupConfirmationSender.propTypes = {
   senderAddress: PropTypes.string.isRequired,
   senderName: PropTypes.string.isRequired,
   mssActive: PropTypes.bool.isRequired,
-  pluginInstalledAt: PropTypes.string.isRequired,
 };
 
 export default SignupConfirmationSender;
