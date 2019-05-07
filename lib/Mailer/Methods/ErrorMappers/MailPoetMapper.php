@@ -91,29 +91,17 @@ class MailPoetMapper {
 
   private function getUnauthorizedEmailMessage($sender, $newsletter) {
     $email = $sender ? $sender['from_email'] : null;
-    if ($email && (new FreeDomains())->isEmailOnFreeDomain($email)) {
-      $message = '<p>' . sprintf(WPFunctions::get()->__('The MailPoet Sending Service can’t send email with the email address <i>%s</i>. You need to use an address like <i>‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌you@yourdomain.com</i>.', 'mailpoet'), $email) . '</p>';
-      $message .= '<p>';
-      if ($newsletter && $newsletter['id']) {
-        $message .= '<a class="button button-primary" href="admin.php?page=mailpoet-newsletters#/send/' . $newsletter['id'] .'">';
-      } else {
-        $message .= '<a class="button button-primary" href="admin.php?page=mailpoet-settings">';
-      }
-      $message .= WPFunctions::get()->__('Change my email address', 'mailpoet');
-      $message .= '</a>';
-    } else {
-      $message = sprintf(WPFunctions::get()->__('<p>The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.</p>', 'mailpoet'), $email ?: WPFunctions::get()->__('Unknown address'));
-      $message .= '<p>';
-      $message .= Helpers::replaceLinkTags(
-        WPFunctions::get()->__('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
-        'https://account.mailpoet.com/authorization',
-        array(
-          'class' => 'button button-primary',
-          'target' => '_blank',
-          'rel' => 'noopener noreferrer',
-        )
-      );
-    }
+    $message = sprintf(WPFunctions::get()->__('<p>The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.</p>', 'mailpoet'), $email ?: WPFunctions::get()->__('Unknown address'));
+    $message .= '<p>';
+    $message .= Helpers::replaceLinkTags(
+      WPFunctions::get()->__('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
+      'https://account.mailpoet.com/authorization',
+      array(
+        'class' => 'button button-primary',
+        'target' => '_blank',
+        'rel' => 'noopener noreferrer',
+      )
+    );
     $message .= ' &nbsp; <button class="button js-button-resume-sending">' . WPFunctions::get()->__('Resume sending', 'mailpoet') . '</button>';
     $message .= '</p>';
     $message .= "<script>jQuery('.js-button-resume-sending').on('click', function() { MailPoet.Ajax.post({ api_version: window.mailpoet_api_version, endpoint: 'mailer', action: 'resumeSending' }).done(function() { jQuery('.js-error-unauthorized-email').slideUp(); MailPoet.Notice.success('" . WPFunctions::get()->__('Sending has been resumed.') . "'); if (window.mailpoet_listing) { window.mailpoet_listing.forceUpdate(); }}).fail(function(response) { if (response.errors.length > 0) { MailPoet.Notice.error(response.errors.map(function(error) { return error.message }), { scroll: true }); }}); })</script>";
