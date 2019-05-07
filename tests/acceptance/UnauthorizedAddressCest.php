@@ -45,9 +45,9 @@ class UnauthorizedAddressCest {
     $I->wait(2);
     $I->amOnMailpoetPage('Emails');
     $I->waitForElement('.mailpoet_notice.notice-error');
-    $I->see('The MailPoet Sending Service can’t send email with the email address ' . $newsletter_from, '.notice-error');
-    $href = $I->grabAttributeFrom('//a[text()="Change my email address"]', 'href');
-    expect($href)->endsWith('page=mailpoet-newsletters#/send/' . $newsletter->id);
+    $I->see('The MailPoet Sending Service did not send your latest email because the address ' . $newsletter_from, '.notice-error');
+    $href = $I->grabAttributeFrom('//a[text()="Authorize your email in your account now."]', 'href');
+    expect($href)->equals('https://account.mailpoet.com/authorization');
 
     // step 5 - Trash newsletter and resume sending
     $I->clickItemRowActionByItemName($newsletter_title, 'Move to trash');
