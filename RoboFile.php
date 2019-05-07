@@ -519,12 +519,29 @@ class RoboFile extends \Robo\Tasks {
 
     return $this->collectionBuilder()
       ->addCode(function () use ($version) {
+        return $this->releaseCheckIssues($version);
+      })
+      ->addCode(function () use ($version) {
         return $this->releaseVersionWrite($version);
       })
       ->addCode(function () use ($version) {
         return $this->releaseChangelogWrite($version);
       })
       ->run();
+  }
+
+  public function releaseCheckIssues($version = null) {
+    $jira = $this->createJiraController();
+    $version = $jira->getVersion($this->releaseVersionGetNext($version));
+    $issues = $jira->getIssuesDataForVersion($version);
+    $pull_requests_id = \MailPoetTasks\Release\JiraController::PULL_REQUESTS_ID;
+    foreach ($issues as $issue) {
+      if (strpos($issue['fields'][$pull_requests_id], 'state=OPEN') !== false) {
+        $key = $issue['key'];
+        $this->yell("Some pull request associated to task {$key} is not merged yet!", 40, 'red');
+        exit(1);
+      }
+    }
   }
 
   public function releasePublish($version = null) {

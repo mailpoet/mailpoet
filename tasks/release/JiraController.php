@@ -9,6 +9,7 @@ class JiraController {
   const CHANGELOG_FIELD_ID = 'customfield_10500';
   const RELEASENOTE_FIELD_ID = 'customfield_10504';
   const VERSION_INCREMENT_FIELD_ID = 'customfield_10509';
+  const PULL_REQUESTS_ID = 'customfield_10000';
 
   const WONT_DO_RESOLUTION_ID = '10001';
 
@@ -100,7 +101,8 @@ class JiraController {
   function getIssuesDataForVersion($version) {
     $changelog_id = self::CHANGELOG_FIELD_ID;
     $release_note_id = self::RELEASENOTE_FIELD_ID;
-    $issues_data = $this->search("fixVersion={$version['id']}", ['key', $changelog_id, $release_note_id, 'status', 'resolution']);
+    $pull_requests_id = self::PULL_REQUESTS_ID;
+    $issues_data = $this->search("fixVersion={$version['id']}", ['key', $changelog_id, $release_note_id, 'status', 'resolution', $pull_requests_id]);
     // Sort issues by importance of change (Added -> Updated -> Improved -> Changed -> Fixed -> Others)
     usort($issues_data['issues'], function($a, $b) use ($changelog_id) {
       $order = array_flip(['added', 'updat', 'impro', 'chang', 'fixed']);
