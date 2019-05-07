@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
-import moment from 'moment';
 import ReactStringReplace from 'react-string-replace';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
 
 const SenderEmailAddressWarning = ({ emailAddress, mssActive }) => {
-  if (mssActive) return null
+  if (mssActive) return null;
   const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
   if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
     return (
