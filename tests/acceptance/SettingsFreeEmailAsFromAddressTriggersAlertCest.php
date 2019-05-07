@@ -2,9 +2,33 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Mailer\Mailer;
+use MailPoet\Test\DataFactories\Settings;
+
+require_once __DIR__ . '/../DataFactories/Settings.php';
+
 class SettingsFreeEmailAsFromAddressTriggersAlertCest {
-  function addFreeEmailAsFromAddress(\AcceptanceTester $I) {
+  function addFreeEmailAsFromAddressWithMSS(\AcceptanceTester $I) {
     $I->wantTo('Confirm free emails as FROM address trigger alert message');
+    $settings = new Settings();
+    $settings->withSendingMethodMailPoet();
+    $I->login();
+    $I->amOnMailPoetPage('Settings');
+    $from_email_field = '[data-automation-id="settings-page-from-email-field"]';
+    $from_name_field = '[data-automation-id="settings-page-from-name-field"]';
+    $I->fillField($from_name_field, 'AlertUser');
+    $I->fillField($from_email_field, 'alertuser@yahoo.com');
+    $I->dontSeeElement('.sender_email_address_warning');
+    $I->fillField($from_email_field, 'info@alertuser.com');
+    $I->dontSeeElement('.sender_email_address_warning');
+    $I->fillField($from_email_field, 'alertuser@hotmail.com');
+    $I->dontSeeElement('.sender_email_address_warning');
+  }
+
+  function addFreeEmailAsFromAddressWithoutMSS(\AcceptanceTester $I) {
+    $I->wantTo('Confirm free emails as FROM address trigger alert message');
+    $settings = new Settings();
+    $settings->withSendingMethod(Mailer::METHOD_PHPMAIL);
     $I->login();
     $I->amOnMailPoetPage('Settings');
     $from_email_field = '[data-automation-id="settings-page-from-email-field"]';
