@@ -589,7 +589,8 @@ class Newsletter extends Model {
     }
 
     // WooCommerce revenues
-    if ($woocommerce_helper->isWooCommerceActive()) {
+    $settings = new SettingsController();
+    if ($woocommerce_helper->isWooCommerceActive() && $settings->get('display_revenues')) {
       $currency = $woocommerce_helper->getWoocommerceCurrency();
       $row = StatisticsWooCommercePurchases::selectExpr('SUM(order_price_total) AS total')
         ->where([

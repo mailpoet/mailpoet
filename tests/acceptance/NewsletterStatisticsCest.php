@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 require_once __DIR__ . '/../DataFactories/NewsletterLink.php';
+require_once __DIR__ . '/../DataFactories/Settings.php';
 require_once __DIR__ . '/../DataFactories/StatisticsClicks.php';
 require_once __DIR__ . '/../DataFactories/StatisticsWooCommercePurchases.php';
 require_once __DIR__ . '/../DataFactories/Subscriber.php';
@@ -11,6 +12,7 @@ require_once __DIR__ . '/../DataFactories/WooCommerceOrder.php';
 
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
+use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\StatisticsClicks;
 use MailPoet\Test\DataFactories\StatisticsWooCommercePurchases;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -20,6 +22,7 @@ class NewsletterStatisticsCest {
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
+    (new Settings())->withDisplayRevenuesEnabled();
   }
 
   function showWooCommercePurchaseStatistics(\AcceptanceTester $I) {
