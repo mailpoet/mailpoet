@@ -28,7 +28,6 @@ class SenderField extends React.Component {
           <SenderEmailAddressWarning
             emailAddress={this.state.emailAddress}
             mssActive={window.mailpoet_mss_active}
-            pluginInstalledAt={window.mailpoet_installed_at}
           />
         </div>
       </React.Fragment>

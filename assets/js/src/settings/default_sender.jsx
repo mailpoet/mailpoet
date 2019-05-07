@@ -50,7 +50,6 @@ class DefaultSender extends React.Component {
           <SenderEmailAddressWarning
             emailAddress={this.state.senderAddress}
             mssActive={this.props.mssActive}
-            pluginInstalledAt={this.props.pluginInstalledAt}
           />
         </div>
         <p>
@@ -83,7 +82,6 @@ DefaultSender.propTypes = {
   replyToAddress: PropTypes.string.isRequired,
   replyToName: PropTypes.string.isRequired,
   mssActive: PropTypes.bool.isRequired,
-  pluginInstalledAt: PropTypes.string.isRequired,
 };
 
 export default DefaultSender;

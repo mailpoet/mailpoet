@@ -42,7 +42,7 @@ OldInstallationWarning.propTypes = {
   emailAddress: PropTypes.string.isRequired,
 };
 
-const SenderEmailAddressWarning = ({ emailAddress, mssActive, pluginInstalledAt }) => {
+const SenderEmailAddressWarning = ({ emailAddress, mssActive }) => {
   if (mssActive) return null
   const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
   if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
@@ -54,7 +54,6 @@ const SenderEmailAddressWarning = ({ emailAddress, mssActive, pluginInstalledAt 
 SenderEmailAddressWarning.propTypes = {
   emailAddress: PropTypes.string.isRequired,
   mssActive: PropTypes.bool.isRequired,
-  pluginInstalledAt: PropTypes.string.isRequired,
 };
 
 export default SenderEmailAddressWarning;
