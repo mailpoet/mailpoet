@@ -73,6 +73,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\CronTrigger::class)->setPublic(true);
     // Features
     $container->autowire(\MailPoet\Features\FeaturesController::class);
+    $container->autowire(\MailPoet\Features\FeatureFlagsController::class);
     // Form
     $container->autowire(\MailPoet\Form\Util\FieldNameObfuscator::class)->setPublic(true);
     // Listing
