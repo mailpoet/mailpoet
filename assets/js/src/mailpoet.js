@@ -1,5 +1,9 @@
+import FeaturesController from 'features_controller';
+
 // A placeholder for MailPoet object
-var MailPoet = {};
+var MailPoet = {
+  FeaturesController: FeaturesController(window.mailpoet_feature_flags),
+};
 
 // Expose MailPoet globally
 window.MailPoet = MailPoet;
