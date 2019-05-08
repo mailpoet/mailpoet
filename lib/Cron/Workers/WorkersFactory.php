@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\Mailer\Mailer;
@@ -32,6 +33,9 @@ class WorkersFactory {
 
   /** @var SettingsController */
   private $settings;
+
+  /** @var FeaturesController */
+  private $features_controller;
 
   /** @var WooCommerceSegment */
   private $woocommerce_segment;
@@ -53,6 +57,7 @@ class WorkersFactory {
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
+    FeaturesController $features_controller,
     WooCommerceSegment $woocommerce_segment,
     InactiveSubscribersController $inactive_subscribers_controller,
     WooCommerceHelper $woocommerce_helper
@@ -62,6 +67,7 @@ class WorkersFactory {
     $this->mailer = $mailer;
     $this->renderer = $renderer;
     $this->settings = $settings;
+    $this->features_controller = $features_controller;
     $this->woocommerce_segment = $woocommerce_segment;
     $this->inactive_subscribers_controller = $inactive_subscribers_controller;
     $this->woocommerce_helper = $woocommerce_helper;
@@ -78,7 +84,7 @@ class WorkersFactory {
   }
 
   function createStatsNotificationsWorker($timer) {
-    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $timer);
+    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $this->features_controller, $this->woocommerce_helper, $timer);
   }
 
   /** @return SendingServiceKeyCheckWorker */

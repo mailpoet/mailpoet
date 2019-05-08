@@ -2,6 +2,7 @@
 namespace MailPoet\Test\Models;
 
 use Carbon\Carbon;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -170,7 +171,7 @@ class NewsletterTest extends \MailPoetTest {
     $unsubscribes->save();
 
     $newsletter->queue = $newsletter->getQueue()->asArray();
-    $statistics = $newsletter->getStatistics($this->makeEmpty(WCHelper::class));
+    $statistics = $newsletter->getStatistics($this->makeEmpty(WCHelper::class), new FeaturesController());
     expect($statistics['opened'])->equals(1);
     expect($statistics['clicked'])->equals(1);
     expect($statistics['unsubscribed'])->equals(1);

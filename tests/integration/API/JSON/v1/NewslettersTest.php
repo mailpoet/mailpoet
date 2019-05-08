@@ -7,6 +7,7 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\API\JSON\v1\Newsletters;
@@ -112,7 +113,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
       $this->makeEmpty(WCHelper::class),
-      new SettingsController()
+      new SettingsController(),
+      new FeaturesController()
     );
     $response = $this->endpoint->get(array('id' => $this->newsletter->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -151,7 +153,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
       $this->makeEmpty(WCHelper::class),
-      new SettingsController()
+      new SettingsController(),
+      new FeaturesController()
     );
 
     $response = $this->endpoint->save($valid_data);
@@ -517,7 +520,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
       $this->makeEmpty(WCHelper::class),
-      new SettingsController()
+      new SettingsController(),
+      new FeaturesController()
     );
 
     $response = $this->endpoint->duplicate(array('id' => $this->newsletter->id));
