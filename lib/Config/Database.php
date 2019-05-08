@@ -89,6 +89,7 @@ class Database {
       define('MP_LOG_TABLE', Env::$db_prefix . 'log');
       define('MP_STATS_NOTIFICATIONS_TABLE', Env::$db_prefix . 'stats_notifications');
       define('MP_USER_FLAGS_TABLE', Env::$db_prefix . 'user_flags');
+      define('MP_FEATURE_FLAGS_TABLE', Env::$db_prefix . 'feature_flags');
     }
   }
 }

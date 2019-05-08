@@ -50,6 +50,7 @@ class Migrator {
       'mapping_to_external_entities',
       'log',
       'user_flags',
+      'feature_flags',
     ];
   }
 
@@ -509,6 +510,19 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'UNIQUE KEY user_id_name (user_id, name)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function featureFlags() {
+    $attributes = array(
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'name varchar(255) NOT NULL,',
+      'value tinyint(1),',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id),',
+      'UNIQUE KEY name (name)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
