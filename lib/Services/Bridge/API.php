@@ -27,6 +27,7 @@ class API {
   public $url_messages = 'https://bridge.mailpoet.com/api/v0/messages';
   public $url_bounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
   public $url_stats = 'https://bridge.mailpoet.com/api/v0/stats';
+  public $url_authorized_email_addresses = 'https://bridge.mailpoet.com/api/v0/authorized_email_addresses';
 
   function __construct($api_key, $wp = null) {
     $this->setKey($api_key);
@@ -133,6 +134,18 @@ class API {
     return $this->wp->wpRemoteRetrieveResponseCode($result) === self::RESPONSE_CODE_STATS_SAVED;
   }
 
+  function getAuthorizedEmailAddresses() {
+    $result = $this->request(
+      $this->url_authorized_email_addresses,
+      null,
+      'GET'
+    );
+    if ($this->wp->wpRemoteRetrieveResponseCode($result) === 200) {
+      return json_decode($this->wp->wpRemoteRetrieveBody($result), true);
+    }
+    return false;
+  }
+
   function setKey($api_key) {
     $this->api_key = $api_key;
   }
@@ -154,7 +167,7 @@ class API {
         'Content-Type' => 'application/json',
         'Authorization' => $this->auth(),
       ],
-      'body' => json_encode($body),
+      'body' => $body !== null ? json_encode($body) : null,
     ];
     return $this->wp->wpRemotePost($url, $params);
   }
