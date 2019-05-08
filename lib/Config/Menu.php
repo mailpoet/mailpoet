@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Helpscout\Beacon;
@@ -50,6 +51,10 @@ class Menu {
   private $access_control;
   /** @var SettingsController */
   private $settings;
+
+  /** @var FeaturesController */
+  private $features_controller;
+
   /** @var UserFlagsController */
   private $user_flags;
   /** @var WPFunctions */
@@ -63,6 +68,7 @@ class Menu {
     Renderer $renderer,
     AccessControl $access_control,
     SettingsController $settings,
+    FeaturesController $featuresController,
     WPFunctions $wp,
     WooCommerceHelper $woocommerce_helper,
     ServicesChecker $servicesChecker,
@@ -72,6 +78,7 @@ class Menu {
     $this->access_control = $access_control;
     $this->wp = $wp;
     $this->settings = $settings;
+    $this->features_controller = $featuresController;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->servicesChecker = $servicesChecker;
     $this->user_flags = $user_flags;
@@ -884,8 +891,11 @@ class Menu {
   }
 
   function displayPage($template, $data) {
+    $defaults = [
+      'feature_flags' => $this->features_controller->getAllFlags(),
+    ];
     try {
-      echo $this->renderer->render($template, $data);
+      echo $this->renderer->render($template, $data + $defaults);
     } catch (\Exception $e) {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();
