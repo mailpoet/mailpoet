@@ -91,8 +91,9 @@ class MailPoetMapper {
 
   private function getUnauthorizedEmailMessage($sender, $newsletter) {
     $email = $sender ? $sender['from_email'] : null;
-    $message = sprintf(WPFunctions::get()->__('<p>The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.</p>', 'mailpoet'), $email ?: WPFunctions::get()->__('Unknown address'));
-    $message .= '<p>';
+    $message = '<p>';
+    $message .= sprintf(WPFunctions::get()->__('The MailPoet Sending Service did not send your latest email because the address <i>%s</i> is not yet authorized.', 'mailpoet'), $email ?: WPFunctions::get()->__('Unknown address'));
+    $message .= '</p><p>';
     $message .= Helpers::replaceLinkTags(
       WPFunctions::get()->__('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
       'https://account.mailpoet.com/authorization',
