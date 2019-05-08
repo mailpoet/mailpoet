@@ -7,6 +7,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -91,6 +92,7 @@ class MenuTest extends \MailPoetTest {
       $renderer,
       new AccessControl(),
       new SettingsController(),
+      new FeaturesController(),
       new Functions(),
       new WooCommerceHelper(new Functions()),
       new ServicesChecker,
