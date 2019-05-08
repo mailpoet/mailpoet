@@ -9,7 +9,7 @@ require_once __DIR__ . '/../DataFactories/Settings.php';
 
 class SettingsFreeEmailAsFromAddressTriggersAlertCest {
   function addFreeEmailAsFromAddressWithMSS(\AcceptanceTester $I) {
-    $I->wantTo('Confirm free emails as FROM address trigger alert message');
+    $I->wantTo('Confirm free emails as FROM address does not trigger alert message when sending with MSS');
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
     $I->login();
@@ -26,7 +26,7 @@ class SettingsFreeEmailAsFromAddressTriggersAlertCest {
   }
 
   function addFreeEmailAsFromAddressWithoutMSS(\AcceptanceTester $I) {
-    $I->wantTo('Confirm free emails as FROM address trigger alert message');
+    $I->wantTo('Confirm free emails as FROM address trigger alert message when sending without MSS');
     $settings = new Settings();
     $settings->withSendingMethod(Mailer::METHOD_PHPMAIL);
     $I->login();
@@ -42,4 +42,8 @@ class SettingsFreeEmailAsFromAddressTriggersAlertCest {
     $I->waitForElement('.sender_email_address_warning');
   }
 
+  function _after() {
+    $settings = new Settings();
+    $settings->withSendingMethod(Mailer::METHOD_PHPMAIL);
+  }
 }
