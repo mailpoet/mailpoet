@@ -310,6 +310,19 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Doctrine metadata generated to: $metadata_dir");
   }
 
+  function doctrineGenerateProxies() {
+    $proxy_dir = \MailPoet\Doctrine\ConfigurationFactory::PROXY_DIR;
+    $this->_exec("rm -rf $proxy_dir");
+
+    // set ArrayCache for metadata to avoid reading & writing them on filesystem as a side effect
+    $entity_manager = $this->createDoctrineEntityManager();
+    $entity_manager->getMetadataFactory()->setCacheDriver(new \MailPoetVendor\Doctrine\Common\Cache\ArrayCache());
+    $entity_manager->getProxyFactory()->generateProxyClasses(
+      $entity_manager->getMetadataFactory()->getAllMetadata()
+    );
+    $this->say("Doctrine proxies generated to: $proxy_dir");
+  }
+
   function qa() {
     $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaLint']);
