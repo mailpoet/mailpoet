@@ -86,13 +86,15 @@ const QueueMixin = {
 
     if (newsletter.queue.status === 'completed') {
       label = (
-        <span>
-          {
-            MailPoet.I18n.t('newsletterQueueCompleted')
-              .replace('%$1d', parseInt(newsletter.queue.count_processed, 10).toLocaleString())
-              .replace('%$2d', parseInt(newsletter.queue.count_total, 10).toLocaleString())
-          }
-        </span>
+        <Link to={`/sending-status/${newsletter.id}`}>
+          <span>
+            {
+              MailPoet.I18n.t('newsletterQueueCompleted')
+                .replace('%$1d', parseInt(newsletter.queue.count_processed, 10).toLocaleString())
+                .replace('%$2d', parseInt(newsletter.queue.count_total, 10).toLocaleString())
+            }
+          </span>
+        </Link>
       );
     } else {
       const resumeSendingClick = _.partial(QueueMixin.resumeSending, newsletter);
