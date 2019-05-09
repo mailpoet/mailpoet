@@ -19,6 +19,7 @@ import NewsletterListStandard from 'newsletters/listings/standard.jsx';
 import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
 import NewsletterListNotification from 'newsletters/listings/notification.jsx';
 import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx';
+import NewsletterSendingStatus from 'newsletters/sending_status.jsx';
 
 class App extends React.Component {
   render() {
@@ -97,6 +98,10 @@ if (container) {
     {
       path: '/send/:id',
       component: NewsletterSend,
+    },
+    {
+      path: '/sending-status/:id',
+      component: NewsletterSendingStatus,
     },
   ];
 
