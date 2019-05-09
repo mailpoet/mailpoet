@@ -31,6 +31,10 @@ echo '[BUILD] Building DI Container cache'
 echo '[BUILD] Generating Doctrine Metadata'
 ./do doctrine:generate-metadata
 
+# Generate Doctrine proxies
+echo '[BUILD] Generating Doctrine Proxies'
+./do doctrine:generate-proxies
+
 # Backup dev libraries
 echo '[BUILD] Backup dev dependencies'
 if [ -d 'vendor' ]; then
