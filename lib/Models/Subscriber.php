@@ -104,6 +104,9 @@ class Subscriber extends Model {
 
   static function getCurrentWPUser() {
     $wp_user = WPFunctions::get()->wpGetCurrentUser();
+    if (empty($wp_user->ID)) {
+      return false; // Don't look up a subscriber for guests
+    }
     return self::where('wp_user_id', $wp_user->ID)->findOne();
   }
 
