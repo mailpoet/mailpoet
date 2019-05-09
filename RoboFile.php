@@ -301,6 +301,15 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
+  function doctrineGenerateMetadata() {
+    $metadata_dir = \MailPoet\Doctrine\ConfigurationFactory::METADATA_DIR;
+    $this->_exec("rm -rf $metadata_dir");
+
+    $entity_manager = $this->createDoctrineEntityManager();
+    $entity_manager->getMetadataFactory()->getAllMetadata();
+    $this->say("Doctrine metadata generated to: $metadata_dir");
+  }
+
   function qa() {
     $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaLint']);
@@ -901,5 +910,16 @@ class RoboFile extends \Robo\Tasks {
 
     $php_config->usePersistent();
     return $exitCode;
+  }
+
+  private function createDoctrineEntityManager() {
+    define('ABSPATH', getenv('WP_ROOT') . '/');
+    \MailPoet\Config\Env::$db_prefix = '';
+    $configuration = (new \MailPoet\Doctrine\ConfigurationFactory(true))->createConfiguration();
+    $platform_class = \MailPoet\Doctrine\ConnectionFactory::PLATFORM_CLASS;
+    return \MailPoetVendor\Doctrine\ORM\EntityManager::create([
+      'driver' => \MailPoet\Doctrine\ConnectionFactory::DRIVER,
+      'platform' => new $platform_class,
+    ], $configuration);
   }
 }
