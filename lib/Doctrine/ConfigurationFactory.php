@@ -19,8 +19,8 @@ class ConfigurationFactory {
   /** @var bool */
   private $is_dev_mode;
 
-  function __construct() {
-    $this->is_dev_mode = WP_DEBUG;
+  function __construct($is_dev_mode = null) {
+    $this->is_dev_mode = $is_dev_mode === null ? WP_DEBUG : $is_dev_mode;
   }
 
   function createConfiguration() {

@@ -27,6 +27,10 @@ echo '[BUILD] Building DI Container cache'
 ./composer.phar install
 ./do container:dump
 
+# Generate Doctrine metadata
+echo '[BUILD] Generating Doctrine Metadata'
+./do doctrine:generate-metadata
+
 # Backup dev libraries
 echo '[BUILD] Backup dev dependencies'
 if [ -d 'vendor' ]; then
