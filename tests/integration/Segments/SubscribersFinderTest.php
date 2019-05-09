@@ -56,7 +56,8 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   function testFindSubscribersInSegmentInSegmentDefaultSegment() {
     $finder = new SubscribersFinder();
-    $subscribers = $finder->findSubscribersInSegments(array($this->subscriber_2->id), array($this->segment_1->id));
+    $deleted_segment_id = 1000; // non-existent segment
+    $subscribers = $finder->findSubscribersInSegments(array($this->subscriber_2->id), array($this->segment_1->id, $deleted_segment_id));
     expect($subscribers)->count(1);
     expect($subscribers[$this->subscriber_2->id])->equals($this->subscriber_2->id);
   }
