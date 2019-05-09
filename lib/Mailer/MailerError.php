@@ -77,13 +77,6 @@ class MailerError {
     return $this->subscribers_errors;
   }
 
-  /**
-   * Temporary method until we implement UI for subscriber errors
-   */
-  function switchLevelToHard() {
-    $this->level = self::LEVEL_HARD;
-  }
-
   function getMessageWithFailedSubscribers() {
     $message = $this->message ?: '';
     if (!$this->subscribers_errors) {
