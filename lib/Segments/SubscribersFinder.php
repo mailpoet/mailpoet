@@ -21,6 +21,9 @@ class SubscribersFinder {
     $result = array();
     foreach ($newsletter_segments_ids as $segment_id) {
       $segment = Segment::findOne($segment_id);
+      if (!$segment instanceof Segment) {
+        continue; // skip deleted segments
+      }
       $result = array_merge($result, $this->findSubscribersInSegment($segment, $subscribers_to_process_ids));
     }
     return $this->unique($result);
