@@ -239,8 +239,6 @@ class SendingQueue {
     if ($send_result['response'] === false) {
       $error = $send_result['error'];
       assert($error instanceof MailerError);
-      // Always switch error level to hard until we implement UI for individual subscriber errors
-      $error->switchLevelToHard();
       $this->error_handler->processError($error, $sending_task, $prepared_subscribers_ids, $prepared_subscribers);
     }
     // update processed/to process list
