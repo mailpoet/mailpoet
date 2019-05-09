@@ -101,6 +101,9 @@ rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
 rm -rf $plugin_name/vendor/symfony/translation/Tests
 rm -rf $plugin_name/vendor/twig/twig/test
 
+# Remove Doctrinne Annotations (no need since generated metadata are packed)
+rm -rf $plugin_name/vendor-prefixed/doctrine/annotations
+
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'
 rm -f $plugin_name/vendor/j4mie/idiorm/demo.php
