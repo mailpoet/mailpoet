@@ -1,6 +1,7 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
@@ -214,7 +215,7 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
           </select>
         </p>
         <p>
-          { totalSentMessage }
+          <Link to={`/sending-status/${newsletter.id}`}>{ totalSentMessage }</Link>
           {' '}
           <br />
           { totalScheduledMessage }
