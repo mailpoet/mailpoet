@@ -4,12 +4,15 @@ namespace MailPoet\Doctrine;
 
 use MailPoetVendor\Doctrine\Common\Annotations\SimpleAnnotationReader;
 use MailPoetVendor\Doctrine\Common\Cache\FilesystemCache;
+use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
 use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactory {
   const ENTITY_DIR = __DIR__ . '/../Doctrine/Entities';
   const METADATA_DIR = __DIR__ . '/../../generated/doctrine-metadata';
+  const PROXY_DIR = __DIR__ . '/../../generated/doctrine-proxies';
+  const PROXY_NAMESPACE = 'MailPoetDoctrineProxies';
 
   /** @var bool */
   private $is_dev_mode;
@@ -23,6 +26,7 @@ class ConfigurationFactory {
     $configuration->setNamingStrategy(new UnderscoreNamingStrategy());
 
     $this->configureMetadata($configuration);
+    $this->configureProxies($configuration);
 
     if (!$this->is_dev_mode) {
       $configuration->ensureProductionSettings();
@@ -40,5 +44,15 @@ class ConfigurationFactory {
     if (class_exists(SimpleAnnotationReader::class)) {
       $configuration->setMetadataDriverImpl($configuration->newDefaultAnnotationDriver([self::ENTITY_DIR]));
     }
+  }
+
+  private function configureProxies(Configuration $configuration) {
+    $configuration->setProxyDir(self::PROXY_DIR);
+    $configuration->setProxyNamespace(self::PROXY_NAMESPACE);
+    $configuration->setAutoGenerateProxyClasses(
+      $this->is_dev_mode
+        ? AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS
+        : AbstractProxyFactory::AUTOGENERATE_NEVER
+    );
   }
 }
