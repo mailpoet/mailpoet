@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Triggers;
 use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
@@ -75,6 +76,12 @@ class WordPressTest extends \MailPoetTest {
   function testItExecutesWhenMigrationIsDue() {
     $this->_enableMigration();
     $this->_addScheduledTask(MigrationWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
+    expect(WordPress::checkExecutionRequirements())->true();
+  }
+
+  function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
+    $this->_enableMigration();
+    $this->_addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
     expect(WordPress::checkExecutionRequirements())->true();
   }
 
