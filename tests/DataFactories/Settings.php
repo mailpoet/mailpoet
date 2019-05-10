@@ -123,4 +123,9 @@ class Settings {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 180);
     return $this;
   }
+
+  function withInstalledAt(\DateTime $date) {
+    $this->settings->set('installed_at', $date);
+    return $this;
+  }
 }
