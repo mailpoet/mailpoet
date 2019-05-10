@@ -3,6 +3,7 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Menu;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PermanentNotices {
@@ -13,16 +14,25 @@ class PermanentNotices {
   /** @var AfterMigrationNotice */
   private $after_migration_notice;
 
+  /** @var DiscountsAnnouncement */
   private $discounts_announcement;
 
+  /** @var UnauthorizedEmailNotice */
+  private $unauthorized_emails_notice;
+
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct() {
+    $this->wp = WPFunctions::get();
     $this->php_version_warnings = new PHPVersionWarnings();
     $this->after_migration_notice = new AfterMigrationNotice();
     $this->discounts_announcement = new DiscountsAnnouncement();
+    $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(new SettingsController, $this->wp);
   }
 
   public function init() {
-    WPFunctions::get()->addAction('wp_ajax_dismissed_notice_handler', [
+    $this->wp->addAction('wp_ajax_dismissed_notice_handler', [
       $this,
       'ajaxDismissNoticeHandler',
     ]);
@@ -34,9 +44,12 @@ class PermanentNotices {
     $this->after_migration_notice->init(
       Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
     );
+    $this->unauthorized_emails_notice->init(
+      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+    );
     $this->discounts_announcement->init(
       empty($_GET['page'])
-      && WPFunctions::get()->isAdmin()
+      && $this->wp->isAdmin()
       && strpos($_SERVER['SCRIPT_NAME'], 'wp-admin/index.php') !== false
     );
   }
