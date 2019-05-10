@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers;
 
 use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url;
@@ -106,7 +107,12 @@ class ConfirmationEmailMailer {
       }
       $this->mailer->getSenderNameAndAddress($from);
       $this->mailer->getReplyToNameAndAddress($reply_to);
-      return $this->mailer->send($email, $subscriber);
+      $result = $this->mailer->send($email, $subscriber);
+      if ($result['response'] === false) {
+        $subscriber->setError($result['error'] instanceof MailerError ? $result['error']->getMessage() : 'Unknown Error.');
+        return false;
+      };
+      return true;
     } catch (\Exception $e) {
       $subscriber->setError($e->getMessage());
       return false;
