@@ -1,11 +1,13 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
+use Codeception\Stub\Expected;
 use Codeception\Util\Stub;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
+use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 
 class MailPoetAPITest extends \MailPoetTest {
@@ -31,7 +33,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->settings['api_key'],
       $this->sender,
       $this->reply_to,
-      new MailPoetMapper()
+      new MailPoetMapper(),
+      $this->makeEmpty(Bridge::class)
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = [
@@ -231,5 +234,25 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
+  }
+
+  function testItCallsAuthorizedEmailsValidationOnRelatedError() {
+    $mailer = new MailPoet(
+      $this->settings['api_key'],
+      $this->sender,
+      $this->reply_to,
+      new MailPoetMapper(),
+      $this->makeEmpty(Bridge::class, ['checkAuthorizedEmailAddresses' => Expected::once()])
+    );
+    $mailer->api = $this->makeEmpty(
+      API::class,
+      array('sendMessages' => [
+        'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
+        'status' => API::SENDING_STATUS_SEND_ERROR,
+        'message' => MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED
+      ]),
+      $this
+    );
+    $mailer->send([$this->newsletter], [$this->subscriber]);
   }
 }

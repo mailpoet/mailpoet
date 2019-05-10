@@ -6,6 +6,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
 class Mailer {
@@ -56,7 +57,8 @@ class Mailer {
           $this->mailer_config['mailpoet_api_key'],
           $this->sender,
           $this->reply_to,
-          new MailPoetMapper()
+          new MailPoetMapper(),
+          new Bridge()
         );
         break;
       case self::METHOD_SENDGRID:
