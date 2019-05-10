@@ -224,6 +224,8 @@ class Bridge {
   function onSettingsSave($settings) {
     $api_key_set = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
     $premium_key_set = !empty($settings['premium']['premium_key']);
+    $sender_address_set = !empty($settings['sender']['address']);
+    $confirmation_address_set = !empty($settings['signup_confirmation']['from']['address']);
     if ($api_key_set) {
       $api_key = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'];
       $state = $this->checkMSSKey($api_key);
@@ -236,6 +238,9 @@ class Bridge {
       $premium_key = $settings['premium']['premium_key'];
       $state = $this->checkPremiumKey($premium_key);
       $this->storePremiumKeyAndState($premium_key, $state);
+    }
+    if ($sender_address_set || $confirmation_address_set) {
+      $this->checkAuthorizedEmailAddresses();
     }
   }
 }
