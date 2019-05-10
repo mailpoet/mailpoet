@@ -23,4 +23,17 @@ class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
     $worker = new AuthorizedSendingEmailsCheck($bridge_mock);
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
   }
+
+  function testItDoesNotScheduleAutomatically() {
+    $this->settings->set('mta_group', 'mailpoet');
+    $this->settings->set('mta.method', 'MailPoet');
+    $bridge_mock = $this->makeEmpty(Bridge::class, ['checkAuthorizedEmailAddresses' => Stub\Expected::never()]);
+    $worker = new AuthorizedSendingEmailsCheck($bridge_mock);
+    $worker->process();
+
+    $task = ScheduledTask::where('type', AuthorizedSendingEmailsCheck::TASK_TYPE)
+      ->where('status', ScheduledTask::STATUS_SCHEDULED)
+      ->findOne();
+    expect($task)->false();
+  }
 }
