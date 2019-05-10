@@ -39,6 +39,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const WP_DOMAIN = 'test.local';
   const WP_URL = 'http://' . self::WP_DOMAIN;
   const MAIL_URL = 'http://mailhog:8025';
+  const AUTHORIZED_SENDING_EMAIL = 'staff@mailpoet.com';
 
   /**
    * Define custom actions here
