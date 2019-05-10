@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use Carbon\Carbon;
 use MailPoet\Config\PopulatorData\DefaultForm;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\NewsletterTemplate;
@@ -16,6 +17,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\UserFlag;
 use MailPoet\Models\Setting;
 use MailPoet\Segments\WP;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -136,6 +138,7 @@ class Populator {
     $this->updateNewsletterCategories();
     $this->updateMetaFields();
     $this->scheduleInitialInactiveSubscribersCheck();
+    $this->scheduleAuthorizedSendingEmailsCheck();
     // Will be uncommented on task [MAILPOET-1998]
     // $this->updateFormsSuccessMessages();
   }
@@ -530,17 +533,33 @@ class Populator {
   }
 
   private function scheduleInitialInactiveSubscribersCheck() {
-    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
+    $this->scheduleTask(
+      InactiveSubscribers::TASK_TYPE,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHour()
+    );
+  }
+
+  private function scheduleAuthorizedSendingEmailsCheck() {
+    if (!Bridge::isMPSendingServiceEnabled()) {
+      return;
+    }
+    $this->scheduleTask(
+      AuthorizedSendingEmailsCheck::TASK_TYPE,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+    );
+  }
+
+  private function scheduleTask($type, $datetime) {
+    $task = ScheduledTask::where('type', $type)
       ->whereRaw('status = ? OR status IS NULL', [ScheduledTask::STATUS_SCHEDULED])
       ->findOne();
     if ($task) {
       return true;
     }
-    $datetime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task = ScheduledTask::create();
-    $task->type = InactiveSubscribers::TASK_TYPE;
+    $task->type = $type;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = $datetime->addHour();
+    $task->scheduled_at = $datetime;
     $task->save();
   }
 
