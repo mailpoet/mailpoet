@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Cron\Triggers;
 
+use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Services\Bridge;
 use MailPoet\Cron\CronHelper;
@@ -111,6 +112,13 @@ class WordPress {
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
 
+    // Authorized email addresses check
+    $authorized_email_addresses_tasks = self::getTasksCount([
+      'type' => AuthorizedSendingEmailsCheck::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+    ]);
+
     // check requirements for each worker
     $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);
     $bounce_sync_active = ($mp_sending_enabled && ($bounce_due_tasks || !$bounce_future_tasks));
@@ -127,6 +135,7 @@ class WordPress {
       || $stats_notifications_tasks
       || $inactive_subscribers_tasks
       || $woo_commerce_sync_tasks
+      || $authorized_email_addresses_tasks
     );
   }
 

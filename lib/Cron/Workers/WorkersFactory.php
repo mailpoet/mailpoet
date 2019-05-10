@@ -15,6 +15,7 @@ use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
+use MailPoet\Services\Bridge;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
@@ -46,6 +47,9 @@ class WorkersFactory {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
+  /** @var Bridge */
+  private $bridge;
+
   /**
    * @var Renderer
    */
@@ -60,7 +64,8 @@ class WorkersFactory {
     FeaturesController $features_controller,
     WooCommerceSegment $woocommerce_segment,
     InactiveSubscribersController $inactive_subscribers_controller,
-    WooCommerceHelper $woocommerce_helper
+    WooCommerceHelper $woocommerce_helper,
+    Bridge $bridge
   ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->scheduler = $scheduler;
@@ -71,6 +76,7 @@ class WorkersFactory {
     $this->woocommerce_segment = $woocommerce_segment;
     $this->inactive_subscribers_controller = $inactive_subscribers_controller;
     $this->woocommerce_helper = $woocommerce_helper;
+    $this->bridge = $bridge;
   }
 
   /** @return SchedulerWorker */
@@ -120,6 +126,11 @@ class WorkersFactory {
   /** @return InactiveSubscribers */
   function createInactiveSubscribersWorker($timer) {
     return new InactiveSubscribers($this->inactive_subscribers_controller, $this->settings, $timer);
+  }
+
+  /** @return AuthorizedSendingEmailsCheck */
+  function createAuthorizedSendingEmailsCheckWorker($timer) {
+    return new AuthorizedSendingEmailsCheck($this->bridge, $timer);
   }
 
 }
