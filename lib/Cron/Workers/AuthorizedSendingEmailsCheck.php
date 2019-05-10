@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) exit;
 
 class AuthorizedSendingEmailsCheck extends SimpleWorker {
   const TASK_TYPE = 'authorized_email_addresses_check';
+  const AUTOMATIC_SCHEDULING = false;
 
   /** @var Bridge */
   private $bridge;
