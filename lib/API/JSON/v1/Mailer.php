@@ -6,14 +6,28 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class Mailer extends APIEndpoint {
+
+  /** @var Bridge */
+  private $bridge;
+
+  /** @var SettingsController */
+  private $settings;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
+
+  function __construct(Bridge $bridge, SettingsController $settings) {
+    $this->bridge = $bridge;
+    $this->settings = $settings;
+  }
 
   function send($data = []) {
     try {
@@ -41,6 +55,9 @@ class Mailer extends APIEndpoint {
   }
 
   function resumeSending() {
+    if ($this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME)) {
+      $this->bridge->checkAuthorizedEmailAddresses();
+    }
     MailerLog::resumeSending();
     return $this->successResponse(null);
   }
