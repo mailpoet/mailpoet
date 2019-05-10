@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Services;
 
+use Carbon\Carbon;
+use Codeception\Stub\Expected;
 use Codeception\Util\Stub;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
@@ -17,6 +19,9 @@ class BridgeTest extends \MailPoetTest {
 
   /** @var SettingsController */
   private $settings;
+
+  /** @var Bridge */
+  private $bridge;
 
   function _before() {
     parent::_before();
@@ -284,6 +289,68 @@ class BridgeTest extends \MailPoetTest {
     $api->sendMessages('test');
     expect($wp_remote_post_args[1]['timeout'])->equals($custom_request_value);
     $wp->removeFilter('mailpoet_bridge_api_request_timeout', $filter);
+  }
+
+  function testItResetsAuthorisedEmailsErrorIfMssIsNotActive() {
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, 'Error');
+    $api = $this->make(API::class, ['getAuthorizedEmailAddresses' => Expected::never()]);
+    $this->bridge->api = $api;
+    $this->bridge->checkAuthorizedEmailAddresses();
+    expect($this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME))->null();
+  }
+
+  function testItResetsAuthorisedEmailsErrorIfIntalationDateIsOlderThanAuthEmailsFeature() {
+    $this->settings->set('installed_at', '2018-03-04');
+    $this->setMailPoetSendingMethod();
+    $api = $this->make(API::class, ['getAuthorizedEmailAddresses' => Expected::never()]);
+    $this->bridge->api = $api;
+    $this->bridge->checkAuthorizedEmailAddresses();
+    expect($this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME))->null();
+  }
+
+  function testItSetProperErrorForInvalidDefaultSender() {
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'invalid@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
+    $this->setMailPoetSendingMethod();
+    $api = $this->make(API::class, ['getAuthorizedEmailAddresses' => Expected::once(['auth@email.com'])]);
+    $this->bridge->api = $api;
+    $this->bridge->checkAuthorizedEmailAddresses();
+    expect($this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME))->equals(['invalid_sender_address' => 'invalid@email.com']);
+  }
+
+  function testItSetProperErrorForInvalidConfirmationSender() {
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'auth@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'invalid@email.com');
+    $this->setMailPoetSendingMethod();
+    $api = $this->make(API::class, ['getAuthorizedEmailAddresses' => Expected::once(['auth@email.com'])]);
+    $this->bridge->api = $api;
+    $this->bridge->checkAuthorizedEmailAddresses();
+    expect($this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME))->equals(['invalid_confirmation_address' => 'invalid@email.com']);
+  }
+
+  function testItSetProperErrorForConfirmationAddressAndDefaultSender() {
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'invalid@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'invalid@email.com');
+    $this->setMailPoetSendingMethod();
+    $api = $this->make(API::class, ['getAuthorizedEmailAddresses' => Expected::once(['auth@email.com'])]);
+    $this->bridge->api = $api;
+    $this->bridge->checkAuthorizedEmailAddresses();
+    expect($this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME))->equals(['invalid_sender_address' => 'invalid@email.com', 'invalid_confirmation_address' => 'invalid@email.com']);
+  }
+
+  function testItSetEmptyErrorWhenBothAdressesAreCorrect() {
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'auth@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
+    $this->setMailPoetSendingMethod();
+    $api = $this->make(API::class, ['getAuthorizedEmailAddresses' => Expected::once(['auth@email.com'])]);
+    $this->bridge->api = $api;
+    $this->bridge->checkAuthorizedEmailAddresses();
+    expect($this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME))->null();
   }
 
   private function setMailPoetSendingMethod() {

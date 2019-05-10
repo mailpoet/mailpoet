@@ -2,8 +2,10 @@
 
 namespace MailPoet\Services;
 
+use Carbon\Carbon;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Subscriber;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -12,6 +14,8 @@ if (!defined('ABSPATH')) exit;
 class Bridge {
   const API_KEY_SETTING_NAME = 'mta.mailpoet_api_key';
   const API_KEY_STATE_SETTING_NAME = 'mta.mailpoet_api_key_state';
+
+  const AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME = 'authorized_emails_addresses_check';
 
   const PREMIUM_KEY_SETTING_NAME = 'premium.premium_key';
   const PREMIUM_KEY_STATE_SETTING_NAME = 'premium.premium_key_state';
@@ -29,13 +33,17 @@ class Bridge {
 
   const BRIDGE_URL = 'https://bridge.mailpoet.com';
 
+  /** @var API|null */
   public $api;
 
   /** @var SettingsController */
   private $settings;
 
-  function __construct() {
-    $this->settings = new SettingsController();
+  function __construct(SettingsController $settingsController = null) {
+    if ($settingsController === null) {
+      $settingsController = new SettingsController;
+    }
+    $this->settings = $settingsController;
   }
 
   static function isMPSendingServiceEnabled() {
@@ -76,6 +84,35 @@ class Bridge {
     } else {
       $this->api = new Bridge\API($api_key);
     }
+  }
+
+  function checkAuthorizedEmailAddresses() {
+    $installed_at = new Carbon($this->settings->get('installed_at'));
+    $authorized_emails_release_date = new Carbon('2019-03-06');
+    if (!self::isMPSendingServiceEnabled() || $installed_at < $authorized_emails_release_date) {
+      $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, null);
+      return;
+    }
+
+    $this->initApi($this->settings->get(self::API_KEY_SETTING_NAME));
+    $authorized_emails = $this->api->getAuthorizedEmailAddresses();
+    // Keep previous check result for an invalid response from API
+    if ($authorized_emails === false) {
+      return;
+    }
+
+    $default_sender_address = $this->settings->get('sender.address');
+    $signup_confirmation_address = $this->settings->get('signup_confirmation.from.address');
+    $authorized_emails = array_map('strtolower', $authorized_emails);
+    $result = [];
+    if (!in_array(strtolower($default_sender_address), $authorized_emails, true)) {
+      $result['invalid_sender_address'] = $default_sender_address;
+    }
+    if (!in_array(strtolower($signup_confirmation_address), $authorized_emails, true)) {
+      $result['invalid_confirmation_address'] = $signup_confirmation_address;
+    }
+
+    $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, $result ?: null);
   }
 
   function checkMSSKey($api_key) {
