@@ -14,6 +14,7 @@ abstract class SimpleWorker {
   private $wp;
   const TASK_TYPE = null;
   const TASK_BATCH_SIZE = 5;
+  const AUTOMATIC_SCHEDULING = true;
 
   function __construct($timer = false) {
     if (static::TASK_TYPE === null) {
@@ -43,7 +44,9 @@ abstract class SimpleWorker {
     $running_tasks = self::getRunningTasks();
 
     if (!$scheduled_tasks && !$running_tasks) {
-      self::schedule();
+      if (static::AUTOMATIC_SCHEDULING) {
+        self::schedule();
+      }
       return false;
     }
 
