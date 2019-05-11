@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!defined('ABSPATH')) exit;
 
 class ScheduledTaskSubscriber extends Model {
@@ -9,6 +11,10 @@ class ScheduledTaskSubscriber extends Model {
 
   const FAIL_STATUS_OK = 0;
   const FAIL_STATUS_FAILED = 1;
+
+  const SENDING_STATUS_SENT = 'sent';
+  const SENDING_STATUS_FAILED = 'failed';
+  const SENDING_STATUS_UNPROCESSED = 'unprocessed';
 
   public static $_table = MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE;
   public static $_id_column = ['task_id', 'subscriber_id'];
@@ -60,6 +66,67 @@ class ScheduledTaskSubscriber extends Model {
 
   static function getTotalCount($task_id) {
     return self::getCount($task_id);
+  }
+
+  static function listingQuery($data) {
+    $group = isset($data['group']) ? $data['group'] : 'all';
+    return self::join(Subscriber::$_table, array("subscriber_id", "=", "subscribers.id"), "subscribers")
+      ->filter($group, $data['params'])
+      ->select('error', 'error')
+      ->select('failed', 'failed')
+      ->select('task_id', 'taskId')
+      ->select('processed', 'processed')
+      ->select('subscribers.email', 'email')
+      ->select('subscribers.id', 'subscriberId')
+      ->select('subscribers.last_name', 'lastName')
+      ->select('subscribers.first_name', 'firstName');
+  }
+
+  static function groups($data) {
+    $params = $data['params'];
+    return [
+      [
+        'name' => 'all',
+        'label' => WPFunctions::get()->__('All', 'mailpoet'),
+        'count' => self::filter('all', $params)->count(),
+      ],
+      [
+        'name' => self::SENDING_STATUS_SENT,
+        'label' => WPFunctions::get()->x('Sent', 'status when a newsletter has been sent', 'mailpoet'),
+        'count' => self::filter(self::SENDING_STATUS_SENT, $params)->count(),
+      ],
+      [
+        'name' => self::SENDING_STATUS_FAILED,
+        'label' => WPFunctions::get()->x('Failed', 'status when the sending of a newsletter has failed', 'mailpoet'),
+        'count' => self::filter(self::SENDING_STATUS_FAILED, $params)->count(),
+      ],
+      [
+        'name' => self::SENDING_STATUS_UNPROCESSED,
+        'label' => WPFunctions::get()->x('Unprocessed', 'status when the sending of a newsletter has not been processed', 'mailpoet'),
+        'count' => self::filter(self::SENDING_STATUS_UNPROCESSED, $params)->count(),
+      ],
+    ];
+  }
+
+  static function all($orm, $params) {
+    return $orm->whereIn('task_id', $params['task_ids']);
+  }
+
+  static function sent($orm, $params) {
+    return $orm->filter('all', $params)
+      ->where('processed', self::STATUS_PROCESSED)
+      ->where('failed', self::FAIL_STATUS_OK);
+  }
+
+  static function failed($orm, $params) {
+    return $orm->filter('all', $params)
+      ->where('processed', self::STATUS_PROCESSED)
+      ->where('failed', self::FAIL_STATUS_FAILED);
+  }
+
+  static function unprocessed($orm, $params) {
+    return $orm->filter('all', $params)
+      ->where('processed', self::STATUS_UNPROCESSED);
   }
 
   private static function getCount($task_id, $processed = null) {
