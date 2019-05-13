@@ -385,6 +385,17 @@ class Menu {
         'migration'
       )
     );
+
+    // Settings page
+    $this->wp->addSubmenuPage(
+      true,
+      $this->setPageTitle('Experimental Features'),
+      '',
+      AccessControl::PERMISSION_MANAGE_FEATURES,
+      'mailpoet-experimental',
+      [$this, 'experimentalFeatures']
+    );
+    //
   }
 
   function disableWPEmojis() {
@@ -540,6 +551,10 @@ class Menu {
         'systemStatusData' => $system_status_data
       )
     );
+  }
+
+  function experimentalFeatures() {
+    $this->displayPage('experimental-features.html', []);
   }
 
   private function _getFlags() {
