@@ -83,6 +83,13 @@ class Settings {
     return $this;
   }
 
+  function withSendingMethodSmtpMailhog() {
+    $this->settings->set('mta_group', 'smtp');
+    $this->settings->set('mta.method', Mailer::METHOD_SMTP);
+    $this->settings->set('mta.port', 1025);
+    $this->settings->set('mta.host', 'mailhog');
+  }
+
   function withSendingError($error_message, $operation = 'send') {
     $this->settings->set('mta_log.status', 'paused');
     $this->settings->set('mta_log.error.operation', $operation);
