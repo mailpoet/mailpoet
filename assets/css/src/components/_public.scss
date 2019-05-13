@@ -14,6 +14,7 @@
   .mailpoet_form_loading {
     display: block;
   }
+
   .mailpoet_submit {
     display: none;
   }
@@ -28,7 +29,6 @@
 .mailpoet_form_loading > span {
   animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
   background-color: #5b5b5b;
-
   border-radius: 100%;
   display: inline-block;
   height: 5px;

@@ -23,7 +23,6 @@ $tool-width: 16px;
 
   span, a,
   img {
-
     vertical-align: top;
   }
 
@@ -55,18 +54,15 @@ $tool-width: 16px;
 }
 
 .mailpoet_social_icon_settings {
-
   background: $white-color;
   border: 1px solid $content-border-color;
   margin-bottom: 9px;
-
   padding: 28px 9px (18px - 10px) 9px;
   position: relative;
 }
 
 .mailpoet_social_icon_settings_row {
   clear: both;
-
   line-height: 30px;
   margin-bottom: 10px;
   overflow: auto;

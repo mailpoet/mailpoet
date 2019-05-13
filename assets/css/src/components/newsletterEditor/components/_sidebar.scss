@@ -97,6 +97,7 @@ $widget-icon-width: 30px;
   padding: 0 13px 15px 13px;
   text-align: center;
   width: $widget-width;
+
   &:nth-child(3n+1) {
     clear: left;
   }
@@ -190,6 +191,7 @@ $widget-icon-width: 30px;
 .mailpoet_browser_preview_container_mobile {
   width: 350px;
 }
+
 .mailpoet_browser_preview_border {
   border: 1px solid #c3c3c3;
   box-sizing: border-box;
