@@ -117,7 +117,7 @@ $widget-icon-width: 30px;
     width: $widget-width;
 
     /* Vertically align widget icon glyphs */
-    & > * {
+    > * {
       font-size: $widget-icon-width;
       height: $widget-icon-width;
       vertical-align: middle;

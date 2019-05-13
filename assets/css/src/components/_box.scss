@@ -53,13 +53,35 @@ ul.mailpoet_boxes {
 
   .mailpoet_actions {
     align-items: center;
+    background: #f5f5f5;
+    border-left: 1px solid #e8e8e8;
+    border-top: 1px solid #d6d6d6;
+    bottom: 0;
     display: flex;
     flex-wrap: nowrap;
+    margin: 0;
+    padding: 8px 16px;
+    right: 0;
+
+    @media screen and (max-width: 782px) {
+      padding: 6px 16px 2px;
+    }
   }
 
   .mailpoet_description {
     align-items: center;
+    background: #fafafa;
+    border-top: 1px solid #e1e1e1;
     display: flex;
+    padding: 12px 5%;
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 20px;
+      margin: 0;
+      max-width: 100%;
+    }
   }
 
   @media screen and (max-width: 1178px) {
@@ -92,34 +114,6 @@ ul.mailpoet_boxes {
 @media screen and (max-width: 520px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(1n) {
     margin: 0 0 $box-margin-small $box-margin-small;
-  }
-}
-
-.mailpoet_boxes .mailpoet_template_boxes .mailpoet_description {
-  background: #fafafa;
-  border-top: 1px solid #e1e1e1;
-  padding: 12px 5%;
-}
-
-.mailpoet_boxes .mailpoet_template_boxes .mailpoet_description h3 {
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 20px;
-  margin: 0;
-  max-width: 100%;
-}
-
-.mailpoet_boxes .mailpoet_template_boxes .mailpoet_actions {
-  background: #f5f5f5;
-  border-left: 1px solid #e8e8e8;
-  border-top: 1px solid #d6d6d6;
-  bottom: 0px;
-  margin: 0;
-  padding: 8px 16px;
-  right: 0px;
-
-  @media screen and (max-width: 782px) {
-    padding: 6px 16px 2px;
   }
 }
 

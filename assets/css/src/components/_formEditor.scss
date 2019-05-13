@@ -76,27 +76,6 @@ $handle_icon: '../../img/handle.png';
   color: #fff;
 }
 
-.mailpoet_form_block {
-  background-color: #fff;
-  border: 0 none;
-  height: 20px;
-}
-
-.mailpoet_form_block.highlighted {
-  border: 1px solid #5897fb;
-  padding: 9px 17px;
-}
-
-.mailpoet_form_block img {
-  max-width: 100%;
-}
-
-/* Widget styles */
-.mailpoet_form_block p {
-  margin: 5px 0;
-  word-wrap: break-word;
-}
-
 /* Widget: checkbox, radio */
 .mailpoet_radio,
 .mailpoet_checkbox {
@@ -334,6 +313,8 @@ $handle_icon: '../../img/handle.png';
 
 /* blocks */
 .mailpoet_form_block {
+  background-color: #fff;
+  border: 0 none;
   display: inline-table;
   display: block;
   height: 1%;
@@ -341,6 +322,21 @@ $handle_icon: '../../img/handle.png';
   padding: 10px 18px;
   position: relative;
   z-index: 98;
+}
+
+.mailpoet_form_block.highlighted {
+  border: 1px solid #5897fb;
+  padding: 9px 17px;
+}
+
+.mailpoet_form_block img {
+  max-width: 100%;
+}
+
+/* Widget styles */
+.mailpoet_form_block p {
+  margin: 5px 0;
+  word-wrap: break-word;
 }
 
 .mailpoet_form_block.dragging {

@@ -13,13 +13,13 @@
     display: block !important;
   }
 
-  & > .mailpoet_tools {
+  > .mailpoet_tools {
     z-index: 100001 !important;
   }
 }
 
 .mailpoet_layer_overlay {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, .6);
   height: 100%;
   left: 0;
   margin: 0 !important;

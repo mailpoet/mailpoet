@@ -48,12 +48,6 @@ Please add custom styles to pages_custom.styl
     line-height: 1.5;
   }
 
-  .feature-section p {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 55em;
-  }
-
   h1 {
     color: #32373c;
     font-size: 2.8em;
@@ -136,6 +130,34 @@ Please add custom styles to pages_custom.styl
         vertical-align: top;
         width: calc(47.6% - 4px);
       }
+
+      h3 {
+        margin-top: 0;
+      }
+    }
+
+    h4 {
+      font-size: 1em;
+      margin: 1.4em 0 .6em;
+    }
+
+    p {
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: .6em;
+      max-width: 55em;
+    }
+
+    .media-container {
+      overflow: hidden;
+    }
+
+    img {
+      margin-bottom: 1em;
+    }
+
+    .col {
+      margin-top: 40px;
     }
   }
 
@@ -149,27 +171,6 @@ Please add custom styles to pages_custom.styl
   .two-col .col:nth-of-type(2n),
   .three-col .col:nth-of-type(3n) {
     margin-right: 0;
-  }
-
-  .feature-section {
-    &.two-col {
-      h3 {
-        margin-top: 0;
-      }
-    }
-  }
-
-  .feature-section {
-    h4 {
-      font-size: 1em;
-      margin: 1.4em 0 0.6em 0;
-    }
-  }
-
-  .feature-section {
-    p {
-      margin-top: 0.6em;
-    }
   }
 
   .lead-description {
@@ -215,34 +216,6 @@ Please add custom styles to pages_custom.styl
     text-align: center;
   }
 
-  .feature-section {
-    overflow: hidden;
-    padding: 0 0 40px;
-  }
-
-  .feature-section {
-    &.no-heading {
-      padding-top: 35px;
-    }
-  }
-
-  .headline-feature {
-    margin: 0 auto;
-    max-width: 80%;
-  }
-
-  .feature-section {
-    .media-container {
-      overflow: hidden;
-    }
-  }
-
-  .feature-section {
-    img {
-      margin-bottom: 1em;
-    }
-  }
-
   .embed-container {
     text-align: center;
 
@@ -253,12 +226,6 @@ Please add custom styles to pages_custom.styl
 
   .wp-embedded-content {
     max-width: 100%;
-  }
-
-  .feature-section {
-    .col {
-      margin-top: 40px;
-    }
   }
 
   .changelog {

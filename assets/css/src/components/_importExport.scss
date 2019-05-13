@@ -21,6 +21,12 @@ span {
       }
     }
   }
+
+  &.select2-search {
+    &.select2-search--dropdown {
+      display: none !important;
+    }
+  }
 }
 
 #subscribers_data {
@@ -34,13 +40,23 @@ span {
     padding: .5em;
   }
 
-  & > table {
-    & > tbody {
-      & > td {
-        padding: 0.5em;
+  > table {
+    > thead {
+      > tr {
+        > th {
+          > span {
+            width: 15em !important;
+          }
+        }
+      }
+    }
+
+    > tbody {
+      > td {
+        padding: .5em;
       }
 
-      & > tr {
+      > tr {
         &:nth-child(odd) {
           background: #f9f9f9;
         }
@@ -48,32 +64,18 @@ span {
     }
   }
 
+  th:first-child,
+  td:first-child {
+    padding: 0 1em !important;
+    text-align: center !important;
+    vertical-align: inherit !important;
+    width: 10em !important;
+  }
+
   .mailpoet_header {
     font-weight: 600;
     text-decoration: underline;
     text-transform: uppercase;
-  }
-}
-
-#subscribers_data th:first-child,
-#subscribers_data td:first-child {
-  padding: 0 1em 0 1em !important;
-  text-align: center !important;
-  vertical-align: inherit !important;
-  width: 10em !important;
-}
-
-#subscribers_data {
-  & > table {
-    & > thead {
-      & > tr {
-        & > th {
-          & > span {
-            width: 15em !important;
-          }
-        }
-      }
-    }
   }
 }
 
@@ -89,18 +91,10 @@ span {
 
 tr {
   &.mailpoet_segments {
-    & > td {
-      & > a {
+    > td {
+      > a {
         margin-left: 15px;
       }
-    }
-  }
-}
-
-span {
-  &.select2-search {
-    &.select2-search--dropdown {
-      display: none !important;
     }
   }
 }

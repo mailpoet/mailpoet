@@ -30,7 +30,7 @@
 .mailpoet_save_option {
   margin: 0;
 
-  & > a {
+  > a {
     display: block;
     line-height: 2em;
     padding-left: 20px;
@@ -42,7 +42,7 @@
   background-color: $primary-active-background-color;
   color: $white-color;
 
-  & > a {
+  > a {
     color: $white-color;
   }
 }
