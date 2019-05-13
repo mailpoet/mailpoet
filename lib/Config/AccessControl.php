@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) exit;
 class AccessControl {
   const PERMISSION_ACCESS_PLUGIN_ADMIN = 'mailpoet_access_plugin_admin';
   const PERMISSION_MANAGE_SETTINGS = 'mailpoet_manage_settings';
+  const PERMISSION_MANAGE_FEATURES = 'mailpoet_manage_features';
   const PERMISSION_MANAGE_EMAILS = 'mailpoet_manage_emails';
   const PERMISSION_MANAGE_SUBSCRIBERS = 'mailpoet_manage_subscribers';
   const PERMISSION_MANAGE_FORMS = 'mailpoet_manage_forms';
@@ -26,6 +27,12 @@ class AccessControl {
       ),
       self::PERMISSION_MANAGE_SETTINGS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_settings',
+        array(
+          'administrator'
+        )
+      ),
+      self::PERMISSION_MANAGE_FEATURES => WPFunctions::get()->applyFilters(
+        'mailpoet_permission_manage_features',
         array(
           'administrator'
         )
@@ -62,6 +69,7 @@ class AccessControl {
     return array(
       self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPFunctions::get()->__('Admin menu item', 'mailpoet'),
       self::PERMISSION_MANAGE_SETTINGS => WPFunctions::get()->__('Manage settings', 'mailpoet'),
+      self::PERMISSION_MANAGE_FEATURES => WPFunctions::get()->__('Manage features', 'mailpoet'),
       self::PERMISSION_MANAGE_EMAILS => WPFunctions::get()->__('Manage emails', 'mailpoet'),
       self::PERMISSION_MANAGE_SUBSCRIBERS => WPFunctions::get()->__('Manage subscribers', 'mailpoet'),
       self::PERMISSION_MANAGE_FORMS => WPFunctions::get()->__('Manage forms', 'mailpoet'),
