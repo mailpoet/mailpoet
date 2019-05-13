@@ -63,6 +63,9 @@ class Changelog {
       $this->checkWelcomeWizard();
     }
     $this->checkWooCommerceListImportPage();
+    if ($this->settings->get('display_revenues')) {
+      $this->checkRevenueTrackingPermissionPage();
+    }
   }
 
   private function checkMp2Migration($version) {
@@ -105,6 +108,18 @@ class Changelog {
       && $this->wp->currentUserCan('administrator')
     ) {
       $this->url_helper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-list-import'));
+    }
+  }
+
+  private function checkRevenueTrackingPermissionPage() {
+    if (
+      !in_array($_GET['page'], ['mailpoet-revenue-tracking-permission', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
+      && ($this->settings->get('woocommerce.accept_cookie_revenue_tracking ') !== null)
+      && $this->settings->get('tracking.enabled')
+      && $this->wooCommerceHelper->isWooCommerceActive()
+      && $this->wp->currentUserCan('administrator')
+    ) {
+      $this->url_helper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-revenue-tracking-permission'));
     }
   }
 
