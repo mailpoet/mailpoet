@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.25.1
+Stable tag: 3.26.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -173,6 +173,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.26.0 - 2019-05-14 =
+* Improved: minor change of default email confirmation text;
+* Improved: WooCommerce customer sync with MailPoet lists for stores with 30k or larger customer lists;
+* Fixed: edge case bug where a user with a user_id of 0 would break links in newsletters for some users;
+* Fixed: uncaught TypeError related to deleted segments.
 
 = 3.25.1 - 2019-05-06 =
 * Improved: subscriber import speed for users importing many subscribers with many custom fields;
