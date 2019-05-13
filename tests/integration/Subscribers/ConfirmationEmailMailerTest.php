@@ -8,6 +8,8 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ConfirmationEmailMailerTest extends \MailPoetTest {
@@ -67,6 +69,28 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $sender->sendConfirmationEmail($subscriber);
     // error is set on the subscriber model object
     expect($subscriber->getErrors()[0])->equals('send error');
+  }
+
+  function testItDoesntSendWhenMSSIsActiveAndConfirmationEmailIsNotAuthorized() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'first_name' => 'John',
+      'last_name' => 'Mailer',
+      'email' => 'john@mailpoet.com'
+    ]);
+
+    $mailer = $this->makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::never(),
+    ]);
+
+    $settings = new SettingsController;
+    $settings->set(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, ['invalid_confirmation_address' => 'email@email.com']);
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $sender = new ConfirmationEmailMailer($mailer);
+
+    $result = $sender->sendConfirmationEmail($subscriber);
+    expect($result)->equals(false);
+    $settings->set(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, null);
   }
 
   function testItLimitsNumberOfConfirmationEmailsForNotLoggedInUser() {
