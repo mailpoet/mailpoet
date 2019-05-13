@@ -311,12 +311,12 @@ span.select2-container--open > span.select2-dropdown li.select2-results__option 
   font-size: 13px;
   margin: 0 !important;
 
-  & .select2-results__group {
+  .select2-results__group {
     color: #bfbfbf;
     font-weight: normal;
   }
 
-  & .select2-results__option {
+  .select2-results__option {
     font-size: 13px;
     padding-left: 15px;
 
