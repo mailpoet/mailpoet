@@ -87,7 +87,7 @@
     margin-bottom: 20px;
   }
 
-  input[type="text"] {
+  input[type='text'] {
     font-size: 15px;
     height: 30px;
     margin-top: 10px;
@@ -101,7 +101,7 @@
 }
 
 .mailpoet_sender_form_loading {
-  opacity: 0.5;
+  opacity: .5;
 }
 
 .mailpoet_welcome_wizard_step_controls {
@@ -113,7 +113,7 @@
 }
 
 .mailpoet_welcome_wizard_woo_screenshot {
-  box-shadow: 2px 3px 18px rgba(#000, 0.3);
+  box-shadow: 2px 3px 18px rgba(#000, .3);
   margin-top: -20px;
   max-width: 100%;
   width: 350px;

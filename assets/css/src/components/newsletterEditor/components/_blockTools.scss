@@ -1,9 +1,9 @@
-$tool-inactive-color: #333333;
-$tool-inactive-secondary-color: #ffffff;
-$tool-hover-color: #bbbbbb;
-$tool-hover-secondary-color: #ffffff;
+$tool-inactive-color: #333;
+$tool-inactive-secondary-color: #fff;
+$tool-hover-color: #bbb;
+$tool-hover-secondary-color: #fff;
 $tool-active-color: #d2d2d4;
-$tool-active-secondary-color: #ffffff;
+$tool-active-secondary-color: #fff;
 
 $content-icon-size: 14px;
 $content-icon-size-with-padding: 24px;
@@ -30,13 +30,13 @@ $column-icon-size-with-padding: 27px;
     padding: 3px 7px;
     position: relative;
     transform: translateY(100%);
-    transition: all 250ms cubic-bezier(0.42, 0, 0.58, 1);
+    transition: all 250ms cubic-bezier(.42, 0, .58, 1);
   }
 
   .mailpoet_resize_active & .mailpoet_tools_slider,
   &.mailpoet_display_tools .mailpoet_tools_slider {
     transform: translateY(0);
-    transition: all 250ms cubic-bezier(0.42, 0, 0.58, 1), visibility 0s linear;
+    transition: all 250ms cubic-bezier(.42, 0, .58, 1), visibility 0s linear;
     visibility: visible;
   }
 
@@ -99,7 +99,7 @@ $column-icon-size-with-padding: 27px;
 
     .mailpoet_delete_block_activated {
       height: auto;
-      padding: 0 5px 3px 5px;
+      padding: 0 5px 3px;
       width: auto;
 
       .mailpoet_delete_block_activate {
@@ -131,7 +131,7 @@ $column-icon-size-with-padding: 27px;
 
   &:hover svg,
   &:focus svg {
-    opacity: 0.7;
+    opacity: .7;
   }
 
   .mailpoet_delete_block_confirmation {

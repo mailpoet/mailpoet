@@ -88,7 +88,7 @@
 
 .mailpoet_editor_last_saved {
   color: $primary-inactive-color;
-  font-size: 0.9em;
+  font-size: .9em;
   margin-top: 10px;
   text-align: right;
 }
@@ -110,14 +110,14 @@
 
   .mailpoet_save_show_options {
     &.mailpoet_save_show_options_active {
-      .mailpoet_save_show_options_icon::before {
+      .mailpoet_save_show_options_icon:before {
         content: '\f142';
       }
     }
   }
 
   .mailpoet_save_show_options_icon {
-    &::before {
+    &:before {
       content: '\f140';
     }
   }
@@ -133,14 +133,14 @@
 
   .mailpoet_save_show_options {
     &.mailpoet_save_show_options_active {
-      .mailpoet_save_show_options_icon::before {
+      .mailpoet_save_show_options_icon:before {
         content: '\f140';
       }
     }
   }
 
   .mailpoet_save_show_options_icon {
-    &::before {
+    &:before {
       content: '\f142';
     }
   }

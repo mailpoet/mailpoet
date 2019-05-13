@@ -2,7 +2,7 @@
   background-color: transparent;
   border: 0;
   border-top: 1px #aba9a9 solid;
-  font-size: 0.85em;
+  font-size: .85em;
   height: 300px;
   margin-top: 20px;
   overflow: scroll;
@@ -25,7 +25,7 @@ $progressbar_gradient_to_color: #fd9215;
   background-image: linear-gradient(to bottom, $progressbar_color, $progressbar_gradient_to_color);
   border: 0;
   border-radius: 3px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
   height: 100%;
 }
 

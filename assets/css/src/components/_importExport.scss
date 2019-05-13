@@ -8,7 +8,7 @@ span {
     &.mailpoet_mailchimp-ok {
       &:before {
         color: #0e90d2;
-        content: "\2713";
+        content: '\2713';
         margin-left: 15px;
       }
     }
@@ -16,7 +16,7 @@ span {
     &.mailpoet_mailchimp-error {
       &:before {
         color: #900;
-        content: "\2717";
+        content: '\2717';
         margin-left: 15px;
       }
     }
@@ -31,7 +31,7 @@ span {
   }
 
   td {
-    padding: 0.5em;
+    padding: .5em;
   }
 
   & > table {
@@ -79,7 +79,7 @@ span {
 
 .mailpoet_data_match {
   color: #0e90d2;
-  margin-left: 0.25em;
+  margin-left: .25em;
 }
 
 .mailpoet_import_error,
@@ -120,13 +120,13 @@ span {
   }
 
   label {
-    margin-bottom: 0.3em;
+    margin-bottom: .3em;
     margin-top: 1.5em;
     padding-left: 35px;
     text-indent: -35px;
 
     input {
-      margin-right: 0.5em;
+      margin-right: .5em;
     }
   }
 }
@@ -136,13 +136,12 @@ span {
   flex-direction: column;
 
   > * {
-    margin: 10px 0px;
+    margin: 10px 0;
   }
 
   .mailpoet_import_selection_form {
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-flow: row nowrap;
 
     > * {
       margin-right: 2.5em;
@@ -171,8 +170,7 @@ span {
 
   .mailpoet_import_method_paste {
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-flow: row nowrap;
   }
 
   .mailpoet_import_mailchimp {
