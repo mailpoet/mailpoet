@@ -6,11 +6,13 @@
   .form-table th {
     width: 20em;
   }
+
   .mailpoet_sending_methods {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     margin: 25px 0 0 0;
+
     > li {
       background-color: #fff;
       border: 2px solid #dcdcdc;
@@ -21,26 +23,32 @@
       flex-shrink: 1;
       margin: 0 25px 25px 0;
       max-width: 500px;
+
       .mailpoet_sending_method_description {
         flex-grow: 1;
         flex-shrink: 0;
         padding: 25px;
       }
+
       &:hover:not(.mailpoet_active) {
         border-color: #c5c5c5;
       }
     }
+
     > li:last-child {
       margin-right: 0;
     }
+
     h3 {
       font-size: 1.5em;
       height: 54px;
       text-align: center;
     }
+
     .mailpoet_description {
       font-size: 14px;
     }
+
     .mailpoet_status {
       align-items: center;
       background-color: #dcdcdc;
@@ -51,38 +59,49 @@
       min-height: 2em;
       padding: 1em;
       text-overflow: ellipsis;
+
       span {
         font-weight: bold;
         visibility: hidden;
       }
+
       div {
         margin-left: 1em;
       }
     }
+
     .mailpoet_active {
       border: 2px solid #088b00;
+
       &.mailpoet_invalid_key {
         border: 2px solid #dc3232;
       }
+
       .mailpoet_status {
         background-color: #088b00;
+
         &.mailpoet_invalid_key {
           background-color: #dc3232;
+
           .mailpoet_actions {
             color: white;
+
             a:not(.button-primary) {
               color: white;
             }
           }
         }
+
         span {
           visibility: visible;
         }
       }
+
       #mailpoet_mta_activate {
         visibility: hidden;
       }
     }
+
     .mailpoet_actions {
       color: initial;
     }
@@ -104,6 +123,7 @@
     box-shadow: 0 1px 0 #e64c03;
     margin: 10px 0;
     text-shadow: 0 -1px 1px #e64c03;
+
     strong {
       text-transform: uppercase;
     }
@@ -117,7 +137,6 @@
     content: '✗ ';
   }
 
-
   @media screen and (max-width: 782px) {
     .form-table th {
       width: auto;
@@ -126,6 +145,7 @@
     .mailpoet_sending_methods {
       flex-flow: row wrap;
       justify-content: space-around;
+
       > li {
         flex-basis: auto;
         margin-right: 0;

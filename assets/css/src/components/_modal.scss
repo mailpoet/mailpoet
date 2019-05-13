@@ -7,9 +7,11 @@ $modal_popup_padding: 30px;
 $modal_popup_padding_mobile: 12px;
 $modal_close_button_size: 23px;
 $overlay_background_color: rgba(0, 0, 0, 0.6);
+
 body.mailpoet_modal_opened {
   overflow: hidden;
 }
+
 .mailpoet_modal_overlay {
   align-items: center;
   background-color: $overlay_background_color;
@@ -34,13 +36,16 @@ body.mailpoet_modal_opened {
   position: relative;
   z-index: 100001 !important;
 }
+
 .mailpoet_modal_overlay.mailpoet_overlay_hidden {
   background-color: transparent;
 }
+
 .mailpoet_modal_overlay.mailpoet_overlay_loading {
   background-color: $overlay_background_color !important;
   display: flex !important;
 }
+
 .mailpoet_popup {
   animation: mailpoet_popup_fadein 0.5s;
   margin: auto;
@@ -92,6 +97,7 @@ body.mailpoet_modal_opened {
 .mailpoet_popup_has_title .mailpoet_popup_body {
   margin-top: 30px;
 }
+
 .mailpoet_modal_overlay.mailpoet_panel_overlay {
   overflow: hidden;
   top: 32px;
@@ -143,6 +149,7 @@ body.mailpoet_modal_opened {
 .mailpoet_panel_body {
   padding: 10px 10px 36px 10px;
 }
+
 .mailpoet_modal_close {
   cursor: pointer;
   outline: 0 none;
@@ -180,6 +187,7 @@ body.mailpoet_modal_opened {
 .mailpoet_modal_close:focus {
   outline: 0 none;
 }
+
 .mailpoet_align_left {
   margin: 0;
   text-align: left;

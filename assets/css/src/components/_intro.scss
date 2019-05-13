@@ -1,6 +1,7 @@
 .mailpoet-intro-active #adminmenuback {
   z-index: auto;
 }
+
 #adminmenuwrap.introjs-fixParent {
   position: absolute;
 }
@@ -17,6 +18,7 @@
 
 .introjs-tooltip {
   min-width: 240px;
+
   &[style*="top:"] {
     margin-top: -8px;
   }
@@ -34,6 +36,7 @@
   &:hover, &:focus {
     z-index: 1;
   }
+
   &:focus {
     height: 100%;
     margin-bottom: -1px;

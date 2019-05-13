@@ -14,7 +14,6 @@
 .select2 input:focus {
   border-color: none;
   box-shadow: none;
-
   margin: 0;
   padding: 0;
 }
@@ -70,7 +69,6 @@ div.mce-toolbar-grp.mce-container {
   position: relative;
 }
 
-
 #wpbody-content > * {
   margin-left: 20px;
 }
@@ -87,6 +85,7 @@ div.mce-toolbar-grp.mce-container {
     margin-left: 36px;
   }
 }
+
 .wrap {
   margin-left: 0;
   margin-right: 0;
@@ -168,7 +167,6 @@ body {
 
 /* Make a button group */
 .mailpoet_button_group {
-
   .button:first-child {
     border-bottom-right-radius: 0;
     border-right: 0;

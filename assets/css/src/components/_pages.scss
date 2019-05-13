@@ -271,6 +271,7 @@ Please add custom styles to pages_custom.styl
     .two-col-text {
       column-count: 1;
     }
+
     .three-col img {
       display: block;
       margin: 0 auto;
@@ -280,19 +281,23 @@ Please add custom styles to pages_custom.styl
   @media screen and (max-width: 500px) {
     margin-left: 10px;
     margin-right: 20px;
+
     h1,
     .about-text {
       margin-right: 0;
     }
+
     .about-text {
       margin-bottom: 0.25em;
     }
+
     .mailpoet-logo {
       margin: 1em 0;
       position: relative;
       text-align: center;
       width: 100%;
     }
+
     .two-col .col,
     .three-col .col {
       float: none !important;

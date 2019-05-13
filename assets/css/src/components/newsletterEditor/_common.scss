@@ -49,7 +49,6 @@ select.mailpoet_font-size {
   border-radius: 1px;
   box-shadow: none !important;
   line-height: 28px - $form-control-padding * 2;
-
   padding: $form-control-padding;
 }
 
@@ -81,6 +80,7 @@ select.mailpoet_font-size {
   &:focus {
     outline: none;
   }
+
   &::-webkit-slider-runnable-track {
     animate: 0.2s;
     background: $range-track-background-color;
@@ -90,6 +90,7 @@ select.mailpoet_font-size {
     height: $range-track-height;
     width: 100%;
   }
+
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     background: $range-thumb-background-color;
@@ -100,9 +101,11 @@ select.mailpoet_font-size {
     margin-top: -1 * $range-thumb-height / 3;
     width: $range-thumb-width;
   }
+
   &:hover::-webkit-slider-thumb {
     background: $range-thumb-hover-background-color;
   }
+
   &::-moz-range-track {
     animate: 0.2s;
     background: $range-track-background-color;
@@ -112,6 +115,7 @@ select.mailpoet_font-size {
     height: $range-track-height;
     width: 100%;
   }
+
   &::-moz-range-thumb {
     background: $range-thumb-background-color;
     border: 1px solid $range-thumb-border-color;
@@ -120,17 +124,21 @@ select.mailpoet_font-size {
     height: $range-thumb-height;
     width: $range-thumb-width;
   }
+
   &:hover::-moz-range-thumb {
     background: $range-thumb-hover-background-color;
   }
+
   &::-ms-fill-lower {
     background: $range-track-background-color;
     border: 1px solid $range-track-border-color;
   }
+
   &::-ms-fill-upper {
     background: $range-track-background-color;
     border: 1px solid $range-track-border-color;
   }
+
   &::-ms-track {
     animate: 0.2s;
     background: transparent;
@@ -141,6 +149,7 @@ select.mailpoet_font-size {
     height: $range-track-height;
     width: 100%;
   }
+
   &::-ms-thumb {
     background: $range-thumb-background-color;
     border: 1px solid $range-thumb-border-color;
@@ -149,13 +158,16 @@ select.mailpoet_font-size {
     height: $range-thumb-height;
     width: $range-thumb-width;
   }
+
   &:hover::-ms-thumb {
     background: $range-thumb-hover-background-color;
   }
+
   &:focus::-ms-fill-lower {
     background: $range-track-background-color;
     border: 1px solid $range-track-border-color;
   }
+
   &:focus::-ms-fill-upper {
     background: $range-track-background-color;
     border: 1px solid $range-track-border-color;
@@ -197,6 +209,7 @@ select.mailpoet_font-size {
   list-style-position: inside;
   margin-left: 0;
 }
+
 #mailpoet_editor_content ul {
   list-style-type: disc;
 }
@@ -236,6 +249,7 @@ select.mailpoet_font-size {
 .tooltip-help-designer-full-width .dashicons {
   line-height: 34px;
 }
+
 .tooltip-help-designer-full-width span {
   line-height: 1.4em;
 }
@@ -281,6 +295,7 @@ select.mailpoet_font-size {
 .mailpoet_option_offset_left_small {
   margin-left: 10px;
 }
+
 input.mailpoet_option_offset_left_small {
   margin-left: 10px !important;
 }

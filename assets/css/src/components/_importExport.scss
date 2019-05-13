@@ -11,6 +11,7 @@ span {
         margin-left: 15px;
       }
     }
+
     &.mailpoet_mailchimp-error {
       &:before {
         color: #900;
@@ -23,17 +24,21 @@ span {
 
 #subscribers_data {
   overflow: auto;
+
   table {
     width: auto;
   }
+
   td {
     padding: 0.5em;
   }
+
   & > table {
     & > tbody {
       & > td {
         padding: 0.5em;
       }
+
       & > tr {
         &:nth-child(odd) {
           background: #f9f9f9;
@@ -41,6 +46,7 @@ span {
       }
     }
   }
+
   .mailpoet_header {
     font-weight: 600;
     text-decoration: underline;
@@ -115,6 +121,7 @@ span {
     margin-top: 1.5em;
     padding-left: 35px;
     text-indent: -35px;
+
     input {
       margin-right: 0.5em;
     }
@@ -172,15 +179,16 @@ span {
       flex-wrap: nowrap;
       margin-bottom: 40px;
     }
+
     .mailpoet_mailchimp_key_input {
       align-items: center;
       display: flex;
       margin-right: 20px;
     }
+
     .mailpoet_import_heading {
       display: block;
       width: 300px;
     }
-
   }
 }

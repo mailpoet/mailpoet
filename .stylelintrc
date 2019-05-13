@@ -5,15 +5,25 @@
   ],
   "rules": {
     "at-rule-name-case": "lower",
+    "block-closing-brace-empty-line-before": "never",
     "color-hex-case": "lower",
+    "declaration-empty-line-before": "never",
+    "function-max-empty-lines": 0,
     "function-name-case": "lower",
     "indentation": 2,
+    "max-empty-lines": 1,
     "media-feature-name-case": "lower",
     "order/properties-alphabetical-order": true,
     "property-case": "lower",
+    "rule-empty-line-before": ["always-multi-line", {
+      except: ["first-nested"],
+      ignore: ["after-comment"]
+    }],
+    "selector-max-empty-lines": 0,
     "selector-pseudo-class-case": "lower",
     "selector-pseudo-element-case": "lower",
     "selector-type-case": "lower",
-    "unit-case": "lower"
+    "unit-case": "lower",
+    "value-list-max-empty-lines": 0,
   },
 }
