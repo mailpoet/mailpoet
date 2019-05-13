@@ -6,7 +6,9 @@
   padding-top: 20px;
   width: 100%;
 
-  div.updated, div.error, .notice {
+  div.updated,
+  div.error,
+  .notice {
     display: none !important;
   }
 }

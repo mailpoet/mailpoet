@@ -59,7 +59,8 @@ div.mce-toolbar-grp.mce-container {
 }
 
 /* Style "No search term specified" in TinyMCE link editor */
-#wp-link li, #wp-link div.query-notice {
+#wp-link li,
+#wp-link div.query-notice {
   border-bottom: 1px solid #f1f1f1;
   clear: both;
   color: #333;

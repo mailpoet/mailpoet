@@ -254,18 +254,19 @@ body.mailpoet_modal_opened {
   width: 32px;
 }
 
-.mailpoet_modal_loading_1, .mailpoet_modal_loading_1 {
+.mailpoet_modal_loading_1 {
   animation-delay: 0.39s;
 }
 
-.mailpoet_modal_loading_2, .mailpoet_modal_loading_2 {
+.mailpoet_modal_loading_2 {
   animation-delay: 0.9099999999999999s;
 }
 
-.mailpoet_modal_loading_3, .mailpoet_modal_loading_3 {
+.mailpoet_modal_loading_3 {
   animation-delay: 1.1700000000000002s;
 }
 
 @keyframes bounce_mailpoet_modal_loading {
-  0%, 50% { background-color: #064e6d; }
+  0%,
+  50% { background-color: #064e6d; }
 }

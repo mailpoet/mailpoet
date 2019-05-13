@@ -21,7 +21,8 @@ $handle_icon: '../../img/handle.png';
   width: 300px;
 }
 
-#mailpoet_form_editor:before, #mailpoet_form_editor:after {
+#mailpoet_form_editor:before,
+#mailpoet_form_editor:after {
   background: transparent;
   bottom: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -114,7 +115,8 @@ $handle_icon: '../../img/handle.png';
   width: 340px;
 }
 
-#mailpoet_form_editor.loading, #mailpoet_form_toolbar.loading {
+#mailpoet_form_editor.loading,
+#mailpoet_form_toolbar.loading {
   background: url(loading.gif) no-repeat center center #fcfcfc;
 }
 
@@ -148,7 +150,8 @@ $handle_icon: '../../img/handle.png';
   text-align: center;
 }
 
-#mailpoet_form_toolbar .mailpoet_form_toolbar_tabs li, #mailpoet_form_toolbar .mailpoet_form_toolbar_tabs a {
+#mailpoet_form_toolbar .mailpoet_form_toolbar_tabs li,
+#mailpoet_form_toolbar .mailpoet_form_toolbar_tabs a {
   display: inline-block;
   *display: inline;
   *float: left;
@@ -196,7 +199,8 @@ $handle_icon: '../../img/handle.png';
   display: none !important;
 }
 
-#mailpoet_form_toolbar .mailpoet_form_toolbar_tabs, #mailpoet_form_toolbar #mailpoet_toolbar_fields {
+#mailpoet_form_toolbar .mailpoet_form_toolbar_tabs,
+#mailpoet_form_toolbar #mailpoet_toolbar_fields {
   margin: 0;
   position: relative;
   z-index: 9998;
@@ -422,7 +426,8 @@ $handle_icon: '../../img/handle.png';
 .wysija_controls a span,
 .wysija_gallery .wysija_tools a span,
 .wysija_image .wysija_tools a span,
-.wysija_text .wysija_tools a span, #mailpoet_toolbar_fields a span {
+.wysija_text .wysija_tools a span,
+#mailpoet_toolbar_fields a span {
   display: block;
   height: 20px;
   width: 20px;
@@ -582,7 +587,8 @@ $handle_icon: '../../img/handle.png';
 }
 
 /* form settings: success message */
-#mailpoet_on_success textarea, #mailpoet_on_success select {
+#mailpoet_on_success textarea,
+#mailpoet_on_success select {
   width: 100%;
 }
 
