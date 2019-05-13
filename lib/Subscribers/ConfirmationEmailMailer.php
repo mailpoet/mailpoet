@@ -6,6 +6,7 @@ use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Models\Subscriber;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url;
 use MailPoet\Util\Helpers;
@@ -49,6 +50,12 @@ class ConfirmationEmailMailer {
     $subscriber->count_confirmations++;
     $subscriber->save();
     if (!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations > self::MAX_CONFIRMATION_EMAILS) {
+      return false;
+    }
+
+    $authorization_emails_validation = $this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME);
+    $unauthorized_confirmation_email = isset($authorization_emails_validation['invalid_confirmation_address']);
+    if (Bridge::isMPSendingServiceEnabled() && $unauthorized_confirmation_email) {
       return false;
     }
 
