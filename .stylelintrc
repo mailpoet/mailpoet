@@ -14,6 +14,7 @@
     "block-opening-brace-space-after": "always-single-line",
     "block-opening-brace-space-before": "always",
     "color-hex-case": "lower",
+    "comment-whitespace-inside": "always",
     "declaration-bang-space-after": "never",
     "declaration-bang-space-before": "always",
     "declaration-block-semicolon-newline-after": "always-multi-line",
@@ -29,6 +30,7 @@
     "function-name-case": "lower",
     "function-parentheses-newline-inside": "always-multi-line",
     "function-parentheses-space-inside": "never-single-line",
+    "function-whitespace-after": "always",
     "indentation": 2,
     "max-empty-lines": 1,
     "media-feature-colon-space-after": "always",
@@ -39,6 +41,7 @@
     "media-query-list-comma-newline-after": "always-multi-line",
     "media-query-list-comma-space-after": "always-single-line",
     "media-query-list-comma-space-before": "never",
+    "no-eol-whitespace": true,
     "no-missing-end-of-source-newline": true,
     "order/properties-alphabetical-order": true,
     "property-case": "lower",
@@ -71,4 +74,3 @@
     "value-list-max-empty-lines": 0,
   },
 }
-
