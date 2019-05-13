@@ -17,8 +17,10 @@
       background-color: #fff;
       border: 2px solid #dcdcdc;
       display: flex;
-      flex: 1 1 0;
+      flex-basis: 0;
       flex-direction: column;
+      flex-grow: 1;
+      flex-shrink: 1;
       margin: 0 25px 25px 0;
       max-width: 500px;
 
