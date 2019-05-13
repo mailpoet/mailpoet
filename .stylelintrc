@@ -7,6 +7,7 @@
     "at-rule-name-case": "lower",
     "color-hex-case": "lower",
     "function-name-case": "lower",
+    "indentation": 2,
     "media-feature-name-case": "lower",
     "order/properties-alphabetical-order": true,
     "property-case": "lower",
