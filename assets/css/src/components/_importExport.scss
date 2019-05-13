@@ -135,7 +135,8 @@ tr {
 
   .mailpoet_import_selection_form {
     display: flex;
-    flex-flow: row nowrap;
+    flex-direction: row;
+    flex-wrap: nowrap;
 
     > * {
       margin-right: 2.5em;
@@ -164,7 +165,8 @@ tr {
 
   .mailpoet_import_method_paste {
     display: flex;
-    flex-flow: row nowrap;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
 
   .mailpoet_import_mailchimp {
