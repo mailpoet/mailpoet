@@ -18,15 +18,13 @@ class EditorSettingsBehaviourCest {
   function testSettingsBehaviour(\AcceptanceTester $I) {
     $I->wantTo('Test settings behaviour');
     $newsletterTitle = 'Settings Newsletter';
-    (new Newsletter())
+    $newsletter = (new Newsletter())
         ->withSubject($newsletterTitle)
         ->loadBodyFrom('newsletterWithALCAndButton.json')
         ->withSubject($newsletterTitle)
         ->create();
     $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($newsletterTitle);
-    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
+    $I->amEditingNewsletter($newsletter->id);
     $I->waitForElementNotVisible('.velocity-animating');
 
     // Check settings are not visible at the beginning
