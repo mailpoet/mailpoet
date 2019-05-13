@@ -2,7 +2,7 @@
 Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
-Tested up to: 5.1
+Tested up to: 5.2
 Stable tag: 3.25.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
