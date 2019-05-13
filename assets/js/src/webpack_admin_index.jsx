@@ -17,3 +17,4 @@ import 'settings/reinstall_from_scratch.js'; // side effect - adds event handler
 import 'subscribers/importExport/import.jsx'; // side effect - executes on doc ready, adds events
 import 'subscribers/importExport/export.js'; // side effect - executes on doc ready
 import 'wizard/wizard.jsx'; // side effect - renders ReactDOM to document
+import 'experimental_features/experimental_features.jsx'; // side effect - renders ReactDOM to document
