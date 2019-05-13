@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -9,6 +10,7 @@ use MailPoet\Test\DataFactories\Subscriber;
 require_once __DIR__ . '/../DataFactories/Segment.php';
 require_once __DIR__ . '/../DataFactories/Subscriber.php';
 require_once __DIR__ . '/../DataFactories/Settings.php';
+require_once __DIR__ . '/../DataFactories/ScheduledTask.php';
 
 class SettingsInactiveSubscribersChangeCest {
 
@@ -22,6 +24,8 @@ class SettingsInactiveSubscribersChangeCest {
       (new Subscriber())->withStatus('inactive')->withSegments([$segment])->create();
     }
     (new Settings)->withDeactivateSubscriberAfter3Months()->withTrackingEnabled();
+    $scheduled_tasks_factory = new ScheduledTask();
+    $scheduled_tasks_factory->deleteAll();
   }
 
   function inactiveSubscribersSettingsChange(\AcceptanceTester $I) {
@@ -35,7 +39,7 @@ class SettingsInactiveSubscribersChangeCest {
     $I->waitForText('Settings saved');
     $I->amOnMailPoetPage('Subscribers');
     // Subscribers are activated in background so we do a couple of reloads
-    for ($i = 0; $i < 10; $i++) {
+    for ($i = 0; $i < 15; $i++) {
       try {
         $I->wait(2);
         $I->reloadPage();
