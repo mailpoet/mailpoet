@@ -33,7 +33,8 @@
   margin-top: 15px;
   position: relative;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     z-index: 1;
   }
 
@@ -73,7 +74,8 @@
     border-top-right-radius: 0;
   }
 
-  &:not(.introjs-hidden) + .introjs-nextbutton, &.introjs-donebutton {
+  &:not(.introjs-hidden) + .introjs-nextbutton,
+  &.introjs-donebutton {
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
     margin-left: -1px;

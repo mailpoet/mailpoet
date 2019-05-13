@@ -11,7 +11,9 @@ Please add custom styles to pages_custom.styl
   max-width: 1050px; /* readability */
   position: relative;
 
-  div.updated, div.error, .notice {
+  div.updated,
+  div.error,
+  .notice {
     display: none !important;
   }
 

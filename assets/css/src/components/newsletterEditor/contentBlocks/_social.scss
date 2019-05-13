@@ -21,7 +21,8 @@ $tool-width: 16px;
     padding: 2px 3px;
   }
 
-  span, a,
+  span,
+  a,
   img {
     vertical-align: top;
   }
@@ -86,7 +87,8 @@ $tool-width: 16px;
   float: left;
   width: 100%;
 
-  input, select {
+  input,
+  select {
     box-sizing: border-box;
     display: inline-block;
     height: 30px;

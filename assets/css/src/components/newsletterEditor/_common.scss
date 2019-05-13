@@ -43,7 +43,8 @@ select.mailpoet_font-size {
   width: 5em;
 }
 
-.mailpoet_input, .mailpoet_select {
+.mailpoet_input,
+.mailpoet_select {
   $form-control-padding: 3px;
   appearance: none;
   border-radius: 1px;
@@ -230,7 +231,8 @@ select.mailpoet_font-size {
   width: 100%;
 }
 
-.tooltip-help-designer-subject-line div, .tooltip-help-designer-preheader div {
+.tooltip-help-designer-subject-line div,
+.tooltip-help-designer-preheader div {
   z-index: 100001;
 }
 

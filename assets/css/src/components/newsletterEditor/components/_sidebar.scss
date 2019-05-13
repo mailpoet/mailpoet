@@ -36,7 +36,8 @@ $widget-icon-width: 30px;
     padding: 0 20px;
   }
 
-  &, .postbox {
+  &,
+  .postbox {
     background-color: $sidebar-background-color;
   }
 

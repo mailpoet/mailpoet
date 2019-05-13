@@ -13,7 +13,8 @@ $draggable-widget-z-index: 2;
   position: absolute;
   z-index: $marker-z-index;
 
-  &::before, &::after {
+  &::before,
+  &::after {
     color: $primary-active-color;
     font: 400 40px / 1 dashicons;
     margin-top: -18px;

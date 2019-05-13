@@ -50,15 +50,18 @@ $video-guide-badge-color: #46b450;
   text-transform: uppercase;
   vertical-align: middle;
 
-  &_excellent, &_teal {
+  &_excellent,
+  &_teal {
     background: $excellent-badge-color;
   }
 
-  &_good, &_yellow {
+  &_good,
+  &_yellow {
     background: $good-badge-color;
   }
 
-  &_bad, &_red {
+  &_bad,
+  &_red {
     background: $bad-badge-color;
   }
 
@@ -74,7 +77,9 @@ $video-guide-badge-color: #46b450;
     text-decoration: none;
     vertical-align: top;
 
-    &:hover, &:active, &:focus {
+    &:hover,
+    &:active,
+    &:focus {
       background: $green-badge-color;
       color: #ffffff;
     }
