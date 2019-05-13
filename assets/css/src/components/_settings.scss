@@ -11,16 +11,14 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    margin: 25px 0 0 0;
+    margin: 25px 0 0;
 
     > li {
       background-color: #fff;
       border: 2px solid #dcdcdc;
       display: flex;
-      flex-basis: 0;
+      flex: 1 1 0;
       flex-direction: column;
-      flex-grow: 1;
-      flex-shrink: 1;
       margin: 0 25px 25px 0;
       max-width: 500px;
 
@@ -129,11 +127,11 @@
     }
   }
 
-  .mailpoet_success_item::before {
+  .mailpoet_success_item:before {
     content: '✔ ';
   }
 
-  .mailpoet_error_item::before {
+  .mailpoet_error_item:before {
     content: '✗ ';
   }
 

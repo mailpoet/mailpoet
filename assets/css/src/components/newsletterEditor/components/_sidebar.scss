@@ -67,7 +67,7 @@ $widget-icon-width: 30px;
       cursor: auto;
     }
 
-    .handlediv::before {
+    .handlediv:before {
       color: $sidebar-active-heading-color;
       content: '\f142';
       display: inline-block;
@@ -81,12 +81,12 @@ $widget-icon-width: 30px;
       top: 18px;
     }
 
-    &.closed .handlediv::before {
+    &.closed .handlediv:before {
       color: $sidebar-inactive-heading-color;
       content: '\f140';
     }
 
-    &.closed:hover .handlediv::before {
+    &.closed:hover .handlediv:before {
       color: $sidebar-active-heading-color;
     }
   }
@@ -95,7 +95,7 @@ $widget-icon-width: 30px;
 .mailpoet_widget {
   display: inline-block;
   float: left;
-  padding: 0 13px 15px 13px;
+  padding: 0 13px 15px;
   text-align: center;
   width: $widget-width;
 
@@ -180,9 +180,9 @@ $widget-icon-width: 30px;
   flex: 1 1 auto;
   flex-direction: column;
   height: 100%;
-  margin: 15px auto 0 auto;
+  margin: 15px auto 0;
   padding: 20px;
-  transition: width 0.5s;
+  transition: width .5s;
 }
 
 .mailpoet_browser_preview_container_desktop {

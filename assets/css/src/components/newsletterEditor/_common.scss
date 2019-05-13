@@ -83,7 +83,6 @@ select.mailpoet_font-size {
   }
 
   &::-webkit-slider-runnable-track {
-    animate: 0.2s;
     background: $range-track-background-color;
     border: 1px solid $range-track-border-color;
     border-radius: $range-border-radius;
@@ -108,7 +107,6 @@ select.mailpoet_font-size {
   }
 
   &::-moz-range-track {
-    animate: 0.2s;
     background: $range-track-background-color;
     border: 1px solid $range-track-border-color;
     border-radius: $range-border-radius;
@@ -141,7 +139,6 @@ select.mailpoet_font-size {
   }
 
   &::-ms-track {
-    animate: 0.2s;
     background: transparent;
     border-color: transparent;
     border-width: $range-track-height * 2 0;
@@ -273,7 +270,7 @@ select.mailpoet_font-size {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
     margin-right: 0;
-    padding: 6px 12px 6px;
+    padding: 6px 12px;
   }
 
   .mailpoet_button:last-child {
@@ -312,7 +309,7 @@ span.select2-container--open > span.select2-dropdown {
 
 span.select2-container--open > span.select2-dropdown li.select2-results__option {
   font-size: 13px;
-  margin: 0px !important;
+  margin: 0 !important;
 
   & .select2-results__group {
     color: #bfbfbf;

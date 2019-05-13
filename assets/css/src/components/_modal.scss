@@ -6,7 +6,7 @@ $modal_popup_margin_mobile: 10px;
 $modal_popup_padding: 30px;
 $modal_popup_padding_mobile: 12px;
 $modal_close_button_size: 23px;
-$overlay_background_color: rgba(0, 0, 0, 0.6);
+$overlay_background_color: rgba(0, 0, 0, .6);
 
 body.mailpoet_modal_opened {
   overflow: hidden;
@@ -31,7 +31,7 @@ body.mailpoet_modal_opened {
 
 .mailpoet_modal_highlight {
   background-color: $modal_highlight_background_color;
-  box-shadow: 0px 0px 20px 2px rgba(#fff, 75%);
+  box-shadow: 0 0 20px 2px rgba(#fff, 75%);
   pointer-events: none;
   position: relative;
   z-index: 100001 !important;
@@ -47,7 +47,7 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_popup {
-  animation: mailpoet_popup_fadein 0.5s;
+  animation: mailpoet_popup_fadein .5s;
   margin: auto;
   max-width: 100%;
   z-index: 25;
@@ -138,7 +138,7 @@ body.mailpoet_modal_opened {
   border-left: 1px solid #444;
   border-right: 1px solid #444;
   color: $modal_title_color;
-  font-family: "Lucida Grande", Verdana, Arial, sans-serif;
+  font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
   font-size: 1em;
   font-weight: normal;
   line-height: 32px;
@@ -147,7 +147,7 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_panel_body {
-  padding: 10px 10px 36px 10px;
+  padding: 10px 10px 36px;
 }
 
 .mailpoet_modal_close {
@@ -159,7 +159,7 @@ body.mailpoet_modal_opened {
   z-index: 2;
 
   svg {
-    opacity: 0.5;
+    opacity: .5;
     stroke: #979797;
 
     &:hover {
@@ -255,11 +255,11 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_modal_loading_1 {
-  animation-delay: 0.39s;
+  animation-delay: .39s;
 }
 
 .mailpoet_modal_loading_2 {
-  animation-delay: 0.9099999999999999s;
+  animation-delay: .9099999999999999s;
 }
 
 .mailpoet_modal_loading_3 {

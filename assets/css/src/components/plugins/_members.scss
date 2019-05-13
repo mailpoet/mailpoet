@@ -12,7 +12,7 @@ Style for Members plugin
     width: 20px;
   }
 
-  &:not([aria-selected="true"]) .mailpoet-icon-logo {
+  &:not([aria-selected='true']) .mailpoet-icon-logo {
     filter: invert(24%) sepia(95%) saturate(1872%) hue-rotate(179deg) brightness(93%) contrast(101%);
   }
 
@@ -21,7 +21,7 @@ Style for Members plugin
     filter: invert(49%) sepia(50%) saturate(3683%) hue-rotate(163deg) brightness(94%) contrast(101%);
   }
 
-  &[aria-selected="true"] a .mailpoet-icon-logo {
+  &[aria-selected='true'] a .mailpoet-icon-logo {
     filter: invert(33%) sepia(0%) saturate(7%) hue-rotate(205deg) brightness(94%) contrast(87%);
   }
 }

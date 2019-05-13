@@ -17,7 +17,12 @@ $divider-hover-border-color: $primary-active-color;
   display: block;
   margin: auto;
   max-width: $newsletter-width;
+  padding: 10px 0;
   width: 100%;
+
+  &:hover {
+    border: 1px solid $divider-hover-border-color;
+  }
 }
 
 .mailpoet_active_divider_style {
@@ -25,14 +30,6 @@ $divider-hover-border-color: $primary-active-color;
   border: 1px solid $active-divider-border-color;
 }
 
-.mailpoet_field_divider_style:hover {
-  border: 1px solid $divider-hover-border-color;
-}
-
 .mailpoet_divider_selector img {
   width: 100%;
-}
-
-.mailpoet_field_divider_style {
-  padding: 10px 0;
 }

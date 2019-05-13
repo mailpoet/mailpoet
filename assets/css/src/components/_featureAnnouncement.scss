@@ -12,10 +12,10 @@
   line-height: 28px;
 }
 
-.mailpoet_feature_announcement_dot::before {
+.mailpoet_feature_announcement_dot:before {
   background: #d54e21;
   border-radius: 10px;
-  content: "";
+  content: '';
   display: block;
   height: 10px;
   position: absolute;
