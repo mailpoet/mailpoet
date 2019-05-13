@@ -192,7 +192,7 @@ Module.BlockView = AugmentedView.extend({
 Module.BlockToolsView = AugmentedView.extend({
   getTemplate: function getTemplate() { return window.templates.genericBlockTools; },
   events: {
-    'click .mailpoet_edit_block': 'changeSettings',
+    'click .mailpoet_edit_block': 'toggleSettings',
     'click .mailpoet_delete_block_activate': 'showDeletionConfirmation',
     'click .mailpoet_delete_block_cancel': 'hideDeletionConfirmation',
     'click .mailpoet_delete_block_confirm': 'deleteBlock',
@@ -223,6 +223,13 @@ Module.BlockToolsView = AugmentedView.extend({
       viewCid: this.cid,
       tools: this.tools,
     };
+  },
+  toggleSettings: function toggleSettings() {
+    if (App.getDisplayedSettingsId() === this.model.cid) {
+      App.getChannel().trigger('hideSettings');
+      return;
+    }
+    this.changeSettings();
   },
   changeSettings: function changeSettings(options) {
     var ViewType = this.getSettingsView();
