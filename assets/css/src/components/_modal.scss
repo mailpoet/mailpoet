@@ -239,7 +239,7 @@ body.mailpoet_modal_opened {
   animation-duration: 1.9500000000000002s;
   animation-iteration-count: infinite;
   animation-name: bounce_mailpoet_modal_loading;
-  background-color: #E01D4E;
+  background-color: #e01d4e;
   border-radius: 21px;
   height: 32px;
   margin-left: 17px;
@@ -259,5 +259,5 @@ body.mailpoet_modal_opened {
 }
 
 @keyframes bounce_mailpoet_modal_loading {
-  0%, 50% { background-color: #064E6D; }
+  0%, 50% { background-color: #064e6d; }
 }

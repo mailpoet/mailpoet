@@ -4,6 +4,15 @@
     "stylelint-scss"
   ],
   "rules": {
+    "at-rule-name-case": "lower",
+    "color-hex-case": "lower",
+    "function-name-case": "lower",
+    "media-feature-name-case": "lower",
     "order/properties-alphabetical-order": true,
+    "property-case": "lower",
+    "selector-pseudo-class-case": "lower",
+    "selector-pseudo-element-case": "lower",
+    "selector-type-case": "lower",
+    "unit-case": "lower"
   },
 }
