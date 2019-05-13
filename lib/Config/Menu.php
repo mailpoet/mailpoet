@@ -360,6 +360,19 @@ class Menu {
       ]
     );
 
+    // WooCommerce List Import
+    $this->wp->addSubmenuPage(
+      true,
+      $this->setPageTitle($this->wp->__('Track WooCommerce revenues with cookies', 'mailpoet')),
+      $this->wp->__('Track WooCommerce revenues with cookies', 'mailpoet'),
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      'mailpoet-revenue-tracking-permission',
+      array(
+        $this,
+        'revenueTrackingPermission'
+      )
+    );
+
     // Update page
     $this->wp->addSubmenuPage(
       true,
@@ -430,6 +443,17 @@ class Menu {
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
     ];
     $this->displayPage('woocommerce_list_import.html', $data);
+  }
+
+  function revenueTrackingPermission() {
+    if (!$this->settings->get('display_revenues')) {
+      return;
+    }
+    if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+    $data = [
+      'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
+    ];
+    $this->displayPage('revenue_tracking_permission.html', $data);
   }
 
   function update() {
