@@ -99,6 +99,6 @@ class UnauthorizedAddressCest {
 
   function _after() {
     $settings = new Settings();
-    $settings->withSendingMethod(Mailer::METHOD_PHPMAIL);
+    $settings->withSendingMethodSmtpMailhog();
   }
 }
