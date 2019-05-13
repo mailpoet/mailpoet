@@ -71,7 +71,7 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
         });
 
         editor.on('click', function onClick(e) {
-          if (App.getShowedSettingsId()) {
+          if (App.getDisplayedSettingsId()) {
             App.getChannel().trigger('hideSettings');
           }
           // if caret not in editor, place it there (triggers focus on editor)
