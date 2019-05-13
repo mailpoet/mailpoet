@@ -26,7 +26,7 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
       return;
     }
     // Ignore mouse events when settings panel is showed
-    if (App.getShowedSettingsId()) {
+    if (App.getDisplayedSettingsId()) {
       return;
     }
     this.view.addHighlight();
@@ -55,7 +55,7 @@ BL.HighlightEditingBehavior = Marionette.Behavior.extend({
   },
   onStopResizing: function onStopResizing(event) {
     this.isFocusedByPointer = isEventInsideElement(event, this.view.$el);
-    if (!App.getShowedSettingsId()) {
+    if (!App.getDisplayedSettingsId()) {
       this.onStopEditing();
     }
     this.view.triggerMethod('resizeStop', event);

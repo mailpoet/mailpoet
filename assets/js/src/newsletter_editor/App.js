@@ -33,7 +33,7 @@ var EditorApplication = Marionette.Application.extend({
   onStart: function onStart() {
     this._appView = new AppView();
     this.showView(this._appView);
-    this.listenTo(this.getChannel(), 'settingsShowed', this.setShowedSettingsId);
+    this.listenTo(this.getChannel(), 'settingsDisplayed', this.setDisplayedSettingsId);
   },
 
   getChannel: function getChannel(channel) {
@@ -43,12 +43,12 @@ var EditorApplication = Marionette.Application.extend({
     return Radio.channel(channel);
   },
 
-  getShowedSettingsId: function getShowedSettingsId() {
-    return this.showedSettingsId;
+  getDisplayedSettingsId: function getDisplayedSettingsId() {
+    return this.displayedSettingsId;
   },
 
-  setShowedSettingsId: function setShowedSettingsId(id) {
-    this.showedSettingsId = id;
+  setDisplayedSettingsId: function setDisplayedSettingsId(id) {
+    this.displayedSettingsId = id;
   },
 });
 
