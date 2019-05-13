@@ -100,6 +100,6 @@ class SettingsPageBasicsCest {
 
   function _after() {
     $settings = new Settings();
-    $settings->withSendingMethod(Mailer::METHOD_SMTP);
+    $settings->withSendingMethodSmtpMailhog();
   }
 }
