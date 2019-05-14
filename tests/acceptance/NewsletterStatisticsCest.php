@@ -23,10 +23,22 @@ use MailPoet\Test\DataFactories\WooCommerceOrder;
 
 class NewsletterStatisticsCest {
 
+  /** @var Settings */
+  private $settings;
+
+  /** @var Features */
+  private $features;
+
+  protected function _inject(Settings $settings, Features $features) {
+    $this->settings = $settings;
+    $this->features = $features;
+  }
+
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
-    (new Settings())->withWooCommerceListImportPageDisplayed(true);
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES);
+    $this->features->withFeatureEnabled(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES);
+    $this->settings->withWooCommerceListImportPageDisplayed(true);
+    $this->settings->withCookieRevenueTrackingDisabled();
   }
 
   function showWooCommercePurchaseStatistics(\AcceptanceTester $I) {
