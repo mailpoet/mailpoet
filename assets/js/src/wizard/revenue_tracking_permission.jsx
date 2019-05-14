@@ -14,14 +14,12 @@ function RevenueTrackingPermission() {
     MailPoet.Notice.error(errorMessage, { scroll: true });
   };
 
-  const updateSettings = (data) => {
-    return MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'settings',
-      action: 'set',
-      data,
-    }).fail(handleApiError);
-  };
+  const updateSettings = data => MailPoet.Ajax.post({
+    api_version: window.mailpoet_api_version,
+    endpoint: 'settings',
+    action: 'set',
+    data,
+  }).fail(handleApiError);
 
   const finishWizard = () => {
     window.location = window.finish_wizard_url;
