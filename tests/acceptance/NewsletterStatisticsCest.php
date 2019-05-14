@@ -22,6 +22,7 @@ class NewsletterStatisticsCest {
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
+    (new Settings())->withWooCommerceListImportPageDisplayed(true);
     (new Settings())->withDisplayRevenuesEnabled();
   }
 
