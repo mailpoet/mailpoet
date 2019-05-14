@@ -27,7 +27,6 @@ class EditorSettingsBehaviourCest {
         ->create();
     $I->login();
     $I->amEditingNewsletter($newsletter->id);
-    $I->waitForElementNotVisible('.velocity-animating');
 
     // Check settings are not visible at the beginning
     $I->dontSee(self::SETTINGS_PANEL_SELECTOR);
