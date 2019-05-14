@@ -208,6 +208,24 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_INACTIVE);
   }
 
+  function testItActivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
+    list($task) = $this->createCompletedSendingTaskWithOneOpen(3);
+
+    $migration_complete_setting = Setting::createOrUpdate([
+      'name' => MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY,
+      'created_at' => (new Carbon())->subDays(3),
+    ]);
+
+    $subscriber = $this->createSubscriber('s1@email.com', 10, Subscriber::STATUS_INACTIVE);
+    $this->addSubcriberToTask($subscriber, $task);
+
+    $result = $this->controller->markActiveSubscribers(5, 100);
+    expect($result)->equals(1);
+    $subscriber = Subscriber::findOne($subscriber->id);
+    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    $migration_complete_setting->delete();
+  }
+
   function testItDoesReactivateInactiveSubscribers() {
     list($task) = $this->createCompletedSendingTask(2);
     $subscriber = $this->createSubscriber('s1@email.com', 10, Subscriber::STATUS_INACTIVE);

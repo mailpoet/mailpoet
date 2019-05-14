@@ -125,14 +125,24 @@ class InactiveSubscribersController {
     $subscribers_table = Subscriber::$_table;
     $stats_opens_table = StatisticsOpens::$_table;
 
-    $ids_to_activate = \ORM::forTable($subscribers_table)->select("$subscribers_table.id")
-      ->leftOuterJoin($stats_opens_table, "$subscribers_table.id = $stats_opens_table.subscriber_id AND $stats_opens_table.created_at > '$threshold_date'")
-      ->whereLt("$subscribers_table.created_at", $threshold_date)
-      ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
-      ->whereRaw("$stats_opens_table.id IS NOT NULL")
-      ->limit($batch_size)
-      ->groupByExpr("$subscribers_table.id")
-      ->findArray();
+    $mp2_migration_date = $this->getMP2MigrationDate();
+    if ($mp2_migration_date && $mp2_migration_date > $threshold_date) {
+      // If MP2 migration occurred during detection interval re-activate all subscribers created before migration
+      $ids_to_activate = \ORM::forTable($subscribers_table)->select("$subscribers_table.id")
+        ->whereLt("$subscribers_table.created_at", $mp2_migration_date)
+        ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
+        ->limit($batch_size)
+        ->findArray();
+    } else {
+      $ids_to_activate = \ORM::forTable($subscribers_table)->select("$subscribers_table.id")
+        ->leftOuterJoin($stats_opens_table, "$subscribers_table.id = $stats_opens_table.subscriber_id AND $stats_opens_table.created_at > '$threshold_date'")
+        ->whereLt("$subscribers_table.created_at", $threshold_date)
+        ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
+        ->whereRaw("$stats_opens_table.id IS NOT NULL")
+        ->limit($batch_size)
+        ->groupByExpr("$subscribers_table.id")
+        ->findArray();
+    }
 
     $ids_to_activate = array_map(
       function($id) {
