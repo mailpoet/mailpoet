@@ -8,6 +8,15 @@ use MailPoet\Models\NewsletterPost;
 if (!defined('ABSPATH')) exit;
 
 class PostsTest extends \MailPoetTest {
+
+  /** @var PostsTask */
+  private $posts_task;
+
+  function _before() {
+    parent::_before();
+    $this->posts_task = new PostsTask;
+  }
+
   function testItFailsWhenNoPostsArePresent() {
     $newsletter = (object)array(
       'id' => 1,
@@ -16,7 +25,7 @@ class PostsTest extends \MailPoetTest {
     $rendered_newsletter = array(
       'html' => 'Sample newsletter'
     );
-    expect(PostsTask::extractAndSave($rendered_newsletter, $newsletter))->equals(false);
+    expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(false);
   }
 
   function testItCanExtractAndSavePosts() {
@@ -29,7 +38,7 @@ class PostsTest extends \MailPoetTest {
     $rendered_newsletter = array(
       'html' => '<a data-post-id="' . $post_id . '" href="#">sample post</a>'
     );
-    expect(PostsTask::extractAndSave($rendered_newsletter, $newsletter))->equals(true);
+    expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(true);
     $newsletter_post = NewsletterPost::where('newsletter_id', $newsletter->parent_id)
       ->findOne();
     expect($newsletter_post->post_id)->equals($post_id);
@@ -45,9 +54,9 @@ class PostsTest extends \MailPoetTest {
     $rendered_newsletter = array(
       'html' => '<a data-post-id="' . $post_id . '" href="#">sample post</a>'
     );
-    expect(PostsTask::extractAndSave($rendered_newsletter, $newsletter))->equals(false);
+    expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(false);
     $newsletter->type = Newsletter::TYPE_STANDARD;
-    expect(PostsTask::extractAndSave($rendered_newsletter, $newsletter))->equals(false);
+    expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(false);
   }
 
   function _after() {

@@ -24,13 +24,20 @@ class Newsletter {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp = null) {
+  /** @var PostsTask */
+  private $posts_task;
+
+  function __construct(WPFunctions $wp = null, PostsTask $posts_task = null) {
     $settings = new SettingsController();
     $this->tracking_enabled = (boolean)$settings->get('tracking.enabled');
-    if ($wp == null) {
+    if ($wp === null) {
       $wp = new WPFunctions;
     }
     $this->wp = $wp;
+    if ($posts_task === null) {
+      $posts_task = new PostsTask;
+    }
+    $this->posts_task = $posts_task;
   }
 
   function getNewsletterFromQueue($queue) {
@@ -100,7 +107,7 @@ class Newsletter {
       return false;
     }
     // extract and save newsletter posts
-    PostsTask::extractAndSave($rendered_newsletter, $newsletter);
+    $this->posts_task->extractAndSave($rendered_newsletter, $newsletter);
     // update queue with the rendered and pre-processed newsletter
     $queue->newsletter_rendered_subject = ShortcodesTask::process(
       $newsletter->subject,
