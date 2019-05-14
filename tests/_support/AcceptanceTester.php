@@ -125,6 +125,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $I = $this;
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $id);
     $I->waitForElement('[data-automation-id="newsletter_title"]');
+    $I->waitForElementNotVisible('.velocity-animating');
   }
 
   public function createFormAndSubscribe($form = null) {
