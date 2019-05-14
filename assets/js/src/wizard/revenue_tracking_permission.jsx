@@ -30,7 +30,8 @@ function RevenueTrackingPermission() {
   const submit = (allowed) => {
     setLoading(true);
     const settings = {
-      accept_cookie_revenue_tracking: allowed ? 1 : 0,
+      'woocommerce.accept_cookie_revenue_tracking.enabled': allowed ? 1 : 0,
+      'woocommerce.accept_cookie_revenue_tracking.set': 1,
     };
     updateSettings(settings).then(finishWizard);
   };

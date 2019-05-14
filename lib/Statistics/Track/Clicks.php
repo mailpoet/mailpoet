@@ -51,7 +51,7 @@ class Clicks {
   }
 
   private function sendRevenueCookie(StatisticsClicks $clicks) {
-    if ($this->settings_controller->get('accept_cookie_revenue_tracking')) {
+    if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled') === "1") {
       setcookie(
         'mailpoet_revenue_tracking',
         serialize([
