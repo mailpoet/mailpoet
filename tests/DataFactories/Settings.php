@@ -98,7 +98,12 @@ class Settings {
   }
 
   function withCookieRevenueTracking() {
-    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', 1);
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "1");
+    return $this;
+  }
+
+  function withCookieRevenueTrackingDisabled() {
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "0");
     return $this;
   }
 
