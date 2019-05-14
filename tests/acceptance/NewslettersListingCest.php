@@ -2,22 +2,44 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Test\DataFactories\Newsletter;
+
+require_once __DIR__ . '/../DataFactories/Newsletter.php';
+
 class NewslettersListingCest {
 
   function newslettersListing(\AcceptanceTester $I) {
+    $standard_newsletter_subject = 'Standard newsletter';
+    $welcome_email_subject = 'Welcome email';
+    $post_notification_email_subject = 'Post notification';
+    $standard_newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withSubject($standard_newsletter_subject)
+      ->create();
+    $welcome_email = (new Newsletter())
+      ->withSentStatus()
+      ->withSubject($welcome_email_subject)
+      ->withWelcomeType()
+      ->create();
+    $post_notification_email = (new Newsletter())
+      ->withSentStatus()
+      ->withPostNotificationsType()
+      ->withSubject($post_notification_email_subject)
+      ->create();
+
     $I->wantTo('Open newsletters listings page');
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
 
     // Standard newsletters is the default tab
-    $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_1"]');
+    $I->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_' . $standard_newsletter->id . '"]');
 
     $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText('Welcome email', 5, '[data-automation-id="listing_item_2"]');
+    $I->waitForText('Welcome email', 5, '[data-automation-id="listing_item_' . $welcome_email->id . '"]');
 
     $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText('Post notification', 5, '[data-automation-id="listing_item_3"]');
+    $I->waitForText('Post notification', 5, '[data-automation-id="listing_item_' . $post_notification_email->id . '"]');
     $I->seeNoJSErrors();
   }
 
