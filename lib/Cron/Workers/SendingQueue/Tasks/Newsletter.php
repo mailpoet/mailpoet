@@ -97,10 +97,9 @@ class Newsletter {
         $newsletter
       );
     }
-    // check if this is a post notification and if it contains posts
-    $newsletter_contains_posts = strpos($rendered_newsletter['html'], 'data-post-id');
+    // check if this is a post notification and if it contains at least 1 ALC post
     if ($newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
-      !$newsletter_contains_posts
+      $this->posts_task->getAlcPostsCount($rendered_newsletter, $newsletter) === 0
     ) {
       // delete notification history record since it will never be sent
       $newsletter->delete();
