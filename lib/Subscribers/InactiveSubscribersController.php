@@ -3,9 +3,11 @@
 namespace MailPoet\Subscribers;
 
 use Carbon\Carbon;
+use MailPoet\Config\MP2Migrator;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 
@@ -79,6 +81,13 @@ class InactiveSubscribersController {
       $threshold_date_iso, $threshold_date_iso, $day_ago_iso
     );
 
+    // If MP2 migration occurred during detection interval we can't deactivate subscribers
+    // because they are imported with original subscription date but they were not present in a list for whole period
+    $mp2_migration_date = $this->getMP2MigrationDate();
+    if ($mp2_migration_date && $mp2_migration_date > $threshold_date) {
+      return 0;
+    }
+
     // Select subscribers who received a recent tracked email but didn't open it
     $ids_to_deactivate = \ORM::forTable($subscribers_table)->rawQuery("
       SELECT s.id FROM $subscribers_table as s
@@ -139,5 +148,13 @@ class InactiveSubscribersController {
       implode(',', $ids_to_activate)
     ));
     return count($ids_to_activate);
+  }
+
+  private function getMP2MigrationDate() {
+    $migration_complete = Setting::where('name', MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY)->findOne();
+    if ($migration_complete === false) {
+      return null;
+    }
+    return new Carbon($migration_complete->created_at);
   }
 }

@@ -3,10 +3,12 @@
 namespace MailPoet\Subscribers;
 
 use Carbon\Carbon;
+use MailPoet\Config\MP2Migrator;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending;
@@ -141,6 +143,24 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($result)->equals(0);
     $subscriber = Subscriber::findOne($subscriber->id);
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
+  function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
+    list($task) = $this->createCompletedSendingTaskWithOneOpen(3);
+
+    $migration_complete_setting = Setting::createOrUpdate([
+      'name' => MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY,
+      'created_at' => (new Carbon())->subDays(3),
+    ]);
+
+    $subscriber = $this->createSubscriber('s1@email.com', 10);
+    $this->addSubcriberToTask($subscriber, $task);
+
+    $result = $this->controller->markInactiveSubscribers(5, 100);
+    expect($result)->equals(0);
+    $subscriber = Subscriber::findOne($subscriber->id);
+    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    $migration_complete_setting->delete();
   }
 
   function testItActivatesSubscriberWhoRecentlyOpenedEmail() {
