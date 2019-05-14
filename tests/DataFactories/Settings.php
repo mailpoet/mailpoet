@@ -114,15 +114,6 @@ class Settings {
     return $this;
   }
 
-  /**
-   * this is a feature flag, we need to remove it from here
-   * @return $this
-   */
-  function withDisplayRevenues() {
-    $this->settings->set('display_revenues', 1);
-    return $this;
-  }
-
   function withWooCommerceCheckoutOptinEnabled() {
     $this->settings->set('woocommerce.optin_on_checkout.enabled', true);
     $this->settings->set('woocommerce.optin_on_checkout.message', 'Yes, I would like to be added to your mailing list');

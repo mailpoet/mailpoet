@@ -20,7 +20,7 @@ class RevenueTrackingCookieCest {
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
-    $this->settings->withDisplayRevenues();
+    $this->settings->withDisplayRevenuesEnabled();
   }
 
   function _after(\AcceptanceTester $I) {
