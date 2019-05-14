@@ -10,6 +10,7 @@ use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\Form;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\UserFlag;
@@ -133,6 +134,7 @@ class Populator {
     $this->createMailPoetPage();
     $this->createSourceForSubscribers();
     $this->updateNewsletterCategories();
+    $this->updateMetaFields();
     $this->scheduleInitialInactiveSubscribersCheck();
     // Will be uncommented on task [MAILPOET-1998]
     // $this->updateFormsSuccessMessages();
@@ -510,6 +512,20 @@ class Populator {
       $query,
       NewsletterTemplate::$_table
     ));
+    return true;
+  }
+
+  private function updateMetaFields() {
+    global $wpdb;
+    // perform once for versions below or equal to 3.26.0
+    if (version_compare($this->settings->get('db_version', '3.26.1'), '3.26.0', '>')) {
+      return false;
+    }
+    $tables = [ScheduledTask::$_table, SendingQueue::$_table];
+    foreach ($tables as $table) {
+      $query = "UPDATE `%s` SET meta = NULL WHERE meta = 'null'";
+      $wpdb->query(sprintf($query, $table));
+    }
     return true;
   }
 
