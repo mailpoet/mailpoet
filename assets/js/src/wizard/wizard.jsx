@@ -17,10 +17,10 @@ if (container) {
   ReactDOM.render((
     <HashRouter>
       <div>
-        <Route exact path="/" render={() => <Redirect to={basePath} />} />
         <Route path="/steps/:step" component={WelcomeWizardStepsController} />
         <Route path="/import" component={WooCommerceImportController} />
         <Route path="/revenue-tracking-permission" component={RevenueTrackingPermissionController} />
+        <Route render={() => <Redirect to={basePath} />} />
       </div>
     </HashRouter>
   ), container);
