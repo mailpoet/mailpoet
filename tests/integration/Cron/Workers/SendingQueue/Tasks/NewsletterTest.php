@@ -6,6 +6,7 @@ use AspectMock\Test as Mock;
 use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -192,7 +193,11 @@ class NewsletterTest extends \MailPoetTest {
   function testItSavesNewsletterPosts() {
     $this->newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     $this->newsletter->parent_id = $this->newsletter->id;
-    $result = $this->newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
+    $posts_task = $this->make(PostsTask::class, [
+      'getAlcPostsCount' => 1
+    ]);
+    $newsletter_task = new NewsletterTask(new WPFunctions, $posts_task);
+    $result = $newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
     $newsletter_post = NewsletterPost::where('newsletter_id', $this->newsletter->id)
       ->findOne();
     expect($result)->notEquals(false);
