@@ -96,8 +96,9 @@
             type="checkbox"
             value="1"
             id="settings[mailpoet_accept_cookie_revenue_tracking]"
+            data-automation-id="accept_cookie_revenue_tracking"
             name="woocommerce[accept_cookie_revenue_tracking][enabled]"
-            <% if(settings.woocommerce.accept_cookie_revenue_tracking) %>checked="checked"<% endif %>
+            <% if(settings.woocommerce.accept_cookie_revenue_tracking.enabled == "1") %>checked="checked"<% endif %>
           >
           <input
             type="hidden"

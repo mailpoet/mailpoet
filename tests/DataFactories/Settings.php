@@ -99,16 +99,27 @@ class Settings {
 
   function withCookieRevenueTracking() {
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "1");
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.set', "1");
     return $this;
   }
 
   function withCookieRevenueTrackingDisabled() {
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "0");
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.set', "1");
     return $this;
   }
 
   function withWooCommerceListImportPageDisplayed($was_shown) {
     $this->settings->set('woocommerce_import_screen_displayed', $was_shown ? 1 : 0);
+    return $this;
+  }
+
+  /**
+   * this is a feature flag, we need to remove it from here
+   * @return $this
+   */
+  function withDisplayRevenues() {
+    $this->settings->set('display_revenues', 1);
     return $this;
   }
 
