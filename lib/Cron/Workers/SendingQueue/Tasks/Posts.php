@@ -7,7 +7,7 @@ use MailPoet\Models\NewsletterPost;
 if (!defined('ABSPATH')) exit;
 
 class Posts {
-  static function extractAndSave($rendered_newsletter, $newsletter) {
+  function extractAndSave($rendered_newsletter, $newsletter) {
     if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
       return false;
     }
