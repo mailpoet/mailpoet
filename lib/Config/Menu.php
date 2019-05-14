@@ -398,7 +398,7 @@ class Menu {
   function welcomeWizard() {
     if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
-      'is_mp2_migration_complete' => (bool)$this->settings->get('mailpoet_migration_complete'),
+      'is_mp2_migration_complete' => (bool)$this->settings->get(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY),
       'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
       'sender' => $this->settings->get('sender'),

@@ -20,6 +20,9 @@ class MP2Migrator {
   const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours
   const CHUNK_SIZE = 10; // To import the data by batch
 
+  const MIGRATION_COMPLETE_SETTING_KEY = 'mailpoet_migration_complete';
+  const MIGRATION_STARTED_SETTING_KEY = 'mailpoet_migration_started';
+
   /** @var SettingsController */
   private $settings;
 
@@ -85,7 +88,8 @@ class MP2Migrator {
    * @return boolean
    */
   public function isMigrationStartedAndNotCompleted() {
-    return $this->settings->get('mailpoet_migration_started', false) && !$this->settings->get('mailpoet_migration_complete', false);
+    return $this->settings->get(self::MIGRATION_STARTED_SETTING_KEY, false)
+      && !$this->settings->get(self::MIGRATION_COMPLETE_SETTING_KEY, false);
   }
 
   /**
@@ -94,7 +98,7 @@ class MP2Migrator {
    * @return boolean
    */
   public function isMigrationNeeded() {
-    if ($this->settings->get('mailpoet_migration_complete')) {
+    if ($this->settings->get(self::MIGRATION_COMPLETE_SETTING_KEY)) {
       return false;
     } else {
       return $this->tableExists($this->mp2_campaign_table); // Check if the MailPoet 2 tables exist
@@ -106,7 +110,7 @@ class MP2Migrator {
    *
    */
   public function skipImport() {
-    $this->settings->set('mailpoet_migration_complete', true);
+    $this->settings->set(self::MIGRATION_COMPLETE_SETTING_KEY, true);
   }
 
   /**
@@ -134,7 +138,7 @@ class MP2Migrator {
    *
    */
   public function init() {
-    if (!$this->settings->get('mailpoet_migration_started', false)) {
+    if (!$this->settings->get(self::MIGRATION_STARTED_SETTING_KEY, false)) {
       $this->emptyLog();
       $this->progressbar->setTotalCount(0);
     }
@@ -172,9 +176,9 @@ class MP2Migrator {
     $this->log(sprintf('=== ' . mb_strtoupper(__('Start import', 'mailpoet'), 'UTF-8') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $this->settings->set('import_stopped', false); // Reset the stop import action
 
-    if (!$this->settings->get('mailpoet_migration_started', false)) {
+    if (!$this->settings->get(self::MIGRATION_STARTED_SETTING_KEY, false)) {
       $this->eraseMP3Data();
-      $this->settings->set('mailpoet_migration_started', true);
+      $this->settings->set(self::MIGRATION_STARTED_SETTING_KEY, true);
       $this->displayDataToMigrate();
     }
 
@@ -187,7 +191,7 @@ class MP2Migrator {
     $this->importSettings();
 
     if (!$this->importStopped()) {
-      $this->settings->set('mailpoet_migration_complete', true);
+      $this->settings->set(self::MIGRATION_COMPLETE_SETTING_KEY, true);
       $this->log(mb_strtoupper(__('Import complete', 'mailpoet'), 'UTF-8'));
       $after_migration_notice = new AfterMigrationNotice();
       $after_migration_notice->enable();
