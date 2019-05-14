@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) exit;
  * @property string $newsletter_rendered_subject
  * @property int $task_id
  * @property int $newsletter_id
- * @property string|object $meta
+ * @property string|object|null $meta
  * @property string|array $subscribers
  * @property string|null $deleted_at
  */
@@ -77,7 +77,7 @@ class SendingQueue extends Model {
         json_encode($this->encodeEmojisInBody($this->newsletter_rendered_body))
       );
     }
-    if (!Helpers::isJson($this->meta)) {
+    if (!is_null($this->meta) && !Helpers::isJson($this->meta)) {
       $this->set(
         'meta',
         json_encode($this->meta)

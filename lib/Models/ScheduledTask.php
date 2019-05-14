@@ -99,7 +99,7 @@ class ScheduledTask extends Model {
     if (!$this->priority) {
       $this->priority = self::PRIORITY_MEDIUM;
     }
-    if (!Helpers::isJson($this->meta)) {
+    if (!is_null($this->meta) && !Helpers::isJson($this->meta)) {
       $this->set(
         'meta',
         json_encode($this->meta)

@@ -125,6 +125,18 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect(json_decode($task->meta, true))->equals($meta);
   }
 
+  function testItDoesNotJsonEncodesMetaEqualToNull() {
+    $task = ScheduledTask::create();
+    $meta = null;
+    $task->meta = $meta;
+    $task->save();
+
+    $task = ScheduledTask::findOne($task->id);
+
+    expect(Helpers::isJson($task->meta))->false();
+    expect($task->meta)->equals($meta);
+  }
+
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
