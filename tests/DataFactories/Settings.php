@@ -123,9 +123,4 @@ class Settings {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 180);
     return $this;
   }
-
-  function withDisplayRevenuesEnabled() {
-    $this->settings->set('display_revenues', true);
-    return $this;
-  }
 }
