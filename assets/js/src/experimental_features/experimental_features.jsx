@@ -57,30 +57,24 @@ const ExperimentalFeatures = () => {
     return <p>There are no experimental features at the moment.</p>;
   }
 
-  return (
-    <>
-      {
-        Object.values(flags).map((flag) => {
-          const id = `experimental-feature-${flag.name}`;
-          return (
-            <div key={flag.name}>
-              <label htmlFor={id}>
-                <input
-                  id={id}
-                  type="checkbox"
-                  name={flag.name}
-                  defaultChecked={flag.value}
-                  onChange={handleChange}
-                />
-                {' '}
-                {flag.name}
-              </label>
-            </div>
-          );
-        })
-      }
-    </>
-  );
+  return Object.values(flags).map((flag) => {
+    const id = `experimental-feature-${flag.name}`;
+    return (
+      <div key={flag.name}>
+        <label htmlFor={id}>
+          <input
+            id={id}
+            type="checkbox"
+            name={flag.name}
+            defaultChecked={flag.value}
+            onChange={handleChange}
+          />
+          {' '}
+          {flag.name}
+        </label>
+      </div>
+    );
+  });
 };
 
 const experimentalFeaturesContainer = document.getElementById('experimental_features_container');
