@@ -9,11 +9,13 @@ class FeaturesController {
   // Define features below in the following form:
   //   const FEATURE_NAME_OF_FEATURE = 'name-of-feature';
   const FEATURE_DISPLAY_WOOCOMMERCE_REVENUES = 'display-woocommerce-revenues'; // may also have 'display_revenues' setting
+  const FEATURE_NEW_FREE_PLAN = 'new-free-plan';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES => false,
+    self::FEATURE_NEW_FREE_PLAN => false,
   ];
 
   /** @var array */
