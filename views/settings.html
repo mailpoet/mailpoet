@@ -249,6 +249,8 @@
     var mailpoet_settings_sender_adddress = "<%= settings.sender.address %>";
     var mailpoet_settings_reply_to_name = "<%= settings.reply_to.name %>";
     var mailpoet_settings_reply_to_address = "<%= settings.reply_to.address %>";
+    var mailpoet_settings_signup_confirmation_name = "<%= settings.signup_confirmation.from.name %>";
+    var mailpoet_settings_signup_confirmation_address = "<%= settings.signup_confirmation.from.address %>";
     var mailpoet_installed_at = '<%= settings.installed_at %>';
     var mailpoet_mss_active = <%= json_encode(settings.mta_group == 'mailpoet') %>;
   </script>

@@ -23,8 +23,8 @@ const settingsSignupConfirmationSenderContainer = document.getElementById('setti
 if (settingsSignupConfirmationSenderContainer) {
   ReactDOM.render(
     React.createElement(SignupConfirmationSender, {
-      senderAddress: window.mailpoet_settings_sender_adddress,
-      senderName: window.mailpoet_settings_sender_name,
+      senderAddress: window.mailpoet_settings_signup_confirmation_address,
+      senderName: window.mailpoet_settings_signup_confirmation_name,
       mssActive: window.mailpoet_mss_active,
     }),
     settingsSignupConfirmationSenderContainer
