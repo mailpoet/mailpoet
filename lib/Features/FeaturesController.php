@@ -12,7 +12,7 @@ class FeaturesController {
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
-  public static $defaults = [
+  private $defaults = [
     self::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES => false,
   ];
 
@@ -21,11 +21,21 @@ class FeaturesController {
 
   /** @return bool */
   function isSupported($feature) {
-    $this->ensureFlagsLoaded();
-    if (!array_key_exists($feature, $this->flags)) {
+    if (!$this->exists($feature)) {
       throw new \RuntimeException("Unknown feature '$feature'");
     }
+    $this->ensureFlagsLoaded();
     return $this->flags[$feature];
+  }
+
+  /** @return bool */
+  function exists($feature) {
+    return array_key_exists($feature, $this->defaults);
+  }
+
+  /** @return array */
+  function getDefaults() {
+    return $this->defaults;
   }
 
   /** @return array */
@@ -41,7 +51,7 @@ class FeaturesController {
 
     $this->flags = [];
     $flagsMap = $this->getValueMap();
-    foreach (self::$defaults as $name => $default) {
+    foreach ($this->defaults as $name => $default) {
       $this->flags[$name] = isset($flagsMap[$name]) ? $flagsMap[$name] : $default;
     }
   }
