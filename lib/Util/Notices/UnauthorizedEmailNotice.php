@@ -90,23 +90,6 @@ class UnauthorizedEmailNotice {
 
   private function getResumeSendingButton() {
     $button = '<button class="button button-primary mailpoet-js-button-resume-sending">' . $this->wp->__('Resume sending', 'mailpoet') . '</button>';
-    $script = "
-    <script>
-      jQuery('.mailpoet-js-button-resume-sending').on('click', function() {
-        MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'mailer', action: 'resumeSending'
-        }).done(function() {
-          jQuery('.mailpoet-js-error-unauthorized-emails-notice').slideUp();
-          MailPoet.Notice.success('" . WPFunctions::get()->__('Sending has been resumed.') . "');}
-        ).fail(function(response) {
-          if (response.errors.length > 0) {
-            MailPoet.Notice.error(response.errors.map(function(error) { return error.message }), { scroll: true });
-          }
-        });
-      });
-    </script>";
-    $button .= str_replace("\n", "", $script);
     return "<p>$button</p>";
   }
 }
