@@ -27,7 +27,7 @@ class FreePlanAnnouncement extends React.Component {
     return (
       (!this.state.announcement_seen)
       && (
-        <div className="mailpoet_free_plan_announcement">
+        <div className="mailpoet_free_plan_announcement" data-automation-id="free-plan-announcement">
           <h3>{MailPoet.I18n.t('freePlanTitle')}</h3>
           <p>{MailPoet.I18n.t('freePlanDescription')}</p>
           <a
