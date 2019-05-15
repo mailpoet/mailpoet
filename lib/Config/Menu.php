@@ -89,7 +89,6 @@ class Menu {
     $this->subscribers_over_limit = $subscribers_feature->check();
     $this->checkMailPoetAPIKey();
     $this->checkPremiumKey();
-    $this->checkFromEmailAuthorization();
 
     $this->wp->addAction(
       'admin_menu',
@@ -883,13 +882,6 @@ class Menu {
       && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
     $checker = $checker ?: $this->servicesChecker;
     $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
-  }
-
-  private function checkFromEmailAuthorization() {
-    if (self::isOnMailPoetAdminPage() && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false) {
-      $checker = $this->servicesChecker;
-      $checker->isFromEmailAuthorized();
-    }
   }
 
   function getLimitPerPage($model = null) {
