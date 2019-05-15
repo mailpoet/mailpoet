@@ -103,9 +103,8 @@ class MailPoetMapper {
         'rel' => 'noopener noreferrer',
       ]
     );
-    $message .= ' &nbsp; <button class="button js-button-resume-sending">' . WPFunctions::get()->__('Resume sending', 'mailpoet') . '</button>';
+    $message .= ' &nbsp; <button class="button mailpoet-js-button-resume-sending">' . WPFunctions::get()->__('Resume sending', 'mailpoet') . '</button>';
     $message .= '</p>';
-    $message .= "<script>jQuery('.js-button-resume-sending').on('click', function() { MailPoet.Ajax.post({ api_version: window.mailpoet_api_version, endpoint: 'mailer', action: 'resumeSending' }).done(function() { jQuery('.js-error-unauthorized-email').slideUp(); MailPoet.Notice.success('" . WPFunctions::get()->__('Sending has been resumed.') . "'); if (window.mailpoet_listing) { window.mailpoet_listing.forceUpdate(); }}).fail(function(response) { if (response.errors.length > 0) { MailPoet.Notice.error(response.errors.map(function(error) { return error.message }), { scroll: true }); }}); })</script>";
     return $message;
   }
 
