@@ -6,8 +6,15 @@ use MailPoet\Models\FeatureFlag;
 use function MailPoet\Util\array_column;
 
 class FeatureFlagsController {
+  /** @var FeaturesController */
+  private $features_controller;
+
+  function __construct(FeaturesController $features_controller) {
+    $this->features_controller = $features_controller;
+  }
+
   function set($name, $value) {
-    if (!isset(FeaturesController::$defaults[$name])) {
+    if (!$this->features_controller->exists($name)) {
       throw new \RuntimeException("Feature '$name' does not exist'");
     }
 
@@ -26,7 +33,7 @@ class FeatureFlagsController {
     $flagsMap = array_combine(array_column($flags, 'name'), $flags);
 
     $output = [];
-    foreach (FeaturesController::$defaults as $name => $default) {
+    foreach ($this->features_controller->getDefaults() as $name => $default) {
       $output[] = [
         'name' => $name,
         'value' => isset($flagsMap[$name]) ? (bool)$flagsMap[$name]['value'] : $default,

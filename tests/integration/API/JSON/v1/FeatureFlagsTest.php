@@ -9,23 +9,18 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Models\FeatureFlag;
 
 class FeatureFlagsTest extends \MailPoetTest {
-  /** @var array */
-  private $defaults_backup;
 
   function _before() {
     parent::_before();
     FeatureFlag::deleteMany();
-    $this->defaults_backup = FeaturesController::$defaults;
   }
 
   function testItReturnsDefaults() {
-    FeaturesController::$defaults = [
+    $endpoint = $this->createEndpointWithFeatureDefaults([
       'feature-a' => true,
       'feature-b' => false,
-    ];
+    ]);
 
-    $controller = new FeatureFlagsController();
-    $endpoint = new FeatureFlags($controller);
     expect($endpoint->getAll()->data)->equals([
       [
         'name' => 'feature-a',
@@ -41,17 +36,14 @@ class FeatureFlagsTest extends \MailPoetTest {
   }
 
   function testItReturnsDatabaseValue() {
-    FeaturesController::$defaults = [
-      'feature-a' => true,
-    ];
-
     FeatureFlag::createOrUpdate([
       'name' => 'feature-a',
       'value' => false,
     ]);
 
-    $controller = new FeatureFlagsController();
-    $endpoint = new FeatureFlags($controller);
+    $endpoint = $this->createEndpointWithFeatureDefaults([
+      'feature-a' => true,
+    ]);
 
     expect($endpoint->getAll()->data)->equals([
       [
@@ -63,12 +55,10 @@ class FeatureFlagsTest extends \MailPoetTest {
   }
 
   function testItSetsDatabaseValue() {
-    FeaturesController::$defaults = [
+    $endpoint = $this->createEndpointWithFeatureDefaults([
       'feature-a' => true,
-    ];
+    ]);
 
-    $controller = new FeatureFlagsController();
-    $endpoint = new FeatureFlags($controller);
     $endpoint->set([
       'feature-a' => false,
     ]);
@@ -81,17 +71,15 @@ class FeatureFlagsTest extends \MailPoetTest {
 
 
   function testItUpdatesDatabaseValue() {
-    FeaturesController::$defaults = [
-      'feature-a' => true,
-    ];
-
     FeatureFlag::createOrUpdate([
       'name' => 'feature-a',
       'value' => false,
     ]);
 
-    $controller = new FeatureFlagsController();
-    $endpoint = new FeatureFlags($controller);
+    $endpoint = $this->createEndpointWithFeatureDefaults([
+      'feature-a' => true,
+    ]);
+
     $endpoint->set([
       'feature-a' => true,
     ]);
@@ -103,24 +91,17 @@ class FeatureFlagsTest extends \MailPoetTest {
   }
 
   function testItDoesNotReturnUnknownFlag() {
-    FeaturesController::$defaults = [];
-
     FeatureFlag::createOrUpdate([
       'name' => 'feature-unknown',
       'value' => true,
     ]);
 
-    $controller = new FeatureFlagsController();
-    $endpoint = new FeatureFlags($controller);
-
+    $endpoint = $this->createEndpointWithFeatureDefaults([]);
     expect($endpoint->getAll()->data)->isEmpty();
   }
 
   function testItDoesNotSaveUnknownFlag() {
-    FeaturesController::$defaults = [];
-
-    $controller = new FeatureFlagsController();
-    $endpoint = new FeatureFlags($controller);
+    $endpoint = $this->createEndpointWithFeatureDefaults([]);
     $response = $endpoint->set([
       'feature-unknown' => false,
     ]);
@@ -132,9 +113,16 @@ class FeatureFlagsTest extends \MailPoetTest {
     expect(count($features))->equals(0);
   }
 
+  private function createEndpointWithFeatureDefaults(array $defaults) {
+    $features_controller = $this->make(FeaturesController::class, [
+      'defaults' => $defaults,
+    ]);
+    $controller = new FeatureFlagsController($features_controller);
+    return new FeatureFlags($features_controller, $controller);
+  }
+
   function _after() {
     parent::_before();
     FeatureFlag::deleteMany();
-    FeaturesController::$defaults = $this->defaults_backup;
   }
 }

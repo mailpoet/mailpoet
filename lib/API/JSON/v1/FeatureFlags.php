@@ -12,14 +12,18 @@ if (!defined('ABSPATH')) exit;
 
 class FeatureFlags extends APIEndpoint {
 
-  /** @var FeatureFlagsController */
-  private $feature_flags_controller;
-
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FEATURES,
   ];
 
-  function __construct(FeatureFlagsController $feature_flags) {
+  /** @var FeaturesController */
+  private $features_controller;
+
+  /** @var FeatureFlagsController */
+  private $feature_flags_controller;
+
+  function __construct(FeaturesController $features_controller, FeatureFlagsController $feature_flags) {
+    $this->features_controller = $features_controller;
     $this->feature_flags_controller = $feature_flags;
   }
 
@@ -30,7 +34,7 @@ class FeatureFlags extends APIEndpoint {
 
   function set(array $flags) {
     foreach ($flags as $name => $value) {
-      if (!isset(FeaturesController::$defaults[$name])) {
+      if (!$this->features_controller->exists($name)) {
         return $this->badRequest([
           APIError::BAD_REQUEST => "Feature '$name' does not exist'",
         ]);

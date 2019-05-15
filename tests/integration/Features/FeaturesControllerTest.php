@@ -5,22 +5,20 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Models\FeatureFlag;
 
 class FeaturesControllerTest extends \MailPoetTest {
-  /** @var array */
-  private $defaults_backup;
 
   function _before() {
     parent::_before();
     FeatureFlag::deleteMany();
-    $this->defaults_backup = FeaturesController::$defaults;
   }
 
-  function testItReturnsDefaults() {
-    FeaturesController::$defaults = [
-      'feature-a' => true,
-      'feature-b' => false,
-    ];
+  function testItWorksWithDefaults() {
+    $controller = $this->make(FeaturesController::class, [
+      'defaults' => [
+        'feature-a' => true,
+        'feature-b' => false,
+      ],
+    ]);
 
-    $controller = new FeaturesController();
     expect($controller->isSupported('feature-a'))->equals(true);
     expect($controller->isSupported('feature-b'))->equals(false);
     expect($controller->getAllFlags())->equals([
@@ -29,17 +27,18 @@ class FeaturesControllerTest extends \MailPoetTest {
     ]);
   }
 
-  function testItReturnsDatabaseValue() {
-    FeaturesController::$defaults = [
-      'feature-a' => true,
-    ];
-
+  function testItWorksWithDatabaseValues() {
     FeatureFlag::createOrUpdate([
       'name' => 'feature-a',
       'value' => false,
     ]);
 
-    $controller = new FeaturesController();
+    $controller = $this->make(FeaturesController::class, [
+      'defaults' => [
+        'feature-a' => true,
+      ],
+    ]);
+
     expect($controller->isSupported('feature-a'))->equals(false);
     expect($controller->getAllFlags())->equals([
       'feature-a' => false,
@@ -47,14 +46,15 @@ class FeaturesControllerTest extends \MailPoetTest {
   }
 
   function testItDoesNotReturnUnknownFlag() {
-    FeaturesController::$defaults = [];
-
     FeatureFlag::createOrUpdate([
       'name' => 'feature-unknown',
       'value' => true,
     ]);
 
-    $controller = new FeaturesController();
+    $controller = $this->make(FeaturesController::class, [
+      'defaults' => [],
+    ]);
+
     try {
       $controller->isSupported('feature-unknown');
     } catch (\RuntimeException $e) {
@@ -66,6 +66,5 @@ class FeaturesControllerTest extends \MailPoetTest {
   function _after() {
     parent::_before();
     FeatureFlag::deleteMany();
-    FeaturesController::$defaults = $this->defaults_backup;
   }
 }
