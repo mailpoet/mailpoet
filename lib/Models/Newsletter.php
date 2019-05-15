@@ -605,6 +605,7 @@ class Newsletter extends Model {
     ) {
       $currency = $woocommerce_helper->getWoocommerceCurrency();
       $row = StatisticsWooCommercePurchases::selectExpr('SUM(order_price_total) AS total')
+        ->selectExpr('count(*)', 'count')
         ->where([
           'newsletter_id' => $this->id,
           'order_currency' => $currency,
@@ -612,9 +613,11 @@ class Newsletter extends Model {
         ->findOne();
 
       $revenue = !empty($row->total) ? (float)$row->total : 0.0;
+      $count = !empty($row->count) ? (int)$row->count : 0;
       $result['revenue'] = [
         'currency' => $currency,
         'value' => $revenue,
+        'count' => $count,
         'formatted' => $woocommerce_helper->getRawPrice($revenue, ['currency' => $currency]),
       ];
     } else {
