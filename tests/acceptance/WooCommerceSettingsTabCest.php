@@ -11,6 +11,7 @@ class WooCommerceSettingsTabCest {
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->settings_factory = new Settings();
+    $this->settings_factory->withCookieRevenueTrackingDisabled();
     $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
   }
 
