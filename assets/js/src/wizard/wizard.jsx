@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, HashRouter, Redirect } from 'react-router-dom';
+import {
+  Route,
+  HashRouter,
+  Redirect,
+  Switch,
+} from 'react-router-dom';
 import WelcomeWizardStepsController from './welcome_wizard_controller.jsx';
 import WooCommerceImportController from './woocommerce_import_controller.jsx';
 import RevenueTrackingPermissionController from './revenue_tracking_permission.jsx';
@@ -16,12 +21,12 @@ if (container) {
   }
   ReactDOM.render((
     <HashRouter>
-      <div>
+      <Switch>
         <Route path="/steps/:step" component={WelcomeWizardStepsController} />
         <Route path="/import" component={WooCommerceImportController} />
         <Route path="/revenue-tracking-permission" component={RevenueTrackingPermissionController} />
         <Route render={() => <Redirect to={basePath} />} />
-      </div>
+      </Switch>
     </HashRouter>
   ), container);
 }
