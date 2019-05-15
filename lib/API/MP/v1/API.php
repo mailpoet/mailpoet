@@ -97,6 +97,9 @@ class API {
       if ($found_segment->type === Segment::TYPE_WC_USERS) {
         throw new \Exception(__(sprintf("Can't subscribe to a WooCommerce Customers list with ID %d.", $found_segment->id), 'mailpoet'));
       }
+      if ($found_segment->type !== Segment::TYPE_DEFAULT) {
+        throw new \Exception(__(sprintf("Can't subscribe to a list with ID %d.", $found_segment->id), 'mailpoet'));
+      }
       $found_segments_ids[] = $found_segment->id;
     }
 
@@ -183,7 +186,7 @@ class API {
   }
 
   function getLists() {
-    return Segment::whereNotIn('type', [Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS])
+    return Segment::where('type', Segment::TYPE_DEFAULT)
       ->findArray();
   }
 
