@@ -101,7 +101,7 @@ class Changelog {
       return;
     }
     if (
-      !in_array($_GET['page'], ['mailpoet-woocommerce-list-import', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
+      !in_array($_GET['page'], ['mailpoet-revenue-tracking-permission', 'mailpoet-woocommerce-list-import', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
       && !$this->settings->get('woocommerce_import_screen_displayed')
       && $this->wooCommerceHelper->isWooCommerceActive()
       && $this->wooCommerceHelper->getOrdersCount() >= 1
@@ -113,7 +113,7 @@ class Changelog {
 
   private function checkRevenueTrackingPermissionPage() {
     if (
-      !in_array($_GET['page'], ['mailpoet-revenue-tracking-permission', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
+      !in_array($_GET['page'], ['mailpoet-revenue-tracking-permission', 'mailpoet-woocommerce-list-import', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
       && ($this->settings->get('woocommerce.accept_cookie_revenue_tracking.set') === null)
       && $this->settings->get('tracking.enabled')
       && $this->wooCommerceHelper->isWooCommerceActive()
