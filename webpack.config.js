@@ -255,6 +255,7 @@ const adminConfig = {
       'newsletters/listings/mixins.jsx',
       'newsletters/listings/heading.jsx',
       'announcements/feature_announcement.jsx',
+      'announcements/free_plan_announcement.jsx',
       'newsletters/types/automatic_emails/events_list.jsx',
       'newsletters/types/automatic_emails/breadcrumb.jsx',
       'newsletters/types/welcome/scheduling.jsx',
