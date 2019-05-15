@@ -197,6 +197,13 @@ const baseConfig = {
         ]
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/help-tooltip.jsx'),
+        use: [
+          'expose-loader?' + globalPrefix + '.HelpTooltip',
+          'babel-loader',
+        ]
+      },
+      {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/breadcrumb.jsx'),
         use: [
           'expose-loader?' + globalPrefix + '.AutomaticEmailsBreadcrumb',
@@ -247,6 +254,7 @@ const adminConfig = {
       'react-string-replace',
       'prop-types',
       'classnames',
+      'help-tooltip.jsx',
       'form/form.jsx',
       'listing/listing.jsx',
       'newsletters/badges/stats.jsx',
