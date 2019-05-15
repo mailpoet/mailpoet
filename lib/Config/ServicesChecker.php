@@ -119,15 +119,4 @@ class ServicesChecker {
 
     return false;
   }
-
-  function isFromEmailAuthorized() {
-    $mta_log_error = $this->settings->get('mta_log.error', []);
-
-    if (isset($mta_log_error['operation']) && $mta_log_error['operation'] === MailerError::OPERATION_AUTHORIZATION) {
-      WPNotice::displayError($mta_log_error['error_message'], 'js-error-unauthorized-email', '', false, false);
-      return false;
-    }
-
-    return true;
-  }
 }
