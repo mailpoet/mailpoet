@@ -7,11 +7,7 @@ function RevenueTrackingPermission() {
 
   const handleApiError = (response) => {
     setLoading(false);
-    let errorMessage = MailPoet.I18n.t('unknownError');
-    if (response && response.errors && response.errors.length > 0) {
-      errorMessage = response.errors.map(error => error.message);
-    }
-    MailPoet.Notice.error(errorMessage, { scroll: true });
+    MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
   };
 
   const updateSettings = data => MailPoet.Ajax.post({

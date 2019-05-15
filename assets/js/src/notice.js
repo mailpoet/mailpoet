@@ -218,4 +218,14 @@ MailPoet.Notice = {
       message: message,
     }, options));
   },
+  showApiErrorNotice: function showApiErrorNotice(response, options) {
+    var errorMessage = MailPoet.I18n.t('ajaxFailedErrorMessage');
+    if (response && response.errors && response.errors.length > 0) {
+      errorMessage = response.errors.map(error => error.message);
+    }
+    this.show(jQuery.extend({}, {
+      type: 'error',
+      message: errorMessage,
+    }, options));
+  },
 };
