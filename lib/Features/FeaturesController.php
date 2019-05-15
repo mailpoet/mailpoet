@@ -13,7 +13,7 @@ class FeaturesController {
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   public static $defaults = [
-    self::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES => true,
+    self::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES => false,
   ];
 
   /** @var array */
