@@ -246,6 +246,7 @@ Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
       element: this.$el,
       template: '',
       position: 'right',
+      overlayRender: false,
       width: App.getConfig().get('sidepanelWidth'),
       onCancel: function () {
         // Self destroy the block if the user closes settings modal
