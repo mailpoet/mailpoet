@@ -10,7 +10,7 @@ class Spacer {
     $template = '
       <tr>
         <td class="mailpoet_spacer" ' .
-      (($background_color !== 'transparent') ? 'bgcolor="' . $background_color . '" ' : ' ') .
+      (($background_color !== 'transparent') ? 'bgcolor="' . $background_color . '" ' : '') .
       'height="' . $height . '" valign="top"></td>
       </tr>';
     return $template;
