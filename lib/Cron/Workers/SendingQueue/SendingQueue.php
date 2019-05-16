@@ -49,6 +49,10 @@ class SendingQueue {
       if (!$queue instanceof SendingTask) continue;
       ScheduledTaskModel::touchAllByIds(array($queue->task_id));
 
+      Logger::getLogger('newsletters')->addInfo(
+        'sending queue processing',
+        ['task_id' => $queue->task_id]
+      );
       $newsletter = $this->newsletter_task->getNewsletterFromQueue($queue);
       if (!$newsletter) {
         continue;
@@ -72,6 +76,10 @@ class SendingQueue {
       // get subscribers
       $subscriber_batches = new BatchIterator($queue->task_id, $this->batch_size);
       foreach ($subscriber_batches as $subscribers_to_process_ids) {
+        Logger::getLogger('newsletters')->addInfo(
+          'subscriber batch processing',
+          ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id, 'subscriber_batch_count' => count($subscribers_to_process_ids)]
+        );
         if (!empty($newsletter_segments_ids[0])) {
           // Check that subscribers are in segments
           $finder = new SubscribersFinder();
@@ -98,12 +106,24 @@ class SendingQueue {
             continue;
           }
         }
+        Logger::getLogger('newsletters')->addInfo(
+          'before queue chunk processing',
+          ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id, 'found_subscribers_count' => count($found_subscribers)]
+        );
         $queue = $this->processQueue(
           $queue,
           $_newsletter,
           $found_subscribers
         );
+        Logger::getLogger('newsletters')->addInfo(
+          'after queue chunk processing',
+          ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+        );
         if ($queue->status === ScheduledTaskModel::STATUS_COMPLETED) {
+          Logger::getLogger('newsletters')->addInfo(
+            'completed newsletter sending',
+            ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+          );
           $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
           $this->stats_notifications_scheduler->schedule($newsletter);
         }

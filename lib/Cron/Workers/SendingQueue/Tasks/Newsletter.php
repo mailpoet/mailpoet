@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
+use MailPoet\Logging\Logger;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
@@ -75,6 +76,10 @@ class Newsletter {
         $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-RENDER', $queue->id)) :
         $newsletter;
     }
+    Logger::getLogger('newsletters')->addInfo(
+      'pre-processing newsletter',
+      ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+    );
     // if tracking is enabled, do additional processing
     if ($this->tracking_enabled) {
       // hook to the newsletter post-processing filter and add tracking image
@@ -102,6 +107,10 @@ class Newsletter {
       $this->posts_task->getAlcPostsCount($rendered_newsletter, $newsletter) === 0
     ) {
       // delete notification history record since it will never be sent
+      Logger::getLogger('post-notifications')->addInfo(
+        'no posts in post notification, deleting it',
+        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+      );
       $newsletter->delete();
       return false;
     }
