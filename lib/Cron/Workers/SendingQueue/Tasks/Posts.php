@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
+use MailPoet\Logging\Logger;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterPost;
 
@@ -11,6 +12,10 @@ class Posts {
     if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
       return false;
     }
+    Logger::getLogger('post-notifications')->addInfo(
+      'extract and save posts - before',
+      ['newsletter_id' => $newsletter->id]
+    );
     preg_match_all(
       '/data-post-id="(\d+)"/ism',
       $rendered_newsletter['html'],
@@ -26,6 +31,10 @@ class Posts {
       $newsletter_post->post_id = $post_id;
       $newsletter_post->save();
     }
+    Logger::getLogger('post-notifications')->addInfo(
+      'extract and save posts - after',
+      ['newsletter_id' => $newsletter->id, 'matched_posts_ids' => $matched_posts_ids]
+    );
     return true;
   }
 }

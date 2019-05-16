@@ -208,7 +208,7 @@ class SendingQueueTest extends \MailPoetTest {
       array(
         'processQueue' => function() {
           // this function returns a queue object
-          return (object)array('status' => null);
+          return (object)array('status' => null, 'task_id' => 0);
         },
         'enforceSendingAndExecutionLimits' => Expected::exactly(2)
       ), $this);

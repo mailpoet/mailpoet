@@ -2,6 +2,7 @@
 
 namespace MailPoet\Services\Bridge;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Logging\Logger;
 
 class API {
   const SENDING_STATUS_OK = 'ok';
@@ -76,12 +77,20 @@ class API {
     return array('code' => $code, 'data' => $body);
   }
 
+  function logCurlInformation($headers, $info) {
+    Logger::getLogger('mss')->addInfo(
+      'requests-curl.after_request',
+      ['headers' => $headers, 'curl_info' => $info]
+    );
+  }
 
   function sendMessages($message_body) {
+    add_action('requests-curl.after_request', [$this, 'logCurlInformation'], 10, 2);
     $result = $this->request(
       $this->url_messages,
       $message_body
     );
+    remove_action('requests-curl.after_request', [$this, 'logCurlInformation']);
     if (is_wp_error($result)) {
       return array(
         'status' => self::SENDING_STATUS_CONNECTION_ERROR,

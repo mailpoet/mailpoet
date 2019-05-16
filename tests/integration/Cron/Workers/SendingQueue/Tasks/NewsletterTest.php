@@ -373,6 +373,7 @@ class NewsletterTest extends \MailPoetTest {
       )
     );
     $queue_mock->id = $queue->id;
+    $queue_mock->task_id = $queue->task_id;
 
     // properly serialized object
     $queue->newsletter_rendered_body = 'a:2:{s:4:"html";s:4:"test";s:4:"text";s:4:"test";}';
