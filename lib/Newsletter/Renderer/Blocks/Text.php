@@ -129,7 +129,7 @@ class Text {
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . EHelper::escapeHtmlStyleAttr($style) . '">
             ' . $contents . $line_breaks . '
           </td>
-         </tr>'
+        </tr>'
       );
     }
     return $DOM->__toString();
