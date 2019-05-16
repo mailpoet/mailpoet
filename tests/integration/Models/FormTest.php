@@ -124,7 +124,7 @@ class FormTest extends \MailPoetTest {
   function testItUpdatesSuccessMessagesWhenConfirmationIsDisabled() {
     $default = Form::createOrUpdate([
       'name' => 'with default message',
-      'settings' => ['success_message' => Form::MESSAGE_WHEN_CONFIRMATION_ENABLED],
+      'settings' => ['success_message' => 'Check your inbox or spam folder to confirm your subscription.'],
     ]);
     $custom = Form::createOrUpdate([
       'name' => 'with custom message',
@@ -134,14 +134,14 @@ class FormTest extends \MailPoetTest {
     Form::updateSuccessMessages();
     $default = Form::findOne($default->id)->asArray();
     $custom = Form::findOne($custom->id)->asArray();
-    expect($default['settings']['success_message'])->equals(Form::MESSAGE_WHEN_CONFIRMATION_DISABLED);
+    expect($default['settings']['success_message'])->equals('You’ve been successfully subscribed to our newsletter!');
     expect($custom['settings']['success_message'])->equals('Thanks for joining us!');
   }
 
   function testItUpdatesSuccessMessagesWhenConfirmationIsEnabled() {
     $default = Form::createOrUpdate([
       'name' => 'with default message',
-      'settings' => ['success_message' => Form::MESSAGE_WHEN_CONFIRMATION_DISABLED],
+      'settings' => ['success_message' => 'Check your inbox or spam folder to confirm your subscription.'],
     ]);
     $custom = Form::createOrUpdate([
       'name' => 'with custom message',
@@ -151,7 +151,7 @@ class FormTest extends \MailPoetTest {
     Form::updateSuccessMessages();
     $default = Form::findOne($default->id)->asArray();
     $custom = Form::findOne($custom->id)->asArray();
-    expect($default['settings']['success_message'])->equals(Form::MESSAGE_WHEN_CONFIRMATION_ENABLED);
+    expect($default['settings']['success_message'])->equals('Check your inbox or spam folder to confirm your subscription.');
     expect($custom['settings']['success_message'])->equals('Thanks for joining us!');
   }
 
