@@ -34,8 +34,7 @@ class Header {
     $style = EHelper::escapeHtmlStyleAttr($style);
     $template = '
       <tr>
-        <td class="mailpoet_header_footer_padded mailpoet_header" ' . $background_color . '
-        style="' . $style . '">
+        <td class="mailpoet_header_footer_padded mailpoet_header" ' . $background_color . ' style="' . $style . '">
           ' . str_replace('&', '&amp;', $DOM->html()) . '
         </td>
       </tr>';
