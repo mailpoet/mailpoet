@@ -6,6 +6,12 @@ class RoboFile extends \Robo\Tasks {
   use \Codeception\Task\SplitTestsByGroups;
 
   public function __construct() {
+
+    // disable xdebug to avoid slowing down command execution
+    $xdebug_handler = new \Composer\XdebugHandler\XdebugHandler('mailpoet');
+    $xdebug_handler->setPersistent();
+    $xdebug_handler->check();
+
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
   }
@@ -195,7 +201,8 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['xml']) {
       $command .= ' --xml';
     }
-    return $this->_exec($command);
+
+    return $this->execWithXDebug($command);
   }
 
   function testJavascript($xml_output_file = null) {
@@ -759,5 +766,16 @@ class RoboFile extends \Robo\Tasks {
       exit(1);
     }
     return $env;
+  }
+
+  private function execWithXDebug($command) {
+    $php_config = new \Composer\XdebugHandler\PhpConfig();
+    $php_config->useOriginal();
+
+    // exec command in subprocess with original settings
+    passthru($command, $exitCode);
+
+    $php_config->usePersistent();
+    return $exitCode;
   }
 }
