@@ -517,7 +517,7 @@ class Migrator {
   function featureFlags() {
     $attributes = array(
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
-      'name varchar(255) NOT NULL,',
+      'name varchar(100) NOT NULL,',
       'value tinyint(1),',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
