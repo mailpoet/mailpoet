@@ -15,9 +15,6 @@ if (!defined('ABSPATH')) exit;
 class Form extends Model {
   public static $_table = MP_FORMS_TABLE;
 
-  const MESSAGE_WHEN_CONFIRMATION_ENABLED = 'Check your inbox or spam folder to confirm your subscription.';
-  const MESSAGE_WHEN_CONFIRMATION_DISABLED = 'You’ve been successfully subscribed to our newsletter!';
-
   function __construct() {
     parent::__construct();
 
@@ -127,17 +124,17 @@ class Form extends Model {
   static function getDefaultSuccessMessage() {
     $settings = new SettingsController;
     if ($settings->get('signup_confirmation.enabled')) {
-      return __(self::MESSAGE_WHEN_CONFIRMATION_ENABLED, 'mailpoet');
+      return __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet');
     }
-    return __(self::MESSAGE_WHEN_CONFIRMATION_DISABLED, 'mailpoet');
+    return __('You’ve been successfully subscribed to our newsletter!', 'mailpoet');
   }
 
   static function updateSuccessMessages() {
     $right_message = self::getDefaultSuccessMessage();
     $wrong_message = (
-      $right_message === self::MESSAGE_WHEN_CONFIRMATION_ENABLED
-      ? self::MESSAGE_WHEN_CONFIRMATION_DISABLED
-      : self::MESSAGE_WHEN_CONFIRMATION_ENABLED
+      $right_message === __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet')
+      ? __('You’ve been successfully subscribed to our newsletter!', 'mailpoet')
+      : __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet')
     );
     $forms = self::findMany();
     foreach ($forms as $form) {
