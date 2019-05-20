@@ -138,7 +138,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
-      )
+      ),
     ]);
 
     expect($getter->get())->equals(false);
@@ -166,7 +166,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
-      )
+      ),
     ]);
 
     expect($this->filterSubscribersData($getter->get()))->equals([
@@ -199,7 +199,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null,
-      )
+      ),
     ]);
 
     expect($getter->get())->equals(false);
@@ -227,7 +227,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
-      )
+      ),
     ]);
 
     expect($this->filterSubscribersData($getter->get()))->equals([]);
@@ -252,7 +252,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null,
-      )
+      ),
     ]);
 
     expect($this->filterSubscribersData($getter->get()))->equals([
@@ -265,7 +265,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_UNCONFIRMED,
         'segment_name' => 'Journals',
         1 => null,
-      )
+      ),
     ]);
 
     expect($getter->get())->equals(false);

@@ -90,7 +90,7 @@ class WordPressTest extends \MailPoetTest {
       'frequency' => array(
         'emails' => Setting::DEFAULT_SENDING_FREQUENCY_EMAILS,
         'interval' => Setting::DEFAULT_SENDING_FREQUENCY_INTERVAL
-      )
+      ),
     ]);
     $this->_addScheduledTask(BounceWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
     expect(WordPress::checkExecutionRequirements())->true();

@@ -36,7 +36,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       [
         'abortWithError' => function($message) {
           return $message;
-        }
+        },
       ]
     );
     expect($daemon->run(false))->equals('Invalid or missing request data.');
@@ -48,7 +48,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       [
         'abortWithError' => function($message) {
           return $message;
-        }
+        },
       ]
     );
     $daemon->settings_daemon_data = array(
@@ -66,12 +66,12 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createScheduleWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           throw new \Exception('Message');
-        }
+        },
       ]),
       'createQueueWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           throw new \Exception();
-        }
+        },
       ]),
     ]);
 
@@ -112,7 +112,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createScheduleWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           $this->settings->delete(CronHelper::DAEMON_SETTING);
-        }
+        },
       ]),
     ]);
     $daemon = $this->make(DaemonHttpRunner::class, array(
@@ -136,7 +136,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
             CronHelper::DAEMON_SETTING,
             array('token' => 567)
           );
-        }
+        },
       ]),
     ]);
     $daemon = $this->make(DaemonHttpRunner::class, array(
@@ -190,12 +190,12 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createScheduleWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           sleep(2);
-        }
+        },
       ]),
       'createQueueWorker' => $this->makeEmpty(SimpleWorker::class, [
         'process' => function () {
           throw new \Exception();
-        }
+        },
       ]),
     ]);
 

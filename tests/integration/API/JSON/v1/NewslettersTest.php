@@ -106,7 +106,7 @@ class NewslettersTest extends \MailPoetTest {
       ->equals('This newsletter does not exist.');
 
     $wp = Stub::make(new WPFunctions, [
-      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters'])
+      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
     ]);
     $this->endpoint = new Newsletters(
       ContainerWrapper::getInstance()->get(BulkActionController::class),
@@ -146,7 +146,7 @@ class NewslettersTest extends \MailPoetTest {
 
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
-      'doAction' => asCallable([WPHooksHelper::class, 'doAction'])
+      'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
     $this->endpoint = new Newsletters(
       ContainerWrapper::getInstance()->get(BulkActionController::class),
@@ -513,7 +513,7 @@ class NewslettersTest extends \MailPoetTest {
 
   function testItCanDuplicateANewsletter() {
     $wp = Stub::make(new WPFunctions, [
-      'doAction' => asCallable([WPHooksHelper::class, 'doAction'])
+      'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
     $this->endpoint = new Newsletters(
       ContainerWrapper::getInstance()->get(BulkActionController::class),

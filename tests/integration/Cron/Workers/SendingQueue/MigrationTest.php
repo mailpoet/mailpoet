@@ -119,7 +119,7 @@ class MigrationTest extends \MailPoetTest {
         // "timestamp" string is passed as an argument
         expect($time)->equals('timestamp');
         return $timestamp;
-      }
+      },
     ]);
 
     $next_run_date = Migration::getNextRunDate($wp);

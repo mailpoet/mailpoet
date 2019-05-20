@@ -22,7 +22,7 @@ class PostsTest extends \MailPoetUnitTest {
           'call check' => 'get_terms called',
           'arguments' => func_get_args()
         );
-      }
+      },
     ]));
 
     $result = Posts::getTerms($args);
@@ -45,7 +45,7 @@ class PostsTest extends \MailPoetUnitTest {
           'call check' => 'get_terms called',
           'arguments' => func_get_args()
         );
-      }
+      },
     ]));
 
     $result = Posts::getTerms($args);

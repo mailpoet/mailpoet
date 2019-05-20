@@ -35,7 +35,7 @@ class RssSimpleNews {
           'orientation' => 'vertical',
           'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
           'styles' =>
@@ -53,7 +53,7 @@ class RssSimpleNews {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -71,7 +71,7 @@ class RssSimpleNews {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -105,7 +105,7 @@ class RssSimpleNews {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -123,7 +123,7 @@ class RssSimpleNews {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -160,7 +160,7 @@ class RssSimpleNews {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -192,7 +192,7 @@ class RssSimpleNews {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -264,7 +264,7 @@ class RssSimpleNews {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -282,7 +282,7 @@ class RssSimpleNews {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -402,7 +402,7 @@ class RssSimpleNews {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -420,7 +420,7 @@ class RssSimpleNews {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>

@@ -15,7 +15,7 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     $this->custom_field = CustomField::createOrUpdate([
       'name' => 'custom field',
       'type' => 'text',
-      'params' => ['required' => '1']
+      'params' => ['required' => '1'],
     ]);
   }
 
@@ -51,7 +51,7 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     CustomField::createOrUpdate([
       'name' => 'custom field 2',
       'type' => 'text',
-      'params' => ['required' => '1']
+      'params' => ['required' => '1'],
     ]);
     $form = Form::createOrUpdate([
       'name' => 'form',

@@ -189,7 +189,7 @@ class Mailer {
 
   static function formatMailerSendSuccessResult() {
     return [
-      'response' => true
+      'response' => true,
     ];
   }
 }

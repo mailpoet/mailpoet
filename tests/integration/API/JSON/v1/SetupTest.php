@@ -18,7 +18,7 @@ class SetupTest extends \MailPoetTest {
 
   function testItCanReinstall() {
     $wp = Stub::make(new WPFunctions, [
-      'doAction' => asCallable([WPHooksHelper::class, 'doAction'])
+      'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
 
     $router = new Setup($wp);

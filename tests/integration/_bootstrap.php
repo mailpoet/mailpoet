@@ -78,7 +78,7 @@ $woocommerceBlacklistFilters = [
   'after_switch_theme',
   'after_setup_theme',
   'switch_blog',
-  'shutdown'
+  'shutdown',
 ];
 foreach ($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
   unset($GLOBALS['wp_filter'][$woocommerceBlacklistFilter]);

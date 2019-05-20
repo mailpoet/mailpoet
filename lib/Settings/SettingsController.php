@@ -52,15 +52,15 @@ class SettingsController {
           )
         ),
         CronTrigger::SETTING_NAME => [
-          'method' => CronTrigger::DEFAULT_METHOD
+          'method' => CronTrigger::DEFAULT_METHOD,
         ],
         'signup_confirmation' => [
           'enabled' => true,
           'subject' => sprintf(__('Confirm your subscription to %1$s', 'mailpoet'), WPFunctions::get()->getOption('blogname')),
-          'body' => WPFunctions::get()->__("Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team", 'mailpoet')
+          'body' => WPFunctions::get()->__("Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team", 'mailpoet'),
         ],
         'tracking' => [
-          'enabled' => true
+          'enabled' => true,
         ],
         'analytics' => [
           'enabled' => false,

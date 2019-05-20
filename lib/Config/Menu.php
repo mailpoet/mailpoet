@@ -531,12 +531,12 @@ class Menu {
     $system_status_data = [
       'cron' => [
         'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
-        'isReachable' => CronHelper::pingDaemon(true)
+        'isReachable' => CronHelper::pingDaemon(true),
       ],
       'mss' => [
         'enabled' => (Bridge::isMPSendingServiceEnabled()) ?
           ['isReachable' => Bridge::pingBridge()] :
-          false
+          false,
       ],
       'cronStatus' => CronHelper::getDaemon(),
       'queueStatus' => MailerLog::getMailerLog(),

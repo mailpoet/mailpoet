@@ -295,7 +295,7 @@ class Populator {
       $this->default_segment->hydrate([
         'name' => WPFunctions::get()->__('My First List', 'mailpoet'),
         'description' =>
-          WPFunctions::get()->__('This list is automatically created when you install MailPoet.', 'mailpoet')
+          WPFunctions::get()->__('This list is automatically created when you install MailPoet.', 'mailpoet'),
       ]);
       $this->default_segment->save();
     }

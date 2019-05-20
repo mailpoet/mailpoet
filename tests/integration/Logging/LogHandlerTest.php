@@ -21,7 +21,7 @@ class LogHandlerTest extends \MailPoetTest {
     $log_handler = Mock::double($log_handler, [
       'createNewLogModel' => function () use ($log_model) {
         return $log_model;
-      }
+      },
     ]);
 
     $log_handler->handle([

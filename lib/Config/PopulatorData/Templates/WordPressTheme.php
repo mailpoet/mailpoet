@@ -36,7 +36,7 @@ class WordPressTheme {
         'orientation' => 'vertical',
         'image' =>
         array (
-          'src' => NULL,
+          'src' => null,
           'display' => 'scale',
         ),
         'styles' =>
@@ -55,7 +55,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -74,7 +74,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -133,7 +133,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -152,7 +152,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -187,7 +187,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -206,7 +206,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -244,7 +244,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -346,7 +346,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -445,7 +445,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -464,7 +464,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -534,7 +534,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -553,7 +553,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -592,7 +592,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -632,7 +632,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -651,7 +651,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -686,7 +686,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -705,7 +705,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -746,7 +746,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -765,7 +765,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -792,7 +792,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -819,7 +819,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -848,7 +848,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -867,7 +867,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -902,7 +902,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -921,7 +921,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -956,7 +956,7 @@ class WordPressTheme {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -975,7 +975,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1013,7 +1013,7 @@ class WordPressTheme {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>

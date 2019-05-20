@@ -44,17 +44,17 @@ class HelpersTest extends \MailPoetUnitTest {
       'list' => [
         'string 1',
         'string 2   ',
-        '  string 3   '
+        '  string 3   ',
       ],
-      'number' => 523
+      'number' => 523,
     ]))->equals([
       'name' => 'some text here',
       'list' => [
         'string 1',
         'string 2',
-        'string 3'
+        'string 3',
       ],
-      'number' => 523
+      'number' => 523,
     ]);
   }
 }

@@ -13,12 +13,12 @@ class UserFlagTest extends \MailPoetTest {
     $created_flag = UserFlag::createOrUpdate([
       'user_id' => 3,
       'name' => 'first_flag',
-      'value' => 'foo'
+      'value' => 'foo',
     ]);
     $other_flag = UserFlag::createOrUpdate([
       'user_id' => 3,
       'name' => 'second_flag',
-      'value' => 'bar'
+      'value' => 'bar',
     ]);
     expect($created_flag->id > 0)->true();
     expect($created_flag->getErrors())->false();
@@ -30,12 +30,12 @@ class UserFlagTest extends \MailPoetTest {
     $created_flag = UserFlag::createOrUpdate([
       'user_id' => 3,
       'name' => 'first_flag',
-      'value' => 'foo'
+      'value' => 'foo',
     ]);
     $updated_flag = UserFlag::createOrUpdate([
       'user_id' => 3,
       'name' => 'first_flag',
-      'value' => 'bar'
+      'value' => 'bar',
     ]);
     expect($updated_flag->id)->equals($created_flag->id);
     expect($updated_flag->value)->equals('bar');

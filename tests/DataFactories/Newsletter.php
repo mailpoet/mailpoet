@@ -138,7 +138,7 @@ class Newsletter {
       15 => 'woocommerce_product_purchased',
       16 => 'user', // sendTo
       19 => 'immediate', // afterTimeType
-      20 => json_encode(['option' => $products_option])
+      20 => json_encode(['option' => $products_option]),
     ]);
     return $this;
   }

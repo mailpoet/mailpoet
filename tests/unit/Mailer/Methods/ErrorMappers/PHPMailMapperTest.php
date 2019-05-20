@@ -17,7 +17,7 @@ class PHPMailMapperTest extends \MailPoetUnitTest {
     WPFunctions::set(Stub::make(new WPFunctions, [
       '__' => function ($value) {
         return $value;
-      }
+      },
     ]));
   }
 

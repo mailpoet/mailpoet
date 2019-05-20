@@ -35,7 +35,7 @@ class FashionBlog {
         'orientation' => 'vertical',
         'image' =>
         array (
-          'src' => NULL,
+          'src' => null,
           'display' => 'scale',
         ),
         'styles' =>
@@ -54,7 +54,7 @@ class FashionBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -73,7 +73,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -192,7 +192,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -225,7 +225,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -277,7 +277,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -312,7 +312,7 @@ class FashionBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -331,7 +331,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -385,7 +385,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -418,7 +418,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -496,7 +496,7 @@ class FashionBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -515,7 +515,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -550,7 +550,7 @@ class FashionBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -569,7 +569,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -683,7 +683,7 @@ class FashionBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -702,7 +702,7 @@ class FashionBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>

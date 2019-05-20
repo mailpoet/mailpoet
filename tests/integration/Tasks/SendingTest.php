@@ -16,12 +16,12 @@ class SendingTest extends \MailPoetTest {
     $this->task = $this->createNewScheduledTask();
     $this->queue = $this->createNewSendingQueue([
       'newsletter' => $this->newsletter,
-      'task' => $this->task
+      'task' => $this->task,
     ]);
     $this->sending = $this->createNewSendingTask([
       'status' => null,
       'task' =>  $this->task,
-      'queue' => $this->queue
+      'queue' => $this->queue,
     ]);
   }
 

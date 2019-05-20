@@ -31,7 +31,7 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
     $free_container_stub = Stub::make(Container::class, [
       'get' => function () {
           return 'service';
-      }
+      },
     ]);
     $instance = new ContainerWrapper($free_container_stub);
     $service = $instance->get('service_id');
@@ -42,7 +42,7 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
     $free_container_stub = Stub::make(Container::class, [
       'get' => function ($id) {
         throw new ServiceNotFoundException($id);
-      }
+      },
     ]);
     $instance = new ContainerWrapper($free_container_stub);
     $exception = null;
@@ -58,12 +58,12 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
     $free_container_stub = Stub::make(Container::class, [
       'get' => function ($id) {
         throw new ServiceNotFoundException($id);
-      }
+      },
     ]);
     $premium_container_stub = Stub::make(Container::class, [
       'get' => function () {
         return 'service_1';
-      }
+      },
     ]);
     $instance = new ContainerWrapper($free_container_stub, $premium_container_stub);
     expect($instance->get('service'))->equals('service_1');
@@ -73,7 +73,7 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
     $container_stub = Stub::make(Container::class, [
       'get' => function ($id) {
         throw new ServiceNotFoundException($id);
-      }
+      },
     ]);
     $instance = new ContainerWrapper($container_stub, $container_stub);
     $exception = null;

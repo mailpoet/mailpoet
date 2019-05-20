@@ -36,7 +36,7 @@ class Software {
         'orientation' => 'vertical',
         'image' =>
         array (
-          'src' => NULL,
+          'src' => null,
           'display' => 'scale',
         ),
         'styles' =>
@@ -55,7 +55,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -74,7 +74,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -109,7 +109,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -128,7 +128,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -166,7 +166,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -213,7 +213,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -232,7 +232,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -301,7 +301,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -320,7 +320,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -355,7 +355,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -374,7 +374,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -437,7 +437,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -477,7 +477,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -496,7 +496,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -531,7 +531,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -550,7 +550,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -588,7 +588,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -653,7 +653,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -672,7 +672,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -707,7 +707,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -726,7 +726,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -803,7 +803,7 @@ class Software {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -822,7 +822,7 @@ class Software {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>

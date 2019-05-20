@@ -27,7 +27,7 @@ class SendingQueueTest extends \MailPoetTest {
     $mock = Mock::double('MailPoet\WP\Emoji', [
       'encodeForUTF8Column' => function($params) {
         return $params;
-      }
+      },
     ]);
     $this->queue->encodeEmojisInBody($this->rendered_body);
     $mock->verifyInvokedMultipleTimes('encodeForUTF8Column', 2);
@@ -37,7 +37,7 @@ class SendingQueueTest extends \MailPoetTest {
     $mock = Mock::double('MailPoet\WP\Emoji', [
       'decodeEntities' => function($params) {
         return $params;
-      }
+      },
     ]);
     $this->queue->decodeEmojisInBody($this->rendered_body);
     $mock->verifyInvokedMultipleTimes('decodeEntities', 2);

@@ -38,7 +38,7 @@ class DogFood {
           'orientation' => 'vertical',
           'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
           'styles' =>
@@ -56,7 +56,7 @@ class DogFood {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -74,7 +74,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -108,7 +108,7 @@ class DogFood {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -126,7 +126,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -175,7 +175,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -247,7 +247,7 @@ class DogFood {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -265,7 +265,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -304,7 +304,7 @@ class DogFood {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -322,7 +322,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -402,7 +402,7 @@ class DogFood {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -420,7 +420,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -489,7 +489,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -558,7 +558,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -629,7 +629,7 @@ class DogFood {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -647,7 +647,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -712,7 +712,7 @@ class DogFood {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -730,7 +730,7 @@ class DogFood {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>

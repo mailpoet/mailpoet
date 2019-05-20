@@ -39,7 +39,7 @@ class KidsClothing {
           'image' =>
             array (
               'display' => 'scale',
-              'src' => NULL,
+              'src' => null,
             ),
           'styles' =>
             array (
@@ -57,7 +57,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -75,7 +75,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -109,7 +109,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -127,7 +127,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -187,7 +187,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -224,7 +224,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -286,7 +286,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -304,7 +304,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -338,7 +338,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -356,7 +356,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -381,7 +381,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -406,7 +406,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -450,7 +450,7 @@ class KidsClothing {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -500,7 +500,7 @@ class KidsClothing {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -532,7 +532,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -550,7 +550,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -577,7 +577,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -595,7 +595,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -629,7 +629,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -647,7 +647,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -684,7 +684,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -756,7 +756,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -814,7 +814,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -832,7 +832,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -866,7 +866,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -884,7 +884,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -923,7 +923,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -941,7 +941,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -975,7 +975,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -993,7 +993,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -1060,7 +1060,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -1127,7 +1127,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -1196,7 +1196,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -1214,7 +1214,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (
@@ -1253,7 +1253,7 @@ class KidsClothing {
                   'image' =>
                     array (
                       'display' => 'scale',
-                      'src' => NULL,
+                      'src' => null,
                     ),
                   'styles' =>
                     array (
@@ -1271,7 +1271,7 @@ class KidsClothing {
                           'image' =>
                             array (
                               'display' => 'scale',
-                              'src' => NULL,
+                              'src' => null,
                             ),
                           'styles' =>
                             array (

@@ -99,7 +99,7 @@ class AccessControlTest extends \MailPoetTest {
     $capability = 'some_capability';
     $access_control = new AccessControl();
     WPFunctions::set(Stub::make(new WPFunctions, [
-      'currentUserCan' => true
+      'currentUserCan' => true,
     ]));
 
     expect($access_control->validatePermission($capability))->true();

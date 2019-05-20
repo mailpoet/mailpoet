@@ -43,7 +43,7 @@ class WorkerTest extends \MailPoetTest {
     $this->stats_notifications = new Worker($this->mailer, $this->renderer, $this->settings, new FeaturesController(), $this->makeEmpty(WCHelper::class));
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
-      'address' => 'email@example.com'
+      'address' => 'email@example.com',
     ]);
     $newsletter = Newsletter::createOrUpdate([
       'subject' => 'Email Subject1',

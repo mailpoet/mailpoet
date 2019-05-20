@@ -36,7 +36,7 @@ class HealthyFoodBlog {
         'orientation' => 'vertical',
         'image' =>
         array (
-          'src' => NULL,
+          'src' => null,
           'display' => 'scale',
         ),
         'styles' =>
@@ -55,7 +55,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -74,7 +74,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -109,7 +109,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -128,7 +128,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -166,7 +166,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -206,7 +206,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -225,7 +225,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -275,7 +275,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -308,7 +308,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -410,7 +410,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -461,7 +461,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -496,7 +496,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -515,7 +515,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -558,7 +558,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -610,7 +610,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -629,7 +629,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -664,7 +664,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -683,7 +683,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -743,7 +743,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -797,7 +797,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -835,7 +835,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -920,7 +920,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -955,7 +955,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -974,7 +974,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1009,7 +1009,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1028,7 +1028,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1063,7 +1063,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1082,7 +1082,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1123,7 +1123,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1142,7 +1142,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1209,7 +1209,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1276,7 +1276,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1345,7 +1345,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1364,7 +1364,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1414,7 +1414,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1433,7 +1433,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1500,7 +1500,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1567,7 +1567,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1636,7 +1636,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1655,7 +1655,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1705,7 +1705,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1724,7 +1724,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1791,7 +1791,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1870,7 +1870,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1889,7 +1889,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1939,7 +1939,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1958,7 +1958,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1993,7 +1993,7 @@ class HealthyFoodBlog {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -2012,7 +2012,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -2050,7 +2050,7 @@ class HealthyFoodBlog {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>

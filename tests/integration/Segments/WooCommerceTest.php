@@ -395,7 +395,7 @@ class WooCommerceTest extends \MailPoetTest  {
       'email' => $user2->user_email,
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_UNSUBSCRIBED,
-      'confirmed_ip' => '123'
+      'confirmed_ip' => '123',
     ]);
     $association2 = SubscriberSegment::create();
     $association2->subscriber_id = $subscriber2->id;
@@ -437,7 +437,7 @@ class WooCommerceTest extends \MailPoetTest  {
       'email' => $user2->user_email,
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_SUBSCRIBED,
-      'confirmed_ip' => '123'
+      'confirmed_ip' => '123',
     ]);
     $association2 = SubscriberSegment::create();
     $association2->subscriber_id = $subscriber2->id;

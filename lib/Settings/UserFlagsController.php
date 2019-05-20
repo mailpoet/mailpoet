@@ -41,7 +41,7 @@ class UserFlagsController {
     UserFlag::createOrUpdate([
       'user_id' => $current_user_id,
       'name' => $name,
-      'value' => $value
+      'value' => $value,
     ]);
     if ($this->isLoaded()) {
       $this->data[$name] = $value;

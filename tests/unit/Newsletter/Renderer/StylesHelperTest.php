@@ -10,26 +10,26 @@ class StylesHelperTest extends \MailPoetUnitTest {
       "text" => [
         "fontColor" => "#565656",
         "fontFamily" => "Arial",
-        "fontSize" => "16px"
+        "fontSize" => "16px",
       ],
       "h1" => [
         "fontColor" => "#565656",
         "fontFamily" => "Roboto",
-        "fontSize" => "36px"
+        "fontSize" => "36px",
       ],
       "h2" => [
         "fontColor" => "#565656",
         "fontFamily" => "Source Sans Pro",
-        "fontSize" => "26px"
+        "fontSize" => "26px",
       ],
       "h3" => [
         "fontColor" => "#565656",
         "fontFamily" => "Roboto",
-        "fontSize" => "18px"
+        "fontSize" => "18px",
       ],
       "link" => [
         "fontColor" => "#561ab9",
-        "textDecoration" => "underline"
+        "textDecoration" => "underline",
       ],
     ];
 
@@ -37,26 +37,26 @@ class StylesHelperTest extends \MailPoetUnitTest {
       "text" => [
         "fontColor" => "#565656",
         "fontFamily" => "Arial",
-        "fontSize" => "16px"
+        "fontSize" => "16px",
       ],
       "h1" => [
         "fontColor" => "#565656",
         "fontFamily" => "Arial",
-        "fontSize" => "36px"
+        "fontSize" => "36px",
       ],
       "h2" => [
         "fontColor" => "#565656",
         "fontFamily" => "Times New Roman",
-        "fontSize" => "26px"
+        "fontSize" => "26px",
       ],
       "h3" => [
         "fontColor" => "#565656",
         "fontFamily" => "Georgia",
-        "fontSize" => "18px"
+        "fontSize" => "18px",
       ],
       "link" => [
         "fontColor" => "#561ab9",
-        "textDecoration" => "underline"
+        "textDecoration" => "underline",
       ],
     ];
 

@@ -27,7 +27,7 @@ class WooCommerceProduct {
       'price' => 10,
       'categoryIds' => null,
       'tagIds' => null,
-      'images' => null
+      'images' => null,
     ];
   }
 

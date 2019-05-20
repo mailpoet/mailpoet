@@ -11,7 +11,7 @@ class ErrorResponseTest extends \MailPoetUnitTest {
     WPFunctions::set(Stub::make(new WPFunctions, [
       '__' => function ($value) {
         return $value;
-      }
+      },
     ]));
     $errors = array(
       'valid error',

@@ -6,7 +6,8 @@ namespace MailPoet\Util;
  * @license MIT License
  * */
 
-if (!class_exists('ZipArchive')) { throw new \Exception('ZipArchive not found'); }
+if (!class_exists('ZipArchive')) { throw new \Exception('ZipArchive not found'); 
+}
 
 class XLSXWriter
 {
@@ -23,8 +24,7 @@ class XLSXWriter
   protected $current_sheet = '';
   public $rtl = false;
 
-  public function __construct()
-  {
+  public function __construct() {
     if (!ini_get('date.timezone'))
     {
       //using date functions can kick out warning if this isn't set
@@ -32,10 +32,11 @@ class XLSXWriter
     }
   }
 
-  public function setAuthor($author='') { $this->author=$author; }
+  public function setAuthor($author='') {
+    $this->author=$author; 
+  }
 
-  public function __destruct()
-  {
+  public function __destruct() {
     if (!empty($this->temp_files)) {
       foreach ($this->temp_files as $temp_file) {
         @unlink($temp_file);
@@ -43,41 +44,41 @@ class XLSXWriter
     }
   }
 
-  protected function tempFilename()
-  {
+  protected function tempFilename() {
     $filename = tempnam(sys_get_temp_dir(), "xlsx_writer_");
     $this->temp_files[] = $filename;
     return $filename;
   }
 
-  public function writeToStdOut()
-  {
+  public function writeToStdOut() {
     $temp_file = $this->tempFilename();
     self::writeToFile($temp_file);
     readfile($temp_file);
   }
 
-  public function writeToString()
-  {
+  public function writeToString() {
     $temp_file = $this->tempFilename();
     self::writeToFile($temp_file);
     $string = file_get_contents($temp_file);
     return $string;
   }
 
-  public function writeToFile($filename)
-  {
+  public function writeToFile($filename) {
     foreach ($this->sheets as $sheet_name => $sheet) {
       self::finalizeSheet($sheet_name);//making sure all footers have been written
     }
 
     @unlink($filename);//if the zip already exists, overwrite it
     $zip = new \ZipArchive();
-    if (empty($this->sheets))                       { self::log("Error in ".__CLASS__."::".__FUNCTION__.", no worksheets defined."); return; }
-    if (!$zip->open($filename, \ZipArchive::CREATE)) { self::log("Error in ".__CLASS__."::".__FUNCTION__.", unable to create zip."); return; }
+    if (empty($this->sheets))                       { self::log("Error in ".__CLASS__."::".__FUNCTION__.", no worksheets defined.");
+      return; 
+    }
+    if (!$zip->open($filename, \ZipArchive::CREATE)) { self::log("Error in ".__CLASS__."::".__FUNCTION__.", unable to create zip.");
+      return; 
+    }
 
     $zip->addEmptyDir("docProps/");
-    $zip->addFromString("docProps/app.xml" , self::buildAppXML() );
+    $zip->addFromString("docProps/app.xml", self::buildAppXML() );
     $zip->addFromString("docProps/core.xml", self::buildCoreXML());
 
     $zip->addEmptyDir("_rels/");
@@ -90,17 +91,16 @@ class XLSXWriter
     if (!empty($this->shared_strings)) {
       $zip->addFile($this->writeSharedStringsXML(), "xl/sharedStrings.xml" );  //$zip->addFromString("xl/sharedStrings.xml",     self::buildSharedStringsXML() );
     }
-    $zip->addFromString("xl/workbook.xml"         , self::buildWorkbookXML() );
+    $zip->addFromString("xl/workbook.xml", self::buildWorkbookXML() );
     $zip->addFile($this->writeStylesXML(), "xl/styles.xml" );  //$zip->addFromString("xl/styles.xml"           , self::buildStylesXML() );
-    $zip->addFromString("[Content_Types].xml"     , self::buildContentTypesXML() );
+    $zip->addFromString("[Content_Types].xml", self::buildContentTypesXML() );
 
     $zip->addEmptyDir("xl/_rels/");
     $zip->addFromString("xl/_rels/workbook.xml.rels", self::buildWorkbookRelsXML() );
     $zip->close();
   }
 
-  protected function initializeSheet($sheet_name)
-  {
+  protected function initializeSheet($sheet_name) {
     //if already initialized
     if ($this->current_sheet==$sheet_name || isset($this->sheets[$sheet_name]))
       return;
@@ -140,8 +140,7 @@ class XLSXWriter
     $sheet->file_writer->write(  '<sheetData>');
   }
 
-  public function writeSheetHeader($sheet_name, array $header_types)
-  {
+  public function writeSheetHeader($sheet_name, array $header_types) {
     if (empty($sheet_name) || empty($header_types) || !empty($this->sheets[$sheet_name]))
       return;
 
@@ -159,8 +158,7 @@ class XLSXWriter
     $this->current_sheet = $sheet_name;
   }
 
-  public function writeSheetRow($sheet_name, array $row)
-  {
+  public function writeSheetRow($sheet_name, array $row) {
     if (empty($sheet_name) || empty($row))
       return;
 
@@ -180,8 +178,7 @@ class XLSXWriter
     $this->current_sheet = $sheet_name;
   }
 
-  protected function finalizeSheet($sheet_name)
-  {
+  protected function finalizeSheet($sheet_name) {
     if (empty($sheet_name) || $this->sheets[$sheet_name]->finalized)
       return;
 
@@ -206,23 +203,21 @@ class XLSXWriter
     $sheet->finalized=true;
   }
 
-  public function writeSheet(array $data, $sheet_name='', array $header_types=array() )
-  {
+  public function writeSheet(array $data, $sheet_name='', array $header_types=array() ) {
     $sheet_name = empty($sheet_name) ? 'Sheet1' : $sheet_name;
     $data = empty($data) ? array(array('')) : $data;
     if (!empty($header_types))
     {
       $this->writeSheetHeader($sheet_name, $header_types);
     }
-    foreach ($data as $i=>$row)
+    foreach ($data as $i => $row)
     {
       $this->writeSheetRow($sheet_name, $row);
     }
     $this->finalizeSheet($sheet_name);
   }
 
-  protected function writeCell(XLSXWriter_BuffererWriter &$file, $row_number, $column_number, $value, $cell_format)
-  {
+  protected function writeCell(XLSXWriter_BuffererWriter &$file, $row_number, $column_number, $value, $cell_format) {
     static $styles = array('money'=>1,'dollar'=>1,'datetime'=>2,'date'=>3,'string'=>0);
     $cell = self::xlsCell($row_number, $column_number);
     $s = isset($styles[$cell_format]) ? $styles[$cell_format] : '0';
@@ -244,72 +239,70 @@ class XLSXWriter
     }
   }
 
-  protected function writeStylesXML()
-  {
+  protected function writeStylesXML() {
     $temporary_filename = $this->tempFilename();
     $file = new XLSXWriter_BuffererWriter($temporary_filename);
     $file->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n");
     $file->write('<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">');
     $file->write('<numFmts count="4">');
-    $file->write(		'<numFmt formatCode="GENERAL" numFmtId="164"/>');
-    $file->write(		'<numFmt formatCode="[$$-1009]#,##0.00;[RED]\-[$$-1009]#,##0.00" numFmtId="165"/>');
-    $file->write(		'<numFmt formatCode="YYYY-MM-DD\ HH:MM:SS" numFmtId="166"/>');
-    $file->write(		'<numFmt formatCode="YYYY-MM-DD" numFmtId="167"/>');
+    $file->write(        '<numFmt formatCode="GENERAL" numFmtId="164"/>');
+    $file->write(        '<numFmt formatCode="[$$-1009]#,##0.00;[RED]\-[$$-1009]#,##0.00" numFmtId="165"/>');
+    $file->write(        '<numFmt formatCode="YYYY-MM-DD\ HH:MM:SS" numFmtId="166"/>');
+    $file->write(        '<numFmt formatCode="YYYY-MM-DD" numFmtId="167"/>');
     $file->write('</numFmts>');
     $file->write('<fonts count="4">');
-    $file->write(		'<font><name val="Arial"/><charset val="1"/><family val="2"/><sz val="10"/></font>');
-    $file->write(		'<font><name val="Arial"/><family val="0"/><sz val="10"/></font>');
-    $file->write(		'<font><name val="Arial"/><family val="0"/><sz val="10"/></font>');
-    $file->write(		'<font><name val="Arial"/><family val="0"/><sz val="10"/></font>');
+    $file->write(        '<font><name val="Arial"/><charset val="1"/><family val="2"/><sz val="10"/></font>');
+    $file->write(        '<font><name val="Arial"/><family val="0"/><sz val="10"/></font>');
+    $file->write(        '<font><name val="Arial"/><family val="0"/><sz val="10"/></font>');
+    $file->write(        '<font><name val="Arial"/><family val="0"/><sz val="10"/></font>');
     $file->write('</fonts>');
     $file->write('<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>');
     $file->write('<borders count="1"><border diagonalDown="false" diagonalUp="false"><left/><right/><top/><bottom/><diagonal/></border></borders>');
-    $file->write(	'<cellStyleXfs count="20">');
-    $file->write(		'<xf applyAlignment="true" applyBorder="true" applyFont="true" applyProtection="true" borderId="0" fillId="0" fontId="0" numFmtId="164">');
-    $file->write(		'<alignment horizontal="general" indent="0" shrinkToFit="false" textRotation="0" vertical="bottom" wrapText="false"/>');
-    $file->write(		'<protection hidden="false" locked="true"/>');
-    $file->write(		'</xf>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="2" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="2" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="43"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="41"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="44"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="42"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="9"/>');
-    $file->write(	'</cellStyleXfs>');
-    $file->write(	'<cellXfs count="4">');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="false" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="164" xfId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="false" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="165" xfId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="false" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="166" xfId="0"/>');
-    $file->write(		'<xf applyAlignment="false" applyBorder="false" applyFont="false" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="167" xfId="0"/>');
-    $file->write(	'</cellXfs>');
-    $file->write(	'<cellStyles count="6">');
-    $file->write(		'<cellStyle builtinId="0" customBuiltin="false" name="Normal" xfId="0"/>');
-    $file->write(		'<cellStyle builtinId="3" customBuiltin="false" name="Comma" xfId="15"/>');
-    $file->write(		'<cellStyle builtinId="6" customBuiltin="false" name="Comma [0]" xfId="16"/>');
-    $file->write(		'<cellStyle builtinId="4" customBuiltin="false" name="Currency" xfId="17"/>');
-    $file->write(		'<cellStyle builtinId="7" customBuiltin="false" name="Currency [0]" xfId="18"/>');
-    $file->write(		'<cellStyle builtinId="5" customBuiltin="false" name="Percent" xfId="19"/>');
-    $file->write(	'</cellStyles>');
+    $file->write(    '<cellStyleXfs count="20">');
+    $file->write(        '<xf applyAlignment="true" applyBorder="true" applyFont="true" applyProtection="true" borderId="0" fillId="0" fontId="0" numFmtId="164">');
+    $file->write(        '<alignment horizontal="general" indent="0" shrinkToFit="false" textRotation="0" vertical="bottom" wrapText="false"/>');
+    $file->write(        '<protection hidden="false" locked="true"/>');
+    $file->write(        '</xf>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="2" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="2" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="43"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="41"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="44"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="42"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="true" applyProtection="false" borderId="0" fillId="0" fontId="1" numFmtId="9"/>');
+    $file->write(    '</cellStyleXfs>');
+    $file->write(    '<cellXfs count="4">');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="false" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="164" xfId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="false" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="165" xfId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="false" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="166" xfId="0"/>');
+    $file->write(        '<xf applyAlignment="false" applyBorder="false" applyFont="false" applyProtection="false" borderId="0" fillId="0" fontId="0" numFmtId="167" xfId="0"/>');
+    $file->write(    '</cellXfs>');
+    $file->write(    '<cellStyles count="6">');
+    $file->write(        '<cellStyle builtinId="0" customBuiltin="false" name="Normal" xfId="0"/>');
+    $file->write(        '<cellStyle builtinId="3" customBuiltin="false" name="Comma" xfId="15"/>');
+    $file->write(        '<cellStyle builtinId="6" customBuiltin="false" name="Comma [0]" xfId="16"/>');
+    $file->write(        '<cellStyle builtinId="4" customBuiltin="false" name="Currency" xfId="17"/>');
+    $file->write(        '<cellStyle builtinId="7" customBuiltin="false" name="Currency [0]" xfId="18"/>');
+    $file->write(        '<cellStyle builtinId="5" customBuiltin="false" name="Percent" xfId="19"/>');
+    $file->write(    '</cellStyles>');
     $file->write('</styleSheet>');
     $file->close();
     return $temporary_filename;
   }
 
-  protected function setSharedString($v)
-  {
+  protected function setSharedString($v) {
     if (isset($this->shared_strings[$v]))
     {
       $string_value = $this->shared_strings[$v];
@@ -323,13 +316,12 @@ class XLSXWriter
     return $string_value;
   }
 
-  protected function writeSharedStringsXML()
-  {
+  protected function writeSharedStringsXML() {
     $temporary_filename = $this->tempFilename();
-    $file = new XLSXWriter_BuffererWriter($temporary_filename, $fd_flags='w', $check_utf8=true);
+    $file = new XLSXWriter_BuffererWriter($temporary_filename, $fd_flags = 'w', $check_utf8 = true);
     $file->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n");
     $file->write('<sst count="'.($this->shared_string_count).'" uniqueCount="'.count($this->shared_strings).'" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">');
-    foreach ($this->shared_strings as $s=>$c)
+    foreach ($this->shared_strings as $s => $c)
     {
       $file->write('<si><t>'.self::xmlspecialchars($s).'</t></si>');
     }
@@ -339,16 +331,14 @@ class XLSXWriter
     return $temporary_filename;
   }
 
-  protected function buildAppXML()
-  {
+  protected function buildAppXML() {
     $app_xml="";
     $app_xml.='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
     $app_xml.='<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><TotalTime>0</TotalTime></Properties>';
     return $app_xml;
   }
 
-  protected function buildCoreXML()
-  {
+  protected function buildCoreXML() {
     $core_xml="";
     $core_xml.='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
     $core_xml.='<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">';
@@ -359,8 +349,7 @@ class XLSXWriter
     return $core_xml;
   }
 
-  protected function buildRelationshipsXML()
-  {
+  protected function buildRelationshipsXML() {
     $rels_xml="";
     $rels_xml.='<?xml version="1.0" encoding="UTF-8"?>'."\n";
     $rels_xml.='<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
@@ -372,8 +361,7 @@ class XLSXWriter
     return $rels_xml;
   }
 
-  protected function buildWorkbookXML()
-  {
+  protected function buildWorkbookXML() {
     $i=0;
     $workbook_xml="";
     $workbook_xml.='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
@@ -381,7 +369,7 @@ class XLSXWriter
     $workbook_xml.='<fileVersion appName="Calc"/><workbookPr backupFile="false" showObjects="all" date1904="false"/><workbookProtection/>';
     $workbook_xml.='<bookViews><workbookView activeTab="0" firstSheet="0" showHorizontalScroll="true" showSheetTabs="true" showVerticalScroll="true" tabRatio="212" windowHeight="8192" windowWidth="16384" xWindow="0" yWindow="0"/></bookViews>';
     $workbook_xml.='<sheets>';
-    foreach ($this->sheets as $sheet_name=>$sheet) {
+    foreach ($this->sheets as $sheet_name => $sheet) {
       $workbook_xml.='<sheet name="'.self::xmlspecialchars($sheet->sheetname).'" sheetId="'.($i+1).'" state="visible" r:id="rId'.($i+2).'"/>';
       $i++;
     }
@@ -390,14 +378,13 @@ class XLSXWriter
     return $workbook_xml;
   }
 
-  protected function buildWorkbookRelsXML()
-  {
+  protected function buildWorkbookRelsXML() {
     $i=0;
     $wkbkrels_xml="";
     $wkbkrels_xml.='<?xml version="1.0" encoding="UTF-8"?>'."\n";
     $wkbkrels_xml.='<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
     $wkbkrels_xml.='<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
-    foreach ($this->sheets as $sheet_name=>$sheet) {
+    foreach ($this->sheets as $sheet_name => $sheet) {
       $wkbkrels_xml.='<Relationship Id="rId'.($i+2).'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/'.($sheet->xmlname).'"/>';
       $i++;
     }
@@ -409,14 +396,13 @@ class XLSXWriter
     return $wkbkrels_xml;
   }
 
-  protected function buildContentTypesXML()
-  {
+  protected function buildContentTypesXML() {
     $content_types_xml="";
     $content_types_xml.='<?xml version="1.0" encoding="UTF-8"?>'."\n";
     $content_types_xml.='<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">';
     $content_types_xml.='<Override PartName="/_rels/.rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>';
     $content_types_xml.='<Override PartName="/xl/_rels/workbook.xml.rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>';
-    foreach ($this->sheets as $sheet_name=>$sheet) {
+    foreach ($this->sheets as $sheet_name => $sheet) {
       $content_types_xml.='<Override PartName="/xl/worksheets/'.($sheet->xmlname).'" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
     }
     if (!empty($this->shared_strings)) {
@@ -437,8 +423,7 @@ class XLSXWriter
    * @param $column_number int, zero based
    * @return Cell label/coordinates, ex: A1, C3, AA42
    * */
-  public static function xlsCell($row_number, $column_number)
-  {
+  public static function xlsCell($row_number, $column_number) {
     $n = $column_number;
     for ($r = ""; $n >= 0; $n = intval($n / 26) - 1) {
       $r = chr($n%26 + 0x41) . $r;
@@ -446,33 +431,30 @@ class XLSXWriter
     return $r . ($row_number+1);
   }
   //------------------------------------------------------------------
-  public static function log($string)
-  {
+  public static function log($string) {
     file_put_contents("php://stderr", date("Y-m-d H:i:s:").rtrim(is_array($string) ? json_encode($string) : $string)."\n");
   }
   //------------------------------------------------------------------
-  public static function sanitize_filename($filename) //http://msdn.microsoft.com/en-us/library/aa365247%28VS.85%29.aspx
-  {
-    $nonprinting = array_map('chr', range(0,31));
+  public static function sanitize_filename($filename) {
+    //http://msdn.microsoft.com/en-us/library/aa365247%28VS.85%29.aspx
+    $nonprinting = array_map('chr', range(0, 31));
     $invalid_chars = array('<', '>', '?', '"', ':', '|', '\\', '/', '*', '&');
-    $all_invalids = array_merge($nonprinting,$invalid_chars);
+    $all_invalids = array_merge($nonprinting, $invalid_chars);
     return str_replace($all_invalids, "", $filename);
   }
   //------------------------------------------------------------------
-  public static function xmlspecialchars($val)
-  {
+  public static function xmlspecialchars($val) {
     return str_replace("'", "&#39;", htmlspecialchars($val));
   }
   //------------------------------------------------------------------
-  public static function array_first_key(array $arr)
-  {
+  public static function array_first_key(array $arr) {
     reset($arr);
     $first_key = key($arr);
     return $first_key;
   }
   //------------------------------------------------------------------
-  public static function convert_date_time($date_input) //thanks to Excel::Writer::XLSX::Worksheet.pm (perl)
-  {
+  public static function convert_date_time($date_input) {
+    //thanks to Excel::Writer::XLSX::Worksheet.pm (perl)
     $days    = 0;    # Number of days since epoch
     $seconds = 0;    # Time expressed as fraction of 24h hours in seconds
     $year=$month=$day=0;
@@ -512,7 +494,7 @@ class XLSXWriter
     # Some boundary checks
     if ($year < $epoch || $year > 9999) return 0;
     if ($month < 1     || $month > 12)  return 0;
-    if ($day < 1       || $day > $mdays[ $month - 1 ]) return 0;
+    if ($day < 1       || $day > $mdays[$month - 1]) return 0;
 
     # Accumulate the number of days since the epoch.
     $days = $day;    # Add days for current month
@@ -524,7 +506,8 @@ class XLSXWriter
     $days -= $leap;                                      # Already counted above
 
     # Adjust for Excel erroneously treating 1900 as a leap year.
-    if ($days > 59) { $days++;}
+    if ($days > 59) { $days++;
+    }
 
     return $days + $seconds;
   }
@@ -537,8 +520,7 @@ class XLSXWriter_BuffererWriter
   protected $buffer='';
   protected $check_utf8=false;
 
-  public function __construct($filename, $fd_fopen_flags='w', $check_utf8=false)
-  {
+  public function __construct($filename, $fd_fopen_flags='w', $check_utf8=false) {
     $this->check_utf8 = $check_utf8;
     $this->fd = fopen($filename, $fd_fopen_flags);
     if ($this->fd===false) {
@@ -546,16 +528,14 @@ class XLSXWriter_BuffererWriter
     }
   }
 
-  public function write($string)
-  {
+  public function write($string) {
     $this->buffer.=$string;
     if (isset($this->buffer[8191])) {
       $this->purge();
     }
   }
 
-  protected function purge()
-  {
+  protected function purge() {
     if ($this->fd) {
       if ($this->check_utf8 && !self::isValidUTF8($this->buffer)) {
         XLSXWriter::log("Error, invalid UTF8 encoding detected.");
@@ -566,8 +546,7 @@ class XLSXWriter_BuffererWriter
     }
   }
 
-  public function close()
-  {
+  public function close() {
     $this->purge();
     if ($this->fd) {
       fclose($this->fd);
@@ -575,13 +554,11 @@ class XLSXWriter_BuffererWriter
     }
   }
 
-  public function __destruct()
-  {
+  public function __destruct() {
     $this->close();
   }
 
-  public function ftell()
-  {
+  public function ftell() {
     if ($this->fd) {
       $this->purge();
       return ftell($this->fd);
@@ -589,8 +566,7 @@ class XLSXWriter_BuffererWriter
     return -1;
   }
 
-  public function fseek($pos)
-  {
+  public function fseek($pos) {
     if ($this->fd) {
       $this->purge();
       return fseek($this->fd, $pos);
@@ -598,8 +574,7 @@ class XLSXWriter_BuffererWriter
     return -1;
   }
 
-  protected static function isValidUTF8($string)
-  {
+  protected static function isValidUTF8($string) {
     if (function_exists('mb_check_encoding'))
     {
       return mb_check_encoding($string, 'UTF-8') ? true : false;

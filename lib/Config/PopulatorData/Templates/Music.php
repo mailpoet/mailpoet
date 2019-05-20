@@ -35,7 +35,7 @@ class Music {
           'orientation' => 'vertical',
           'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
           'styles' =>
@@ -53,7 +53,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -71,7 +71,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -140,7 +140,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -198,7 +198,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -216,7 +216,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -255,7 +255,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -273,7 +273,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -317,7 +317,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -361,7 +361,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -407,7 +407,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -425,7 +425,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -469,7 +469,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -513,7 +513,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -559,7 +559,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -577,7 +577,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -621,7 +621,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -665,7 +665,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -711,7 +711,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -729,7 +729,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -773,7 +773,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -817,7 +817,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -863,7 +863,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -881,7 +881,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -915,7 +915,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -933,7 +933,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -967,7 +967,7 @@ class Music {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -985,7 +985,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -1017,7 +1017,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -1098,7 +1098,7 @@ class Music {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>

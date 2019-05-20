@@ -14,13 +14,13 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   function testItSendsConfirmationEmail() {
     Mock::double('MailPoet\Subscription\Url', [
-      'getConfirmationUrl' => 'http://example.com'
+      'getConfirmationUrl' => 'http://example.com',
     ]);
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'John',
       'last_name' => 'Mailer',
-      'email' => 'john@mailpoet.com'
+      'email' => 'john@mailpoet.com',
     ]);
 
     $mailer = Stub::makeEmpty(Mailer::class, [
@@ -52,7 +52,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $subscriber->hydrate([
       'first_name' => 'John',
       'last_name' => 'Mailer',
-      'email' => 'john@mailpoet.com'
+      'email' => 'john@mailpoet.com',
     ]);
 
     $mailer = Stub::makeEmpty(Mailer::class, [
@@ -76,13 +76,13 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $subscriber->hydrate([
       'first_name' => 'John',
       'last_name' => 'Mailer',
-      'email' => 'john@mailpoet.com'
+      'email' => 'john@mailpoet.com',
     ]);
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => function() {
         return true;
-      }
+      },
     ], $this);
     $sender = new ConfirmationEmailMailer($mailer);
 
@@ -99,13 +99,13 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $subscriber->hydrate([
       'first_name' => 'John',
       'last_name' => 'Mailer',
-      'email' => 'john@mailpoet.com'
+      'email' => 'john@mailpoet.com',
     ]);
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => function() {
         return true;
-      }
+      },
     ], $this);
     $sender = new ConfirmationEmailMailer($mailer);
 

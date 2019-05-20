@@ -34,7 +34,7 @@ class NewsDay {
           'orientation' => 'vertical',
           'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
           'styles' =>
@@ -52,7 +52,7 @@ class NewsDay {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -70,7 +70,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -121,7 +121,7 @@ class NewsDay {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -139,7 +139,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -173,7 +173,7 @@ class NewsDay {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -191,7 +191,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -289,7 +289,7 @@ class NewsDay {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -307,7 +307,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -378,7 +378,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -451,7 +451,7 @@ class NewsDay {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -469,7 +469,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -527,7 +527,7 @@ class NewsDay {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -545,7 +545,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -591,7 +591,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -695,7 +695,7 @@ class NewsDay {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -713,7 +713,7 @@ class NewsDay {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>

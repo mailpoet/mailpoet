@@ -495,7 +495,7 @@ class SubscribersTest extends \MailPoetTest {
     $custom_field = CustomField::createOrUpdate([
       'name' => 'custom field',
       'type' => 'text',
-      'params' => ['required' => '1']
+      'params' => ['required' => '1'],
     ]);
     $form = Form::createOrUpdate([
       'name' => 'form',
@@ -645,7 +645,7 @@ class SubscribersTest extends \MailPoetTest {
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'segments' => [
-        $this->segment_1->id
+        $this->segment_1->id,
       ],
       'source' => Source::IMPORTED,
     ));

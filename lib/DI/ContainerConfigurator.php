@@ -26,7 +26,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setPublic(true)
       ->setFactory([
       ContainerWrapper::class,
-      'getInstance'
+      'getInstance',
       ]);
     // Analytics
     $container->autowire(\MailPoet\Analytics\Reporter::class)->setPublic(true);
