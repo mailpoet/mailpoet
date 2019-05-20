@@ -226,7 +226,7 @@ class Populator {
       $sender = $this->settings->fetch('sender', []);
       $this->settings->set('subscriber_email_notification', [
         'enabled' => true,
-        'address' => isset($sender['address'])? $sender['address'] : null,
+        'address' => isset($sender['address']) ? $sender['address'] : null,
       ]);
     }
 
@@ -235,7 +235,7 @@ class Populator {
       $sender = $this->settings->fetch('sender', []);
       $this->settings->set('stats_notifications', [
         'enabled' => true,
-        'address' => isset($sender['address'])? $sender['address'] : null,
+        'address' => isset($sender['address']) ? $sender['address'] : null,
       ]);
     }
 

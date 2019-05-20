@@ -208,8 +208,8 @@ class CSS {
           $i++;
         }
 
-        $queries .= substr($css, $start-1, $i+1-$start) . "\n";
-        $css = substr($css, 0, $start-1) . substr($css, $i);
+        $queries .= substr($css, $start - 1, $i + 1 - $start) . "\n";
+        $css = substr($css, 0, $start - 1) . substr($css, $i);
         $i = $start;
       }
     }

@@ -86,7 +86,7 @@ class PieceOfCake {
                   2 => [
                     'type' => 'image',
                     'link' => '',
-                    'src' =>  $this->template_image_url . '/Restaurant-Bakery-Logo-1.png',
+                    'src' => $this->template_image_url . '/Restaurant-Bakery-Logo-1.png',
                     'alt' => 'Restaurant-Bakery-Logo-1',
                     'fullWidth' => true,
                     'width' => '1280px',
@@ -109,7 +109,7 @@ class PieceOfCake {
                   4 => [
                     'type' => 'image',
                     'link' => '',
-                    'src' =>  $this->template_image_url . '/Restaurant-Bakery-Header.jpg',
+                    'src' => $this->template_image_url . '/Restaurant-Bakery-Header.jpg',
                     'alt' => 'Restaurant-Bakery-Header',
                     'fullWidth' => true,
                     'width' => '1280px',

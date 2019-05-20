@@ -23,7 +23,7 @@ class SubscribeOnRegistrationPageCest {
     $I->click('[data-automation-id="settings-submit-button"]');
     $I->logOut();
     $I->amOnPage('/wp-login.php?action=register');
-    $I->waitForElement(['css'=>'.registration-form-mailpoet']);
+    $I->waitForElement(['css' => '.registration-form-mailpoet']);
     if (!getenv('MULTISITE')) {
       $I->fillField(['name' => 'user_login'], 'registerpagesignup');
       $I->fillField(['name' => 'user_email'], $regpageuseremail);
@@ -33,7 +33,7 @@ class SubscribeOnRegistrationPageCest {
     } else {
       $I->fillField(['name' => 'user_name'], 'muregisterpagesignup');
       $I->fillField(['name' => 'user_email'], $regpageuseremail);
-      $I->scrollTo(['css' =>'#mailpoet_subscribe_on_register']);
+      $I->scrollTo(['css' => '#mailpoet_subscribe_on_register']);
       $I->checkOption('#mailpoet_subscribe_on_register');
       $I->click('Next');
       $I->waitForText('muregisterpagesignup is your new username');

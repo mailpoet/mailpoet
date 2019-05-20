@@ -56,7 +56,7 @@ class PostContentManager {
       '<a>', '<ul>', '<ol>', '<li>', '<br>', '<blockquote>',
     ];
     if ($display_type === 'full') {
-      $tags_not_being_stripped =  array_merge($tags_not_being_stripped, ['<figure>', '<img>', '<h1>', '<h2>', '<h3>']);
+      $tags_not_being_stripped = array_merge($tags_not_being_stripped, ['<figure>', '<img>', '<h1>', '<h2>', '<h3>']);
     }
 
     $content = strip_tags($content, implode('', $tags_not_being_stripped));

@@ -48,7 +48,7 @@ class MailPoet {
   }
 
   function processSendError($result, $subscriber, $newsletter) {
-    if (!empty($result['code']) && $result['code'] ===  API::RESPONSE_CODE_KEY_INVALID) {
+    if (!empty($result['code']) && $result['code'] === API::RESPONSE_CODE_KEY_INVALID) {
       Bridge::invalidateKey();
     }
     return $this->error_mapper->getErrorForResult($result, $subscriber, $this->sender, $newsletter);

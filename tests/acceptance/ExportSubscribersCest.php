@@ -21,7 +21,7 @@ class ExportSubscribersCest {
     $I->login();
     $I->amOnMailPoetPage('Subscribers');
     //export those users
-    $I->click(['xpath'=>'//*[@id="mailpoet_export_button"]']);
+    $I->click(['xpath' => '//*[@id="mailpoet_export_button"]']);
     //choose new list
     $I->selectOptionInSelect2($segment_name);
     //export

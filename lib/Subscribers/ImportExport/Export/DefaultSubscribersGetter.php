@@ -24,7 +24,7 @@ class DefaultSubscribersGetter extends SubscribersGetter {
   }
 
   protected function filter($subscribers) {
-    $subscribers =  $subscribers
+    $subscribers = $subscribers
       ->selectMany(
         [
           'list_status' => SubscriberSegment::$_table . '.status',

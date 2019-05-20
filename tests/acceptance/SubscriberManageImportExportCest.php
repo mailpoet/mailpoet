@@ -54,7 +54,7 @@ class SubscriberManageImportExportCest {
     // trigger dropdown to display selections
     $I->click('input.select2-search__field');
     // choose first list
-    $I->click(['xpath'=>'//*[@id="select2-mailpoet_segments_select-results"]/li[1]']);
+    $I->click(['xpath' => '//*[@id="select2-mailpoet_segments_select-results"]/li[1]']);
     $I->click('#step_data_manipulation [data-automation-id="import-next-step"]');
     $I->waitForText('Import again');
   }

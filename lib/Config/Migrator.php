@@ -153,7 +153,7 @@ class Migrator {
   }
 
   function scheduledTaskSubscribers() {
-    $attributes =  [
+    $attributes = [
       'task_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'processed int(1) NOT NULL,',

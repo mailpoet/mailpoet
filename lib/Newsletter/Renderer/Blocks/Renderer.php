@@ -32,7 +32,7 @@ class Renderer {
 
   function render($data) {
     $column_count = count($data['blocks']);
-    $columns_layout = isset($data['columnLayout'])?$data['columnLayout']:null;
+    $columns_layout = isset($data['columnLayout']) ? $data['columnLayout'] : null;
     $column_widths = ColumnsHelper::columnWidth($column_count, $columns_layout);
     $column_content = [];
 

@@ -50,7 +50,7 @@ class Reporter {
       'users_can_register' => WPFunctions::get()->getOption('users_can_register') ? 'yes' : 'no',
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
-      'Total number of subscribers' =>  Subscriber::getTotalSubscribers(),
+      'Total number of subscribers' => Subscriber::getTotalSubscribers(),
       'Sending Method' => isset($mta['method']) ? $mta['method'] : null,
       'Date of plugin installation' => $this->settings->get('installed_at'),
       'Subscribe in comments' => (boolean)$this->settings->get('subscribe.on_comment.enabled', false),

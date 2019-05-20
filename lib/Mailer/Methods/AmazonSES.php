@@ -107,7 +107,7 @@ class AmazonSES {
         ])
       ->setSender($this->sender['from_email'])
       ->setReplyTo([
-          $this->reply_to['reply_to_email'] =>  $this->reply_to['reply_to_name'],
+          $this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name'],
         ])
       ->setReturnPath($this->return_path)
       ->setSubject($newsletter['subject']);

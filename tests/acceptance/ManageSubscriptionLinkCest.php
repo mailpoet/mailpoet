@@ -35,7 +35,7 @@ class ManageSubscriptionLinkCest {
     $I->click($first_template_element);
 
     // step 3 - design newsletter (update subject)
-    $title_element ='[data-automation-id="newsletter_title"]';
+    $title_element = '[data-automation-id="newsletter_title"]';
     $I->waitForElement($title_element);
     $I->fillField($title_element, $this->newsletter_title);
     $I->click('Next');
