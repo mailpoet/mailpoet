@@ -76,7 +76,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $subscriber->hydrate([
       'first_name' => 'John',
       'last_name' => 'Mailer',
-      'email' => 'john@mailpoet.com'
+      'email' => 'john@mailpoet.com',
     ]);
 
     $mailer = $this->makeEmpty(Mailer::class, [

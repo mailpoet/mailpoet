@@ -91,7 +91,7 @@ class UnauthorizedEmailNotice {
       $authorize_link = str_replace('%email', EscapeHelper::escapeHtmlText($email), $authorize_link);
     }
     $authorize_link = Helpers::replaceLinkTags("[link]{$authorize_link}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
-    $html = '<p><b>'. $this->wp->x('OR', 'User has to choose between two options') . '</b></p>';
+    $html = '<p><b>' . $this->wp->x('OR', 'User has to choose between two options') . '</b></p>';
     $html .= "<p>$authorize_link</p>";
     return $html;
   }
