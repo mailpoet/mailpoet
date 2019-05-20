@@ -39,7 +39,7 @@ class FashionStore {
             'orientation' => 'vertical',
             'image' =>
               array(
-                'src' => NULL,
+                'src' => null,
                 'display' => 'scale',
               ),
             'styles' =>
@@ -57,7 +57,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -75,7 +75,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -129,7 +129,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -186,7 +186,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -225,7 +225,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -243,7 +243,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -295,7 +295,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -313,7 +313,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -350,7 +350,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -390,7 +390,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -408,7 +408,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -446,7 +446,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -485,7 +485,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -503,7 +503,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -540,7 +540,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -580,7 +580,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -598,7 +598,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -683,7 +683,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -701,7 +701,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -728,7 +728,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -746,7 +746,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -783,7 +783,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -820,7 +820,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -859,7 +859,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -877,7 +877,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -911,7 +911,7 @@ class FashionStore {
                     'orientation' => 'horizontal',
                     'image' =>
                       array(
-                        'src' => NULL,
+                        'src' => null,
                         'display' => 'scale',
                       ),
                     'styles' =>
@@ -929,7 +929,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -966,7 +966,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -1036,7 +1036,7 @@ class FashionStore {
                             'orientation' => 'vertical',
                             'image' =>
                               array(
-                                'src' => NULL,
+                                'src' => null,
                                 'display' => 'scale',
                               ),
                             'styles' =>
@@ -1423,7 +1423,7 @@ class FashionStore {
                   ),
               ),
           ),
-    );
+      );
   }
 
 }

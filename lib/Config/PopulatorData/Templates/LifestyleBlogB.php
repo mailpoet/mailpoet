@@ -39,7 +39,7 @@ class LifestyleBlogB {
         'orientation' => 'vertical',
         'image' =>
         array (
-          'src' => NULL,
+          'src' => null,
           'display' => 'scale',
         ),
         'styles' =>
@@ -58,7 +58,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -77,7 +77,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -127,7 +127,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -186,7 +186,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -205,7 +205,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -259,7 +259,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -311,7 +311,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -330,7 +330,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -359,7 +359,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -378,7 +378,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -405,7 +405,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -432,7 +432,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -461,7 +461,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -480,7 +480,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -551,7 +551,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -570,7 +570,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -608,7 +608,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -650,7 +650,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -669,7 +669,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -704,7 +704,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -723,7 +723,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -763,7 +763,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -803,7 +803,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -822,7 +822,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -857,7 +857,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -876,7 +876,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -914,7 +914,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -956,7 +956,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -975,7 +975,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>
@@ -1010,7 +1010,7 @@ class LifestyleBlogB {
             'orientation' => 'horizontal',
             'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
             'styles' =>
@@ -1029,7 +1029,7 @@ class LifestyleBlogB {
                 'orientation' => 'vertical',
                 'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
                 'styles' =>

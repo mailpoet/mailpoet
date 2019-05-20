@@ -31,7 +31,7 @@ class ScienceWeekly {
           'orientation' => 'vertical',
           'image' =>
             array (
-              'src' => NULL,
+              'src' => null,
               'display' => 'scale',
             ),
           'styles' =>
@@ -49,7 +49,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -67,7 +67,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -123,7 +123,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -141,7 +141,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -248,7 +248,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -266,7 +266,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -329,7 +329,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -347,7 +347,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -386,7 +386,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -404,7 +404,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -469,7 +469,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -508,7 +508,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -526,7 +526,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -565,7 +565,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -583,7 +583,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -634,7 +634,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -652,7 +652,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -707,7 +707,7 @@ class ScienceWeekly {
                   'orientation' => 'horizontal',
                   'image' =>
                     array (
-                      'src' => NULL,
+                      'src' => null,
                       'display' => 'scale',
                     ),
                   'styles' =>
@@ -725,7 +725,7 @@ class ScienceWeekly {
                           'orientation' => 'vertical',
                           'image' =>
                             array (
-                              'src' => NULL,
+                              'src' => null,
                               'display' => 'scale',
                             ),
                           'styles' =>
@@ -1008,7 +1008,7 @@ class ScienceWeekly {
             array (
               'image' =>
                 array (
-                  'src' => NULL,
+                  'src' => null,
                   'display' => 'scale',
                 ),
               'styles' =>

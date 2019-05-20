@@ -76,7 +76,7 @@ class FormTest extends \MailPoetTest {
     $url_helper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params) {
         return $params;
-      }
+      },
     ], $this);
     $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
     $result = $form_controller->onSubmit($this->request_data);
@@ -99,7 +99,7 @@ class FormTest extends \MailPoetTest {
       },
       'redirectBack' => function($params) {
         return $params;
-      }
+      },
     ], $this);
     $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
     $result = $form_controller->onSubmit($this->request_data);
@@ -114,7 +114,7 @@ class FormTest extends \MailPoetTest {
     $url_helper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params) {
         return $params;
-      }
+      },
     ], $this);
     $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
     $result = $form_controller->onSubmit($request_data);

@@ -142,7 +142,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
-      )
+      ),
     ]);
 
     expect($getter->get())->equals(false);
@@ -191,7 +191,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null,
-      )
+      ),
     ]);
 
     expect($getter->get())->equals(false);
@@ -219,7 +219,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null
-      )
+      ),
     ]);
 
     expect($this->filterSubscribersData($getter->get()))->equals([
@@ -242,7 +242,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null,
-      )
+      ),
     ]);
 
     expect($getter->get())->equals([]);
@@ -262,7 +262,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => null,
         'segment_name' => 'Not In Segment',
         1 => null
-      )
+      ),
     ]);
   }
 

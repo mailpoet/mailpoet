@@ -131,7 +131,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItHashesLinksAndInsertsTrackingImageWhenTrackingIsEnabled() {
     $wp = Stub::make(new WPFunctions, [
-      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters'])
+      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
     ]);
     $newsletter_task = new NewsletterTask($wp);
     $newsletter_task->tracking_enabled = true;
@@ -153,7 +153,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItDoesNotHashLinksAndInsertTrackingCodeWhenTrackingIsDisabled() {
     $wp = Stub::make(new WPFunctions, [
-      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters'])
+      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
     ]);
     $newsletter_task = new NewsletterTask($wp);
     $newsletter_task->tracking_enabled = false;
@@ -194,7 +194,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     $this->newsletter->parent_id = $this->newsletter->id;
     $posts_task = $this->make(PostsTask::class, [
-      'getAlcPostsCount' => 1
+      'getAlcPostsCount' => 1,
     ]);
     $newsletter_task = new NewsletterTask(new WPFunctions, $posts_task);
     $result = $newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);

@@ -18,7 +18,7 @@ class SendGridMapperTest extends \MailPoetUnitTest {
     $this->response = [
       'errors' => [
         'Some message',
-      ]
+      ],
     ];
   }
 

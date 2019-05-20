@@ -27,7 +27,7 @@ class SettingTest extends \MailPoetTest {
     Setting::createOrUpdate(['name' => 'key_2', 'value' => 'value_2']);
     Setting::createOrUpdate(['name' => 'key_3', 'value' => serialize([
       'subkey_1' => 'subvalue_1',
-      'subkey_2' => 'subvalue_2'
+      'subkey_2' => 'subvalue_2',
     ])]);
 
     $settings = Setting::getAll();

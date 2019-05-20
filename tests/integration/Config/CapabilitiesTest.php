@@ -89,7 +89,7 @@ class CapabilitiesTest extends \MailPoetTest {
 
   function testItSetsUpMembersCapabilities() {
     $wp = Stub::make(new WPFunctions, [
-      'addAction' => asCallable([WPHooksHelper::class, 'addAction'])
+      'addAction' => asCallable([WPHooksHelper::class, 'addAction']),
     ]);
     $this->caps = new Capabilities(new Renderer, $wp);
 

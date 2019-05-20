@@ -111,7 +111,7 @@ class NewsletterStatisticsCest {
           'id' => 1,
           'name' => 'Product 1',
           'total' => $product_price,
-        ]
+        ],
       ])
       ->create();
   }

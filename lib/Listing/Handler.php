@@ -153,7 +153,7 @@ class Handler {
       // filters
       'filter' => (isset($data['filter']) ? $data['filter'] : null),
       // selection
-      'selection' => (isset($data['selection']) ? $data['selection'] : null)
+      'selection' => (isset($data['selection']) ? $data['selection'] : null),
     ];
 
     return $data;

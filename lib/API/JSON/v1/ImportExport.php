@@ -100,7 +100,7 @@ class ImportExport extends APIEndpoint {
       return $this->successResponse();
     } catch (\Exception $e) {
       return $this->errorResponse([
-        $e->getCode() => $e->getMessage()
+        $e->getCode() => $e->getMessage(),
       ]);
     }
   }

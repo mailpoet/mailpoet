@@ -70,7 +70,7 @@ class Export {
       }
       $callback = [
         $this,
-        'generate' . strtoupper($this->export_format_option)
+        'generate' . strtoupper($this->export_format_option),
       ];
       if (is_callable($callback)) {
         $processed_subscribers = call_user_func($callback);

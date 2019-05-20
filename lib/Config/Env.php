@@ -94,7 +94,7 @@ class Env {
       $port,
       ';',
       'dbname=',
-      $db_name
+      $db_name,
     ];
     if (!empty($socket)) {
       $source_name[] = ';unix_socket=' . $socket;

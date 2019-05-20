@@ -223,7 +223,7 @@ class MailPoetAPITest extends \MailPoetTest {
       array('sendMessages' => [
         'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
         'status' => API::SENDING_STATUS_SEND_ERROR,
-        'message' => '[{"index":0,"errors":{"subject":"subject is missing"}},{"index":1,"errors":{"subject":"subject is missing"}}]'
+        'message' => '[{"index":0,"errors":{"subject":"subject is missing"}},{"index":1,"errors":{"subject":"subject is missing"}}]',
       ]),
       $this
     );

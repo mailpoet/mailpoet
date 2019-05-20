@@ -52,7 +52,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $settings = Stub::make($this->controller, [
       'getAllDefaults' => function () {
         return ['default1' => ['default2' => 1]];
-      }
+      },
     ]);
     $settings->delete('default1');
     $value = $settings->get('default1');

@@ -13,13 +13,13 @@ class FunctionsTest extends \MailPoetTest {
     $twig->addExtension(new Functions());
 
     WPFunctions::set(Stub::make(new WPFunctions, [
-      'isRtl' => true
+      'isRtl' => true,
     ]));
     $result = $twig->render('template');
     expect($result)->equals('rtl');
 
     WPFunctions::set(Stub::make(new WPFunctions, [
-      'isRtl' => false
+      'isRtl' => false,
     ]));
     $result = $twig->render('template');
     expect($result)->isEmpty();

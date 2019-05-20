@@ -39,17 +39,17 @@ class WordPress {
     $migration_due_tasks = self::getTasksCount([
       'type' => MigrationWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     $migration_completed_tasks = self::getTasksCount([
       'type' => MigrationWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST, self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTask::STATUS_COMPLETED]
+      'status' => [ScheduledTask::STATUS_COMPLETED],
     ]);
     $migration_future_tasks = self::getTasksCount([
       'type' => MigrationWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTask::STATUS_SCHEDULED]
+      'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // sending queue
     $scheduled_queues = SchedulerWorker::getScheduledQueues();
@@ -62,53 +62,53 @@ class WordPress {
     $bounce_due_tasks = self::getTasksCount([
       'type' => BounceWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     $bounce_future_tasks = self::getTasksCount([
       'type' => BounceWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTask::STATUS_SCHEDULED]
+      'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // sending service key check
     $msskeycheck_due_tasks = self::getTasksCount([
       'type' => SendingServiceKeyCheckWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     $msskeycheck_future_tasks = self::getTasksCount([
       'type' => SendingServiceKeyCheckWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTask::STATUS_SCHEDULED]
+      'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // premium key check
     $premium_key_specified = Bridge::isPremiumKeySpecified();
     $premium_keycheck_due_tasks = self::getTasksCount([
       'type' => PremiumKeyCheckWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     $premium_keycheck_future_tasks = self::getTasksCount([
       'type' => PremiumKeyCheckWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTask::STATUS_SCHEDULED]
+      'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // stats notifications
     $stats_notifications_tasks = self::getTasksCount([
       'type' => StatsNotificationsWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     // inactive subscribers check
     $inactive_subscribers_tasks = self::getTasksCount([
       'type' => InactiveSubscribers::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     // WooCommerce sync
     $woo_commerce_sync_tasks = self::getTasksCount([
       'type' => WooCommerceSyncWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
 
     // check requirements for each worker

@@ -3,6 +3,8 @@
   <config name="installed_paths" value="tasks/code_sniffer/vendor/squizlabs/php_codesniffer,tasks/code_sniffer/vendor/phpcompatibility/php-compatibility,tasks/code_sniffer/vendor/slevomat/coding-standard"/>
   <description>MailPoet specific rule set</description>
 
+  <!-- This sniff enforces trailing commas in multi-line arrays -->
+  <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
   <!-- Control structures must have at least one statement in the body -->
   <!--<rule ref="Generic.CodeAnalysis.EmptyStatement"/>-->
   <!-- For loops with only second expression should be while loops -->

@@ -396,7 +396,7 @@ class APITest extends \MailPoetTest {
     CustomField::createOrUpdate([
       'name' => 'custom field',
       'type' => 'text',
-      'params' => ['required' => '1']
+      'params' => ['required' => '1'],
     ]);
 
     $subscriber = array(
@@ -509,7 +509,7 @@ class APITest extends \MailPoetTest {
           expect($options['send_confirmation_email'])->equals(true);
         }),
         'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-        'new_subscriber_notification_mailer'=> Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send'])
+        'new_subscriber_notification_mailer'=> Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       ]
     );
     $subscriber = array(

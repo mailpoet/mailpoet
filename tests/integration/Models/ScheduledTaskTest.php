@@ -93,15 +93,15 @@ class ScheduledTaskTest extends \MailPoetTest {
     $task_id = $this->task->id;
     ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $task_id,
-      'subscriber_id' => 1
+      'subscriber_id' => 1,
     ]);
     ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $task_id,
-      'subscriber_id' => 2
+      'subscriber_id' => 2,
     ]);
     ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $task_id,
-      'subscriber_id' => 3
+      'subscriber_id' => 3,
     ]);
     $count = ScheduledTaskSubscriber::where('task_id', $task_id)->count();
     expect($count)->equals(3);

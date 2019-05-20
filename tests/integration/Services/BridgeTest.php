@@ -266,7 +266,7 @@ class BridgeTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'wpRemotePost' => function() use (&$wp_remote_post_args) {
         $wp_remote_post_args = func_get_args();
-      }
+      },
     ]);
     $api = new API('test_key', $wp);
 

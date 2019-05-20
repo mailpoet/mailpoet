@@ -25,7 +25,7 @@ class CronHelperTest extends \MailPoetTest {
     ));
     $this->settings->set('sender', [
       'name' => 'John Doe',
-      'address' => 'john.doe@example.com'
+      'address' => 'john.doe@example.com',
     ]);
   }
 
@@ -287,7 +287,7 @@ class CronHelperTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'wpRemotePost' => function() use (&$wp_remote_get_args) {
         return $wp_remote_get_args = func_get_args();
-      }
+      },
     ]);
     $wp->addFilter('mailpoet_cron_request_args', $filter);
     CronHelper::queryCronUrl('test', $wp);

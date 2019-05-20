@@ -21,7 +21,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->stats_notifications = new Scheduler($this->settings);
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
-      'address' => 'email@example.com'
+      'address' => 'email@example.com',
     ]);
     $this->settings->set('tracking.enabled', true);
   }
@@ -49,7 +49,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_id = 6;
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => false,
-      'address' => 'email@example.com'
+      'address' => 'email@example.com',
     ]);
     $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id, 'type' => Newsletter::TYPE_STANDARD]);
     $this->stats_notifications->schedule($newsletter);
@@ -81,7 +81,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_id = 9;
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
-      'address' => ' '
+      'address' => ' ',
     ]);
     $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id, 'type' => Newsletter::TYPE_STANDARD]);
     $this->stats_notifications->schedule($newsletter);

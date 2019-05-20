@@ -124,11 +124,11 @@ class FormTest extends \MailPoetTest {
   function testItUpdatesSuccessMessagesWhenConfirmationIsDisabled() {
     $default = Form::createOrUpdate([
       'name' => 'with default message',
-      'settings' => ['success_message' => Form::MESSAGE_WHEN_CONFIRMATION_ENABLED]
+      'settings' => ['success_message' => Form::MESSAGE_WHEN_CONFIRMATION_ENABLED],
     ]);
     $custom = Form::createOrUpdate([
       'name' => 'with custom message',
-      'settings' => ['success_message' => 'Thanks for joining us!']
+      'settings' => ['success_message' => 'Thanks for joining us!'],
     ]);
     $this->settings->set('signup_confirmation.enabled', '0');
     Form::updateSuccessMessages();
@@ -141,11 +141,11 @@ class FormTest extends \MailPoetTest {
   function testItUpdatesSuccessMessagesWhenConfirmationIsEnabled() {
     $default = Form::createOrUpdate([
       'name' => 'with default message',
-      'settings' => ['success_message' => Form::MESSAGE_WHEN_CONFIRMATION_DISABLED]
+      'settings' => ['success_message' => Form::MESSAGE_WHEN_CONFIRMATION_DISABLED],
     ]);
     $custom = Form::createOrUpdate([
       'name' => 'with custom message',
-      'settings' => ['success_message' => 'Thanks for joining us!']
+      'settings' => ['success_message' => 'Thanks for joining us!'],
     ]);
     $this->settings->set('signup_confirmation.enabled', '1');
     Form::updateSuccessMessages();

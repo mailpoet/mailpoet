@@ -36,7 +36,7 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     $mock = Mock::double('MailPoet\WP\Notice', [
       'displayWarning' => function($message, $classes, $data_notice_name) {
         return $message;
-      }
+      },
     ]);
     $warning = $this->phpVersionWarning->init('5.6.3', true);
     $mock->verifyInvoked('displayWarning');
