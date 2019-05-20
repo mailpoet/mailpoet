@@ -4,6 +4,7 @@
   <div id="newsletters_container"></div>
 
   <script type="text/javascript">
+    var mailpoet_update_available = <%= is_mailpoet_update_available ? 'true' : 'false' %>
     var mailpoet_listing_per_page = <%= items_per_page %>;
     var mailpoet_display_nps_poll = <%= settings.display_nps_poll ? 'true' : 'false' %>;
     var mailpoet_segments = <%= json_encode(segments) %>;
@@ -319,6 +320,7 @@
     'introDone': _x('Done', 'A label on a button'),
 
     'whatsNew': __("What’s new"),
+    'updateMailPoetNotice': __('[link]Update MailPoet[/link] to see the latest changes'),
 
     'congratulationsSendSuccessHeader': __('Congratulations, your newsletter is being sent!'),
     'congratulationsScheduleSuccessHeader': __('Congratulations, your newsletter is scheduled to be sent.'),
