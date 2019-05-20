@@ -313,7 +313,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function qaLint() {
-    return $this->_exec('vendor/bin/parallel-lint lib/ tests/ mailpoet.php');
+    return $this->_exec('./tasks/code_sniffer/vendor/bin/parallel-lint lib/ tests/ mailpoet.php');
   }
 
   function qaLintJavascript() {
@@ -332,7 +332,7 @@ class RoboFile extends \Robo\Tasks {
     }
     return $this->collectionBuilder()
       ->taskExec(
-        './vendor/bin/phpcs '.
+        './tasks/code_sniffer/vendor/bin/phpcs '.
         '--standard=./tasks/code_sniffer/MailPoet '.
         '--runtime-set testVersion 5.6-7.3 '.
         '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
@@ -341,7 +341,7 @@ class RoboFile extends \Robo\Tasks {
         $severityFlag
       )
       ->taskExec(
-        './vendor/bin/phpcs '.
+        './tasks/code_sniffer/vendor/bin/phpcs '.
         '--standard=./tasks/code_sniffer/MailPoet '.
         '--runtime-set testVersion 5.6-7.3 '.
         '--ignore=./tests/unit/_bootstrap.php,./tests/unit/_fixtures.php,./tests/integration/_bootstrap.php,./tests/integration/_fixtures.php '.
