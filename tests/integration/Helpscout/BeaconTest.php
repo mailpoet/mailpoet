@@ -99,8 +99,8 @@ class BeaconTest extends \MailPoetTest {
   function testItReturnsSendingMethodDetails() {
     $mta = $this->settings->get('mta');
     expect($this->beacon_data['Sending Method'])->equals($mta['method']);
-    expect($this->beacon_data['Sending Frequency'])->contains($mta['frequency']['emails'].' emails');
-    expect($this->beacon_data['Sending Frequency'])->contains($mta['frequency']['interval'].' minutes');
+    expect($this->beacon_data['Sending Frequency'])->contains($mta['frequency']['emails'] . ' emails');
+    expect($this->beacon_data['Sending Frequency'])->contains($mta['frequency']['interval'] . ' minutes');
   }
 
   function testItReturnsSomeSettings() {

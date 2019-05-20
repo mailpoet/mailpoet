@@ -17,7 +17,7 @@ class Handler {
         [$data]
       );
       if (!empty($data['selection'])) {
-        $custom_query->whereIn($table_name.'.id', $data['selection']);
+        $custom_query->whereIn($table_name . '.id', $data['selection']);
       }
       return $custom_query;
     } else {
@@ -26,7 +26,7 @@ class Handler {
       $this->setSearch($model, $data);
 
       if (!empty($data['selection'])) {
-        $model->whereIn($table_name.'.id', $data['selection']);
+        $model->whereIn($table_name . '.id', $data['selection']);
       }
       return $model;
     }
@@ -66,8 +66,8 @@ class Handler {
       $items = $custom_query
         ->offset($data['offset'])
         ->limit($data['limit'])
-        ->{'order_by_'.$data['sort_order']}(
-          $table_name.'.'.$data['sort_by']
+        ->{'order_by_' . $data['sort_order']}(
+          $table_name . '.' . $data['sort_by']
         )
         ->findMany();
     } else {
@@ -101,8 +101,8 @@ class Handler {
 
   private function setOrder(\ORMWrapper $model, array $data, $table_name) {
     return $model
-      ->{'order_by_'.$data['sort_order']}(
-        $table_name.'.'.$data['sort_by']);
+      ->{'order_by_' . $data['sort_order']}(
+        $table_name . '.' . $data['sort_by']);
   }
 
   private function setGroup(\ORMWrapper $model, array $data) {

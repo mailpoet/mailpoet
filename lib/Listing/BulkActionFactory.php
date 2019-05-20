@@ -24,7 +24,7 @@ class BulkActionFactory {
   private function ensureMethodExists($action_class, $bulk_action_method) {
     if (!method_exists($action_class, $bulk_action_method)) {
       throw new \Exception(
-        (is_object($action_class) ? get_class($action_class) : $action_class).' has no method "'.$bulk_action_method.'"'
+        (is_object($action_class) ? get_class($action_class) : $action_class) . ' has no method "' . $bulk_action_method . '"'
       );
     }
   }

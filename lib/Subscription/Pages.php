@@ -259,7 +259,7 @@ class Pages {
     }
 
     $custom_fields = array_map(function($custom_field) use($subscriber) {
-      $custom_field->id = 'cf_'.$custom_field->id;
+      $custom_field->id = 'cf_' . $custom_field->id;
       $custom_field = $custom_field->asArray();
       $custom_field['params']['value'] = $subscriber->{$custom_field['id']};
 
@@ -392,23 +392,23 @@ class Pages {
       ]
     );
 
-    $form_html = '<form method="POST" '.
-      'action="'.admin_url('admin-post.php').'" '.
+    $form_html = '<form method="POST" ' .
+      'action="' . admin_url('admin-post.php') . '" ' .
       'novalidate>';
-    $form_html .= '<input type="hidden" name="action"'.
+    $form_html .= '<input type="hidden" name="action"' .
       ' value="mailpoet_subscription_update" />';
     $form_html .= '<input type="hidden" name="data[segments]" value="" />';
-    $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
+    $form_html .= '<input type="hidden" name="mailpoet_redirect" ' .
       'value="' . htmlspecialchars($this->url_helper->getCurrentUrl(), ENT_QUOTES) . '" />';
-    $form_html .= '<input type="hidden" name="data[email]" value="'.
-      $subscriber->email.
+    $form_html .= '<input type="hidden" name="data[email]" value="' .
+      $subscriber->email .
     '" />';
-    $form_html .= '<input type="hidden" name="token" value="'.
-      Subscriber::generateToken($subscriber->email).
+    $form_html .= '<input type="hidden" name="token" value="' .
+      Subscriber::generateToken($subscriber->email) .
     '" />';
 
     $form_html .= '<p class="mailpoet_paragraph">';
-    $form_html .= '<label>'.__('Email', 'mailpoet').' *<br /><strong>' . htmlspecialchars($subscriber->email) . '</strong></label>';
+    $form_html .= '<label>' . __('Email', 'mailpoet') . ' *<br /><strong>' . htmlspecialchars($subscriber->email) . '</strong></label>';
     $form_html .= '<br /><span style="font-size:85%;">';
     // special case for WP users as they cannot edit their subscriber's email
     if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
@@ -442,7 +442,7 @@ class Pages {
   private function getUnsubscribeContent() {
     $content = '';
     if ($this->isPreview() || $this->subscriber !== false) {
-      $content .= '<p>'.__('Accidentally unsubscribed?', 'mailpoet').' <strong>';
+      $content .= '<p>' . __('Accidentally unsubscribed?', 'mailpoet') . ' <strong>';
       $content .= '[mailpoet_manage]';
       $content .= '</strong></p>';
     }
@@ -459,8 +459,8 @@ class Pages {
       : WPFunctions::get()->__('Manage your subscription', 'mailpoet')
     );
 
-    return '<a href="'.Url::getManageUrl(
+    return '<a href="' . Url::getManageUrl(
       $this->subscriber ?: null
-    ).'">'.$text.'</a>';
+    ) . '">' . $text . '</a>';
   }
 }

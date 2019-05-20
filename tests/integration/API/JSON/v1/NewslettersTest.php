@@ -787,9 +787,9 @@ class NewslettersTest extends \MailPoetTest {
             expect($subscriber)->equals($subscriber);
             expect($extra_params['unsubscribe_url'])->equals(home_url());
             // system links are replaced with hashes
-            expect($newsletter['body']['html'])->contains('href="'.$viewInBrowserLink.'">View in browser');
-            expect($newsletter['body']['html'])->contains('href="'.$unsubscribeLink.'">Unsubscribe');
-            expect($newsletter['body']['html'])->contains('href="'.$manageLink.'">Manage subscription');
+            expect($newsletter['body']['html'])->contains('href="' . $viewInBrowserLink . '">View in browser');
+            expect($newsletter['body']['html'])->contains('href="' . $unsubscribeLink . '">Unsubscribe');
+            expect($newsletter['body']['html'])->contains('href="' . $manageLink . '">Manage subscription');
             return ['response' => true];
           },
         ]

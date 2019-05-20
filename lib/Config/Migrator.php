@@ -263,7 +263,7 @@ class Migrator {
       'type varchar(20) NOT NULL DEFAULT "standard",',
       'sender_address varchar(150) NOT NULL DEFAULT "",',
       'sender_name varchar(150) NOT NULL DEFAULT "",',
-      'status varchar(20) NOT NULL DEFAULT "'.Newsletter::STATUS_DRAFT.'",',
+      'status varchar(20) NOT NULL DEFAULT "' . Newsletter::STATUS_DRAFT . '",',
       'reply_to_address varchar(150) NOT NULL DEFAULT "",',
       'reply_to_name varchar(150) NOT NULL DEFAULT "",',
       'preheader varchar(250) NOT NULL DEFAULT "",',

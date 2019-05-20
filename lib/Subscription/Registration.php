@@ -33,7 +33,7 @@ class Registration {
           id="mailpoet_subscribe_on_register"
           value="1"
           name="mailpoet[subscribe_on_register]"
-        />&nbsp;'.esc_attr($label).'
+        />&nbsp;' . esc_attr($label) . '
       </label>
     </p>';
   }

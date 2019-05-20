@@ -29,7 +29,7 @@ class Export {
           'height="100%"',
           'scrolling="no"',
           'frameborder="0"',
-          'src="'.$iframe_url.'"',
+          'src="' . $iframe_url . '"',
           'class="mailpoet_form_iframe"',
           'id="mailpoet_form_iframe"',
           'vspace="0"',
@@ -44,8 +44,8 @@ class Export {
       case 'php':
         $output = [
           '$form_widget = new \MailPoet\Form\Widget();',
-          'echo $form_widget->widget(array(\'form\' => '.
-            (int)$form['id'].
+          'echo $form_widget->widget(array(\'form\' => ' .
+            (int)$form['id'] .
             ', \'form_type\' => \'php\'));',
           ];
         return join("\n", $output);
@@ -53,40 +53,40 @@ class Export {
       case 'html':
         $output = [];
 
-        $output[] = '<!-- '.
+        $output[] = '<!-- ' .
           WPFunctions::get()->__(
             'BEGIN Scripts: you should place them in the header of your theme',
             'mailpoet'
-          ).
+          ) .
         ' -->';
 
         // CSS
-        $output[] = '<link rel="stylesheet" type="text/css" href="'.
-          Env::$assets_url.'/dist/css/public.css?mp_ver='.MAILPOET_VERSION.
+        $output[] = '<link rel="stylesheet" type="text/css" href="' .
+          Env::$assets_url . '/dist/css/public.css?mp_ver=' . MAILPOET_VERSION .
         '" />';
 
         // jQuery
-        $output[] = '<script type="text/javascript" src="'.
-          WPFunctions::get()->includesUrl().'js/jquery/jquery.js?mp_ver'.MAILPOET_VERSION.
+        $output[] = '<script type="text/javascript" src="' .
+          WPFunctions::get()->includesUrl() . 'js/jquery/jquery.js?mp_ver' . MAILPOET_VERSION .
         '"></script>';
 
         // JS
-        $output[] = '<script type="text/javascript" src="'.
-          Env::$assets_url.'/dist/js/vendor.js?mp_ver='.MAILPOET_VERSION.
+        $output[] = '<script type="text/javascript" src="' .
+          Env::$assets_url . '/dist/js/vendor.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
-        $output[] = '<script type="text/javascript" src="'.
-          Env::$assets_url.'/dist/js/public.js?mp_ver='.MAILPOET_VERSION.
+        $output[] = '<script type="text/javascript" src="' .
+          Env::$assets_url . '/dist/js/public.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
 
         // (JS) variables...
         $output[] = '<script type="text/javascript">';
         $output[] = '   var MailPoetForm = MailPoetForm || {';
-        $output[] = '       is_rtl: '.((int)is_rtl()).",";
-        $output[] = '       ajax_url: "'.admin_url('admin-ajax.php').'"';
+        $output[] = '       is_rtl: ' . ((int)is_rtl()) . ",";
+        $output[] = '       ajax_url: "' . admin_url('admin-ajax.php') . '"';
         $output[] = '   };';
         $output[] = '</script>';
-        $output[] = '<!-- '.
-          WPFunctions::get()->__('END Scripts', 'mailpoet').
+        $output[] = '<!-- ' .
+          WPFunctions::get()->__('END Scripts', 'mailpoet') .
         '-->';
 
         $form_widget = new Widget();
@@ -97,7 +97,7 @@ class Export {
         return join("\n", $output);
 
       case 'shortcode':
-        return '[mailpoet_form id="'.(int)$form['id'].'"]';
+        return '[mailpoet_form id="' . (int)$form['id'] . '"]';
     }
   }
 }

@@ -99,17 +99,17 @@ class Shortcodes {
     } else {
       $title = $this->wp->applyFilters('mailpoet_archive_title', '');
       if (!empty($title)) {
-        $html .= '<h3 class="mailpoet_archive_title">'.$title.'</h3>';
+        $html .= '<h3 class="mailpoet_archive_title">' . $title . '</h3>';
       }
       $html .= '<ul class="mailpoet_archive">';
       foreach ($newsletters as $newsletter) {
         $queue = $newsletter->queue()->findOne();
-        $html .= '<li>'.
-          '<span class="mailpoet_archive_date">'.
-            $this->wp->applyFilters('mailpoet_archive_date', $newsletter).
+        $html .= '<li>' .
+          '<span class="mailpoet_archive_date">' .
+            $this->wp->applyFilters('mailpoet_archive_date', $newsletter) .
           '</span>
-          <span class="mailpoet_archive_subject">'.
-            $this->wp->applyFilters('mailpoet_archive_subject', $newsletter, $subscriber, $queue).
+          <span class="mailpoet_archive_subject">' .
+            $this->wp->applyFilters('mailpoet_archive_subject', $newsletter, $subscriber, $queue) .
           '</span>
         </li>';
       }
@@ -132,9 +132,9 @@ class Shortcodes {
       $subscriber,
       $queue
     );
-    return '<a href="'.esc_attr($preview_url).'" target="_blank" title="'
-      .esc_attr(__('Preview in a new tab', 'mailpoet')).'">'
-      .esc_attr($newsletter->newsletter_rendered_subject).
+    return '<a href="' . esc_attr($preview_url) . '" target="_blank" title="'
+      . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
+      . esc_attr($newsletter->newsletter_rendered_subject) .
     '</a>';
   }
 }

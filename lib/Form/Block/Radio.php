@@ -27,7 +27,7 @@ class Radio extends Base {
 
       $html .= '<input type="radio" class="mailpoet_radio" ';
 
-      $html .= 'name="'.$field_name.'" ';
+      $html .= 'name="' . $field_name . '" ';
 
       if (is_array($option['value'])) {
         $value = key($option['value']);
@@ -37,7 +37,7 @@ class Radio extends Base {
         $label = $option['value'];
       }
 
-      $html .= 'value="'.esc_attr($value).'" ';
+      $html .= 'value="' . esc_attr($value) . '" ';
 
       $html .= (
         (
@@ -48,11 +48,11 @@ class Radio extends Base {
       ) ? 'checked="checked"' : '';
 
       $html .= $field_validation;
-      $html .= ' /> '.esc_attr($label);
+      $html .= ' /> ' . esc_attr($label);
       $html .= '</label>';
     }
 
-    $html .= '<span class="mailpoet_error_'.$block['id'].'"></span>';
+    $html .= '<span class="mailpoet_error_' . $block['id'] . '"></span>';
 
     $html .= '</p>';
 

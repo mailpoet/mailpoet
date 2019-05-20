@@ -61,7 +61,7 @@ class PostContentManager {
 
     $content = strip_tags($content, implode('', $tags_not_being_stripped));
     if ($with_post_class) {
-      $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS .'"', WPFunctions::get()->wpautop($content));
+      $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS . '"', WPFunctions::get()->wpautop($content));
     } else {
       $content = WPFunctions::get()->wpautop($content);
     }
@@ -107,7 +107,7 @@ class PostContentManager {
     // remove embedded video and replace with links
     $content = preg_replace(
       '#<iframe.*?src=\"(.+?)\".*><\/iframe>#',
-      '<a href="$1">'.__('Click here to view media.', 'mailpoet').'</a>',
+      '<a href="$1">' . __('Click here to view media.', 'mailpoet') . '</a>',
       $content
     );
 

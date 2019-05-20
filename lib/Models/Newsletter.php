@@ -66,7 +66,7 @@ class Newsletter extends Model {
 
   function children() {
     return $this->hasMany(
-      __NAMESPACE__.'\Newsletter',
+      __NAMESPACE__ . '\Newsletter',
       'parent_id',
       'id'
     );
@@ -74,7 +74,7 @@ class Newsletter extends Model {
 
   function parent() {
     return $this->hasOne(
-      __NAMESPACE__.'\Newsletter',
+      __NAMESPACE__ . '\Newsletter',
       'id',
       'parent_id'
     );
@@ -82,8 +82,8 @@ class Newsletter extends Model {
 
   function segments() {
     return $this->hasManyThrough(
-      __NAMESPACE__.'\Segment',
-      __NAMESPACE__.'\NewsletterSegment',
+      __NAMESPACE__ . '\Segment',
+      __NAMESPACE__ . '\NewsletterSegment',
       'newsletter_id',
       'segment_id'
     );
@@ -91,7 +91,7 @@ class Newsletter extends Model {
 
   function segmentRelations() {
     return $this->hasMany(
-      __NAMESPACE__.'\NewsletterSegment',
+      __NAMESPACE__ . '\NewsletterSegment',
       'newsletter_id',
       'id'
     );
@@ -99,11 +99,11 @@ class Newsletter extends Model {
 
   function options() {
     return $this->hasManyThrough(
-      __NAMESPACE__.'\NewsletterOptionField',
-      __NAMESPACE__.'\NewsletterOption',
+      __NAMESPACE__ . '\NewsletterOptionField',
+      __NAMESPACE__ . '\NewsletterOption',
       'newsletter_id',
       'option_field_id'
-    )->select_expr(MP_NEWSLETTER_OPTION_TABLE.'.value');
+    )->select_expr(MP_NEWSLETTER_OPTION_TABLE . '.value');
   }
 
   function save() {
@@ -787,7 +787,7 @@ class Newsletter extends Model {
   }
 
   static function filterWithOptions($orm, $type) {
-    $orm = $orm->select(MP_NEWSLETTERS_TABLE.'.*');
+    $orm = $orm->select(MP_NEWSLETTERS_TABLE . '.*');
     $optionFields = NewsletterOptionField::findArray();
     foreach ($optionFields as $optionField) {
       if ($optionField['newsletter_type'] !== $type) {
@@ -796,26 +796,26 @@ class Newsletter extends Model {
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
         MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id=' . $optionField['id'] . ' THEN ' .
-        MP_NEWSLETTER_OPTION_TABLE . '.value END), NULL) as "' . $optionField['name'].'"');
+        MP_NEWSLETTER_OPTION_TABLE . '.value END), NULL) as "' . $optionField['name'] . '"');
     }
     $orm = $orm
       ->left_outer_join(
         MP_NEWSLETTER_OPTION_TABLE,
         [
-          MP_NEWSLETTERS_TABLE.'.id',
+          MP_NEWSLETTERS_TABLE . '.id',
           '=',
-          MP_NEWSLETTER_OPTION_TABLE.'.newsletter_id',
+          MP_NEWSLETTER_OPTION_TABLE . '.newsletter_id',
         ]
       )
       ->left_outer_join(
         MP_NEWSLETTER_OPTION_FIELDS_TABLE,
         [
-          MP_NEWSLETTER_OPTION_FIELDS_TABLE.'.id',
+          MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id',
           '=',
-          MP_NEWSLETTER_OPTION_TABLE.'.option_field_id',
+          MP_NEWSLETTER_OPTION_TABLE . '.option_field_id',
         ]
       )
-      ->group_by(MP_NEWSLETTERS_TABLE.'.id');
+      ->group_by(MP_NEWSLETTERS_TABLE . '.id');
     return $orm;
   }
 

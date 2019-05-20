@@ -99,7 +99,7 @@ class Form extends Model {
   }
 
   static function search($orm, $search = '') {
-    return $orm->whereLike('name', '%'.$search.'%');
+    return $orm->whereLike('name', '%' . $search . '%');
   }
 
   static function groups() {

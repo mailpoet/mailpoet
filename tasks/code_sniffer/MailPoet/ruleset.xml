@@ -28,6 +28,12 @@
 
   <!-- Only short array syntax is allowed -->
   <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+  <rule ref="Squiz.Strings.ConcatenationSpacing">
+    <properties>
+      <property name="ignoreNewlines" value="true" />
+      <property name="spacing" value="1" />
+    </properties>
+  </rule>
   <rule ref="Squiz.WhiteSpace.OperatorSpacing">
     <properties>
       <property name="ignoreNewlines" value="true" />

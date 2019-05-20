@@ -14,8 +14,8 @@ class DOMTest extends \MailPoetUnitTest {
     DOMUtil::splitOn($this->root, $this->root->query('a')->offsetGet(0));
 
     expect($this->root->html())->equals(
-      '<p><i>italic</i><em>previous text</em></p>'.
-      '<a href="#mylink"><img src="#myimage" /></a>'.
+      '<p><i>italic</i><em>previous text</em></p>' .
+      '<a href="#mylink"><img src="#myimage" /></a>' .
       '<p><em>next text</em><b>bolded</b></p>'
     );
   }

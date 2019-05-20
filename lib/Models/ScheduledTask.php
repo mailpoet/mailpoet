@@ -35,8 +35,8 @@ class ScheduledTask extends Model {
 
   function subscribers() {
     return $this->hasManyThrough(
-      __NAMESPACE__.'\Subscriber',
-      __NAMESPACE__.'\ScheduledTaskSubscriber',
+      __NAMESPACE__ . '\Subscriber',
+      __NAMESPACE__ . '\ScheduledTaskSubscriber',
       'task_id',
       'subscriber_id'
     );
