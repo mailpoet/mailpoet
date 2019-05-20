@@ -116,7 +116,7 @@ class WordPress {
     $authorized_email_addresses_tasks = self::getTasksCount([
       'type' => AuthorizedSendingEmailsCheck::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTask::STATUS_SCHEDULED]
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
 
     // check requirements for each worker
