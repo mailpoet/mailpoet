@@ -41,7 +41,11 @@ class UnauthorizedEmailNotice {
   }
 
   private function getMessageText($validation_error) {
-    if (!empty($validation_error['invalid_sender_address']) && !empty($validation_error['invalid_confirmation_address'])) {
+    if (
+      !empty($validation_error['invalid_sender_address'])
+      && !empty($validation_error['invalid_confirmation_address'])
+      && $validation_error['invalid_sender_address'] !== $validation_error['invalid_confirmation_address']
+    ) {
       $text = $this->wp->x('<b>Sending all of your emails has been paused</b> because your email addresses %default-sender-address and %signup-confirmation-address have not been authorized yet.</b>',
         'Email addresses have to be authorized to be used to send emails. %default-sender-address and %signup-confirmation-address will be replaced by email addresses.'
       );
@@ -73,9 +77,13 @@ class UnauthorizedEmailNotice {
   }
 
   private function getAuthorizationLink($validation_error) {
-    if (!empty($validation_error['invalid_sender_address']) && !empty($validation_error['invalid_confirmation_address'])) {
-      $authorize_link = $this->wp->x('Authorize %email and %email2', 'Link for user to authorize their email address');
-      $authorize_link = str_replace('%email', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $authorize_link);
+    if (
+      !empty($validation_error['invalid_sender_address'])
+      && !empty($validation_error['invalid_confirmation_address'])
+      && $validation_error['invalid_sender_address'] !== $validation_error['invalid_confirmation_address']
+    ) {
+      $authorize_link = $this->wp->x('Authorize %email1 and %email2', 'Link for user to authorize their email address');
+      $authorize_link = str_replace('%email1', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $authorize_link);
       $authorize_link = str_replace('%email2', EscapeHelper::escapeHtmlText($validation_error['invalid_confirmation_address']), $authorize_link);
     } else {
       $email = isset($validation_error['invalid_sender_address']) ? $validation_error['invalid_sender_address'] : $validation_error['invalid_confirmation_address'];
