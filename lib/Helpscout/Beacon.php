@@ -42,8 +42,8 @@ class Beacon {
       'PHP post_max_size' => ini_get('post_max_size'),
       'WordPress language' => WPFunctions::get()->getLocale(),
       'Multisite environment?' => (is_multisite() ? 'Yes' : 'No'),
-      'Current Theme' => $current_theme->get('Name').
-        ' (version '.$current_theme->get('Version').')',
+      'Current Theme' => $current_theme->get('Name') .
+        ' (version ' . $current_theme->get('Version') . ')',
       'Active Plugin names' => join(", ", WPFunctions::get()->getOption('active_plugins')),
       'Sending Method' => $mta['method'],
       'Sending Frequency' => sprintf('%d emails every %d minutes',

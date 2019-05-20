@@ -13,9 +13,9 @@ class Textarea extends Base {
 
     $lines = (isset($block['params']['lines']) ? (int)$block['params']['lines'] : 1);
 
-    $html .= '<textarea class="mailpoet_textarea" rows="'.$lines.'" ';
+    $html .= '<textarea class="mailpoet_textarea" rows="' . $lines . '" ';
 
-    $html .= 'name="data['.static::getFieldName($block).']"';
+    $html .= 'name="data[' . static::getFieldName($block) . ']"';
 
     $html .= static::renderInputPlaceholder($block);
 
@@ -23,7 +23,7 @@ class Textarea extends Base {
 
     $html .= static::getInputModifiers($block);
 
-    $html .= '>'.static::getFieldValue($block).'</textarea>';
+    $html .= '>' . static::getFieldValue($block) . '</textarea>';
 
     $html .= '</p>';
 

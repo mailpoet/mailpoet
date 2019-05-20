@@ -61,7 +61,7 @@ class ConfirmationEmailMailer {
     // replace list of segments shortcode
     $body = str_replace(
       '[lists_to_confirm]',
-      '<strong>'.join(', ', $segment_names).'</strong>',
+      '<strong>' . join(', ', $segment_names) . '</strong>',
       $body
     );
 

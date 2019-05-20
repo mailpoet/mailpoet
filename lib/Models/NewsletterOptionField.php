@@ -23,6 +23,6 @@ class NewsletterOptionField extends Model {
       __NAMESPACE__ . '\NewsletterOption',
       'option_field_id',
       'newsletter_id'
-    )->select_expr(MP_NEWSLETTER_OPTION_TABLE.'.value');
+    )->select_expr(MP_NEWSLETTER_OPTION_TABLE . '.value');
   }
 }

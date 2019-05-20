@@ -283,7 +283,7 @@ class RendererTest extends \MailPoetTest {
     ];
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     $site_url = get_option('siteurl');
-    expect($rendered_image)->contains('src="'.$site_url.'/relative-path"');
+    expect($rendered_image)->contains('src="' . $site_url . '/relative-path"');
 
     $image = [
       'src' => '//path-without-protocol',

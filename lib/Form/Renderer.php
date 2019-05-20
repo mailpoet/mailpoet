@@ -52,13 +52,13 @@ class Renderer {
     foreach ($blocks as $key => $block) {
       if ($block['type'] == 'submit' && $settings->get('re_captcha.enabled')) {
         $site_key = $settings->get('re_captcha.site_token');
-        $html .= '<div class="mailpoet_recaptcha" data-sitekey="'. $site_key .'">
+        $html .= '<div class="mailpoet_recaptcha" data-sitekey="' . $site_key . '">
           <div class="mailpoet_recaptcha_container"></div>
           <noscript>
             <div>
               <div style="width: 302px; height: 422px; position: relative;">
                 <div style="width: 302px; height: 422px; position: absolute;">
-                  <iframe src="https://www.google.com/recaptcha/api/fallback?k='. $site_key .'" frameborder="0" scrolling="no" style="width: 302px; height:422px; border-style: none;">
+                  <iframe src="https://www.google.com/recaptcha/api/fallback?k=' . $site_key . '" frameborder="0" scrolling="no" style="width: 302px; height:422px; border-style: none;">
                   </iframe>
                 </div>
               </div>

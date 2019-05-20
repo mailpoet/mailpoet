@@ -16,7 +16,7 @@ class BulkActionController {
   }
 
   function apply($model_class, array $data) {
-    $bulk_action_method = 'bulk'.ucfirst($data['action']);
+    $bulk_action_method = 'bulk' . ucfirst($data['action']);
     unset($data['action']);
 
     $action_class = $this->factory->getActionClass($model_class, $bulk_action_method);

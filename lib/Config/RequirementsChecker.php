@@ -92,7 +92,7 @@ class RequirementsChecker {
 
   function checkMbstringExtension() {
     if (!extension_loaded('mbstring')) {
-      require_once Env::$util_path .'/Polyfills.php';
+      require_once Env::$util_path . '/Polyfills.php';
     }
     return true;
   }

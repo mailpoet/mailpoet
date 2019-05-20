@@ -251,7 +251,7 @@ class MP2Migrator {
     global $wpdb;
 
     $table = MP_SEGMENTS_TABLE;
-    $wpdb->query("DELETE FROM {$table} WHERE type != '" . Segment::TYPE_WP_USERS . "' AND type != '" . Segment::TYPE_WC_USERS ."'");
+    $wpdb->query("DELETE FROM {$table} WHERE type != '" . Segment::TYPE_WP_USERS . "' AND type != '" . Segment::TYPE_WC_USERS . "'");
   }
 
   /**

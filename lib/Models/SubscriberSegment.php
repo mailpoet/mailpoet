@@ -15,7 +15,7 @@ class SubscriberSegment extends Model {
   public static $_table = MP_SUBSCRIBER_SEGMENT_TABLE;
 
   function subscriber() {
-    return $this->has_one(__NAMESPACE__.'\Subscriber', 'id', 'subscriber_id');
+    return $this->has_one(__NAMESPACE__ . '\Subscriber', 'id', 'subscriber_id');
   }
 
   static function unsubscribeFromSegments($subscriber, $segment_ids = []) {
@@ -112,9 +112,9 @@ class SubscriberSegment extends Model {
     }
 
     $query = [
-      'INSERT IGNORE INTO `'.self::$_table.'`',
+      'INSERT IGNORE INTO `' . self::$_table . '`',
       '(`subscriber_id`, `segment_id`, `created_at`)',
-      'VALUES '.rtrim(str_repeat('(?, ?, NOW()),', $row_count), ','),
+      'VALUES ' . rtrim(str_repeat('(?, ?, NOW()),', $row_count), ','),
     ];
     self::rawExecute(join(' ', $query), $values);
 

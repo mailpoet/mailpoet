@@ -315,13 +315,13 @@ class SubscriberTest extends \MailPoetTest {
 
     $subscriber_with_custom_field = Subscriber::createOrUpdate([
       'email' => 'user.with.cf@mailpoet.com',
-      'cf_'.$custom_field->id => 'Paris',
-      'cf_'.$custom_field_2->id => [
+      'cf_' . $custom_field->id => 'Paris',
+      'cf_' . $custom_field_2->id => [
         'day' => 9,
         'month' => 3,
         'year' => 1984,
       ], // date as array value
-      'cf_'.$custom_field_3->id => '2013-07', // date as string value
+      'cf_' . $custom_field_3->id => '2013-07', // date as string value
     ]);
 
     $subscriber = Subscriber::findOne($subscriber_with_custom_field->id)
@@ -329,11 +329,11 @@ class SubscriberTest extends \MailPoetTest {
 
     expect($subscriber->id)->equals($subscriber_with_custom_field->id);
     expect($subscriber->email)->equals('user.with.cf@mailpoet.com');
-    expect($subscriber->{'cf_'.$custom_field->id})->equals('Paris');
+    expect($subscriber->{'cf_' . $custom_field->id})->equals('Paris');
     // date specified as array gets converted to string
-    expect($subscriber->{'cf_'.$custom_field_2->id})->equals('1984-03-09 00:00:00');
+    expect($subscriber->{'cf_' . $custom_field_2->id})->equals('1984-03-09 00:00:00');
     // date specified as string is stored as is
-    expect($subscriber->{'cf_'.$custom_field_3->id})->equals('2013-07');
+    expect($subscriber->{'cf_' . $custom_field_3->id})->equals('2013-07');
   }
 
   function testItShouldUnsubscribeFromAllSegments() {
@@ -459,7 +459,7 @@ class SubscriberTest extends \MailPoetTest {
 
     $subscriber = $subscriber->withCustomFields()->asArray();
 
-    expect($subscriber['cf_'.$custom_field->id()])->equals(
+    expect($subscriber['cf_' . $custom_field->id()])->equals(
       mktime(0, 0, 0, $value['month'], $value['day'], $value['year'])
     );
   }

@@ -56,7 +56,7 @@ class Widget extends \WP_Widget {
     WPFunctions::get()->wpPrintScripts('jquery');
     WPFunctions::get()->wpPrintScripts('mailpoet_vendor');
     WPFunctions::get()->wpPrintScripts('mailpoet_public');
-    echo '<script src="'.self::RECAPTCHA_API_URL.'" async defer></script>';
+    echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
     $scripts = ob_get_contents();
     ob_end_clean();
 

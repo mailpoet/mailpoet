@@ -27,7 +27,7 @@ class Renderer {
     $background_css = $this->getBackgroundCss($styles, $image);
     $template['content_start'] = '
       <tr>
-        <td class="mailpoet_content" align="center" style="border-collapse:collapse;' . $background_css . '" ' . $this->getBgColorAttribute($styles, $image) .'>
+        <td class="mailpoet_content" align="center" style="border-collapse:collapse;' . $background_css . '" ' . $this->getBgColorAttribute($styles, $image) . '>
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
             <tbody>
               <tr>
@@ -67,7 +67,7 @@ class Renderer {
   private function getMultipleColumnsContainerStart($class, $styles, $image) {
     return '
       <tr>
-        <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;' . $this->getBackgroundCss($styles, $image) . '" ' . $this->getBgColorAttribute($styles, $image) .'>
+        <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;' . $this->getBackgroundCss($styles, $image) . '" ' . $this->getBgColorAttribute($styles, $image) . '>
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
             <tbody>
               <tr>

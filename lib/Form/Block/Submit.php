@@ -10,7 +10,7 @@ class Submit extends Base {
 
     $html .= '<p class="mailpoet_paragraph"><input type="submit" class="mailpoet_submit" ';
 
-    $html .= 'value="'.static::getFieldLabel($block).'" ';
+    $html .= 'value="' . static::getFieldLabel($block) . '" ';
 
     $html .= 'data-automation-id="subscribe-submit-button" ';
 

@@ -55,7 +55,7 @@ class Segments extends APIEndpoint {
     $data = [];
     foreach ($listing_data['items'] as $segment) {
       $segment->subscribers_url = WPFunctions::get()->adminUrl(
-        'admin.php?page=mailpoet-subscribers#/filter[segment='.$segment->id.']'
+        'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->id . ']'
       );
 
       $data[] = $segment

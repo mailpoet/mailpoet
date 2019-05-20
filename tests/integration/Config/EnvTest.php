@@ -26,31 +26,31 @@ class EnvTest extends \MailPoetTest {
     Env::init('file', '1.0.0', 'localhost', 'db_user', 'pass123', 'db_name');
     expect(Env::$db_host)->equals('localhost');
     expect(Env::$db_port)->equals('3306');
-    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3306;dbname=db_name;charset='. ENV::$db_charset);
+    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3306;dbname=db_name;charset=' . ENV::$db_charset);
 
     Env::init('file', '1.0.0', 'localhost:3307', 'db_user', 'pass123', 'db_name');
     expect(Env::$db_host)->equals('localhost');
     expect(Env::$db_port)->equals('3307');
-    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3307;dbname=db_name;charset='. ENV::$db_charset);
+    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3307;dbname=db_name;charset=' . ENV::$db_charset);
   }
 
   function testItProcessDBHostWithSocket() {
     Env::init('file', '1.0.0', 'localhost:/var/lib/mysql/mysql55.sock', 'db_user', 'pass123', 'db_name');
     expect(Env::$db_host)->equals('localhost');
     expect(Env::$db_socket)->equals('/var/lib/mysql/mysql55.sock');
-    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3306;dbname=db_name;unix_socket=/var/lib/mysql/mysql55.sock;charset='. ENV::$db_charset);
+    expect(Env::$db_source_name)->equals('mysql:host=localhost;port=3306;dbname=db_name;unix_socket=/var/lib/mysql/mysql55.sock;charset=' . ENV::$db_charset);
   }
 
   function testItProcessDBHostWithIpV6Address() {
     Env::init('file', '1.0.0', '::1', 'db_user', 'pass123', 'db_name');
     expect(Env::$db_host)->equals('::1');
     expect(Env::$db_socket)->equals(null);
-    expect(Env::$db_source_name)->equals('mysql:host=[::1];port=3306;dbname=db_name;charset='. ENV::$db_charset);
+    expect(Env::$db_source_name)->equals('mysql:host=[::1];port=3306;dbname=db_name;charset=' . ENV::$db_charset);
 
     Env::init('file', '1.0.0', 'b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036', 'db_user', 'pass123', 'db_name');
     expect(Env::$db_host)->equals('b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036');
     expect(Env::$db_socket)->equals(null);
-    expect(Env::$db_source_name)->equals('mysql:host=[b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036];port=3306;dbname=db_name;charset='. ENV::$db_charset);
+    expect(Env::$db_source_name)->equals('mysql:host=[b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036];port=3306;dbname=db_name;charset=' . ENV::$db_charset);
 
   }
   function testItCanReturnDbName() {

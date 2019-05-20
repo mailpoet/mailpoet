@@ -33,7 +33,7 @@ abstract class Response {
     }
 
     if (!empty($response)) {
-      @header('Content-Type: application/json; charset='.get_option('blog_charset'));
+      @header('Content-Type: application/json; charset=' . get_option('blog_charset'));
       echo WPFunctions::get()->wpJsonEncode($response);
     }
     die();

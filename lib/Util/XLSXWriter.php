@@ -70,10 +70,10 @@ class XLSXWriter
 
     @unlink($filename);//if the zip already exists, overwrite it
     $zip = new \ZipArchive();
-    if (empty($this->sheets))                       { self::log("Error in ".__CLASS__."::".__FUNCTION__.", no worksheets defined.");
+    if (empty($this->sheets))                       { self::log("Error in " . __CLASS__ . "::" . __FUNCTION__ . ", no worksheets defined.");
       return; 
     }
-    if (!$zip->open($filename, \ZipArchive::CREATE)) { self::log("Error in ".__CLASS__."::".__FUNCTION__.", unable to create zip.");
+    if (!$zip->open($filename, \ZipArchive::CREATE)) { self::log("Error in " . __CLASS__ . "::" . __FUNCTION__ . ", unable to create zip.");
       return; 
     }
 
@@ -86,7 +86,7 @@ class XLSXWriter
 
     $zip->addEmptyDir("xl/worksheets/");
     foreach ($this->sheets as $sheet) {
-      $zip->addFile($sheet->filename, "xl/worksheets/".$sheet->xmlname );
+      $zip->addFile($sheet->filename, "xl/worksheets/" . $sheet->xmlname );
     }
     if (!empty($this->shared_strings)) {
       $zip->addFile($this->writeSharedStringsXML(), "xl/sharedStrings.xml" );  //$zip->addFromString("xl/sharedStrings.xml",     self::buildSharedStringsXML() );
@@ -106,7 +106,7 @@ class XLSXWriter
       return;
 
     $sheet_filename = $this->tempFilename();
-    $sheet_xmlname = 'sheet' . (count($this->sheets) + 1).".xml";
+    $sheet_xmlname = 'sheet' . (count($this->sheets) + 1) . ".xml";
     $this->sheets[$sheet_name] = (object)[
       'filename' => $sheet_filename,
       'sheetname' => $sheet_name,
@@ -223,26 +223,26 @@ class XLSXWriter
     $s = isset($styles[$cell_format]) ? $styles[$cell_format] : '0';
 
     if (!is_scalar($value) || $value == '') { //objects, array, empty
-      $file->write('<c r="'.$cell.'" s="'.$s.'"/>');
+      $file->write('<c r="' . $cell . '" s="' . $s . '"/>');
     } elseif ($cell_format == 'date') {
-      $file->write('<c r="'.$cell.'" s="'.$s.'" t="n"><v>'.intval(self::convert_date_time($value)).'</v></c>');
+      $file->write('<c r="' . $cell . '" s="' . $s . '" t="n"><v>' . intval(self::convert_date_time($value)) . '</v></c>');
     } elseif ($cell_format == 'datetime') {
-      $file->write('<c r="'.$cell.'" s="'.$s.'" t="n"><v>'.self::convert_date_time($value).'</v></c>');
+      $file->write('<c r="' . $cell . '" s="' . $s . '" t="n"><v>' . self::convert_date_time($value) . '</v></c>');
     } elseif (!is_string($value)) {
-      $file->write('<c r="'.$cell.'" s="'.$s.'" t="n"><v>'.($value * 1).'</v></c>');//int,float, etc
+      $file->write('<c r="' . $cell . '" s="' . $s . '" t="n"><v>' . ($value * 1) . '</v></c>');//int,float, etc
     } elseif ($value{0} != '0' && filter_var($value, FILTER_VALIDATE_INT)){ //excel wants to trim leading zeros
-      $file->write('<c r="'.$cell.'" s="'.$s.'" t="n"><v>'.($value).'</v></c>');//numeric string
+      $file->write('<c r="' . $cell . '" s="' . $s . '" t="n"><v>' . ($value) . '</v></c>');//numeric string
     } elseif ($value{0} == '='){
-      $file->write('<c r="'.$cell.'" s="'.$s.'" t="s"><f>'.self::xmlspecialchars($value).'</f></c>');
+      $file->write('<c r="' . $cell . '" s="' . $s . '" t="s"><f>' . self::xmlspecialchars($value) . '</f></c>');
     } elseif ($value !== ''){
-      $file->write('<c r="'.$cell.'" s="'.$s.'" t="s"><v>'.self::xmlspecialchars($this->setSharedString($value)).'</v></c>');
+      $file->write('<c r="' . $cell . '" s="' . $s . '" t="s"><v>' . self::xmlspecialchars($this->setSharedString($value)) . '</v></c>');
     }
   }
 
   protected function writeStylesXML() {
     $temporary_filename = $this->tempFilename();
     $file = new XLSXWriter_BuffererWriter($temporary_filename);
-    $file->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n");
+    $file->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n");
     $file->write('<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">');
     $file->write('<numFmts count="4">');
     $file->write(        '<numFmt formatCode="GENERAL" numFmtId="164"/>');
@@ -319,11 +319,11 @@ class XLSXWriter
   protected function writeSharedStringsXML() {
     $temporary_filename = $this->tempFilename();
     $file = new XLSXWriter_BuffererWriter($temporary_filename, $fd_flags = 'w', $check_utf8 = true);
-    $file->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n");
-    $file->write('<sst count="'.($this->shared_string_count).'" uniqueCount="'.count($this->shared_strings).'" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">');
+    $file->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n");
+    $file->write('<sst count="' . ($this->shared_string_count) . '" uniqueCount="' . count($this->shared_strings) . '" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">');
     foreach ($this->shared_strings as $s => $c)
     {
-      $file->write('<si><t>'.self::xmlspecialchars($s).'</t></si>');
+      $file->write('<si><t>' . self::xmlspecialchars($s) . '</t></si>');
     }
     $file->write('</sst>');
     $file->close();
@@ -333,17 +333,17 @@ class XLSXWriter
 
   protected function buildAppXML() {
     $app_xml = "";
-    $app_xml .= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
+    $app_xml .= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
     $app_xml .= '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><TotalTime>0</TotalTime></Properties>';
     return $app_xml;
   }
 
   protected function buildCoreXML() {
     $core_xml = "";
-    $core_xml .= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
+    $core_xml .= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
     $core_xml .= '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">';
-    $core_xml .= '<dcterms:created xsi:type="dcterms:W3CDTF">'.date("Y-m-d\TH:i:s.00\Z").'</dcterms:created>';//$date_time = '2014-10-25T15:54:37.00Z';
-    $core_xml .= '<dc:creator>'.self::xmlspecialchars($this->author).'</dc:creator>';
+    $core_xml .= '<dcterms:created xsi:type="dcterms:W3CDTF">' . date("Y-m-d\TH:i:s.00\Z") . '</dcterms:created>';//$date_time = '2014-10-25T15:54:37.00Z';
+    $core_xml .= '<dc:creator>' . self::xmlspecialchars($this->author) . '</dc:creator>';
     $core_xml .= '<cp:revision>0</cp:revision>';
     $core_xml .= '</cp:coreProperties>';
     return $core_xml;
@@ -351,7 +351,7 @@ class XLSXWriter
 
   protected function buildRelationshipsXML() {
     $rels_xml = "";
-    $rels_xml .= '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+    $rels_xml .= '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $rels_xml .= '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
     $rels_xml .= '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>';
     $rels_xml .= '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>';
@@ -364,13 +364,13 @@ class XLSXWriter
   protected function buildWorkbookXML() {
     $i = 0;
     $workbook_xml = "";
-    $workbook_xml .= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
+    $workbook_xml .= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
     $workbook_xml .= '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">';
     $workbook_xml .= '<fileVersion appName="Calc"/><workbookPr backupFile="false" showObjects="all" date1904="false"/><workbookProtection/>';
     $workbook_xml .= '<bookViews><workbookView activeTab="0" firstSheet="0" showHorizontalScroll="true" showSheetTabs="true" showVerticalScroll="true" tabRatio="212" windowHeight="8192" windowWidth="16384" xWindow="0" yWindow="0"/></bookViews>';
     $workbook_xml .= '<sheets>';
     foreach ($this->sheets as $sheet_name => $sheet) {
-      $workbook_xml .= '<sheet name="'.self::xmlspecialchars($sheet->sheetname).'" sheetId="'.($i + 1).'" state="visible" r:id="rId'.($i + 2).'"/>';
+      $workbook_xml .= '<sheet name="' . self::xmlspecialchars($sheet->sheetname) . '" sheetId="' . ($i + 1) . '" state="visible" r:id="rId' . ($i + 2) . '"/>';
       $i++;
     }
     $workbook_xml .= '</sheets>';
@@ -381,15 +381,15 @@ class XLSXWriter
   protected function buildWorkbookRelsXML() {
     $i = 0;
     $wkbkrels_xml = "";
-    $wkbkrels_xml .= '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+    $wkbkrels_xml .= '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $wkbkrels_xml .= '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
     $wkbkrels_xml .= '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
     foreach ($this->sheets as $sheet_name => $sheet) {
-      $wkbkrels_xml .= '<Relationship Id="rId'.($i + 2).'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/'.($sheet->xmlname).'"/>';
+      $wkbkrels_xml .= '<Relationship Id="rId' . ($i + 2) . '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/' . ($sheet->xmlname) . '"/>';
       $i++;
     }
     if (!empty($this->shared_strings)) {
-      $wkbkrels_xml .= '<Relationship Id="rId'.(count($this->sheets) + 2).'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>';
+      $wkbkrels_xml .= '<Relationship Id="rId' . (count($this->sheets) + 2) . '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>';
     }
     $wkbkrels_xml .= "\n";
     $wkbkrels_xml .= '</Relationships>';
@@ -398,12 +398,12 @@ class XLSXWriter
 
   protected function buildContentTypesXML() {
     $content_types_xml = "";
-    $content_types_xml .= '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+    $content_types_xml .= '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $content_types_xml .= '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">';
     $content_types_xml .= '<Override PartName="/_rels/.rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>';
     $content_types_xml .= '<Override PartName="/xl/_rels/workbook.xml.rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>';
     foreach ($this->sheets as $sheet_name => $sheet) {
-      $content_types_xml .= '<Override PartName="/xl/worksheets/'.($sheet->xmlname).'" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+      $content_types_xml .= '<Override PartName="/xl/worksheets/' . ($sheet->xmlname) . '" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
     }
     if (!empty($this->shared_strings)) {
       $content_types_xml .= '<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>';
@@ -432,7 +432,7 @@ class XLSXWriter
   }
   //------------------------------------------------------------------
   public static function log($string) {
-    file_put_contents("php://stderr", date("Y-m-d H:i:s:").rtrim(is_array($string) ? json_encode($string) : $string)."\n");
+    file_put_contents("php://stderr", date("Y-m-d H:i:s:") . rtrim(is_array($string) ? json_encode($string) : $string) . "\n");
   }
   //------------------------------------------------------------------
   public static function sanitize_filename($filename) {

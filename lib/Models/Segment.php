@@ -34,8 +34,8 @@ class Segment extends Model {
 
   function newsletters() {
     return $this->has_many_through(
-      __NAMESPACE__.'\Newsletter',
-      __NAMESPACE__.'\NewsletterSegment',
+      __NAMESPACE__ . '\Newsletter',
+      __NAMESPACE__ . '\NewsletterSegment',
       'segment_id',
       'newsletter_id'
     );
@@ -43,8 +43,8 @@ class Segment extends Model {
 
   function subscribers() {
     return $this->has_many_through(
-      __NAMESPACE__.'\Subscriber',
-      __NAMESPACE__.'\SubscriberSegment',
+      __NAMESPACE__ . '\Subscriber',
+      __NAMESPACE__ . '\SubscriberSegment',
       'segment_id',
       'subscriber_id'
     );
@@ -156,7 +156,7 @@ class Segment extends Model {
   }
 
   static function search($orm, $search = '') {
-    return $orm->whereLike('name', '%'.$search.'%');
+    return $orm->whereLike('name', '%' . $search . '%');
   }
 
   static function groups() {
@@ -184,31 +184,31 @@ class Segment extends Model {
   }
 
   static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
-    $query = self::selectMany([self::$_table.'.id', self::$_table.'.name'])
+    $query = self::selectMany([self::$_table . '.id', self::$_table . '.name'])
       ->whereIn('type', [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS])
       ->selectExpr(
-        self::$_table.'.*, ' .
-        'COUNT(IF('.
-          MP_SUBSCRIBER_SEGMENT_TABLE.'.status="'.Subscriber::STATUS_SUBSCRIBED.'"'
-          .' AND '.
-          MP_SUBSCRIBERS_TABLE.'.deleted_at IS NULL'
-          .' AND '.
-          MP_SUBSCRIBERS_TABLE.'.status="'.Subscriber::STATUS_SUBSCRIBED.'"'
-          .', 1, NULL)) `subscribers`'
+        self::$_table . '.*, ' .
+        'COUNT(IF(' .
+          MP_SUBSCRIBER_SEGMENT_TABLE . '.status="' . Subscriber::STATUS_SUBSCRIBED . '"'
+          . ' AND ' .
+          MP_SUBSCRIBERS_TABLE . '.deleted_at IS NULL'
+          . ' AND ' .
+          MP_SUBSCRIBERS_TABLE . '.status="' . Subscriber::STATUS_SUBSCRIBED . '"'
+          . ', 1, NULL)) `subscribers`'
       )
       ->leftOuterJoin(
         MP_SUBSCRIBER_SEGMENT_TABLE,
-        [self::$_table.'.id', '=', MP_SUBSCRIBER_SEGMENT_TABLE.'.segment_id'])
+        [self::$_table . '.id', '=', MP_SUBSCRIBER_SEGMENT_TABLE . '.segment_id'])
       ->leftOuterJoin(
         MP_SUBSCRIBERS_TABLE,
-        [MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id', '=', MP_SUBSCRIBERS_TABLE.'.id'])
-      ->groupBy(self::$_table.'.id')
-      ->groupBy(self::$_table.'.name')
-      ->orderByAsc(self::$_table.'.name')
-      ->whereNull(self::$_table.'.deleted_at');
+        [MP_SUBSCRIBER_SEGMENT_TABLE . '.subscriber_id', '=', MP_SUBSCRIBERS_TABLE . '.id'])
+      ->groupBy(self::$_table . '.id')
+      ->groupBy(self::$_table . '.name')
+      ->orderByAsc(self::$_table . '.name')
+      ->whereNull(self::$_table . '.deleted_at');
 
     if (!empty($type)) {
-      $query->where(self::$_table.'.type', $type);
+      $query->where(self::$_table . '.type', $type);
     }
 
     return $query->findArray();
@@ -259,7 +259,7 @@ class Segment extends Model {
       Segment::rawExecute(join(' ', [
         'UPDATE `' . Segment::$_table . '`',
         'SET `deleted_at` = NOW()',
-        'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')',
+        'WHERE `id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')',
         'AND `type` = "' . Segment::TYPE_DEFAULT . '"',
       ]), $ids);
     });

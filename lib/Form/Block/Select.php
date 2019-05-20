@@ -16,10 +16,10 @@ class Select extends Base {
     $automation_id = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
     $html .= '<p class="mailpoet_paragraph">';
     $html .= static::renderLabel($block);
-    $html .= '<select class="mailpoet_select" name="'.$field_name.'" ' . $automation_id . '>';
+    $html .= '<select class="mailpoet_select" name="' . $field_name . '" ' . $automation_id . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {
-      $html .= '<option value="">'.static::getFieldLabel($block).'</option>';
+      $html .= '<option value="">' . static::getFieldLabel($block) . '</option>';
     } else {
       if (empty($block['params']['required']) || !$block['params']['required']) {
         $html .= '<option value="">-</option>';
@@ -52,7 +52,7 @@ class Select extends Base {
         $label = $option['value'];
       }
 
-      $html .= '<option value="'.$value.'"' . $is_selected . $is_disabled . '>';
+      $html .= '<option value="' . $value . '"' . $is_selected . $is_disabled . '>';
       $html .= WPFunctions::get()->escAttr($label);
       $html .= '</option>';
     }

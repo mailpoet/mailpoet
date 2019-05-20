@@ -11,7 +11,7 @@ class FieldNameObfuscator {
 
   public function obfuscate($name) {
     $auth_key = defined('AUTH_KEY') ? AUTH_KEY : '';
-    $hash = substr(md5($auth_key .  WPFunctions::get()->homeUrl() . $name), 0, self::HASH_LENGTH);
+    $hash = substr(md5($auth_key . WPFunctions::get()->homeUrl() . $name), 0, self::HASH_LENGTH);
     return self::OBFUSCATED_FIELD_PREFIX . base64_encode($hash . '_' . $name);
   }
 

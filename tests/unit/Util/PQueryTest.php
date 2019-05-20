@@ -32,7 +32,7 @@ class PQueryTest extends \MailPoetUnitTest {
     $html_numbers = array_merge(range(40, 126), range(160, 255), [32, 33, 35, 36, 37, 38, 338, 339, 352, 353, 376, 402, 8211, 8212, 8216, 8217, 8218, 8220, 8221, 8222, 8224, 8225, 8226, 8230, 8240, 8364, 8482]);
 
     foreach ($html_numbers as $char) {
-      $this->parseTest('&#'.$char.';', $equals = false);
+      $this->parseTest('&#' . $char . ';', $equals = false);
     }
   }
 

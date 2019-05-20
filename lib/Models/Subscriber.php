@@ -60,12 +60,12 @@ class Subscriber extends Model {
 
   function segments() {
     return $this->has_many_through(
-      __NAMESPACE__.'\Segment',
-      __NAMESPACE__.'\SubscriberSegment',
+      __NAMESPACE__ . '\Segment',
+      __NAMESPACE__ . '\SubscriberSegment',
       'subscriber_id',
       'segment_id'
     )
-    ->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', self::STATUS_SUBSCRIBED);
+    ->where(MP_SUBSCRIBER_SEGMENT_TABLE . '.status', self::STATUS_SUBSCRIBED);
   }
 
   function save() {
@@ -157,7 +157,7 @@ class Subscriber extends Model {
 
     return $orm->where_raw(
       '(`email` LIKE ? OR `first_name` LIKE ? OR `last_name` LIKE ?)',
-      ['%'.$search.'%', '%'.$search.'%', '%'.$search.'%']
+      ['%' . $search . '%', '%' . $search . '%', '%' . $search . '%']
     );
   }
 
@@ -281,58 +281,58 @@ class Subscriber extends Model {
   }
 
   static function filterWithCustomFields($orm) {
-    $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
+    $orm = $orm->select(MP_SUBSCRIBERS_TABLE . '.*');
     $customFields = CustomField::findArray();
     foreach ($customFields as $customField) {
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
         MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
-        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END), NULL) as "' . $customField['name'].'"');
+        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END), NULL) as "' . $customField['name'] . '"');
     }
     $orm = $orm
       ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
         [
-          MP_SUBSCRIBERS_TABLE.'.id',
+          MP_SUBSCRIBERS_TABLE . '.id',
           '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.subscriber_id',
         ]
       )
       ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
         [
-          MP_CUSTOM_FIELDS_TABLE.'.id',
+          MP_CUSTOM_FIELDS_TABLE . '.id',
           '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.custom_field_id',
         ]
       )
-      ->groupBy(MP_SUBSCRIBERS_TABLE.'.id');
+      ->groupBy(MP_SUBSCRIBERS_TABLE . '.id');
     return $orm;
   }
 
   static function filterWithCustomFieldsForExport($orm) {
-    $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
+    $orm = $orm->select(MP_SUBSCRIBERS_TABLE . '.*');
     $customFields = CustomField::findArray();
     foreach ($customFields as $customField) {
       $orm = $orm->selectExpr(
         'MAX(CASE WHEN ' .
         MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
-        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END) as "' . $customField['id'].'"'
+        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END) as "' . $customField['id'] . '"'
       );
     }
     $orm = $orm
       ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
         [
-          MP_SUBSCRIBERS_TABLE.'.id', '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id',
+          MP_SUBSCRIBERS_TABLE . '.id', '=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.subscriber_id',
         ]
       )
       ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
         [
-          MP_CUSTOM_FIELDS_TABLE.'.id','=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id',
+          MP_CUSTOM_FIELDS_TABLE . '.id','=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.custom_field_id',
         ]
       );
     return $orm;
@@ -356,11 +356,11 @@ class Subscriber extends Model {
 
   function customFields() {
     return $this->hasManyThrough(
-      __NAMESPACE__.'\CustomField',
-      __NAMESPACE__.'\SubscriberCustomField',
+      __NAMESPACE__ . '\CustomField',
+      __NAMESPACE__ . '\SubscriberCustomField',
       'subscriber_id',
       'custom_field_id'
-    )->select_expr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.value');
+    )->select_expr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value');
   }
 
   static function createOrUpdate($data = []) {
@@ -444,7 +444,7 @@ class Subscriber extends Model {
       ->where('subscriber_id', $this->id())
       ->findMany();
     foreach ($relations as $relation) {
-      $this->{'cf_'.$relation->custom_field_id} = $relation->value;
+      $this->{'cf_' . $relation->custom_field_id} = $relation->value;
     }
 
     return $this;
@@ -606,9 +606,9 @@ class Subscriber extends Model {
       Subscriber::rawExecute(join(' ', [
           'UPDATE `' . Subscriber::$_table . '`',
           'SET `deleted_at` = NOW()',
-          'WHERE `id` IN ('.
+          'WHERE `id` IN (' .
             rtrim(str_repeat('?,', count($subscriber_ids)), ',')
-          .')',
+          . ')',
           'AND `wp_user_id` IS NULL',
           'AND `is_woocommerce_user` = 0',
         ]),
@@ -666,13 +666,13 @@ class Subscriber extends Model {
   }
 
   static function withoutSegments($orm) {
-    return $orm->select(MP_SUBSCRIBERS_TABLE.'.*')
+    return $orm->select(MP_SUBSCRIBERS_TABLE . '.*')
       ->whereRaw(
         MP_SUBSCRIBERS_TABLE . '.id NOT IN (
           SELECT `subscriber_id`
-          FROM '.MP_SUBSCRIBER_SEGMENT_TABLE.'
-          WHERE `status` = "'.self::STATUS_SUBSCRIBED.'" AND `segment_id` IN (
-            SELECT `id` FROM '.MP_SEGMENTS_TABLE.' WHERE `deleted_at` IS NULL
+          FROM ' . MP_SUBSCRIBER_SEGMENT_TABLE . '
+          WHERE `status` = "' . self::STATUS_SUBSCRIBED . '" AND `segment_id` IN (
+            SELECT `id` FROM ' . MP_SEGMENTS_TABLE . ' WHERE `deleted_at` IS NULL
           )
         )'
       );

@@ -73,7 +73,7 @@ class Date extends Base {
         $html .= static::getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a day', 'mailpoet'),
         ]);
-        $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day', 'mailpoet').'">';
+        $html .= 'name="' . $field_name . '[day]" placeholder="' . __('Day', 'mailpoet') . '">';
         $html .= static::getDays($block);
         $html .= '</select>';
       } else if ($date_selector === 'MM') {
@@ -82,7 +82,7 @@ class Date extends Base {
         $html .= static::getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a month', 'mailpoet'),
         ]);
-        $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month', 'mailpoet').'">';
+        $html .= 'name="' . $field_name . '[month]" placeholder="' . __('Month', 'mailpoet') . '">';
         $html .= static::getMonths($block);
         $html .= '</select>';
       } else if ($date_selector === 'YYYY') {
@@ -91,13 +91,13 @@ class Date extends Base {
         $html .= static::getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a year', 'mailpoet'),
         ]);
-        $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year', 'mailpoet').'">';
+        $html .= 'name="' . $field_name . '[year]" placeholder="' . __('Year', 'mailpoet') . '">';
         $html .= static::getYears($block);
         $html .= '</select>';
       }
     }
 
-    $html .= '<span class="mailpoet_error_'.$block['id'].'"></span>';
+    $html .= '<span class="mailpoet_error_' . $block['id'] . '"></span>';
 
     return $html;
   }
@@ -139,11 +139,11 @@ class Date extends Base {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">'.__('Month', 'mailpoet').'</option>';
+    $html .= '<option value="">' . __('Month', 'mailpoet') . '</option>';
 
     for ($i = 1; $i < 13; $i++) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
-      $html .= '<option value="'.$i.'" '.$is_selected.'>';
+      $html .= '<option value="' . $i . '" ' . $is_selected . '>';
       $html .= $month_names[$i - 1];
       $html .= '</option>';
     }
@@ -169,12 +169,12 @@ class Date extends Base {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">'.__('Year', 'mailpoet').'</option>';
+    $html .= '<option value="">' . __('Year', 'mailpoet') . '</option>';
 
     // return years as an array
     for ($i = (int)$block['to']; $i > (int)($block['from'] - 1); $i--) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
-      $html .= '<option value="'.$i.'" '.$is_selected.'>'.$i.'</option>';
+      $html .= '<option value="' . $i . '" ' . $is_selected . '>' . $i . '</option>';
     }
 
     return $html;
@@ -195,12 +195,12 @@ class Date extends Base {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">'.__('Day', 'mailpoet').'</option>';
+    $html .= '<option value="">' . __('Day', 'mailpoet') . '</option>';
 
     // return days as an array
     for ($i = 1; $i < 32; $i++) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
-      $html .= '<option value="'.$i.'" '.$is_selected.'>'.$i.'</option>';
+      $html .= '<option value="' . $i . '" ' . $is_selected . '>' . $i . '</option>';
     }
 
     return $html;
