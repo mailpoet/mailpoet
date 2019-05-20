@@ -42,6 +42,7 @@ class Clicks {
         $queue->id
       );
       $this->sendRevenueCookie($statistics_clicks);
+      $this->sendAbandonedCartCookie($subscriber);
       // track open event
       $open_event = new Opens();
       $open_event->track($data, $display_image = false);
@@ -59,6 +60,19 @@ class Clicks {
           'created_at' => time(),
         ]),
         time() + self::REVENUE_TRACKING_COOKIE_EXPIRY,
+        '/'
+      );
+    }
+  }
+
+  private function sendAbandonedCartCookie($subscriber) {
+    if ($this->settings_controller->get('accept_cookie_revenue_tracking')) {
+      setcookie(
+        'mailpoet_abandoned_cart_tracking',
+        serialize([
+          'subscriber_id' => $subscriber->id,
+        ]),
+        time() + (10 * 365 * 24 * 60 * 60), // practically no expiry
         '/'
       );
     }
