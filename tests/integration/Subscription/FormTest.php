@@ -16,9 +16,6 @@ use MailPoet\Util\Url as UrlHelper;
 
 class FormTest extends \MailPoetTest {
 
-  /** @var Form */
-  private $form_controller;
-
   /** @var SettingsController */
   private $settings;
 

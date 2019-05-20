@@ -123,6 +123,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     return $container;
   }
 
+  /**
+   * @phpcsSuppress SlevomatCodingStandard.Classes.UnusedPrivateElements
+   */
   private function registerPremiumService(ContainerBuilder $container, $id) {
     $container->register($id)
       ->setPublic(true)

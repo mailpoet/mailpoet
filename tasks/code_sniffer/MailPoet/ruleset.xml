@@ -3,6 +3,8 @@
   <config name="installed_paths" value="tasks/code_sniffer/vendor/squizlabs/php_codesniffer,tasks/code_sniffer/vendor/phpcompatibility/php-compatibility,tasks/code_sniffer/vendor/slevomat/coding-standard"/>
   <description>MailPoet specific rule set</description>
 
+  <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
+  <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>
   <!-- This sniff enforces trailing commas in multi-line arrays -->
   <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
   <!-- Disallows assignments in if, elseif and do-while loop conditions -->

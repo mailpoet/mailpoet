@@ -24,7 +24,7 @@ class DaemonTest extends \MailPoetTest {
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon = new Daemon($this->settings, $this->createWorkersFactoryMock());
+    $daemon = new Daemon($this->createWorkersFactoryMock());
     $daemon->run($data);
   }
 

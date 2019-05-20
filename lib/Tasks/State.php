@@ -63,7 +63,9 @@ class State
       $tasks = array_merge($tasks, $query->findMany());
     }
 
-    return array_map([$this, 'buildTaskData'], $tasks);
+    return array_map(function ($task) {
+      return $this->buildTaskData($task);
+    }, $tasks);
   }
 
   /**

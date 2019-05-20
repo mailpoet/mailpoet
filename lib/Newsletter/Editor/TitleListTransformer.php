@@ -13,7 +13,9 @@ class TitleListTransformer {
   }
 
   function transform($posts) {
-    $results = array_map(array($this, 'getPostTitle'), $posts);
+    $results = array_map(function($post) {
+      return $this->getPostTitle($post);
+    }, $posts);
 
     return array(
       $this->wrap(array(
