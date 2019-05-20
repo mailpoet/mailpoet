@@ -23,7 +23,8 @@ class API {
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
     switch ($code) {
       case 200:
-        if ($body = $this->wp->wpRemoteRetrieveBody($result)) {
+        $body = $this->wp->wpRemoteRetrieveBody($result);
+        if ($body) {
           $body = json_decode($body);
         }
         break;
