@@ -367,10 +367,10 @@ class Menu {
       $this->wp->__('Track WooCommerce revenues with cookies', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
       'mailpoet-revenue-tracking-permission',
-      array(
+      [
         $this,
-        'revenueTrackingPermission'
-      )
+        'revenueTrackingPermission',
+      ]
     );
 
     // Update page
@@ -446,7 +446,7 @@ class Menu {
   }
 
   function revenueTrackingPermission() {
-    if (!$this->settings->get('display_revenues')) {
+    if (!$this->features_controller->isSupported(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES)) {
       return;
     }
     if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
@@ -533,6 +533,7 @@ class Menu {
       'current_user' => $this->wp->wpGetCurrentUser(),
       'linux_cron_path' => dirname(dirname(__DIR__)),
       'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
+      'display_revenues' => $this->features_controller->isSupported(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES),
       'ABSPATH' => ABSPATH,
       'hosts' => [
         'web' => Hosts::getWebHosts(),
