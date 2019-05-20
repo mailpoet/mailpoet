@@ -8,13 +8,13 @@ class ShortcodesHelperTest extends \MailPoetTest {
   function testGetsShortcodes() {
     $shortcodes = ShortcodesHelper::getShortcodes();
     expect(array_keys($shortcodes))->equals(
-      array(
+      [
         'Subscriber',
         'Newsletter',
         'Post Notifications',
         'Date',
-        'Links'
-      )
+        'Links',
+      ]
     );
   }
 

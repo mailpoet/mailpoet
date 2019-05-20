@@ -22,70 +22,70 @@ class AccessControlTest extends \MailPoetTest {
     $wp->addFilter(
       'mailpoet_permission_access_plugin_admin',
       function() {
-        return array('custom_access_plugin_admin_role');
+        return ['custom_access_plugin_admin_role'];
       }
     );
     $wp->addFilter(
       'mailpoet_permission_manage_settings',
       function() {
-        return array('custom_manage_settings_role');
+        return ['custom_manage_settings_role'];
       }
     );
     $wp->addFilter(
       'mailpoet_permission_manage_features',
       function() {
-        return array('custom_manage_features_role');
+        return ['custom_manage_features_role'];
       }
     );
     $wp->addFilter(
       'mailpoet_permission_manage_emails',
       function() {
-        return array('custom_manage_emails_role');
+        return ['custom_manage_emails_role'];
       }
     );
     $wp->addFilter(
       'mailpoet_permission_manage_subscribers',
       function() {
-        return array('custom_manage_subscribers_role');
+        return ['custom_manage_subscribers_role'];
       }
     );
     $wp->addFilter(
       'mailpoet_permission_manage_forms',
       function() {
-        return array('custom_manage_forms_role');
+        return ['custom_manage_forms_role'];
       }
     );
     $wp->addFilter(
       'mailpoet_permission_manage_segments',
       function() {
-        return array('custom_manage_segments_role');
+        return ['custom_manage_segments_role'];
       }
     );
 
     expect($this->access_control->getDefaultPermissions())->equals(
-      array(
-        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => array(
-          'custom_access_plugin_admin_role'
-        ),
-        AccessControl::PERMISSION_MANAGE_SETTINGS => array(
-          'custom_manage_settings_role'
-        ),
-        AccessControl::PERMISSION_MANAGE_FEATURES => array(
-          'custom_manage_features_role'
-        ),
-        AccessControl::PERMISSION_MANAGE_EMAILS => array(
-          'custom_manage_emails_role'
-        ),
-        AccessControl::PERMISSION_MANAGE_SUBSCRIBERS => array(
-          'custom_manage_subscribers_role'
-        ),
-        AccessControl::PERMISSION_MANAGE_FORMS => array(
-          'custom_manage_forms_role'
-        ),
-        AccessControl::PERMISSION_MANAGE_SEGMENTS => array(
-          'custom_manage_segments_role'
-        ),
-      )
+      [
+        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => [
+          'custom_access_plugin_admin_role',
+        ],
+        AccessControl::PERMISSION_MANAGE_SETTINGS => [
+          'custom_manage_settings_role',
+        ],
+        AccessControl::PERMISSION_MANAGE_FEATURES => [
+          'custom_manage_features_role',
+        ],
+        AccessControl::PERMISSION_MANAGE_EMAILS => [
+          'custom_manage_emails_role',
+        ],
+        AccessControl::PERMISSION_MANAGE_SUBSCRIBERS => [
+          'custom_manage_subscribers_role',
+        ],
+        AccessControl::PERMISSION_MANAGE_FORMS => [
+          'custom_manage_forms_role',
+        ],
+        AccessControl::PERMISSION_MANAGE_SEGMENTS => [
+          'custom_manage_segments_role',
+        ],
+      ]
     );
   }
 

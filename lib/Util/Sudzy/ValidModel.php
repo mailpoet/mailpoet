@@ -8,17 +8,17 @@ if (!defined('ABSPATH')) exit;
  */
 abstract class ValidModel extends \Model {
   protected $_validator = null; // Reference to Sudzy validator object
-  protected $_validations = array(); // Array of validations
-  protected $_validationErrors = array(); // Array of error messages
-  protected $_validationOptions = array(
+  protected $_validations = []; // Array of validations
+  protected $_validationErrors = []; // Array of error messages
+  protected $_validationOptions = [
     'indexedErrors' => false, // If True getValidationErrors will return an array with the index
                               // being the field name and the value the error. If multiple errors
                               // are triggered for a field only the first will be kept.
-    'throw' => self::ON_SAVE  // One of self::ON_SET|ON_SAVE|NEVER.
+    'throw' => self::ON_SAVE,  // One of self::ON_SET|ON_SAVE|NEVER.
                               //  + ON_SET throws immediately when field is set()
                               //  + ON_SAVE throws on save()
                               //  + NEVER means an exception is never thrown; check for ->getValidationErrors()
-  );
+  ];
 
   const ON_SET = 'set';
   const ON_SAVE = 'save';
@@ -34,12 +34,12 @@ abstract class ValidModel extends \Model {
 
   public function addValidation($field, $validation, $message) {
     if (!isset($this->_validations[$field])) {
-      $this->_validations[$field] = array();
+      $this->_validations[$field] = [];
     }
-    $this->_validations[$field][] = array(
+    $this->_validations[$field][] = [
       'validation' => $validation,
-      'message'     => $message
-    );
+      'message'     => $message,
+    ];
   }
 
   public function addValidations($field, $validators) {
@@ -94,7 +94,7 @@ abstract class ValidModel extends \Model {
   }
 
   public function resetValidationErrors() {
-    $this->_validationErrors = array();
+    $this->_validationErrors = [];
   }
 
   ///////////////////

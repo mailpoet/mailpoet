@@ -27,9 +27,9 @@ class PostTransformer {
     if (empty($this->with_layout)) {
       return $this->args['divider'];
     }
-    return LayoutHelper::row(array(
-      LayoutHelper::col(array($this->args['divider']))
-    ));
+    return LayoutHelper::row([
+      LayoutHelper::col([$this->args['divider']]),
+    ]);
   }
 
   function transform($post) {
@@ -88,11 +88,11 @@ class PostTransformer {
     ) {
       array_unshift($content, $title);
 
-      return array(
-        LayoutHelper::row(array(
-          LayoutHelper::col($content)
-        ))
-      );
+      return [
+        LayoutHelper::row([
+          LayoutHelper::col($content),
+        ]),
+      ];
     }
     $title_position = isset($this->args['titlePosition']) ? $this->args['titlePosition'] : '';
 
@@ -106,11 +106,11 @@ class PostTransformer {
       } else {
         array_unshift($content, $title, $featured_image);
       }
-      return array(
-        LayoutHelper::row(array(
-          LayoutHelper::col($content)
-        ))
-      );
+      return [
+        LayoutHelper::row([
+          LayoutHelper::col($content),
+        ]),
+      ];
     }
 
     if ($title_position === 'aboveExcerpt') {
@@ -122,18 +122,18 @@ class PostTransformer {
     }
 
     $content = ($featured_image_position === 'left')
-      ? array(
-        LayoutHelper::col(array($featured_image)),
-        LayoutHelper::col($content)
-      )
-      : array(
+      ? [
+        LayoutHelper::col([$featured_image]),
         LayoutHelper::col($content),
-        LayoutHelper::col(array($featured_image))
-      );
+      ]
+      : [
+        LayoutHelper::col($content),
+        LayoutHelper::col([$featured_image]),
+      ];
 
-    $result = array(
-      LayoutHelper::row($content)
-    );
+    $result = [
+      LayoutHelper::row($content),
+    ];
 
     if ($title_position !== 'aboveExcerpt') {
       array_unshift(
@@ -221,7 +221,7 @@ class PostTransformer {
       $alt_text = trim(strip_tags($post_title));
     }
 
-    return array(
+    return [
       'type' => 'image',
       'link' => $this->wp->getPermalink($post_id),
       'src' => $image_info[0],
@@ -229,12 +229,12 @@ class PostTransformer {
       'fullWidth' => $image_full_width,
       'width' => $image_info[1],
       'height' => $image_info[2],
-      'styles' => array(
-        'block' => array(
+      'styles' => [
+        'block' => [
           'textAlign' => 'center',
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
   }
 
   private function getReadMoreButton($post) {
@@ -250,10 +250,10 @@ class PostTransformer {
       $this->args['readMoreText']
     );
 
-    return array(
+    return [
       'type' => 'text',
       'text' => $read_more_text,
-    );
+    ];
   }
 
   private function getTitle($post) {
@@ -263,7 +263,7 @@ class PostTransformer {
       $title = '<a href="' . $this->wp->getPermalink($post->ID) . '">' . $title . '</a>';
     }
 
-    if (in_array($this->args['titleFormat'], array('h1', 'h2', 'h3'))) {
+    if (in_array($this->args['titleFormat'], ['h1', 'h2', 'h3'])) {
       $tag = $this->args['titleFormat'];
     } elseif ($this->args['titleFormat'] === 'ul') {
       $tag = 'li';
@@ -271,13 +271,13 @@ class PostTransformer {
       $tag = 'h1';
     }
 
-    $alignment = (in_array($this->args['titleAlignment'], array('left', 'right', 'center'))) ? $this->args['titleAlignment'] : 'left';
+    $alignment = (in_array($this->args['titleAlignment'], ['left', 'right', 'center'])) ? $this->args['titleAlignment'] : 'left';
 
     $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
-    return array(
+    return [
       'type' => 'text',
       'text' => $title,
-    );
+    ];
   }
 
   private function getPrice($post) {
@@ -305,10 +305,10 @@ class PostTransformer {
         $content[$blocks_count - 1]['text'] = $price . $content[$blocks_count - 1]['text'];
       }
     } else {
-      $content[] = array(
+      $content[] = [
         'type' => 'text',
         'text' => $price,
-      );
+      ];
     }
     return $content;
   }

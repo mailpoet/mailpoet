@@ -23,7 +23,7 @@ class Installer {
   }
 
   function init() {
-    WPFunctions::get()->addFilter('plugins_api', array($this, 'getPluginInformation'), 10, 3);
+    WPFunctions::get()->addFilter('plugins_api', [$this, 'getPluginInformation'], 10, 3);
   }
 
   function getPluginInformation($data, $action = '', $args = null) {
@@ -60,11 +60,11 @@ class Installer {
 
   static function getPluginInstallationUrl($slug) {
     $install_url = WPFunctions::get()->addQueryArg(
-      array(
+      [
         'action'   => 'install-plugin',
         'plugin'   => $slug,
         '_wpnonce' => WPFunctions::get()->wpCreateNonce('install-plugin_' . $slug),
-      ),
+      ],
       WPFunctions::get()->selfAdminUrl('update.php')
     );
     return $install_url;
@@ -76,18 +76,18 @@ class Installer {
       return false;
     }
     $activate_url = WPFunctions::get()->addQueryArg(
-      array(
+      [
         'action'   => 'activate',
         'plugin'   => $plugin_file,
         '_wpnonce' => WPFunctions::get()->wpCreateNonce('activate-plugin_' . $plugin_file),
-      ),
+      ],
       WPFunctions::get()->selfAdminUrl('plugins.php')
     );
     return $activate_url;
   }
 
   private static function getInstalledPlugin($slug) {
-    $installed_plugin = array();
+    $installed_plugin = [];
     if (is_dir(WP_PLUGIN_DIR . '/' . $slug)) {
       $installed_plugin = WPFunctions::get()->getPlugins('/' . $slug);
     }

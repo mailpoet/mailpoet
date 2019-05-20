@@ -6,10 +6,10 @@ use MailPoet\Models\NewsletterTemplate;
 class NewsletterTemplateTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->data = array(
+    $this->data = [
       'name' => 'Some template',
       'body' => '{}',
-    );
+    ];
 
     $template = NewsletterTemplate::create();
     $template->hydrate($this->data);
@@ -45,10 +45,10 @@ class NewsletterTemplateTest extends \MailPoetTest {
 
   function testItCanCreateOrUpdate() {
     $created_template = NewsletterTemplate::createOrUpdate(
-      array(
+      [
         'name' => 'Another template',
         'body' => '{content: {}, globalStyles: {}}',
-      ));
+      ]);
     expect($created_template->id() > 0)->true();
     expect($created_template->getErrors())->false();
 
@@ -57,11 +57,11 @@ class NewsletterTemplateTest extends \MailPoetTest {
     expect($template->name)->equals('Another template');
 
     $updated_template = NewsletterTemplate::createOrUpdate(
-      array(
+      [
         'id' => $template->id,
         'name' => 'Another template updated',
-        'body' => '{}'
-      ));
+        'body' => '{}',
+      ]);
     expect($updated_template->id() > 0)->true();
     expect($updated_template->getErrors())->false();
 
@@ -72,22 +72,22 @@ class NewsletterTemplateTest extends \MailPoetTest {
   function testItCanCleanRecentlySent() {
     $total = NewsletterTemplate::RECENTLY_SENT_COUNT + 5;
     for ($i = 0; $i < $total; $i++) {
-      NewsletterTemplate::createOrUpdate(array(
+      NewsletterTemplate::createOrUpdate([
         'name' => 'Testing template ' . $i,
         'body' => '{content: {}, globalStyles: {}}',
-        'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES
-      ));
+        'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES,
+      ]);
     }
 
-    NewsletterTemplate::cleanRecentlySent(array());
+    NewsletterTemplate::cleanRecentlySent([]);
     $count = NewsletterTemplate::where(
       'categories', NewsletterTemplate::RECENTLY_SENT_CATEGORIES
       )->count();
     expect($count)->equals($total);
 
-    NewsletterTemplate::cleanRecentlySent(array(
-      'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES    
-    ));
+    NewsletterTemplate::cleanRecentlySent([
+      'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES,    
+    ]);
     $count = NewsletterTemplate::where(
       'categories', NewsletterTemplate::RECENTLY_SENT_CATEGORIES
       )->count();

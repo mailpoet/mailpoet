@@ -15,7 +15,7 @@ class StatsNotification extends Model {
   }
 
   /** @return StatsNotification */
-  static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = []) {
     $model = null;
 
     if (isset($data['id']) && (int)$data['id'] > 0) {

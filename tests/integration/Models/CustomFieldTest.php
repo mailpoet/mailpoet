@@ -8,27 +8,27 @@ use MailPoet\Models\SubscriberCustomField;
 class CustomFieldTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->data = array(
+    $this->data = [
       'name' => 'City',
       'type' => CustomField::TYPE_TEXT,
-      'params' => array(
-        'label' => 'What is your city?'
-      )
-    );
+      'params' => [
+        'label' => 'What is your city?',
+      ],
+    ];
     $this->custom_field = CustomField::createOrUpdate($this->data);
 
-    $this->subscribers = array(
-      array(
+    $this->subscribers = [
+      [
         'first_name' => 'John',
         'last_name' => 'Mailer',
-        'email' => 'john@mailpoet.com'
-      ),
-      array(
+        'email' => 'john@mailpoet.com',
+      ],
+      [
         'first_name' => 'Mike',
         'last_name' => 'Smith',
-        'email' => 'mike@maipoet.com'
-      )
-    );
+        'email' => 'mike@maipoet.com',
+      ],
+    ];
   }
 
   function testItCanBeCreated() {
@@ -39,10 +39,10 @@ class CustomFieldTest extends \MailPoetTest {
   function testItCanBeUpdated() {
     expect($this->custom_field->name)->equals($this->data['name']);
 
-    $updated_custom_field = CustomField::createOrUpdate(array(
+    $updated_custom_field = CustomField::createOrUpdate([
       'id' => $this->custom_field->id,
-      'name' => 'Country'
-    ));
+      'name' => 'Country',
+    ]);
 
     expect($updated_custom_field->getErrors())->false();
     expect($updated_custom_field->name)->equals('Country');

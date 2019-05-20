@@ -11,10 +11,10 @@ class PluginActivatedHookTest extends \MailPoetTest {
   public function testItAddsANewMessageIfNetworkActivation() {
     $deferred_admin_notices = Stub::makeEmpty(
       'MailPoet\Config\DeferredAdminNotices',
-      array(
+      [
         'addNetworkAdminNotice' => Expected::exactly(1, function () {
         }),
-      ),
+      ],
       $this
     );
     $hook = new PluginActivatedHook($deferred_admin_notices);
@@ -24,9 +24,9 @@ class PluginActivatedHookTest extends \MailPoetTest {
   public function testItDoesntAddAMessageIfPluginNameDiffers() {
     $deferred_admin_notices = Stub::makeEmpty(
       'MailPoet\Config\DeferredAdminNotices',
-      array(
+      [
         'addNetworkAdminNotice' => Expected::never(),
-      ),
+      ],
       $this
     );
     $hook = new PluginActivatedHook($deferred_admin_notices);
@@ -36,9 +36,9 @@ class PluginActivatedHookTest extends \MailPoetTest {
   public function testItDoesntAddAMessageIfNoNetworkActivation() {
     $deferred_admin_notices = Stub::makeEmpty(
       'MailPoet\Config\DeferredAdminNotices',
-      array(
+      [
         'addNetworkAdminNotice' => Expected::never(),
-      ),
+      ],
       $this
     );
     $hook = new PluginActivatedHook($deferred_admin_notices);

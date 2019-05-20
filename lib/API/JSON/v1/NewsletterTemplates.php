@@ -11,11 +11,11 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class NewsletterTemplates extends APIEndpoint {
-  public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_EMAILS
-  );
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
+  ];
 
-  function get($data = array()) {
+  function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
     if ($template instanceof NewsletterTemplate) {
@@ -23,9 +23,9 @@ class NewsletterTemplates extends APIEndpoint {
         $template->asArray()
       );
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
@@ -43,7 +43,7 @@ class NewsletterTemplates extends APIEndpoint {
     return $this->successResponse($templates);
   }
 
-  function save($data = array()) {
+  function save($data = []) {
     ignore_user_abort(true);
     if (!empty($data['newsletter_id'])) {
       $template = NewsletterTemplate::whereEqual('newsletter_id', $data['newsletter_id'])->findOne();
@@ -68,16 +68,16 @@ class NewsletterTemplates extends APIEndpoint {
     }
   }
 
-  function delete($data = array()) {
+  function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
     if ($template instanceof NewsletterTemplate) {
       $template->delete();
-      return $this->successResponse(null, array('count' => 1));
+      return $this->successResponse(null, ['count' => 1]);
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet'),
+      ]);
     }
   }
 }

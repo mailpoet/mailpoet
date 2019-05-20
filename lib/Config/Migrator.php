@@ -78,7 +78,7 @@ class Migrator {
   }
 
   function segments() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL DEFAULT "default",',
@@ -87,26 +87,26 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
-    );
+      'UNIQUE KEY name (name)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function settings() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(50) NOT NULL,',
       'value longtext,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
-    );
+      'UNIQUE KEY name (name)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function customFields() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL,',
@@ -114,13 +114,13 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
-    );
+      'UNIQUE KEY name (name)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function scheduledTasks() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'type varchar(90) NULL DEFAULT NULL,',
       'status varchar(12) NULL DEFAULT NULL,',
@@ -134,12 +134,12 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'KEY type (type),',
       'KEY status (status)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function statsNotifications() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'task_id int(11) unsigned NOT NULL,',
@@ -148,12 +148,12 @@ class Migrator {
       'PRIMARY KEY (id),',
       'UNIQUE KEY newsletter_id_task_id (newsletter_id, task_id),',
       'KEY task_id (task_id)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function scheduledTaskSubscribers() {
-    $attributes = array (
+    $attributes =  [
       'task_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'processed int(1) NOT NULL,',
@@ -161,13 +161,13 @@ class Migrator {
       'error text NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (task_id, subscriber_id),',
-      'KEY subscriber_id (subscriber_id)'
-    );
+      'KEY subscriber_id (subscriber_id)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function sendingQueues() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'task_id int(11) unsigned NOT NULL,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -184,12 +184,12 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'KEY task_id (task_id),',
       'KEY newsletter_id (newsletter_id)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function subscribers() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'wp_user_id bigint(20) NULL,',
       'is_woocommerce_user int(1) NOT NULL DEFAULT 0,',
@@ -211,12 +211,12 @@ class Migrator {
       'KEY wp_user_id (wp_user_id),',
       'KEY updated_at (updated_at),',
       'KEY status_deleted_at (status,deleted_at)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function subscriberSegment() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'segment_id int(11) unsigned NOT NULL,',
@@ -226,12 +226,12 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'UNIQUE KEY subscriber_segment (subscriber_id,segment_id),',
       'KEY segment_id (segment_id)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function subscriberCustomField() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'custom_field_id int(11) unsigned NOT NULL,',
@@ -239,23 +239,23 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY subscriber_id_custom_field_id (subscriber_id,custom_field_id)'
-    );
+      'UNIQUE KEY subscriber_id_custom_field_id (subscriber_id,custom_field_id)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function subscriberIps() {
-    $attributes = array(
+    $attributes = [
       'ip varchar(45) NOT NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (created_at, ip),',
-      'KEY ip (ip)'
-    );
+      'KEY ip (ip)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function newsletters() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'hash varchar(150) NULL DEFAULT NULL,',
       'parent_id int(11) unsigned NULL,',
@@ -273,13 +273,13 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'PRIMARY KEY  (id),',
-      'KEY type_status (type,status)'
-    );
+      'KEY type_status (type,status)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function newsletterTemplates() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) NULL DEFAULT 0,',
       'name varchar(250) NOT NULL,',
@@ -290,26 +290,26 @@ class Migrator {
       'readonly tinyint(1) DEFAULT 0,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
-    );
+      'PRIMARY KEY  (id)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function newsletterOptionFields() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'newsletter_type varchar(90) NOT NULL,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY name_newsletter_type (newsletter_type,name)'
-    );
+      'UNIQUE KEY name_newsletter_type (newsletter_type,name)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function newsletterOption() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'option_field_id int(11) unsigned NOT NULL,',
@@ -317,26 +317,26 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY newsletter_id_option_field_id (newsletter_id,option_field_id)'
-    );
+      'UNIQUE KEY newsletter_id_option_field_id (newsletter_id,option_field_id)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function newsletterSegment() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'segment_id int(11) unsigned NOT NULL,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY newsletter_segment (newsletter_id,segment_id)'
-    );
+      'UNIQUE KEY newsletter_segment (newsletter_id,segment_id)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function newsletterLinks() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'queue_id int(11) unsigned NOT NULL,',
@@ -348,12 +348,12 @@ class Migrator {
       'KEY newsletter_id (newsletter_id),',
       'KEY queue_id (queue_id),',
       'KEY url (url(100))',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function newsletterPosts() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'post_id int(11) unsigned NOT NULL,',
@@ -361,12 +361,12 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function forms() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'body longtext,',
@@ -375,13 +375,13 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
-      'PRIMARY KEY  (id)'
-    );
+      'PRIMARY KEY  (id)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function statisticsNewsletters() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
@@ -390,12 +390,12 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
       'KEY subscriber_id (subscriber_id)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function statisticsClicks() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
@@ -408,12 +408,12 @@ class Migrator {
       'KEY newsletter_id (newsletter_id),',
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function statisticsOpens() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
@@ -424,12 +424,12 @@ class Migrator {
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id),',
       'KEY created_at (created_at)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function statisticsUnsubscribes() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
@@ -439,24 +439,24 @@ class Migrator {
       'KEY newsletter_id (newsletter_id),',
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function statisticsForms() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'form_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY form_subscriber (form_id,subscriber_id)'
-    );
+      'UNIQUE KEY form_subscriber (form_id,subscriber_id)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function statisticsWoocommercePurchases() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
@@ -472,19 +472,19 @@ class Migrator {
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id),',
       'UNIQUE KEY click_id_order_id (click_id, order_id)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function mappingToExternalEntities() {
-    $attributes = array(
+    $attributes = [
       'old_id int(11) unsigned NOT NULL,',
       'type varchar(50) NOT NULL,',
       'new_id int(11) unsigned NOT NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY (old_id, type),',
-      'KEY new_id (new_id)'
-    );
+      'KEY new_id (new_id)',
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
@@ -501,7 +501,7 @@ class Migrator {
   }
 
   function userFlags() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'user_id bigint(20) NOT NULL,',
       'name varchar(50) NOT NULL,',
@@ -510,12 +510,12 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'UNIQUE KEY user_id_name (user_id, name)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   function featureFlags() {
-    $attributes = array(
+    $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(100) NOT NULL,',
       'value tinyint(1),',
@@ -523,14 +523,14 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'UNIQUE KEY name (name)',
-    );
+    ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
   private function sqlify($model, $attributes) {
     $table = $this->prefix . Helpers::camelCaseToUnderscore($model);
 
-    $sql = array();
+    $sql = [];
     $sql[] = "CREATE TABLE " . $table . " (";
     $sql = array_merge($sql, $attributes);
     $sql[] = ") " . $this->charset_collate . ";";

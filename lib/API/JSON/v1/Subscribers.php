@@ -26,10 +26,10 @@ if (!defined('ABSPATH')) exit;
 class Subscribers extends APIEndpoint {
   const SUBSCRIPTION_LIMIT_COOLDOWN = 60;
 
-  public $permissions = array(
+  public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
-    'methods' => array('subscribe' => AccessControl::NO_ACCESS_RESTRICTION)
-  );
+    'methods' => ['subscribe' => AccessControl::NO_ACCESS_RESTRICTION],
+  ];
 
   /** @var Listing\BulkActionController */
   private $bulk_action_controller;
@@ -70,13 +70,13 @@ class Subscribers extends APIEndpoint {
     $this->settings = $settings;
   }
 
-  function get($data = array()) {
+  function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
+      ]);
     } else {
       return $this->successResponse(
         $subscriber
@@ -87,7 +87,7 @@ class Subscribers extends APIEndpoint {
     }
   }
 
-  function listing($data = array()) {
+  function listing($data = []) {
 
     if (!isset($data['filter']['segment'])) {
       $listing_data = $this->listing_handler->get('\MailPoet\Models\Subscriber', $data);
@@ -95,7 +95,7 @@ class Subscribers extends APIEndpoint {
       $listing_data = $this->subscribers_listings->getListingsInSegment($data);
     }
 
-    $result = array();
+    $result = [];
     foreach ($listing_data['items'] as $subscriber) {
       $subscriber_result = $subscriber
         ->withSubscriptions()
@@ -111,11 +111,11 @@ class Subscribers extends APIEndpoint {
       $listing_data['filters']['segment']
     );
 
-    return $this->successResponse($result, array(
+    return $this->successResponse($result, [
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
-      'groups' => $listing_data['groups']
-    ));
+      'groups' => $listing_data['groups'],
+    ]);
   }
 
   private function preferUnsubscribedStatusFromSegment(array $subscriber, $segment_id) {
@@ -135,7 +135,7 @@ class Subscribers extends APIEndpoint {
     }
   }
 
-  function subscribe($data = array()) {
+  function subscribe($data = []) {
     $form_id = (isset($data['form_id']) ? (int)$data['form_id'] : false);
     $form = Form::findOne($form_id);
     unset($data['form_id']);
@@ -143,40 +143,40 @@ class Subscribers extends APIEndpoint {
     $recaptcha = $this->settings->get('re_captcha');
 
     if (!$form instanceof Form) {
-      return $this->badRequest(array(
-        APIError::BAD_REQUEST => WPFunctions::get()->__('Please specify a valid form ID.', 'mailpoet')
-      ));
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('Please specify a valid form ID.', 'mailpoet'),
+      ]);
     }
     if (!empty($data['email'])) {
-      return $this->badRequest(array(
-        APIError::BAD_REQUEST => WPFunctions::get()->__('Please leave the first field empty.', 'mailpoet')
-      ));
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('Please leave the first field empty.', 'mailpoet'),
+      ]);
     }
 
     if (!empty($recaptcha['enabled']) && empty($data['recaptcha'])) {
-      return $this->badRequest(array(
-        APIError::BAD_REQUEST => WPFunctions::get()->__('Please check the CAPTCHA.', 'mailpoet')
-      ));
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('Please check the CAPTCHA.', 'mailpoet'),
+      ]);
     }
 
     if (!empty($recaptcha['enabled'])) {
       $res = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
-      $res = WPFunctions::get()->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', array(
-        'body' => array(
+      $res = WPFunctions::get()->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', [
+        'body' => [
           'secret' => $recaptcha['secret_token'],
-          'response' => $res
-        )
-      ));
+          'response' => $res,
+        ],
+      ]);
       if (is_wp_error($res)) {
-        return $this->badRequest(array(
-          APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet')
-        ));
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet'),
+        ]);
       }
       $res = json_decode(wp_remote_retrieve_body($res));
       if (empty($res->success)) {
-        return $this->badRequest(array(
-          APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet')
-        ));
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet'),
+        ]);
       }
     }
 
@@ -190,15 +190,15 @@ class Subscribers extends APIEndpoint {
 
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
-      : array()
+      : []
     );
     $segment_ids = $form->filterSegments($segment_ids);
     unset($data['segments']);
 
     if (empty($segment_ids)) {
-      return $this->badRequest(array(
-        APIError::BAD_REQUEST => WPFunctions::get()->__('Please select a list.', 'mailpoet')
-      ));
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('Please select a list.', 'mailpoet'),
+      ]);
     }
 
     // only accept fields defined in the form
@@ -218,7 +218,7 @@ class Subscribers extends APIEndpoint {
     if ($errors !== false) {
       return $this->badRequest($errors);
     } else {
-      $meta = array();
+      $meta = [];
 
       if ($form !== false) {
         // record form statistics
@@ -237,7 +237,7 @@ class Subscribers extends APIEndpoint {
       }
 
       return $this->successResponse(
-        array(),
+        [],
         $meta
       );
     }
@@ -248,9 +248,9 @@ class Subscribers extends APIEndpoint {
     return $obfuscator->deobfuscateFormPayload($data);
   }
 
-  function save($data = array()) {
+  function save($data = []) {
     if (empty($data['segments'])) {
-      $data['segments'] = array();
+      $data['segments'] = [];
     }
     $new_segments = $this->findNewSegments($data);
     $subscriber = Subscriber::createOrUpdate($data);
@@ -285,7 +285,7 @@ class Subscribers extends APIEndpoint {
     return array_diff($data['segments'], $old_segment_ids);
   }
 
-  function restore($data = array()) {
+  function restore($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber instanceof Subscriber) {
@@ -294,16 +294,16 @@ class Subscribers extends APIEndpoint {
       if(!$subscriber instanceof Subscriber) return $this->errorResponse();
       return $this->successResponse(
         $subscriber->asArray(),
-        array('count' => 1)
+        ['count' => 1]
       );
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
-  function trash($data = array()) {
+  function trash($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber instanceof Subscriber) {
@@ -312,29 +312,29 @@ class Subscribers extends APIEndpoint {
       if(!$subscriber instanceof Subscriber) return $this->errorResponse();
       return $this->successResponse(
         $subscriber->asArray(),
-        array('count' => 1)
+        ['count' => 1]
       );
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
-  function delete($data = array()) {
+  function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber instanceof Subscriber) {
       $subscriber->delete();
-      return $this->successResponse(null, array('count' => 1));
+      return $this->successResponse(null, ['count' => 1]);
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
-  function bulkAction($data = array()) {
+  function bulkAction($data = []) {
     try {
       if (!isset($data['listing']['filter']['segment'])) {
         return $this->successResponse(
@@ -346,9 +346,9 @@ class Subscribers extends APIEndpoint {
         return $this->successResponse(null, $bulk_action->apply());
       }
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 }

@@ -22,12 +22,12 @@ class CustomField extends Model {
 
   function __construct() {
     parent::__construct();
-    $this->addValidations('name', array(
-      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
-    ));
-    $this->addValidations('type', array(
-      'required' => WPFunctions::get()->__('Please specify a type.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+    ]);
+    $this->addValidations('type', [
+      'required' => WPFunctions::get()->__('Please specify a type.', 'mailpoet'),
+    ]);
   }
 
   function asArray() {
@@ -43,7 +43,7 @@ class CustomField extends Model {
 
   function save() {
     if (is_null($this->params)) {
-      $this->params = array();
+      $this->params = [];
     }
     $this->set('params', (
       is_array($this->params)
@@ -132,7 +132,7 @@ class CustomField extends Model {
     )->selectExpr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value');
   }
 
-  static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = []) {
     // set name as label by default
     if (empty($data['params']['label']) && isset($data['name'])) {
       $data['params']['label'] = $data['name'];

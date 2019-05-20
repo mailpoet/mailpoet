@@ -26,7 +26,7 @@ class Widget extends \WP_Widget {
     parent::__construct(
       'mailpoet_form',
       WPFunctions::get()->__('MailPoet 3 Form', 'mailpoet'),
-      array('description' => WPFunctions::get()->__('Add a newsletter subscription form', 'mailpoet'))
+      ['description' => WPFunctions::get()->__('Add a newsletter subscription form', 'mailpoet')]
     );
     $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
@@ -34,10 +34,10 @@ class Widget extends \WP_Widget {
     if (!is_admin()) {
       $this->setupIframe();
     } else {
-      WPFunctions::get()->addAction('widgets_admin_page', array(
+      WPFunctions::get()->addAction('widgets_admin_page', [
         $this,
-        'setupAdminWidgetPageDependencies'
-      ));
+        'setupAdminWidgetPageDependencies',
+      ]);
     }
   }
 
@@ -46,10 +46,10 @@ class Widget extends \WP_Widget {
     if (!$form_id || !Form::findOne($form_id)) return;
 
     $form_html = $this->widget(
-      array(
+      [
         'form' => $form_id,
-        'form_type' => 'iframe'
-      )
+        'form_type' => 'iframe',
+      ]
     );
 
     ob_start();
@@ -61,7 +61,7 @@ class Widget extends \WP_Widget {
     ob_end_clean();
 
     // language attributes
-    $language_attributes = array();
+    $language_attributes = [];
     $is_rtl = (bool)(function_exists('is_rtl') && WPFunctions::get()->isRtl());
 
     if ($is_rtl) {
@@ -76,15 +76,15 @@ class Widget extends \WP_Widget {
       'language_attributes', implode(' ', $language_attributes)
     );
 
-    $data = array(
+    $data = [
       'language_attributes' => $language_attributes,
       'scripts' => $scripts,
       'form' => $form_html,
-      'mailpoet_form' => array(
+      'mailpoet_form' => [
         'ajax_url' => WPFunctions::get()->adminUrl('admin-ajax.php', 'absolute'),
-        'is_rtl' => $is_rtl
-      )
-    );
+        'is_rtl' => $is_rtl,
+      ],
+    ];
 
     try {
       echo $this->renderer->render('form/iframe.html', $data);
@@ -104,7 +104,7 @@ class Widget extends \WP_Widget {
     WPFunctions::get()->wpEnqueueScript(
       'mailpoet_vendor',
       Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
-      array(),
+      [],
       Env::$version,
       true
     );
@@ -112,7 +112,7 @@ class Widget extends \WP_Widget {
     WPFunctions::get()->wpEnqueueScript(
       'mailpoet_public',
       Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
-      array('jquery'),
+      ['jquery'],
       Env::$version,
       true
     );
@@ -122,14 +122,14 @@ class Widget extends \WP_Widget {
       WPFunctions::get()->wpEnqueueScript(
         'mailpoet_recaptcha',
         self::RECAPTCHA_API_URL,
-        array('mailpoet_public')
+        ['mailpoet_public']
       );
     }
 
-    WPFunctions::get()->wpLocalizeScript('mailpoet_public', 'MailPoetForm', array(
+    WPFunctions::get()->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
       'ajax_url' => WPFunctions::get()->adminUrl('admin-ajax.php'),
-      'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false)
-    ));
+      'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
+    ]);
 
     $ajax_failed_error_message = WPFunctions::get()->__('An error has happened while performing a request, please try again later.');
 
@@ -154,7 +154,7 @@ EOL;
     WPFunctions::get()->wpEnqueueScript(
       'mailpoet_vendor',
       Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
-      array(),
+      [],
       Env::$version,
       true
     );
@@ -162,7 +162,7 @@ EOL;
     WPFunctions::get()->wpEnqueueScript(
       'mailpoet_admin',
       Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('mailpoet.js'),
-      array(),
+      [],
       Env::$version,
       true
     );
@@ -184,9 +184,9 @@ EOL;
   public function form($instance) {
     $instance = WPFunctions::get()->wpParseArgs(
       (array)$instance,
-      array(
-        'title' => WPFunctions::get()->__('Subscribe to Our Newsletter', 'mailpoet')
-      )
+      [
+        'title' => WPFunctions::get()->__('Subscribe to Our Newsletter', 'mailpoet'),
+      ]
     );
 
     $form_edit_url = WPFunctions::get()->adminUrl('admin.php?page=mailpoet-form-editor&id=');
@@ -275,22 +275,22 @@ EOL;
     $form_type = 'widget';
     if (isset($instance['form_type']) && in_array(
         $instance['form_type'],
-        array(
+        [
           'html',
           'php',
           'iframe',
-          'shortcode'
-        )
+          'shortcode',
+        ]
       )) {
       $form_type = $instance['form_type'];
     }
 
-    $body = (isset($form['body']) ? $form['body'] : array());
+    $body = (isset($form['body']) ? $form['body'] : []);
     $output = '';
 
     if (!empty($body)) {
       $form_id = $this->id_base . '_' . $form['id'];
-      $data = array(
+      $data = [
         'form_id' => $form_id,
         'form_type' => $form_type,
         'form' => $form,
@@ -300,8 +300,8 @@ EOL;
         'before_widget' => (!empty($before_widget) ? $before_widget : ''),
         'after_widget' => (!empty($after_widget) ? $after_widget : ''),
         'before_title' => (!empty($before_title) ? $before_title : ''),
-        'after_title' => (!empty($after_title) ? $after_title : '')
-      );
+        'after_title' => (!empty($after_title) ? $after_title : ''),
+      ];
 
       // (POST) non ajax success/error variables
       $data['success'] = (

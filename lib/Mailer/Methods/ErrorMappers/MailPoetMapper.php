@@ -97,11 +97,11 @@ class MailPoetMapper {
     $message .= Helpers::replaceLinkTags(
       WPFunctions::get()->__('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
       'https://account.mailpoet.com/authorization',
-      array(
+      [
         'class' => 'button button-primary',
         'target' => '_blank',
         'rel' => 'noopener noreferrer',
-      )
+      ]
     );
     $message .= ' &nbsp; <button class="button js-button-resume-sending">' . WPFunctions::get()->__('Resume sending', 'mailpoet') . '</button>';
     $message .= '</p>';
@@ -113,10 +113,10 @@ class MailPoetMapper {
     return Helpers::replaceLinkTags(
       WPFunctions::get()->__('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
       'https://www.mailpoet.com/support/',
-      array(
+      [
         'target' => '_blank',
         'rel' => 'noopener noreferrer',
-      )
+      ]
     );
   }
 }

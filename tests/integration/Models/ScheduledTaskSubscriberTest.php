@@ -10,19 +10,19 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $task = ScheduledTask::create();
-    $task->hydrate(array(
-      'status' => ScheduledTask::STATUS_SCHEDULED
-    ));
+    $task->hydrate([
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+    ]);
     $this->task = $task->save();
 
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $this->subscriber = $subscriber->save();
 
-    $this->task_subscriber = ScheduledTaskSubscriber::createOrUpdate(array(
+    $this->task_subscriber = ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $this->task->id,
-      'subscriber_id' => $this->subscriber->id
-    ));
+      'subscriber_id' => $this->subscriber->id,
+    ]);
   }
 
   function testItCanBeCreated() {
@@ -32,17 +32,17 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
   }
 
   function testItCanBeUpdated() {
-    $task_subscriber = ScheduledTaskSubscriber::createOrUpdate(array(
+    $task_subscriber = ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $this->task->id,
       'subscriber_id' => $this->subscriber->id,
-      'processed' => ScheduledTaskSubscriber::STATUS_PROCESSED
-    ));
+      'processed' => ScheduledTaskSubscriber::STATUS_PROCESSED,
+    ]);
     expect($task_subscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
   }
 
   function testItCanAddMultipleSubscribers() {
     ScheduledTaskSubscriber::deleteMany();
-    $subscriber_ids = array(321, 654, 987); // sorted random ids
+    $subscriber_ids = [321, 654, 987]; // sorted random ids
     ScheduledTaskSubscriber::addSubscribers($this->task->id, $subscriber_ids);
     $task_subscribers = ScheduledTaskSubscriber::where('task_id', $this->task->id)
       ->orderByAsc('subscriber_id')
@@ -72,11 +72,11 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
   }
 
   function testItCanGetTotalCount() {
-    ScheduledTaskSubscriber::createOrUpdate(array(
+    ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $this->task->id,
       'subscriber_id' => 555, // random new ID
-      'processed' => ScheduledTaskSubscriber::STATUS_PROCESSED
-    ));
+      'processed' => ScheduledTaskSubscriber::STATUS_PROCESSED,
+    ]);
     $count = ScheduledTaskSubscriber::getTotalCount($this->task->id);
     expect($count)->equals(2);
   }

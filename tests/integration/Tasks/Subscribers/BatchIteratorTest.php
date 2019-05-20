@@ -11,10 +11,10 @@ class BatchIteratorTest extends \MailPoetTest {
     $this->batch_size = 2;
     $this->subscriber_count = 10;
     for ($i = 0; $i < $this->subscriber_count; $i++) {
-      ScheduledTaskSubscriber::createOrUpdate(array(
+      ScheduledTaskSubscriber::createOrUpdate([
         'task_id' => $this->task_id,
         'subscriber_id' => $i + 1,
-      ));
+      ]);
     }
     $this->iterator = new BatchIterator($this->task_id, $this->batch_size);
   }

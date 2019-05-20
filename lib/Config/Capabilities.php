@@ -30,7 +30,7 @@ class Capabilities {
 
   function setupWPCapabilities() {
     $permissions = $this->access_control->getDefaultPermissions();
-    $role_objects = array();
+    $role_objects = [];
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
         if (!isset($role_objects[$role])) {
@@ -44,7 +44,7 @@ class Capabilities {
 
   function removeWPCapabilities() {
     $permissions = $this->access_control->getDefaultPermissions();
-    $role_objects = array();
+    $role_objects = [];
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
         if (!isset($role_objects[$role])) {
@@ -57,9 +57,9 @@ class Capabilities {
   }
 
   function setupMembersCapabilities() {
-    $this->wp->addAction('admin_enqueue_scripts', array($this, 'enqueueMembersStyles'));
-    $this->wp->addAction('members_register_cap_groups', array($this, 'registerMembersCapGroup'));
-    $this->wp->addAction('members_register_caps', array($this, 'registerMembersCapabilities'));
+    $this->wp->addAction('admin_enqueue_scripts', [$this, 'enqueueMembersStyles']);
+    $this->wp->addAction('members_register_cap_groups', [$this, 'registerMembersCapGroup']);
+    $this->wp->addAction('members_register_caps', [$this, 'registerMembersCapabilities']);
   }
 
   function enqueueMembersStyles() {
@@ -72,12 +72,12 @@ class Capabilities {
   function registerMembersCapGroup() {
     members_register_cap_group(
       self::MEMBERS_CAP_GROUP_NAME,
-      array(
+      [
         'label' => WPFunctions::get()->__('MailPoet', 'mailpoet'),
-        'caps' => array(),
+        'caps' => [],
         'icon' => 'mailpoet-icon-logo',
-        'priority' => 30
-      )
+        'priority' => 30,
+      ]
     );
   }
 
@@ -91,10 +91,10 @@ class Capabilities {
   function registerMembersCapability($name, $label) {
     members_register_cap(
       $name,
-      array(
+      [
         'label' => $label,
-        'group' => self::MEMBERS_CAP_GROUP_NAME
-      )
+        'group' => self::MEMBERS_CAP_GROUP_NAME,
+      ]
     );
   }
 }

@@ -8,14 +8,14 @@ use MailPoet\WP\Functions as WPFunctions;
 class PersonalDataErasers {
 
   function init() {
-    WPFunctions::get()->addFilter('wp_privacy_personal_data_erasers', array($this, 'registerSubscriberEraser'));
+    WPFunctions::get()->addFilter('wp_privacy_personal_data_erasers', [$this, 'registerSubscriberEraser']);
   }
 
   function registerSubscriberEraser($erasers) {
-    $erasers['mailpet-subscriber'] = array(
+    $erasers['mailpet-subscriber'] = [
       'eraser_friendly_name' => WPFunctions::get()->__('MailPoet Subscribers', 'mailpoet'),
-      'callback' => array(new SubscriberPersonalDataEraser(), 'erase'),
-    );
+      'callback' => [new SubscriberPersonalDataEraser(), 'erase'],
+    ];
 
     return $erasers;
   }

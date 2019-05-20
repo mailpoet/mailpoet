@@ -66,11 +66,11 @@ class APITest extends \MailPoetTest {
     $api = Stub::makeEmptyExcept(
       $this->api,
       'setupAjax',
-      array(
+      [
         'wp' => new WPFunctions,
         'processRoute' => Stub::makeEmpty(new SuccessResponse),
-        'settings' => $this->container->get(SettingsController::class)
-      )
+        'settings' => $this->container->get(SettingsController::class),
+      ]
     );
     $api->setupAjax();
     expect($called)->true();
@@ -79,10 +79,10 @@ class APITest extends \MailPoetTest {
   function testItCanAddEndpointNamespaces() {
     expect($this->api->getEndpointNamespaces())->count(1);
 
-    $namespace = array(
+    $namespace = [
       'name' => 'MailPoet\\Dummy\\Name\\Space',
-      'version' => 'v2'
-    );
+      'version' => 'v2',
+    ];
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $namespaces = $this->api->getEndpointNamespaces();
 
@@ -91,27 +91,27 @@ class APITest extends \MailPoetTest {
   }
 
   function testItReturns400ErrorWhenAPIVersionIsNotSpecified() {
-    $data = array(
+    $data = [
       'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
-      'method' => 'test'
-    );
+      'method' => 'test',
+    ];
 
     $response = $this->api->setRequestData($data);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
   function testItAcceptsAndProcessesAPIVersion() {
-    $namespace = array(
+    $namespace = [
       'name' => 'MailPoet\API\JSON\v2',
-      'version' => 'v2'
-    );
+      'version' => 'v2',
+    ];
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
-    $data = array(
+    $data = [
       'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v2',
       'api_version' => 'v2',
-      'method' => 'test'
-    );
+      'method' => 'test',
+    ];
     $this->api->setRequestData($data);
 
     expect($this->api->getRequestedAPIVersion())->equals('v2');
@@ -121,18 +121,18 @@ class APITest extends \MailPoetTest {
   }
 
   function testItCallsAddedEndpoints() {
-    $namespace = array(
+    $namespace = [
       'name' => 'MailPoet\API\JSON\v1',
-      'version' => 'v1'
-    );
+      'version' => 'v1',
+    ];
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
-    $data = array(
+    $data = [
       'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
       'method' => 'test',
       'api_version' => 'v1',
-      'data' => array('test' => 'data')
-    );
+      'data' => ['test' => 'data'],
+    ];
     $this->api->setRequestData($data);
     $response = $this->api->processRoute();
 
@@ -140,51 +140,51 @@ class APITest extends \MailPoetTest {
   }
 
   function testItCallsAddedEndpointsForSpecificAPIVersion() {
-    $namespace = array(
+    $namespace = [
       'name' => 'MailPoet\API\JSON\v2',
-      'version' => 'v2'
-    );
+      'version' => 'v2',
+    ];
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
-    $data = array(
+    $data = [
       'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v2',
       'api_version' => 'v2',
-      'method' => 'testVersion'
-    );
+      'method' => 'testVersion',
+    ];
     $this->api->setRequestData($data);
     $response = $this->api->processRoute();
     expect($response->getData()['data'])->equals($data['api_version']);
   }
 
   function testItValidatesPermissionBeforeProcessingEndpointMethod() {
-    $namespace = array(
+    $namespace = [
       'name' => 'MailPoet\API\JSON\v1',
-      'version' => 'v1'
-    );
-    $data = array(
+      'version' => 'v1',
+    ];
+    $data = [
       'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
       'method' => 'restricted',
       'api_version' => 'v1',
-      'data' => array('test' => 'data')
-    );
+      'data' => ['test' => 'data'],
+    ];
     $api = Stub::make(
       JSONAPI::class,
-      array(
+      [
         'container' => $this->container,
         'validatePermissions' => function($method, $permissions) use ($data) {
           expect($method)->equals($data['method']);
           expect($permissions)->equals(
-            array(
+            [
               'global' => AccessControl::NO_ACCESS_RESTRICTION,
-              'methods' => array(
+              'methods' => [
                 'test' => AccessControl::NO_ACCESS_RESTRICTION,
-                'restricted' => AccessControl::PERMISSION_MANAGE_SETTINGS
-              )
-            )
+                'restricted' => AccessControl::PERMISSION_MANAGE_SETTINGS,
+              ],
+            ]
           );
           return true;
-        }
-      )
+        },
+      ]
     );
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data);
@@ -193,19 +193,19 @@ class APITest extends \MailPoetTest {
   }
 
   function testItReturnsForbiddenResponseWhenPermissionFailsValidation() {
-    $namespace = array(
+    $namespace = [
       'name' => 'MailPoet\API\JSON\v1',
-      'version' => 'v1'
-    );
-    $data = array(
+      'version' => 'v1',
+    ];
+    $data = [
       'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
       'method' => 'restricted',
       'api_version' => 'v1',
-      'data' => array('test' => 'data')
-    );
+      'data' => ['test' => 'data'],
+    ];
     $access_control = Stub::make(
       new AccessControl(new WPFunctions()),
-      array('validatePermission' => false)
+      ['validatePermission' => false]
     );
 
     $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
@@ -216,18 +216,18 @@ class APITest extends \MailPoetTest {
   }
 
   function testItValidatesGlobalPermission() {
-    $permissions = array(
+    $permissions = [
       'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
-    );
+    ];
 
     $access_control = Stub::make(
       new AccessControl(new WPFunctions()),
-      array(
+      [
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
-        })
-      )
+        }),
+      ]
     );
 
     $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
@@ -235,33 +235,33 @@ class APITest extends \MailPoetTest {
 
     $access_control = Stub::make(
       new AccessControl(new WPFunctions()),
-      array(
+      [
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
-        })
-      )
+        }),
+      ]
     );
     $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->true();
   }
 
   function testItValidatesEndpointMethodPermission() {
-    $permissions = array(
+    $permissions = [
       'global' => null,
-      'methods' => array(
-        'test' => AccessControl::PERMISSION_MANAGE_SETTINGS
-      )
-    );
+      'methods' => [
+        'test' => AccessControl::PERMISSION_MANAGE_SETTINGS,
+      ],
+    ];
 
     $access_control = Stub::make(
       new AccessControl(new WPFunctions()),
-      array(
+      [
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
-        })
-      )
+        }),
+      ]
     );
 
     $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
@@ -269,12 +269,12 @@ class APITest extends \MailPoetTest {
 
     $access_control = Stub::make(
       new AccessControl(new WPFunctions()),
-      array(
+      [
         'validatePermission' => Expected::once(function($cap) {
           expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
-        })
-      )
+        }),
+      ]
     );
 
     $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
@@ -282,17 +282,17 @@ class APITest extends \MailPoetTest {
   }
 
   function testItThrowsExceptionWhenInvalidEndpointMethodIsCalled() {
-    $namespace = array(
+    $namespace = [
       'name' => 'MailPoet\API\JSON\v2',
-      'version' => 'v2'
-    );
+      'version' => 'v2',
+    ];
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
-    $data = array(
+    $data = [
       'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v2',
       'api_version' => 'v2',
-      'method' => 'fakeMethod'
-    );
+      'method' => 'fakeMethod',
+    ];
     $this->api->setRequestData($data);
     $response = $this->api->processRoute();
 

@@ -22,9 +22,9 @@ class SubscribersTest extends \MailPoetTest {
   function testChecksIfSubscribersWithinLimitWhenPremiumLicenseExists() {
     $subscribers_feature = Stub::construct(
       new SubscribersFeature(),
-      array(
-        'license' => true
-      )
+      [
+        'license' => true,
+      ]
     );
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));

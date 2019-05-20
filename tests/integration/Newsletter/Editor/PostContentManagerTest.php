@@ -62,13 +62,13 @@ class PostContentManagerTest extends \MailPoetTest {
   }
 
   function testFilterContentRetainsTextStyling() {
-    $text_tags = array(
+    $text_tags = [
       '<em>emphasized></em>',
       '<b>bold</b>',
       '<strong>strong</strong>',
       '<i>italic</i>',
-      'Text<br />new line'
-    );
+      'Text<br />new line',
+    ];
     foreach ($text_tags as $html) {
       expect($this->post_content->filterContent($html, 'full'))->equals(
         '<p class="' . PostContentManager::WP_POST_CLASS . '">' . $html . '</p>'
@@ -89,7 +89,7 @@ class PostContentManagerTest extends \MailPoetTest {
   }
 
   function testFilterContentStripsUndesirableTags() {
-    $undesirable_tags = array(
+    $undesirable_tags = [
       '<embed src="#" />',
       '<iframe src="#" />',
       '<form></form>',
@@ -100,7 +100,7 @@ class PostContentManagerTest extends \MailPoetTest {
       '<table></table>',
       '<tr></tr>',
       '<td></td>',
-    );
+    ];
 
     foreach ($undesirable_tags as $html) {
       expect($this->post_content->filterContent($html, 'full'))->equals('');
@@ -108,7 +108,7 @@ class PostContentManagerTest extends \MailPoetTest {
   }
 
   function testFilterContentStripsUndesirableTagsForExcerpts() {
-    $undesirable_tags = array(
+    $undesirable_tags = [
       '<embed src="#" />',
       '<iframe src="#" />',
       '<form></form>',
@@ -123,7 +123,7 @@ class PostContentManagerTest extends \MailPoetTest {
       '<h1></h1>',
       '<h2></h2>',
       '<h3></h3>',
-    );
+    ];
 
     foreach ($undesirable_tags as $html) {
       expect($this->post_content->filterContent($html, 'excerpt'))->equals('');
@@ -133,9 +133,9 @@ class PostContentManagerTest extends \MailPoetTest {
 
   function testItAppliesCustomMaxExcerptLenghViaHook() {
     $post_content_manager = new PostContentManager();
-    $post = (object)array(
-      'post_content' => '<p>one two three four five six</p>'
-    );
+    $post = (object)[
+      'post_content' => '<p>one two three four five six</p>',
+    ];
     $excerpt = $post_content_manager->getContent($post, 'excerpt');
     expect($excerpt)->equals('one two three four five six');
     (new WPFunctions)->addFilter(
@@ -151,21 +151,21 @@ class PostContentManagerTest extends \MailPoetTest {
 
   function testItStripsShortcodesWhenGettingPostContent() {
     // shortcodes are stripped in excerpt
-    $post = (object)array(
-      'post_excerpt' => '[shortcode]some text in excerpt[/shortcode]'
-    );
+    $post = (object)[
+      'post_excerpt' => '[shortcode]some text in excerpt[/shortcode]',
+    ];
     expect($this->post_content->getContent($post, 'excerpt'))->equals('some text in excerpt');
 
     // shortcodes are stripped in post content when excerpt doesn't exist
-    $post = (object)array(
-      'post_content' => '[shortcode]some text in content[/shortcode]'
-    );
+    $post = (object)[
+      'post_content' => '[shortcode]some text in content[/shortcode]',
+    ];
     expect($this->post_content->getContent($post, 'excerpt'))->equals('some text in content');
 
     // shortcodes are stripped in post content
-    $post = (object)array(
-      'post_content' => '[shortcode]some text in content[/shortcode]'
-    );
+    $post = (object)[
+      'post_content' => '[shortcode]some text in content[/shortcode]',
+    ];
     expect($this->post_content->getContent($post, ''))->equals('some text in content');
   }
 

@@ -61,7 +61,7 @@ class DateTime {
     $time_step='+1 hour',
     $total_steps=24
   ) {
-    $steps = array();
+    $steps = [];
 
     $formatted_time = $start_time;
     $timestamp = strtotime($formatted_time);

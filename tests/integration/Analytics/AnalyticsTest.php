@@ -31,29 +31,29 @@ class AnalyticsTest extends \MailPoetTest {
   }
 
   function testIsEnabledReturnsTrueIfSettingEnabled() {
-    $this->settings->set('analytics', array('enabled' => '1'));
+    $this->settings->set('analytics', ['enabled' => '1']);
     expect($this->analytics->isEnabled())->true();
   }
 
   function testIsEnabledReturnsFalseIfEmptySettings() {
-    $this->settings->set('analytics', array());
+    $this->settings->set('analytics', []);
     expect($this->analytics->isEnabled())->false();
   }
 
   function testIsEnabledReturnsFalseIfNotEnabled() {
-    $this->settings->set('analytics', array('enabled' => ''));
+    $this->settings->set('analytics', ['enabled' => '']);
     expect($this->analytics->isEnabled())->false();
   }
 
   function testGetDataIfSettingsIsDisabled() {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
-      array(
+      [
         'getData' => Expected::never(),
-      ),
+      ],
       $this
     );
-    $this->settings->set('analytics', array('enabled' => ''));
+    $this->settings->set('analytics', ['enabled' => '']);
     $analytics = new Analytics($reporter, new SettingsController());
 
     expect($analytics->generateAnalytics())->null();
@@ -62,12 +62,12 @@ class AnalyticsTest extends \MailPoetTest {
   function testGetDataIfSentRecently() {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
-      array(
+      [
         'getData' => Expected::never(),
-      ),
+      ],
       $this
     );
-    $this->settings->set('analytics', array('enabled' => '1'));
+    $this->settings->set('analytics', ['enabled' => '1']);
     $this->settings->set('analytics_last_sent', Carbon::now()->subHours(1));
     $analytics = new Analytics($reporter, new SettingsController());
 
@@ -75,17 +75,17 @@ class AnalyticsTest extends \MailPoetTest {
   }
 
   function testGetDataIfEnabledButNeverSent() {
-    $data = array();
+    $data = [];
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
-      array(
+      [
         'getData' => Expected::once(function() use ($data) {
           return $data;
         }),
-      ),
+      ],
       $this
     );
-    $this->settings->set('analytics', array('enabled' => '1'));
+    $this->settings->set('analytics', ['enabled' => '1']);
     $this->settings->set('analytics_last_sent', null);
 
     $analytics = new Analytics($reporter, new SettingsController());
@@ -93,17 +93,17 @@ class AnalyticsTest extends \MailPoetTest {
   }
 
   function testGetDataIfEnabledAndSentLongTimeAgo() {
-    $data = array();
+    $data = [];
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
-      array(
+      [
         'getData' => Expected::once(function() use ($data){
           return $data;
         }),
-      ),
+      ],
       $this
     );
-    $this->settings->set('analytics', array('enabled' => '1'));
+    $this->settings->set('analytics', ['enabled' => '1']);
     $this->settings->set('analytics_last_sent', Carbon::now()->subYear());
 
     $analytics = new Analytics($reporter, new SettingsController());

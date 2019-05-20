@@ -44,13 +44,13 @@ class API {
     return $this->api_key;
   }
 
-  private function request($url, $params = array()) {
+  private function request($url, $params = []) {
     $params['license'] = $this->api_key;
     $url = WPFunctions::get()->addQueryArg($params, $url);
-    $args = array(
+    $args = [
       'timeout' => 10,
-      'httpversion' => '1.0'
-    );
+      'httpversion' => '1.0',
+    ];
     return $this->wp->wpRemoteGet($url, $args);
   }
 }

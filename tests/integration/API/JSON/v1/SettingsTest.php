@@ -41,14 +41,14 @@ class SettingsTest extends \MailPoetTest {
   }
 
   function testItCanSetSettings() {
-    $new_settings = array(
-      'some' => array(
-        'setting' => array(
-          'new_key' => true
-        ),
-        'new_setting' => true
-      )
-    );
+    $new_settings = [
+      'some' => [
+        'setting' => [
+          'new_key' => true,
+        ],
+        'new_setting' => true,
+      ],
+    ];
 
     $response = $this->endpoint->set(/* missing data */);
     expect($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);

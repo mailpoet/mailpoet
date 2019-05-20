@@ -17,10 +17,10 @@ class Posts {
     }
   }
 
-  static function getTypes($args = array(), $output = 'names', $operator = 'and') {
-    $defaults = array(
-      'exclude_from_search' => false
-    );
+  static function getTypes($args = [], $output = 'names', $operator = 'and') {
+    $defaults = [
+      'exclude_from_search' => false,
+    ];
     $args = array_merge($defaults, $args);
     return WPFunctions::get()->getPostTypes($args, $output, $operator);
   }

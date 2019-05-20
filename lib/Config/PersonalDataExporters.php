@@ -11,41 +11,41 @@ use MailPoet\WP\Functions as WPFunctions;
 class PersonalDataExporters {
 
   function init() {
-    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', array($this, 'registerSubscriberExporter'));
-    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', array($this, 'registerSegmentsExporter'));
-    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', array($this, 'registerNewslettersExporter'));
-    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', array($this, 'registerNewsletterClicksExporter'));
+    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerSubscriberExporter']);
+    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerSegmentsExporter']);
+    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerNewslettersExporter']);
+    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerNewsletterClicksExporter']);
   }
 
   function registerSegmentsExporter($exporters) {
-    $exporters[] = array(
+    $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Lists', 'mailpoet'),
-      'callback' => array(new SegmentsExporter(), 'export'),
-    );
+      'callback' => [new SegmentsExporter(), 'export'],
+    ];
     return $exporters;
   }
 
   function registerSubscriberExporter($exporters) {
-    $exporters[] = array(
+    $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Subscriber Data', 'mailpoet'),
-      'callback' => array(new SubscriberExporter(), 'export'),
-    );
+      'callback' => [new SubscriberExporter(), 'export'],
+    ];
     return $exporters;
   }
 
   function registerNewslettersExporter($exporters) {
-    $exporters[] = array(
+    $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Emails', 'mailpoet'),
-      'callback' => array(new NewslettersExporter(), 'export'),
-    );
+      'callback' => [new NewslettersExporter(), 'export'],
+    ];
     return $exporters;
   }
 
   function registerNewsletterClicksExporter($exporters) {
-    $exporters[] = array(
+    $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Email Clicks', 'mailpoet'),
-      'callback' => array(new NewsletterClicksExporter(), 'export'),
-    );
+      'callback' => [new NewsletterClicksExporter(), 'export'],
+    ];
     return $exporters;
   }
 

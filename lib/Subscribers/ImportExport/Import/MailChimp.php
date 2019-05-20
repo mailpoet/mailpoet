@@ -49,16 +49,16 @@ class MailChimp {
 
     $lists = [];
     foreach ($response->data as $list) {
-      $lists[] = array(
+      $lists[] = [
         'id' => $list->id,
-        'name' => $list->name
-      );
+        'name' => $list->name,
+      ];
     }
 
     return $lists;
   }
 
-  function getSubscribers($lists = array()) {
+  function getSubscribers($lists = []) {
     if (!$this->api_key || !$this->data_center) {
       return $this->throwException('API');
     }
@@ -108,13 +108,13 @@ class MailChimp {
       return $this->throwException('subscribers');
     }
 
-    return array(
+    return [
       'subscribers' => $subscribers,
       'invalid' => false,
       'duplicate' => false,
       'header' => $header,
-      'subscribersCount' => count($subscribers)
-    );
+      'subscribersCount' => count($subscribers),
+    ];
   }
 
   function getDataCenter($api_key) {

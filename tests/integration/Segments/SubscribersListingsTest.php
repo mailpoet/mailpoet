@@ -20,26 +20,26 @@ class SubscribersListingsTest extends \MailPoetTest {
     parent::_before();
     $this->finder = ContainerWrapper::getInstance()->get(SubscribersListings::class);
     $this->cleanData();
-    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1', 'type' => 'default'));
-    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 3', 'type' => 'not default'));
-    $this->subscriber_1 = Subscriber::createOrUpdate(array(
+    $this->segment_1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
+    $this->segment_2 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'not default']);
+    $this->subscriber_1 = Subscriber::createOrUpdate([
       'email' => 'john@mailpoet.com',
       'first_name' => 'John',
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
-      'segments' => array(
+      'segments' => [
         $this->segment_1->id,
-      ),
-    ));
-    $this->subscriber_2 = Subscriber::createOrUpdate(array(
+      ],
+    ]);
+    $this->subscriber_2 = Subscriber::createOrUpdate([
       'email' => 'jake@mailpoet.com',
       'first_name' => 'Jake',
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
-      'segments' => array(
+      'segments' => [
         $this->segment_2->id,
-      ),
-    ));
+      ],
+    ]);
     SubscriberSegment::resubscribeToAllSegments($this->subscriber_1);
     SubscriberSegment::resubscribeToAllSegments($this->subscriber_2);
   }
@@ -56,21 +56,21 @@ class SubscribersListingsTest extends \MailPoetTest {
 
   function testTryToGetListingsWithoutPassingSegment() {
     $this->setExpectedException('InvalidArgumentException');
-    $this->finder->getListingsInSegment(array());
+    $this->finder->getListingsInSegment([]);
   }
 
   function testGetListingsForDefaultSegment() {
-    $listings = $this->finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_1->id)));
+    $listings = $this->finder->getListingsInSegment(['filter'=> ['segment' => $this->segment_1->id]]);
     expect($listings['items'])->count(1);
   }
 
   function testGetListingsForNonExistingSegmen() {
-    $listings = $this->finder->getListingsInSegment(array('filter'=> array('segment' => 'non-existing-id')));
+    $listings = $this->finder->getListingsInSegment(['filter'=> ['segment' => 'non-existing-id']]);
     expect($listings['items'])->notEmpty();
   }
 
   function testGetListingsUsingFilter() {
-    $mock = Stub::makeEmpty('MailPoet\Test\Segments\DynamicListingsHandlerMock', array('get'));
+    $mock = Stub::makeEmpty('MailPoet\Test\Segments\DynamicListingsHandlerMock', ['get']);
     $mock
       ->expects($this->once())
       ->method('get')
@@ -78,17 +78,17 @@ class SubscribersListingsTest extends \MailPoetTest {
 
     remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
     (new WPFunctions)->addFilter('mailpoet_get_subscribers_listings_in_segment_handlers', function () use ($mock) {
-      return array($mock);
+      return [$mock];
     });
 
-    $listings = $this->finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_2->id)));
+    $listings = $this->finder->getListingsInSegment(['filter'=> ['segment' => $this->segment_2->id]]);
     expect($listings)->equals('dynamic listings');
   }
 
   function testTryToGetListingsForSegmentWithoutHandler() {
     $this->setExpectedException('InvalidArgumentException');
     remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
-    $this->finder->getListingsInSegment(array('filter'=> array('segment' => $this->segment_2->id)));
+    $this->finder->getListingsInSegment(['filter'=> ['segment' => $this->segment_2->id]]);
   }
 
 }

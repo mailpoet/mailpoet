@@ -48,9 +48,9 @@ class WooCommerce {
           return false;
         }
 
-        $data = array(
+        $data = [
           'is_woocommerce_user' => 1,
-        );
+        ];
         if (!empty($new_customer)) {
           $data['status'] = Subscriber::STATUS_SUBSCRIBED;
           $data['source'] = Source::WOOCOMMERCE_USER;
@@ -63,7 +63,7 @@ class WooCommerce {
           // add subscriber to the WooCommerce Customers segment
           SubscriberSegment::subscribeToSegments(
             $subscriber,
-            array($wc_segment->id)
+            [$wc_segment->id]
           );
         }
         break;
@@ -89,7 +89,7 @@ class WooCommerce {
       // add subscriber to the WooCommerce Customers segment
       SubscriberSegment::subscribeToSegments(
         $subscriber,
-        array($wc_segment->id)
+        [$wc_segment->id]
       );
     }
   }

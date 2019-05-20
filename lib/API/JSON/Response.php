@@ -14,7 +14,7 @@ abstract class Response {
   public $status;
   public $meta;
 
-  function __construct($status, $meta = array()) {
+  function __construct($status, $meta = []) {
     $this->status = $status;
     $this->meta = $meta;
   }
@@ -23,7 +23,7 @@ abstract class Response {
     WPFunctions::get()->statusHeader($this->status);
 
     $data = $this->getData();
-    $response = array();
+    $response = [];
 
     if (!empty($this->meta)) {
       $response['meta'] = $this->meta;

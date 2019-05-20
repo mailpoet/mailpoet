@@ -7,16 +7,16 @@ use MailPoet\Mailer\Methods\PHPMail;
 class PHPMailTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->sender = array(
+    $this->sender = [
       'from_name' => 'Sender',
       'from_email' => 'staff@mailpoet.com',
-      'from_name_email' => 'Sender <staff@mailpoet.com>'
-    );
-    $this->reply_to = array(
+      'from_name_email' => 'Sender <staff@mailpoet.com>',
+    ];
+    $this->reply_to = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
-      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
-    );
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
+    ];
     $this->return_path = 'bounce@mailpoet.com';
     $this->mailer = new PHPMail(
       $this->sender,
@@ -25,16 +25,16 @@ class PHPMailTest extends \MailPoetTest {
       new PHPMailMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->newsletter = array(
+    $this->newsletter = [
       'subject' => 'testing local method (PHP mail)',
-      'body' => array(
+      'body' => [
         'html' => 'HTML body',
-        'text' => 'TEXT body'
-      )
-    );
-    $this->extra_params = array(
-      'unsubscribe_url' => 'http://www.mailpoet.com'
-    );
+        'text' => 'TEXT body',
+      ],
+    ];
+    $this->extra_params = [
+      'unsubscribe_url' => 'http://www.mailpoet.com',
+    ];
   }
 
   function testItCanBuildMailer() {
@@ -58,24 +58,24 @@ class PHPMailTest extends \MailPoetTest {
       ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extra_params);
     expect($mailer->CharSet)->equals('UTF-8');
     expect($mailer->getToAddresses())->equals(
-      array(
-        array(
+      [
+        [
           'mailpoet-phoenix-test@mailinator.com',
-          'Recipient'
-        )
-      )
+          'Recipient',
+        ],
+      ]
     );
     expect($mailer->getAllRecipientAddresses())
-      ->equals(array('mailpoet-phoenix-test@mailinator.com' => true));
+      ->equals(['mailpoet-phoenix-test@mailinator.com' => true]);
     expect($mailer->From)->equals($this->sender['from_email']);
     expect($mailer->FromName)->equals($this->sender['from_name']);
     expect($mailer->getReplyToAddresses())->equals(
-      array(
-        'reply-to@mailpoet.com' => array(
+      [
+        'reply-to@mailpoet.com' => [
           'reply-to@mailpoet.com',
-          'Reply To'
-        )
-      )
+          'Reply To',
+        ],
+      ]
     );
     expect($mailer->Sender)->equals($this->return_path);
     expect($mailer->ContentType)->equals('text/html');
@@ -85,31 +85,31 @@ class PHPMailTest extends \MailPoetTest {
     expect($mailer->AltBody)
       ->equals($this->newsletter['body']['text']);
     expect($mailer->getCustomHeaders())->equals(
-      array(
-        array(
+      [
+        [
           'List-Unsubscribe',
-          'http://www.mailpoet.com'
-        )
-      )
+          'http://www.mailpoet.com',
+        ],
+      ]
     );
   }
 
   function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))->equals(
-      array(
+      [
         'email' => 'test@test.com',
-        'name' => ''
-      ));
+        'name' => '',
+      ]);
     expect($this->mailer->processSubscriber('First <test@test.com>'))->equals(
-      array(
+      [
         'email' => 'test@test.com',
-        'name' => 'First'
-      ));
+        'name' => 'First',
+      ]);
     expect($this->mailer->processSubscriber('First Last <test@test.com>'))->equals(
-      array(
+      [
         'email' => 'test@test.com',
-        'name' => 'First Last'
-      ));
+        'name' => 'First Last',
+      ]);
   }
 
   function testItCanSend() {

@@ -19,19 +19,19 @@ class SubscriberExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->internalType('array');
     expect($result)->hasKey('data');
-    expect($result['data'])->equals(array());
+    expect($result['data'])->equals([]);
     expect($result)->hasKey('done');
     expect($result['done'])->equals(true);
   }
 
   function testExportSubscriberWithoutCustomFields() {
-    Subscriber::createOrUpdate(array(
+    Subscriber::createOrUpdate([
       'email' => 'email.that@has.no.custom.fields',
       'first_name' => 'John',
       'last_name' => 'Doe',
       'status' => 'unconfirmed',
       'created_at' => '2018-05-03 10:30:08',
-    ));
+    ]);
     $result = $this->exporter->export('email.that@has.no.custom.fields');
     expect($result)->internalType('array');
     expect($result)->hasKey('data');
@@ -43,35 +43,35 @@ class SubscriberExporterTest extends \MailPoetTest {
     expect($result['data'][0])->hasKey('group_label');
     expect($result['data'][0])->hasKey('item_id');
     expect($result['data'][0])->hasKey('data');
-    $expected = array(
-      array('name' => 'First Name', 'value' => 'John'),
-      array('name' => 'Last Name', 'value' => 'Doe'),
-      array('name' => 'Email', 'value' => 'email.that@has.no.custom.fields'),
-      array('name' => 'Status', 'value' => 'unconfirmed'),
-      array('name' => 'Created at', 'value' => '2018-05-03 10:30:08'),
-      array('name' => "Subscriber's subscription source", 'value' => 'Unknown'),
-    );
+    $expected = [
+      ['name' => 'First Name', 'value' => 'John'],
+      ['name' => 'Last Name', 'value' => 'Doe'],
+      ['name' => 'Email', 'value' => 'email.that@has.no.custom.fields'],
+      ['name' => 'Status', 'value' => 'unconfirmed'],
+      ['name' => 'Created at', 'value' => '2018-05-03 10:30:08'],
+      ['name' => "Subscriber's subscription source", 'value' => 'Unknown'],
+    ];
     expect($result['data'][0]['data'])->equals($expected);
   }
 
   function testExportSubscriberWithSource() {
-    Subscriber::createOrUpdate(array(
+    Subscriber::createOrUpdate([
       'email' => 'email.with@source.com',
       'first_name' => 'John',
       'last_name' => 'Doe',
       'status' => 'unconfirmed',
       'created_at' => '2018-05-03 10:30:08',
       'source' => 'form',
-    ));
+    ]);
     $result = $this->exporter->export('email.with@source.com');
-    expect($result['data'][0]['data'])->contains(array(
+    expect($result['data'][0]['data'])->contains([
       'name' => "Subscriber's subscription source",
-      'value' => 'Subscription via a MailPoet subscription form'
-    ));
+      'value' => 'Subscription via a MailPoet subscription form',
+    ]);
   }
 
   function testExportSubscriberWithIPs() {
-    Subscriber::createOrUpdate(array(
+    Subscriber::createOrUpdate([
       'email' => 'email.that@has.ip.addresses',
       'first_name' => 'John',
       'last_name' => 'Doe',
@@ -79,29 +79,29 @@ class SubscriberExporterTest extends \MailPoetTest {
       'created_at' => '2018-05-03 10:30:08',
       'subscribed_ip' => 'IP1',
       'confirmed_ip' => 'IP2',
-    ));
+    ]);
     $result = $this->exporter->export('email.that@has.ip.addresses');
-    expect($result['data'][0]['data'])->contains(array('name' => 'Subscribed IP', 'value' => 'IP1'));
-    expect($result['data'][0]['data'])->contains(array('name' => 'Confirmed IP', 'value' => 'IP2'));
+    expect($result['data'][0]['data'])->contains(['name' => 'Subscribed IP', 'value' => 'IP1']);
+    expect($result['data'][0]['data'])->contains(['name' => 'Confirmed IP', 'value' => 'IP2']);
   }
 
 
   function testExportSubscriberWithCustomField() {
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'email' => 'email.that@has.custom.fields',
-    ));
-    $custom_field1 = CustomField::createOrUpdate(array(
+    ]);
+    $custom_field1 = CustomField::createOrUpdate([
       'name' => 'Custom field1',
-      'type' => 'input'
-    ));
-    CustomField::createOrUpdate(array(
+      'type' => 'input',
+    ]);
+    CustomField::createOrUpdate([
       'name' => 'Custom field2',
-      'type' => 'input'
-    ));
+      'type' => 'input',
+    ]);
     $subscriber->setCustomField($custom_field1->id(), 'Value');
     $subscriber->setCustomField('123545657', 'Value');
     $result = $this->exporter->export('email.that@has.custom.fields');
-    expect($result['data'][0]['data'])->contains(array('name' => 'Custom field1', 'value' => 'Value'));
+    expect($result['data'][0]['data'])->contains(['name' => 'Custom field1', 'value' => 'Value']);
   }
 
 }

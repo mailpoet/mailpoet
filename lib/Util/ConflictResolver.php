@@ -4,8 +4,8 @@ namespace MailPoet\Util;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ConflictResolver {
-  public $permitted_assets_locations = array(
-    'styles' => array(
+  public $permitted_assets_locations = [
+    'styles' => [
       // WP default
       '^/wp-admin',
       '^/wp-includes',
@@ -14,9 +14,9 @@ class ConflictResolver {
       'wp.com',
       // third-party
       'query-monitor',
-      'wpt-tx-updater-network'
-    ),
-    'scripts' => array(
+      'wpt-tx-updater-network',
+    ],
+    'scripts' => [
       // WP default
       '^/wp-admin',
       '^/wp-includes',
@@ -25,31 +25,31 @@ class ConflictResolver {
       'wp.com',
       // third-party
       'query-monitor',
-      'wpt-tx-updater-network'
-    )
-  );
+      'wpt-tx-updater-network',
+    ],
+  ];
 
   function init() {
     WPFunctions::get()->addAction(
       'mailpoet_conflict_resolver_router_url_query_parameters',
-      array(
+      [
         $this,
-        'resolveRouterUrlQueryParametersConflict'
-      )
+        'resolveRouterUrlQueryParametersConflict',
+      ]
     );
     WPFunctions::get()->addAction(
       'mailpoet_conflict_resolver_styles',
-      array(
+      [
         $this,
-        'resolveStylesConflict'
-      )
+        'resolveStylesConflict',
+      ]
     );
     WPFunctions::get()->addAction(
       'mailpoet_conflict_resolver_scripts',
-      array(
+      [
         $this,
-        'resolveScriptsConflict'
-      )
+        'resolveScriptsConflict',
+      ]
     );
   }
 

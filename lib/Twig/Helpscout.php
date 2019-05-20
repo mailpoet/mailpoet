@@ -8,12 +8,12 @@ if (!defined('ABSPATH')) exit;
 
 class Helpscout extends \MailPoetVendor\Twig\Extension\AbstractExtension {
   public function getFunctions() {
-    return array(
+    return [
       new TwigFunction(
         'get_helpscout_data',
         '\MailPoet\Helpscout\Beacon::getData',
-        array('is_safe' => array('all'))
-      )
-    );
+        ['is_safe' => ['all']]
+      ),
+    ];
   }
 }

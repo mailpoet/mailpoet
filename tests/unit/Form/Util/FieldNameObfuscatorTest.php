@@ -29,15 +29,15 @@ class FieldNameObfuscatorTest extends \MailPoetUnitTest {
   public function testObfuscatePayloadWorks() {
     $obfuscator = new FieldNameObfuscator();
     $obfuscated = $obfuscator->obfuscate('email');
-    $data = array(
+    $data = [
       'regularField' => 'regularValue',
       $obfuscated => 'obfuscatedFieldValue',
-    );
+    ];
     $deobfuscatedPayload = $obfuscator->deobfuscateFormPayload($data);
-    expect($deobfuscatedPayload)->equals(array(
+    expect($deobfuscatedPayload)->equals([
       'regularField' => 'regularValue',
       'email' => 'obfuscatedFieldValue',
-    ));
+    ]);
   }
 
   function _after() {

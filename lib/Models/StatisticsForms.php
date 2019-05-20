@@ -20,10 +20,10 @@ class StatisticsForms extends Model {
       if ($record === false) {
         // create a new entry
         $record = self::create();
-        $record->hydrate(array(
+        $record->hydrate([
           'form_id' => $form_id,
-          'subscriber_id' => $subscriber_id
-        ));
+          'subscriber_id' => $subscriber_id,
+        ]);
         $record->save();
       }
       return $record;

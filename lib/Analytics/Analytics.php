@@ -40,7 +40,7 @@ class Analytics {
 
   /** @return boolean */
   function isEnabled() {
-    $analytics_settings = $this->settings->get('analytics', array());
+    $analytics_settings = $this->settings->get('analytics', []);
     return !empty($analytics_settings['enabled']) === true;
   }
 

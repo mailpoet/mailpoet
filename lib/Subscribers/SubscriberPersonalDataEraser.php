@@ -9,12 +9,12 @@ class SubscriberPersonalDataEraser {
 
   function erase($email) {
     if (empty($email)) {
-      return array(
+      return [
         'items_removed' => false,
         'items_retained' => false,
-        'messages' => array(),
+        'messages' => [],
         'done' => true,
-      );
+      ];
     }
     $subscriber = Subscriber::findOne(trim($email));
     $item_removed = false;
@@ -26,12 +26,12 @@ class SubscriberPersonalDataEraser {
       $items_retained = false;
     }
 
-    return array(
+    return [
       'items_removed' => $item_removed,
       'items_retained' => $items_retained,
-      'messages' => array(),
+      'messages' => [],
       'done' => true,
-    );
+    ];
   }
 
   private function eraseCustomFields($subscriber_id) {

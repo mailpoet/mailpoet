@@ -61,10 +61,10 @@ class Bridge {
   }
 
   static function pingBridge() {
-    $params = array(
+    $params = [
       'blocking' => true,
-      'timeout' => 10
-    );
+      'timeout' => 10,
+    ];
     $wp = new WPFunctions();
     $result = $wp->wpRemoteGet(self::BRIDGE_URL, $params);
     return $wp->wpRemoteRetrieveResponseCode($result) === 200;
@@ -111,12 +111,12 @@ class Bridge {
   }
 
   private function processKeyCheckResult(array $result) {
-    $state_map = array(
+    $state_map = [
       200 => self::KEY_VALID,
       401 => self::KEY_INVALID,
       402 => self::KEY_ALREADY_USED,
-      403 => self::KEY_INVALID
-    );
+      403 => self::KEY_INVALID,
+    ];
 
     if (!empty($result['code']) && isset($state_map[$result['code']])) {
       if ($state_map[$result['code']] == self::KEY_VALID
@@ -157,11 +157,11 @@ class Bridge {
   }
 
   private function buildKeyState($key_state, $result) {
-    $state = array(
+    $state = [
       'state' => $key_state,
       'data' => !empty($result['data']) ? $result['data'] : null,
-      'code' => !empty($result['code']) ? $result['code'] : self::CHECK_ERROR_UNKNOWN
-    );
+      'code' => !empty($result['code']) ? $result['code'] : self::CHECK_ERROR_UNKNOWN,
+    ];
 
     return $state;
   }
@@ -180,7 +180,7 @@ class Bridge {
     $settings = new SettingsController();
     $settings->set(
       self::API_KEY_STATE_SETTING_NAME,
-      array('state' => self::KEY_INVALID)
+      ['state' => self::KEY_INVALID]
     );
   }
 

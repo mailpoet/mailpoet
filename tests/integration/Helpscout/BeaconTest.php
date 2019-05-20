@@ -11,22 +11,22 @@ class BeaconTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     // create 4 users (1 confirmed, 1 subscribed, 1 unsubscribed, 1 bounced)
-    Subscriber::createOrUpdate(array(
+    Subscriber::createOrUpdate([
       'email' => 'user1@mailpoet.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED
-    ));
-    Subscriber::createOrUpdate(array(
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
+    Subscriber::createOrUpdate([
       'email' => 'user2@mailpoet.com',
-      'status' => Subscriber::STATUS_UNCONFIRMED
-    ));
-    Subscriber::createOrUpdate(array(
+      'status' => Subscriber::STATUS_UNCONFIRMED,
+    ]);
+    Subscriber::createOrUpdate([
       'email' => 'user3@mailpoet.com',
-      'status' => Subscriber::STATUS_UNSUBSCRIBED
-    ));
-    Subscriber::createOrUpdate(array(
+      'status' => Subscriber::STATUS_UNSUBSCRIBED,
+    ]);
+    Subscriber::createOrUpdate([
       'email' => 'user4@mailpoet.com',
-      'status' => Subscriber::STATUS_BOUNCED
-    ));
+      'status' => Subscriber::STATUS_BOUNCED,
+    ]);
 
     $this->beacon_data = Beacon::getData();
     $this->settings = new SettingsController();

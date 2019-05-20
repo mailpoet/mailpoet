@@ -9,80 +9,80 @@ use MailPoet\WP\Functions as WPFunctions;
 class SubscriberExporter {
 
   function export($email) {
-    return array(
+    return [
       'data' => $this->exportSubscriber(Subscriber::findOne(trim($email))),
       'done' => true,
-    );
+    ];
   }
 
   private function exportSubscriber($subscriber) {
-    if (!$subscriber) return array();
-    return array(array(
+    if (!$subscriber) return [];
+    return [[
       'group_id' => 'mailpoet-subscriber',
       'group_label' => WPFunctions::get()->__('MailPoet Subscriber Data', 'mailpoet'),
       'item_id' => 'subscriber-' . $subscriber->id,
       'data' => $this->getSubscriberExportData($subscriber->withCustomFields()),
-    ));
+    ]];
   }
 
   private function getSubscriberExportData($subscriber) {
     $custom_fields = $this->getCustomFields();
-    $result = array(
-      array(
+    $result = [
+      [
         'name' => WPFunctions::get()->__('First Name', 'mailpoet'),
         'value' => $subscriber->first_name,
-      ),
-      array(
+      ],
+      [
         'name' => WPFunctions::get()->__('Last Name', 'mailpoet'),
         'value' => $subscriber->last_name,
-      ),
-      array(
+      ],
+      [
         'name' => WPFunctions::get()->__('Email', 'mailpoet'),
         'value' => $subscriber->email,
-      ),
-      array(
+      ],
+      [
         'name' => WPFunctions::get()->__('Status', 'mailpoet'),
         'value' => $subscriber->status,
-      ),
-    );
+      ],
+    ];
     if ($subscriber->subscribed_ip) {
-      $result[] = array(
+      $result[] = [
         'name' => WPFunctions::get()->__('Subscribed IP', 'mailpoet'),
         'value' => $subscriber->subscribed_ip,
-      );
+      ];
     }
     if ($subscriber->confirmed_ip) {
-      $result[] = array(
+      $result[] = [
         'name' => WPFunctions::get()->__('Confirmed IP', 'mailpoet'),
         'value' => $subscriber->confirmed_ip,
-      );
+      ];
     }
-    $result[] = array(
+    $result[] = [
       'name' => WPFunctions::get()->__('Created at', 'mailpoet'),
       'value' => $subscriber->created_at,
-    );
+    ];
 
     foreach ($custom_fields as $custom_field_id => $custom_field_name) {
       $custom_field_value = $subscriber->{$custom_field_id};
       if ($custom_field_value) {
-        $result[] = array(
+        $result[] = [
           'name' => $custom_field_name,
           'value' => $custom_field_value,
-        );
+        ];
       }
     }
 
-    $result[] = array(
+    $result[] = [
       'name' => WPFunctions::get()->__("Subscriber's subscription source", 'mailpoet'),
       'value' => $this->formatSource($subscriber->source),
-    );
+    ];
 
     return $result;
   }
 
   private function getCustomFields() {
     $fields = CustomField::findMany();
-    $result = array();
+    $result = [];
     foreach ($fields as $field) {
       $result['cf_' . $field->id] = $field->name;
     }

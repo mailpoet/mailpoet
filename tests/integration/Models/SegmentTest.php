@@ -10,48 +10,48 @@ use MailPoet\Models\SubscriberSegment;
 class SegmentTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->segment_data = array(
+    $this->segment_data = [
       'name' => 'some name',
-      'description' => 'some description'
-    );
+      'description' => 'some description',
+    ];
     $this->segment = Segment::createOrUpdate($this->segment_data);
 
-    $this->subscribers_data = array(
-      array(
+    $this->subscribers_data = [
+      [
         'first_name' => 'John',
         'last_name' => 'Mailer',
         'status' => Subscriber::STATUS_UNSUBSCRIBED,
-        'email' => 'john@mailpoet.com'
-      ),
-      array(
+        'email' => 'john@mailpoet.com',
+      ],
+      [
         'first_name' => 'Mike',
         'last_name' => 'Smith',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        'email' => 'mike@maipoet.com'
-      ),
-      array(
+        'email' => 'mike@maipoet.com',
+      ],
+      [
         'first_name' => 'Dave',
         'last_name' => 'Brown',
         'status' => Subscriber::STATUS_UNCONFIRMED,
-        'email' => 'dave@maipoet.com'
-      ),
-      array(
+        'email' => 'dave@maipoet.com',
+      ],
+      [
         'first_name' => 'Bob',
         'last_name' => 'Jones',
         'status' => Subscriber::STATUS_BOUNCED,
-        'email' => 'bob@maipoet.com'
-      )
-    );
-    $this->newsletters_data = array(
-      array(
+        'email' => 'bob@maipoet.com',
+      ],
+    ];
+    $this->newsletters_data = [
+      [
         'subject' => 'My first newsletter',
-        'type' => 'standard'
-      ),
-      array(
+        'type' => 'standard',
+      ],
+      [
         'subject' => 'My second newsletter',
-        'type' => 'standard'
-      )
-    );
+        'type' => 'standard',
+      ],
+    ];
   }
 
   function testItCanBeCreated() {
@@ -118,9 +118,9 @@ class SegmentTest extends \MailPoetTest {
   }
 
   function testItCanCreateOrUpdate() {
-    $is_created = Segment::createOrUpdate(array(
-      'name' => 'new list'
-    ));
+    $is_created = Segment::createOrUpdate([
+      'name' => 'new list',
+    ]);
     expect($is_created->id() > 0)->true();
     expect($is_created->getErrors())->false();
 
@@ -129,10 +129,10 @@ class SegmentTest extends \MailPoetTest {
     expect($segment->name)->equals('new list');
 
     $is_updated = Segment::createOrUpdate(
-      array(
+      [
         'id' => $segment->id,
-        'name' => 'updated list'
-      ));
+        'name' => 'updated list',
+      ]);
     $segment = Segment::where('name', 'updated list')
       ->findOne();
     expect($segment->name)->equals('updated list');
@@ -195,7 +195,7 @@ class SegmentTest extends \MailPoetTest {
     // unsubscribed from this particular segment
     foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::findOne($subscriber_data['email']);
-      SubscriberSegment::unsubscribeFromSegments($subscriber, array($this->segment->id));
+      SubscriberSegment::unsubscribeFromSegments($subscriber, [$this->segment->id]);
     }
 
     $this->segment->withSubscribersCount();
@@ -255,19 +255,19 @@ class SegmentTest extends \MailPoetTest {
   }
 
   function testListingQuery() {
-    Segment::createOrUpdate(array(
+    Segment::createOrUpdate([
       'name' => 'name 2',
       'description' => 'description 2',
-      'type' => 'unknown'
-    ));
-    $query = Segment::listingQuery(array());
+      'type' => 'unknown',
+    ]);
+    $query = Segment::listingQuery([]);
     $data = $query->findMany();
     expect($data)->count(1);
     expect($data[0]->name)->equals('some name');
   }
 
   function testListingQueryWithGroup() {
-    $query = Segment::listingQuery(array('group' => 'trash'));
+    $query = Segment::listingQuery(['group' => 'trash']);
     $data = $query->findMany();
     expect($data)->count(0);
   }

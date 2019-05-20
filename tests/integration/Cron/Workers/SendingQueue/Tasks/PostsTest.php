@@ -18,26 +18,26 @@ class PostsTest extends \MailPoetTest {
   }
 
   function testItFailsWhenNoPostsArePresent() {
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
-      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY
-    );
-    $rendered_newsletter = array(
-      'html' => 'Sample newsletter'
-    );
+      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+    ];
+    $rendered_newsletter = [
+      'html' => 'Sample newsletter',
+    ];
     expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(false);
   }
 
   function testItCanExtractAndSavePosts() {
     $post_id = 10;
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 2,
       'parent_id' => 1,
-      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY
-    );
-    $rendered_newsletter = array(
-      'html' => '<a data-post-id="' . $post_id . '" href="#">sample post</a>'
-    );
+      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+    ];
+    $rendered_newsletter = [
+      'html' => '<a data-post-id="' . $post_id . '" href="#">sample post</a>',
+    ];
     expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(true);
     $newsletter_post = NewsletterPost::where('newsletter_id', $newsletter->parent_id)
       ->findOne();
@@ -46,14 +46,14 @@ class PostsTest extends \MailPoetTest {
 
   function testItDoesNotSavePostsWhenNewsletterIsNotANotificationHistory() {
     $post_id = 10;
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 2,
       'parent_id' => 1,
-      'type' => Newsletter::TYPE_WELCOME
-    );
-    $rendered_newsletter = array(
-      'html' => '<a data-post-id="' . $post_id . '" href="#">sample post</a>'
-    );
+      'type' => Newsletter::TYPE_WELCOME,
+    ];
+    $rendered_newsletter = [
+      'html' => '<a data-post-id="' . $post_id . '" href="#">sample post</a>',
+    ];
     expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(false);
     $newsletter->type = Newsletter::TYPE_STANDARD;
     expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(false);

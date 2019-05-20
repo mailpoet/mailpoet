@@ -15,10 +15,10 @@ class LinksTest extends \MailPoetTest {
     $result = Links::extract($template);
 
     expect($result[0])->equals(
-      array(
+      [
         'type' => Links::LINK_TYPE_URL,
-        'link' => 'http://example.com'
-      )
+        'link' => 'http://example.com',
+      ]
     );
   }
 
@@ -58,10 +58,10 @@ class LinksTest extends \MailPoetTest {
     $result = Links::extract($template);
 
     expect($result[0])->equals(
-      array(
+      [
         'type' => Links::LINK_TYPE_SHORTCODE,
-        'link' => '[link:some_link_shortcode]'
-      )
+        'link' => '[link:some_link_shortcode]',
+      ]
     );
   }
 
@@ -95,13 +95,13 @@ class LinksTest extends \MailPoetTest {
   function testItDoesNotReplaceUnprocessedLinks() {
     $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
 
-    $processed_links = array(
-      'http://example.com' => array(
+    $processed_links = [
+      'http://example.com' => [
         'type' => Links::LINK_TYPE_URL,
         'link' => 'http://example.com',
-        'processed_link' => 'replace by this'
-      )
-    );
+        'processed_link' => 'replace by this',
+      ],
+    ];
 
     list($updated_content, $replaced_links) =
       Links::replace($template, $processed_links);
@@ -117,13 +117,13 @@ class LinksTest extends \MailPoetTest {
 
   function testItCreatesAndTransformsUrlDataObject() {
     $subscriber_email = 'test@example.com';
-    $data = array(
+    $data = [
       'subscriber_id' => 1,
       'subscriber_token' => Subscriber::generateToken($subscriber_email),
       'queue_id' => 2,
       'link_hash' => 'hash',
-      'preview' => false
-    );
+      'preview' => false,
+    ];
     $url_data_object = Links::createUrlDataObject(
       $data['subscriber_id'],
       $subscriber_email,
@@ -170,12 +170,12 @@ class LinksTest extends \MailPoetTest {
   }
 
   function testItCanSaveLinks() {
-    $links = array(
-      array(
+    $links = [
+      [
         'link' => 'http://example.com',
-        'hash' => 123
-      )
-    );
+        'hash' => 123,
+      ],
+    ];
     Links::save(
       $links,
       $newsletter_id = 1,

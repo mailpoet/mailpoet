@@ -13,9 +13,9 @@ class Analytics extends APIEndpoint {
   /** @var Reporter */
   private $reporter;
 
-  public $permissions = array(
-    'global' => AccessControl::NO_ACCESS_RESTRICTION
-  );
+  public $permissions = [
+    'global' => AccessControl::NO_ACCESS_RESTRICTION,
+  ];
 
   function __construct(Reporter $reporter) {
     $this->reporter = $reporter;

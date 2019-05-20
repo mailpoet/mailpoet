@@ -16,9 +16,9 @@ class UserFlags extends APIEndpoint {
   /** @var UserFlagsController */
   private $user_flags;
 
-  public $permissions = array(
-    'global' => AccessControl::ALL_ROLES_ACCESS
-  );
+  public $permissions = [
+    'global' => AccessControl::ALL_ROLES_ACCESS,
+  ];
 
   function __construct(UserFlagsController $user_flags) {
     $this->user_flags = $user_flags;
@@ -27,10 +27,10 @@ class UserFlags extends APIEndpoint {
   function set(array $flags = []) {
     if (empty($flags)) {
       return $this->badRequest(
-        array(
+        [
           APIError::BAD_REQUEST =>
-            WPFunctions::get()->__('You have not specified any user flags to be saved.', 'mailpoet')
-        ));
+            WPFunctions::get()->__('You have not specified any user flags to be saved.', 'mailpoet'),
+        ]);
     } else {
       foreach ($flags as $name => $value) {
         $this->user_flags->set($name, $value);

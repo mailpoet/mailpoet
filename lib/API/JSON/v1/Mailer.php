@@ -11,11 +11,11 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class Mailer extends APIEndpoint {
-  public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_EMAILS
-  );
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
+  ];
 
-  function send($data = array()) {
+  function send($data = []) {
     try {
       $mailer = new \MailPoet\Mailer\Mailer(
         (isset($data['mailer'])) ? $data['mailer'] : false,
@@ -24,9 +24,9 @@ class Mailer extends APIEndpoint {
       );
       $result = $mailer->send($data['newsletter'], $data['subscriber']);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
 
     if ($result['response'] === false) {
@@ -34,7 +34,7 @@ class Mailer extends APIEndpoint {
         WPFunctions::get()->__('The email could not be sent: %s', 'mailpoet'),
         $result['error']->getMessage()
       );
-      return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
+      return $this->errorResponse([APIError::BAD_REQUEST => $error]);
     } else {
       return $this->successResponse(null);
     }

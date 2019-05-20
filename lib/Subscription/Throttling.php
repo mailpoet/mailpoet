@@ -21,7 +21,7 @@ class Throttling {
         $subscription_count = SubscriberIP::where('ip', $subscriber_ip)
           ->whereRaw(
             '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-            array((int)$subscription_limit_window)
+            [(int)$subscription_limit_window]
           )->count();
 
         if ($subscription_count > 0) {
@@ -29,7 +29,7 @@ class Throttling {
           $existing_user = SubscriberIP::where('ip', $subscriber_ip)
             ->whereRaw(
               '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-              array((int)$timeout)
+              [(int)$timeout]
             )->findOne();
 
           if (!empty($existing_user)) {
@@ -51,7 +51,7 @@ class Throttling {
   static function purge($interval) {
     return SubscriberIP::whereRaw(
       '(`created_at` < NOW() - INTERVAL ? SECOND)',
-      array($interval)
+      [$interval]
     )->deleteMany();
   }
 }

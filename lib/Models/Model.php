@@ -124,7 +124,7 @@ class Model extends \Sudzy\ValidModel {
   protected $_new_record;
 
   function __construct() {
-    $this->_errors = array();
+    $this->_errors = [];
     $validator = new ModelValidator();
     parent::__construct($validator);
   }
@@ -143,7 +143,7 @@ class Model extends \Sudzy\ValidModel {
    * @param  callable|bool $onCreate
    * @return self
    */
-  static protected function _createOrUpdate($data = array(), $keys = false, $onCreate = false) {
+  static protected function _createOrUpdate($data = [], $keys = false, $onCreate = false) {
     $model = false;
 
     if (isset($data['id']) && (int)$data['id'] > 0) {
@@ -175,7 +175,7 @@ class Model extends \Sudzy\ValidModel {
     return $model->save();
   }
 
-  static public function createOrUpdate($data = array()) {
+  static public function createOrUpdate($data = []) {
     return self::_createOrUpdate($data);
   }
 
@@ -245,14 +245,14 @@ class Model extends \Sudzy\ValidModel {
   static function bulkTrash($orm) {
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use ($model) {
-      $model::rawExecute(join(' ', array(
+      $model::rawExecute(join(' ', [
         'UPDATE `' . $model::$_table . '`',
         'SET `deleted_at` = NOW()',
-        'WHERE `id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
-      )), $ids);
+        'WHERE `id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')',
+      ]), $ids);
     });
 
-    return array('count' => $count);
+    return ['count' => $count];
   }
 
   static function bulkDelete($orm) {
@@ -261,7 +261,7 @@ class Model extends \Sudzy\ValidModel {
       $model::whereIn('id', $ids)->deleteMany();
     });
 
-    return array('count' => $count);
+    return ['count' => $count];
   }
 
   function restore() {
@@ -271,14 +271,14 @@ class Model extends \Sudzy\ValidModel {
   static function bulkRestore($orm) {
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use ($model) {
-      $model::rawExecute(join(' ', array(
+      $model::rawExecute(join(' ', [
         'UPDATE `' . $model::$_table . '`',
         'SET `deleted_at` = NULL',
-        'WHERE `id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
-      )), $ids);
+        'WHERE `id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')',
+      ]), $ids);
     });
 
-    return array('count' => $count);
+    return ['count' => $count];
   }
 
   static function bulkAction($orm, $callback = false) {
@@ -304,7 +304,7 @@ class Model extends \Sudzy\ValidModel {
       ->rowCount();
   }
 
-  function duplicate($data = array()) {
+  function duplicate($data = []) {
     $model = get_called_class();
     $model_data = array_merge($this->asArray(), $data);
     unset($model_data['id']);

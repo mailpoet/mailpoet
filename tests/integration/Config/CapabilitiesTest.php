@@ -26,7 +26,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $caps = Stub::makeEmptyExcept(
       $this->caps,
       'init',
-      array('setupMembersCapabilities' => Expected::once()),
+      ['setupMembersCapabilities' => Expected::once()],
       $this
     );
     $caps->init();
@@ -64,7 +64,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $this->caps->removeWPCapabilities();
 
     $filter = function() {
-      return array('nonexistent_role');
+      return ['nonexistent_role'];
     };
     $wp = new WPFunctions;
     $wp->addFilter('mailpoet_permission_access_plugin_admin', $filter);

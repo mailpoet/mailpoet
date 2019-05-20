@@ -26,7 +26,7 @@ class MailPoet {
     $this->error_mapper = $error_mapper;
   }
 
-  function send($newsletter, $subscriber, $extra_params = array()) {
+  function send($newsletter, $subscriber, $extra_params = []) {
     if ($this->services_checker->isMailPoetAPIKeyValid() === false) {
       return Mailer::formatMailerErrorResult($this->error_mapper->getInvalidApiKeyError());
     }
@@ -57,34 +57,34 @@ class MailPoet {
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
-      $subscriber_data = array(
+      $subscriber_data = [
         'email' => $subscriber,
-      );
+      ];
     }
-    return array(
+    return [
       'email' => $subscriber_data['email'],
-      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
-    );
+      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : '',
+    ];
   }
 
-  function getBody($newsletter, $subscriber, $extra_params = array()) {
+  function getBody($newsletter, $subscriber, $extra_params = []) {
     $_this = $this;
     $composeBody = function($newsletter, $subscriber, $unsubscribe_url) use($_this) {
-      $body = array(
-        'to' => (array(
+      $body = [
+        'to' => ([
           'address' => $subscriber['email'],
-          'name' => $subscriber['name']
-        )),
-        'from' => (array(
+          'name' => $subscriber['name'],
+        ]),
+        'from' => ([
           'address' => $_this->sender['from_email'],
-          'name' => $_this->sender['from_name']
-        )),
-        'reply_to' => (array(
+          'name' => $_this->sender['from_name'],
+        ]),
+        'reply_to' => ([
           'address' => $_this->reply_to['reply_to_email'],
-          'name' => $_this->reply_to['reply_to_name']
-        )),
-        'subject' => $newsletter['subject']
-      );
+          'name' => $_this->reply_to['reply_to_name'],
+        ]),
+        'subject' => $newsletter['subject'],
+      ];
       if (!empty($newsletter['body']['html'])) {
         $body['html'] = $newsletter['body']['html'];
       }
@@ -97,7 +97,7 @@ class MailPoet {
       return $body;
     };
     if (is_array($newsletter) && is_array($subscriber)) {
-      $body = array();
+      $body = [];
       for ($record = 0; $record < count($newsletter); $record++) {
         $body[] = $composeBody(
           $newsletter[$record],

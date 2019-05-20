@@ -82,7 +82,7 @@ class MailChimpTest extends \MailPoetUnitTest {
     }
 
     try {
-      $this->mailchimp->getSubscribers(array(12));
+      $this->mailchimp->getSubscribers([12]);
       $this->fail('MailChimp getSubscribers() did not throw an exception');
     } catch (\Exception $e) {
       expect($e->getMessage())->contains('Did not find any valid lists');
@@ -93,7 +93,7 @@ class MailChimpTest extends \MailPoetUnitTest {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
 
     try {
-      $subscribers = $this->mailchimp->getSubscribers(array($this->lists[0]));
+      $subscribers = $this->mailchimp->getSubscribers([$this->lists[0]]);
     } catch (\Exception $e) {
       $this->fail('MailChimp getSubscribers() threw an exception');
     }

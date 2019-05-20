@@ -17,27 +17,27 @@ class SendingQueueTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->newsletter = Newsletter::createOrUpdate(
-      array(
+      [
         'subject' => 'My Standard Newsletter',
         'body' => Fixtures::get('newsletter_body_template'),
-        'type' => Newsletter::TYPE_STANDARD
-      )
+        'type' => Newsletter::TYPE_STANDARD,
+      ]
     );
     $settings = new SettingsController();
-    $settings->set('sender', array(
+    $settings->set('sender', [
       'name' => 'John Doe',
-      'address' => 'john.doe@example.com'
-    ));
+      'address' => 'john.doe@example.com',
+    ]);
   }
 
   function testItCreatesNewScheduledSendingQueueTask() {
     $newsletter = $this->newsletter;
     $newsletter->status = Newsletter::STATUS_SCHEDULED;
     $newsletter->save();
-    $newletter_options = array(
+    $newletter_options = [
       'isScheduled' => 1,
-      'scheduledAt' => '2018-10-10 10:00:00'
-    );
+      'scheduledAt' => '2018-10-10 10:00:00',
+    ];
     $this->_createOrUpdateNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_STANDARD,
@@ -45,7 +45,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
 
     $sending_queue = new SendingQueueAPI();
-    $result = $sending_queue->add(array('newsletter_id' => $newsletter->id));
+    $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
     $scheduled_task = ScheduledTask::findOne($result->data['task_id']);
     expect($scheduled_task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     expect($scheduled_task->scheduled_at)->equals($newletter_options['scheduledAt']);
@@ -56,10 +56,10 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletter = $this->newsletter;
     $newsletter->status = Newsletter::STATUS_SCHEDULED;
     $newsletter->save();
-    $newletter_options = array(
+    $newletter_options = [
       'isScheduled' => 1,
-      'scheduledAt' => '2018-10-10 10:00:00'
-    );
+      'scheduledAt' => '2018-10-10 10:00:00',
+    ];
     $this->_createOrUpdateNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_STANDARD,
@@ -68,20 +68,20 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue = new SendingQueueAPI();
 
     // add scheduled task
-    $result = $sending_queue->add(array('newsletter_id' => $newsletter->id));
+    $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
     $scheduled_task = ScheduledTask::findOne($result->data['task_id']);
     expect($scheduled_task->scheduled_at)->equals('2018-10-10 10:00:00');
 
     // update scheduled time
-    $newletter_options = array(
-      'scheduledAt' => '2018-11-11 11:00:00'
-    );
+    $newletter_options = [
+      'scheduledAt' => '2018-11-11 11:00:00',
+    ];
     $this->_createOrUpdateNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_STANDARD,
       $newletter_options
     );
-    $result = $sending_queue->add(array('newsletter_id' => $newsletter->id));
+    $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
     $rescheduled_task = ScheduledTask::findOne($result->data['task_id']);
     // new task was not created
     expect($rescheduled_task->id)->equals($scheduled_task->id);

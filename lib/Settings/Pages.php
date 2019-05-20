@@ -8,11 +8,11 @@ class Pages {
   }
 
   function init() {
-    WPFunctions::get()->registerPostType('mailpoet_page', array(
-      'labels' => array(
+    WPFunctions::get()->registerPostType('mailpoet_page', [
+      'labels' => [
         'name' => WPFunctions::get()->__('MailPoet Page', 'mailpoet'),
-        'singular_name' => WPFunctions::get()->__('MailPoet Page', 'mailpoet')
-      ),
+        'singular_name' => WPFunctions::get()->__('MailPoet Page', 'mailpoet'),
+      ],
       'public' => true,
       'has_archive' => false,
       'show_ui' => false,
@@ -21,8 +21,8 @@ class Pages {
       'show_in_nav_menus' => false,
       'can_export' => false,
       'publicly_queryable' => true,
-      'exclude_from_search' => true
-    ));
+      'exclude_from_search' => true,
+    ]);
   }
 
   static function createMailPoetPage() {
@@ -30,22 +30,22 @@ class Pages {
     WPFunctions::get()->removeAllActions('save_post');
     WPFunctions::get()->removeAllActions('wp_insert_post');
 
-    $id = WPFunctions::get()->wpInsertPost(array(
+    $id = WPFunctions::get()->wpInsertPost([
       'post_status' => 'publish',
       'post_type' => 'mailpoet_page',
       'post_author' => 1,
       'post_content' => '[mailpoet_page]',
       'post_title' => WPFunctions::get()->__('MailPoet Page', 'mailpoet'),
-      'post_name' => 'subscriptions'
-    ));
+      'post_name' => 'subscriptions',
+    ]);
 
     return ((int)$id > 0) ? (int)$id : false;
   }
 
   static function getMailPoetPages() {
-    return WPFunctions::get()->getPosts(array(
-      'post_type' => 'mailpoet_page'
-    ));
+    return WPFunctions::get()->getPosts([
+      'post_type' => 'mailpoet_page',
+    ]);
   }
 
   /**
@@ -69,7 +69,7 @@ class Pages {
       WPFunctions::get()->getPages()
     );
 
-    $pages = array();
+    $pages = [];
     foreach ($all_pages as $page) {
       $pages[] = static::getPageData($page);
     }
@@ -78,14 +78,14 @@ class Pages {
   }
 
   static function getPageData($page) {
-    return array(
+    return [
       'id' => $page->ID,
       'title' => $page->post_title,
-      'url' => array(
+      'url' => [
         'unsubscribe' => Subscription\Url::getSubscriptionUrl($page, 'unsubscribe'),
         'manage' => Subscription\Url::getSubscriptionUrl($page, 'manage'),
-        'confirm' => Subscription\Url::getSubscriptionUrl($page, 'confirm')
-      )
-    );
+        'confirm' => Subscription\Url::getSubscriptionUrl($page, 'confirm'),
+      ],
+    ];
   }
 }

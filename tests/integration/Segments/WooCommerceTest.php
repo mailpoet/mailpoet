@@ -16,7 +16,7 @@ use MailPoet\Subscribers\Source;
 
 class WooCommerceTest extends \MailPoetTest  {
 
-  private $userEmails = array();
+  private $userEmails = [];
 
   /** @var WooCommerce */
   private $woocommerce_segment;
@@ -34,12 +34,12 @@ class WooCommerceTest extends \MailPoetTest  {
   function testItSynchronizesNewRegisteredCustomer() {
     $user = $this->insertRegisteredCustomer();
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => $user->user_email,
       'wp_user_id' => $user->ID,
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->source = Source::WORDPRESS_USER;
     $subscriber->save();
@@ -59,12 +59,12 @@ class WooCommerceTest extends \MailPoetTest  {
   function testItSynchronizesUpdatedRegisteredCustomer() {
     $user = $this->insertRegisteredCustomer();
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => $user->user_email,
       'wp_user_id' => $user->ID,
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber->source = Source::WORDPRESS_USER;
     $subscriber->save();
@@ -84,12 +84,12 @@ class WooCommerceTest extends \MailPoetTest  {
     $wc_segment = Segment::getWooCommerceSegment();
     $user = $this->insertRegisteredCustomer();
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => $user->user_email,
       'wp_user_id' => $user->ID,
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber->source = Source::WORDPRESS_USER;
     $subscriber->save();
@@ -143,10 +143,10 @@ class WooCommerceTest extends \MailPoetTest  {
 
   function testItSynchronizesPresubscribedRegisteredCustomers() {
     $random_number = 12345;
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'email' => 'user-sync-test' . $random_number . '@example.com',
-      'status' => Subscriber::STATUS_UNSUBSCRIBED
-    ));
+      'status' => Subscriber::STATUS_UNSUBSCRIBED,
+    ]);
     $user = $this->insertRegisteredCustomer($random_number);
     $this->woocommerce_segment->synchronizeCustomers();
     $wp_subscriber = Segment::getWooCommerceSegment()->subscribers()
@@ -160,10 +160,10 @@ class WooCommerceTest extends \MailPoetTest  {
 
   function testItSynchronizesPresubscribedGuestCustomers() {
     $random_number = 12345;
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'email' => 'user-sync-test' . $random_number . '@example.com',
-      'status' => Subscriber::STATUS_UNSUBSCRIBED
-    ));
+      'status' => Subscriber::STATUS_UNSUBSCRIBED,
+    ]);
     $guest = $this->insertGuestCustomer($random_number);
     $this->woocommerce_segment->synchronizeCustomers();
     $wp_subscriber = Segment::getWooCommerceSegment()->subscribers()
@@ -299,30 +299,30 @@ class WooCommerceTest extends \MailPoetTest  {
     $user = $this->insertRegisteredCustomer();
     $user->remove_role('customer');
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'John',
       'last_name' => 'John',
       'email' => $user->user_email,
       'wp_user_id' => $user->ID,
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $subscriber->save();
     // Regular subscriber
     $subscriber2 = Subscriber::create();
-    $subscriber2->hydrate(array(
+    $subscriber2->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => 'user-sync-test2' . rand() . '@example.com',
-    ));
+    ]);
     $subscriber2->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber2->save();
     // email is empty
     $subscriber3 = Subscriber::create();
-    $subscriber3->hydrate(array(
+    $subscriber3->hydrate([
       'first_name' => 'Dave',
       'last_name' => 'Dave',
       'email' => 'user-sync-test3' . rand() . '@example.com', // need to pass validation
-    ));
+    ]);
     $subscriber3->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber3->save();
     $this->clearEmail($subscriber3);
@@ -336,12 +336,12 @@ class WooCommerceTest extends \MailPoetTest  {
 
   function testItUnsubscribesSubscribersWithoutWCFlagFromWCSegment() {
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => 'user-sync-test' . rand() . '@example.com',
       'is_woocommerce_user' => 0,
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
     $wc_segment = Segment::getWooCommerceSegment();
@@ -356,12 +356,12 @@ class WooCommerceTest extends \MailPoetTest  {
 
   function testItUnsubscribesSubscribersWithoutEmailFromWCSegment() {
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => 'user-sync-test' . rand() . '@example.com', // need to pass validation
       'is_woocommerce_user' => 1,
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
     $this->clearEmail($subscriber);
@@ -566,11 +566,11 @@ class WooCommerceTest extends \MailPoetTest  {
   private function insertGuestCustomer($number = null, array $data = null) {
     $number = !is_null($number) ? (int)$number : mt_rand();
     // add order
-    $guest = array(
+    $guest = [
       'email' => isset($data['email']) ? $data['email'] : 'user-sync-test' . $number . '@example.com',
       'first_name' => isset($data['first_name']) ? $data['first_name'] : 'user-sync-test' . $number . ' first',
       'last_name' => isset($data['last_name']) ? $data['last_name'] : 'user-sync-test' . $number . ' last',
-    );
+    ];
     $guest['order_id'] = $this->createOrder($guest);
     $this->userEmails[] = $guest['email'];
     return $guest;
@@ -587,14 +587,14 @@ class WooCommerceTest extends \MailPoetTest  {
   }
 
   private function createOrder($data) {
-    $order_data = array(
+    $order_data = [
       'post_type' => 'shop_order',
-      'meta_input' => array(
+      'meta_input' => [
         '_billing_email' => isset($data['email']) ? $data['email'] : '',
         '_billing_first_name' => isset($data['first_name']) ? $data['first_name'] : '',
         '_billing_last_name' => isset($data['last_name']) ? $data['last_name'] : '',
-      )
-    );
+      ],
+    ];
     if (!empty($data['user_id'])) {
       $order_data['meta_input']['_customer_user'] = (int)$data['user_id'];
     }

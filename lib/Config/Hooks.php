@@ -265,21 +265,21 @@ class Hooks {
   function setupImageSize() {
     $this->wp->addFilter(
       'image_size_names_choose',
-      array($this, 'appendImageSize'),
+      [$this, 'appendImageSize'],
       10, 1
     );
   }
 
   function appendImageSize($sizes) {
-    return array_merge($sizes, array(
-      'mailpoet_newsletter_max' => WPFunctions::get()->__('MailPoet Newsletter', 'mailpoet')
-    ));
+    return array_merge($sizes, [
+      'mailpoet_newsletter_max' => WPFunctions::get()->__('MailPoet Newsletter', 'mailpoet'),
+    ]);
   }
 
   function setupListing() {
     $this->wp->addFilter(
       'set-screen-option',
-      array($this, 'setScreenOption'),
+      [$this, 'setScreenOption'],
       10, 3
     );
   }

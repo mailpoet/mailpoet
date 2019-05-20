@@ -8,20 +8,20 @@ use MailPoet\WP\Functions as WPFunctions;
 class PostsTest extends \MailPoetUnitTest {
 
   function testGetTermsProxiesCallToWordPress() {
-    $args = array(
+    $args = [
       'taxonomy' => 'post_tags',
-      'hide_empty' => true
-    );
+      'hide_empty' => true,
+    ];
 
     WPFunctions::set(Stub::make(new WPFunctions, [
       'getBloginfo' => function($key) {
         return '4.6.0';
       },
       'getTerms' => function($key) {
-        return array(
+        return [
           'call check' => 'get_terms called',
-          'arguments' => func_get_args()
-        );
+          'arguments' => func_get_args(),
+        ];
       },
     ]));
 
@@ -31,27 +31,27 @@ class PostsTest extends \MailPoetUnitTest {
   }
 
   function testGetTermsPassesTaxonomyAsFirstArgumentInOldVersions() {
-    $args = array(
+    $args = [
       'taxonomy' => 'post_tags',
-      'hide_empty' => true
-    );
+      'hide_empty' => true,
+    ];
 
     WPFunctions::set(Stub::make(new WPFunctions, [
       'getBloginfo' => function($key) {
         return '4.4.0';
       },
       'getTerms' => function($key) {
-        return array(
+        return [
           'call check' => 'get_terms called',
-          'arguments' => func_get_args()
-        );
+          'arguments' => func_get_args(),
+        ];
       },
     ]));
 
     $result = Posts::getTerms($args);
     expect($result['call check'])->equals('get_terms called');
     expect($result['arguments'][0])->equals($args['taxonomy']);
-    expect($result['arguments'][1])->equals(array_diff_key($args, array('taxonomy' => '')));
+    expect($result['arguments'][1])->equals(array_diff_key($args, ['taxonomy' => '']));
   }
 
   function _after() {

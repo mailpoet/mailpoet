@@ -13,15 +13,15 @@ class CronDaemon {
   const ACTION_RUN = 'run';
   const ACTION_PING = 'ping';
   const ACTION_PING_RESPONSE = 'pingResponse';
-  public $allowed_actions = array(
+  public $allowed_actions = [
     self::ACTION_RUN,
     self::ACTION_PING,
-    self::ACTION_PING_RESPONSE
-  );
+    self::ACTION_PING_RESPONSE,
+  ];
   public $data;
-  public $permissions = array(
-    'global' => AccessControl::NO_ACCESS_RESTRICTION
-  );
+  public $permissions = [
+    'global' => AccessControl::NO_ACCESS_RESTRICTION,
+  ];
 
   /** @var DaemonHttpRunner */
   private $daemon_runner;

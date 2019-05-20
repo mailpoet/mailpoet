@@ -16,11 +16,11 @@ class API {
   private $_request_method;
   private $_request_token;
   private $_request_endpoint_class;
-  private $_request_data = array();
-  private $_endpoint_namespaces = array();
-  private $_available_api_versions = array(
-      'v1'
-  );
+  private $_request_data = [];
+  private $_endpoint_namespaces = [];
+  private $_available_api_versions = [
+      'v1',
+  ];
   /** @var ContainerInterface */
   private $container;
 
@@ -58,24 +58,24 @@ class API {
      // admin security token and API version
     WPFunctions::get()->addAction(
       'admin_head',
-      array($this, 'setTokenAndAPIVersion')
+      [$this, 'setTokenAndAPIVersion']
     );
 
     // ajax (logged in users)
     WPFunctions::get()->addAction(
       'wp_ajax_mailpoet',
-      array($this, 'setupAjax')
+      [$this, 'setupAjax']
     );
 
     // ajax (logged out users)
     WPFunctions::get()->addAction(
       'wp_ajax_nopriv_mailpoet',
-      array($this, 'setupAjax')
+      [$this, 'setupAjax']
     );
   }
 
   function setupAjax() {
-    $this->wp->doAction('mailpoet_api_setup', array($this));
+    $this->wp->doAction('mailpoet_api_setup', [$this]);
     $this->setRequestData($_POST);
 
     $ignoreToken = (
@@ -129,19 +129,19 @@ class API {
       }
       $this->_request_data = isset($data['data'])
         ? WPFunctions::get()->stripslashesDeep($data['data'])
-        : array();
+        : [];
 
       // remove reserved keywords from data
       if (is_array($this->_request_data) && !empty($this->_request_data)) {
         // filter out reserved keywords from data
-        $reserved_keywords = array(
+        $reserved_keywords = [
           'token',
           'endpoint',
           'method',
           'api_version',
           'mailpoet_method', // alias of 'method'
-          'mailpoet_redirect'
-        );
+          'mailpoet_redirect',
+        ];
         $this->_request_data = array_diff_key(
           $this->_request_data,
           array_flip($reserved_keywords)
@@ -221,10 +221,10 @@ class API {
 
   function createErrorResponse($error_type, $error_message, $response_status) {
     $error_response = new ErrorResponse(
-      array(
-        $error_type => $error_message
-      ),
-      array(),
+      [
+        $error_type => $error_message,
+      ],
+      [],
       $response_status
     );
     return $error_response;

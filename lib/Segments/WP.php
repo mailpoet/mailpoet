@@ -43,14 +43,14 @@ class WP {
           $first_name = $wp_user->display_name;
         }
         // subscriber data
-        $data = array(
+        $data = [
           'wp_user_id' => $wp_user->ID,
           'email' => $wp_user->user_email,
           'first_name' => $first_name,
           'last_name' => $last_name,
           'status' => Subscriber::STATUS_SUBSCRIBED,
           'source' => Source::WORDPRESS_USER,
-        );
+        ];
 
         if ($subscriber !== false) {
           $data['id'] = $subscriber->id();
@@ -64,7 +64,7 @@ class WP {
           // add subscriber to the WP Users segment
           SubscriberSegment::subscribeToSegments(
             $subscriber,
-            array($wp_segment->id)
+            [$wp_segment->id]
           );
 
           // welcome email
@@ -214,7 +214,7 @@ class WP {
     $wp_segment = Segment::getWPSegment();
 
     $wp_segment->subscribers()
-      ->leftOuterJoin($wpdb->users, array(MP_SUBSCRIBERS_TABLE . '.wp_user_id', '=', 'wu.id'), 'wu')
+      ->leftOuterJoin($wpdb->users, [MP_SUBSCRIBERS_TABLE . '.wp_user_id', '=', 'wu.id'], 'wu')
       ->whereRaw('(wu.id IS NULL OR ' . MP_SUBSCRIBERS_TABLE . '.email = "")')
       ->findResultSet()
       ->set('wp_user_id', null)

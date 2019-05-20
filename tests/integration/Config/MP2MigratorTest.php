@@ -134,14 +134,14 @@ class MP2MigratorTest extends \MailPoetTest {
     $name = 'Test list';
     $description = 'Description of the test list';
     $timestamp = 1486319877;
-    $wpdb->insert($wpdb->prefix . 'wysija_list', array(
+    $wpdb->insert($wpdb->prefix . 'wysija_list', [
       'list_id' => $id,
       'name' => $name,
       'description' => $description,
       'is_enabled' => 1,
       'is_public' => 1,
       'created_at' => $timestamp,
-    ));
+    ]);
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     $table = MP_SEGMENTS_TABLE;
@@ -170,17 +170,17 @@ class MP2MigratorTest extends \MailPoetTest {
     $name = 'Test field';
     $type = 'input';
     $required = 1;
-    $settings = array(
+    $settings = [
       'required' => '1',
       'validate' => 'onlyLetterSp',
-    );
-    $wpdb->insert($wpdb->prefix . 'wysija_custom_field', array(
+    ];
+    $wpdb->insert($wpdb->prefix . 'wysija_custom_field', [
       'id' => $id,
       'name' => $name,
       'type' => $type,
       'required' => $required,
       'settings' => serialize($settings),
-    ));
+    ]);
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
     $table = MP_CUSTOM_FIELDS_TABLE;
     $custom_field = $wpdb->get_row("SELECT * FROM $table WHERE id=$id");
@@ -205,7 +205,7 @@ class MP2MigratorTest extends \MailPoetTest {
     $lastname = 'Test lastname';
     $ip = '127.0.0.1';
     $confirmed_ip = $ip;
-    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+    $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id,
       'wpuser_id' => $wp_id,
       'email' => $email,
@@ -214,8 +214,8 @@ class MP2MigratorTest extends \MailPoetTest {
       'ip' => $ip,
       'confirmed_ip' => $confirmed_ip,
       'status' => '1',
-    ));
-    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+    ]);
+    $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id + 1,
       'wpuser_id' => $wp_id,
       'email' => '1' . $email,
@@ -224,7 +224,7 @@ class MP2MigratorTest extends \MailPoetTest {
       'ip' => $ip,
       'confirmed_ip' => $confirmed_ip,
       'status' => '0',
-    ));
+    ]);
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
     $table = MP_SUBSCRIBERS_TABLE;
     $subscribers = $wpdb->get_results("SELECT * FROM $table WHERE email LIKE '%$email' ORDER BY id");
@@ -247,7 +247,7 @@ class MP2MigratorTest extends \MailPoetTest {
     $lastname = 'Test lastname';
     $ip = '127.0.0.1';
     $confirmed_ip = $ip;
-    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+    $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id,
       'wpuser_id' => $wp_id,
       'email' => $email,
@@ -256,8 +256,8 @@ class MP2MigratorTest extends \MailPoetTest {
       'ip' => $ip,
       'confirmed_ip' => $confirmed_ip,
       'status' => '1',
-    ));
-    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+    ]);
+    $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id + 1,
       'wpuser_id' => $wp_id,
       'email' => '1' . $email,
@@ -266,7 +266,7 @@ class MP2MigratorTest extends \MailPoetTest {
       'ip' => $ip,
       'confirmed_ip' => $confirmed_ip,
       'status' => '0',
-    ));
+    ]);
     $this->invokeMethod($this->MP2Migrator, 'loadDoubleOptinSettings');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
     $table = MP_SUBSCRIBERS_TABLE;
@@ -328,31 +328,31 @@ class MP2MigratorTest extends \MailPoetTest {
     $list_name = 'Test list';
     $description = 'Description of the test list';
     $timestamp = 1486319877;
-    $wpdb->insert($wpdb->prefix . 'wysija_list', array(
+    $wpdb->insert($wpdb->prefix . 'wysija_list', [
       'list_id' => $list_id,
       'name' => $list_name,
       'description' => $description,
       'is_enabled' => 1,
       'is_public' => 1,
       'created_at' => $timestamp,
-    ));
+    ]);
 
     // Insert a user
     $user_id = 999;
     $wp_id = 1;
     $email = 'test@test.com';
-    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+    $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $user_id,
       'wpuser_id' => $wp_id,
       'email' => $email,
-    ));
+    ]);
 
     // Insert a user list
-    $wpdb->insert($wpdb->prefix . 'wysija_user_list', array(
+    $wpdb->insert($wpdb->prefix . 'wysija_user_list', [
       'list_id' => $list_id,
       'user_id' => $user_id,
       'sub_date' => $timestamp,
-    ));
+    ]);
 
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
@@ -388,29 +388,29 @@ class MP2MigratorTest extends \MailPoetTest {
     $cf_name = 'Custom field key';
     $cf_type = 'input';
     $cf_required = 1;
-    $cf_settings = array(
+    $cf_settings = [
       'required' => '1',
       'validate' => 'onlyLetterSp',
-    );
-    $wpdb->insert($wpdb->prefix . 'wysija_custom_field', array(
+    ];
+    $wpdb->insert($wpdb->prefix . 'wysija_custom_field', [
       'id' => $cf_id,
       'name' => $cf_name,
       'type' => $cf_type,
       'required' => $cf_required,
       'settings' => serialize($cf_settings),
-    ));
+    ]);
 
     // Insert a user
     $user_id = 999;
     $wp_id = 1;
     $email = 'test@test.com';
     $custom_field_value = 'Test custom field value';
-    $wpdb->insert($wpdb->prefix . 'wysija_user', array(
+    $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $user_id,
       'wpuser_id' => $wp_id,
       'email' => $email,
       'cf_' . $cf_id => $custom_field_value,
-    ));
+    ]);
 
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
@@ -431,12 +431,12 @@ class MP2MigratorTest extends \MailPoetTest {
     $old_id = 999;
     $new_id = 500;
     $type = 'testMapping';
-    $mapping->create(array(
+    $mapping->create([
       'old_id' => $old_id,
       'type' => $type,
       'new_id' => $new_id,
-    ));
-    $result = $this->invokeMethod($this->MP2Migrator, 'getImportedMapping', array('testMapping'));
+    ]);
+    $result = $this->invokeMethod($this->MP2Migrator, 'getImportedMapping', ['testMapping']);
     expect($result[$old_id])->equals($new_id);
   }
 
@@ -461,43 +461,43 @@ class MP2MigratorTest extends \MailPoetTest {
     $list_id = 2;
 
     // Insert a MP2 list
-    $wpdb->insert($wpdb->prefix . 'wysija_list', array(
+    $wpdb->insert($wpdb->prefix . 'wysija_list', [
       'list_id' => $list_id,
       'name' => 'Test list',
       'description' => 'Test list description',
       'is_enabled' => 1,
       'is_public' => 1,
       'created_at' => 1486319877,
-    ));
+    ]);
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
 
     // Insert a MP2 form
-    $data = array(
+    $data = [
       'version' => 0.4,
-      'settings' => array(
+      'settings' => [
         'on_success' => 'message',
         'success_message' => 'Test message',
-        'lists' => array($list_id),
+        'lists' => [$list_id],
         'lists_selected_by' => 'admin',
-      ),
-      'body' => array(
-        array(
+      ],
+      'body' => [
+        [
           'name' => 'E-mail',
           'type' => 'input',
           'field' => 'email',
-          'params' => array(
+          'params' => [
             'label' => 'E-mail',
             'required' => 1,
-          ),
-        ),
-      ),
-    );
-    $wpdb->insert($wpdb->prefix . 'wysija_form', array(
+          ],
+        ],
+      ],
+    ];
+    $wpdb->insert($wpdb->prefix . 'wysija_form', [
       'form_id' => $id,
       'name' => $name,
       'data' => base64_encode(serialize($data)),
-    ));
+    ]);
     $this->invokeMethod($this->MP2Migrator, 'importForms');
     $table = MP_FORMS_TABLE;
     $form = $wpdb->get_row("SELECT * FROM $table WHERE id=" . 2);
@@ -518,21 +518,21 @@ class MP2MigratorTest extends \MailPoetTest {
   public function testReplaceMP2Shortcodes() {
     $this->initImport();
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[total_subscribers]'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', ['[total_subscribers]']);
     expect($result)->equals('[mailpoet_subscribers_count]');
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('Total: [total_subscribers]'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', ['Total: [total_subscribers]']);
     expect($result)->equals('Total: [mailpoet_subscribers_count]');
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('Total: [total_subscribers] found'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', ['Total: [total_subscribers] found']);
     expect($result)->equals('Total: [mailpoet_subscribers_count] found');
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id="1,2" ]'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', ['[wysija_subscribers_count list_id="1,2" ]']);
     expect($result)->notEquals('mailpoet_subscribers_count segments=1,2');
 
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
-    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id="1,2" ]'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', ['[wysija_subscribers_count list_id="1,2" ]']);
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     expect($result)->equals(sprintf('[mailpoet_subscribers_count segments=%d,%d]', $importedSegmentsMapping[1], $importedSegmentsMapping[2]));
   }
@@ -544,12 +544,12 @@ class MP2MigratorTest extends \MailPoetTest {
   public function testGetMappedSegmentIds() {
     $this->initImport();
 
-    $lists = array(1, 2);
+    $lists = [1, 2];
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
-    $result = $this->invokeMethod($this->MP2Migrator, 'getMappedSegmentIds', array($lists));
-    $expected_lists = array($importedSegmentsMapping[1],$importedSegmentsMapping[2]);
+    $result = $this->invokeMethod($this->MP2Migrator, 'getMappedSegmentIds', [$lists]);
+    $expected_lists = [$importedSegmentsMapping[1],$importedSegmentsMapping[2]];
     expect($result)->equals($expected_lists);
   }
 
@@ -560,30 +560,30 @@ class MP2MigratorTest extends \MailPoetTest {
   public function testReplaceListIds() {
     $this->initImport();
 
-    $lists = array(
-      array(
+    $lists = [
+      [
         'list_id' => 1,
         'name' => 'List 1',
-        ),
-      array(
+        ],
+      [
         'list_id' => 2,
         'name' => 'List 2',
-        ),
-    );
+        ],
+    ];
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
-    $result = $this->invokeMethod($this->MP2Migrator, 'replaceListIds', array($lists));
-    $expected_lists = array(
-      array(
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceListIds', [$lists]);
+    $expected_lists = [
+      [
         'id' => $importedSegmentsMapping[1],
         'name' => 'List 1',
-        ),
-      array(
+        ],
+      [
         'id' => $importedSegmentsMapping[2],
         'name' => 'List 2',
-        ),
-    );
+        ],
+    ];
     expect($result)->equals($expected_lists);
   }
 
@@ -592,28 +592,28 @@ class MP2MigratorTest extends \MailPoetTest {
    *
    */
   public function testMapFrequencyInterval() {
-    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('one_min'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', ['one_min']);
     expect($result)->equals(1);
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('two_min'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', ['two_min']);
     expect($result)->equals(2);
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('five_min'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', ['five_min']);
     expect($result)->equals(5);
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('ten_min'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', ['ten_min']);
     expect($result)->equals(10);
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('fifteen_min'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', ['fifteen_min']);
     expect($result)->equals(15);
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('thirty_min'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', ['thirty_min']);
     expect($result)->equals(15);
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('hourly'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', ['hourly']);
     expect($result)->equals(15);
 
-    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('two_hours'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', ['two_hours']);
     expect($result)->equals(15);
   }
 
@@ -677,7 +677,7 @@ class MP2MigratorTest extends \MailPoetTest {
    *
    */
   private function loadMP2OptionsFixtures() {
-    $wysija_options = array (
+    $wysija_options =  [
       'from_name' => 'Sender',
       'replyto_name' => 'Reply',
       'emails_notified' => 'notification@email.com',
@@ -697,9 +697,9 @@ class MP2MigratorTest extends \MailPoetTest {
       'dkim_domain' => 'localhost',
       'wysija_whats_new' => '2.7.10',
       'ignore_msgs' =>
-      array (
+       [
         'ctaupdate' => 1,
-      ),
+       ],
       'queue_sends_slow' => 1,
       'emails_notified_when_sub' => 1,
       'emails_notified_when_bounce' => false,
@@ -718,10 +718,10 @@ class MP2MigratorTest extends \MailPoetTest {
       'debug_log_manual' => false,
       'company_address' => 'mon adresse postale',
       'commentform_lists' =>
-      array (
+       [
         0 => '15',
         1 => '3',
-      ),
+       ],
       'unsubscribe_page' => '2',
       'confirmation_page' => '4',
       'smtp_host' => 'smtp.mondomaine.com',
@@ -737,25 +737,25 @@ class MP2MigratorTest extends \MailPoetTest {
       'archive_linkname' => '[wysija_archive]',
       'subscribers_count_linkname' => '[wysija_subscribers_count]',
       'archive_lists' =>
-      array (
+       [
         0 => '15',
-      ),
+       ],
       'commentform_linkname' => 'Oui, ajoutez moi à votre liste de diffusion !!!',
       'registerform' => 1,
       'registerform_linkname' => 'Oui, ajoutez moi à votre liste de diffusion 2',
       'registerform_lists' =>
-      array (
+       [
         0 => '12',
         1 => '11',
         2 => '8',
-      ),
+       ],
       'viewinbrowser_linkname' => 'Problèmes d\'affichage ?? [link]Affichez cette newsletter dans votre navigateur.[/link]',
       'unsubscribe_linkname' => 'Se désabonner...',
       'analytics' => '1',
       'subscribers_count_lists' =>
-      array (
+       [
         0 => '15',
-      ),
+       ],
       'premium_key' => '',
       'premium_val' => '',
       'last_save' => 1498810541,
@@ -763,11 +763,11 @@ class MP2MigratorTest extends \MailPoetTest {
       'sending_emails_number' => '25',
       'sending_method' => 'smtp',
       'manage_subscriptions_lists' =>
-      array (
+       [
         0 => '3',
         1 => '12',
         2 => '11',
-      ),
+       ],
       'rolescap---administrator---newsletters' => false,
       'rolescap---editor---newsletters' => false,
       'rolescap---author---newsletters' => false,
@@ -793,7 +793,7 @@ class MP2MigratorTest extends \MailPoetTest {
       'rolescap---author---style_tab' => false,
       'rolescap---contributor---style_tab' => false,
       'rolescap---subscriber---style_tab' => false,
-    );
+    ];
     update_option('wysija', base64_encode(serialize($wysija_options)));
   }
 

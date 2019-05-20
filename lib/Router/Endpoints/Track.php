@@ -19,13 +19,13 @@ class Track {
   const ENDPOINT = 'track';
   const ACTION_CLICK = 'click';
   const ACTION_OPEN = 'open';
-  public $allowed_actions = array(
+  public $allowed_actions = [
     self::ACTION_CLICK,
-    self::ACTION_OPEN
-  );
-  public $permissions = array(
-    'global' => AccessControl::NO_ACCESS_RESTRICTION
-  );
+    self::ACTION_OPEN,
+  ];
+  public $permissions = [
+    'global' => AccessControl::NO_ACCESS_RESTRICTION,
+  ];
 
   /** @var Clicks */
   private $clicks;

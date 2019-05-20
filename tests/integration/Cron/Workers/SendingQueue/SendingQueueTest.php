@@ -73,7 +73,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter_segment->save();
     $this->queue = SendingTask::create();
     $this->queue->newsletter_id = $this->newsletter->id;
-    $this->queue->setSubscribers(array($this->subscriber->id));
+    $this->queue->setSubscribers([$this->subscriber->id]);
     $this->queue->count_total = 1;
     $this->queue->save();
     $this->newsletter_link = NewsletterLink::create();
@@ -122,12 +122,12 @@ class SendingQueueTest extends \MailPoetTest {
   function testItEnforcesExecutionLimitsBeforeQueueProcessing() {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker),
-      array(
+      [
         'processQueue' => Expected::never(),
         'enforceSendingAndExecutionLimits' => Expected::exactly(1, function() {
           throw new \Exception();
-        })
-      ), $this);
+        }),
+      ], $this);
     $sending_queue_worker->__construct($this->sending_error_handler, $this->stats_notifications_worker);
     try {
       $sending_queue_worker->process();
@@ -140,30 +140,30 @@ class SendingQueueTest extends \MailPoetTest {
   function testItEnforcesExecutionLimitsAfterSendingWhenQueueStatusIsNotSetToComplete() {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker),
-      array(
-        'enforceSendingAndExecutionLimits' => Expected::exactly(1)
-      ), $this);
+      [
+        'enforceSendingAndExecutionLimits' => Expected::exactly(1),
+      ], $this);
     $sending_queue_worker->__construct(
       $this->sending_error_handler,
       $this->stats_notifications_worker,
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
-          'sendBulk' => null
-        )
+        [
+          'sendBulk' => null,
+        ]
       )
     );
     $sending_queue_worker->sendNewsletters(
       $this->queue,
-      $prepared_subscribers = array(),
+      $prepared_subscribers = [],
       $prepared_newsletters = [],
       $prepared_subscribers = [],
-      $statistics[] = array(
+      $statistics[] = [
         'newsletter_id' => 1,
         'subscriber_id' => 1,
-        'queue_id' => $this->queue->id
-      )
+        'queue_id' => $this->queue->id,
+      ]
     );
   }
 
@@ -175,43 +175,43 @@ class SendingQueueTest extends \MailPoetTest {
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker),
-      array(
-        'enforceSendingAndExecutionLimits' => Expected::never()
-      ), $this);
+      [
+        'enforceSendingAndExecutionLimits' => Expected::never(),
+      ], $this);
     $sending_queue_worker->__construct(
       $this->sending_error_handler,
       $this->stats_notifications_worker,
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
-          'sendBulk' => null
-        )
+        [
+          'sendBulk' => null,
+        ]
       )
     );
     $sending_queue_worker->sendNewsletters(
       $queue,
-      $prepared_subscribers = array(),
-      $prepared_newsletters = array(),
-      $prepared_subscribers = array(),
-      $statistics[] = array(
+      $prepared_subscribers = [],
+      $prepared_newsletters = [],
+      $prepared_subscribers = [],
+      $statistics[] = [
         'newsletter_id' => 1,
         'subscriber_id' => 1,
-        'queue_id' => $queue->id
-      )
+        'queue_id' => $queue->id,
+      ]
     );
   }
 
   function testItEnforcesExecutionLimitsAfterQueueProcessing() {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker),
-      array(
+      [
         'processQueue' => function() {
           // this function returns a queue object
-          return (object)array('status' => null, 'task_id' => 0);
+          return (object)['status' => null, 'task_id' => 0];
         },
-        'enforceSendingAndExecutionLimits' => Expected::exactly(2)
-      ), $this);
+        'enforceSendingAndExecutionLimits' => Expected::exactly(2),
+      ], $this);
     $sending_queue_worker->__construct($this->sending_error_handler, $this->stats_notifications_worker);
     $sending_queue_worker->process();
   }
@@ -240,13 +240,13 @@ class SendingQueueTest extends \MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
+        [
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extra_params) use ($directUnsubscribeURL) {
             expect(isset($extra_params['unsubscribe_url']))->true();
             expect($extra_params['unsubscribe_url'])->equals($directUnsubscribeURL);
             return true;
-          })
-        ),
+          }),
+        ],
         $this
       )
     );
@@ -262,13 +262,13 @@ class SendingQueueTest extends \MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
+        [
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extra_params) use ($trackedUnsubscribeURL) {
             expect(isset($extra_params['unsubscribe_url']))->true();
             expect($extra_params['unsubscribe_url'])->equals($trackedUnsubscribeURL);
             return true;
-          })
-        ),
+          }),
+        ],
         $this
       )
     );
@@ -282,14 +282,14 @@ class SendingQueueTest extends \MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
+        [
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extra_params) {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
             return true;
-          })
-        ),
+          }),
+        ],
         $this
       )
     );
@@ -305,9 +305,9 @@ class SendingQueueTest extends \MailPoetTest {
 
     // queue subscriber processed/to process count is updated
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->equals(array());
+      ->equals([]);
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals(array($this->subscriber->id));
+      ->equals([$this->subscriber->id]);
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -327,7 +327,7 @@ class SendingQueueTest extends \MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
+        [
           'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
             expect(!empty($newsletter[0]['body']['html']))->true();
@@ -336,8 +336,8 @@ class SendingQueueTest extends \MailPoetTest {
           }),
           'getProcessingMethod' => Expected::exactly(1, function() {
             return 'bulk';
-          })
-        ),
+          }),
+        ],
         $this
       )
     );
@@ -353,9 +353,9 @@ class SendingQueueTest extends \MailPoetTest {
 
     // queue subscriber processed/to process count is updated
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->equals(array());
+      ->equals([]);
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals(array($this->subscriber->id));
+      ->equals([$this->subscriber->id]);
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -375,14 +375,14 @@ class SendingQueueTest extends \MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
+        [
           'send' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
             return true;
-          })
-        ),
+          }),
+        ],
         $this
       )
     );
@@ -399,9 +399,9 @@ class SendingQueueTest extends \MailPoetTest {
 
     // queue subscriber processed/to process count is updated
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->equals(array());
+      ->equals([]);
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals(array($this->subscriber->id));
+      ->equals([$this->subscriber->id]);
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -428,7 +428,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sending_error_handler,
       $this->stats_notifications_worker,
       $timer = false,
-      Stub::makeEmpty(new MailerTask(), array(), $this)
+      Stub::makeEmpty(new MailerTask(), [], $this)
     );
     $sending_queue_worker->process();
 
@@ -446,14 +446,14 @@ class SendingQueueTest extends \MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
+        [
           'send' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
             return true;
-          })
-        ),
+          }),
+        ],
         $this
       )
     );
@@ -469,9 +469,9 @@ class SendingQueueTest extends \MailPoetTest {
 
     // queue subscriber processed/to process count is updated
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->equals(array());
+      ->equals([]);
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals(array($this->subscriber->id));
+      ->equals([$this->subscriber->id]);
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -486,20 +486,20 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItRemovesNonexistentSubscribersFromProcessingList() {
     $queue = $this->queue;
-    $queue->setSubscribers(array(
+    $queue->setSubscribers([
       $this->subscriber->id(),
-      12345645454
-    ));
+      12345645454,
+    ]);
     $queue->count_total = 2;
     $queue->save();
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array(
+      [
         'send' => Expected::exactly(1, function() {
           return true;
-        })
-      ),
+        }),
+      ],
       $this
     );
     $sending_queue_worker->process();
@@ -507,9 +507,9 @@ class SendingQueueTest extends \MailPoetTest {
     $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     // queue subscriber processed/to process count is updated
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->equals(array());
+      ->equals([]);
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals(array($this->subscriber->id));
+      ->equals([$this->subscriber->id]);
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
     expect($updated_queue->count_to_process)->equals(0);
@@ -521,25 +521,25 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItUpdatesQueueSubscriberCountWhenNoneOfSubscribersExist() {
     $queue = $this->queue;
-    $queue->setSubscribers(array(
+    $queue->setSubscribers([
       123,
-      456
-    ));
+      456,
+    ]);
     $queue->count_total = 2;
     $queue->save();
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => true)
+      ['send' => true]
     );
     $sending_queue_worker->process();
 
     $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     // queue subscriber processed/to process count is updated
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->equals(array());
+      ->equals([]);
     expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals(array());
+      ->equals([]);
     expect($updated_queue->count_total)->equals(0);
     expect($updated_queue->count_processed)->equals(0);
     expect($updated_queue->count_to_process)->equals(0);
@@ -549,7 +549,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => true)
+      ['send' => true]
     );
 
     // newsletter is sent to existing subscriber
@@ -572,7 +572,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => true)
+      ['send' => true]
     );
 
     // newsletter is not sent to globally unsubscribed subscriber
@@ -588,7 +588,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => true)
+      ['send' => true]
     );
 
     // newsletter is not sent to subscriber unsubscribed from segment
@@ -604,7 +604,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => true)
+      ['send' => true]
     );
 
     // newsletter is not sent to inactive subscriber
@@ -617,9 +617,9 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
-    $sending_task = Mock::double(SendingTask::create(), array(
-      'updateProcessedSubscribers' => false
-    ));
+    $sending_task = Mock::double(SendingTask::create(), [
+      'updateProcessedSubscribers' => false,
+    ]);
     $sending_task->id = 100;
     $sending_queue_worker = Stub::make(new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker));
     $sending_queue_worker->__construct(
@@ -628,9 +628,9 @@ class SendingQueueTest extends \MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
-          'sendBulk' => true
-        )
+        [
+          'sendBulk' => true,
+        ]
       )
     );
     try {
@@ -648,10 +648,10 @@ class SendingQueueTest extends \MailPoetTest {
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
     expect($mailer_log['error'])->equals(
-      array(
+      [
         'operation' => 'processed_list_update',
-        'error_message' => 'QUEUE-100-PROCESSED-LIST-UPDATE'
-      )
+        'error_message' => 'QUEUE-100-PROCESSED-LIST-UPDATE',
+      ]
     );
   }
 
@@ -662,9 +662,9 @@ class SendingQueueTest extends \MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array(
-          'send' => Expected::once()
-        ),
+        [
+          'send' => Expected::once(),
+        ],
         $this
       )
     );

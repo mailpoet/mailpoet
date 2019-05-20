@@ -21,23 +21,23 @@ use MailPoet\WooCommerce\Helper as WCHelper;
 class NewsletterTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->newsletter = Newsletter::createOrUpdate(array(
+    $this->newsletter = Newsletter::createOrUpdate([
       'subject' => 'My Standard Newsletter',
       'preheader' => 'Pre Header',
-      'type' => Newsletter::TYPE_STANDARD
-    ));
+      'type' => Newsletter::TYPE_STANDARD,
+    ]);
 
-    $this->segment_1 = Segment::createOrUpdate(array(
-      'name' => 'Segment 1'
-    ));
+    $this->segment_1 = Segment::createOrUpdate([
+      'name' => 'Segment 1',
+    ]);
     $association = NewsletterSegment::create();
     $association->newsletter_id = $this->newsletter->id;
     $association->segment_id = $this->segment_1->id;
     $association->save();
 
-    $this->segment_2 = Segment::createOrUpdate(array(
-      'name' => 'Segment 2'
-    ));
+    $this->segment_2 = Segment::createOrUpdate([
+      'name' => 'Segment 2',
+    ]);
     $association = NewsletterSegment::create();
     $association->newsletter_id = $this->newsletter->id;
     $association->segment_id = $this->segment_2->id;
@@ -144,11 +144,11 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter = $this->newsletter;
     $sending_queue = $this->sending_queue;
 
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'email' => 'john.doe@mailpoet.com',
       'first_name' => 'John',
-      'last_name' => 'Doe'
-    ));
+      'last_name' => 'Doe',
+    ]);
 
     $opens = StatisticsOpens::create();
     $opens->subscriber_id = $subscriber->id;
@@ -179,11 +179,11 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItCanCreateOrUpdate() {
     $is_created = Newsletter::createOrUpdate(
-      array(
+      [
         'subject' => 'new newsletter',
         'type' => Newsletter::TYPE_STANDARD,
-        'body' => 'body'
-      ));
+        'body' => 'body',
+      ]);
     expect($is_created->id() > 0)->true();
     expect($is_created->getErrors())->false();
 
@@ -192,10 +192,10 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter->subject)->equals('new newsletter');
 
     $is_updated = Newsletter::createOrUpdate(
-      array(
+      [
         'id' => $newsletter->id,
-        'subject' => 'updated newsletter'
-      ));
+        'subject' => 'updated newsletter',
+      ]);
     $newsletter = Newsletter::findOne($newsletter->id);
     expect($newsletter->subject)->equals('updated newsletter');
   }
@@ -212,11 +212,11 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletters)->count(1);
 
     // filter by segment
-    $newsletters = Newsletter::filter('filterBy', array(
-      'filter' => array(
-        'segment' => $this->segment_1->id
-      )
-    ))->findArray();
+    $newsletters = Newsletter::filter('filterBy', [
+      'filter' => [
+        'segment' => $this->segment_1->id,
+      ],
+    ])->findArray();
 
     expect($newsletters)->count(1);
     expect($newsletters[0]['subject'])->equals($this->newsletter->subject);
@@ -224,60 +224,60 @@ class NewsletterTest extends \MailPoetTest {
     // remove all segment relations to newsletters
     NewsletterSegment::deleteMany();
 
-    $newsletters = Newsletter::filter('filterBy', array(
-      'filter' => array(
-        'segment' => $this->segment_1->id
-      )))->findArray();
+    $newsletters = Newsletter::filter('filterBy', [
+      'filter' => [
+        'segment' => $this->segment_1->id,
+      ]])->findArray();
 
     expect($newsletters)->isEmpty();
   }
 
   function testItCanBeGrouped() {
-    $newsletters = Newsletter::filter('groupBy', array(
-      'group' => 'all'
-    ))->findArray();
+    $newsletters = Newsletter::filter('groupBy', [
+      'group' => 'all',
+    ])->findArray();
     expect($newsletters)->count(1);
 
-    $newsletters = Newsletter::filter('groupBy', array(
-      'group' => 'trash'
-    ))->findArray();
+    $newsletters = Newsletter::filter('groupBy', [
+      'group' => 'trash',
+    ])->findArray();
     expect($newsletters)->count(0);
 
     $this->newsletter->trash();
-    $newsletters = Newsletter::filter('groupBy', array(
-      'group' => 'trash'
-    ))->findArray();
+    $newsletters = Newsletter::filter('groupBy', [
+      'group' => 'trash',
+    ])->findArray();
     expect($newsletters)->count(1);
 
-    $newsletters = Newsletter::filter('groupBy', array(
-      'group' => 'all'
-    ))->findArray();
+    $newsletters = Newsletter::filter('groupBy', [
+      'group' => 'all',
+    ])->findArray();
     expect($newsletters)->count(0);
 
     $this->newsletter->restore();
-    $newsletters = Newsletter::filter('groupBy', array(
-      'group' => 'all'
-    ))->findArray();
+    $newsletters = Newsletter::filter('groupBy', [
+      'group' => 'all',
+    ])->findArray();
     expect($newsletters)->count(1);
   }
 
   function testItHasSearchFilter() {
     Newsletter::createOrUpdate(
-      array(
+      [
         'subject' => 'search for "pineapple"',
         'type' => Newsletter::TYPE_STANDARD,
-        'body' => 'body'
-      ));
+        'body' => 'body',
+      ]);
     $newsletter = Newsletter::filter('search', 'pineapple')
       ->findOne();
     expect($newsletter->subject)->contains('pineapple');
   }
 
   function testItCanHaveOptions() {
-    $newsletter_options = array(
+    $newsletter_options = [
       'name' => 'Event',
       'newsletter_type' => Newsletter::TYPE_WELCOME,
-    );
+    ];
     $option_field = NewsletterOptionField::create();
     $option_field->hydrate($newsletter_options);
     $option_field->save();
@@ -295,19 +295,19 @@ class NewsletterTest extends \MailPoetTest {
     // clear the DB
     $this->_after();
 
-    $types = array(
+    $types = [
       Newsletter::TYPE_STANDARD,
-      Newsletter::TYPE_NOTIFICATION_HISTORY
-    );
-    $newsletters = array();
-    $sending_queues[] = array();
+      Newsletter::TYPE_NOTIFICATION_HISTORY,
+    ];
+    $newsletters = [];
+    $sending_queues[] = [];
     for ($i = 0; $i < count($types); $i++) {
       $newsletters[$i] = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'My Standard Newsletter',
           'preheader' => 'Pre Header',
-          'type' => $types[$i]
-        )
+          'type' => $types[$i],
+        ]
       );
       $sending_queues[$i] = SendingTask::create();
       $sending_queues[$i]->newsletter_id = $newsletters[$i]->id;
@@ -323,7 +323,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(Newsletter::findMany())->count(2);
 
     // return archives in segment 123
-    $results = Newsletter::getArchives(array(123));
+    $results = Newsletter::getArchives([123]);
     expect($results)->count(1);
     expect($results[0]->id)->equals($newsletters[1]->id);
     expect($results[0]->type)->equals(Newsletter::TYPE_NOTIFICATION_HISTORY);
@@ -333,24 +333,24 @@ class NewsletterTest extends \MailPoetTest {
     // clear the DB
     $this->_after();
 
-    $types = array(
+    $types = [
       Newsletter::TYPE_STANDARD,
       Newsletter::TYPE_STANDARD, // should be returned
       Newsletter::TYPE_WELCOME,
       Newsletter::TYPE_AUTOMATIC,
       Newsletter::TYPE_NOTIFICATION,
       Newsletter::TYPE_NOTIFICATION_HISTORY, // should be returned
-      Newsletter::TYPE_NOTIFICATION_HISTORY
-    );
-    $newsletters = array();
-    $sending_queues[] = array();
+      Newsletter::TYPE_NOTIFICATION_HISTORY,
+    ];
+    $newsletters = [];
+    $sending_queues[] = [];
     for ($i = 0; $i < count($types); $i++) {
       $newsletters[$i] = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'My Standard Newsletter',
           'preheader' => 'Pre Header',
-          'type' => $types[$i]
-        )
+          'type' => $types[$i],
+        ]
       );
       $sending_queues[$i] = SendingTask::create();
       $sending_queues[$i]->newsletter_id = $newsletters[$i]->id;
@@ -411,21 +411,21 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function testItCanBulkRestoreNewsletters() {
-    $statuses = array(
+    $statuses = [
       Newsletter::STATUS_DRAFT,
       Newsletter::STATUS_SENT,
-      Newsletter::STATUS_SENDING
-    );
+      Newsletter::STATUS_SENDING,
+    ];
 
-    $newsletters = array();
+    $newsletters = [];
     for ($i = 0; $i < count($statuses); $i++) {
       $newsletters[$i] = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'Test',
           'preheader' => 'Some text',
           'type' => Newsletter::TYPE_STANDARD,
-          'status' => $statuses[$i]
-        )
+          'status' => $statuses[$i],
+        ]
       );
     }
 
@@ -465,11 +465,11 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
           'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
-          'parent_id' => $parent_newsletter->id
-        )
+          'parent_id' => $parent_newsletter->id,
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -514,11 +514,11 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
           'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
-          'parent_id' => $parent_newsletter->id
-        )
+          'parent_id' => $parent_newsletter->id,
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -564,12 +564,12 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
           'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
           'parent_id' => $parent_newsletter->id,
-          'deleted_at' => date('Y-m-d H:i:s')
-        )
+          'deleted_at' => date('Y-m-d H:i:s'),
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -591,10 +591,10 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
-          'type' => Newsletter::TYPE_STANDARD
-        )
+          'type' => Newsletter::TYPE_STANDARD,
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -614,11 +614,11 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
           'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
           'parent_id' => $this->newsletter->id,
-        )
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -638,11 +638,11 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
           'type' => Newsletter::TYPE_STANDARD,
-          'deleted_at' => date('Y-m-d H:i:s')
-        )
+          'deleted_at' => date('Y-m-d H:i:s'),
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -663,12 +663,12 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
           'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
           'parent_id' => $this->newsletter->id,
-          'deleted_at' => date('Y-m-d H:i:s')
-        )
+          'deleted_at' => date('Y-m-d H:i:s'),
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -689,10 +689,10 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple newsletters, sending queues and newsletter segments
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
-          'type' => Newsletter::TYPE_STANDARD
-        )
+          'type' => Newsletter::TYPE_STANDARD,
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -720,11 +720,11 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple children (post notification history) newsletters, sending queues and newsletter segments
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
-        array(
+        [
           'subject' => 'test',
           'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
-          'parent_id' => $this->newsletter->id
-        )
+          'parent_id' => $this->newsletter->id,
+        ]
       );
       $sending_queue = SendingTask::create();
       $sending_queue->newsletter_id = $newsletter->id;
@@ -751,7 +751,7 @@ class NewsletterTest extends \MailPoetTest {
     $original_newsletter->status = Newsletter::STATUS_SENT;
     $original_newsletter->sent_at = $original_newsletter->deleted_at = $original_newsletter->created_at = $original_newsletter->updated_at = date( '2000-m-d H:i:s');
     $original_newsletter->save();
-    $data = array('subject' => 'duplicate newsletter');
+    $data = ['subject' => 'duplicate newsletter'];
     $duplicate_newsletter = $this->newsletter->duplicate($data);
     $duplicate_newsletter = Newsletter::findOne($duplicate_newsletter->id);
     // hash is different
@@ -772,56 +772,56 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItCanQueryAutomaticEmailsByGroup() {
     $newsletter_1 = Newsletter::createOrUpdate(
-      array(
+      [
         'subject' => 'WooCommerce',
         'preheader' => 'Pre Header',
-        'type' => Newsletter::TYPE_AUTOMATIC
-      )
+        'type' => Newsletter::TYPE_AUTOMATIC,
+      ]
     );
     $newsletter_2 = Newsletter::createOrUpdate(
-      array(
+      [
         'subject' => 'Unicrons',
         'preheader' => 'Pre Header',
-        'type' => Newsletter::TYPE_AUTOMATIC
-      )
+        'type' => Newsletter::TYPE_AUTOMATIC,
+      ]
     );
     $newsletter_option_field = NewsletterOptionField::create();
     $newsletter_option_field->hydrate(
-      array(
+      [
         'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
-        'name' => 'group'
-      )
+        'name' => 'group',
+      ]
     );
     $newsletter_option_field->save();
     $newsletter_option_1 = NewsletterOption::create();
     $newsletter_option_1->hydrate(
-      array(
+      [
         'newsletter_id' => $newsletter_1->id,
         'option_field_id' => $newsletter_option_field->id,
-        'value' => 'woocommerce'
-      )
+        'value' => 'woocommerce',
+      ]
     );
     $newsletter_option_1->save();
     $newsletter_option_2 = NewsletterOption::create();
     $newsletter_option_2->hydrate(
-      array(
+      [
         'newsletter_id' => $newsletter_2->id,
         'option_field_id' => $newsletter_option_field->id,
-        'value' => 'unicorns'
-      )
+        'value' => 'unicorns',
+      ]
     );
     $newsletter_option_2->save();
-    $listings_data = array(
-      'params' => array(
-        'type' => Newsletter::TYPE_AUTOMATIC
-      ),
+    $listings_data = [
+      'params' => [
+        'type' => Newsletter::TYPE_AUTOMATIC,
+      ],
       'sort_by' => 'updated_at',
       'sort_order' => 'desc',
       'offset' => 0,
       'limit' => 20,
       'group' => 'all',
-      'search' => ''
-    );
+      'search' => '',
+    ];
 
     // get "woocommerce" emails
     $listings_data['params']['group'] = 'woocommerce';
@@ -845,28 +845,28 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItGetsAndDecodesNewsletterOptionMetaField() {
     $newsletter = Newsletter::createOrUpdate(
-      array(
+      [
         'subject' => 'Test Option Meta Field',
         'preheader' => 'Pre Header',
-        'type' => Newsletter::TYPE_AUTOMATIC
-      )
+        'type' => Newsletter::TYPE_AUTOMATIC,
+      ]
     );
     $newsletter_option_field = NewsletterOptionField::create();
     $newsletter_option_field->hydrate(
-      array(
+      [
         'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
-        'name' => 'meta'
-      )
+        'name' => 'meta',
+      ]
     );
     $newsletter_option_field->save();
     $newsletter_option = NewsletterOption::create();
-    $meta = array('some' => 'value');
+    $meta = ['some' => 'value'];
     $newsletter_option->hydrate(
-      array(
+      [
         'newsletter_id' => $newsletter->id,
         'option_field_id' => $newsletter_option_field->id,
-        'value' => json_encode($meta)
-      )
+        'value' => json_encode($meta),
+      ]
     );
     $newsletter_option->save();
 
@@ -881,14 +881,14 @@ class NewsletterTest extends \MailPoetTest {
   function testPausesTaskWhenNewsletterWithActivationIsDisabled() {
     $newsletters_with_activation = [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_WELCOME, Newsletter::TYPE_AUTOMATIC];
     foreach ($newsletters_with_activation as $type) {
-      $newsletter = Newsletter::createOrUpdate(array(
-        'type' => $type
-      ));
-      $task = ScheduledTask::createOrUpdate(array('status' => ScheduledTask::STATUS_SCHEDULED));
-      SendingQueue::createOrUpdate(array(
+      $newsletter = Newsletter::createOrUpdate([
+        'type' => $type,
+      ]);
+      $task = ScheduledTask::createOrUpdate(['status' => ScheduledTask::STATUS_SCHEDULED]);
+      SendingQueue::createOrUpdate([
         'newsletter_id' => $newsletter->id(),
         'task_id' => $task->id(),
-      ));
+      ]);
       $newsletter->setStatus(Newsletter::STATUS_DRAFT);
       $task_found = ScheduledTask::findOne($task->id());
       expect($task_found->status)->equals(ScheduledTask::STATUS_PAUSED);
@@ -898,17 +898,17 @@ class NewsletterTest extends \MailPoetTest {
   function testUnpausesTaskWhenNewsletterWithActivationIsEnabled() {
     $newsletters_with_activation = [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_WELCOME, Newsletter::TYPE_AUTOMATIC];
     foreach ($newsletters_with_activation as $type) {
-      $newsletter = Newsletter::createOrUpdate(array(
-        'type' => $type
-      ));
-      $task = ScheduledTask::createOrUpdate(array(
+      $newsletter = Newsletter::createOrUpdate([
+        'type' => $type,
+      ]);
+      $task = ScheduledTask::createOrUpdate([
         'status' => ScheduledTask::STATUS_PAUSED,
         'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
-      ));
-      SendingQueue::createOrUpdate(array(
+      ]);
+      SendingQueue::createOrUpdate([
         'newsletter_id' => $newsletter->id(),
         'task_id' => $task->id(),
-      ));
+      ]);
       $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
       $task_found = ScheduledTask::findOne($task->id());
       expect($task_found->status)->equals(ScheduledTask::STATUS_SCHEDULED);

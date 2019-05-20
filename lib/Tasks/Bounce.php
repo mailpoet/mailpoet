@@ -17,12 +17,12 @@ class Bounce {
        FROM ' . MP_SUBSCRIBERS_TABLE . ' s
        WHERE s.`deleted_at` IS NULL
        AND s.`status` IN (?, ?)',
-      array(
+      [
         $task->id,
         ScheduledTaskSubscriber::STATUS_UNPROCESSED,
         Subscriber::STATUS_SUBSCRIBED,
-        Subscriber::STATUS_UNCONFIRMED
-      )
+        Subscriber::STATUS_UNCONFIRMED,
+      ]
     );
   }
 }

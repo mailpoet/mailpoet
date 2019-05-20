@@ -44,7 +44,7 @@ class StructureTransformer {
         $image = $item->tag === 'img' ? $item : $item->query('img')[0];
         $width = $image->getAttribute('width');
         $height = $image->getAttribute('height');
-        return array(
+        return [
           'type' => 'image',
           'link' => $item->getAttribute('href') ?: '',
           'src' => $image->getAttribute('src'),
@@ -52,17 +52,17 @@ class StructureTransformer {
           'fullWidth' => $image_full_width,
           'width' => $width === null ? 'auto' : $width,
           'height' => $height === null ? 'auto' : $height,
-          'styles' => array(
-            'block' => array(
+          'styles' => [
+            'block' => [
               'textAlign' => $this->getImageAlignment($image),
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
       } else {
-        return array(
+        return [
           'type' => 'text',
-          'text' => $item->toString()
-        );
+          'text' => $item->toString(),
+        ];
       }
 
     }, $children);
@@ -101,7 +101,7 @@ class StructureTransformer {
    * E.g. 2 adjacent text blocks may be combined into one.
    */
   private function mergeNeighboringBlocks(array $structure) {
-    $updated_structure = array();
+    $updated_structure = [];
     $text_accumulator = '';
     foreach ($structure as $item) {
       if ($item['type'] === 'text') {
@@ -109,10 +109,10 @@ class StructureTransformer {
       }
       if ($item['type'] !== 'text') {
         if (!empty($text_accumulator)) {
-          $updated_structure[] = array(
+          $updated_structure[] = [
             'type' => 'text',
             'text' => trim($text_accumulator),
-          );
+          ];
           $text_accumulator = '';
         }
         $updated_structure[] = $item;
@@ -120,10 +120,10 @@ class StructureTransformer {
     }
 
     if (!empty($text_accumulator)) {
-      $updated_structure[] = array(
+      $updated_structure[] = [
         'type' => 'text',
         'text' => trim($text_accumulator),
-      );
+      ];
     }
 
     return $updated_structure;

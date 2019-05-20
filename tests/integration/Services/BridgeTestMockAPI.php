@@ -43,18 +43,18 @@ class BridgeTestMockAPI {
       case 'expiring':
         // a special case of a valid key
         $code = 200;
-        $body = array(
+        $body = [
           'subscriber_limit' => 10000,
           'expire_at' => Carbon::createFromTimestamp(current_time('timestamp'))
-            ->addMonth()->format('c')
-        );
+            ->addMonth()->format('c'),
+        ];
         break;
       default:
         $body = null;
         break;
     }
 
-    return array('code' => $code, 'data' => $body);
+    return ['code' => $code, 'data' => $body];
   }
 
   private function processPremiumResponse($code) {
@@ -62,16 +62,16 @@ class BridgeTestMockAPI {
       case 'expiring':
         // a special case of a valid key
         $code = 200;
-        $body = array(
+        $body = [
           'expire_at' => Carbon::createFromTimestamp(current_time('timestamp'))
-            ->addMonth()->format('c')
-        );
+            ->addMonth()->format('c'),
+        ];
         break;
       default:
         $body = null;
         break;
     }
 
-    return array('code' => $code, 'data' => $body);
+    return ['code' => $code, 'data' => $body];
   }
 }

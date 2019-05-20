@@ -6,18 +6,18 @@ use MailPoet\Models\SubscriberCustomField;
 class SubscriberCustomFieldTest extends \MailPoetTest {
   function __construct() {
     parent::__construct();
-    $this->data = array(
-      array(
+    $this->data = [
+      [
         'custom_field_id' => 10,
         'subscriber_id' => 12,
-        'value' => 'Test 1'
-      ),
-      array(
+        'value' => 'Test 1',
+      ],
+      [
         'custom_field_id' => 10,
         'subscriber_id' => 13,
-        'value' => 'Test 2'
-      )
-    );
+        'value' => 'Test 2',
+      ],
+    ];
   }
 
   function testItCanBeCreated() {
@@ -55,10 +55,10 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
     $data = array_map('array_values', $this->data);
     SubscriberCustomField::createMultiple($data);
     SubscriberCustomField::deleteManySubscriberRelations(
-      array(
+      [
         $this->data[0]['subscriber_id'],
-        $this->data[1]['subscriber_id']
-      )
+        $this->data[1]['subscriber_id'],
+      ]
     );
     $records = SubscriberCustomField::findArray();
     expect($records)->isEmpty();
@@ -67,7 +67,7 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
   function testItCanDeleteSubscriberRelations() {
     $data = array_map('array_values', $this->data);
     SubscriberCustomField::createMultiple($data);
-    $subscriber = (object)array('id' => $this->data[0]['subscriber_id']);
+    $subscriber = (object)['id' => $this->data[0]['subscriber_id']];
     SubscriberCustomField::deleteSubscriberRelations($subscriber);
     $records = SubscriberCustomField::findArray();
     expect($records)->count(1);

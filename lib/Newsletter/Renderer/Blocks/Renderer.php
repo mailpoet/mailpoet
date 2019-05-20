@@ -13,7 +13,7 @@ class Renderer {
 
   function __construct(array $newsletter) {
     $this->newsletter = $newsletter;
-    $this->posts = array();
+    $this->posts = [];
     $newer_than_timestamp = false;
     $newsletter_id = false;
     if ($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
@@ -86,9 +86,9 @@ class Renderer {
   }
 
   function processAutomatedLatestContent($args, $column_base_width) {
-    $transformed_posts = array(
-      'blocks' => $this->automatedLatestContentTransformedPosts($args)
-    );
+    $transformed_posts = [
+      'blocks' => $this->automatedLatestContentTransformedPosts($args),
+    ];
     $transformed_posts = StylesHelper::applyTextAlignment($transformed_posts);
     $rendered_posts = $this->renderBlocksInColumn($transformed_posts, $column_base_width);
     return $rendered_posts;

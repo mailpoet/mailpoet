@@ -2,214 +2,214 @@
 namespace MailPoet\Settings;
 
 class Hosts {
-  private static $_smtp = array(
-    'AmazonSES' => array(
+  private static $_smtp = [
+    'AmazonSES' => [
       'name' => 'Amazon SES',
       'emails' => 100,
       'interval' => 5,
-      'fields' => array(
+      'fields' => [
         'region',
         'access_key',
-        'secret_key'
-      ),
-      'regions' => array(
+        'secret_key',
+      ],
+      'regions' => [
         'US East (N. Virginia)' => 'us-east-1',
         'US West (Oregon)' => 'us-west-2',
-        'EU (Ireland)' => 'eu-west-1'
-      )
-    ),
-    'SendGrid' => array(
+        'EU (Ireland)' => 'eu-west-1',
+      ],
+    ],
+    'SendGrid' => [
       'name' => 'SendGrid',
       'emails' => 100,
       'interval' => 5,
-      'fields' => array(
-        'api_key'
-      )
-    )
-  );
+      'fields' => [
+        'api_key',
+      ],
+    ],
+  ];
 
-  private static $_web = array(
-    '1and1' => array(
+  private static $_web = [
+    '1and1' => [
         'name' => '1and1',
         'emails' => 30,
         'interval' => 5,
-    ),
-    'bluehost' => array(
+    ],
+    'bluehost' => [
         'name' => 'BlueHost',
         'emails' => 70,
         'interval' => 30,
-    ),
-    'df' => array(
+    ],
+    'df' => [
         'name' => 'Df.eu',
         'emails' => 115,
         'interval' => 15,
-    ),
-    'dreamhost' => array(
+    ],
+    'dreamhost' => [
         'name' => 'DreamHost',
         'emails' => 25,
         'interval' => 15,
-    ),
-    'free' => array(
+    ],
+    'free' => [
         'name' => 'Free.fr',
         'emails' => 18,
         'interval' => 15,
-    ),
-    'froghost' => array(
+    ],
+    'froghost' => [
         'name' => 'FrogHost.com',
         'emails' => 490,
         'interval' => 30,
-    ),
-    'godaddy' => array(
+    ],
+    'godaddy' => [
         'name' => 'GoDaddy',
         'emails' => 5,
         'interval' => 30,
-    ),
-    'goneo' => array(
+    ],
+    'goneo' => [
         'name' => 'Goneo',
         'emails' => 60,
         'interval' => 15,
-    ),
-    'googleapps' => array(
+    ],
+    'googleapps' => [
         'name' => 'Google Apps',
         'emails' => 20,
         'interval' => 60,
-    ),
-    'greengeeks' => array(
+    ],
+    'greengeeks' => [
         'name' => 'GreenGeeks',
         'emails' => 45,
         'interval' => 30,
-    ),
-    'hawkhost' => array(
+    ],
+    'hawkhost' => [
         'name' => 'Hawkhost.com',
         'emails' => 500,
         'interval' => 15,
-    ),
-    'hivetec' => array(
+    ],
+    'hivetec' => [
         'name' => 'Hivetec',
         'emails' => 20,
         'interval' => 15,
-    ),
-    'hostgator' => array(
+    ],
+    'hostgator' => [
         'name' => 'Host Gator',
         'emails' => 115,
         'interval' => 15,
-    ),
-    'hosting2go' => array(
+    ],
+    'hosting2go' => [
         'name' => 'Hosting 2GO',
         'emails' => 45,
         'interval' => 15,
-    ),
-    'hostmonster' => array(
+    ],
+    'hostmonster' => [
         'name' => 'Host Monster',
         'emails' => 115,
         'interval' => 15,
-    ),
-    'infomaniak' => array(
+    ],
+    'infomaniak' => [
         'name' => 'Infomaniak',
         'emails' => 20,
         'interval' => 15,
-    ),
-    'justhost' => array(
+    ],
+    'justhost' => [
         'name' => 'JustHost',
         'emails' => 70,
         'interval' => 30,
-    ),
-    'laughingsquid' => array(
+    ],
+    'laughingsquid' => [
         'name' => 'Laughing Squid',
         'emails' => 20,
         'interval' => 15,
-    ),
-    'lunarpages' => array(
+    ],
+    'lunarpages' => [
         'name' => 'Lunarpages',
         'emails' => 19,
         'interval' => 15,
-    ),
-    'mediatemple' => array(
+    ],
+    'mediatemple' => [
         'name' => 'Media Temple',
         'emails' => 115,
         'interval' => 15,
-    ),
-    'netfirms' => array(
+    ],
+    'netfirms' => [
         'name' => 'Netfirms',
         'emails' => 200,
         'interval' => 60,
-    ),
-    'netissime' => array(
+    ],
+    'netissime' => [
         'name' => 'Netissime',
         'emails' => 100,
         'interval' => 15,
-    ),
-    'one' => array(
+    ],
+    'one' => [
         'name' => 'One.com',
         'emails' => 100,
         'interval' => 15,
-    ),
-    'ovh' => array(
+    ],
+    'ovh' => [
         'name' => 'OVH',
         'emails' => 50,
         'interval' => 15,
-    ),
-    'phpnet' => array(
+    ],
+    'phpnet' => [
         'name' => 'PHPNet',
         'emails' => 15,
         'interval' => 15,
-    ),
-    'planethoster' => array(
+    ],
+    'planethoster' => [
         'name' => 'PlanetHoster',
         'emails' => 90,
         'interval' => 30,
-    ),
-    'rochen' => array(
+    ],
+    'rochen' => [
         'name' => 'Rochen',
         'emails' => 40,
         'interval' => 15,
-    ),
-    'site5' => array(
+    ],
+    'site5' => [
         'name' => 'Site5',
         'emails' => 40,
         'interval' => 15,
-    ),
-    'siteground' => array(
+    ],
+    'siteground' => [
         'name' => 'Siteground',
         'emails' => 95,
         'interval' => 15,
-    ),
-    'synthesis' => array(
+    ],
+    'synthesis' => [
         'name' => 'Synthesis',
         'emails' => 250,
         'interval' => 15,
-    ),
-    'techark' => array(
+    ],
+    'techark' => [
         'name' => 'Techark',
         'emails' => 60,
         'interval' => 15,
-    ),
-    'vexxhost' => array(
+    ],
+    'vexxhost' => [
         'name' => 'Vexxhost',
         'emails' => 60,
         'interval' => 15,
-    ),
-    'vps' => array(
+    ],
+    'vps' => [
         'name' => 'VPS.net',
         'emails' => 90,
         'interval' => 30,
-    ),
-    'webcity' => array(
+    ],
+    'webcity' => [
         'name' => 'Webcity',
         'emails' => 19,
         'interval' => 15,
-    ),
-    'westhost' => array(
+    ],
+    'westhost' => [
         'name' => 'Westhost',
         'emails' => 225,
         'interval' => 15,
-    ),
-    'wpwebhost' => array(
+    ],
+    'wpwebhost' => [
         'name' => 'Wpwebhost.com',
         'emails' => 95,
         'interval' => 30,
-    )
-  );
+    ],
+  ];
 
   static function getWebHosts() {
     return static::$_web;

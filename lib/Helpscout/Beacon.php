@@ -22,7 +22,7 @@ class Beacon {
     $current_theme = WPFunctions::get()->wpGetTheme();
     $current_user = WPFunctions::get()->wpGetCurrentUser();
     $premium_key = $settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $settings->get(Bridge::API_KEY_SETTING_NAME);
-    return array(
+    return [
       'name' => $current_user->display_name,
       'email' => $current_user->user_email,
       'PHP version' => PHP_VERSION,
@@ -58,7 +58,7 @@ class Beacon {
       'Default Reply-To address' => $settings->get('reply_to.address'),
       'Bounce Email Address' => $settings->get('bounce.address'),
       'Total number of subscribers' =>  Subscriber::getTotalSubscribers(),
-      'Plugin installed at' => $settings->get('installed_at')
-    );
+      'Plugin installed at' => $settings->get('installed_at'),
+    ];
   }
 }

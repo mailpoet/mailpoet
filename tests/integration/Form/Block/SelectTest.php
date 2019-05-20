@@ -7,36 +7,36 @@ use MailPoet\Models\Subscriber;
 class SelectTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->block = array(
+    $this->block = [
       'id' => 'status',
       'type' => 'select',
-      'params' => array(
+      'params' => [
         'required' => true,
         'label' => 'Status',
-        'values' => array(
-          array(
-            'value' => array(
-              Subscriber::STATUS_SUBSCRIBED => Subscriber::STATUS_SUBSCRIBED
-            ),
-            'is_checked' => false
-          ),
-          array(
-            'value' => array(
-              Subscriber::STATUS_UNSUBSCRIBED => Subscriber::STATUS_UNSUBSCRIBED
-            ),
-            'is_checked' => false
-          ),
-          array(
-            'value' => array(
-              Subscriber::STATUS_BOUNCED => Subscriber::STATUS_BOUNCED
-            ),
+        'values' => [
+          [
+            'value' => [
+              Subscriber::STATUS_SUBSCRIBED => Subscriber::STATUS_SUBSCRIBED,
+            ],
+            'is_checked' => false,
+          ],
+          [
+            'value' => [
+              Subscriber::STATUS_UNSUBSCRIBED => Subscriber::STATUS_UNSUBSCRIBED,
+            ],
+            'is_checked' => false,
+          ],
+          [
+            'value' => [
+              Subscriber::STATUS_BOUNCED => Subscriber::STATUS_BOUNCED,
+            ],
             'is_checked' => false,
             'is_disabled' => false,
-            'is_hidden' => false
-          )
-        )
-      )
-    );
+            'is_hidden' => false,
+          ],
+        ],
+      ],
+    ];
   }
 
   function testItRendersSelectBlock() {

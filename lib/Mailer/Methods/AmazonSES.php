@@ -23,11 +23,11 @@ class AmazonSES {
   public $message;
   public $date;
   public $date_without_time;
-  private $available_regions = array(
+  private $available_regions = [
     'US East (N. Virginia)' => 'us-east-1',
     'US West (Oregon)' => 'us-west-2',
-    'EU (Ireland)' => 'eu-west-1'
-  );
+    'EU (Ireland)' => 'eu-west-1',
+  ];
 
   /** @var AmazonSESMapper */
   private $error_mapper;
@@ -66,7 +66,7 @@ class AmazonSES {
     $this->wp = new WPFunctions();
   }
 
-  function send($newsletter, $subscriber, $extra_params = array()) {
+  function send($newsletter, $subscriber, $extra_params = []) {
     try {
       $result = $this->wp->wpRemotePost(
         $this->url,
@@ -88,27 +88,27 @@ class AmazonSES {
     return Mailer::formatMailerSendSuccessResult();
   }
 
-  function getBody($newsletter, $subscriber, $extra_params = array()) {
+  function getBody($newsletter, $subscriber, $extra_params = []) {
     $this->message = $this->createMessage($newsletter, $subscriber, $extra_params);
-    $body = array(
+    $body = [
       'Action' => 'SendRawEmail',
       'Version' => '2010-12-01',
       'Source' => $this->sender['from_name_email'],
-      'RawMessage.Data' => $this->encodeMessage($this->message)
-    );
+      'RawMessage.Data' => $this->encodeMessage($this->message),
+    ];
     return $body;
   }
 
-  function createMessage($newsletter, $subscriber, $extra_params = array()) {
+  function createMessage($newsletter, $subscriber, $extra_params = []) {
     $message = \Swift_Message::newInstance()
       ->setTo($this->processSubscriber($subscriber))
-      ->setFrom(array(
-          $this->sender['from_email'] => $this->sender['from_name']
-        ))
+      ->setFrom([
+          $this->sender['from_email'] => $this->sender['from_name'],
+        ])
       ->setSender($this->sender['from_email'])
-      ->setReplyTo(array(
-          $this->reply_to['reply_to_email'] =>  $this->reply_to['reply_to_name']
-        ))
+      ->setReplyTo([
+          $this->reply_to['reply_to_email'] =>  $this->reply_to['reply_to_name'],
+        ])
       ->setReturnPath($this->return_path)
       ->setSubject($newsletter['subject']);
     if (!empty($extra_params['unsubscribe_url'])) {
@@ -131,29 +131,29 @@ class AmazonSES {
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
-      $subscriber_data = array(
+      $subscriber_data = [
         'email' => $subscriber,
-      );
+      ];
     }
-    return array(
+    return [
       $subscriber_data['email'] =>
-        (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
-    );
+        (isset($subscriber_data['name'])) ? $subscriber_data['name'] : '',
+    ];
   }
 
-  function request($newsletter, $subscriber, $extra_params = array()) {
+  function request($newsletter, $subscriber, $extra_params = []) {
     $body = array_map('urlencode', $this->getBody($newsletter, $subscriber, $extra_params));
-    return array(
+    return [
       'timeout' => 10,
       'httpversion' => '1.1',
       'method' => 'POST',
-      'headers' => array(
+      'headers' => [
         'Host' => $this->aws_endpoint,
         'Authorization' => $this->signRequest($body),
-        'X-Amz-Date' => $this->date
-      ),
-      'body' => urldecode(http_build_query($body, null, '&'))
-    );
+        'X-Amz-Date' => $this->date,
+      ],
+      'body' => urldecode(http_build_query($body, null, '&')),
+    ];
   }
 
   function signRequest($body) {
@@ -185,7 +185,7 @@ class AmazonSES {
   }
 
   function getCanonicalRequest($body) {
-    return implode("\n", array(
+    return implode("\n", [
       'POST',
       '/',
       '',
@@ -193,17 +193,17 @@ class AmazonSES {
       'x-amz-date:' . $this->date,
       '',
       'host;x-amz-date',
-      hash($this->hash_algorithm, urldecode(http_build_query($body, null, '&')))
-    ));
+      hash($this->hash_algorithm, urldecode(http_build_query($body, null, '&'))),
+    ]);
   }
 
   function createStringToSign($credential_scope, $canonical_request) {
-    return implode("\n", array(
+    return implode("\n", [
       $this->aws_signing_algorithm,
       $this->date,
       $credential_scope,
-      hash($this->hash_algorithm, $canonical_request)
-    ));
+      hash($this->hash_algorithm, $canonical_request),
+    ]);
   }
 
   function getSigningKey() {

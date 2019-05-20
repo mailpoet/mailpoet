@@ -20,22 +20,22 @@ class I18n extends AbstractExtension {
 
   function getFunctions() {
     // twig custom functions
-    $twig_functions = array();
+    $twig_functions = [];
     // list of WP functions to map
-    $functions = array(
+    $functions = [
       'localize' => 'localize',
       '__' => 'translate',
       '_n' => 'pluralize',
       '_x' => 'translateWithContext',
       'get_locale' => 'getLocale',
-      'date' => 'date'
-    );
+      'date' => 'date',
+    ];
 
     foreach ($functions as $twig_function => $function) {
       $twig_functions[] = new TwigFunction(
         $twig_function,
-        array($this, $function),
-        array('is_safe' => array('all'))
+        [$this, $function],
+        ['is_safe' => ['all']]
       );
     }
     return $twig_functions;
@@ -44,7 +44,7 @@ class I18n extends AbstractExtension {
   function localize() {
     $args = func_get_args();
     $translations = array_shift($args);
-    $output = array();
+    $output = [];
 
     $output[] = '<script type="text/javascript">';
     foreach ($translations as $key => $translation) {
@@ -95,7 +95,7 @@ class I18n extends AbstractExtension {
     return WPFunctions::get()->getDateFromGmt(date('Y-m-d H:i:s', (int)$date), $date_format);
   }
 
-  private function setTextDomain($args = array()) {
+  private function setTextDomain($args = []) {
     // make sure that the last argument is our text domain
     if ($args[count($args) - 1] !== $this->_text_domain) {
       // otherwise add it to the list of arguments

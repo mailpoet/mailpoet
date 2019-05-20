@@ -10,55 +10,55 @@ class AutomatedLatestContentTest extends \MailPoetTest {
   }
 
   function testItCategorizesTermsToTaxonomies() {
-    $args = array(
-      'terms' => array(
-        array(
+    $args = [
+      'terms' => [
+        [
           'id' => 1,
-          'taxonomy' => 'post_tag'
-        ),
-        array(
+          'taxonomy' => 'post_tag',
+        ],
+        [
           'id' => 2,
           'taxonomy' => 'product_tag',
-        ),
-        array(
+        ],
+        [
           'id' => 3,
-          'taxonomy' => 'post_tag'
-        )
-      ),
+          'taxonomy' => 'post_tag',
+        ],
+      ],
       'inclusionType' => 'include',
-    );
+    ];
 
-    expect($this->alc->constructTaxonomiesQuery($args))->equals(array(
-      array(
-        array(
+    expect($this->alc->constructTaxonomiesQuery($args))->equals([
+      [
+        [
           'taxonomy' => 'post_tag',
           'field' => 'id',
-          'terms' => array(1, 3)
-        ),
-        array(
+          'terms' => [1, 3],
+        ],
+        [
           'taxonomy' => 'product_tag',
           'field' => 'id',
-          'terms' => array(2)
-        ),
-        'relation' => 'OR'
-      )
-    ));
+          'terms' => [2],
+        ],
+        'relation' => 'OR',
+      ],
+    ]);
   }
 
   function testItCanExcludeTaxonomies() {
-    $args = array(
-      'terms' => array(
-        array(
+    $args = [
+      'terms' => [
+        [
           'id' => 7,
-          'taxonomy' => 'post_tag'
-        ),
-        array(
+          'taxonomy' => 'post_tag',
+        ],
+        [
           'id' => 8,
-          'taxonomy' => 'post_tag'
-        )
-      ),
+          'taxonomy' => 'post_tag',
+        ],
+      ],
       'inclusionType' => 'exclude',
-    );
+    ];
 
     $query = $this->alc->constructTaxonomiesQuery($args);
 

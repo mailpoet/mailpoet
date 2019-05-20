@@ -38,7 +38,7 @@ class Image {
       $image_template = '<a href="' . EHelper::escapeHtmlLinkAttr($element['link']) . '">' . $image_template . '</a>';
     }
     $align = 'center';
-    if (!empty($element['styles']['block']['textAlign']) && in_array($element['styles']['block']['textAlign'], array('left', 'right'))) {
+    if (!empty($element['styles']['block']['textAlign']) && in_array($element['styles']['block']['textAlign'], ['left', 'right'])) {
       $align = $element['styles']['block']['textAlign'];
     }
 

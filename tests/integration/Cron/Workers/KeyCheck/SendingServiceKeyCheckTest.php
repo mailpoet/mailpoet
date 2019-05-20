@@ -23,14 +23,14 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   }
 
   function testItChecksMSSKey() {
-    $response = array('code' => Bridge::KEY_VALID);
+    $response = ['code' => Bridge::KEY_VALID];
     $this->worker->bridge = Stub::make(
       new Bridge,
-      array(
+      [
         'checkMSSKey' => $response,
         'storeMSSKeyAndState' => null,
-        'updateSubscriberCount' => Expected::once()
-      ),
+        'updateSubscriberCount' => Expected::once(),
+      ],
       $this
     );
     $this->worker->bridge->expects($this->once())
@@ -50,10 +50,10 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     $settings = new SettingsController();
     $settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
-      array(
+      [
         'method' => 'MailPoet',
         'mailpoet_api_key' => $this->mss_key,
-      )
+      ]
     );
   }
 

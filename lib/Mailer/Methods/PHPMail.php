@@ -28,7 +28,7 @@ class PHPMail {
     $this->error_mapper = $error_mapper;
   }
 
-  function send($newsletter, $subscriber, $extra_params = array()) {
+  function send($newsletter, $subscriber, $extra_params = []) {
     try {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extra_params);
       $result = $mailer->send();
@@ -50,7 +50,7 @@ class PHPMail {
     return $mailer;
   }
 
-  function configureMailerWithMessage($newsletter, $subscriber, $extra_params = array()) {
+  function configureMailerWithMessage($newsletter, $subscriber, $extra_params = []) {
     $mailer = $this->mailer;
     $mailer->clearAddresses();
     $mailer->clearCustomHeaders();
@@ -73,13 +73,13 @@ class PHPMail {
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
-      $subscriber_data = array(
+      $subscriber_data = [
         'email' => $subscriber,
-      );
+      ];
     }
-    return array(
+    return [
       'email' => $subscriber_data['email'],
-      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
-    );
+      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : '',
+    ];
   }
 }

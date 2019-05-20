@@ -12,25 +12,25 @@ class MailerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->available_mailer_methods = array(
-      array(
+    $this->available_mailer_methods = [
+      [
         'method' => 'AmazonSES',
         'region' => 'us-west-2',
         'access_key' => '1234567890',
         'secret_key' => 'abcdefghijk',
-      ),
-      array(
+      ],
+      [
         'method' => 'MailPoet',
-        'mailpoet_api_key' => 'abcdefghijk'
-      ),
-      array(
+        'mailpoet_api_key' => 'abcdefghijk',
+      ],
+      [
         'method' => 'SendGrid',
-        'api_key' => 'abcdefghijk'
-      ),
-      array(
-        'method' => 'PHPMail'
-      ),
-      array(
+        'api_key' => 'abcdefghijk',
+      ],
+      [
+        'method' => 'PHPMail',
+      ],
+      [
         'method' => 'SMTP',
         'host' => 'example.com',
         'port' => 25,
@@ -38,31 +38,31 @@ class MailerTest extends \MailPoetTest {
         'login' => 'username',
         'password' => 'password',
         'encryption' => 'tls',
-      )
-    );
-    $this->sender = array(
+      ],
+    ];
+    $this->sender = [
       'name' => 'Sender',
-      'address' => 'staff@mailinator.com'
-    );
-    $this->reply_to = array(
+      'address' => 'staff@mailinator.com',
+    ];
+    $this->reply_to = [
       'name' => 'Reply To',
-      'address' => 'staff@mailinator.com'
-    );
+      'address' => 'staff@mailinator.com',
+    ];
     $this->return_path = 'bounce@test.com';
-    $this->mailer = array(
+    $this->mailer = [
       'method' => 'MailPoet',
       'mailpoet_api_key' => getenv('WP_TEST_MAILER_MAILPOET_API') ?
         getenv('WP_TEST_MAILER_MAILPOET_API') :
-        '1234567890'
-    );
+        '1234567890',
+    ];
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->newsletter = array(
+    $this->newsletter = [
       'subject' => 'testing Mailer',
-      'body' => array(
+      'body' => [
         'html' => 'HTML body',
-        'text' => 'TEXT body'
-      )
-    );
+        'text' => 'TEXT body',
+      ],
+    ];
     $this->settings = new SettingsController();
   }
 
@@ -106,7 +106,7 @@ class MailerTest extends \MailPoetTest {
 
   function testItThrowsUnknownMailerException() {
     try {
-      $mailer = new Mailer(array('method' => 'Unknown'), $this->sender);
+      $mailer = new Mailer(['method' => 'Unknown'], $this->sender);
       $this->fail('Mailer did not throw an exception');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Mailing method does not exist.');
@@ -114,7 +114,7 @@ class MailerTest extends \MailPoetTest {
   }
 
   function testItSetsReplyToAddressWhenOnlyNameIsAvailable() {
-    $reply_to = array('name' => 'test');
+    $reply_to = ['name' => 'test'];
     $mailer = new Mailer($this->mailer, $this->sender, $reply_to);
     $reply_to = $mailer->getReplyToNameAndAddress();
     expect($reply_to['reply_to_email'])->equals($this->sender['address']);
@@ -124,7 +124,7 @@ class MailerTest extends \MailPoetTest {
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
     $return_path = $mailer->getReturnPathAddress('bounce@test.com');
     expect($return_path)->equals('bounce@test.com');
-    $this->settings->set('bounce', array('address' => 'settngs_bounce@test.com'));
+    $this->settings->set('bounce', ['address' => 'settngs_bounce@test.com']);
     $return_path = $mailer->getReturnPathAddress($return_path = false);
     expect($return_path)->equals('settngs_bounce@test.com');
   }
@@ -134,28 +134,28 @@ class MailerTest extends \MailPoetTest {
     expect($mailer->formatSubscriberNameAndEmailAddress('test@email.com'))
       ->equals('test@email.com');
     expect($mailer->formatSubscriberNameAndEmailAddress(
-      array(
-        'email' => 'test@email.com'
-      ))
+      [
+        'email' => 'test@email.com',
+      ])
     )->equals('test@email.com');
     expect($mailer->formatSubscriberNameAndEmailAddress(
-      array(
+      [
         'first_name' => 'First',
-        'email' => 'test@email.com'
-      ))
+        'email' => 'test@email.com',
+      ])
     )->equals('First <test@email.com>');
     expect($mailer->formatSubscriberNameAndEmailAddress(
-      array(
+      [
         'last_name' => 'Last',
-        'email' => 'test@email.com'
-      ))
+        'email' => 'test@email.com',
+      ])
     )->equals('Last <test@email.com>');
     expect($mailer->formatSubscriberNameAndEmailAddress(
-      array(
+      [
         'first_name' => 'First',
         'last_name' => 'Last',
-        'email' => 'test@email.com'
-      ))
+        'email' => 'test@email.com',
+      ])
     )->equals('First Last <test@email.com>');
   }
 
@@ -163,14 +163,14 @@ class MailerTest extends \MailPoetTest {
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
     expect($mailer->sender['from_name'])->equals($this->sender['name']);
     expect($mailer->reply_to['reply_to_name'])->equals($this->reply_to['name']);
-    $sender = array(
+    $sender = [
       'name' => 'Sender Außergewöhnlichen тест системы',
-      'address' => 'staff@mailinator.com'
-    );
-    $reply_to = array(
+      'address' => 'staff@mailinator.com',
+    ];
+    $reply_to = [
       'name' => 'Reply-To Außergewöhnlichen тест системы',
-      'address' => 'staff@mailinator.com'
-    );
+      'address' => 'staff@mailinator.com',
+    ];
     $mailer = new Mailer($this->mailer, $sender, $reply_to);
     expect($mailer->sender['from_name'])
       ->equals(sprintf('=?utf-8?B?%s?=', base64_encode($sender['name'])));

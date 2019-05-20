@@ -51,7 +51,7 @@ class Changelog {
 
     WPFunctions::get()->addAction(
       'admin_init',
-      array($this, 'check')
+      [$this, 'check']
     );
   }
 
@@ -67,7 +67,7 @@ class Changelog {
 
   private function checkMp2Migration($version) {
     $mp2_migrator = new MP2Migrator();
-    if (!in_array($_GET['page'], array('mailpoet-migration', 'mailpoet-settings')) && $mp2_migrator->isMigrationStartedAndNotCompleted()) {
+    if (!in_array($_GET['page'], ['mailpoet-migration', 'mailpoet-settings']) && $mp2_migrator->isMigrationStartedAndNotCompleted()) {
       // Force the redirection if the migration has started but is not completed
       return $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
     }

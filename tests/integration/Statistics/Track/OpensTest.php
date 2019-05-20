@@ -27,25 +27,25 @@ class OpensTest extends \MailPoetTest {
     // create queue
     $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->setSubscribers(array($subscriber->id));
-    $queue->updateProcessedSubscribers(array($subscriber->id));
+    $queue->setSubscribers([$subscriber->id]);
+    $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
     // build track data
-    $this->track_data = (object)array(
+    $this->track_data = (object)[
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
       'subscriber_token' => Subscriber::generateToken($subscriber->email),
-      'preview' => false
-    );
+      'preview' => false,
+    ];
     // instantiate class
     $this->opens = new Opens();
   }
 
   function testItReturnsImageWhenTrackDataIsEmpty() {
-    $opens = Stub::make($this->opens, array(
-      'returnResponse' => Expected::exactly(1)
-    ), $this);
+    $opens = Stub::make($this->opens, [
+      'returnResponse' => Expected::exactly(1),
+    ], $this);
     $opens->track(false);
     expect(StatisticsOpens::findMany())->isEmpty();
   }
@@ -54,9 +54,9 @@ class OpensTest extends \MailPoetTest {
     $data = $this->track_data;
     $data->subscriber->wp_user_id = 99;
     $data->preview = true;
-    $opens = Stub::make($this->opens, array(
-      'returnResponse' => null
-    ), $this);
+    $opens = Stub::make($this->opens, [
+      'returnResponse' => null,
+    ], $this);
     $opens->track($data);
     expect(StatisticsOpens::findMany())->isEmpty();
   }
@@ -66,17 +66,17 @@ class OpensTest extends \MailPoetTest {
   }
 
   function testItTracksOpenEvent() {
-    $opens = Stub::make($this->opens, array(
-      'returnResponse' => null
-    ), $this);
+    $opens = Stub::make($this->opens, [
+      'returnResponse' => null,
+    ], $this);
     $opens->track($this->track_data);
     expect(StatisticsOpens::findMany())->notEmpty();
   }
 
   function testItDoesNotTrackRepeatedOpenEvents() {
-    $opens = Stub::make($this->opens, array(
-      'returnResponse' => null
-    ), $this);
+    $opens = Stub::make($this->opens, [
+      'returnResponse' => null,
+    ], $this);
     for ($count = 0; $count <= 2; $count++) {
       $opens->track($this->track_data);
     }
@@ -84,9 +84,9 @@ class OpensTest extends \MailPoetTest {
   }
 
   function testItReturnsImageAfterTracking() {
-    $opens = Stub::make($this->opens, array(
-      'returnResponse' => Expected::exactly(1)
-    ), $this);
+    $opens = Stub::make($this->opens, [
+      'returnResponse' => Expected::exactly(1),
+    ], $this);
     $opens->track($this->track_data);
   }
 

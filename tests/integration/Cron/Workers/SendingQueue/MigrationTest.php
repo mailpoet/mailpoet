@@ -23,14 +23,14 @@ class MigrationTest extends \MailPoetTest {
       $this->altered = true;
     }
 
-    $this->subscriber_to_process = Subscriber::createOrUpdate(array(
+    $this->subscriber_to_process = Subscriber::createOrUpdate([
       'status' => Subscriber::STATUS_SUBSCRIBED,
-      'email' => 'to_process@example.com'
-    ));
-    $this->subscriber_processed = Subscriber::createOrUpdate(array(
+      'email' => 'to_process@example.com',
+    ]);
+    $this->subscriber_processed = Subscriber::createOrUpdate([
       'status' => Subscriber::STATUS_SUBSCRIBED,
-      'email' => 'processed@example.com'
-    ));
+      'email' => 'processed@example.com',
+    ]);
 
     // subscribers should be migrated
     $this->queue_running = $this->createSendingQueue();
@@ -157,10 +157,10 @@ class MigrationTest extends \MailPoetTest {
     $queue = SendingQueue::create();
     $queue->newsletter_id = 0;
     $queue->task_id = 0;
-    $queue->subscribers = serialize(array(
-      'to_process' => array($this->subscriber_to_process->id),
-      'processed' => array($this->subscriber_processed->id)
-    ));
+    $queue->subscribers = serialize([
+      'to_process' => [$this->subscriber_to_process->id],
+      'processed' => [$this->subscriber_processed->id],
+    ]);
     $queue->count_total = 2;
     $queue->count_processed = 1;
     $queue->count_to_process = 1;

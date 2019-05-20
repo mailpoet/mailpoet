@@ -42,13 +42,13 @@ class Renderer {
     $newsletter = $this->newsletter;
     $body = (is_array($newsletter['body']))
       ? $newsletter['body']
-      : array();
+      : [];
     $content = (array_key_exists('content', $body))
       ? $body['content']
-      : array();
+      : [];
     $styles = (array_key_exists('globalStyles', $body))
       ? $body['globalStyles']
-      : array();
+      : [];
 
     if (!$this->premium_activated && !$this->mss_activated && !$this->preview) {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
@@ -59,20 +59,20 @@ class Renderer {
     $rendered_styles = $this->renderStyles($styles);
     $custom_fonts_links = StylesHelper::getCustomFontsLinks($styles);
 
-    $template = $this->injectContentIntoTemplate($this->template, array(
+    $template = $this->injectContentIntoTemplate($this->template, [
       htmlspecialchars($newsletter['subject']),
       $rendered_styles,
       $custom_fonts_links,
       EHelper::escapeHtmlText($newsletter['preheader']),
-      $rendered_body
-    ));
+      $rendered_body,
+    ]);
     $template_dom = $this->inlineCSSStyles($template);
     $template = $this->postProcessTemplate($template_dom);
 
-    $rendered_newsletter = array(
+    $rendered_newsletter = [
       'html' => $template,
-      'text' => $this->renderTextVersion($template)
-    );
+      'text' => $this->renderTextVersion($template),
+    ];
 
     return ($type && !empty($rendered_newsletter[$type])) ?
       $rendered_newsletter[$type] :
@@ -84,10 +84,10 @@ class Renderer {
    * @return array
    */
   private function preProcessALC(array $content) {
-    $blocks = array();
+    $blocks = [];
     $content_blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
-      : array();
+      : [];
     foreach ($content_blocks as $block) {
       if ($block['type'] === 'automatedLatestContentLayout') {
         $blocks = array_merge(
@@ -110,7 +110,7 @@ class Renderer {
   private function renderBody($content) {
     $blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
-      : array();
+      : [];
 
     $_this = $this;
     $rendered_content = array_map(function($content_block) use($_this) {
@@ -202,24 +202,24 @@ class Renderer {
    */
   private function addMailpoetLogoContentBlock(array $content, array $styles) {
     if (empty($content['blocks'])) return $content;
-    $content['blocks'][] = array(
+    $content['blocks'][] = [
       'type' => 'container',
       'orientation' => 'horizontal',
-      'styles' => array(
-        'block' => array(
+      'styles' => [
+        'block' => [
           'backgroundColor' => (!empty($styles['body']['backgroundColor'])) ?
             $styles['body']['backgroundColor'] :
-            'transparent'
-        )
-      ),
-      'blocks' => array(
-        array(
+            'transparent',
+        ],
+      ],
+      'blocks' => [
+        [
           'type' => 'container',
           'orientation' => 'vertical',
-          'styles' => array(
-          ),
-          'blocks' => array(
-            array(
+          'styles' => [
+          ],
+          'blocks' => [
+            [
               'type' => 'image',
               'link' => 'http://www.mailpoet.com',
               'src' => Env::$assets_url . '/img/mailpoet_logo_newsletter.png',
@@ -227,16 +227,16 @@ class Renderer {
               'alt' => 'MailPoet',
               'width' => '108px',
               'height' => '65px',
-              'styles' => array(
-                'block' => array(
-                  'textAlign' => 'center'
-                )
-              )
-            )
-          )
-        )
-      )
-    );
+              'styles' => [
+                'block' => [
+                  'textAlign' => 'center',
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+    ];
     return $content;
   }
 }

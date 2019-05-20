@@ -22,9 +22,9 @@ class UrlTest extends \MailPoetTest {
     expect($url)->contains('endpoint=subscription');
 
     // actual subscriber
-    $subscriber = Subscriber::createOrUpdate(array(
-      'email' => 'john@mailpoet.com'
-    ));
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'john@mailpoet.com',
+    ]);
     $url = Url::getConfirmationUrl($subscriber);
     expect($url)->contains('action=confirm');
     expect($url)->contains('endpoint=subscription');
@@ -40,9 +40,9 @@ class UrlTest extends \MailPoetTest {
     expect($url)->contains('endpoint=subscription');
 
     // actual subscriber
-    $subscriber = Subscriber::createOrUpdate(array(
-      'email' => 'john@mailpoet.com'
-    ));
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'john@mailpoet.com',
+    ]);
     $url = Url::getManageUrl($subscriber);
     expect($url)->contains('action=manage');
     expect($url)->contains('endpoint=subscription');
@@ -58,9 +58,9 @@ class UrlTest extends \MailPoetTest {
     expect($url)->contains('endpoint=subscription');
 
     // actual subscriber
-    $subscriber = Subscriber::createOrUpdate(array(
-      'email' => 'john@mailpoet.com'
-    ));
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'john@mailpoet.com',
+    ]);
     $url = Url::getUnsubscribeUrl($subscriber);
     expect($url)->contains('action=unsubscribe');
     expect($url)->contains('endpoint=subscription');

@@ -17,10 +17,10 @@ class XLSXWriter
   const EXCEL_2007_MAX_COL=16384;
   //------------------------------------------------------------------
   protected $author ='MailPoet';
-  protected $sheets = array();
-  protected $shared_strings = array();//unique set
+  protected $sheets = [];
+  protected $shared_strings = [];//unique set
   protected $shared_string_count = 0;//count of non-unique references to the unique set
-  protected $temp_files = array();
+  protected $temp_files = [];
   protected $current_sheet = '';
   public $rtl = false;
 
@@ -107,17 +107,17 @@ class XLSXWriter
 
     $sheet_filename = $this->tempFilename();
     $sheet_xmlname = 'sheet' . (count($this->sheets) + 1).".xml";
-    $this->sheets[$sheet_name] = (object)array(
+    $this->sheets[$sheet_name] = (object)[
       'filename' => $sheet_filename,
       'sheetname' => $sheet_name,
       'xmlname' => $sheet_xmlname,
       'row_count' => 0,
       'file_writer' => new XLSXWriter_BuffererWriter($sheet_filename),
-      'cell_formats' => array(),
+      'cell_formats' => [],
       'max_cell_tag_start' => 0,
       'max_cell_tag_end' => 0,
       'finalized' => false,
-    );
+    ];
     $sheet = &$this->sheets[$sheet_name];
     $tabselected = count($this->sheets) == 1 ? 'true' : 'false';//only first sheet is selected
     $max_cell=XLSXWriter::xlsCell(self::EXCEL_2007_MAX_ROW, self::EXCEL_2007_MAX_COL);//XFE1048577
@@ -203,9 +203,9 @@ class XLSXWriter
     $sheet->finalized=true;
   }
 
-  public function writeSheet(array $data, $sheet_name='', array $header_types=array() ) {
+  public function writeSheet(array $data, $sheet_name='', array $header_types=[] ) {
     $sheet_name = empty($sheet_name) ? 'Sheet1' : $sheet_name;
-    $data = empty($data) ? array(array('')) : $data;
+    $data = empty($data) ? [['']] : $data;
     if (!empty($header_types))
     {
       $this->writeSheetHeader($sheet_name, $header_types);
@@ -218,7 +218,7 @@ class XLSXWriter
   }
 
   protected function writeCell(XLSXWriter_BuffererWriter &$file, $row_number, $column_number, $value, $cell_format) {
-    static $styles = array('money'=>1,'dollar'=>1,'datetime'=>2,'date'=>3,'string'=>0);
+    static $styles = ['money'=>1,'dollar'=>1,'datetime'=>2,'date'=>3,'string'=>0];
     $cell = self::xlsCell($row_number, $column_number);
     $s = isset($styles[$cell_format]) ? $styles[$cell_format] : '0';
 
@@ -438,7 +438,7 @@ class XLSXWriter
   public static function sanitize_filename($filename) {
     //http://msdn.microsoft.com/en-us/library/aa365247%28VS.85%29.aspx
     $nonprinting = array_map('chr', range(0, 31));
-    $invalid_chars = array('<', '>', '?', '"', ':', '|', '\\', '/', '*', '&');
+    $invalid_chars = ['<', '>', '?', '"', ':', '|', '\\', '/', '*', '&'];
     $all_invalids = array_merge($nonprinting, $invalid_chars);
     return str_replace($all_invalids, "", $filename);
   }
@@ -489,7 +489,7 @@ class XLSXWriter
 
     # Set month days and check for leap year.
     $leap = (($year % 400 == 0) || (($year % 4 == 0) && ($year % 100)) ) ? 1 : 0;
-    $mdays = array( 31, ($leap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 );
+    $mdays = [ 31, ($leap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 
     # Some boundary checks
     if ($year < $epoch || $year > 9999) return 0;

@@ -25,7 +25,7 @@ class Sending {
   private $queue;
   private $task_subscribers;
 
-  private $queue_fields = array(
+  private $queue_fields = [
     'id',
     'task_id',
     'newsletter_id',
@@ -34,14 +34,14 @@ class Sending {
     'count_total',
     'count_processed',
     'count_to_process',
-    'meta'
-  );
+    'meta',
+  ];
 
-  private $common_fields = array(
+  private $common_fields = [
     'created_at',
     'updated_at',
-    'deleted_at'
-  );
+    'deleted_at',
+  ];
 
   private function __construct(ScheduledTask $task = null, SendingQueue $queue = null) {
     if (is_null($task) && is_null($queue)) {

@@ -43,7 +43,7 @@ class Url {
   }
 
   static function createUrlDataObject($newsletter, $subscriber, $queue, $preview) {
-    return array(
+    return [
       (!empty($newsletter->id)) ?
         (int)$newsletter->id :
         0,
@@ -59,14 +59,14 @@ class Url {
       (!empty($queue->id)) ?
         (int)$queue->id :
         0,
-      (int)$preview
-    );
+      (int)$preview,
+    ];
   }
 
   static function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
-    $transformed_data = array();
+    $transformed_data = [];
     $transformed_data['newsletter_id'] = (!empty($data[0])) ? $data[0] : false;
     $transformed_data['newsletter_hash'] = (!empty($data[1])) ? $data[1] : false;
     $transformed_data['subscriber_id'] = (!empty($data[2])) ? $data[2] : false;

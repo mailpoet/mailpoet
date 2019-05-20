@@ -26,7 +26,7 @@ class Updater {
   }
 
   function init() {
-    WPFunctions::get()->addFilter('pre_set_site_transient_update_plugins', array($this, 'checkForUpdate'));
+    WPFunctions::get()->addFilter('pre_set_site_transient_update_plugins', [$this, 'checkForUpdate']);
   }
 
   function checkForUpdate($update_transient) {

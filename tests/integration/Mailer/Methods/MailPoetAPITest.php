@@ -11,22 +11,22 @@ use MailPoet\Services\Bridge\API;
 class MailPoetAPITest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->settings = array(
+    $this->settings = [
       'method' => 'MailPoet',
       'api_key' => getenv('WP_TEST_MAILER_MAILPOET_API') ?
         getenv('WP_TEST_MAILER_MAILPOET_API') :
-        '1234567890'
-    );
-    $this->sender = array(
+        '1234567890',
+    ];
+    $this->sender = [
       'from_name' => 'Sender',
       'from_email' => 'staff@mailpoet.com',
-      'from_name_email' => 'Sender <staff@mailpoet.com>'
-    );
-    $this->reply_to = array(
+      'from_name_email' => 'Sender <staff@mailpoet.com>',
+    ];
+    $this->reply_to = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
-      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
-    );
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
+    ];
     $this->mailer = new MailPoet(
       $this->settings['api_key'],
       $this->sender,
@@ -34,13 +34,13 @@ class MailPoetAPITest extends \MailPoetTest {
       new MailPoetMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->newsletter = array(
+    $this->newsletter = [
       'subject' => 'testing MailPoet',
-      'body' => array(
+      'body' => [
         'html' => 'HTML body',
-        'text' => 'TEXT body'
-      )
-    );
+        'text' => 'TEXT body',
+      ],
+    ];
   }
 
   function testItCanGenerateBodyForSingleMessage() {
@@ -75,13 +75,13 @@ class MailPoetAPITest extends \MailPoetTest {
   }
 
   function testItCanAddExtraParametersToSingleMessage() {
-    $extra_params = array('unsubscribe_url' => 'http://example.com');
+    $extra_params = ['unsubscribe_url' => 'http://example.com'];
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $extra_params);
     expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url']);
   }
 
   function testItCanAddExtraParametersToMultipleMessages() {
-    $extra_params = array('unsubscribe_url' => 'http://example.com');
+    $extra_params = ['unsubscribe_url' => 'http://example.com'];
     $newsletters = array_fill(0, 10, $this->newsletter);
     $subscribers = array_fill(0, 10, $this->subscriber);
     $body = $this->mailer->getBody($newsletters, $subscribers, $extra_params);
@@ -92,7 +92,7 @@ class MailPoetAPITest extends \MailPoetTest {
   function testItCanAddUnsubscribeUrlToMultipleMessages() {
     $newsletters = array_fill(0, 10, $this->newsletter);
     $subscribers = array_fill(0, 10, $this->subscriber);
-    $extra_params = array('unsubscribe_url' => array_fill(0, 10, 'http://example.com'));
+    $extra_params = ['unsubscribe_url' => array_fill(0, 10, 'http://example.com')];
 
     $body = $this->mailer->getBody($newsletters, $subscribers, $extra_params);
     expect(count($body))->equals(10);
@@ -103,22 +103,22 @@ class MailPoetAPITest extends \MailPoetTest {
   function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))
       ->equals(
-        array(
+        [
           'email' => 'test@test.com',
-          'name' => ''
-        ));
+          'name' => '',
+        ]);
     expect($this->mailer->processSubscriber('First <test@test.com>'))
       ->equals(
-        array(
+        [
           'email' => 'test@test.com',
-          'name' => 'First'
-        ));
+          'name' => 'First',
+        ]);
     expect($this->mailer->processSubscriber('First Last <test@test.com>'))
       ->equals(
-        array(
+        [
           'email' => 'test@test.com',
-          'name' => 'First Last'
-        ));
+          'name' => 'First Last',
+        ]);
   }
 
   function testItWillNotSendIfApiKeyIsMarkedInvalid() {
@@ -126,7 +126,7 @@ class MailPoetAPITest extends \MailPoetTest {
     $this->mailer->api_key = 'someapi';
     $this->mailer->services_checker = Stub::make(
       new ServicesChecker(),
-      array('isMailPoetAPIKeyValid' => false),
+      ['isMailPoetAPIKeyValid' => false],
       $this
     );
     $result = $this->mailer->send(
@@ -158,10 +158,10 @@ class MailPoetAPITest extends \MailPoetTest {
   function testFormatConnectionError() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
-      array('sendMessages' => [
+      ['sendMessages' => [
         'status' => API::SENDING_STATUS_CONNECTION_ERROR,
         'message' => 'connection error',
-      ]),
+      ]],
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
@@ -173,11 +173,11 @@ class MailPoetAPITest extends \MailPoetTest {
   function testFormatErrorNotArray() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
-      array('sendMessages' => [
+      ['sendMessages' => [
         'code' => API::RESPONSE_CODE_NOT_ARRAY,
         'status' => API::SENDING_STATUS_SEND_ERROR,
         'message' => 'error not array',
-      ]),
+      ]],
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
@@ -189,11 +189,11 @@ class MailPoetAPITest extends \MailPoetTest {
   function testFormatErrorTooBig() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
-      array('sendMessages' => [
+      ['sendMessages' => [
         'code' => API::RESPONSE_CODE_PAYLOAD_TOO_BIG,
         'status' => API::SENDING_STATUS_SEND_ERROR,
         'message' => 'error too big',
-      ]),
+      ]],
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
@@ -204,11 +204,11 @@ class MailPoetAPITest extends \MailPoetTest {
   function testFormatPayloadError() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
-      array('sendMessages' => [
+      ['sendMessages' => [
         'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
         'status' => API::SENDING_STATUS_SEND_ERROR,
         'message' => 'Api Error',
-      ]),
+      ]],
       $this
     );
     $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);
@@ -220,11 +220,11 @@ class MailPoetAPITest extends \MailPoetTest {
   function testFormatPayloadErrorWithErrorMessage() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
-      array('sendMessages' => [
+      ['sendMessages' => [
         'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
         'status' => API::SENDING_STATUS_SEND_ERROR,
         'message' => '[{"index":0,"errors":{"subject":"subject is missing"}},{"index":1,"errors":{"subject":"subject is missing"}}]',
-      ]),
+      ]],
       $this
     );
     $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);

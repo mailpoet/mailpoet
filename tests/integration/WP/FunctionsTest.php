@@ -25,14 +25,14 @@ class FunctionsTest extends \MailPoetTest {
             $type = $mime['type'];
     }
 
-    $attachment = array(
+    $attachment = [
         'post_title' => basename($upload['file']),
         'post_content' => '',
         'post_type' => 'attachment',
         'post_parent' => $parent_post_id,
         'post_mime_type' => $type,
         'guid' => $upload['url'],
-    );
+    ];
 
     // Save the data
     $id = wp_insert_attachment($attachment, $upload['file'], $parent_post_id);
@@ -43,7 +43,7 @@ class FunctionsTest extends \MailPoetTest {
   }
 
   function testItCanProcessActions() {
-    $test_value = array('abc', 'def');
+    $test_value = ['abc', 'def'];
     $test_value2 = new \stdClass;
     $called = false;
 
@@ -65,7 +65,7 @@ class FunctionsTest extends \MailPoetTest {
   }
 
   function testItCanProcessFilters() {
-    $test_value = array('abc', 'def');
+    $test_value = ['abc', 'def'];
 
     $called = false;
 

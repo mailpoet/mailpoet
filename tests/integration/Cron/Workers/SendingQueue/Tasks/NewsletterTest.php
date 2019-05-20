@@ -124,7 +124,7 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItReturnsNewsletterObjectWhenRenderedNewsletterBodyExistsInTheQueue() {
     $queue = $this->queue;
-    $queue->newsletter_rendered_body = array('html' => 'test', 'text' => 'test');
+    $queue->newsletter_rendered_body = ['html' => 'test', 'text' => 'test'];
     $result = $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue);
     expect($result instanceof \MailPoet\Models\Newsletter)->true();
   }
@@ -259,10 +259,10 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItUsesRenderedNewsletterBodyAndSubjectFromQueueObjectWhenPreparingNewsletterForSending() {
     $queue = $this->queue;
-    $queue->newsletter_rendered_body = array(
+    $queue->newsletter_rendered_body = [
       'html' => 'queue HTML body',
-      'text' => 'queue TEXT body'
-    );
+      'text' => 'queue TEXT body',
+    ];
     $queue->newsletter_rendered_subject = 'queue subject';
     $result = $this->newsletter_task->prepareNewsletterForSending(
       $this->newsletter,
@@ -311,7 +311,7 @@ class NewsletterTest extends \MailPoetTest {
       $newsletter_segment->save();
     }
     expect($this->newsletter_task->getNewsletterSegments($this->newsletter))->equals(
-      array(1,2,3)
+      [1,2,3]
     );
   }
 
@@ -331,10 +331,10 @@ class NewsletterTest extends \MailPoetTest {
   function testItLogsErrorWhenExistingRenderedNewsletterBodyIsInvalid() {
     $queue_mock = Mock::double(
       $this->queue,
-      array(
+      [
         'getNewsletterRenderedBody' => 'a:2:{s:4:"html"',
-        'validate' => false
-      )
+        'validate' => false,
+      ]
     );
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock);
@@ -350,9 +350,9 @@ class NewsletterTest extends \MailPoetTest {
     $queue = $this->queue;
     $queue_mock = Mock::double(
       $this->queue,
-      array(
-        'getNewsletterRenderedBody' => null
-      )
+      [
+        'getNewsletterRenderedBody' => null,
+      ]
     );
     $queue_mock->id = $queue->id;
 
@@ -373,9 +373,9 @@ class NewsletterTest extends \MailPoetTest {
     $queue = $this->queue;
     $queue_mock = Mock::double(
       new \stdClass(),
-      array(
-        'getNewsletterRenderedBody' => null
-      )
+      [
+        'getNewsletterRenderedBody' => null,
+      ]
     );
     $queue_mock->id = $queue->id;
     $queue_mock->task_id = $queue->task_id;

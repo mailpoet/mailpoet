@@ -36,9 +36,9 @@ abstract class SubscribersGetter {
       'last_name',
       'email',
       'subscribed_ip',
-      array(
-        'global_status' => Subscriber::$_table . '.status'
-      )
+      [
+        'global_status' => Subscriber::$_table . '.status',
+      ]
     )
     ->filter('filterWithCustomFieldsForExport')
     ->groupBy(Subscriber::$_table . '.id')

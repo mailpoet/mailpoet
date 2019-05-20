@@ -14,9 +14,9 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class Segments extends APIEndpoint {
-  public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS
-  );
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
+  ];
 
   /** @var Listing\BulkActionController */
   private $bulk_action;
@@ -37,22 +37,22 @@ class Segments extends APIEndpoint {
     $this->woo_commerce_sync = $woo_commerce;
   }
 
-  function get($data = array()) {
+  function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
       return $this->successResponse($segment->asArray());
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
-  function listing($data = array()) {
+  function listing($data = []) {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\Segment', $data);
 
-    $data = array();
+    $data = [];
     foreach ($listing_data['items'] as $segment) {
       $segment->subscribers_url = WPFunctions::get()->adminUrl(
         'admin.php?page=mailpoet-subscribers#/filter[segment='.$segment->id.']'
@@ -63,14 +63,14 @@ class Segments extends APIEndpoint {
         ->asArray();
     }
 
-    return $this->successResponse($data, array(
+    return $this->successResponse($data, [
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
-      'groups' => $listing_data['groups']
-    ));
+      'groups' => $listing_data['groups'],
+    ]);
   }
 
-  function save($data = array()) {
+  function save($data = []) {
     $segment = Segment::createOrUpdate($data);
     $errors = $segment->getErrors();
 
@@ -85,7 +85,7 @@ class Segments extends APIEndpoint {
     }
   }
 
-  function restore($data = array()) {
+  function restore($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
@@ -94,16 +94,16 @@ class Segments extends APIEndpoint {
       if(!$segment instanceof Segment) return $this->errorResponse();
       return $this->successResponse(
         $segment->asArray(),
-        array('count' => 1)
+        ['count' => 1]
       );
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
-  function trash($data = array()) {
+  function trash($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
@@ -112,36 +112,36 @@ class Segments extends APIEndpoint {
       if(!$segment instanceof Segment) return $this->errorResponse();
       return $this->successResponse(
         $segment->asArray(),
-        array('count' => 1)
+        ['count' => 1]
       );
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
-  function delete($data = array()) {
+  function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
       $segment->delete();
-      return $this->successResponse(null, array('count' => 1));
+      return $this->successResponse(null, ['count' => 1]);
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
-  function duplicate($data = array()) {
+  function duplicate($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
 
     if ($segment instanceof Segment) {
-      $data = array(
-        'name' => sprintf(__('Copy of %s', 'mailpoet'), $segment->name)
-      );
+      $data = [
+        'name' => sprintf(__('Copy of %s', 'mailpoet'), $segment->name),
+      ];
       $duplicate = $segment->duplicate($data);
       $errors = $duplicate->getErrors();
 
@@ -152,13 +152,13 @@ class Segments extends APIEndpoint {
         if(!$duplicate instanceof Segment) return $this->errorResponse();
         return $this->successResponse(
           $duplicate->asArray(),
-          array('count' => 1)
+          ['count' => 1]
         );
       }
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
@@ -170,22 +170,22 @@ class Segments extends APIEndpoint {
         WP::synchronizeUsers();
       }
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
 
     return $this->successResponse(null);
   }
 
-  function bulkAction($data = array()) {
+  function bulkAction($data = []) {
     try {
       $meta = $this->bulk_action->apply('\MailPoet\Models\Segment', $data);
       return $this->successResponse(null, $meta);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 }

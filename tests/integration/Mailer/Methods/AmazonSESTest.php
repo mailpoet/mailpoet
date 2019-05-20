@@ -8,7 +8,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 class AmazonSESTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->settings = array(
+    $this->settings = [
       'method' => 'AmazonSES',
       'access_key' => getenv('WP_TEST_MAILER_AMAZON_ACCESS') ?
         getenv('WP_TEST_MAILER_AMAZON_ACCESS') :
@@ -19,17 +19,17 @@ class AmazonSESTest extends \MailPoetTest {
       'region' => getenv('WP_TEST_MAILER_AMAZON_REGION') ?
         getenv('WP_TEST_MAILER_AMAZON_REGION') :
         'us-west-2',
-    );
-    $this->sender = array(
+    ];
+    $this->sender = [
       'from_name' => 'Sender',
       'from_email' => 'staff@mailpoet.com',
-      'from_name_email' => 'Sender <staff@mailpoet.com>'
-    );
-    $this->reply_to = array(
+      'from_name_email' => 'Sender <staff@mailpoet.com>',
+    ];
+    $this->reply_to = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
-      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
-    );
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
+    ];
     $this->return_path = 'bounce@mailpoet.com';
     $this->mailer = new AmazonSES(
       $this->settings['region'],
@@ -41,16 +41,16 @@ class AmazonSESTest extends \MailPoetTest {
       new AmazonSESMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->newsletter = array(
+    $this->newsletter = [
       'subject' => 'testing AmazonSES',
-      'body' => array(
+      'body' => [
         'html' => 'HTML body',
-        'text' => 'TEXT body'
-      )
-    );
-    $this->extra_params = array(
-      'unsubscribe_url' => 'http://www.mailpoet.com'
-    );
+        'text' => 'TEXT body',
+      ],
+    ];
+    $this->extra_params = [
+      'unsubscribe_url' => 'http://www.mailpoet.com',
+    ];
   }
 
   function testItsConstructorWorks() {
@@ -109,13 +109,13 @@ class AmazonSESTest extends \MailPoetTest {
     $message = $this->mailer
       ->createMessage($this->newsletter, $this->subscriber, $this->extra_params);
     expect($message->getTo())
-      ->equals(array('mailpoet-phoenix-test@mailinator.com' => 'Recipient'));
+      ->equals(['mailpoet-phoenix-test@mailinator.com' => 'Recipient']);
     expect($message->getFrom())
-      ->equals(array($this->sender['from_email'] => $this->sender['from_name']));
+      ->equals([$this->sender['from_email'] => $this->sender['from_name']]);
     expect($message->getSender())
-      ->equals(array($this->sender['from_email'] => null));
+      ->equals([$this->sender['from_email'] => null]);
     expect($message->getReplyTo())
-      ->equals(array($this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name']));
+      ->equals([$this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name']]);
     expect($message->getSubject())
       ->equals($this->newsletter['subject']);
     expect($message->getBody())
@@ -152,7 +152,7 @@ class AmazonSESTest extends \MailPoetTest {
     );
     expect($canonicalRequest)
       ->equals(
-        array(
+        [
           'POST',
           '/',
           '',
@@ -162,8 +162,8 @@ class AmazonSESTest extends \MailPoetTest {
           'host;x-amz-date',
           hash($this->mailer->hash_algorithm,
                urldecode(http_build_query($body))
-          )
-        )
+          ),
+        ]
       );
   }
 
@@ -189,12 +189,12 @@ class AmazonSESTest extends \MailPoetTest {
     $stringToSing = explode("\n", $stringToSing);
     expect($stringToSing)
       ->equals(
-        array(
+        [
           $this->mailer->aws_signing_algorithm,
           $this->mailer->date,
           $credentialScope,
-          hash($this->mailer->hash_algorithm, $canonicalRequest)
-        )
+          hash($this->mailer->hash_algorithm, $canonicalRequest),
+        ]
       );
   }
 

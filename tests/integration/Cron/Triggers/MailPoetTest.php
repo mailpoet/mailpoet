@@ -17,9 +17,9 @@ class MailPoetTest extends \MailPoetTest {
     // called by the MailPoet cron trigger does not work. for that matter, we need to set
     // the trigger setting to anything but 'WordPress'.
     $this->settings = new SettingsController();
-    $this->settings->set('cron_trigger', array(
-      'method' => 'none'
-    ));
+    $this->settings->set('cron_trigger', [
+      'method' => 'none',
+    ]);
   }
 
   function testItCanRun() {

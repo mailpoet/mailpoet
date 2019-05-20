@@ -8,30 +8,30 @@ use MailPoet\Models\NewsletterOptionField;
 class NewsletterOptionFieldTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->data = array(
+    $this->data = [
       'name' => 'event',
-      'newsletter_type' => 'welcome'
-    );
+      'newsletter_type' => 'welcome',
+    ];
     $option = NewsletterOptionField::create();
     $option->hydrate($this->data);
     $option->save();
 
     $this->option_field = NewsletterOptionField::findOne($option->id);
 
-    $this->newsletter_data = array(
-      array(
+    $this->newsletter_data = [
+      [
         'subject' => 'Test newsletter 1',
         'type' => 'standard',
         'preheader' => '',
-        'body' => '{}'
-      ),
-      array(
+        'body' => '{}',
+      ],
+      [
         'subject' => 'Test newsletter 2',
         'type' => 'standard',
         'preheader' => 'A newsletter',
-        'body' => '{}'
-      )
-    );
+        'body' => '{}',
+      ],
+    ];
   }
 
   function testItCanBeCreated() {

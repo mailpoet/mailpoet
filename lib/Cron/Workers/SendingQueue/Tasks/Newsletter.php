@@ -46,10 +46,10 @@ class Newsletter {
     $newsletter = $queue->newsletter()
       ->whereNull('deleted_at')
       ->whereAnyIs(
-        array(
-          array('status' => NewsletterModel::STATUS_ACTIVE),
-          array('status' => NewsletterModel::STATUS_SENDING)
-        )
+        [
+          ['status' => NewsletterModel::STATUS_ACTIVE],
+          ['status' => NewsletterModel::STATUS_SENDING],
+        ]
       )
       ->findOne();
     if (!$newsletter) return false;
@@ -58,10 +58,10 @@ class Newsletter {
       $parent_newsletter = $newsletter->parent()
         ->whereNull('deleted_at')
         ->whereAnyIs(
-          array(
-            array('status' => NewsletterModel::STATUS_ACTIVE),
-            array('status' => NewsletterModel::STATUS_SENDING)
-          )
+          [
+            ['status' => NewsletterModel::STATUS_ACTIVE],
+            ['status' => NewsletterModel::STATUS_SENDING],
+          ]
         )
         ->findOne();
       if (!$parent_newsletter) return false;
@@ -151,11 +151,11 @@ class Newsletter {
     // to speed the processing, join content into a continuous string
     $rendered_newsletter = $queue->getNewsletterRenderedBody();
     $prepared_newsletter = Helpers::joinObject(
-      array(
+      [
         $queue->newsletter_rendered_subject,
         $rendered_newsletter['html'],
-        $rendered_newsletter['text']
-      )
+        $rendered_newsletter['text'],
+      ]
     );
     $prepared_newsletter = ShortcodesTask::process(
       $prepared_newsletter,
@@ -172,14 +172,14 @@ class Newsletter {
       );
     }
     $prepared_newsletter = Helpers::splitObject($prepared_newsletter);
-    return array(
+    return [
       'id' => $newsletter->id,
       'subject' => $prepared_newsletter[0],
-      'body' => array(
+      'body' => [
         'html' => $prepared_newsletter[1],
-        'text' => $prepared_newsletter[2]
-      )
-    );
+        'text' => $prepared_newsletter[2],
+      ],
+    ];
   }
 
   function markNewsletterAsSent($newsletter, $queue) {

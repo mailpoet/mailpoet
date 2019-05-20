@@ -18,18 +18,18 @@ class Polls extends AbstractExtension {
   }
 
   public function getFunctions() {
-    return array(
+    return [
       new TwigFunction(
         'get_polls_data',
-        array($this, 'getPollsData'),
-        array('is_safe' => array('all'))
+        [$this, 'getPollsData'],
+        ['is_safe' => ['all']]
       ),
       new TwigFunction(
         'get_polls_visiblity',
-        array($this, 'getPollsVisibility'),
-        array('is_safe' => array('all'))
+        [$this, 'getPollsVisibility'],
+        ['is_safe' => ['all']]
       ),
-    );
+    ];
   }
 
   function getPollsData() {

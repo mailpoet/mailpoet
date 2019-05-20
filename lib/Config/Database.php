@@ -29,10 +29,10 @@ class Database {
   }
 
   function setupDriverOptions() {
-    $driver_options = array(
+    $driver_options = [
       'TIME_ZONE = "' . Env::$db_timezone_offset . '"',
       'sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))',
-    );
+    ];
 
     if (!empty(Env::$db_charset)) {
       $character_set = 'NAMES ' . Env::$db_charset;
@@ -42,9 +42,9 @@ class Database {
       $driver_options[] = $character_set;
     }
 
-    ORM::configure('driver_options', array(
-      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driver_options)
-    ));
+    ORM::configure('driver_options', [
+      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driver_options),
+    ]);
 
     try {
       $current_options = ORM::for_table("")

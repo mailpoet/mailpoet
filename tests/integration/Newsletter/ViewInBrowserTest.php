@@ -16,7 +16,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->newsletter =
-      array(
+      [
         'body' => json_decode(
           '{
           "content": {
@@ -61,16 +61,16 @@ class ViewInBrowserTest extends \MailPoetTest {
         'subject' => 'Some subject',
         'preheader' => 'Some preheader',
         'type' => 'standard',
-        'status' => 'active'
-      );
-    $this->queue_rendered_newsletter_without_tracking = array(
+        'status' => 'active',
+      ];
+    $this->queue_rendered_newsletter_without_tracking = [
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="[link:newsletter_view_in_browser_url]">Unsubscribe</a> or visit <a href="http://google.com">Google</a></p>',
-      'text' => 'test'
-    );
-    $this->queue_rendered_newsletter_with_tracking = array(
+      'text' => 'test',
+    ];
+    $this->queue_rendered_newsletter_with_tracking = [
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="' . Links::DATA_TAG_CLICK . '-90e56">Unsubscribe</a> or visit <a href="' . Links::DATA_TAG_CLICK . '-i1893">Google</a><img alt="" class="" src="' . Links::DATA_TAG_OPEN . '"></p>',
-      'text' => 'test'
-    );
+      'text' => 'test',
+    ];
     $this->view_in_browser = new ViewInBrowser(false);
     // create newsletter
     $newsletter = Newsletter::create();
@@ -86,7 +86,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_without_tracking;
-    $queue->setSubscribers(array($subscriber->id));
+    $queue->setSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
     // create newsletter link associations
     $newsletter_link_1 = NewsletterLink::create();

@@ -38,7 +38,7 @@ class AutomatedLatestContent {
     $query->is_home = false;
   }
 
-  function getPosts($args, $posts_to_exclude = array()) {
+  function getPosts($args, $posts_to_exclude = []) {
     // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     WPFunctions::get()->wpSetCurrentUser(0);
@@ -50,13 +50,13 @@ class AutomatedLatestContent {
     $posts_per_page = (!empty($args['amount']) && (int)$args['amount'] > 0)
       ? (int)$args['amount']
       : self::DEFAULT_POSTS_PER_PAGE;
-    $parameters = array(
+    $parameters = [
       'posts_per_page' => $posts_per_page,
       'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
       'post_status' => (isset($args['postStatus'])) ? $args['postStatus'] : 'publish',
       'orderby' => 'date',
       'order' => ($args['sortBy'] === 'newest') ? 'DESC' : 'ASC',
-    );
+    ];
     if (!empty($args['offset']) && (int)$args['offset'] > 0) {
       $parameters['offset'] = (int)$args['offset'];
     }
@@ -79,12 +79,12 @@ class AutomatedLatestContent {
     $parameters['suppress_filters'] = false;
 
     if ($this->newer_than_timestamp) {
-      $parameters['date_query'] = array(
-        array(
+      $parameters['date_query'] = [
+        [
           'column' => 'post_date',
-          'after' => $this->newer_than_timestamp
-        )
-      );
+          'after' => $this->newer_than_timestamp,
+        ],
+      ];
     }
 
     // set low priority to execute 'ensureConstistentQueryType' before any other filter
@@ -111,25 +111,25 @@ class AutomatedLatestContent {
   }
 
   function constructTaxonomiesQuery($args) {
-    $taxonomies_query = array();
+    $taxonomies_query = [];
     if (isset($args['terms']) && is_array($args['terms'])) {
-      $taxonomies = array();
+      $taxonomies = [];
       // Categorize terms based on their taxonomies
       foreach ($args['terms'] as $term) {
         $taxonomy = $term['taxonomy'];
         if (!isset($taxonomies[$taxonomy])) {
-          $taxonomies[$taxonomy] = array();
+          $taxonomies[$taxonomy] = [];
         }
         $taxonomies[$taxonomy][] = $term['id'];
       }
 
       foreach ($taxonomies as $taxonomy => $terms) {
         if (!empty($terms)) {
-          $tax = array(
+          $tax = [
             'taxonomy' => $taxonomy,
             'field' => 'id',
             'terms' => $terms,
-          );
+          ];
           if ($args['inclusionType'] === 'exclude') $tax['operator'] = 'NOT IN';
           $taxonomies_query[] = $tax;
         }
@@ -149,13 +149,13 @@ class AutomatedLatestContent {
 
   private function _attachSentPostsFilter() {
     if ($this->newsletter_id > 0) {
-      WPFunctions::get()->addAction('posts_where', array($this, 'filterOutSentPosts'));
+      WPFunctions::get()->addAction('posts_where', [$this, 'filterOutSentPosts']);
     }
   }
 
   private function _detachSentPostsFilter() {
     if ($this->newsletter_id > 0) {
-      WPFunctions::get()->removeAction('posts_where', array($this, 'filterOutSentPosts'));
+      WPFunctions::get()->removeAction('posts_where', [$this, 'filterOutSentPosts']);
     }
   }
 

@@ -15,7 +15,7 @@ class Source {
   const WOOCOMMERCE_CHECKOUT = 'woocommerce_checkout';
   const UNKNOWN = 'unknown';
 
-  private static $allowed_sources = array(
+  private static $allowed_sources = [
     Source::FORM,
     Source::IMPORTED,
     Source::ADMINISTRATOR,
@@ -24,7 +24,7 @@ class Source {
     Source::WOOCOMMERCE_USER,
     Source::WOOCOMMERCE_CHECKOUT,
     Source::UNKNOWN,
-  );
+  ];
 
   static function setSource(Subscriber $subscriber, $source) {
     if ((isset($subscriber->source)) && ($subscriber->source !== Source::UNKNOWN)) {

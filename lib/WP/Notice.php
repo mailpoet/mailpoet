@@ -49,7 +49,7 @@ class Notice {
 
   protected static function createNotice($type, $message, $classes, $data_notice_name, $render_in_paragraph) {
     $notice = new Notice($type, $message, $classes, $data_notice_name, $render_in_paragraph);
-    WPFunctions::get()->addAction('admin_notices', array($notice, 'displayWPNotice'));
+    WPFunctions::get()->addAction('admin_notices', [$notice, 'displayWPNotice']);
   }
 
   function displayWPNotice() {

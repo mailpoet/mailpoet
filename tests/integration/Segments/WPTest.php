@@ -12,7 +12,7 @@ use MailPoet\Segments\WP;
 
 class WPTest extends \MailPoetTest  {
 
-  private $userIds = array();
+  private $userIds = [];
 
   function testItSynchronizeUsers() {
     $this->insertUser();
@@ -34,10 +34,10 @@ class WPTest extends \MailPoetTest  {
 
   function testItSynchronizesPresubscribedUsers() {
     $random_number = 12345;
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'email' => 'user-sync-test' . $random_number . '@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED
-    ));
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
     $id = $this->insertUser($random_number);
     WP::synchronizeUsers();
     $wp_subscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
@@ -162,30 +162,30 @@ class WPTest extends \MailPoetTest  {
     $this->insertUser();
     // wp_user_id is null
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'John',
       'last_name' => 'John',
       'email' => 'user-sync-test' . rand() . '@example.com',
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $subscriber->save();
     // wp_user_id is zero
     $subscriber2 = Subscriber::create();
-    $subscriber2->hydrate(array(
+    $subscriber2->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => 'user-sync-test2' . rand() . '@example.com',
       'wp_user_id' => 0,
-    ));
+    ]);
     $subscriber2->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber2->save();
     // email is empty
     $subscriber3 = Subscriber::create();
-    $subscriber3->hydrate(array(
+    $subscriber3->hydrate([
       'first_name' => 'Dave',
       'last_name' => 'Dave',
       'email' => 'user-sync-test3' . rand() . '@example.com', // need to pass validation
-    ));
+    ]);
     $subscriber3->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber3->save();
     $this->clearEmail($subscriber3);
@@ -199,12 +199,12 @@ class WPTest extends \MailPoetTest  {
 
   function testItRemovesSubscribersInWPSegmentWithoutWPId() {
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => 'user-sync-test' . rand() . '@example.com',
       'wp_user_id' => null,
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
     $wp_segment = Segment::getWPSegment();
@@ -223,12 +223,12 @@ class WPTest extends \MailPoetTest  {
     $id = $this->insertUser();
     $this->updateWPUserEmail($id, '');
     $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
+    $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => 'user-sync-test' . rand() . '@example.com', // need to pass validation
       'wp_user_id' => $id,
-    ));
+    ]);
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
     $this->clearEmail($subscriber);

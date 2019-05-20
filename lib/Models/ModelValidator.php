@@ -15,10 +15,10 @@ class ModelValidator extends \Sudzy\Engine {
 
   function __construct() {
     parent::__construct();
-    $this->validators = array(
+    $this->validators = [
       'validEmail' => 'validateEmail',
-      'validRenderedNewsletterBody' => 'validateRenderedNewsletterBody'
-    );
+      'validRenderedNewsletterBody' => 'validateRenderedNewsletterBody',
+    ];
     $this->setupValidators();
   }
 

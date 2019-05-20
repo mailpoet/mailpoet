@@ -15,7 +15,7 @@ class PostListTransformer {
   }
 
   function transform($posts) {
-    $results = array();
+    $results = [];
     $use_divider = filter_var($this->args['showDivider'], FILTER_VALIDATE_BOOLEAN);
 
     foreach ($posts as $index => $post) {

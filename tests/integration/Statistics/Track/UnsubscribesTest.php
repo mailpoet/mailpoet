@@ -24,8 +24,8 @@ class UnsubscribesTest extends \MailPoetTest {
     // create queue
     $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->setSubscribers(array($subscriber->id));
-    $queue->updateProcessedSubscribers(array($subscriber->id));
+    $queue->setSubscribers([$subscriber->id]);
+    $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
     // instantiate class
     $this->unsubscribes = new Unsubscribes();

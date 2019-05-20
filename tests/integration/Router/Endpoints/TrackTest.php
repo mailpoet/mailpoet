@@ -30,8 +30,8 @@ class TrackTest extends \MailPoetTest {
     // create queue
     $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->setSubscribers(array($subscriber->id));
-    $queue->updateProcessedSubscribers(array($subscriber->id));
+    $queue->setSubscribers([$subscriber->id]);
+    $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
     // create link
     $link = NewsletterLink::create();
@@ -41,14 +41,14 @@ class TrackTest extends \MailPoetTest {
     $link->queue_id = $queue->id;
     $this->link = $link->save();
     // build track data
-    $this->track_data = array(
+    $this->track_data = [
       'queue_id' => $queue->id,
       'subscriber_id' => $subscriber->id,
       'newsletter_id' => $newsletter->id,
       'subscriber_token' => Subscriber::generateToken($subscriber->email),
       'link_hash' => $link->hash,
-      'preview' => false
-    );
+      'preview' => false,
+    ];
     // instantiate class
     $this->track = new Track(new Clicks(new SettingsController()), new Opens());
   }
@@ -71,11 +71,11 @@ class TrackTest extends \MailPoetTest {
   function testItFailsWhenSubscriberTokenDoesNotMatch() {
     $data = (object)array_merge(
       $this->track_data,
-      array(
+      [
         'queue' => $this->queue,
         'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter
-      )
+        'newsletter' => $this->newsletter,
+      ]
     );
     $data->subscriber->email = 'random@email.com';
     $track = Stub::make(Track::class, ['terminate' => function($code) {
@@ -87,11 +87,11 @@ class TrackTest extends \MailPoetTest {
   function testItFailsWhenSubscriberIsNotOnProcessedList() {
     $data = (object)array_merge(
       $this->track_data,
-      array(
+      [
         'queue' => $this->queue,
         'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter
-      )
+        'newsletter' => $this->newsletter,
+      ]
     );
     $data->subscriber->id = 99;
     expect($this->track->_validateTrackData($data))->false();
@@ -100,11 +100,11 @@ class TrackTest extends \MailPoetTest {
   function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
     $data = (object)array_merge(
       $this->track_data,
-      array(
+      [
         'queue' => $this->queue,
         'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter
-      )
+        'newsletter' => $this->newsletter,
+      ]
     );
     $data->subscriber->wp_user_id = 99;
     $data->preview = true;
@@ -141,8 +141,8 @@ class TrackTest extends \MailPoetTest {
     $newsletter = $newsletter->save();
     $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->setSubscribers(array($this->subscriber->id));
-    $queue->updateProcessedSubscribers(array($this->subscriber->id));
+    $queue->setSubscribers([$this->subscriber->id]);
+    $queue->updateProcessedSubscribers([$this->subscriber->id]);
     $queue->save();
     $track_data = $this->track_data;
     $track_data['queue_id'] = $queue->id;

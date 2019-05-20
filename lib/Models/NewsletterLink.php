@@ -22,7 +22,7 @@ class NewsletterLink extends Model {
       ->selectExpr('count(*)', 'clicksCount')
       ->tableAlias('links')
       ->innerJoin(StatisticsClicks::$_table,
-        array('clicks.link_id', '=', 'links.id'),
+        ['clicks.link_id', '=', 'links.id'],
         'clicks')
       ->where('newsletter_id', $newsletter->id())
       ->groupBy('links.id')

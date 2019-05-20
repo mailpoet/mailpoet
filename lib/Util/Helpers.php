@@ -11,7 +11,7 @@ class Helpers {
     return json_last_error() == JSON_ERROR_NONE;
   }
 
-  static function replaceLinkTags($source, $link = false, $attributes = array(), $link_tag = false) {
+  static function replaceLinkTags($source, $link = false, $attributes = [], $link_tag = false) {
     if (!$link) return $source;
     $link_tag = ($link_tag) ? $link_tag : self::LINK_TAG;
     $attributes = array_map(function($key) use ($attributes) {
@@ -50,7 +50,7 @@ class Helpers {
 
   static function flattenArray($array) {
     if (!$array) return;
-    $flattened_array = array();
+    $flattened_array = [];
     array_walk_recursive($array, function ($a) use (&$flattened_array) {
       $flattened_array[] = $a;
     });
@@ -73,11 +73,11 @@ class Helpers {
     }, $str);
   }
 
-  static function joinObject($object = array()) {
+  static function joinObject($object = []) {
     return implode(self::DIVIDER, $object);
   }
 
-  static function splitObject($object = array()) {
+  static function splitObject($object = []) {
     return explode(self::DIVIDER, $object);
   }
 

@@ -21,9 +21,9 @@ class Form extends Model {
   function __construct() {
     parent::__construct();
 
-    $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => __('Please specify a name.', 'mailpoet'),
+    ]);
   }
 
   function getSettings() {
@@ -61,8 +61,8 @@ class Form extends Model {
       return false;
     }
 
-    $skipped_types = array('html', 'divider', 'submit');
-    $fields = array();
+    $skipped_types = ['html', 'divider', 'submit'];
+    $fields = [];
 
     foreach ((array)$body as $field) {
       if (empty($field['id'])
@@ -81,10 +81,10 @@ class Form extends Model {
     return $fields ?: false;
   }
 
-  function filterSegments(array $segment_ids = array()) {
+  function filterSegments(array $segment_ids = []) {
     $settings = $this->getSettings();
     if (empty($settings['segments'])) {
-      return array();
+      return [];
     }
 
     if (!empty($settings['segments_selected_by'])
@@ -103,18 +103,18 @@ class Form extends Model {
   }
 
   static function groups() {
-    return array(
-      array(
+    return [
+      [
         'name' => 'all',
         'label' => __('All', 'mailpoet'),
-        'count' => Form::getPublished()->count()
-      ),
-      array(
+        'count' => Form::getPublished()->count(),
+      ],
+      [
         'name' => 'trash',
         'label' => __('Trash', 'mailpoet'),
-        'count' => Form::getTrashed()->count()
-      )
-    );
+        'count' => Form::getTrashed()->count(),
+      ],
+    ];
   }
 
   static function groupBy($orm, $group = null) {

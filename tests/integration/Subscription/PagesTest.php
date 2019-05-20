@@ -54,16 +54,16 @@ class PagesTest extends \MailPoetTest {
     $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     // create segment
     $segment = Segment::create();
-    $segment->hydrate(array('name' => 'List #1'));
+    $segment->hydrate(['name' => 'List #1']);
     $segment->save();
     expect($segment->getErrors())->false();
     // create subscriber->segment relation
     $subscriber_segment = SubscriberSegment::create();
     $subscriber_segment->hydrate(
-      array(
+      [
         'subscriber_id' => $this->subscriber->id,
-        'segment_id' => $segment->id
-      )
+        'segment_id' => $segment->id,
+      ]
     );
     $subscriber_segment->save();
     expect($subscriber_segment->getErrors())->false();
@@ -74,12 +74,12 @@ class PagesTest extends \MailPoetTest {
     $newsletter->status = Newsletter::STATUS_ACTIVE;
     $newsletter->save();
     expect($newsletter->getErrors())->false();
-    $newsletter_options = array(
+    $newsletter_options = [
       'event' => 'segment',
       'segment' => $segment->id,
       'afterTimeType' => 'days',
-      'afterTimeNumber' => 1
-    );
+      'afterTimeNumber' => 1,
+    ];
     foreach ($newsletter_options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;

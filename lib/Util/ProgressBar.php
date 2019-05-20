@@ -89,10 +89,10 @@ if (!class_exists('ProgressBar', false)) {
      *
      */
     private function saveProgress() {
-      file_put_contents($this->filename, json_encode(array(
+      file_put_contents($this->filename, json_encode([
         'total' => $this->total_count,
         'current' => $this->current_count,
-      )));
+      ]));
     }
 
     /**

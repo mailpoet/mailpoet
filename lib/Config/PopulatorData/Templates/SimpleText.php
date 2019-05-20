@@ -21,54 +21,54 @@ class SimpleText {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("Simple Text", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getBody() {
-    return array(
-      "content" => array(
+    return [
+      "content" => [
         "type" => "container",
         "orientation" => "vertical",
-        "styles" => array(
-          "block" => array(
-            "backgroundColor" => "transparent"
-          )
-        ),
-        "blocks" => array(
-          array(
+        "styles" => [
+          "block" => [
+            "backgroundColor" => "transparent",
+          ],
+        ],
+        "blocks" => [
+          [
             "type" => "container",
             "orientation" => "horizontal",
-            "styles" => array(
-              "block" => array(
-                "backgroundColor" => "#ffffff"
-              )
-            ),
-            "blocks" => array(
-              array(
+            "styles" => [
+              "block" => [
+                "backgroundColor" => "#ffffff",
+              ],
+            ],
+            "blocks" => [
+              [
                 "type" => "container",
                 "orientation" => "vertical",
-                "styles" => array(
-                  "block" => array(
-                    "backgroundColor" => "transparent"
-                  )
-                ),
-                "blocks" => array(
-                  array(
+                "styles" => [
+                  "block" => [
+                    "backgroundColor" => "transparent",
+                  ],
+                ],
+                "blocks" => [
+                  [
                     "type" => "spacer",
-                    "styles" => array(
-                      "block" => array(
+                    "styles" => [
+                      "block" => [
                         "backgroundColor" => "transparent",
-                        "height" => "30px"
-                      )
-                    )
-                  ),
-                  array(
+                        "height" => "30px",
+                      ],
+                    ],
+                  ],
+                  [
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
@@ -76,53 +76,53 @@ class SimpleText {
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
-                    "styles" => array(
-                      "block" => array(
-                        "textAlign" => "center"
-                      )
-                    )
-                  ),
-                  array(
+                    "styles" => [
+                      "block" => [
+                        "textAlign" => "center",
+                      ],
+                    ],
+                  ],
+                  [
                     "type" => "text",
-                    "text" => WPFunctions::get()->__("<p style=\"text-align: left;\">Hi [subscriber:firstname | default:subscriber],</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">In MailPoet, you can write emails in plain text, just like in a regular email. This can make your email newsletters more personal and attention-grabbing.</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Is this too simple? You can still style your text with basic formatting, like <strong>bold</strong> or <em>italics.</em></p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:</p>", 'mailpoet')
-                  )
-                )
-              )
-            )
-          ),
-          array(
+                    "text" => WPFunctions::get()->__("<p style=\"text-align: left;\">Hi [subscriber:firstname | default:subscriber],</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">In MailPoet, you can write emails in plain text, just like in a regular email. This can make your email newsletters more personal and attention-grabbing.</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Is this too simple? You can still style your text with basic formatting, like <strong>bold</strong> or <em>italics.</em></p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:</p>", 'mailpoet'),
+                  ],
+                ],
+              ],
+            ],
+          ],
+          [
             "type" => "container",
             "orientation" => "horizontal",
-            "styles" => array(
-              "block" => array(
-                "backgroundColor" => "#ffffff"
-              )
-            ),
-            "blocks" => array(
-              array(
+            "styles" => [
+              "block" => [
+                "backgroundColor" => "#ffffff",
+              ],
+            ],
+            "blocks" => [
+              [
                 "type" => "container",
                 "orientation" => "vertical",
-                "styles" => array(
-                  "block" => array(
-                    "backgroundColor" => "transparent"
-                  )
-                ),
-                "blocks" => array(
-                  array(
+                "styles" => [
+                  "block" => [
+                    "backgroundColor" => "transparent",
+                  ],
+                ],
+                "blocks" => [
+                  [
                     "type" => "spacer",
-                    "styles" => array(
-                      "block" => array(
+                    "styles" => [
+                      "block" => [
                         "backgroundColor" => "transparent",
-                        "height" => "23px"
-                      )
-                    )
-                  ),
-                  array(
+                        "height" => "23px",
+                      ],
+                    ],
+                  ],
+                  [
                     "type" => "button",
                     "text" => WPFunctions::get()->__("It's time to take action!", 'mailpoet'),
                     "url" => "",
-                    "styles" => array(
-                      "block" => array(
+                    "styles" => [
+                      "block" => [
                         "backgroundColor" => "#2ea1cd",
                         "borderColor" => "#0074a2",
                         "borderWidth" => "1px",
@@ -134,72 +134,72 @@ class SimpleText {
                         "fontFamily" => "Verdana",
                         "fontSize" => "16px",
                         "fontWeight" => "normal",
-                        "textAlign" => "left"
-                      )
-                    )
-                  ),
-                  array(
+                        "textAlign" => "left",
+                      ],
+                    ],
+                  ],
+                  [
                     "type" => "text",
-                    "text" => WPFunctions::get()->__("<p>Thanks for reading. See you soon!</p>\n<p>&nbsp;</p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet')
-                  ),
-                  array(
+                    "text" => WPFunctions::get()->__("<p>Thanks for reading. See you soon!</p>\n<p>&nbsp;</p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet'),
+                  ],
+                  [
                     "type" => "footer",
                     "text" => WPFunctions::get()->__("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
-                    "styles" => array(
-                      "block" => array(
-                        "backgroundColor" => "transparent"
-                      ),
-                      "text" => array(
+                    "styles" => [
+                      "block" => [
+                        "backgroundColor" => "transparent",
+                      ],
+                      "text" => [
                         "fontColor" => "#222222",
                         "fontFamily" => "Arial",
                         "fontSize" => "12px",
-                        "textAlign" => "left"
-                      ),
-                      "link" => array(
+                        "textAlign" => "left",
+                      ],
+                      "link" => [
                         "fontColor" => "#6cb7d4",
-                        "textDecoration" => "none"
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-      ),
-      "globalStyles" => array(
-        "text" => array(
+                        "textDecoration" => "none",
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+      "globalStyles" => [
+        "text" => [
           "fontColor" => "#000000",
           "fontFamily" => "Arial",
-          "fontSize" => "15px"
-        ),
-        "h1" => array(
+          "fontSize" => "15px",
+        ],
+        "h1" => [
           "fontColor" => "#111111",
           "fontFamily" => "Trebuchet MS",
-          "fontSize" => "30px"
-        ),
-        "h2" => array(
+          "fontSize" => "30px",
+        ],
+        "h2" => [
           "fontColor" => "#222222",
           "fontFamily" => "Trebuchet MS",
-          "fontSize" => "24px"
-        ),
-        "h3" => array(
+          "fontSize" => "24px",
+        ],
+        "h3" => [
           "fontColor" => "#333333",
           "fontFamily" => "Trebuchet MS",
-          "fontSize" => "22px"
-        ),
-        "link" => array(
+          "fontSize" => "22px",
+        ],
+        "link" => [
           "fontColor" => "#21759B",
-          "textDecoration" => "underline"
-        ),
-        "wrapper" => array(
-          "backgroundColor" => "#ffffff"
-        ),
-        "body" => array(
-          "backgroundColor" => "#ffffff"
-        )
-      )
-    );
+          "textDecoration" => "underline",
+        ],
+        "wrapper" => [
+          "backgroundColor" => "#ffffff",
+        ],
+        "body" => [
+          "backgroundColor" => "#ffffff",
+        ],
+      ],
+    ];
   }
 
   private function getThumbnail() {

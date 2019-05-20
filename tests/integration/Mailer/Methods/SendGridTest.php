@@ -7,22 +7,22 @@ use MailPoet\Mailer\Methods\SendGrid;
 class SendGridTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->settings = array(
+    $this->settings = [
       'method' => 'SendGrid',
       'api_key' => getenv('WP_TEST_MAILER_SENDGRID_API') ?
         getenv('WP_TEST_MAILER_SENDGRID_API') :
-        '1234567890'
-    );
-    $this->sender = array(
+        '1234567890',
+    ];
+    $this->sender = [
       'from_name' => 'Sender',
       'from_email' => 'staff@mailpoet.com',
-      'from_name_email' => 'Sender <staff@mailpoet.com>'
-    );
-    $this->reply_to = array(
+      'from_name_email' => 'Sender <staff@mailpoet.com>',
+    ];
+    $this->reply_to = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
-      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
-    );
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
+    ];
     $this->mailer = new SendGrid(
       $this->settings['api_key'],
       $this->sender,
@@ -30,16 +30,16 @@ class SendGridTest extends \MailPoetTest {
       new SendGridMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->newsletter = array(
+    $this->newsletter = [
       'subject' => 'testing SendGrid',
-      'body' => array(
+      'body' => [
         'html' => 'HTML body',
-        'text' => 'TEXT body'
-      )
-    );
-    $this->extra_params = array(
-      'unsubscribe_url' => 'http://www.mailpoet.com'
-    );
+        'text' => 'TEXT body',
+      ],
+    ];
+    $this->extra_params = [
+      'unsubscribe_url' => 'http://www.mailpoet.com',
+    ];
   }
 
   function testItCanGenerateBody() {

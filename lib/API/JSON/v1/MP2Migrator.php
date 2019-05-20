@@ -8,9 +8,9 @@ use MailPoet\Config\AccessControl;
 if (!defined('ABSPATH')) exit;
 
 class MP2Migrator extends APIEndpoint {
-  public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS
-  );
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
+  ];
   private $MP2Migrator;
 
   public function __construct() {
@@ -28,9 +28,9 @@ class MP2Migrator extends APIEndpoint {
       $process = $this->MP2Migrator->import($data);
       return $this->successResponse($process);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 
@@ -45,9 +45,9 @@ class MP2Migrator extends APIEndpoint {
       $process = $this->MP2Migrator->stopImport();
       return $this->successResponse($process);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 
@@ -62,9 +62,9 @@ class MP2Migrator extends APIEndpoint {
       $process = $this->MP2Migrator->skipImport();
       return $this->successResponse($process);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 

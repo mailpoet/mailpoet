@@ -17,17 +17,17 @@ use MailPoet\Settings\SettingsController;
 class BounceTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->emails = array(
+    $this->emails = [
       'soft_bounce@example.com',
       'hard_bounce@example.com',
-      'good_address@example.com'
-    );
+      'good_address@example.com',
+    ];
 
     foreach ($this->emails as $email) {
-        Subscriber::createOrUpdate(array(
+        Subscriber::createOrUpdate([
           'status' => Subscriber::STATUS_SUBSCRIBED,
-          'email' => $email
-        ));
+          'email' => $email,
+        ]);
     }
 
     $this->worker = new Bounce(microtime(true));
@@ -102,10 +102,10 @@ class BounceTest extends \MailPoetTest {
     $settings = new SettingsController();
     $settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
-      array(
+      [
         'method' => 'MailPoet',
         'mailpoet_api_key' => 'some_key',
-      )
+      ]
     );
   }
 

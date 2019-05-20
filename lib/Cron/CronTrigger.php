@@ -9,12 +9,12 @@ class CronTrigger {
   /** @var SettingsController */
   private $settings;
 
-  public static $available_methods = array(
+  public static $available_methods = [
     'mailpoet' => 'MailPoet',
     'wordpress' => 'WordPress',
     'linux_cron' => 'Linux Cron',
-    'none' => 'Disabled'
-  );
+    'none' => 'Disabled',
+  ];
   const DEFAULT_METHOD = 'WordPress';
   const SETTING_NAME = 'cron_trigger';
 

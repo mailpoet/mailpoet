@@ -33,7 +33,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = Subscriber::getCurrentWPUser();
     SubscriberSegment::subscribeToSegments(
       $subscriber,
-      array($this->wc_segment->id)
+      [$this->wc_segment->id]
     );
     expect($this->getRenderedOptinField())->contains('checked');
   }
@@ -45,7 +45,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = Subscriber::getCurrentWPUser();
     SubscriberSegment::unsubscribeFromSegments(
       $subscriber,
-      array($this->wc_segment->id)
+      [$this->wc_segment->id]
     );
     expect($this->getRenderedOptinField())->notContains('checked');
   }
@@ -98,7 +98,7 @@ class SubscriptionTest extends \MailPoetTest {
   function testItUnsubscribesIfCheckoutOptinIsDisabled() {
     SubscriberSegment::subscribeToSegments(
       $this->subscriber,
-      array($this->wc_segment->id)
+      [$this->wc_segment->id]
     );
     $subscribed_segments = $this->subscriber->segments()->findArray();
     expect($subscribed_segments)->count(1);
@@ -115,7 +115,7 @@ class SubscriptionTest extends \MailPoetTest {
   function testItUnsubscribesIfCheckboxIsNotChecked() {
     SubscriberSegment::subscribeToSegments(
       $this->subscriber,
-      array($this->wc_segment->id)
+      [$this->wc_segment->id]
     );
     $subscribed_segments = $this->subscriber->segments()->findArray();
     expect($subscribed_segments)->count(1);

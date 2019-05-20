@@ -9,14 +9,14 @@ if (!defined('ABSPATH')) exit;
 
 class LinksTest extends \MailPoetTest {
   function testItCanSaveLinks() {
-    $links = array(
-      array(
+    $links = [
+      [
         'link' => 'http://example.com',
-        'hash' => 'some_hash'
-      )
-    );
-    $newsletter = (object)array('id' => 1);
-    $queue = (object)array('id' => 2);
+        'hash' => 'some_hash',
+      ],
+    ];
+    $newsletter = (object)['id' => 1];
+    $queue = (object)['id' => 2];
     $result = Links::saveLinks($links, $newsletter, $queue);
     $newsletter_link = NewsletterLink::where('hash', $links[0]['hash'])
       ->findOne();
@@ -26,10 +26,10 @@ class LinksTest extends \MailPoetTest {
   }
 
   function testItCanHashAndReplaceLinks() {
-    $rendered_newsletter = array(
+    $rendered_newsletter = [
       'html' => '<a href="http://example.com">Example Link</a>',
-      'text' => '<a href="http://example.com">Example Link</a>'
-    );
+      'text' => '<a href="http://example.com">Example Link</a>',
+    ];
     $result = Links::hashAndReplaceLinks($rendered_newsletter, 0, 0);
     $processed_rendered_newsletter_body = $result[0];
     $processed_and_hashed_links = $result[1];
@@ -44,11 +44,11 @@ class LinksTest extends \MailPoetTest {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->save();
-    $rendered_newsletter = array(
+    $rendered_newsletter = [
       'html' => '<a href="http://example.com">Example Link</a>',
-      'text' => '<a href="http://example.com">Example Link</a>'
-    );
-    $queue = (object)array('id' => 2);
+      'text' => '<a href="http://example.com">Example Link</a>',
+    ];
+    $queue = (object)['id' => 2];
     $result = Links::process($rendered_newsletter, $newsletter, $queue);
     $newsletter_link = NewsletterLink::where('newsletter_id', $newsletter->id)
       ->findOne();

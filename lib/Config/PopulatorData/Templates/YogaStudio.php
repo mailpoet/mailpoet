@@ -14,76 +14,76 @@ class YogaStudio {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("Yoga Studio", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getBody() {
-    return array(
-      'content' => array(
+    return [
+      'content' => [
         'type' => 'container',
         'orientation' => 'vertical',
-        'styles' => array(
-          'block' => array(
+        'styles' => [
+          'block' => [
             'backgroundColor' => 'transparent',
-          ),
-        ),
-        'blocks' => array(
-          0 => array(
+          ],
+        ],
+        'blocks' => [
+          0 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => '#f8f8f8',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#1e2937',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          1 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          1 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => '#ffffff',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/yoga-1.png',
@@ -91,57 +91,57 @@ class YogaStudio {
                     'fullWidth' => true,
                     'width' => '1280px',
                     'height' => '740px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><strong>Here\'s your classes for this week:</strong></h2>',
-                  ),
-                  3 => array(
+                  ],
+                  3 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          2 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          2 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'text',
                     'text' => '<h3><strong><span style="color: #83bd31;"><em>Weekdays</em></span></strong></h3>
                       <p><strong>Monday</strong>: 7am, 9am, 11am, 3pm and 5pm.</p>
@@ -149,104 +149,104 @@ class YogaStudio {
                       <p><strong>Wednesday</strong>: 7am, 9am, 11am, 3pm and 5pm.</p>
                       <p><strong>Thursday</strong>:&nbsp;CLOSED FOR PRIVATE CLASS.</p>
                       <p><strong>Friday</strong>: 7am, 9am, 11am,&nbsp;and 3pm.</p>',
-                  ),
-                ),
-              ),
-              1 => array(
+                  ],
+                ],
+              ],
+              1 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'text',
                     'text' => '<h3><strong><span style="color: #83bd31;"><em>Weekend</em></span></strong></h3>
                       <p><strong>Saturday</strong>: 7am, 9am, 11am, 3pm and 5pm.</p>
                       <p><strong>Sunday</strong>: 7am, 9am, 11am, 3pm and 5pm.</p>
                       <p></p>',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          3 => array(
+                  ],
+                ],
+              ],
+            ],
+          ],
+          3 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'padding' => '22px',
                         'borderStyle' => 'solid',
                         'borderWidth' => '1px',
                         'borderColor' => '#d5d5d5',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;"><span style="font-weight: 600;">Meet the instructors</span></h3>',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          4 => array(
+                  ],
+                ],
+              ],
+            ],
+          ],
+          4 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/yoga-person-1.png',
@@ -254,23 +254,23 @@ class YogaStudio {
                     'fullWidth' => false,
                     'width' => '400px',
                     'height' => '400px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;"><span style="color: #83bd31;"><span style="font-weight: 600;">Maria Smith</span></span></h3>
                       <p style="text-align: center;">Nullam hendrerit feugiat feugiat. Praesent mollis ante lacus, quis tempor leo sagittis vel. Donec sagittis eros at felis venenatis ultricies.</p>',
-                  ),
-                  3 => array(
+                  ],
+                  3 => [
                     'type' => 'button',
                     'text' => 'Find Out More',
                     'url' => '',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#83bd31',
                         'borderColor' => '#83bd31',
                         'borderWidth' => '1px',
@@ -283,39 +283,39 @@ class YogaStudio {
                         'fontSize' => '14px',
                         'fontWeight' => 'normal',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  4 => array(
+                      ],
+                    ],
+                  ],
+                  4 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+              1 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/yoga-person-2.png',
@@ -323,23 +323,23 @@ class YogaStudio {
                     'fullWidth' => false,
                     'width' => '400px',
                     'height' => '400px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;"><span style="color: #83bd31;"><span style="font-weight: 600;">Fiona&nbsp;Davies</span></span></h3>
                       <p style="text-align: center;">Nullam hendrerit feugiat feugiat. Praesent mollis ante lacus, quis tempor leo sagittis vel. Donec sagittis eros at felis venenatis ultricies.</p>',
-                  ),
-                  3 => array(
+                  ],
+                  3 => [
                     'type' => 'button',
                     'text' => 'Find Out More',
                     'url' => '',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#83bd31',
                         'borderColor' => '#83bd31',
                         'borderWidth' => '1px',
@@ -352,39 +352,39 @@ class YogaStudio {
                         'fontSize' => '14px',
                         'fontWeight' => 'normal',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  4 => array(
+                      ],
+                    ],
+                  ],
+                  4 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              2 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+              2 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/yoga-person-3.png',
@@ -392,23 +392,23 @@ class YogaStudio {
                     'fullWidth' => false,
                     'width' => '400px',
                     'height' => '400px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;"><span style="color: #83bd31;"><span style="font-weight: 600;">Matthew&nbsp;Johnson</span></span></h3>
                        <p style="text-align: center;">Nullam hendrerit feugiat feugiat. Praesent mollis ante lacus, quis tempor leo sagittis vel. Donec sagittis eros at felis venenatis ultricies.</p>',
-                  ),
-                  3 => array(
+                  ],
+                  3 => [
                     'type' => 'button',
                     'text' => 'Find Out More',
                     'url' => '',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#83bd31',
                         'borderColor' => '#83bd31',
                         'borderWidth' => '1px',
@@ -421,87 +421,87 @@ class YogaStudio {
                         'fontSize' => '14px',
                         'fontWeight' => 'normal',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  4 => array(
+                      ],
+                    ],
+                  ],
+                  4 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          5 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          5 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => '#83bd31',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'text',
                     'text' => '<p><strong>Pose of the week:</strong></p>
                       <h2>Virabhadrasana I</h2>
                       <p>The myth is that the powerful priest Daksha made a great yagna (ritual sacrifice) but did not invite his youngest daughter Sati and her husband Shiva, the supreme ruler of the universe. Sati found out and decided to go alone to the yagna.</p>
                       <p></p>
                       <p>When she arrived, Sati entered into an argument with her father. Unable to withstand his insults, she spoke a vow to her father, &ldquo;Since it was you who gave me this body, I no longer wish to be associated with it.&rdquo;</p>',
-                  ),
-                  2 => array(
+                  ],
+                  2 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+              1 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/yoga-pose.png',
@@ -509,105 +509,105 @@ class YogaStudio {
                     'fullWidth' => false,
                     'width' => '400px',
                     'height' => '400px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '35px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          6 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          6 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => '#ffffff',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;"><span style="font-weight: 600;">Quote of the week</span></h3>',
-                  ),
-                  2 => array(
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><em>Be a lamp to yourself. Be your own confidence. Hold on to the truth within yourself as to the only truth.</em></h2>
                       <p style="text-align: center;"><span style="font-family: Arial, sans-serif; font-size: 14px; text-align: center; color: #999999;">Buddha</span><em></em></p>',
-                  ),
-                  3 => array(
+                  ],
+                  3 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#ffffff',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  4 => array(
+                      ],
+                    ],
+                  ],
+                  4 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#d5d5d5',
                         'padding' => '15px',
                         'borderStyle' => 'solid',
                         'borderWidth' => '1px',
                         'borderColor' => '#b3b3b3',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          7 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          7 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => '#d5d5d5',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/yoga-logo-small.png',
@@ -615,17 +615,17 @@ class YogaStudio {
                     'fullWidth' => false,
                     'width' => '50px',
                     'height' => '50px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => array(
-                      0 => array(
+                    'icons' => [
+                      0 => [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -633,8 +633,8 @@ class YogaStudio {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => array(
+                      ],
+                      1 => [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -642,8 +642,8 @@ class YogaStudio {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => array(
+                      ],
+                      2 => [
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
                         'link' => 'http://instagram.com',
@@ -651,8 +651,8 @@ class YogaStudio {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Instagram',
-                      ),
-                      3 => array(
+                      ],
+                      3 => [
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
@@ -660,131 +660,131 @@ class YogaStudio {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Youtube',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+              1 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'text',
                     'text' => '<p style="font-size: 13px; text-align: center;"><strong>Yoga Studio</strong></p>
                       <p style="font-size: 11px; text-align: center;">Address Line 1</p>
                       <p style="font-size: 11px; text-align: center;">Address Line 2</p>
                       <p style="font-size: 11px; text-align: center;">City/Town</p>
                       <p style="font-size: 11px; text-align: center;">Country</p>',
-                  ),
-                ),
-              ),
-              2 => array(
+                  ],
+                ],
+              ],
+              2 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'footer',
                     'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a></p><p><a href="[link:subscription_manage_url]">Manage subscription</a></p>',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => array(
+                      ],
+                      'text' => [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '11px',
                         'textAlign' => 'center',
-                      ),
-                      'link' => array(
+                      ],
+                      'link' => [
                         'fontColor' => '#000000',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          8 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          8 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#d5d5d5',
                         'padding' => '13px',
                         'borderStyle' => 'solid',
                         'borderWidth' => '1px',
                         'borderColor' => '#aaaaaa',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      'globalStyles' => array(
-        'text' => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+      'globalStyles' => [
+        'text' => [
           'fontColor' => '#1e2937',
           'fontFamily' => 'Arial',
           'fontSize' => '13px',
-        ),
-        'h1' => array(
+        ],
+        'h1' => [
           'fontColor' => '#1e2937',
           'fontFamily' => 'Arial',
           'fontSize' => '30px',
-        ),
-        'h2' => array(
+        ],
+        'h2' => [
           'fontColor' => '#1e2937',
           'fontFamily' => 'Arial',
           'fontSize' => '24px',
-        ),
-        'h3' => array(
+        ],
+        'h3' => [
           'fontColor' => '#1e2937',
           'fontFamily' => 'Arial',
           'fontSize' => '20px',
-        ),
-        'link' => array(
+        ],
+        'link' => [
           'fontColor' => '#83bd31',
           'textDecoration' => 'underline',
-        ),
-        'wrapper' => array(
+        ],
+        'wrapper' => [
           'backgroundColor' => '#ffffff',
-        ),
-        'body' => array(
+        ],
+        'body' => [
           'backgroundColor' => '#1e2937',
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
   }
 
   private function getThumbnail() {

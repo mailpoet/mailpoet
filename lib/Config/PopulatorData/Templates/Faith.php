@@ -17,45 +17,45 @@ class Faith {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("Faith", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getBody() {
-    return array(
-      'content' => array(
+    return [
+      'content' => [
         'type' => 'container',
         'orientation' => 'vertical',
-        'styles' => array(
-          'block' => array(
+        'styles' => [
+          'block' => [
             'backgroundColor' => 'transparent',
-          ),
-        ),
-        'blocks' => array(
-          0 => array(
+          ],
+        ],
+        'blocks' => [
+          0 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/church-header.jpg',
@@ -63,70 +63,70 @@ class Faith {
                     'fullWidth' => true,
                     'width' => '1036px',
                     'height' => '563px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center;">Spreading Love &amp; Hope...</h1><p>Duis id molestie ex. Quisque finibus magna in justo tristique pellentesque. Nulla sed leo facilisis arcu malesuada molestie vel quis dolor. Donec imperdiet condimentum odio ut elementum. Aenean nisl massa, rutrum a ullamcorper eget, molestie non erat.&nbsp;</p>',
-                  ),
-                  3 => array(
+                  ],
+                  3 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          1 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          1 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => '#f3f4f4',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: left;">Family Faith Events</h2>',
-                  ),
-                  2 => array(
+                  ],
+                  2 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/family.jpg',
@@ -134,50 +134,50 @@ class Faith {
                     'fullWidth' => false,
                     'width' => '660px',
                     'height' => '880px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  3 => array(
+                      ],
+                    ],
+                  ],
+                  3 => [
                     'type' => 'text',
                     'text' => '<p>In maximus tempus pellentesque. Nunc scelerisque ante odio, vel placerat dui fermentum efficitur. Integer vitae ex suscipit, aliquet eros vitae, ornare est. <a href="http://www.example.com">Aenean vel dapibus nisi</a>.</p>',
-                  ),
-                  4 => array(
+                  ],
+                  4 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+              1 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'text',
                     'text' => '<h2>Thoughts &amp; Prayers</h2>',
-                  ),
-                  2 => array(
+                  ],
+                  2 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/pray.jpg',
@@ -185,77 +185,77 @@ class Faith {
                     'fullWidth' => false,
                     'width' => '660px',
                     'height' => '880px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  3 => array(
+                      ],
+                    ],
+                  ],
+                  3 => [
                     'type' => 'text',
                     'text' => '<p>Donec sed vulputate ipsum. In scelerisque rutrum interdum. Donec imperdiet dignissim erat, in dictum lectus accumsan ut. <a href="http://www.example.com">Aliquam erat volutpat.</a></p>',
-                  ),
-                  4 => array(
+                  ],
+                  4 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          2 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          2 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center;">Latest News</h1>',
-                  ),
-                  2 => array(
+                  ],
+                  2 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'padding' => '7px',
                         'borderStyle' => 'dotted',
                         'borderWidth' => '1px',
                         'borderColor' => '#dcdcdc',
-                      ),
-                    ),
-                  ),
-                  3 => array(
+                      ],
+                    ],
+                  ],
+                  3 => [
                     'type' => 'automatedLatestContent',
                     'amount' => '3',
                     'contentType' => 'post',
-                    'terms' => array(),
+                    'terms' => [],
                     'inclusionType' => 'include',
                     'displayType' => 'excerpt',
                     'titleFormat' => 'h3',
@@ -269,12 +269,12 @@ class Faith {
                     'categoriesPrecededBy' => 'Categories:',
                     'readMoreType' => 'button',
                     'readMoreText' => 'Read more',
-                    'readMoreButton' => array(
+                    'readMoreButton' => [
                       'type' => 'button',
                       'text' => 'Read more',
                       'url' => '[postLink]',
-                      'styles' => array(
-                        'block' => array(
+                      'styles' => [
+                        'block' => [
                           'backgroundColor' => '#dfeaf3',
                           'borderColor' => '#00ddff',
                           'borderWidth' => '0px',
@@ -287,117 +287,117 @@ class Faith {
                           'fontSize' => '16px',
                           'fontWeight' => 'normal',
                           'textAlign' => 'center',
-                        ),
-                      ),
-                    ),
+                        ],
+                      ],
+                    ],
                     'sortBy' => 'newest',
                     'showDivider' => true,
-                    'divider' => array(
+                    'divider' => [
                       'type' => 'divider',
-                      'styles' => array(
-                        'block' => array(
+                      'styles' => [
+                        'block' => [
                           'backgroundColor' => 'transparent',
                           'padding' => '13px',
                           'borderStyle' => 'dotted',
                           'borderWidth' => '2px',
                           'borderColor' => '#dfeaf3',
-                        ),
-                      ),
-                    ),
+                        ],
+                      ],
+                    ],
                     'backgroundColor' => '#ffffff',
                     'backgroundColorAlternate' => '#eeeeee',
-                  ),
-                  4 => array(
+                  ],
+                  4 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  5 => array(
+                      ],
+                    ],
+                  ],
+                  5 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#e7eff6',
                         'padding' => '13px',
                         'borderStyle' => 'ridge',
                         'borderWidth' => '6px',
                         'borderColor' => '#597890',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          3 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          3 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => '#e7eff6',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'footer',
                     'text' => '<a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br /><b>Add your postal address here!</b>',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#e7eff6',
-                      ),
-                      'text' => array(
+                      ],
+                      'text' => [
                         'fontColor' => '#787878',
                         'fontFamily' => 'Tahoma',
                         'fontSize' => '14px',
                         'textAlign' => 'left',
-                      ),
-                      'link' => array(
+                      ],
+                      'link' => [
                         'fontColor' => '#787878',
                         'textDecoration' => 'none',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+              1 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;">Find us socially:</p>',
-                  ),
-                  1 => array(
+                  ],
+                  1 => [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => array(
-                      0 => array(
+                    'icons' => [
+                      0 => [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -405,8 +405,8 @@ class Faith {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => array(
+                      ],
+                      1 => [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -414,8 +414,8 @@ class Faith {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => array(
+                      ],
+                      2 => [
                         'type' => 'socialIcon',
                         'iconType' => 'email',
                         'link' => '',
@@ -423,8 +423,8 @@ class Faith {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Email',
-                      ),
-                      3 => array(
+                      ],
+                      3 => [
                         'type' => 'socialIcon',
                         'iconType' => 'website',
                         'link' => '',
@@ -432,57 +432,57 @@ class Faith {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Website',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      'globalStyles' => array(
-        'text' => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+      'globalStyles' => [
+        'text' => [
           'fontColor' => '#787878',
           'fontFamily' => 'Tahoma',
           'fontSize' => '16px',
-        ),
-        'h1' => array(
+        ],
+        'h1' => [
           'fontColor' => '#597890',
           'fontFamily' => 'Comic Sans MS',
           'fontSize' => '26px',
-        ),
-        'h2' => array(
+        ],
+        'h2' => [
           'fontColor' => '#597890',
           'fontFamily' => 'Comic Sans MS',
           'fontSize' => '18px',
-        ),
-        'h3' => array(
+        ],
+        'h3' => [
           'fontColor' => '#787878',
           'fontFamily' => 'Tahoma',
           'fontSize' => '18px',
-        ),
-        'link' => array(
+        ],
+        'link' => [
           'fontColor' => '#597890',
           'textDecoration' => 'underline',
-        ),
-        'wrapper' => array(
+        ],
+        'wrapper' => [
           'backgroundColor' => '#ffffff',
-        ),
-        'body' => array(
+        ],
+        'body' => [
           'backgroundColor' => '#e7eff6',
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
   }
 
   private function getThumbnail() {

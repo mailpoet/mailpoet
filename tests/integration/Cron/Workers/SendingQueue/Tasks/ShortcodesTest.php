@@ -12,23 +12,23 @@ class ShortcodesTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->WP_post = wp_insert_post(
-      array(
+      [
         'post_title' => 'Sample Post',
         'post_content' => 'contents',
         'post_status' => 'publish',
-      )
+      ]
     );
   }
 
   function testItCanReplaceShortcodes() {
-    $queue = $newsletter = (object)array(
-      'id' => 1
-    );
-    $subscriber = (object)array(
+    $queue = $newsletter = (object)[
+      'id' => 1,
+    ];
+    $subscriber = (object)[
       'email' => 'test@xample. com',
       'first_name' => 'John',
-      'last_name' => 'Doe'
-    );
+      'last_name' => 'Doe',
+    ];
     $rendered_body = '[subscriber:firstname] [subscriber:lastname]';
     $result = Shortcodes::process($rendered_body, null, $newsletter, $subscriber, $queue);
     expect($result)->equals('John Doe');

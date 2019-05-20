@@ -22,12 +22,12 @@ class NewsletterTemplate extends Model {
   function __construct() {
     parent::__construct();
 
-    $this->addValidations('name', array(
-      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
-    ));
-    $this->addValidations('body', array(
-      'required' => WPFunctions::get()->__('The template body cannot be empty.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+    ]);
+    $this->addValidations('body', [
+      'required' => WPFunctions::get()->__('The template body cannot be empty.', 'mailpoet'),
+    ]);
   }
 
   static function cleanRecentlySent($data) {

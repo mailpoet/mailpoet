@@ -11,9 +11,9 @@ class FormTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->settings = new SettingsController();
-    $this->form = Form::createOrUpdate(array(
-      'name' => 'My Form'
-    ));
+    $this->form = Form::createOrUpdate([
+      'name' => 'My Form',
+    ]);
   }
 
   function testItCanBeCreated() {
@@ -83,42 +83,42 @@ class FormTest extends \MailPoetTest {
   }
 
   function testItCanCreateOrUpdate() {
-    $created_form = Form::createOrUpdate(array(
-      'name' => 'Created Form'
-    ));
+    $created_form = Form::createOrUpdate([
+      'name' => 'Created Form',
+    ]);
     expect($created_form->id > 0)->true();
     expect($created_form->getErrors())->false();
 
     $form = Form::findOne($created_form->id);
     expect($form->name)->equals('Created Form');
 
-    $is_updated = Form::createOrUpdate(array(
+    $is_updated = Form::createOrUpdate([
       'id' => $created_form->id,
-      'name' => 'Updated Form'
-    ));
+      'name' => 'Updated Form',
+    ]);
     $form = Form::findOne($created_form->id);
     expect($form->name)->equals('Updated Form');
   }
 
   function testItCanProvideAFieldList() {
-    $form = Form::createOrUpdate(array(
+    $form = Form::createOrUpdate([
       'name' => 'My Form',
-      'body' => array(
-        array(
+      'body' => [
+        [
           'type' => 'text',
           'id' => 'email',
-        ),
-        array(
+        ],
+        [
           'type' => 'text',
           'id' => 2,
-        ),
-        array(
+        ],
+        [
           'type' => 'submit',
           'id' => 'submit',
-        )
-      )
-    ));
-    expect($form->getFieldList())->equals(array('email', 'cf_2'));
+        ],
+      ],
+    ]);
+    expect($form->getFieldList())->equals(['email', 'cf_2']);
   }
 
   function testItUpdatesSuccessMessagesWhenConfirmationIsDisabled() {

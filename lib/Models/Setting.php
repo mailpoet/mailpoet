@@ -21,9 +21,9 @@ class Setting extends Model {
   function __construct() {
     parent::__construct();
 
-    $this->addValidations('name', array(
-      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+    ]);
   }
 
   /**
@@ -38,7 +38,7 @@ class Setting extends Model {
 
   public static function getAll() {
     $settingsCollection = self::findMany();
-    $settings = array();
+    $settings = [];
     if (!empty($settingsCollection)) {
       foreach ($settingsCollection as $setting) {
         $value = (is_serialized($setting->value)
@@ -51,8 +51,8 @@ class Setting extends Model {
     return $settings;
   }
 
-  public static function createOrUpdate($data = array()) {
-    $keys = isset($data['name']) ? array('name' => $data['name']) : false;
+  public static function createOrUpdate($data = []) {
+    $keys = isset($data['name']) ? ['name' => $data['name']] : false;
     return parent::_createOrUpdate($data, $keys);
   }
 
@@ -66,9 +66,9 @@ class Setting extends Model {
     if (empty($sender_address) || empty($sender_name) || $settings->get('sender')) {
       return;
     }
-    $settings->set('sender', array(
+    $settings->set('sender', [
       'address' => $sender_address,
-      'name' => $sender_name
-    ));
+      'name' => $sender_name,
+    ]);
   }
 }
