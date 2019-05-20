@@ -79,6 +79,9 @@ Module.ContainerBlockModel = base.BlockModel.extend({
 
 Module.ContainerBlocksView = Marionette.CollectionView.extend({
   className: 'mailpoet_container',
+  events: {
+    click: 'removeFocusFromAnyActiveElement',
+  },
   childView: function (model) {
     return App.getBlockTypeView(model.get('type'));
   },
@@ -101,6 +104,15 @@ Module.ContainerBlocksView = Marionette.CollectionView.extend({
   },
   onChildviewResizeStop: function onChildviewResizeStart(event) {
     this.triggerMethod('resizeStop', event);
+  },
+  removeFocusFromAnyActiveElement: function removeFocusFromAnyActiveElement(event) {
+    if (!event || !event.target) {
+      return;
+    }
+    if (event.target.className.indexOf('mailpoet_container_horizontal') === -1) {
+      return;
+    }
+    document.activeElement.blur();
   },
 });
 
