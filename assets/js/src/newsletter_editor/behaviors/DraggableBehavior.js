@@ -86,6 +86,7 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
             that.view.$el.addClass('mailpoet_hidden');
           }
           App.getChannel().trigger('dragStart');
+          document.activeElement.blur();
         }
       },
       // call this function on every dragmove event
