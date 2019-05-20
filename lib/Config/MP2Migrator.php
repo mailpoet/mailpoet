@@ -944,7 +944,13 @@ class MP2Migrator {
    */
   private function replaceMP2Shortcodes($text) {
     $text = str_replace('[total_subscribers]', '[mailpoet_subscribers_count]', $text);
-    $text = preg_replace_callback('/\[wysija_subscribers_count list_id="(.*)" \]/', array($this, 'replaceMP2ShortcodesCallback'), $text);
+    $text = preg_replace_callback(
+      '/\[wysija_subscribers_count list_id="(.*)" \]/',
+      function ($matches) {
+        return $this->replaceMP2ShortcodesCallback($matches);
+      },
+      $text
+    );
     return $text;
   }
 

@@ -19,29 +19,20 @@ class NewSubscriberNotificationMailer {
   /** @var \MailPoet\Mailer\Mailer|null */
   private $mailer;
 
-  /** @var Functions */
-  private $wordpress_functions;
-
   /** @var SettingsController */
   private $settings;
 
   /**
    * @param \MailPoet\Mailer\Mailer|null $mailer
    * @param Renderer|null $renderer
-   * @param Functions|null $wordpress_functions
    */
-  function __construct($mailer = null, $renderer = null, $wordpress_functions = null) {
+  function __construct($mailer = null, $renderer = null) {
     if ($renderer) {
       $this->renderer = $renderer;
     } else {
       $caching = !WP_DEBUG;
       $debugging = WP_DEBUG;
        $this->renderer = new Renderer($caching, $debugging);
-    }
-    if ($wordpress_functions) {
-      $this->wordpress_functions = $wordpress_functions;
-    } else {
-      $this->wordpress_functions = new Functions();
     }
     $this->mailer = $mailer;
     $this->settings = new SettingsController();

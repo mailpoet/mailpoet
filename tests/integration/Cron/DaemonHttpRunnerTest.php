@@ -75,7 +75,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       ]),
     ]);
 
-    $daemon = new Daemon($this->settings, $workers_factory_mock);
+    $daemon = new Daemon($workers_factory_mock);
     $daemon_http_runner = $this->make(new DaemonHttpRunner($daemon), array(
       'pauseExecution' => null,
       'callSelf' => null
@@ -124,7 +124,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon($this->settings, $workers_factory_mock));
+    $daemon->__construct(new Daemon($workers_factory_mock));
     $daemon->run($data);
   }
 
@@ -148,7 +148,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon($this->settings, $workers_factory_mock));
+    $daemon->__construct(new Daemon($workers_factory_mock));
     $daemon->run($data);
     $data_after_run = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($data_after_run['token'])->equals(567);
@@ -179,7 +179,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon_http_runner->__construct(new Daemon($this->settings, $this->createWorkersFactoryMock()));
+    $daemon_http_runner->__construct(new Daemon($this->createWorkersFactoryMock()));
     $daemon_http_runner->run($data);
     $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['token'])->equals($daemon_http_runner->token);
@@ -199,7 +199,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       ]),
     ]);
 
-    $daemon = new Daemon($this->settings, $workers_factory_mock);
+    $daemon = new Daemon($workers_factory_mock);
     $daemon_http_runner = $this->make(new DaemonHttpRunner($daemon), array(
       'pauseExecution' => null,
       'callSelf' => null
@@ -231,7 +231,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123
     );
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon($this->settings, $this->createWorkersFactoryMock()));
+    $daemon->__construct(new Daemon($this->createWorkersFactoryMock()));
     $daemon->run($data);
     expect(ignore_user_abort())->equals(1);
   }

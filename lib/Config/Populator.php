@@ -544,6 +544,10 @@ class Populator {
     $task->save();
   }
 
+  /**
+   * Remove this comment when this private function is actually used
+   * @phpcsSuppress SlevomatCodingStandard.Classes.UnusedPrivateElements
+   */
   private function updateFormsSuccessMessages() {
     if (version_compare($this->settings->get('db_version', '3.23.2'), '3.23.1', '>')) {
       return;

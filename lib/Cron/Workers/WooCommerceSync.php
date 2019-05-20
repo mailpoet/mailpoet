@@ -22,8 +22,6 @@ class WooCommerceSync extends SimpleWorker {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
-  private $taskAlreadyInProgress = false;
-
   function __construct(WooCommerceSegment $woocommerce_segment, WooCommerceHelper $woocommerce_helper, $timer = false) {
     $this->woocommerce_segment = $woocommerce_segment;
     $this->woocommerce_helper = $woocommerce_helper;

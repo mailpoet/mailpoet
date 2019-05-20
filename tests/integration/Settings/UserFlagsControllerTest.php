@@ -14,13 +14,10 @@ class UserFlagsControllerTest extends \MailPoetTest {
   /** @var int */
   private $current_user_id;
 
-  /** @var int */
-  private $other_user_id;
-
   function _before() {
     parent::_before();
     UserFlag::deleteMany();
-    
+
     $current_user_id = 1;
     $other_user_id = 2;
     WPFunctions::set(Stub::make(new WPFunctions, [
