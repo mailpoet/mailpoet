@@ -20,7 +20,7 @@ class SendingTest extends \MailPoetTest {
     ]);
     $this->sending = $this->createNewSendingTask([
       'status' => null,
-      'task' =>  $this->task,
+      'task' => $this->task,
       'queue' => $this->queue,
     ]);
   }

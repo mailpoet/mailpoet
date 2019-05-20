@@ -10,7 +10,7 @@ class ExportFilesCleanupTest extends \MailPoetTest {
     $wp_upload_dir = wp_upload_dir();
     $old_file_path = $wp_upload_dir['basedir'] . '/mailpoet/MailPoet_export_old_file.csv';
     $new_file_path = $wp_upload_dir['basedir'] . '/mailpoet/MailPoet_export_new_file.csv';
-    touch($old_file_path, time()  - (60 * 60 * 24 * 7));
+    touch($old_file_path, time() - (60 * 60 * 24 * 7));
     touch($new_file_path);
 
     $cleanup = new ExportFilesCleanup();

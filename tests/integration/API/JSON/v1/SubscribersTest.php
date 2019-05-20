@@ -248,7 +248,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanSearchListing() {
-    $new_subscriber =  Subscriber::createOrUpdate([
+    $new_subscriber = Subscriber::createOrUpdate([
       'email' => 'search.me@find.me',
       'first_name' => 'Billy Bob',
       'last_name' => 'Thornton',
@@ -376,7 +376,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function testItCanBulkDeleteSelectionOfSubscribers() {
-    $deletable_subscriber =  Subscriber::createOrUpdate([
+    $deletable_subscriber = Subscriber::createOrUpdate([
       'email' => 'to.be.removed@mailpoet.com',
     ]);
 

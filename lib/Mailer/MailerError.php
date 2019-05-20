@@ -93,9 +93,9 @@ class MailerError {
     $message .= $this->message ? ' ' : '';
 
     if (count($this->subscribers_errors) === 1) {
-      $message .=  WPFunctions::get()->__('Unprocessed subscriber:', 'mailpoet') . ' ';
+      $message .= WPFunctions::get()->__('Unprocessed subscriber:', 'mailpoet') . ' ';
     } else {
-      $message .=  WPFunctions::get()->__('Unprocessed subscribers:', 'mailpoet') . ' ';
+      $message .= WPFunctions::get()->__('Unprocessed subscribers:', 'mailpoet') . ' ';
     }
 
     $message .= implode(

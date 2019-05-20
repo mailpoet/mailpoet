@@ -59,12 +59,12 @@ class SegmentsExporterTest extends \MailPoetTest {
     expect($result)->internalType('array');
     expect($result)->hasKey('data');
     expect($result)->hasKey('done');
-    $expected =  [
+    $expected = [
        [
         'group_id' => 'mailpoet-lists',
         'group_label' => 'MailPoet Mailing Lists',
         'item_id' => 'list-' . $segment1->id(),
-        'data' =>  [
+        'data' => [
              ['name' => 'List name', 'value' => 'List 1'],
              ['name' => 'Subscription status', 'value' => 'subscribed'],
              ['name' => 'Timestamp of the subscription (or last change of the subscription status)', 'value' => '2018-05-02 15:26:52'],
@@ -74,7 +74,7 @@ class SegmentsExporterTest extends \MailPoetTest {
         'group_id' => 'mailpoet-lists',
         'group_label' => 'MailPoet Mailing Lists',
         'item_id' => 'list-' . $segment2->id(),
-        'data' =>  [
+        'data' => [
              ['name' => 'List name', 'value' => 'List 2'],
              ['name' => 'Subscription status', 'value' => 'unsubscribed'],
              ['name' => 'Timestamp of the subscription (or last change of the subscription status)', 'value' => '2018-05-02 15:26:00'],

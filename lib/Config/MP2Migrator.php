@@ -1077,7 +1077,7 @@ class MP2Migrator {
     $sending_emails_number = isset($options['sending_emails_number']) ? $options['sending_emails_number'] : '';
     $sending_emails_each = isset($options['sending_emails_each']) ? $options['sending_emails_each'] : '';
     $mta['frequency']['emails'] = $this->mapFrequencyEmails($sending_emails_number, $sending_emails_each);
-    $mta['frequency']['interval'] =  $this->mapFrequencyInterval($sending_emails_each);
+    $mta['frequency']['interval'] = $this->mapFrequencyInterval($sending_emails_each);
     $mta['host'] = isset($options['smtp_host']) ? $options['smtp_host'] : '';
     $mta['port'] = isset($options['smtp_port']) ? $options['smtp_port'] : '';
     $mta['login'] = isset($options['smtp_login']) ? $options['smtp_login'] : '';

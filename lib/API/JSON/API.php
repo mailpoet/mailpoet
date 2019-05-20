@@ -95,7 +95,7 @@ class API {
   }
 
   function setRequestData($data) {
-    $this->_request_api_version = !empty($data['api_version']) ? $data['api_version']: false;
+    $this->_request_api_version = !empty($data['api_version']) ? $data['api_version'] : false;
 
     $this->_request_endpoint = isset($data['endpoint'])
       ? Helpers::underscoreToCamelCase(trim($data['endpoint']))

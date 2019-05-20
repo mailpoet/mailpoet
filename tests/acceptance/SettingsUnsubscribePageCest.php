@@ -9,7 +9,7 @@ class SettingsUnsubscribePageCest {
     $I->amOnMailPoetPage('Settings');
     $I->click('[data-automation-id="unsubscribe_page_preview_link"]');
     $I->switchToNextTab();
-    $I->waitForElement(['css'=>'.entry-title']);
+    $I->waitForElement(['css' => '.entry-title']);
   }
 
 }

@@ -677,7 +677,7 @@ class MP2MigratorTest extends \MailPoetTest {
    *
    */
   private function loadMP2OptionsFixtures() {
-    $wysija_options =  [
+    $wysija_options = [
       'from_name' => 'Sender',
       'replyto_name' => 'Reply',
       'emails_notified' => 'notification@email.com',

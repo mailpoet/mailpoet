@@ -121,7 +121,7 @@ class Worker {
     $clicked = ($newsletter->statistics['clicked'] * 100) / $newsletter->total_sent;
     $opened = ($newsletter->statistics['opened'] * 100) / $newsletter->total_sent;
     $unsubscribed = ($newsletter->statistics['unsubscribed'] * 100) / $newsletter->total_sent;
-    $context =  [
+    $context = [
       'subject' => $newsletter->subject,
       'preheader' => sprintf(_x(
         '%1$s%% opens, %2$s%% clicks, %3$s%% unsubscribes in a nutshell.', 'newsletter open rate, click rate and unsubscribe rate', 'mailpoet'),

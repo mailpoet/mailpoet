@@ -57,7 +57,7 @@ class BulkActionTest extends \MailPoetTest {
 
   function testBulkActionForDefaultSegment() {
     $handler = new BulkAction([
-      'listing' => ['filter'=> ['segment' => $this->segment_1->id]],
+      'listing' => ['filter' => ['segment' => $this->segment_1->id]],
       'action' => 'trash',
     ]);
     $result = $handler->apply();
@@ -66,7 +66,7 @@ class BulkActionTest extends \MailPoetTest {
 
   function testBulkActionForUnknownSegment() {
     $handler = new BulkAction([
-      'listing' => ['filter'=> ['segment' => 'this-segment-doesnt-exist']],
+      'listing' => ['filter' => ['segment' => 'this-segment-doesnt-exist']],
       'action' => 'trash',
     ]);
     $result = $handler->apply();
@@ -75,7 +75,7 @@ class BulkActionTest extends \MailPoetTest {
 
   function testForUnknownSegmentTypeWithoutHandler() {
     $handler = new BulkAction([
-      'listing' => ['filter'=> ['segment' => $this->segment_2->id]],
+      'listing' => ['filter' => ['segment' => $this->segment_2->id]],
       'action' => 'trash',
     ]);
     $this->setExpectedException('InvalidArgumentException');
@@ -96,7 +96,7 @@ class BulkActionTest extends \MailPoetTest {
     });
 
     $handler = new BulkAction([
-      'listing' => ['filter'=> ['segment' => $this->segment_2->id]],
+      'listing' => ['filter' => ['segment' => $this->segment_2->id]],
       'action' => 'trash',
     ]);
     $result = $handler->apply();

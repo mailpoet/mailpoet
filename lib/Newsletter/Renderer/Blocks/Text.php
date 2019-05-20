@@ -103,7 +103,7 @@ class Text {
       if (!preg_match('/text-align/i', $style)) {
         $style = 'text-align: left;' . $style;
       }
-      $contents =  str_replace('&', '&amp;', $paragraph->html());
+      $contents = str_replace('&', '&amp;', $paragraph->html());
       $paragraph->setTag('table');
       $paragraph->style = 'border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;';
       $paragraph->width = '100%';

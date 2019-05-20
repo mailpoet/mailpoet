@@ -655,9 +655,9 @@ class Menu {
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
-    $data['current_wp_user'] =  $this->wp->wpGetCurrentUser()->to_array();
-    $data['current_wp_user_firstname'] =  $this->wp->wpGetCurrentUser()->user_firstname;
-    $data['site_url'] =  $this->wp->siteUrl();
+    $data['current_wp_user'] = $this->wp->wpGetCurrentUser()->to_array();
+    $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
+    $data['site_url'] = $this->wp->siteUrl();
     $data['roles'] = $wp_roles->get_names();
     $data['roles']['mailpoet_all'] = $this->wp->__('In any WordPress role', 'mailpoet');
 
@@ -673,7 +673,7 @@ class Menu {
       24
     );
     $data['mailpoet_main_page'] = $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG);
-    $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter'])?$data['settings']['show_congratulate_after_first_newsletter']:'false';
+    $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter']) ? $data['settings']['show_congratulate_after_first_newsletter'] : 'false';
 
     $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();

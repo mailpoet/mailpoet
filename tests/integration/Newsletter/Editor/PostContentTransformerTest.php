@@ -31,7 +31,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldAddImageAboveTitleForExcerptWithoutLayout() {
-    $args =  [
+    $args = [
       'withLayout' => false,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'aboveTitle',
@@ -43,7 +43,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldAddImageBelowTitleForExcerptWithoutLayout() {
-    $args =  [
+    $args = [
       'withLayout' => false,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'belowTitle',
@@ -55,7 +55,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldTransformContentWithoutLayoutWhenImageIsMissing() {
-    $args =  [
+    $args = [
       'withLayout' => false,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'belowTitle',
@@ -67,7 +67,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldNotAddImageForTitleOnlyWhenImageIsPresentWithoutLayout() {
-    $args =  [
+    $args = [
       'withLayout' => false,
       'displayType' => 'titleOnly',
       'featuredImagePosition' => 'aboveTitle',
@@ -79,7 +79,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldPrependTitleTextToContentTextIfFirstContentBlockIsTextual() {
-    $args =  [
+    $args = [
       'withLayout' => false,
       'displayType' => 'titleOnly',
       'featuredImagePosition' => 'aboveTitle',
@@ -95,7 +95,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldCreateLayoutStructureForCenteredImageWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'centered',
@@ -116,7 +116,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldCreateLayoutStructureForCenteredImageWithLayoutWithTitleAboveExcerpt() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'centered',
@@ -133,7 +133,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldCreateLayoutStructureForOtherThanCenteredPositionedImageWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'alternate',
@@ -152,7 +152,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldAddCenteredImageForExcerptWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'centered',
@@ -164,7 +164,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldHandleOldStructureImagePositionValueAndAddImageForExcerptWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'aboveTitle',
@@ -176,7 +176,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldAddLeftPositionedImageForExcerptWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'left',
@@ -190,7 +190,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldAddLeftPositionedImageForExcerptWithTitleAboveExcerpt() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'left',
@@ -205,7 +205,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldAddRightPositionedImageForExcerptWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'right',
@@ -219,7 +219,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldNotAddImageForTitleOnlyWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'titleOnly',
       'featuredImagePosition' => 'centered',
@@ -231,7 +231,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldAddClassToParagraphsInFullPostsWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'full',
       'featuredImagePosition' => 'right',
@@ -249,7 +249,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   }
 
   function testShouldNotAddClassToParagraphsInExcerptWithLayout() {
-    $args =  [
+    $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
       'featuredImagePosition' => 'right',
