@@ -50,6 +50,7 @@ class CronHelperTest extends \MailPoetTest {
         'run_started_at' => null,
         'run_completed_at' => null,
         'last_error' => null,
+        'last_error_date' => null,
       ]
     );
   }
@@ -68,6 +69,7 @@ class CronHelperTest extends \MailPoetTest {
         'run_started_at' => null,
         'run_completed_at' => null,
         'last_error' => null,
+        'last_error_date' => null,
       ]
     );
   }
@@ -192,9 +194,11 @@ class CronHelperTest extends \MailPoetTest {
       $daemon
     );
 
+    $time = time();
     CronHelper::saveDaemonLastError('error');
     $daemon = CronHelper::getDaemon();
     expect($daemon['last_error'])->equals('error');
+    expect($daemon['last_error_date'])->greaterOrEquals($time);
   }
 
 
@@ -325,6 +329,7 @@ class CronHelperTest extends \MailPoetTest {
       'run_started_at' => null,
       'run_completed_at' => null,
       'last_error' => null,
+      'last_error_date' => null,
     ];
   }
 }

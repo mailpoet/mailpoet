@@ -26,6 +26,7 @@ class CronHelper {
       'run_started_at' => null,
       'run_completed_at' => null,
       'last_error' => null,
+      'last_error_date' => null,
     ];
     self::saveDaemon($daemon);
     return $daemon;
@@ -44,6 +45,7 @@ class CronHelper {
     $daemon = self::getDaemon();
     if ($daemon) {
       $daemon['last_error'] = $error;
+      $daemon['last_error_date'] = time();
       self::saveDaemon($daemon);
     }
   }
