@@ -69,7 +69,7 @@ class ConfirmationEmailMailer {
     $body = Helpers::replaceLinkTags(
       $body,
       Url::getConfirmationUrl($subscriber),
-      array('target' => '_blank'),
+      ['target' => '_blank'],
       'activation_link'
     );
 
@@ -77,13 +77,13 @@ class ConfirmationEmailMailer {
     $text = @Html2Text::convert((mb_detect_encoding($body, 'UTF-8', true)) ? $body : utf8_encode($body));
 
     // build email data
-    $email = array(
+    $email = [
       'subject' => $signup_confirmation['subject'],
       'body' => [
         'html' => $body,
         'text' => $text,
-      ]
-    );
+      ],
+    ];
 
     // set from
     $from = (

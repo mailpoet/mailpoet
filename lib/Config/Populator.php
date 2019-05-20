@@ -39,11 +39,11 @@ class Populator {
   function __construct() {
     $this->settings = new SettingsController();
     $this->prefix = Env::$db_prefix;
-    $this->models = array(
+    $this->models = [
       'newsletter_option_fields',
       'newsletter_templates',
-    );
-    $this->templates = array(
+    ];
+    $this->templates = [
       'WelcomeBlank1Column',
       'WelcomeBlank12Column',
       'GiftWelcome',
@@ -118,14 +118,14 @@ class Populator {
       'LifestyleBlogB',
       'Painter',
       'FarmersMarket',
-    );
+    ];
   }
 
   function up() {
     $localizer = new Localizer();
     $localizer->forceLoadWebsiteLocaleText();
 
-    array_map(array($this, 'populate'), $this->models);
+    array_map([$this, 'populate'], $this->models);
 
     $this->createDefaultSegments();
     $this->createDefaultForm();
@@ -141,12 +141,12 @@ class Populator {
   }
 
   private function createMailPoetPage() {
-    $pages = WPFunctions::get()->getPosts(array(
+    $pages = WPFunctions::get()->getPosts([
       'posts_per_page' => 1,
       'orderby' => 'date',
       'order' => 'DESC',
-      'post_type' => 'mailpoet_page'
-    ));
+      'post_type' => 'mailpoet_page',
+    ]);
 
     $page = null;
     if (!empty($pages)) {
@@ -162,13 +162,13 @@ class Populator {
       $mailpoet_page_id = (int)$page->ID;
     }
 
-    $subscription = $this->settings->get('subscription.pages', array());
+    $subscription = $this->settings->get('subscription.pages', []);
     if (empty($subscription)) {
-      $this->settings->set('subscription.pages', array(
+      $this->settings->set('subscription.pages', [
         'unsubscribe' => $mailpoet_page_id,
         'manage' => $mailpoet_page_id,
-        'confirmation' => $mailpoet_page_id
-      ));
+        'confirmation' => $mailpoet_page_id,
+      ]);
     }
   }
 
@@ -178,16 +178,16 @@ class Populator {
 
     // set cron trigger option to default method
     if (!$this->settings->fetch(CronTrigger::SETTING_NAME)) {
-      $this->settings->set(CronTrigger::SETTING_NAME, array(
-        'method' => CronTrigger::DEFAULT_METHOD
-      ));
+      $this->settings->set(CronTrigger::SETTING_NAME, [
+        'method' => CronTrigger::DEFAULT_METHOD,
+      ]);
     }
 
     // set default sender info based on current user
-    $sender = array(
+    $sender = [
       'name' => $current_user->display_name,
-      'address' => $current_user->user_email
-    );
+      'address' => $current_user->user_email,
+    ];
 
     // set default from name & address
     if (!$this->settings->fetch('sender')) {
@@ -196,14 +196,14 @@ class Populator {
 
     // enable signup confirmation by default
     if (!$this->settings->fetch('signup_confirmation')) {
-      $this->settings->set('signup_confirmation', array(
+      $this->settings->set('signup_confirmation', [
         'enabled' => true,
-        'from' => array(
+        'from' => [
           'name' => WPFunctions::get()->getOption('blogname'),
-          'address' => WPFunctions::get()->getOption('admin_email')
-        ),
-        'reply_to' => $sender
-      ));
+          'address' => WPFunctions::get()->getOption('admin_email'),
+        ],
+        'reply_to' => $sender,
+      ]);
     }
 
     // set installation date
@@ -214,11 +214,11 @@ class Populator {
     // set reCaptcha settings
     $re_captcha = $this->settings->fetch('re_captcha');
     if (empty($re_captcha)) {
-      $this->settings->set('re_captcha', array(
+      $this->settings->set('re_captcha', [
         'enabled' => false,
         'site_token' => '',
-        'secret_token' => ''
-      ));
+        'secret_token' => '',
+      ]);
     }
 
     $subscriber_email_notification = $this->settings->fetch(NewSubscriberNotificationMailer::SETTINGS_KEY);
@@ -317,84 +317,84 @@ class Populator {
   }
 
   protected function newsletterOptionFields() {
-    $option_fields = array(
-      array(
+    $option_fields = [
+      [
         'name' => 'isScheduled',
         'newsletter_type' => 'standard',
-      ),
-      array(
+      ],
+      [
         'name' => 'scheduledAt',
         'newsletter_type' => 'standard',
-      ),
-      array(
+      ],
+      [
         'name' => 'event',
         'newsletter_type' => 'welcome',
-      ),
-      array(
+      ],
+      [
         'name' => 'segment',
         'newsletter_type' => 'welcome',
-      ),
-      array(
+      ],
+      [
         'name' => 'role',
         'newsletter_type' => 'welcome',
-      ),
-      array(
+      ],
+      [
         'name' => 'afterTimeNumber',
         'newsletter_type' => 'welcome',
-      ),
-      array(
+      ],
+      [
         'name' => 'afterTimeType',
         'newsletter_type' => 'welcome',
-      ),
-      array(
+      ],
+      [
         'name' => 'intervalType',
         'newsletter_type' => 'notification',
-      ),
-      array(
+      ],
+      [
         'name' => 'timeOfDay',
         'newsletter_type' => 'notification',
-      ),
-      array(
+      ],
+      [
         'name' => 'weekDay',
         'newsletter_type' => 'notification',
-      ),
-      array(
+      ],
+      [
         'name' => 'monthDay',
         'newsletter_type' => 'notification',
-      ),
-      array(
+      ],
+      [
         'name' => 'nthWeekDay',
         'newsletter_type' => 'notification',
-      ),
-      array(
+      ],
+      [
         'name' => 'schedule',
         'newsletter_type' => 'notification',
-      )
-    );
+      ],
+    ];
 
-    return array(
+    return [
       'rows' => $option_fields,
-      'identification_columns' => array(
+      'identification_columns' => [
         'name',
-        'newsletter_type'
-      )
-    );
+        'newsletter_type',
+      ],
+    ];
   }
 
   protected function newsletterTemplates() {
-    $templates = array();
+    $templates = [];
     foreach ($this->templates as $template) {
       $template = self::TEMPLATES_NAMESPACE . $template;
       $template = new $template(Env::$assets_url);
       $templates[] = $template->get();
     }
-    return array(
+    return [
       'rows' => $templates,
-      'identification_columns' => array(
-        'name'
-      ),
-      'remove_duplicates' => true
-    );
+      'identification_columns' => [
+        'name',
+      ],
+      'remove_duplicates' => true,
+    ];
   }
 
   protected function populate($model) {
@@ -461,8 +461,8 @@ class Populator {
   private function removeDuplicates($table, $row, $where) {
     global $wpdb;
 
-    $conditions = array('1=1');
-    $values = array();
+    $conditions = ['1=1'];
+    $values = [];
     foreach ($where as $field => $value) {
       $conditions[] = "`t1`.`$field` = `t2`.`$field`";
       $conditions[] = "`t1`.`$field` = %s";

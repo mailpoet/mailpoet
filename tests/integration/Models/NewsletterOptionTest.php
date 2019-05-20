@@ -8,11 +8,11 @@ class NewsletterOptionTest extends \MailPoetTest {
 
   function __construct() {
     parent::__construct();
-    $this->data = array(
+    $this->data = [
       'newsletter_id' => 1,
       'option_field_id' => 2,
-      'value' => 'test'
-    );
+      'value' => 'test',
+    ];
   }
 
   function testItCanCreateOrUpdateNewsletterOptionFieldRelation() {

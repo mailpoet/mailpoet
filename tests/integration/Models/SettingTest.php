@@ -6,10 +6,10 @@ use MailPoet\Settings\SettingsController;
 
 class SettingTest extends \MailPoetTest {
   function testItCanBeCreated() {
-    $setting = Setting::createOrUpdate(array(
+    $setting = Setting::createOrUpdate([
       'name' => 'key',
-      'value' => 'val'
-    ));
+      'value' => 'val',
+    ]);
     expect($setting->id() > 0)->true();
     expect($setting->getErrors())->false();
   }
@@ -33,17 +33,17 @@ class SettingTest extends \MailPoetTest {
     $settings = Setting::getAll();
     expect($settings['key_1'])->equals('value_1');
     expect($settings['key_2'])->equals('value_2');
-    expect($settings['key_3'])->equals(array(
+    expect($settings['key_3'])->equals([
       'subkey_1' => 'subvalue_1',
-      'subkey_2' => 'subvalue_2'
-    ));
+      'subkey_2' => 'subvalue_2',
+    ]);
   }
 
   function testItCanCreateOrUpdate() {
-    $data = array(
+    $data = [
       'name'  => 'new',
-      'value' => 'data'
-    );
+      'value' => 'data',
+    ];
 
     $created_setting = Setting::createOrUpdate($data);
     expect($created_setting->id() > 0)->true();
@@ -69,7 +69,7 @@ class SettingTest extends \MailPoetTest {
 
   function testSaveDefaultSenderIfNeededDoesntOverride() {
     $settings_controller = new SettingsController();
-    $settings_controller->set('sender', array('name' => 'sender1', 'address' => 'sender1address'));
+    $settings_controller->set('sender', ['name' => 'sender1', 'address' => 'sender1address']);
     Setting::saveDefaultSenderIfNeeded('sender2address', 'sender1');
     $settings = $settings_controller->get('sender');
     expect($settings['name'])->equals('sender1');

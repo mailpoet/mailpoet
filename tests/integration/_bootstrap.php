@@ -13,7 +13,7 @@ $console = new \Codeception\Lib\Console\Output([]);
 $console->writeln('Loading WP core... (' . $wp_load_file . ')');
 
 $console->writeln('Cleaning up database...');
-$models = array(
+$models = [
   'CustomField',
   'Form',
   'Newsletter',
@@ -36,8 +36,8 @@ $models = array(
   'StatisticsOpens',
   'StatisticsClicks',
   'StatisticsNewsletters',
-  'StatisticsUnsubscribes'
-);
+  'StatisticsUnsubscribes',
+];
 $destroy = function($model) {
   $class = new \ReflectionClass('\MailPoet\Models\\' . $model);
   $table = $class->getStaticPropertyValue('_table');
@@ -59,12 +59,12 @@ exec('rm -rf ' . $cacheDir . '/_transformation.cache');
 $console->writeln('Initializing AspectMock library...');
 $kernel = \AspectMock\Kernel::getInstance();
 $kernel->init(
-  array(
+  [
     'debug' => true,
     'appDir' => __DIR__ . '/../../',
     'cacheDir' => $cacheDir,
-    'includePaths' => [__DIR__ . '/../../lib']
-  )
+    'includePaths' => [__DIR__ . '/../../lib'],
+  ]
 );
 
 // This hook throws an 'Undefined index: SERVER_NAME' error in CLI mode,
@@ -86,7 +86,7 @@ foreach ($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
 
 abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $backupGlobals = true;
-  protected $backupGlobalsBlacklist = array(
+  protected $backupGlobalsBlacklist = [
     'app',
     'post',
     'authordata',
@@ -134,8 +134,8 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
     'allowedposttags',
     'allowedtags',
     'menu',
-    'woocommerce'
-  );
+    'woocommerce',
+  ];
   protected $backupStaticAttributes = false;
   protected $runTestInSeparateProcess = false;
   protected $preserveGlobalState = false;
@@ -154,7 +154,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
    *
    * @return mixed Method return.
    */
-  public function invokeMethod(&$object, $methodName, array $parameters = array()) {
+  public function invokeMethod(&$object, $methodName, array $parameters = []) {
     $reflection = new \ReflectionClass(get_class($object));
     $method = $reflection->getMethod($methodName);
     $method->setAccessible(true);

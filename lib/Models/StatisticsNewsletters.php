@@ -7,7 +7,7 @@ class StatisticsNewsletters extends Model {
   public static $_table = MP_STATISTICS_NEWSLETTERS_TABLE;
 
   static function createMultiple(array $data) {
-    $values = array();
+    $values = [];
     foreach ($data as $value) {
       if (!empty($value['newsletter_id']) &&
          !empty($value['subscriber_id']) &&
@@ -38,7 +38,7 @@ class StatisticsNewsletters extends Model {
       ->select('sent_at')
       ->join(
         SendingQueue::$_table,
-        array('statistics.queue_id', '=', 'queue.id'),
+        ['statistics.queue_id', '=', 'queue.id'],
         'queue'
       )
       ->leftOuterJoin(

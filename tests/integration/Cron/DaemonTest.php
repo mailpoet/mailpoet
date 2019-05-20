@@ -20,9 +20,9 @@ class DaemonTest extends \MailPoetTest {
   }
 
   function testItCanRun() {
-    $data = array(
-      'token' => 123
-    );
+    $data = [
+      'token' => 123,
+    ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemon = new Daemon($this->createWorkersFactoryMock());
     $daemon->run($data);

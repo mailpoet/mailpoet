@@ -24,9 +24,9 @@ class Import {
   public $created_at;
   public $updated_at;
   public $required_subscribers_fields;
-  private $default_subscribers_data_validation_rules = array(
-    'email' => 'email'
-  );
+  private $default_subscribers_data_validation_rules = [
+    'email' => 'email',
+  ];
   const DB_QUERY_CHUNK_SIZE = 100;
 
   public function __construct($data) {
@@ -47,22 +47,22 @@ class Import {
     $this->subscribers_count = count(reset($this->subscribers_data));
     $this->created_at = date('Y-m-d H:i:s', (int)$data['timestamp']);
     $this->updated_at = date('Y-m-d H:i:s', (int)$data['timestamp'] + 1);
-    $this->required_subscribers_fields = array(
+    $this->required_subscribers_fields = [
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'first_name' => '',
       'last_name' => '',
-      'created_at' => $this->created_at
-    );
+      'created_at' => $this->created_at,
+    ];
   }
 
   function validateImportData($data) {
-    $required_data_fields = array(
+    $required_data_fields = [
       'subscribers',
       'columns',
       'segments',
       'timestamp',
-      'updateSubscribers'
-    );
+      'updateSubscribers',
+    ];
     // 1. data should contain all required fields
     // 2. column names should only contain alphanumeric & underscore characters
     if (count(array_intersect_key(array_flip($required_data_fields), $data)) !== count($required_data_fields) ||
@@ -73,7 +73,7 @@ class Import {
   }
 
   function getSubscriberDataValidationRules($subscribers_fields) {
-    $validation_rules = array();
+    $validation_rules = [];
     foreach ($subscribers_fields as $column => $field) {
       $validation_rules[$column] = (!empty($field['validation_rule'])) ?
         $field['validation_rule'] :
@@ -95,16 +95,16 @@ class Import {
     $this->deleteExistingTrashedSubscribers($subscribers_data);
 
     // split subscribers into "existing" and "new" and free up memory
-    $existing_subscribers = $new_subscribers = array(
-      'data' => array(),
-      'fields' => $this->subscribers_fields
-    );
+    $existing_subscribers = $new_subscribers = [
+      'data' => [],
+      'fields' => $this->subscribers_fields,
+    ];
     list($existing_subscribers['data'], $new_subscribers['data'], $wp_users) =
       $this->splitSubscribersData($subscribers_data);
     $subscribers_data = null;
 
     // create or update subscribers
-    $created_subscribers = $updated_subscribers = array();
+    $created_subscribers = $updated_subscribers = [];
     try {
       if ($new_subscribers['data']) {
         // add, if required, missing required fields to new subscribers
@@ -141,17 +141,17 @@ class Import {
         Newsletter::getWelcomeNotificationsForSegments($this->segments_ids) :
         false;
 
-    return array(
+    return [
       'created' => count($created_subscribers),
       'updated' => count($updated_subscribers),
       'segments' => $segments,
       'added_to_segment_with_welcome_notification' =>
-        ($welcome_notifications_in_segments) ? true : false
-    );
+        ($welcome_notifications_in_segments) ? true : false,
+    ];
   }
 
   function validateSubscribersData($subscribers_data, $validation_rules) {
-    $invalid_records = array();
+    $invalid_records = [];
     $validator = new ModelValidator();
     foreach ($subscribers_data as $column => &$data) {
       $validation_rule = $validation_rules[$column];
@@ -204,7 +204,7 @@ class Import {
   function splitSubscribersData($subscribers_data) {
     // $subscribers_data is an two-dimensional associative array
     // of all subscribers being imported: [field => [value1, value2], field => [value1, value2], ...]
-    $temp_existing_subscribers = array();
+    $temp_existing_subscribers = [];
     foreach (array_chunk($subscribers_data['email'], self::DB_QUERY_CHUNK_SIZE) as $subscribers_emails) {
       // create a two-dimensional indexed array of all existing subscribers
       // with just wp_user_id and email fields: [[wp_user_id, email], [wp_user_id, email], ...]
@@ -218,11 +218,11 @@ class Import {
       );
     }
     if (!$temp_existing_subscribers) {
-      return array(
+      return [
         false, // existing subscribers
         $subscribers_data, // new subscribers
-        false // WP users
-      );
+        false, // WP users
+      ];
     }
     // extract WP users ids into a simple indexed array: [wp_user_id_1, wp_user_id_2, ...]
     $wp_users = array_filter(array_column($temp_existing_subscribers, 'wp_user_id'));
@@ -242,17 +242,17 @@ class Import {
     $new_subscribers = array_map('array_values', $new_subscribers);
     // remove empty values
     $new_subscribers = array_filter($new_subscribers);
-    return array(
+    return [
       $existing_subscribers,
       $new_subscribers,
-      $wp_users
-    );
+      $wp_users,
+    ];
   }
 
   function deleteExistingTrashedSubscribers($subscribers_data) {
     $existing_trashed_records = array_filter(
       array_map(function($subscriber_emails) {
-        return Subscriber::selectMany(array('id'))
+        return Subscriber::selectMany(['id'])
           ->whereIn('email', $subscriber_emails)
           ->whereNotNull('deleted_at')
           ->findArray();
@@ -347,11 +347,11 @@ class Import {
         );
       }
     }
-    $created_or_updated_subscribers = array();
+    $created_or_updated_subscribers = [];
     foreach (array_chunk($subscribers_data['data']['email'], self::DB_QUERY_CHUNK_SIZE) as $data) {
       $created_or_updated_subscribers = array_merge(
         $created_or_updated_subscribers,
-        Subscriber::selectMany(array('id', 'email'))->whereIn('email', $data)->findArray()
+        Subscriber::selectMany(['id', 'email'])->whereIn('email', $data)->findArray()
       );
     }
     if (empty($created_or_updated_subscribers)) return null;
@@ -385,18 +385,18 @@ class Import {
     );
     if (!$subscribers_custom_fields_ids) return;
     // assemble a two-dimensional array: [[custom_field_id, subscriber_id, value], [custom_field_id, subscriber_id, value], ...]
-    $subscribers_custom_fields_data = array();
+    $subscribers_custom_fields_data = [];
     $subscribers_emails = array_flip($subscribers_data['data']['email']);
     foreach ($created_or_updated_subscribers as $created_or_updated_subscriber) {
       $subscriber_index = $subscribers_emails[$created_or_updated_subscriber['email']];
       foreach ($subscribers_data['data'] as $field => $values) {
         // exclude non-custom fields
         if (!is_int($field)) continue;
-        $subscribers_custom_fields_data[] = array(
+        $subscribers_custom_fields_data[] = [
           (int)$field,
           $created_or_updated_subscriber['id'],
           $values[$subscriber_index],
-        );
+        ];
       }
     }
     foreach (array_chunk($subscribers_custom_fields_data, self::DB_QUERY_CHUNK_SIZE) as $subscribers_custom_fields_data_chunk) {

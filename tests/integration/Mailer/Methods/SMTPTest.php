@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class SMTPTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->settings = array(
+    $this->settings = [
       'method' => 'SMTP',
       'host' => getenv('WP_TEST_MAILER_SMTP_HOST') ?
         getenv('WP_TEST_MAILER_SMTP_HOST') :
@@ -21,18 +21,18 @@ class SMTPTest extends \MailPoetTest {
         getenv('WP_TEST_MAILER_SMTP_PASSWORD') :
         'example.com',
       'authentication' => '1',
-      'encryption' => 'tls'
-    );
-    $this->sender = array(
+      'encryption' => 'tls',
+    ];
+    $this->sender = [
       'from_name' => 'Sender',
       'from_email' => 'staff@mailpoet.com',
-      'from_name_email' => 'Sender <staff@mailpoet.com>'
-    );
-    $this->reply_to = array(
+      'from_name_email' => 'Sender <staff@mailpoet.com>',
+    ];
+    $this->reply_to = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
-      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
-    );
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
+    ];
     $this->return_path = 'bounce@mailpoet.com';
     $this->mailer = new SMTP(
       $this->settings['host'],
@@ -47,16 +47,16 @@ class SMTPTest extends \MailPoetTest {
       new SMTPMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->newsletter = array(
+    $this->newsletter = [
       'subject' => 'testing SMTP',
-      'body' => array(
+      'body' => [
         'html' => 'HTML body',
-        'text' => 'TEXT body'
-      )
-    );
-    $this->extra_params = array(
-      'unsubscribe_url' => 'http://www.mailpoet.com'
-    );
+        'text' => 'TEXT body',
+      ],
+    ];
+    $this->extra_params = [
+      'unsubscribe_url' => 'http://www.mailpoet.com',
+    ];
   }
 
   function testItCanBuildMailer() {
@@ -93,13 +93,13 @@ class SMTPTest extends \MailPoetTest {
     $message = $this->mailer
       ->createMessage($this->newsletter, $this->subscriber, $this->extra_params);
     expect($message->getTo())
-      ->equals(array('mailpoet-phoenix-test@mailinator.com' => 'Recipient'));
+      ->equals(['mailpoet-phoenix-test@mailinator.com' => 'Recipient']);
     expect($message->getFrom())
-      ->equals(array($this->sender['from_email'] => $this->sender['from_name']));
+      ->equals([$this->sender['from_email'] => $this->sender['from_name']]);
     expect($message->getSender())
-      ->equals(array($this->sender['from_email'] => null));
+      ->equals([$this->sender['from_email'] => null]);
     expect($message->getReplyTo())
-      ->equals(array($this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name']));
+      ->equals([$this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name']]);
     expect($message->getSubject())
       ->equals($this->newsletter['subject']);
     expect($message->getBody())
@@ -112,11 +112,11 @@ class SMTPTest extends \MailPoetTest {
 
   function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))
-      ->equals(array('test@test.com' => ''));
+      ->equals(['test@test.com' => '']);
     expect($this->mailer->processSubscriber('First <test@test.com>'))
-      ->equals(array('test@test.com' => 'First'));
+      ->equals(['test@test.com' => 'First']);
     expect($this->mailer->processSubscriber('First Last <test@test.com>'))
-      ->equals(array('test@test.com' => 'First Last'));
+      ->equals(['test@test.com' => 'First Last']);
   }
 
   function testItCantSendWithoutProperAuthentication() {
@@ -137,24 +137,24 @@ class SMTPTest extends \MailPoetTest {
       'mailpoet_mailer_smtp_transport_agent',
       function($transport) {
         $transport->setStreamOptions(
-          array(
-            'ssl' => array(
+          [
+            'ssl' => [
               'verify_peer' => false,
-              'verify_peer_name' => false
-            )
-          )
+              'verify_peer_name' => false,
+            ],
+          ]
         );
         return $transport;
       }
     );
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport()->getStreamOptions())->equals(
-      array(
-        'ssl' => array(
+      [
+        'ssl' => [
           'verify_peer' => false,
-          'verify_peer_name' => false
-        )
-      )
+          'verify_peer_name' => false,
+        ],
+      ]
     );
   }
 

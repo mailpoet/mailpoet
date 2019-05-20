@@ -37,7 +37,7 @@ class SubscriberActions {
     $this->bulk_action_factory->registerAction('\MailPoet\Models\Subscriber', 'bulkSendConfirmationEmail', $this);
   }
 
-  function subscribe($subscriber_data = array(), $segment_ids = array()) {
+  function subscribe($subscriber_data = [], $segment_ids = []) {
     // filter out keys from the subscriber_data array
     // that should not be editable when subscribing
     $subscriber_data = Subscriber::filterOutReservedColumns($subscriber_data);
@@ -115,9 +115,9 @@ class SubscriberActions {
       }
     }
 
-    return array(
-      'count' => $emails_sent
-    );
+    return [
+      'count' => $emails_sent,
+    ];
   }
 
 }

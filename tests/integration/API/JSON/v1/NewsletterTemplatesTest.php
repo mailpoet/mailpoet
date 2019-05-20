@@ -9,16 +9,16 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     NewsletterTemplate::deleteMany();
-    NewsletterTemplate::createOrUpdate(array(
+    NewsletterTemplate::createOrUpdate([
       'name' => 'Template #1',
-      'body' => '{"key1": "value1"}'
-    ));
+      'body' => '{"key1": "value1"}',
+    ]);
 
-    NewsletterTemplate::createOrUpdate(array(
+    NewsletterTemplate::createOrUpdate([
       'name' => 'Template #2',
       'newsletter_id' => 1,
-      'body' => '{"key2": "value2"}'
-    ));
+      'body' => '{"key2": "value2"}',
+    ]);
   }
 
   function testItCanGetANewsletterTemplate() {
@@ -30,12 +30,12 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($response->errors[0]['message'])
       ->equals('This template does not exist.');
 
-    $response = $router->get(array('id' => 'not_an_id'));
+    $response = $router->get(['id' => 'not_an_id']);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
       ->equals('This template does not exist.');
 
-    $response = $router->get(array('id' => $template->id));
+    $response = $router->get(['id' => $template->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       $template->asArray()
@@ -52,10 +52,10 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   }
 
   function testItCanSaveANewTemplate() {
-    $template_data = array(
+    $template_data = [
       'name' => 'Template #3',
-      'body' => '{"key3": "value3"}'
-    );
+      'body' => '{"key3": "value3"}',
+    ];
 
     $router = new NewsletterTemplates();
     $response = $router->save($template_data);
@@ -66,11 +66,11 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   }
 
   function testItCanSaveANewTemplateAssociatedWithANewsletter() {
-    $template_data = array(
+    $template_data = [
       'newsletter_id' => 2,
       'name' => 'Template #3',
-      'body' => '{"key3": "value3"}'
-    );
+      'body' => '{"key3": "value3"}',
+    ];
 
     $router = new NewsletterTemplates();
     $response = $router->save($template_data);
@@ -81,11 +81,11 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   }
 
   function testItCanUpdateTemplateAssociatedWithANewsletter() {
-    $template_data = array(
+    $template_data = [
       'newsletter_id' => '1',
       'name' => 'Template #2',
-      'body' => '{"key3": "value3"}'
-    );
+      'body' => '{"key3": "value3"}',
+    ];
 
     $template_id = NewsletterTemplate::whereEqual('newsletter_id', 1)->findOne()->id;
 
@@ -96,7 +96,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $template_data['body'] = json_decode($template_data['body'], true);
 
     $normalize = function($array) {
-      $result = array();
+      $result = [];
       foreach ($array as $key => $value) {
         if (in_array($key, ['newsletter_id', 'name', 'body'])) {
           $result[$key] = $value;
@@ -120,7 +120,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($response->errors[0]['message'])
       ->equals('This template does not exist.');
 
-    $response = $router->delete(array('id' => $template->id));
+    $response = $router->delete(['id' => $template->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $deleted_template = NewsletterTemplate::findOne($template->id);

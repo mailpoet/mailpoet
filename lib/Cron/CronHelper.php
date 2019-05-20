@@ -95,7 +95,7 @@ class CronHelper {
   }
 
   static function accessDaemon($token) {
-    $data = array('token' => $token);
+    $data = ['token' => $token];
     $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_RUN,
       $data
@@ -137,12 +137,12 @@ class CronHelper {
     }
     $args = $wp->applyFilters(
       'mailpoet_cron_request_args',
-      array(
+      [
         'blocking' => true,
         'sslverify' => false,
         'timeout' => self::DAEMON_REQUEST_TIMEOUT,
-        'user-agent' => 'MailPoet Cron'
-      )
+        'user-agent' => 'MailPoet Cron',
+      ]
     );
     return $wp->wpRemotePost($url, $args);
   }

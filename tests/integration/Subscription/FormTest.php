@@ -22,49 +22,49 @@ class FormTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->settings = new SettingsController();
-    $this->settings->set('sender', array(
+    $this->settings->set('sender', [
       'name' => 'John Doe',
-      'address' => 'john.doe@example.com'
-    ));
+      'address' => 'john.doe@example.com',
+    ]);
     $this->testEmail = 'test@example.com';
     $this->segment = SegmentModel::createOrUpdate(
-      array(
-        'name' => 'Test segment'
-      )
+      [
+        'name' => 'Test segment',
+      ]
     );
     $this->form = FormModel::createOrUpdate(
-      array(
+      [
         'name' => 'Test form',
-        'body' => array(
-          array(
+        'body' => [
+          [
             'type' => 'text',
-            'id' => 'email'
-          )
-        ),
-        'settings' => array(
-          'segments' => array($this->segment->id)
-        )
-      )
+            'id' => 'email',
+          ],
+        ],
+        'settings' => [
+          'segments' => [$this->segment->id],
+        ],
+      ]
     );
     $obfuscator = new FieldNameObfuscator();
     $obfuscatedEmail = $obfuscator->obfuscate('email');
-    $this->request_data = array(
+    $this->request_data = [
       'action' => 'mailpoet_subscription_form',
-      'data' => array(
+      'data' => [
         'form_id' => $this->form->id,
-        $obfuscatedEmail => $this->testEmail
-      ),
+        $obfuscatedEmail => $this->testEmail,
+      ],
       'token' => Security::generateToken(),
       'api_version' => 'v1',
       'endpoint' => 'subscribers',
-      'mailpoet_method' => 'subscribe'
-    );
+      'mailpoet_method' => 'subscribe',
+    ];
     $this->post = wp_insert_post(
-      array(
+      [
         'post_title' => 'Sample Post',
         'post_content' => 'contents',
         'post_status' => 'publish',
-      )
+      ]
     );
     $this->settings->set('signup_confirmation.enabled', false);
   }

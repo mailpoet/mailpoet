@@ -15,9 +15,9 @@ class DeactivationSurvey {
   }
 
   public function init() {
-    WPFunctions::get()->addAction('admin_print_scripts', array($this, 'js'), 20);
-    WPFunctions::get()->addAction('admin_print_scripts', array($this, 'css'));
-    WPFunctions::get()->addAction('admin_footer', array($this, 'modal'));
+    WPFunctions::get()->addAction('admin_print_scripts', [$this, 'js'], 20);
+    WPFunctions::get()->addAction('admin_print_scripts', [$this, 'css']);
+    WPFunctions::get()->addAction('admin_footer', [$this, 'modal']);
   }
 
   private function shouldShow() {
@@ -28,7 +28,7 @@ class DeactivationSurvey {
     if (!is_object($screen)) {
       return false;
     }
-    return (in_array(get_current_screen()->id, array('plugins', 'plugins-network'), true));
+    return (in_array(get_current_screen()->id, ['plugins', 'plugins-network'], true));
   }
 
   public function js() {

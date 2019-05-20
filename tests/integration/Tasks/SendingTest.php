@@ -90,33 +90,33 @@ class SendingTest extends \MailPoetTest {
   }
 
   function testItGetsSubscribers() {
-    expect($this->sending->getSubscribers())->equals(array(123, 456));
+    expect($this->sending->getSubscribers())->equals([123, 456]);
   }
 
   function testItSetsSubscribers() {
-    $subscriber_ids = array(1, 2, 3);
+    $subscriber_ids = [1, 2, 3];
     $this->sending->setSubscribers($subscriber_ids);
     expect($this->sending->getSubscribers())->equals($subscriber_ids);
     expect($this->sending->count_total)->equals(count($subscriber_ids));
   }
 
   function testItRemovesSubscribers() {
-    $subscriber_ids = array(456);
+    $subscriber_ids = [456];
     $this->sending->removeSubscribers($subscriber_ids);
-    expect($this->sending->getSubscribers())->equals(array(123));
+    expect($this->sending->getSubscribers())->equals([123]);
     expect($this->sending->count_total)->equals(1);
   }
 
   function testItRemovesAllSubscribers() {
     $this->sending->removeAllSubscribers();
-    expect($this->sending->getSubscribers())->equals(array());
+    expect($this->sending->getSubscribers())->equals([]);
     expect($this->sending->count_total)->equals(0);
   }
 
   function testItUpdatesProcessedSubscribers() {
     expect($this->sending->count_to_process)->equals(2);
     expect($this->sending->count_processed)->equals(0);
-    $subscriber_ids = array(456);
+    $subscriber_ids = [456];
     $this->sending->updateProcessedSubscribers($subscriber_ids);
     expect($this->sending->count_to_process)->equals(1);
     expect($this->sending->count_processed)->equals(1);
@@ -244,7 +244,7 @@ class SendingTest extends \MailPoetTest {
     $status = isset($args['status']) ? $args['status'] : null;
 
     $sending = SendingTask::create($task, $queue);
-    $sending->setSubscribers(array(123, 456)); // random IDs
+    $sending->setSubscribers([123, 456]); // random IDs
     $sending->status = $status;
     $sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
     return $sending->save();

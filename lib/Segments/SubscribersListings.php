@@ -33,7 +33,7 @@ class SubscribersListings {
     ) {
       return $listing_data = $this->handler->get('\MailPoet\Models\Subscriber', $data);
     }
-    $handlers = $this->wp->applyFilters('mailpoet_get_subscribers_listings_in_segment_handlers', array());
+    $handlers = $this->wp->applyFilters('mailpoet_get_subscribers_listings_in_segment_handlers', []);
     foreach ($handlers as $handler) {
       $listings = $handler->get($segment, $data);
       if ($listings) {

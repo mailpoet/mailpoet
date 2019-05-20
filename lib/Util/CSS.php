@@ -134,18 +134,18 @@ class CSS {
     $css->settings['compress_colors'] = false;
     $css->parse($text);
 
-    $rules    = array();
+    $rules    = [];
     $position   = 0;
 
     foreach ($css->css as $declarations) {
       foreach ($declarations as $selectors => $properties) {
         foreach (explode(",", $selectors) as $selector) {
-          $rules[] = array(
+          $rules[] = [
             'position'    => $position,
             'specificity'   => $this->calculateCSSSpecifity($selector),
             'selector'    => $selector,
-            'properties'  => $properties
-          );
+            'properties'  => $properties,
+          ];
         }
 
         $position += 1;
@@ -184,7 +184,7 @@ class CSS {
 
     while (($start = strpos($css, "@media", $start)) !== false) {
       // stack to manage brackets
-      $s = array();
+      $s = [];
 
       // get the first opening bracket
       $i = strpos($css, "{", $start);
@@ -214,7 +214,7 @@ class CSS {
       }
     }
 
-    return array($css, $queries);
+    return [$css, $queries];
   }
 
   /**
@@ -230,7 +230,7 @@ class CSS {
 
   private function calculateCSSSpecifity($selector) {
       // cleanup selector
-    $selector = str_replace(array('>', '+'), array(' > ', ' + '), $selector);
+    $selector = str_replace(['>', '+'], [' > ', ' + '], $selector);
 
       // init var
     $specifity = 0;
@@ -260,7 +260,7 @@ class CSS {
   */
   private function styleToArray($str) {
     $str = EHelper::unescapeHtmlStyleAttr($str);
-    $array = array();
+    $array = [];
 
     if (trim($str) === '') return $array;
 
@@ -280,7 +280,7 @@ class CSS {
   * array("border" => "1px solid black", "color" => "red") yields "border: 1px solid black; color:red"
   */
   private function arrayToStyle($array) {
-    $parts = array();
+    $parts = [];
     foreach ($array as $k => $v) {
       $parts[] = "$k:$v";
     }

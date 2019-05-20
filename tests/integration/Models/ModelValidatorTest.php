@@ -29,14 +29,14 @@ class ModelValidatorTest extends \MailPoetTest {
   function testItValidatesRenderedNewsletterBody() {
     expect($this->validator->validateRenderedNewsletterBody('test'))->false();
     expect($this->validator->validateRenderedNewsletterBody(serialize('test')))->false();
-    expect($this->validator->validateRenderedNewsletterBody(array('html' => 'test', 'text' => null)))->false();
-    expect($this->validator->validateRenderedNewsletterBody(array('html' => null, 'text' => 'test')))->false();
+    expect($this->validator->validateRenderedNewsletterBody(['html' => 'test', 'text' => null]))->false();
+    expect($this->validator->validateRenderedNewsletterBody(['html' => null, 'text' => 'test']))->false();
 
     expect($this->validator->validateRenderedNewsletterBody(null))->true();
     expect($this->validator->validateRenderedNewsletterBody(serialize(null)))->true();
-    expect($this->validator->validateRenderedNewsletterBody(serialize(array('html' => 'test', 'text' => 'test'))))->true();
-    expect($this->validator->validateRenderedNewsletterBody(array('html' => 'test', 'text' => 'test')))->true();
+    expect($this->validator->validateRenderedNewsletterBody(serialize(['html' => 'test', 'text' => 'test'])))->true();
+    expect($this->validator->validateRenderedNewsletterBody(['html' => 'test', 'text' => 'test']))->true();
     expect($this->validator->validateRenderedNewsletterBody(json_encode(null)))->true();
-    expect($this->validator->validateRenderedNewsletterBody(json_encode(array('html' => 'test', 'text' => 'test'))))->true();
+    expect($this->validator->validateRenderedNewsletterBody(json_encode(['html' => 'test', 'text' => 'test'])))->true();
   }
 }

@@ -40,7 +40,7 @@ class ServicesChecker {
         $error = Helpers::replaceLinkTags(
           WPFunctions::get()->__('All sending is currently paused! Your key to send with MailPoet is invalid. [link]Visit MailPoet.com to purchase a key[/link]', 'mailpoet'),
           'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers(),
-          array('target' => '_blank')
+          ['target' => '_blank']
         );
         WPNotice::displayError($error);
       }
@@ -54,7 +54,7 @@ class ServicesChecker {
         $error = Helpers::replaceLinkTags(
           WPFunctions::get()->__("Your newsletters are awesome! Don't forget to [link]upgrade your MailPoet email plan[/link] by %s to keep sending them to your subscribers.", 'mailpoet'),
           'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers(),
-          array('target' => '_blank')
+          ['target' => '_blank']
         );
         $error = sprintf($error, $date);
         WPNotice::displayWarning($error);
@@ -86,13 +86,13 @@ class ServicesChecker {
         $error = Helpers::replaceLinkTags(
           $error_string,
           'admin.php?page=mailpoet-settings#premium',
-          array(),
+          [],
           'link1'
         );
         $error = Helpers::replaceLinkTags(
           $error,
           'admin.php?page=mailpoet-premium',
-          array(),
+          [],
           'link2'
         );
         WPNotice::displayWarning($error);
@@ -107,7 +107,7 @@ class ServicesChecker {
         $error = Helpers::replaceLinkTags(
           WPFunctions::get()->__("Your License Key for MailPoet is expiring! Don't forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.", 'mailpoet'),
           'https://account.mailpoet.com',
-          array('target' => '_blank')
+          ['target' => '_blank']
         );
         $error = sprintf($error, $date);
         WPNotice::displayWarning($error);

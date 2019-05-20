@@ -8,9 +8,9 @@ class MetaInformationManager {
 
   function appendMetaInformation($content, $post, $args) {
     // Append author and categories above and below contents
-    foreach (array('above', 'below') as $position) {
+    foreach (['above', 'below'] as $position) {
       $position_field = $position . 'Text';
-      $text = array();
+      $text = [];
 
       if ($args['showAuthor'] === $position_field) {
         $text[] = self::getPostAuthor(
@@ -44,8 +44,8 @@ class MetaInformationManager {
     // Get categories
     $categories = WPFunctions::get()->wpGetPostTerms(
       $post_id,
-      array('category'),
-      array('fields' => 'names')
+      ['category'],
+      ['fields' => 'names']
     );
     if (!empty($categories)) {
       // check if the user specified a label to be displayed before the author's name

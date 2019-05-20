@@ -13,9 +13,9 @@ use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 if (!defined('ABSPATH')) exit;
 
 class ImportExport extends APIEndpoint {
-  public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS
-  );
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
+  ];
 
   function getMailChimpLists($data) {
     try {
@@ -23,9 +23,9 @@ class ImportExport extends APIEndpoint {
       $lists = $mailChimp->getLists();
       return $this->successResponse($lists);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 
@@ -35,9 +35,9 @@ class ImportExport extends APIEndpoint {
       $subscribers = $mailChimp->getSubscribers($data['lists']);
       return $this->successResponse($subscribers);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 
@@ -62,9 +62,9 @@ class ImportExport extends APIEndpoint {
       $process = $import->process();
       return $this->successResponse($process);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 
@@ -76,9 +76,9 @@ class ImportExport extends APIEndpoint {
       $process = $export->process();
       return $this->successResponse($process);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 

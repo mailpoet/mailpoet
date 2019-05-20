@@ -35,9 +35,9 @@ class SendingQueue extends Model {
   function __construct() {
     parent::__construct();
 
-    $this->addValidations('newsletter_rendered_body', array(
-      'validRenderedNewsletterBody' => WPFunctions::get()->__('Rendered newsletter body is invalid!', 'mailpoet')
-    ));
+    $this->addValidations('newsletter_rendered_body', [
+      'validRenderedNewsletterBody' => WPFunctions::get()->__('Rendered newsletter body is invalid!', 'mailpoet'),
+    ]);
     $this->emoji = new Emoji();
   }
 
@@ -97,7 +97,7 @@ class SendingQueue extends Model {
     }
     $subscribers = unserialize($this->subscribers);
     if (empty($subscribers['processed'])) {
-      $subscribers['processed'] = array();
+      $subscribers['processed'] = [];
     }
     return $subscribers;
   }

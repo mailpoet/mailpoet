@@ -13,14 +13,14 @@ class Engine
   protected $_checks;
 
   public function __construct() {
-      $this->_checks = array(
-          'required'  => array($this, '_required'),
-          'minLength' => array($this, '_minLength'),
-          'maxLength' => array($this, '_maxLength'),
-          'isEmail'   => array($this, '_isEmail'),
-          'isInteger'   => array($this, '_isInteger'),
-          'isNumeric'   => array($this, '_isNumeric')
-      );
+      $this->_checks = [
+          'required'  => [$this, '_required'],
+          'minLength' => [$this, '_minLength'],
+          'maxLength' => [$this, '_maxLength'],
+          'isEmail'   => [$this, '_isEmail'],
+          'isInteger'   => [$this, '_isInteger'],
+          'isNumeric'   => [$this, '_isNumeric'],
+      ];
   }
 
   public function __call($name, $args) {
@@ -33,7 +33,7 @@ class Engine
       return call_user_func($this->_checks[$name], $val, $args);
   }
 
-  public function executeOne($check, $val, $params=array()) {
+  public function executeOne($check, $val, $params=[]) {
     $callback = __NAMESPACE__ .'\Engine::'.$check;
     if (is_callable($callback)) {
       return call_user_func($callback, $val, $params);
@@ -89,7 +89,7 @@ class Engine
       return strlen($val) <= $len;
   }
 
-  protected function _required($val, $params=array()) {
+  protected function _required($val, $params=[]) {
       return !(($val === null) || ('' === trim($val)));
   }
 }

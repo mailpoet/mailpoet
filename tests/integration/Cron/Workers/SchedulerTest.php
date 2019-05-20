@@ -202,7 +202,7 @@ class SchedulerTest extends \MailPoetTest {
   function testItDoesNotProcessWelcomeNewsletterWhenThereAreNoSubscribersToProcess() {
     $newsletter = $this->_createNewsletter();
     $queue = $this->_createQueue($newsletter->id);
-    $queue->setSubscribers(array());
+    $queue->setSubscribers([]);
 
     // delete queue when the list of subscribers to process is blank
     $scheduler = new Scheduler();
@@ -215,14 +215,14 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $newsletter->event = 'user';
     $queue = $this->_createQueue($newsletter->id);
-    $queue->setSubscribers(array(1));
+    $queue->setSubscribers([1]);
 
     // return false when WP user cannot be verified
-    $scheduler = Stub::make(new Scheduler(), array(
+    $scheduler = Stub::make(new Scheduler(), [
       'verifyWPSubscriber' => Expected::exactly(1, function() {
         return false;
-      })
-    ), $this);
+      }),
+    ], $this);
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->false();
   }
 
@@ -230,14 +230,14 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $newsletter->event = 'segment';
     $queue = $this->_createQueue($newsletter->id);
-    $queue->setSubscribers(array(1));
+    $queue->setSubscribers([1]);
 
     // return false when subscriber cannot be verified
-    $scheduler = Stub::make(new Scheduler(), array(
+    $scheduler = Stub::make(new Scheduler(), [
       'verifyMailpoetSubscriber' => Expected::exactly(1, function() {
         return false;
-      })
-    ), $this);
+      }),
+    ], $this);
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->false();
   }
 
@@ -247,10 +247,10 @@ class SchedulerTest extends \MailPoetTest {
 
     // return true when subsriber is verified and update the queue's status to null
     $queue = $this->_createQueue($newsletter->id);
-    $queue->setSubscribers(array(1));
-    $scheduler = Stub::make(new Scheduler(), array(
-      'verifyMailpoetSubscriber' => Expected::exactly(1)
-    ), $this);
+    $queue->setSubscribers([1]);
+    $scheduler = Stub::make(new Scheduler(), [
+      'verifyMailpoetSubscriber' => Expected::exactly(1),
+    ], $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
     $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
@@ -263,10 +263,10 @@ class SchedulerTest extends \MailPoetTest {
 
     // return true when WP user is verified
     $queue = $this->_createQueue($newsletter->id);
-    $queue->setSubscribers(array(1));
-    $scheduler = Stub::make(new Scheduler(), array(
-      'verifyWPSubscriber' => Expected::exactly(1)
-    ), $this);
+    $queue->setSubscribers([1]);
+    $scheduler = Stub::make(new Scheduler(), [
+      'verifyWPSubscriber' => Expected::exactly(1),
+    ], $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
     // update queue's status to null
@@ -375,7 +375,7 @@ class SchedulerTest extends \MailPoetTest {
     // update queue's list of subscribers to process
     $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     $updated_queue_subscribers = $updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
-    expect($updated_queue_subscribers)->equals(array($subscriber->id));
+    expect($updated_queue_subscribers)->equals([$subscriber->id]);
     // set queue's status to null
     expect($updated_queue->status)->null();
     // set newsletter's status to sending
@@ -390,11 +390,11 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
 
     // delete or reschedule queue when segments don't exist
-    $scheduler = Stub::make(new Scheduler(), array(
+    $scheduler = Stub::make(new Scheduler(), [
       'deleteQueueOrUpdateNextRunDate' => Expected::exactly(1, function() {
         return false;
-      })
-    ), $this);
+      }),
+    ], $this);
     expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->false();
   }
 
@@ -405,11 +405,11 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_segment = $this->_createNewsletterSegment($newsletter->id, $segment->id);
 
     // delete or reschedule queue when there are no subscribers in segments
-    $scheduler = Stub::make(new Scheduler(), array(
+    $scheduler = Stub::make(new Scheduler(), [
       'deleteQueueOrUpdateNextRunDate' => Expected::exactly(1, function() {
         return false;
-      })
-    ), $this);
+      }),
+    ], $this);
     expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->false();
   }
 
@@ -441,7 +441,7 @@ class SchedulerTest extends \MailPoetTest {
     // to that of the notification history
     $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     $updated_queue_subscribers = $updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
-    expect($updated_queue_subscribers)->equals(array($subscriber->id));
+    expect($updated_queue_subscribers)->equals([$subscriber->id]);
     expect($updated_queue->newsletter_id)->equals($notification_history->id);
     // set notification history's status to sending
     $updated_notification_history = Newsletter::where('parent_id', $newsletter->id)
@@ -482,9 +482,9 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
-    $scheduler = Stub::make(new Scheduler(), array(
-      'processWelcomeNewsletter' => Expected::exactly(1)
-    ), $this);
+    $scheduler = Stub::make(new Scheduler(), [
+      'processWelcomeNewsletter' => Expected::exactly(1),
+    ], $this);
     $scheduler->timer = microtime(true);
     $scheduler->process();
   }
@@ -494,9 +494,9 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
-    $scheduler = Stub::make(new Scheduler(), array(
-      'processPostNotificationNewsletter' => Expected::exactly(1)
-    ), $this);
+    $scheduler = Stub::make(new Scheduler(), [
+      'processPostNotificationNewsletter' => Expected::exactly(1),
+    ], $this);
     $scheduler->timer = microtime(true);
     $scheduler->process();
   }
@@ -506,9 +506,9 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
-    $scheduler = Stub::make(new Scheduler(), array(
-      'processScheduledStandardNewsletter' => Expected::exactly(1)
-    ), $this);
+    $scheduler = Stub::make(new Scheduler(), [
+      'processScheduledStandardNewsletter' => Expected::exactly(1),
+    ], $this);
     $scheduler->timer = microtime(true);
     $scheduler->process();
   }
@@ -518,9 +518,9 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
-    $scheduler = Stub::make(new Scheduler(), array(
-      'processPostNotificationNewsletter' => Expected::exactly(1)
-    ), $this);
+    $scheduler = Stub::make(new Scheduler(), [
+      'processPostNotificationNewsletter' => Expected::exactly(1),
+    ], $this);
     $scheduler->timer = microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT;
     try {
       $scheduler->process();
@@ -536,9 +536,9 @@ class SchedulerTest extends \MailPoetTest {
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
 
-    $scheduler = Stub::make(new Scheduler(), array(
-      'processScheduledStandardNewsletter' => Expected::never()
-    ), $this);
+    $scheduler = Stub::make(new Scheduler(), [
+      'processScheduledStandardNewsletter' => Expected::never(),
+    ], $this);
     // scheduled job is not processed
     $scheduler->timer = microtime(true);
     $scheduler->process();
@@ -550,9 +550,9 @@ class SchedulerTest extends \MailPoetTest {
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
 
-    $scheduler = Stub::make(new Scheduler(), array(
-      'processScheduledStandardNewsletter' => Expected::once()
-    ), $this);
+    $scheduler = Stub::make(new Scheduler(), [
+      'processScheduledStandardNewsletter' => Expected::once(),
+    ], $this);
     // scheduled job is processed
     $scheduler->timer = microtime(true);
     $scheduler->process();
@@ -564,9 +564,9 @@ class SchedulerTest extends \MailPoetTest {
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
 
-    $scheduler = Stub::make(new Scheduler(), array(
-      'processScheduledStandardNewsletter' => Expected::once()
-    ), $this);
+    $scheduler = Stub::make(new Scheduler(), [
+      'processScheduledStandardNewsletter' => Expected::once(),
+    ], $this);
     // scheduled job is processed
     $scheduler->timer = microtime(true);
     $scheduler->process();
@@ -579,14 +579,14 @@ class SchedulerTest extends \MailPoetTest {
     $task->newsletter_id = $newsletter->id;
     $task->status = SendingQueue::STATUS_SCHEDULED;
     $task->scheduled_at = Carbon::now()->subDay(1)->toDateTimeString();
-    $task->setSubscribers(array($subscriber->id));
+    $task->setSubscribers([$subscriber->id]);
     $task->save();
 
     // scheduled task should exist
     $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
     expect($task->newsletter_id)->equals($newsletter->id);
-    expect($task->getSubscribers())->equals(array($subscriber->id));
+    expect($task->getSubscribers())->equals([$subscriber->id]);
 
     // task should have its status set to null (i.e., sending)
     $scheduler = new Scheduler();
@@ -602,7 +602,7 @@ class SchedulerTest extends \MailPoetTest {
     $task->newsletter_id = $newsletter->id;
     $task->status = SendingQueue::STATUS_SCHEDULED;
     $task->scheduled_at = Carbon::now()->subDay(1)->toDateTimeString();
-    $task->setSubscribers(array($subscriber->id));
+    $task->setSubscribers([$subscriber->id]);
     $task->save();
     $subscriber->delete();
 
@@ -610,7 +610,7 @@ class SchedulerTest extends \MailPoetTest {
     $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
     expect($task->newsletter_id)->equals($newsletter->id);
-    expect($task->getSubscribers())->equals(array($subscriber->id));
+    expect($task->getSubscribers())->equals([$subscriber->id]);
 
     // task should be deleted
     $scheduler = new Scheduler();
@@ -624,7 +624,7 @@ class SchedulerTest extends \MailPoetTest {
     $segment = $this->_createSegment();
     $subscriber = $this->_createSubscriber();
     $segment_subscriber = $this->_createSubscriberSegment($subscriber->id, $segment->id);
-    $options = array('sendTo' => 'segment', 'segment' => $segment->id);
+    $options = ['sendTo' => 'segment', 'segment' => $segment->id];
     foreach ($options as $option => $value) {
       $newsletter_option_field = $this->_createNewsletterOptionField($option, Newsletter::TYPE_AUTOMATIC);
       $newsletter_option = $this->_createNewsletterOption($newsletter_option_field->id, $newsletter->id, $value);
@@ -747,19 +747,19 @@ class SchedulerTest extends \MailPoetTest {
     $username = 'phoenix_test_user';
     if (email_exists($email) === false) {
       wp_insert_user(
-        array(
+        [
           'user_login' => $username,
           'user_email' => $email,
-          'user_pass' => null
-        )
+          'user_pass' => null,
+        ]
       );
     }
     $user = get_user_by('login', $username);
     wp_update_user(
-      array(
+      [
         'ID' => $user->ID,
-        'role' => $role
-      )
+        'role' => $role,
+      ]
     );
     expect($user->ID)->notNull();
     return $user;

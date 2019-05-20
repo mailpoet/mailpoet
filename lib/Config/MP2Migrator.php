@@ -29,7 +29,7 @@ class MP2Migrator {
   private $log_file;
   public $log_file_url;
   public $progressbar;
-  private $segments_mapping = array(); // Mapping between old and new segment IDs
+  private $segments_mapping = []; // Mapping between old and new segment IDs
   private $wp_users_segment;
   private $double_optin_enabled = true;
   private $mp2_campaign_table;
@@ -381,24 +381,24 @@ class MP2Migrator {
   private function importSegment($list_data) {
     $datetime = new \MailPoet\WP\DateTime();
     if ($list_data['is_enabled']) {
-      $segment = Segment::createOrUpdate(array(
+      $segment = Segment::createOrUpdate([
         'name' => $list_data['name'],
         'type' => 'default',
         'description' => !empty($list_data['description']) ? $list_data['description'] : '',
         'created_at' => $datetime->formatTime($list_data['created_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
-      ));
+      ]);
     } else {
       $segment = Segment::getWPSegment();
     }
     if (!empty($segment)) {
       // Map the segment with its old ID
       $mapping = new MappingToExternalEntities();
-      $mapping->create(array(
+      $mapping->create([
         'old_id' => $list_data['list_id'],
         'type' => 'segments',
         'new_id' => $segment->id,
         'created_at' => $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
-      ));
+      ]);
     }
     $this->settings->set('last_imported_list_id', $list_data['list_id']);
     return $segment;
@@ -434,7 +434,7 @@ class MP2Migrator {
    */
   private function getCustomFields() {
     global $wpdb;
-    $custom_fields = array();
+    $custom_fields = [];
 
     $table = $this->mp2_custom_field_table;
     $sql = "
@@ -453,12 +453,12 @@ class MP2Migrator {
    * @return CustomField
    */
   private function importCustomField($custom_field) {
-    $data = array(
+    $data = [
       'id' => $custom_field['id'],
       'name' => $custom_field['name'],
       'type' => $this->mapCustomFieldType($custom_field['type']),
       'params' => $this->mapCustomFieldParams($custom_field['name'], unserialize($custom_field['settings'])),
-    );
+    ];
     $custom_field = new CustomField();
     $custom_field->createOrUpdate($data);
     return $custom_field;
@@ -617,7 +617,7 @@ class MP2Migrator {
    */
   private function importSubscriber($user_data) {
     $datetime = new \MailPoet\WP\DateTime();
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'wp_user_id' => !empty($user_data['wpuser_id']) ? $user_data['wpuser_id'] : null,
       'email' => $user_data['email'],
       'first_name' => $user_data['firstname'],
@@ -627,17 +627,17 @@ class MP2Migrator {
       'subscribed_ip' => !empty($user_data['ip']) ? $user_data['ip'] : null,
       'confirmed_ip' => !empty($user_data['confirmed_ip']) ? $user_data['confirmed_ip'] : null,
       'confirmed_at' => !empty($user_data['confirmed_at']) ? $datetime->formatTime($user_data['confirmed_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
-    ));
+    ]);
     $this->settings->set('last_imported_user_id', $user_data['user_id']);
     if (!empty($subscriber)) {
       // Map the subscriber with its old ID
       $mapping = new MappingToExternalEntities();
-      $mapping->create(array(
+      $mapping->create([
         'old_id' => $user_data['user_id'],
         'type' => 'subscribers',
         'new_id' => $subscriber->id,
         'created_at' => $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
-      ));
+      ]);
     }
     return $subscriber;
   }
@@ -717,12 +717,12 @@ class MP2Migrator {
     if (isset($this->segments_mapping[$user_list['list_id']])) {
       $segment_id = $this->segments_mapping[$user_list['list_id']];
       $status = (($segment_id == $this->wp_users_segment->id) || empty($user_list['unsub_date'])) ? 'subscribed' : 'unsubscribed'; // the users belonging to the wp_users segment are always subscribed
-      $data = array(
+      $data = [
         'subscriber_id' => $subscriber_id,
         'segment_id' => $segment_id,
         'status' => $status,
         'created_at' => $datetime->formatTime($user_list['sub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
-      );
+      ];
       $data['updated_at'] = !empty($user_list['unsub_date']) ? $datetime->formatTime($user_list['unsub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : $data['created_at'];
       $subscriber_segment = new SubscriberSegment();
       $subscriber_segment->createOrUpdate($data);
@@ -777,11 +777,11 @@ class MP2Migrator {
     } else {
       $value = $custom_field_value;
     }
-    $data = array(
+    $data = [
       'subscriber_id' => $subscriber_id,
       'custom_field_id' => $custom_field['id'],
       'value' => isset($value) ? $value : '',
-    );
+    ];
     $subscriber_custom_field = new SubscriberCustomField();
     $subscriber_custom_field->createOrUpdate($data);
     return $subscriber_custom_field;
@@ -794,7 +794,7 @@ class MP2Migrator {
    * @return array Mapping
    */
   public function getImportedMapping($model) {
-    $mappings = array();
+    $mappings = [];
     $mapping_relations = MappingToExternalEntities::where('type', $model)->findArray();
     foreach ($mapping_relations as $relation) {
       $mappings[$relation['old_id']] = $relation['new_id'];
@@ -869,14 +869,14 @@ class MP2Migrator {
     $settings = $data['settings'];
     $body = $data['body'];
     $segments = $this->getMappedSegmentIds($settings['lists']);
-    $mp3_form_settings = array(
+    $mp3_form_settings = [
       'on_success' => $settings['on_success'],
       'success_message' => $settings['success_message'],
       'segments_selected_by' => $settings['lists_selected_by'],
       'segments' => $segments,
-    );
+    ];
 
-    $mp3_form_body = array();
+    $mp3_form_body = [];
     foreach ($body as $field) {
       $type = $this->mapCustomFieldType($field['type']);
       if ($type == 'segment') {
@@ -901,22 +901,22 @@ class MP2Migrator {
       if (isset($params['values'])) {
         $params['values'] = $this->replaceListIds($params['values']);
       }
-      $mp3_form_body[] = array(
+      $mp3_form_body[] = [
         'type' => $type,
         'name' => $field['name'],
         'id' => $field_id,
-        'unique' => !in_array($field['type'], array('html', 'divider', 'email', 'submit')) ? "1" : "0",
-        'static' => in_array($field_id, array('email', 'submit')) ? "1" : "0",
+        'unique' => !in_array($field['type'], ['html', 'divider', 'email', 'submit']) ? "1" : "0",
+        'static' => in_array($field_id, ['email', 'submit']) ? "1" : "0",
         'params' => $params,
         'position' => isset($field['position']) ? $field['position'] : '',
-      );
+      ];
     }
 
-    $form = Form::createOrUpdate(array(
+    $form = Form::createOrUpdate([
       'name' => $form_data['name'],
       'body' => $mp3_form_body,
       'settings' => $mp3_form_settings,
-    ));
+    ]);
     $this->settings->set('last_imported_form_id', $form_data['form_id']);
     return $form;
   }
@@ -927,7 +927,7 @@ class MP2Migrator {
    * @param array $mp2_list_ids
    */
   private function getMappedSegmentIds($mp2_list_ids) {
-    $mp3_segment_ids = array();
+    $mp3_segment_ids = [];
     foreach ($mp2_list_ids as $list_id) {
       if (isset($this->segments_mapping[$list_id])) {
         $mp3_segment_ids[] = $this->segments_mapping[$list_id];
@@ -976,9 +976,9 @@ class MP2Migrator {
    * @return array Field values
    */
   private function replaceListIds($values) {
-    $mp3_values = array();
+    $mp3_values = [];
     foreach ($values as $value) {
-      $mp3_value = array();
+      $mp3_value = [];
       foreach ($value as $item => $item_value) {
         if (($item == 'list_id') && isset($this->segments_mapping[$item_value])) {
           $segment_id = $this->segments_mapping[$item_value];
@@ -1032,10 +1032,10 @@ class MP2Migrator {
     $subscribe = $this->settings->get('subscribe');
     $subscribe['on_comment']['enabled'] = isset($options['commentform']) ? $options['commentform'] : '0';
     $subscribe['on_comment']['label'] = isset($options['commentform_linkname']) ? $options['commentform_linkname'] : '';
-    $subscribe['on_comment']['segments'] = isset($options['commentform_lists']) ? $this->getMappedSegmentIds($options['commentform_lists']) : array();
+    $subscribe['on_comment']['segments'] = isset($options['commentform_lists']) ? $this->getMappedSegmentIds($options['commentform_lists']) : [];
     $subscribe['on_register']['enabled'] = isset($options['registerform']) ? $options['registerform'] : '0';
     $subscribe['on_register']['label'] = isset($options['registerform_linkname']) ? $options['registerform_linkname'] : '';
-    $subscribe['on_register']['segments'] = isset($options['registerform_lists']) ? $this->getMappedSegmentIds($options['registerform_lists']) : array();
+    $subscribe['on_register']['segments'] = isset($options['registerform_lists']) ? $this->getMappedSegmentIds($options['registerform_lists']) : [];
     $this->settings->set('subscribe', $subscribe);
 
     // Subscription
@@ -1043,7 +1043,7 @@ class MP2Migrator {
     $subscription['pages']['unsubscribe'] = isset($options['unsubscribe_page']) ? $options['unsubscribe_page'] : '';
     $subscription['pages']['confirmation'] = isset($options['confirmation_page']) ? $options['confirmation_page'] : '';
     $subscription['pages']['manage'] = isset($options['subscriptions_page']) ? $options['subscriptions_page'] : '';
-    $subscription['segments'] = isset($options['manage_subscriptions_lists']) ? $this->getMappedSegmentIds($options['manage_subscriptions_lists']) : array();
+    $subscription['segments'] = isset($options['manage_subscriptions_lists']) ? $this->getMappedSegmentIds($options['manage_subscriptions_lists']) : [];
     $this->settings->set('subscription', $subscription);
 
     // Confirmation email
@@ -1110,7 +1110,7 @@ class MP2Migrator {
    */
   private function getEmail($email_id) {
     global $wpdb;
-    $email = array();
+    $email = [];
 
     $table = $this->mp2_email_table;
     $sql = "

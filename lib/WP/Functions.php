@@ -89,7 +89,7 @@ class Functions {
     return add_query_arg($key, $value, $url);
   }
 
-  function addScreenOption($option, $args = array()) {
+  function addScreenOption($option, $args = []) {
     return add_screen_option($option, $args);
   }
 
@@ -105,7 +105,7 @@ class Functions {
     return admin_url($path, $scheme);
   }
 
-  function arrayReplaceRecursive(array $base = array(), array $replacements = array()) {
+  function arrayReplaceRecursive(array $base = [], array $replacements = []) {
     return array_replace_recursive($base, $replacements);
   }
 
@@ -197,7 +197,7 @@ class Functions {
     return get_option($option, $default);
   }
 
-  function getPages($args = array()) {
+  function getPages($args = []) {
     return get_pages($args);
   }
 
@@ -221,7 +221,7 @@ class Functions {
     return get_post_thumbnail_id($post);
   }
 
-  function getPostTypes($args = array(), $output = 'names', $operator = 'and') {
+  function getPostTypes($args = [], $output = 'names', $operator = 'and') {
     return get_post_types($args, $output, $operator);
   }
 
@@ -250,7 +250,7 @@ class Functions {
    * @param string|array $deprecated
    * @return array|int|WP_Error
    */
-  function getTerms($args = array(), $deprecated = '') {
+  function getTerms($args = [], $deprecated = '') {
     return get_terms($args, $deprecated);
   }
 
@@ -348,7 +348,7 @@ class Functions {
     return register_activation_hook($file, $function);
   }
 
-  function registerPostType($post_type, $args = array()) {
+  function registerPostType($post_type, $args = []) {
     return register_post_type($post_type, $args);
   }
 
@@ -432,15 +432,15 @@ class Functions {
     return wp_encode_emoji($content);
   }
 
-  function wpEnqueueMedia(array $args = array()) {
+  function wpEnqueueMedia(array $args = []) {
     return wp_enqueue_media($args);
   }
 
-  function wpEnqueueScript($handle, $src = '', array $deps = array(), $ver = false, $in_footer = false) {
+  function wpEnqueueScript($handle, $src = '', array $deps = [], $ver = false, $in_footer = false) {
     return wp_enqueue_script($handle, $src, $deps, $ver, $in_footer);
   }
 
-  function wpEnqueueStyle($handle, $src = '', array $deps = array(), $ver = false, $media = 'all') {
+  function wpEnqueueStyle($handle, $src = '', array $deps = [], $ver = false, $media = 'all') {
     return wp_enqueue_style($handle, $src, $deps, $ver, $media);
   }
 
@@ -452,7 +452,7 @@ class Functions {
     return wp_get_current_user();
   }
 
-  function wpGetPostTerms($post_id, $taxonomy = 'post_tag', array $args = array()) {
+  function wpGetPostTerms($post_id, $taxonomy = 'post_tag', array $args = []) {
     return wp_get_post_terms($post_id, $taxonomy, $args);
   }
 
@@ -488,11 +488,11 @@ class Functions {
     return wp_print_scripts($handles);
   }
 
-  function wpRemoteGet($url, array $args = array()) {
+  function wpRemoteGet($url, array $args = []) {
     return wp_remote_get($url, $args);
   }
 
-  function wpRemotePost($url, array $args = array()) {
+  function wpRemotePost($url, array $args = []) {
     return wp_remote_post($url, $args);
   }
 

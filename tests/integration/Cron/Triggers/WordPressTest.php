@@ -26,9 +26,9 @@ class WordPressTest extends \MailPoetTest {
     // called by the MailPoet cron trigger does not work. for that matter, we need to set
     // the trigger setting to anything but 'WordPress'.
     $this->settings = new SettingsController();
-    $this->settings->set('cron_trigger', array(
-      'method' => 'none'
-    ));
+    $this->settings->set('cron_trigger', [
+      'method' => 'none',
+    ]);
   }
 
   function testItRequiresScheduledQueuesToExecute() {
@@ -87,10 +87,10 @@ class WordPressTest extends \MailPoetTest {
   function testItExecutesWhenBounceIsActive() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
       'method' => Mailer::METHOD_MAILPOET,
-      'frequency' => array(
+      'frequency' => [
         'emails' => Setting::DEFAULT_SENDING_FREQUENCY_EMAILS,
-        'interval' => Setting::DEFAULT_SENDING_FREQUENCY_INTERVAL
-      ),
+        'interval' => Setting::DEFAULT_SENDING_FREQUENCY_INTERVAL,
+      ],
     ]);
     $this->_addScheduledTask(BounceWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
     expect(WordPress::checkExecutionRequirements())->true();
@@ -120,21 +120,21 @@ class WordPressTest extends \MailPoetTest {
   }
 
   function _addMTAConfigAndLog($sent, $status = null) {
-    $mta_config = array(
-      'frequency' => array(
+    $mta_config = [
+      'frequency' => [
         'emails' => 1,
-        'interval' => 1
-      )
-    );
+        'interval' => 1,
+      ],
+    ];
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       $mta_config
     );
-    $mta_log = array(
+    $mta_log = [
       'sent' => $sent,
       'started' => time(),
-      'status' => $status
-    );
+      'status' => $status,
+    ];
     $this->settings->set(
       MailerLog::SETTING_NAME,
       $mta_log
@@ -144,13 +144,13 @@ class WordPressTest extends \MailPoetTest {
   function _addQueue($status) {
     $queue = SendingTask::create();
     $queue->hydrate(
-      array(
+      [
         'newsletter_id' => 1,
         'status' => $status,
         'scheduled_at' => ($status === SendingQueue::STATUS_SCHEDULED) ?
           Carbon::createFromTimestamp(current_time('timestamp')) :
-          null
-      )
+          null,
+      ]
     );
     return $queue->save();
   }
@@ -158,13 +158,13 @@ class WordPressTest extends \MailPoetTest {
   function _addScheduledTask($type, $status) {
     $task = ScheduledTask::create();
     $task->hydrate(
-      array(
+      [
         'type' => $type,
         'status' => $status,
         'scheduled_at' => ($status === ScheduledTask::STATUS_SCHEDULED) ?
           Carbon::createFromTimestamp(current_time('timestamp')) :
-          null
-      )
+          null,
+      ]
     );
     return $task->save();
   }
@@ -172,9 +172,9 @@ class WordPressTest extends \MailPoetTest {
   function _enableMigration() {
     // Migration can be triggered only if cron execution method is selected
     // and is not "none"
-    $this->settings->set('cron_trigger', array(
-      'method' => 'WordPress'
-    ));
+    $this->settings->set('cron_trigger', [
+      'method' => 'WordPress',
+    ]);
   }
 
   function _after() {

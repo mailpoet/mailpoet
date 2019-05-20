@@ -33,7 +33,7 @@ class Router {
       false;
     $this->data = isset($api_data['data']) ?
       self::decodeRequestData($api_data['data']) :
-      array();
+      [];
     $this->access_control = $access_control;
     $this->container = $container;
   }
@@ -67,7 +67,7 @@ class Router {
   static function decodeRequestData($data) {
     $data = json_decode(base64_decode($data), true);
     if (!is_array($data)) {
-      $data = array();
+      $data = [];
     }
     return $data;
   }
@@ -77,11 +77,11 @@ class Router {
   }
 
   static function buildRequest($endpoint, $action, $data = false) {
-    $params = array(
+    $params = [
       self::NAME => '',
       'endpoint' => $endpoint,
       'action' => $action,
-    );
+    ];
     if ($data) {
       $params['data'] = self::encodeRequestData($data);
     }

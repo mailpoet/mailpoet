@@ -12,9 +12,9 @@ class ScheduledTaskTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->task = ScheduledTask::create();
-    $this->task->hydrate(array(
-      'status' => ScheduledTask::STATUS_SCHEDULED
-    ));
+    $this->task->hydrate([
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+    ]);
     $this->task->save();
   }
 
@@ -28,33 +28,33 @@ class ScheduledTaskTest extends \MailPoetTest {
   }
 
   function testItUnPauseAllByNewsletters() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'type' => Newsletter::TYPE_NOTIFICATION
-    ));
-    $task1 = ScheduledTask::createOrUpdate(array(
+    $newsletter = Newsletter::createOrUpdate([
+      'type' => Newsletter::TYPE_NOTIFICATION,
+    ]);
+    $task1 = ScheduledTask::createOrUpdate([
       'status' => ScheduledTask::STATUS_PAUSED,
       'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
-    ));
-    $task2 = ScheduledTask::createOrUpdate(array(
+    ]);
+    $task2 = ScheduledTask::createOrUpdate([
       'status' => ScheduledTask::STATUS_COMPLETED,
       'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
-    ));
-    $task3 = ScheduledTask::createOrUpdate(array(
+    ]);
+    $task3 = ScheduledTask::createOrUpdate([
       'status' => ScheduledTask::STATUS_PAUSED,
       'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->subDays(10)->format('Y-m-d H:i:s'),
-    ));
-    SendingQueue::createOrUpdate(array(
+    ]);
+    SendingQueue::createOrUpdate([
       'newsletter_id' => $newsletter->id(),
       'task_id' => $task1->id(),
-    ));
-    SendingQueue::createOrUpdate(array(
+    ]);
+    SendingQueue::createOrUpdate([
       'newsletter_id' => $newsletter->id(),
       'task_id' => $task2->id(),
-    ));
-    SendingQueue::createOrUpdate(array(
+    ]);
+    SendingQueue::createOrUpdate([
       'newsletter_id' => $newsletter->id(),
       'task_id' => $task3->id(),
-    ));
+    ]);
     ScheduledTask::setScheduledAllByNewsletter($newsletter);
     $task1_found = ScheduledTask::findOne($task1->id());
     expect($task1_found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
@@ -65,23 +65,23 @@ class ScheduledTaskTest extends \MailPoetTest {
   }
 
   function testItPauseAllByNewsletters() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'type' => Newsletter::TYPE_NOTIFICATION
-    ));
-    $task1 = ScheduledTask::createOrUpdate(array(
+    $newsletter = Newsletter::createOrUpdate([
+      'type' => Newsletter::TYPE_NOTIFICATION,
+    ]);
+    $task1 = ScheduledTask::createOrUpdate([
       'status' => ScheduledTask::STATUS_COMPLETED,
-    ));
-    $task2 = ScheduledTask::createOrUpdate(array(
+    ]);
+    $task2 = ScheduledTask::createOrUpdate([
       'status' => ScheduledTask::STATUS_SCHEDULED,
-    ));
-    SendingQueue::createOrUpdate(array(
+    ]);
+    SendingQueue::createOrUpdate([
       'newsletter_id' => $newsletter->id(),
       'task_id' => $task1->id(),
-    ));
-    SendingQueue::createOrUpdate(array(
+    ]);
+    SendingQueue::createOrUpdate([
       'newsletter_id' => $newsletter->id(),
       'task_id' => $task2->id(),
-    ));
+    ]);
     ScheduledTask::pauseAllByNewsletter($newsletter);
     $task1_found = ScheduledTask::findOne($task1->id());
     expect($task1_found->status)->equals(ScheduledTask::STATUS_COMPLETED);
@@ -113,9 +113,9 @@ class ScheduledTaskTest extends \MailPoetTest {
 
   function testItJsonEncodesMetaWhenSaving() {
     $task = ScheduledTask::create();
-    $meta = array(
-      'some' => 'value'
-    );
+    $meta = [
+      'some' => 'value',
+    ];
     $task->meta = $meta;
     $task->save();
 

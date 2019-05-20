@@ -11,9 +11,9 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class CustomFields extends APIEndpoint {
-  public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_FORMS
-  );
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_FORMS,
+  ];
 
   function getAll() {
     $collection = CustomField::orderByAsc('created_at')->findMany();
@@ -24,7 +24,7 @@ class CustomFields extends APIEndpoint {
     return $this->successResponse($custom_fields);
   }
 
-  function delete($data = array()) {
+  function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
     $custom_field = CustomField::findOne($id);
     if ($custom_field instanceof CustomField) {
@@ -32,13 +32,13 @@ class CustomFields extends APIEndpoint {
 
       return $this->successResponse($custom_field->asArray());
     } else {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet')
-      ));
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet'),
+      ]);
     }
   }
 
-  function save($data = array()) {
+  function save($data = []) {
     $custom_field = CustomField::createOrUpdate($data);
     $errors = $custom_field->getErrors();
 
@@ -50,14 +50,14 @@ class CustomFields extends APIEndpoint {
     return $this->successResponse($custom_field->asArray());
   }
 
-  function get($data = array()) {
+  function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
     $custom_field = CustomField::findOne($id);
     if ($custom_field instanceof CustomField) {
       return $this->successResponse($custom_field->asArray());
     }
-    return $this->errorResponse(array(
-      APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet')
-    ));
+    return $this->errorResponse([
+      APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet'),
+    ]);
   }
 }

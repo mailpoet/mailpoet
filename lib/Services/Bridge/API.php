@@ -40,7 +40,7 @@ class API {
   function checkMSSKey() {
     $result = $this->request(
       $this->url_me,
-      array('site' => WPFunctions::get()->homeUrl())
+      ['site' => WPFunctions::get()->homeUrl()]
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
@@ -53,13 +53,13 @@ class API {
         break;
     }
 
-    return array('code' => $code, 'data' => $body);
+    return ['code' => $code, 'data' => $body];
   }
 
   function checkPremiumKey() {
     $result = $this->request(
       $this->url_premium,
-      array('site' => WPFunctions::get()->homeUrl())
+      ['site' => WPFunctions::get()->homeUrl()]
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
@@ -75,7 +75,7 @@ class API {
         break;
     }
 
-    return array('code' => $code, 'data' => $body);
+    return ['code' => $code, 'data' => $body];
   }
 
   function logCurlInformation($headers, $info) {
@@ -93,10 +93,10 @@ class API {
     );
     remove_action('requests-curl.after_request', [$this, 'logCurlInformation']);
     if (is_wp_error($result)) {
-      return array(
+      return [
         'status' => self::SENDING_STATUS_CONNECTION_ERROR,
-        'message' => $result->get_error_message()
-      );
+        'message' => $result->get_error_message(),
+      ];
     }
 
     $response_code = $this->wp->wpRemoteRetrieveResponseCode($result);
@@ -104,13 +104,13 @@ class API {
       $response = ($this->wp->wpRemoteRetrieveBody($result)) ?
         $this->wp->wpRemoteRetrieveBody($result) :
         $this->wp->wpRemoteRetrieveResponseMessage($result);
-      return array(
+      return [
         'status' => self::SENDING_STATUS_SEND_ERROR,
         'message' => $response,
-        'code' => $response_code
-      );
+        'code' => $response_code,
+      ];
     }
-    return array('status' => self::SENDING_STATUS_OK);
+    return ['status' => self::SENDING_STATUS_OK];
   }
 
   function checkBounces(array $emails) {
@@ -127,7 +127,7 @@ class API {
   function updateSubscriberCount($count) {
     $result = $this->request(
       $this->url_stats,
-      array('subscriber_count' => (int)$count),
+      ['subscriber_count' => (int)$count],
       'PUT'
     );
     return $this->wp->wpRemoteRetrieveResponseCode($result) === self::RESPONSE_CODE_STATS_SAVED;
@@ -146,16 +146,16 @@ class API {
   }
 
   private function request($url, $body, $method = 'POST') {
-    $params = array(
+    $params = [
       'timeout' => $this->wp->applyFilters('mailpoet_bridge_api_request_timeout', self::REQUEST_TIMEOUT),
       'httpversion' => '1.0',
       'method' => $method,
-      'headers' => array(
+      'headers' => [
         'Content-Type' => 'application/json',
-        'Authorization' => $this->auth()
-      ),
-      'body' => json_encode($body)
-    );
+        'Authorization' => $this->auth(),
+      ],
+      'body' => json_encode($body),
+    ];
     return $this->wp->wpRemotePost($url, $params);
   }
 }

@@ -16,31 +16,31 @@ if (!defined('ABSPATH')) exit;
 class Services extends APIEndpoint {
   public $bridge;
   public $date_time;
-  public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS
-  );
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
+  ];
 
   function __construct() {
     $this->bridge = new Bridge();
     $this->date_time = new DateTime();
   }
 
-  function checkMSSKey($data = array()) {
+  function checkMSSKey($data = []) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
     if (!$key) {
-      return $this->badRequest(array(
-        APIError::BAD_REQUEST  => WPFunctions::get()->__('Please specify a key.', 'mailpoet')
-      ));
+      return $this->badRequest([
+        APIError::BAD_REQUEST  => WPFunctions::get()->__('Please specify a key.', 'mailpoet'),
+      ]);
     }
 
     try {
       $result = $this->bridge->checkMSSKey($key);
       $this->bridge->storeMSSKeyAndState($key, $result);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
 
     $state = !empty($result['state']) ? $result['state'] : null;
@@ -60,7 +60,7 @@ class Services extends APIEndpoint {
     }
 
     if ($success_message) {
-      return $this->successResponse(array('message' => $success_message));
+      return $this->successResponse(['message' => $success_message]);
     }
 
     switch ($state) {
@@ -84,25 +84,25 @@ class Services extends APIEndpoint {
         break;
     }
 
-    return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
+    return $this->errorResponse([APIError::BAD_REQUEST => $error]);
   }
 
-  function checkPremiumKey($data = array()) {
+  function checkPremiumKey($data = []) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
     if (!$key) {
-      return $this->badRequest(array(
-        APIError::BAD_REQUEST  => WPFunctions::get()->__('Please specify a key.', 'mailpoet')
-      ));
+      return $this->badRequest([
+        APIError::BAD_REQUEST  => WPFunctions::get()->__('Please specify a key.', 'mailpoet'),
+      ]);
     }
 
     try {
       $result = $this->bridge->checkPremiumKey($key);
       $this->bridge->storePremiumKeyAndState($key, $result);
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
 
     $state = !empty($result['state']) ? $result['state'] : null;
@@ -123,7 +123,7 @@ class Services extends APIEndpoint {
 
     if ($success_message) {
       return $this->successResponse(
-        array('message' => $success_message),
+        ['message' => $success_message],
         Installer::getPremiumStatus()
       );
     }
@@ -144,7 +144,7 @@ class Services extends APIEndpoint {
         break;
     }
 
-    return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
+    return $this->errorResponse([APIError::BAD_REQUEST => $error]);
   }
 
   private function getErrorDescriptionByCode($code) {

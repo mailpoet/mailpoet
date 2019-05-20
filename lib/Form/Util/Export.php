@@ -6,24 +6,24 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Export {
   static function getAll($form = null) {
-    return array(
+    return [
       'html'      => static::get('html', $form),
       'php'       => static::get('php', $form),
       'iframe'    => static::get('iframe', $form),
       'shortcode' => static::get('shortcode', $form),
-    );
+    ];
   }
 
   static function get($type = 'html', $form = null) {
     switch ($type) {
       case 'iframe':
         // generate url to load iframe's content
-        $iframe_url = WPFunctions::get()->addQueryArg(array(
-          'mailpoet_form_iframe' => $form['id']
-        ), WPFunctions::get()->siteUrl());
+        $iframe_url = WPFunctions::get()->addQueryArg([
+          'mailpoet_form_iframe' => $form['id'],
+        ], WPFunctions::get()->siteUrl());
 
         // generate iframe
-        return join(' ', array(
+        return join(' ', [
           '<iframe',
           'width="100%"',
           'height="100%"',
@@ -38,20 +38,20 @@ class Export {
           'marginwidth="0"',
           'marginheight="0"',
           'hspace="0"',
-          'allowtransparency="true"></iframe>'
-        ));
+          'allowtransparency="true"></iframe>',
+        ]);
 
       case 'php':
-        $output = array(
+        $output = [
           '$form_widget = new \MailPoet\Form\Widget();',
           'echo $form_widget->widget(array(\'form\' => '.
             (int)$form['id'].
-            ', \'form_type\' => \'php\'));'
-          );
+            ', \'form_type\' => \'php\'));',
+          ];
         return join("\n", $output);
 
       case 'html':
-        $output = array();
+        $output = [];
 
         $output[] = '<!-- '.
           WPFunctions::get()->__(
@@ -90,10 +90,10 @@ class Export {
         '-->';
 
         $form_widget = new Widget();
-        $output[] = $form_widget->widget(array(
+        $output[] = $form_widget->widget([
           'form' => (int)$form['id'],
-          'form_type' => 'php'
-        ));
+          'form_type' => 'php',
+        ]);
         return join("\n", $output);
 
       case 'shortcode':

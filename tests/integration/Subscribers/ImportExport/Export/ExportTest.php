@@ -15,50 +15,50 @@ class ExportTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->JSON_data = json_decode(file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
-    $this->subscriber_fields = array(
+    $this->subscriber_fields = [
       'first_name' => 'First name',
       'last_name' => 'Last name',
       'email' => 'Email',
-      1 => 'Country'
-    );
-    $this->subscribers_data = array(
-      array(
+      1 => 'Country',
+    ];
+    $this->subscribers_data = [
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
-      ),
-      array(
+      ],
+      [
         'first_name' => 'Mary',
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        1 => 'Brazil'
-      ),
-      array(
+        1 => 'Brazil',
+      ],
+      [
         'first_name' => 'John',
         'last_name' => 'Kookoo',
-        'email' => 'john@kookoo.com'
-      ),
-      array(
+        'email' => 'john@kookoo.com',
+      ],
+      [
         'first_name' => 'Paul',
         'last_name' => 'Newman',
-        'email' => 'paul@newman.com'
-      )
-    );
-    $this->custom_fields_data = array(
-      array(
+        'email' => 'paul@newman.com',
+      ],
+    ];
+    $this->custom_fields_data = [
+      [
         'name' => 'Country',
-        'type' => 'text'
-      )
-    );
-    $this->segments_data = array(
-      array(
-        'name' => 'Newspapers'
-      ),
-      array(
-        'name' => 'Journals'
-      )
-    );
+        'type' => 'text',
+      ],
+    ];
+    $this->segments_data = [
+      [
+        'name' => 'Newspapers',
+      ],
+      [
+        'name' => 'Journals',
+      ],
+    ];
     foreach ($this->subscribers_data as $subscriber) {
       if (isset($subscriber[1])) {
         unset($subscriber[1]);
@@ -107,11 +107,11 @@ class ExportTest extends \MailPoetTest {
       ->equals('csv');
     expect($this->export->subscriber_fields)
       ->equals(
-        array(
+        [
           'email',
           'first_name',
-          '1'
-        )
+          '1',
+        ]
       );
     expect($this->export->subscriber_custom_fields)
       ->equals($this->export->getSubscriberCustomFields());
@@ -142,7 +142,7 @@ class ExportTest extends \MailPoetTest {
     $source = CustomField::where('name', $this->custom_fields_data[0]['name'])
       ->findOne();
     $target = $this->export->getSubscriberCustomFields();
-    expect($target)->equals(array($source->id => $source->name));
+    expect($target)->equals([$source->id => $source->name]);
   }
 
   function testItCanFormatSubscriberFields() {
@@ -165,28 +165,28 @@ class ExportTest extends \MailPoetTest {
   }
 
   function testItCanGetSubscribers() {
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(1), 100);
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([1], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
 
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(2), 100);
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([2], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
 
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(1, 2), 100);
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([1, 2], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(4);
 
   }
 
   function testItAlwaysGroupsSubscribersBySegments() {
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(0, 1, 2), 100);
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([0, 1, 2], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(5);
   }
 
   function testItCanGetSubscribersOnlyWithoutSegments() {
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter(array(0), 100);
+    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([0], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(1);
     expect($subscribers[0]['segment_name'])->equals('Not In Segment');

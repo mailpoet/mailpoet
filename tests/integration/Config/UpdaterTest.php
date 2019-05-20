@@ -22,9 +22,9 @@ class UpdaterTest extends \MailPoetTest {
   function testItInitializes() {
     $updater = Stub::make(
       $this->updater,
-      array(
-        'checkForUpdate' => Expected::once()
-      ),
+      [
+        'checkForUpdate' => Expected::once(),
+      ],
       $this
     );
     $updater->init();
@@ -36,23 +36,23 @@ class UpdaterTest extends \MailPoetTest {
     $update_transient->last_checked = time();
     $updater = Stub::construct(
       $this->updater,
-      array(
+      [
         $this->plugin_name,
         $this->slug,
-        $this->version
-      ),
-      array(
+        $this->version,
+      ],
+      [
         'getLatestVersion' => function () {
-          return (object)array(
+          return (object)[
             'id' => 76630,
             'slug' => $this->slug,
             'plugin' => $this->plugin_name,
             'new_version' => $this->version . 1,
             'url' => 'http://www.mailpoet.com/wordpress-newsletter-plugin-premium/',
-            'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip'
-          );
-        }
-      ),
+            'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip',
+          ];
+        },
+      ],
       $this
     );
     $result = $updater->checkForUpdate($update_transient);

@@ -12,9 +12,9 @@ if (!defined('ABSPATH')) exit;
 
 class Setup extends APIEndpoint {
   private $wp;
-  public $permissions = array(
-    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS
-  );
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
+  ];
 
   function __construct(WPFunctions $wp) {
     $this->wp = $wp;
@@ -28,9 +28,9 @@ class Setup extends APIEndpoint {
       $this->wp->doAction('mailpoet_setup_reset');
       return $this->successResponse();
     } catch (\Exception $e) {
-      return $this->errorResponse(array(
-        $e->getCode() => $e->getMessage()
-      ));
+      return $this->errorResponse([
+        $e->getCode() => $e->getMessage(),
+      ]);
     }
   }
 }

@@ -20,7 +20,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   function testItRequiresTaskTypeToConstruct() {
     $worker = Stub::make(
       'MailPoet\Cron\Workers\SimpleWorker',
-      array(),
+      [],
       $this
     );
     try {
@@ -125,7 +125,7 @@ class SimpleWorkerTest extends \MailPoetTest {
     $this->createRunningTask();
     $worker = Stub::make(
       $this->worker,
-      array('checkProcessingRequirements' => false),
+      ['checkProcessingRequirements' => false],
       $this
     );
     expect($worker->process())->false();
@@ -134,7 +134,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   function testItCanInitBeforeProcessing() {
     $worker = Stub::make(
       $this->worker,
-      array('init' => Expected::once()),
+      ['init' => Expected::once()],
       $this
     );
     $worker->process();
@@ -163,8 +163,8 @@ class SimpleWorkerTest extends \MailPoetTest {
     $task = $this->createRunningTask();
     $worker = Stub::construct(
       $this->worker,
-      array(),
-      array('processTaskStrategy' => false),
+      [],
+      ['processTaskStrategy' => false],
       $this
     );
     $result = $worker->processTask($task);

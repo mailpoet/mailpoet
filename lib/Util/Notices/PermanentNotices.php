@@ -22,10 +22,10 @@ class PermanentNotices {
   }
 
   public function init() {
-    WPFunctions::get()->addAction('wp_ajax_dismissed_notice_handler', array(
+    WPFunctions::get()->addAction('wp_ajax_dismissed_notice_handler', [
       $this,
-      'ajaxDismissNoticeHandler'
-    ));
+      'ajaxDismissNoticeHandler',
+    ]);
 
     $this->php_version_warnings->init(
       phpversion(),

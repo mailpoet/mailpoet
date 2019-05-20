@@ -27,10 +27,10 @@ class Links {
     // split the processed body with hashed links back to HTML and TEXT
     list($rendered_newsletter['html'], $rendered_newsletter['text'])
       = Helpers::splitObject($content);
-    return array(
+    return [
       $rendered_newsletter,
-      $links
-    );
+      $links,
+    ];
   }
 
   static function saveLinks($links, $newsletter, $queue) {

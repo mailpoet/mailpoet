@@ -13,29 +13,29 @@ class ErrorResponseTest extends \MailPoetUnitTest {
         return $value;
       },
     ]));
-    $errors = array(
+    $errors = [
       'valid error',
       'SQLSTATE[22001]: Some SQL error',
-      'another valid error'
-    );
+      'another valid error',
+    ];
     $error_response = new ErrorResponse($errors);
     expect($error_response->getData())->equals(
-      array(
-        'errors' => array(
-          array(
+      [
+        'errors' => [
+          [
             'error' => 0,
-            'message' => 'valid error'
-          ),
-          array(
+            'message' => 'valid error',
+          ],
+          [
             'error' => 1,
-            'message' => 'An unknown error occurred.'
-          ),
-          array(
+            'message' => 'An unknown error occurred.',
+          ],
+          [
             'error' => 2,
-            'message' => 'another valid error'
-          )
-        )
-      )
+            'message' => 'another valid error',
+          ],
+        ],
+      ]
     );
   }
 

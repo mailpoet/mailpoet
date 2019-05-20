@@ -17,10 +17,10 @@ class SendingQueueTest extends \MailPoetTest {
     $this->queue->newsletter_id = 1;
     $this->queue->save();
 
-    $this->rendered_body = array(
+    $this->rendered_body = [
       'html' => 'some html',
-      'text' => 'some text'
-    );
+      'text' => 'some text',
+    ];
   }
 
   function testItCanEncodeEmojisInBody() {
@@ -46,46 +46,46 @@ class SendingQueueTest extends \MailPoetTest {
   function testItChecksProcessedSubscribersForOldQueues() {
     $subscriber_id = 123;
     expect($this->queue->isSubscriberProcessed($subscriber_id))->false();
-    $this->queue->subscribers = array('processed' => array($subscriber_id));
+    $this->queue->subscribers = ['processed' => [$subscriber_id]];
     expect($this->queue->isSubscriberProcessed($subscriber_id))->true();
   }
 
   function testItChecksProcessedSubscribersForNewQueues() {
     $subscriber_id = 123;
     $queue = SendingTask::create();
-    $queue->setSubscribers(array($subscriber_id));
+    $queue->setSubscribers([$subscriber_id]);
     $queue->save();
     expect($queue->isSubscriberProcessed($subscriber_id))->false();
-    $queue->updateProcessedSubscribers(array($subscriber_id));
+    $queue->updateProcessedSubscribers([$subscriber_id]);
     expect($queue->isSubscriberProcessed($subscriber_id))->true();
   }
 
   function testItReadsSerializedRenderedNewsletterBody() {
     $queue = $this->queue;
-    $data = array(
+    $data = [
       'html' => 'html',
-      'text' => 'text'
-    );
+      'text' => 'text',
+    ];
     $queue->newsletter_rendered_body = serialize($data);
     expect($queue->getNewsletterRenderedBody())->equals($data);
   }
 
   function testItReadsJsonEncodedRenderedNewsletterBody() {
     $queue = $this->queue;
-    $data = array(
+    $data = [
       'html' => 'html',
-      'text' => 'text'
-    );
+      'text' => 'text',
+    ];
     $queue->newsletter_rendered_body = json_encode($data);
     expect($queue->getNewsletterRenderedBody())->equals($data);
   }
 
   function testItJsonEncodesRenderedNewsletterBodyWhenSaving() {
     $queue = SendingQueue::create();
-    $data = array(
+    $data = [
       'html' => 'html',
-      'text' => 'text'
-    );
+      'text' => 'text',
+    ];
     $queue->task_id = 0;
     $queue->newsletter_id = 1;
     $queue->newsletter_rendered_body = $data;
@@ -99,9 +99,9 @@ class SendingQueueTest extends \MailPoetTest {
 
   function testItJsonEncodesMetaWhenSaving() {
     $queue = SendingQueue::create();
-    $meta = array(
-      'some' => 'value'
-    );
+    $meta = [
+      'some' => 'value',
+    ];
     $queue->task_id = 0;
     $queue->newsletter_id = 1;
     $queue->meta = $meta;
@@ -134,10 +134,10 @@ class SendingQueueTest extends \MailPoetTest {
     // update queue with a serialized rendered newsletter body
     \ORM::rawExecute(
       'UPDATE `' . SendingQueue::$_table . '` SET `newsletter_rendered_body` = ? WHERE `id` = ?',
-      array(
+      [
         serialize($newsletter_rendered_body),
-        $queue->id
-      )
+        $queue->id,
+      ]
     );
     $sending_queue = SendingQueue::findOne($queue->id);
     expect($sending_queue->newsletter_rendered_body)->equals(serialize($newsletter_rendered_body));

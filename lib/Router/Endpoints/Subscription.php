@@ -12,14 +12,14 @@ class Subscription {
   const ACTION_CONFIRM = 'confirm';
   const ACTION_MANAGE = 'manage';
   const ACTION_UNSUBSCRIBE = 'unsubscribe';
-  public $allowed_actions = array(
+  public $allowed_actions = [
     self::ACTION_CONFIRM,
     self::ACTION_MANAGE,
-    self::ACTION_UNSUBSCRIBE
-  );
-  public $permissions = array(
-    'global' => AccessControl::NO_ACCESS_RESTRICTION
-  );
+    self::ACTION_UNSUBSCRIBE,
+  ];
+  public $permissions = [
+    'global' => AccessControl::NO_ACCESS_RESTRICTION,
+  ];
 
   function confirm($data) {
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM, $data);

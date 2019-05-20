@@ -44,9 +44,9 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_AUTOMATIC,
-      array(
-        'group' => 'test'
-      )
+      [
+        'group' => 'test',
+      ]
     );
 
     expect(Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, 'group_does_not_exist'))->isEmpty();
@@ -118,15 +118,15 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
       'afterTimeNumber' => 2,
-      'afterTimeType' => 'hours'
-    );
+      'afterTimeType' => 'hours',
+    ];
     $existing_subscriber = 678;
     $existing_queue = SendingTask::create();
     $existing_queue->newsletter_id = $newsletter->id;
-    $existing_queue->setSubscribers(array($existing_subscriber));
+    $existing_queue->setSubscribers([$existing_subscriber]);
     $existing_queue->save();
 
     // queue is not scheduled
@@ -139,10 +139,10 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInHours() {
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
-      'afterTimeNumber' => 2
-    );
+      'afterTimeNumber' => 2,
+    ];
 
     // queue is scheduled delivery in 2 hours
     $newsletter->afterTimeType = 'hours';
@@ -158,10 +158,10 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInDays() {
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
-      'afterTimeNumber' => 2
-    );
+      'afterTimeNumber' => 2,
+    ];
 
     // queue is scheduled for delivery in 2 days
     $newsletter->afterTimeType = 'days';
@@ -177,10 +177,10 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInWeeks() {
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
-      'afterTimeNumber' => 2
-    );
+      'afterTimeNumber' => 2,
+    ];
 
     // queue is scheduled for delivery in 2 weeks
     $newsletter->afterTimeType = 'weeks';
@@ -196,10 +196,10 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testItCreatesWelcomeNotificationSendingTaskScheduledToSendImmediately() {
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
-      'afterTimeNumber' => 2
-    );
+      'afterTimeNumber' => 2,
+    ];
 
     // queue is scheduled for immediate delivery
     $newsletter->afterTimeType = null;
@@ -232,9 +232,9 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_NOTIFICATION,
-      array(
-        'schedule' => '0 5 * * *'
-      )
+      [
+        'schedule' => '0 5 * * *',
+      ]
     );
 
     // queue is created and scheduled for delivery one day later at 5 a.m.
@@ -254,7 +254,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_WELCOME);
     Scheduler::scheduleSubscriberWelcomeNotification(
       $subscriber_id = 10,
-      $segments = array()
+      $segments = []
     );
 
     // queue is not created
@@ -268,22 +268,22 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_WELCOME,
-      array(
+      [
         'event' => 'segment',
         'segment' => 2,
         'afterTimeType' => 'days',
-        'afterTimeNumber' => 1
-      )
+        'afterTimeNumber' => 1,
+      ]
     );
 
     // queue is created and scheduled for delivery one day later
     $result = Scheduler::scheduleSubscriberWelcomeNotification(
       $subscriber_id = 10,
-      $segments = array(
+      $segments = [
         3,
         2,
-        1
-      )
+        1,
+      ]
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
@@ -301,14 +301,14 @@ class SchedulerTest extends \MailPoetTest {
     // subscriber welcome notification is not scheduled
     $result = Scheduler::scheduleSubscriberWelcomeNotification(
       $subscriber_id = 10,
-      $segments = array()
+      $segments = []
     );
     expect($result)->false();
 
     // WP user welcome notification is not scheduled
     $result = Scheduler::scheduleSubscriberWelcomeNotification(
       $subscriber_id = 10,
-      $segments = array()
+      $segments = []
     );
     expect($result)->false();
   }
@@ -318,17 +318,17 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_WELCOME,
-      array(
+      [
         'event' => 'user',
         'role' => 'editor',
         'afterTimeType' => 'days',
-        'afterTimeNumber' => 1
-      )
+        'afterTimeNumber' => 1,
+      ]
     );
     Scheduler::scheduleWPUserWelcomeNotification(
       $subscriber_id = 10,
-      $wp_user = array('roles' => array('editor')),
-      $old_user_data = array('roles' => array('editor'))
+      $wp_user = ['roles' => ['editor']],
+      $old_user_data = ['roles' => ['editor']]
     );
 
     // queue is not created
@@ -342,16 +342,16 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_WELCOME,
-      array(
+      [
         'event' => 'user',
         'role' => 'editor',
         'afterTimeType' => 'days',
-        'afterTimeNumber' => 1
-      )
+        'afterTimeNumber' => 1,
+      ]
     );
     Scheduler::scheduleWPUserWelcomeNotification(
       $subscriber_id = 10,
-      $wp_user = array('roles' => array('administrator'))
+      $wp_user = ['roles' => ['administrator']]
     );
 
     // queue is not created
@@ -365,16 +365,16 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_WELCOME,
-      array(
+      [
         'event' => 'user',
         'role' => 'administrator',
         'afterTimeType' => 'days',
-        'afterTimeNumber' => 1
-      )
+        'afterTimeNumber' => 1,
+      ]
     );
     Scheduler::scheduleWPUserWelcomeNotification(
       $subscriber_id = 10,
-      $wp_user = array('roles' => array('administrator'))
+      $wp_user = ['roles' => ['administrator']]
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
@@ -390,16 +390,16 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_WELCOME,
-      array(
+      [
         'event' => 'user',
         'role' => Scheduler::WORDPRESS_ALL_ROLES,
         'afterTimeType' => 'days',
-        'afterTimeNumber' => 1
-      )
+        'afterTimeNumber' => 1,
+      ]
     );
     Scheduler::scheduleWPUserWelcomeNotification(
       $subscriber_id = 10,
-      $wp_user = array('roles' => array('administrator'))
+      $wp_user = ['roles' => ['administrator']]
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
@@ -417,14 +417,14 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_option_field->save();
 
     // daily notification is scheduled at 14:00
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_DAILY,
       'monthDay' => null,
       'nthWeekDay' => null,
       'weekDay' => null,
-      'timeOfDay' => 50400 // 2 p.m.
-    );
+      'timeOfDay' => 50400, // 2 p.m.
+    ];
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
@@ -441,14 +441,14 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_option_field->save();
 
     // weekly notification is scheduled every Tuesday at 14:00
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_WEEKLY,
       'monthDay' => null,
       'nthWeekDay' => null,
       'weekDay' => Carbon::TUESDAY,
-      'timeOfDay' => 50400 // 2 p.m.
-    );
+      'timeOfDay' => 50400, // 2 p.m.
+    ];
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
@@ -465,14 +465,14 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_option_field->save();
 
     // monthly notification is scheduled every 20th day at 14:00
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_MONTHLY,
       'monthDay' => 19, // 20th (count starts from 0)
       'nthWeekDay' => null,
       'weekDay' => null,
-      'timeOfDay' => 50400// 2 p.m.
-    );
+      'timeOfDay' => 50400,// 2 p.m.
+    ];
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
@@ -489,14 +489,14 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_option_field->save();
 
     // monthly notification is scheduled every last Saturday at 14:00
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_NTHWEEKDAY,
       'monthDay' => null,
       'nthWeekDay' => 'L', // L = last
       'weekDay' => Carbon::SATURDAY,
-      'timeOfDay' => 50400// 2 p.m.
-    );
+      'timeOfDay' => 50400,// 2 p.m.
+    ];
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
@@ -513,14 +513,14 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter_option_field->save();
 
     // notification is scheduled immediately (next minute)
-    $newsletter = (object)array(
+    $newsletter = (object)[
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
       'monthDay' => null,
       'nthWeekDay' => null,
       'weekDay' => null,
-      'timeOfDay' => null
-    );
+      'timeOfDay' => null,
+    ];
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
@@ -535,11 +535,11 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_AUTOMATIC,
-      array(
+      [
         'sendTo' => 'user',
         'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2
-      )
+        'afterTimeNumber' => 2,
+      ]
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
     $subscriber = Subscriber::create();
@@ -567,17 +567,17 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_AUTOMATIC,
-      array(
+      [
         'sendTo' => 'user',
         'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2
-      )
+        'afterTimeNumber' => 2,
+      ]
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
-    $meta = array('some' => 'value');
+    $meta = ['some' => 'value'];
 
     Scheduler::createAutomaticEmailSendingTask($newsletter, $subscriber->id, $meta);
     // new queue record should be created with meta data
@@ -590,11 +590,11 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_AUTOMATIC,
-      array(
+      [
         'sendTo' => 'segment',
         'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2
-      )
+        'afterTimeNumber' => 2,
+      ]
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
 
@@ -618,13 +618,13 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_AUTOMATIC,
-      array(
+      [
         'group' => 'some_group',
         'event' => 'some_event',
         'sendTo' => 'user',
         'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2
-      )
+        'afterTimeNumber' => 2,
+      ]
     );
 
     // email should not be scheduled when group is not matched
@@ -637,13 +637,13 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_AUTOMATIC,
-      array(
+      [
         'group' => 'some_group',
         'event' => 'some_event',
         'sendTo' => 'user',
         'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2
-      )
+        'afterTimeNumber' => 2,
+      ]
     );
 
     // email should not be scheduled when event is not matched
@@ -658,25 +658,25 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter_1->id,
       Newsletter::TYPE_AUTOMATIC,
-      array(
+      [
         'group' => 'some_group',
         'event' => 'some_event',
         'sendTo' => 'user',
         'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2
-      )
+        'afterTimeNumber' => 2,
+      ]
     );
     $newsletter_2 = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC);
     $this->_createNewsletterOptions(
       $newsletter_2->id,
       Newsletter::TYPE_AUTOMATIC,
-      array(
+      [
         'group' => 'some_group',
         'event' => 'some_event',
         'sendTo' => 'segment',
         'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2
-      )
+        'afterTimeNumber' => 2,
+      ]
     );
     $condition = function($email) {
       return $email->sendTo === 'segment';
@@ -704,27 +704,27 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_NOTIFICATION,
-      array(
+      [
         'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
-        'schedule' => '* * * * *'
-      )
+        'schedule' => '* * * * *',
+      ]
     );
 
     $this->_removePostNotificationHooks();
-    register_post_type('post', array('exclude_from_search' => true));
+    register_post_type('post', ['exclude_from_search' => true]);
     $hook->setupPostNotifications();
 
-    $post_data = array(
+    $post_data = [
       'post_title' => 'title',
       'post_status' => 'publish',
-    );
+    ];
     wp_insert_post($post_data);
 
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
     expect($queue)->equals(false);
 
     $this->_removePostNotificationHooks();
-    register_post_type('post', array('exclude_from_search' => false));
+    register_post_type('post', ['exclude_from_search' => false]);
     $hook->setupPostNotifications();
 
     wp_insert_post($post_data);
@@ -739,10 +739,10 @@ class SchedulerTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_NOTIFICATION,
-      array(
+      [
         'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
-        'schedule' => '* * * * *'
-      )
+        'schedule' => '* * * * *',
+      ]
     );
 
     $notification_history = Newsletter::create();
@@ -756,10 +756,10 @@ class SchedulerTest extends \MailPoetTest {
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
     $sending_task->save();
 
-    $post_data = array(
+    $post_data = [
       'post_title' => 'title',
       'post_status' => 'publish',
-    );
+    ];
     wp_insert_post($post_data);
 
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();

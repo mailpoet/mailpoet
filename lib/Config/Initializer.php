@@ -96,48 +96,48 @@ class Initializer {
       return WPNotice::displayError(Helpers::replaceLinkTags(
         WPFunctions::get()->__('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
         '//beta.docs.mailpoet.com/article/200-solving-database-connection-issues',
-        array('target' => '_blank')
+        ['target' => '_blank']
       ));
     }
 
     // activation function
     WPFunctions::get()->registerActivationHook(
       Env::$file,
-      array(
+      [
         $this,
-        'runActivator'
-      )
+        'runActivator',
+      ]
     );
 
-    WPFunctions::get()->addAction('activated_plugin', array(
+    WPFunctions::get()->addAction('activated_plugin', [
       new PluginActivatedHook(new DeferredAdminNotices),
-      'action'
-    ), 10, 2);
+      'action',
+    ], 10, 2);
 
-    WPFunctions::get()->addAction('init', array(
+    WPFunctions::get()->addAction('init', [
       $this,
-      'preInitialize'
-    ), 0);
+      'preInitialize',
+    ], 0);
 
-    WPFunctions::get()->addAction('init', array(
+    WPFunctions::get()->addAction('init', [
       $this,
-      'initialize'
-    ));
+      'initialize',
+    ]);
 
-    WPFunctions::get()->addAction('admin_init', array(
+    WPFunctions::get()->addAction('admin_init', [
       $this,
-      'setupPrivacyPolicy'
-    ));
+      'setupPrivacyPolicy',
+    ]);
 
-    WPFunctions::get()->addAction('wp_loaded', array(
+    WPFunctions::get()->addAction('wp_loaded', [
       $this,
-      'postInitialize'
-    ));
+      'postInitialize',
+    ]);
 
-    WPFunctions::get()->addAction('admin_init', array(
+    WPFunctions::get()->addAction('admin_init', [
       new DeferredAdminNotices,
-      'printAndClean'
-    ));
+      'printAndClean',
+    ]);
   }
 
   function checkRequirements() {

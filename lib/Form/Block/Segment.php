@@ -17,7 +17,7 @@ class Segment extends Base {
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']
-      : array()
+      : []
     );
 
     foreach ($options as $option) {

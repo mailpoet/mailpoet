@@ -15,9 +15,9 @@ class RendererTest extends \MailPoetTest {
 
   function testItUsesCorrectAssetsManifestFilenames() {
     $renderer = Stub::make(new Renderer(),
-      array('getAssetManifest' => function($manifest) {
+      ['getAssetManifest' => function($manifest) {
         return $manifest;
-      })
+      }]
     );
     $renderer->__construct();
     expect($renderer->assets_manifest_js)->equals(Env::$assets_path . '/dist/js/manifest.json');
@@ -25,14 +25,14 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItGetsAssetManifest() {
-    $assets_manifest_js = array(
+    $assets_manifest_js = [
       'script1.js' => 'script1.hash.js',
-      'script2.js' => 'script2.hash.js'
-    );
-    $assets_manifest_css = array(
+      'script2.js' => 'script2.hash.js',
+    ];
+    $assets_manifest_css = [
       'style1.css' => 'style1.hash.css',
-      'style2.css' => 'style2.hash.css'
-    );
+      'style2.css' => 'style2.hash.css',
+    ];
     file_put_contents(Env::$temp_path . '/js.json', json_encode($assets_manifest_js));
     file_put_contents(Env::$temp_path . '/css.json', json_encode($assets_manifest_css));
 
@@ -45,10 +45,10 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItCanGetCssAsset() {
-    $assets_manifest_css = array(
+    $assets_manifest_css = [
       'style1.css' => 'style1.hash.css',
-      'style2.css' => 'style2.hash.css'
-    );
+      'style2.css' => 'style2.hash.css',
+    ];
     $renderer = $this->renderer;
     $renderer->assets_manifest_css = $assets_manifest_css;
     expect($renderer->getCssAsset('style1.css'))->equals('style1.hash.css');
@@ -56,10 +56,10 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItCanGetJsAsset() {
-    $assets_manifest_js = array(
+    $assets_manifest_js = [
       'script1.js' => 'script1.hash.js',
-      'script2.js' => 'script2.hash.js'
-    );
+      'script2.js' => 'script2.hash.js',
+    ];
     $renderer = $this->renderer;
     $renderer->assets_manifest_js = $assets_manifest_js;
     expect($renderer->getJsAsset('script1.js'))->equals('script1.hash.js');
@@ -74,41 +74,41 @@ class RendererTest extends \MailPoetTest {
   function testItDelegatesRenderingToTwig() {
     $renderer = Stub::construct(
       $this->renderer,
-      array(),
-      array(
+      [],
+      [
         'renderer' => Stub::makeEmpty(Twig_Environment::class,
-          array(
+          [
             'render' => Expected::atLeastOnce(function() {
               return 'test render';
             }),
-          ),
+          ],
           $this
         ),
-      )
+      ]
     );
 
-    expect($renderer->render('non-existing-template.html', array('somekey' => 'someval')))->equals('test render');
+    expect($renderer->render('non-existing-template.html', ['somekey' => 'someval']))->equals('test render');
   }
 
   function testItRethrowsTwigCacheExceptions() {
     $exception_message = 'this is a test error';
     $renderer = Stub::construct(
       $this->renderer,
-      array(true, false),
-      array(
+      [true, false],
+      [
         'renderer' => Stub::makeEmpty(Twig_Environment::class,
-          array(
+          [
             'render' => Expected::atLeastOnce(function() use ($exception_message) {
               throw new \RuntimeException($exception_message);
             }),
-          ),
+          ],
           $this
         ),
-      )
+      ]
     );
 
     try {
-      $renderer->render('non-existing-template.html', array('somekey' => 'someval'));
+      $renderer->render('non-existing-template.html', ['somekey' => 'someval']);
       self::fail('Twig exception was not rethrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->contains($exception_message);

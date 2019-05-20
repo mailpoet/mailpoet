@@ -9,12 +9,12 @@ class NewsletterOptionField extends Model {
 
   function __construct() {
     parent::__construct();
-    $this->addValidations('name', array(
-      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet')
-    ));
-    $this->addValidations('newsletter_type', array(
-      'required' => WPFunctions::get()->__('Please specify a newsletter type.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+    ]);
+    $this->addValidations('newsletter_type', [
+      'required' => WPFunctions::get()->__('Please specify a newsletter type.', 'mailpoet'),
+    ]);
   }
 
   function newsletters() {

@@ -17,7 +17,7 @@ class Radio extends Base {
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']
-      : array()
+      : []
     );
 
     $selected_value = self::getFieldValue($block);

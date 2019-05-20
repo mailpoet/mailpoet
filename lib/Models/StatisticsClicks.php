@@ -42,12 +42,12 @@ class StatisticsClicks extends Model {
       ->select('url')
       ->join(
        SendingQueue::$_table,
-       array('clicks.queue_id', '=', 'queue.id'),
+       ['clicks.queue_id', '=', 'queue.id'],
        'queue'
       )
       ->join(
         NewsletterLink::$_table,
-        array('clicks.link_id', '=', 'link.id'),
+        ['clicks.link_id', '=', 'link.id'],
         'link'
       )
       ->where('clicks.subscriber_id', $subscriber->id())

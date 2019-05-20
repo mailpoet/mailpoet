@@ -78,10 +78,10 @@ class Registration {
 
     if (!empty($segment_ids)) {
       $this->subscriber_actions->subscribe(
-        array(
+        [
           'email' => $email,
-          'first_name' => $name
-        ),
+          'first_name' => $name,
+        ],
         $segment_ids
       );
     }

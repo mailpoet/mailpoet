@@ -14,41 +14,41 @@ class ImportTest extends \MailPoetTest {
     $custom_field->name = 'country';
     $custom_field->type = 'text';
     $custom_field->save();
-    $this->subscribers_custom_fields = array((string)$custom_field->id);
-    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
-    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
-    $this->test_data = array(
-      'subscribers' => array(
-        array(
+    $this->subscribers_custom_fields = [(string)$custom_field->id];
+    $this->segment_1 = Segment::createOrUpdate(['name' => 'Segment 1']);
+    $this->segment_2 = Segment::createOrUpdate(['name' => 'Segment 2']);
+    $this->test_data = [
+      'subscribers' => [
+        [
           'Adam',
           'Smith',
           'Adam@smith.com', // capitalized to test normalization
-          'France'
-        ),
-        array(
+          'France',
+        ],
+        [
           'Mary',
           'Jane',
           'mary@jane.com',
-          'Brazil'
-        )
-      ),
-      'columns' => array(
-        'first_name' => array('index' => 0),
-        'last_name' => array('index' => 1),
-        'email' => array('index' => 2),
-        (string)$custom_field->id => array('index' => 3)
-      ),
-      'segments' => array(
-        $this->segment_1->id
-      ),
+          'Brazil',
+        ],
+      ],
+      'columns' => [
+        'first_name' => ['index' => 0],
+        'last_name' => ['index' => 1],
+        'email' => ['index' => 2],
+        (string)$custom_field->id => ['index' => 3],
+      ],
+      'segments' => [
+        $this->segment_1->id,
+      ],
       'timestamp' => time(),
-      'updateSubscribers' => true
-    );
-    $this->subscribers_fields = array(
+      'updateSubscribers' => true,
+    ];
+    $this->subscribers_fields = [
       'first_name',
       'last_name',
-      'email'
-    );
+      'email',
+    ];
     $this->import = new Import($this->test_data);
     $this->subscribers_data = $this->import->transformSubscribersData(
       $this->test_data['subscribers'],
@@ -92,45 +92,45 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItValidatesSubscribersEmail() {
-    $validation_rules = array('email' => 'email');
+    $validation_rules = ['email' => 'email'];
 
     // invalid email is removed from data object
-    $data['email'] = array(
+    $data['email'] = [
       'àdam@smîth.com',
-      'jane@doe.com'
-    );
+      'jane@doe.com',
+    ];
     $result = $this->import->validateSubscribersData($data, $validation_rules);
     expect($result['email'])->count(1);
     expect($result['email'][0])->equals('jane@doe.com');
 
     // valid email passes validation
-    $data['email'] = array(
+    $data['email'] = [
       'adam@smith.com',
-      'jane@doe.com'
-    );
+      'jane@doe.com',
+    ];
     $result = $this->import->validateSubscribersData($data, $validation_rules);
     expect($result)->equals($data);
   }
 
   function testItThrowsErrorWhenNoValidSubscribersAreFoundDuringImport() {
-    $data = array(
-      'subscribers' => array(
-        array(
+    $data = [
+      'subscribers' => [
+        [
           'Adam',
           'Smith',
           'àdam@smîth.com',
-          'France'
-        )
-      ),
-      'columns' => array(
-        'first_name' => array('index' => 0),
-        'last_name' => array('index' => 1),
-        'email' => array('index' => 2)
-      ),
-      'segments' => array(),
+          'France',
+        ],
+      ],
+      'columns' => [
+        'first_name' => ['index' => 0],
+        'last_name' => ['index' => 1],
+        'email' => ['index' => 2],
+      ],
+      'segments' => [],
       'timestamp' => time(),
-      'updateSubscribers' => true
-    );
+      'updateSubscribers' => true,
+    ];
     $import = new Import($data);
     try {
       $import->process();
@@ -154,18 +154,18 @@ class ImportTest extends \MailPoetTest {
 
   function testItSplitsSubscribers() {
     $subscribers_data = $this->subscribers_data;
-    $subscribers_data_existing = array(
-      array(
+    $subscribers_data_existing = [
+      [
         'first_name' => 'Johnny',
         'last_name' => 'Walker',
         'email' => 'johnny@WaLker.com',
-        'wp_user_id' => 13579
-      ),  array(
+        'wp_user_id' => 13579,
+      ],  [
         'first_name' => 'Steve',
         'last_name' => 'Sorrow',
-        'email' => 'sTeve.sorrow@exaMple.com'
-      ),
-    );
+        'email' => 'sTeve.sorrow@exaMple.com',
+      ],
+    ];
     foreach ($subscribers_data_existing as $i => $existing_subscriber) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($existing_subscriber);
@@ -183,31 +183,31 @@ class ImportTest extends \MailPoetTest {
     foreach ($new_subscribers as $field => $value) {
       expect($value[0])->equals($subscribers_data[$field][0]);
     }
-    expect($wp_users)->equals(array($subscribers_data_existing[0]['wp_user_id']));
+    expect($wp_users)->equals([$subscribers_data_existing[0]['wp_user_id']]);
   }
 
   function testItAddsMissingRequiredFieldsToSubscribersObject() {
-    $data = array(
-      'subscribers' => array(
-        array(
-          'adam@smith.com'
-        ),
-        array(
-          'mary@jane.com'
-        )
-      ),
-      'columns' => array(
-        'email' => array('index' => 0)
-      ),
-      'segments' => array(1),
+    $data = [
+      'subscribers' => [
+        [
+          'adam@smith.com',
+        ],
+        [
+          'mary@jane.com',
+        ],
+      ],
+      'columns' => [
+        'email' => ['index' => 0],
+      ],
+      'segments' => [1],
       'timestamp' => time(),
-      'updateSubscribers' => true
-    );
+      'updateSubscribers' => true,
+    ];
     $import = new Import($data);
-    $subscribers_data = array(
+    $subscribers_data = [
       'data' => $import->subscribers_data,
-      'fields' => $import->subscribers_fields
-    );
+      'fields' => $import->subscribers_fields,
+    ];
     $result = $import->addMissingRequiredFields(
       $subscribers_data
     );
@@ -227,34 +227,34 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItGetsSubscriberFields() {
-    $data = array(
+    $data = [
       'one',
       'two',
-      39
-    );
+      39,
+    ];
     $fields = $this->import->getSubscribersFields($data);
     expect($fields)->equals(
-      array(
+      [
         'one',
-        'two'
-      ));
+        'two',
+      ]);
   }
 
   function testItGetsCustomSubscribersFields() {
-    $data = array(
+    $data = [
       'one',
       'two',
-      39
-    );
+      39,
+    ];
     $fields = $this->import->getCustomSubscribersFields($data);
-    expect($fields)->equals(array(39));
+    expect($fields)->equals([39]);
   }
 
   function testItAddsOrUpdatesSubscribers() {
-    $subscribers_data = array(
+    $subscribers_data = [
       'data' => $this->subscribers_data,
-      'fields' => $this->subscribers_fields
-    );
+      'fields' => $this->subscribers_fields,
+    ];
     $this->import->createOrUpdateSubscribers(
       'create',
       $subscribers_data
@@ -275,14 +275,14 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItDeletesTrashedSubscribers() {
-    $subscribers_data = array(
+    $subscribers_data = [
       'data' => $this->subscribers_data,
-      'fields' => $this->subscribers_fields
-    );
-    $subscribers_data['data']['deleted_at'] = array(
+      'fields' => $this->subscribers_fields,
+    ];
+    $subscribers_data['data']['deleted_at'] = [
       null,
-      date('Y-m-d H:i:s')
-    );
+      date('Y-m-d H:i:s'),
+    ];
     $subscribers_data['fields'][] = 'deleted_at';
     $this->import->createOrUpdateSubscribers(
       'create',
@@ -296,7 +296,7 @@ class ImportTest extends \MailPoetTest {
     expect(count($db_subscribers))->equals(2);
     $this->import->addSubscribersToSegments(
       $db_subscribers,
-      array($this->segment_1->id, $this->segment_2->id)
+      [$this->segment_1->id, $this->segment_2->id]
     );
     $subscribers_segments = SubscriberSegment::findArray();
     expect(count($subscribers_segments))->equals(4);
@@ -310,17 +310,17 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItCreatesOrUpdatesCustomFields() {
-    $subscribers_data = array(
+    $subscribers_data = [
       'data' => $this->subscribers_data,
-      'fields' => $this->subscribers_fields
-    );
+      'fields' => $this->subscribers_fields,
+    ];
     $custom_field = $this->subscribers_custom_fields[0];
     $this->import->createOrUpdateSubscribers(
       'create',
       $subscribers_data,
       $this->subscribers_fields
     );
-    $db_subscribers = Subscriber::selectMany(array('id','email'))->findArray();
+    $db_subscribers = Subscriber::selectMany(['id','email'])->findArray();
     $this->import->createOrUpdateCustomFields(
       'create',
       $db_subscribers,
@@ -344,10 +344,10 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItAddsSubscribersToSegments() {
-    $subscribers_data = array(
+    $subscribers_data = [
       'data' => $this->subscribers_data,
-      'fields' => $this->subscribers_fields
-    );
+      'fields' => $this->subscribers_fields,
+    ];
     $this->import->createOrUpdateSubscribers(
       'create',
       $subscribers_data,
@@ -360,7 +360,7 @@ class ImportTest extends \MailPoetTest {
     );
     $this->import->addSubscribersToSegments(
       $db_subscribers,
-      array($this->segment_1->id, $this->segment_2->id)
+      [$this->segment_1->id, $this->segment_2->id]
     );
     // 2 subscribers * 2 segments
     foreach ($db_subscribers as $db_subscriber) {
@@ -376,15 +376,15 @@ class ImportTest extends \MailPoetTest {
   }
 
   function testItDeletesExistingTrashedSubscribers() {
-    $subscribers_data = array(
+    $subscribers_data = [
       'data' => $this->subscribers_data,
-      'fields' => $this->subscribers_fields
-    );
+      'fields' => $this->subscribers_fields,
+    ];
     $subscribers_data['fields'][] = 'deleted_at';
-    $subscribers_data['data']['deleted_at'] = array(
+    $subscribers_data['data']['deleted_at'] = [
       null,
-      date('Y-m-d H:i:s')
-    );
+      date('Y-m-d H:i:s'),
+    ];
     $this->import->createOrUpdateSubscribers(
       'create',
       $subscribers_data
@@ -404,12 +404,12 @@ class ImportTest extends \MailPoetTest {
   function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsNotPresent() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(
-      array(
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'Adam@Smith.com',
-        'status' => 'unsubscribed'
-      ));
+        'status' => 'unsubscribed',
+      ]);
     $subscriber->save();
     $result = $this->import->process();
     $updated_subscriber = Subscriber::where('email', $subscriber->email)->findOne();
@@ -418,18 +418,18 @@ class ImportTest extends \MailPoetTest {
 
   function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsPresent() {
     $data = $this->test_data;
-    $data['columns']['status'] = array('index' => 4);
+    $data['columns']['status'] = ['index' => 4];
     $data['subscribers'][0][] = 'subscribed';
     $data['subscribers'][1][] = 'subscribed';
     $import = new Import($data);
     $existing_subscriber = Subscriber::create();
     $existing_subscriber->hydrate(
-      array(
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'Adam@Smith.com',
-        'status' => 'unsubscribed'
-      ));
+        'status' => 'unsubscribed',
+      ]);
     $existing_subscriber->save();
     $result = $import->process();
     $updated_subscriber = Subscriber::where('email', $existing_subscriber->email)->findOne();
@@ -438,15 +438,15 @@ class ImportTest extends \MailPoetTest {
 
   function testItImportsNewsSubscribersWithSubscribedStatus() {
     $data = $this->test_data;
-    $data['columns']['status'] = array('index' => 4);
+    $data['columns']['status'] = ['index' => 4];
     $data['subscribers'][0][] = 'unsubscribed';
     $data['subscribers'][1][] = 'unsubscribed';
     $import = new Import($data);
     $result = $import->process();
-    $new_subscribers = Subscriber::whereAnyIs(array(
-      array('email' => $data['subscribers'][0][2]),
-      array('email' => $data['subscribers'][1][2])
-      )
+    $new_subscribers = Subscriber::whereAnyIs([
+      ['email' => $data['subscribers'][0][2]],
+      ['email' => $data['subscribers'][1][2]],
+      ]
     )->findMany();
     expect($new_subscribers)->count(2);
     expect($new_subscribers[0]->status)->equals('subscribed');

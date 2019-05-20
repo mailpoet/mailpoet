@@ -17,54 +17,54 @@ class FestivalEvent {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("Festival Event", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getBody() {
-    return array(
-      'content' => array(
+    return [
+      'content' => [
         'type' => 'container',
         'orientation' => 'vertical',
-        'styles' => array(
-          'block' => array(
+        'styles' => [
+          'block' => [
             'backgroundColor' => 'transparent',
-          ),
-        ),
-        'blocks' => array(
-          0 => array(
+          ],
+        ],
+        'blocks' => [
+          0 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#0a5388',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/festival-header.jpg',
@@ -72,33 +72,33 @@ class FestivalEvent {
                     'fullWidth' => true,
                     'width' => '1320px',
                     'height' => '879px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '36px',
-                      ),
-                    ),
-                  ),
-                  3 => array(
+                      ],
+                    ],
+                  ],
+                  3 => [
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center;">Pack your glowsticks, <br />Boomfest is back!&nbsp;</h1>
                         <p></p>
                         <p style="text-align: center;">Duis tempor nisl in risus hendrerit venenatis. <br />Curabitur ornare venenatis nisl non ullamcorper. </p>',
-                  ),
-                  4 => array(
+                  ],
+                  4 => [
                     'type' => 'button',
                     'text' => 'Duis id tincidunt',
                     'url' => '',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => '#0a5388',
                         'borderColor' => '#0074a2',
                         'borderWidth' => '0px',
@@ -111,18 +111,18 @@ class FestivalEvent {
                         'fontSize' => '18px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  5 => array(
+                      ],
+                    ],
+                  ],
+                  5 => [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;">Maecenas scelerisque nisi sit amet metus efficitur dapibus!&nbsp;<br />Ut eros risus, facilisis ac aliquet vel, posuere ut urna.</p>',
-                  ),
-                  6 => array(
+                  ],
+                  6 => [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-grey',
-                    'icons' => array(
-                      0 => array(
+                    'icons' => [
+                      0 => [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -130,8 +130,8 @@ class FestivalEvent {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => array(
+                      ],
+                      1 => [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -139,8 +139,8 @@ class FestivalEvent {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => array(
+                      ],
+                      2 => [
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
                         'link' => 'http://instagram.com',
@@ -148,212 +148,212 @@ class FestivalEvent {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Instagram',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          1 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          1 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'padding' => '13px',
                         'borderStyle' => 'dashed',
                         'borderWidth' => '2px',
                         'borderColor' => '#ffffff',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '28px',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;">Confirmed Lineup</h2>',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          2 => array(
+                  ],
+                ],
+              ],
+            ],
+          ],
+          2 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'text',
                     'text' => '<h3><em><span style="color: #bae2ff;">Main Stage</span></em></h3><p>Quisque libero<br />Nulla convallis<br />Vestibulum Ornare<br />Consectetur Odio</p>',
-                  ),
-                ),
-              ),
-              1 => array(
+                  ],
+                ],
+              ],
+              1 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'text',
                     'text' => '<h3><em><span style="color: #bae2ff;">New Acts Stage</span></em></h3><p>Nulla interdum<br />Massa nec<br />Pharetra<br />Varius</p>',
-                  ),
-                ),
-              ),
-              2 => array(
+                  ],
+                ],
+              ],
+              2 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'text',
                     'text' => '<h3><em><span style="color: #bae2ff;">Comedy Stage</span></em></h3><p>In pulvinar<br />Risus sed<br />Condimentum<br />Feugiat</p>',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          3 => array(
+                  ],
+                ],
+              ],
+            ],
+          ],
+          3 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'padding' => '13px',
                         'borderStyle' => 'dashed',
                         'borderWidth' => '2px',
                         'borderColor' => '#ffffff',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  3 => array(
+                      ],
+                    ],
+                  ],
+                  3 => [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;">New to the festival this year</h2>',
-                  ),
-                  4 => array(
+                  ],
+                  4 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'padding' => '9px',
                         'borderStyle' => 'dashed',
                         'borderWidth' => '2px',
                         'borderColor' => '#ffffff',
-                      ),
-                    ),
-                  ),
-                  5 => array(
+                      ],
+                    ],
+                  ],
+                  5 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          4 => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          4 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/street-food.jpg',
@@ -361,37 +361,37 @@ class FestivalEvent {
                     'fullWidth' => true,
                     'width' => '499px',
                     'height' => '750px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h3>Award-winning Street Food</h3><p>Nullam pharetra lectus id porta pulvinar. Proin ac massa nibh. Nullam ac mi pharetra, lobortis nunc et, placerat leo. Mauris eu feugiat elit. Pellentesque eget turpis eu diam vehicula convallis non <a href="http://www.mailpoet.com">luctus enim.</a></p>',
-                  ),
-                ),
-              ),
-              1 => array(
+                  ],
+                ],
+              ],
+              1 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/happy.jpeg',
@@ -399,126 +399,126 @@ class FestivalEvent {
                     'fullWidth' => true,
                     'width' => '499px',
                     'height' => '750px',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'text',
                     'text' => '<h3>Prepare to&nbsp;dazzle with our Glitter Run</h3><p>Donec quis orci at metus finibus tincidunt. Sed vel urna sed urna maximus congue eu et turpis. Nulla tempus hendrerit justo eget molestie. Vivamus quis molestie lacus. Donec commodo odio a nisi feugiat, vitae egestas mi.</p>',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          5 => array(
+                  ],
+                ],
+              ],
+            ],
+          ],
+          5 => [
             'type' => 'container',
             'orientation' => 'horizontal',
-            'styles' => array(
-              'block' => array(
+            'styles' => [
+              'block' => [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => array(
-              0 => array(
+              ],
+            ],
+            'blocks' => [
+              0 => [
                 'type' => 'container',
                 'orientation' => 'vertical',
-                'styles' => array(
-                  'block' => array(
+                'styles' => [
+                  'block' => [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => array(
-                  0 => array(
+                  ],
+                ],
+                'blocks' => [
+                  0 => [
                     'type' => 'spacer',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => array(
+                      ],
+                    ],
+                  ],
+                  1 => [
                     'type' => 'divider',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
                         'padding' => '13px',
                         'borderStyle' => 'dashed',
                         'borderWidth' => '2px',
                         'borderColor' => '#ffffff',
-                      ),
-                    ),
-                  ),
-                  2 => array(
+                      ],
+                    ],
+                  ],
+                  2 => [
                     'type' => 'footer',
                     'text' => '<p>Mauris tristique ultricies ullamcorper. <br />Don\'t want to hear from us?&nbsp;<a href="[link:subscription_unsubscribe_url]">Unsubscribe</a></p><p></p><p>Add your postal address here.&nbsp;</p>',
-                    'styles' => array(
-                      'block' => array(
+                    'styles' => [
+                      'block' => [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => array(
+                      ],
+                      'text' => [
                         'fontColor' => '#ffffff',
                         'fontFamily' => 'Courier New',
                         'fontSize' => '13px',
                         'textAlign' => 'center',
-                      ),
-                      'link' => array(
+                      ],
+                      'link' => [
                         'fontColor' => '#ffffff',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      'globalStyles' => array(
-        'text' => array(
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+      'globalStyles' => [
+        'text' => [
           'fontColor' => '#ffffff',
           'fontFamily' => 'Courier New',
           'fontSize' => '16px',
-        ),
-        'h1' => array(
+        ],
+        'h1' => [
           'fontColor' => '#ffffff',
           'fontFamily' => 'Georgia',
           'fontSize' => '36px',
-        ),
-        'h2' => array(
+        ],
+        'h2' => [
           'fontColor' => '#ffffff',
           'fontFamily' => 'Georgia',
           'fontSize' => '26px',
-        ),
-        'h3' => array(
+        ],
+        'h3' => [
           'fontColor' => '#ffffff',
           'fontFamily' => 'Georgia',
           'fontSize' => '24px',
-        ),
-        'link' => array(
+        ],
+        'link' => [
           'fontColor' => '#ffffff',
           'textDecoration' => 'underline',
-        ),
-        'wrapper' => array(
+        ],
+        'wrapper' => [
           'backgroundColor' => '#8d062b',
-        ),
-        'body' => array(
+        ],
+        'body' => [
           'backgroundColor' => '#0a5388',
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
   }
 
   private function getThumbnail() {

@@ -43,10 +43,10 @@ class Subscriber extends Model {
   function __construct() {
     parent::__construct();
 
-    $this->addValidations('email', array(
+    $this->addValidations('email', [
       'required' => WPFunctions::get()->__('Please enter your email address', 'mailpoet'),
-      'validEmail' => WPFunctions::get()->__('Your email address is invalid!', 'mailpoet')
-    ));
+      'validEmail' => WPFunctions::get()->__('Your email address is invalid!', 'mailpoet'),
+    ]);
   }
 
   static function findOne($id = false) {
@@ -130,7 +130,7 @@ class Subscriber extends Model {
   }
 
   static function filterOutReservedColumns(array $subscriber_data) {
-    $reserved_columns = array(
+    $reserved_columns = [
       'id',
       'wp_user_id',
       'is_woocommerce_user',
@@ -141,8 +141,8 @@ class Subscriber extends Model {
       'created_at',
       'updated_at',
       'deleted_at',
-      'unconfirmed_data'
-    );
+      'unconfirmed_data',
+    ];
     $subscriber_data = array_diff_key(
       $subscriber_data,
       array_flip($reserved_columns)
@@ -157,22 +157,22 @@ class Subscriber extends Model {
 
     return $orm->where_raw(
       '(`email` LIKE ? OR `first_name` LIKE ? OR `last_name` LIKE ?)',
-      array('%'.$search.'%', '%'.$search.'%', '%'.$search.'%')
+      ['%'.$search.'%', '%'.$search.'%', '%'.$search.'%']
     );
   }
 
-  static function filters($data = array()) {
+  static function filters($data = []) {
     $group = (!empty($data['group'])) ? $data['group'] : 'all';
 
     $segments = Segment::orderByAsc('name')
       ->whereNull('deleted_at')
-      ->whereIn('type', array(Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS))
+      ->whereIn('type', [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS])
       ->findMany();
-    $segment_list = array();
-    $segment_list[] = array(
+    $segment_list = [];
+    $segment_list[] = [
       'label' => WPFunctions::get()->__('All Lists', 'mailpoet'),
-      'value' => ''
-    );
+      'value' => '',
+    ];
 
     $subscribers_without_segment = self::filter('withoutSegments')
       ->whereNull('deleted_at')
@@ -182,10 +182,10 @@ class Subscriber extends Model {
       number_format($subscribers_without_segment)
     );
 
-    $segment_list[] = array(
+    $segment_list[] = [
       'label' => $subscribers_without_segment_label,
-      'value' => 'none'
-    );
+      'value' => 'none',
+    ];
 
     foreach ($segments as $segment) {
       $subscribers_count = $segment->subscribers()
@@ -198,15 +198,15 @@ class Subscriber extends Model {
         number_format($subscribers_count)
       );
 
-      $segment_list[] = array(
+      $segment_list[] = [
         'label' => $label,
-        'value' => $segment->id()
-      );
+        'value' => $segment->id(),
+      ];
     }
 
-    $filters = array(
-      'segment' => $segment_list
-    );
+    $filters = [
+      'segment' => $segment_list,
+    ];
 
     return $filters;
   }
@@ -231,43 +231,43 @@ class Subscriber extends Model {
   }
 
   static function groups() {
-    return array(
-      array(
+    return [
+      [
         'name' => 'all',
         'label' => WPFunctions::get()->__('All', 'mailpoet'),
-        'count' => self::getPublished()->count()
-      ),
-      array(
+        'count' => self::getPublished()->count(),
+      ],
+      [
         'name' => self::STATUS_SUBSCRIBED,
         'label' => WPFunctions::get()->__('Subscribed', 'mailpoet'),
-        'count' => self::filter(self::STATUS_SUBSCRIBED)->count()
-      ),
-      array(
+        'count' => self::filter(self::STATUS_SUBSCRIBED)->count(),
+      ],
+      [
         'name' => self::STATUS_UNCONFIRMED,
         'label' => WPFunctions::get()->__('Unconfirmed', 'mailpoet'),
-        'count' => self::filter(self::STATUS_UNCONFIRMED)->count()
-      ),
-      array(
+        'count' => self::filter(self::STATUS_UNCONFIRMED)->count(),
+      ],
+      [
         'name' => self::STATUS_UNSUBSCRIBED,
         'label' => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
-        'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count()
-      ),
-      array(
+        'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count(),
+      ],
+      [
         'name' => self::STATUS_INACTIVE,
         'label' => WPFunctions::get()->__('Inactive', 'mailpoet'),
-        'count' => self::filter(self::STATUS_INACTIVE)->count()
-      ),
-      array(
+        'count' => self::filter(self::STATUS_INACTIVE)->count(),
+      ],
+      [
         'name' => self::STATUS_BOUNCED,
         'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
-        'count' => self::filter(self::STATUS_BOUNCED)->count()
-      ),
-      array(
+        'count' => self::filter(self::STATUS_BOUNCED)->count(),
+      ],
+      [
         'name' => 'trash',
         'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
-        'count' => self::getTrashed()->count()
-      )
-    );
+        'count' => self::getTrashed()->count(),
+      ],
+    ];
   }
 
   static function groupBy($orm, $group = null) {
@@ -292,19 +292,19 @@ class Subscriber extends Model {
     $orm = $orm
       ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
-        array(
+        [
           MP_SUBSCRIBERS_TABLE.'.id',
           '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'
-        )
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id',
+        ]
       )
       ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
-        array(
+        [
           MP_CUSTOM_FIELDS_TABLE.'.id',
           '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'
-        )
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id',
+        ]
       )
       ->groupBy(MP_SUBSCRIBERS_TABLE.'.id');
     return $orm;
@@ -323,17 +323,17 @@ class Subscriber extends Model {
     $orm = $orm
       ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
-        array(
+        [
           MP_SUBSCRIBERS_TABLE.'.id', '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'
-        )
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id',
+        ]
       )
       ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
-        array(
+        [
           MP_CUSTOM_FIELDS_TABLE.'.id','=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'
-        )
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id',
+        ]
       );
     return $orm;
   }
@@ -363,7 +363,7 @@ class Subscriber extends Model {
     )->select_expr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.value');
   }
 
-  static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = []) {
     $subscriber = false;
     if (is_array($data) && !empty($data)) {
       $data = WPFunctions::get()->stripslashesDeep($data);
@@ -474,7 +474,7 @@ class Subscriber extends Model {
     }
   }
 
-  function saveCustomFields($custom_fields_data = array()) {
+  function saveCustomFields($custom_fields_data = []) {
     // get custom field ids
     $custom_field_ids = array_keys($custom_fields_data);
 
@@ -494,11 +494,11 @@ class Subscriber extends Model {
   }
 
   function setCustomField($custom_field_id, $value) {
-    return SubscriberCustomField::createOrUpdate(array(
+    return SubscriberCustomField::createOrUpdate([
       'subscriber_id' => $this->id(),
       'custom_field_id' => $custom_field_id,
-      'value' => $value
-    ));
+      'value' => $value,
+    ]);
   }
 
   function setUnconfirmedData(array $subscriber_data) {
@@ -518,7 +518,7 @@ class Subscriber extends Model {
     return null;
   }
 
-  static function bulkAddToList($orm, $data = array()) {
+  static function bulkAddToList($orm, $data = []) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
@@ -527,18 +527,18 @@ class Subscriber extends Model {
     $count = parent::bulkAction($orm,
       function($subscriber_ids) use($segment) {
         SubscriberSegment::subscribeManyToSegments(
-          $subscriber_ids, array($segment->id)
+          $subscriber_ids, [$segment->id]
         );
       }
     );
 
-    return array(
+    return [
       'count' => $count,
-      'segment' => $segment->name
-    );
+      'segment' => $segment->name,
+    ];
   }
 
-  static function bulkMoveToList($orm, $data = array()) {
+  static function bulkMoveToList($orm, $data = []) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
@@ -548,18 +548,18 @@ class Subscriber extends Model {
       function($subscriber_ids) use($segment) {
         SubscriberSegment::deleteManySubscriptions($subscriber_ids);
         SubscriberSegment::subscribeManyToSegments(
-          $subscriber_ids, array($segment->id)
+          $subscriber_ids, [$segment->id]
         );
       }
     );
 
-    return array(
+    return [
       'count' => $count,
-      'segment' => $segment->name
-    );
+      'segment' => $segment->name,
+    ];
   }
 
-  static function bulkRemoveFromList($orm, $data = array()) {
+  static function bulkRemoveFromList($orm, $data = []) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
@@ -569,54 +569,54 @@ class Subscriber extends Model {
 
     parent::bulkAction($orm, function($subscriber_ids) use($segment) {
       SubscriberSegment::deleteManySubscriptions(
-        $subscriber_ids, array($segment->id)
+        $subscriber_ids, [$segment->id]
       );
     });
 
-    return array(
+    return [
       'count' => $count,
-      'segment' => $segment->name
-    );
+      'segment' => $segment->name,
+    ];
   }
 
-  static function bulkRemoveFromAllLists($orm, $data = array()) {
+  static function bulkRemoveFromAllLists($orm, $data = []) {
     $count = $orm->count();
 
     parent::bulkAction($orm, function($subscriber_ids) {
       SubscriberSegment::deleteManySubscriptions($subscriber_ids);
     });
 
-    return array(
-      'count' => $count
-    );
+    return [
+      'count' => $count,
+    ];
   }
 
   static function getTotalSubscribers() {
-    return self::whereIn('status', array(
+    return self::whereIn('status', [
       self::STATUS_SUBSCRIBED,
       self::STATUS_UNCONFIRMED,
-      self::STATUS_INACTIVE
-    ))
+      self::STATUS_INACTIVE,
+    ])
     ->whereNull('deleted_at')
     ->count();
   }
 
   static function bulkTrash($orm) {
     $count = parent::bulkAction($orm, function($subscriber_ids) {
-      Subscriber::rawExecute(join(' ', array(
+      Subscriber::rawExecute(join(' ', [
           'UPDATE `' . Subscriber::$_table . '`',
           'SET `deleted_at` = NOW()',
           'WHERE `id` IN ('.
             rtrim(str_repeat('?,', count($subscriber_ids)), ',')
           .')',
           'AND `wp_user_id` IS NULL',
-          'AND `is_woocommerce_user` = 0'
-        )),
+          'AND `is_woocommerce_user` = 0',
+        ]),
         $subscriber_ids
       );
     });
 
-    return array('count' => $count);
+    return ['count' => $count];
   }
 
   static function bulkDelete($orm) {
@@ -632,7 +632,7 @@ class Subscriber extends Model {
         ->deleteMany();
     });
 
-    return array('count' => $count);
+    return ['count' => $count];
   }
 
   static function subscribed($orm) {
@@ -694,13 +694,13 @@ class Subscriber extends Model {
   }
 
   static function updateMultiple($columns, $subscribers, $updated_at = false) {
-    $ignore_columns_on_update = array(
+    $ignore_columns_on_update = [
       'wp_user_id',
       'is_woocommerce_user',
       'email',
       'created_at',
-      'status'
-    );
+      'status',
+    ];
     // check if there is anything to update after excluding ignored columns
     if (!array_diff($columns, $ignore_columns_on_update)) return;
     $subscribers = array_map('array_values', $subscribers);
@@ -723,10 +723,10 @@ class Subscriber extends Model {
             $query = array_map(
               function($subscriber) use ($type, $column_position, $email_position) {
                 return ($type === 'values') ?
-                  array(
+                  [
                     $subscriber[$email_position],
-                    $subscriber[$column_position]
-                  ) :
+                    $subscriber[$column_position],
+                  ] :
                   'WHEN email = ? THEN ?';
               }, $subscribers);
             return ($type === 'values') ?
@@ -765,11 +765,11 @@ class Subscriber extends Model {
 
   static function setRequiredFieldsDefaultValues($data) {
     $settings = new SettingsController();
-    $required_field_default_values = array(
+    $required_field_default_values = [
       'first_name' => '',
       'last_name' => '',
-      'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED
-    );
+      'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED,
+    ];
     foreach ($required_field_default_values as $field => $value) {
       if (!isset($data[$field])) {
         $data[$field] = $value;
@@ -779,14 +779,14 @@ class Subscriber extends Model {
   }
 
   static function extractCustomFieldsFromFromObject($data) {
-    $custom_fields = array();
+    $custom_fields = [];
     foreach ($data as $key => $value) {
       if (strpos($key, 'cf_') === 0) {
         $custom_fields[(int)substr($key, 3)] = $value;
         unset($data[$key]);
       }
     }
-    return array($data, $custom_fields);
+    return [$data, $custom_fields];
   }
 
   public function getAllSegmentNamesWithStatus() {
@@ -797,7 +797,7 @@ class Subscriber extends Model {
       ->select('subscriber_segment.updated_at', 'updated_at')
       ->join(
         SubscriberSegment::$_table,
-        array('subscriber_segment.segment_id', '=', 'segment.id'),
+        ['subscriber_segment.segment_id', '=', 'segment.id'],
         'subscriber_segment'
       )
       ->where('subscriber_segment.subscriber_id', $this->id)

@@ -16,7 +16,7 @@ class Date extends Base {
     return $html;
   }
 
-  private static function renderDateSelect($block = array()) {
+  private static function renderDateSelect($block = []) {
     $html = '';
 
     $field_name = 'data[' . static::getFieldName($block) . ']';
@@ -70,27 +70,27 @@ class Date extends Base {
       if ($date_selector === 'DD') {
         $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';
-        $html .= static::getInputValidation($block, array(
-          'required-message' => WPFunctions::get()->__('Please select a day', 'mailpoet')
-        ));
+        $html .= static::getInputValidation($block, [
+          'required-message' => WPFunctions::get()->__('Please select a day', 'mailpoet'),
+        ]);
         $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day', 'mailpoet').'">';
         $html .= static::getDays($block);
         $html .= '</select>';
       } else if ($date_selector === 'MM') {
         $block['selected'] = $month;
         $html .= '<select class="mailpoet_select mailpoet_date_month" ';
-        $html .= static::getInputValidation($block, array(
-          'required-message' => WPFunctions::get()->__('Please select a month', 'mailpoet')
-        ));
+        $html .= static::getInputValidation($block, [
+          'required-message' => WPFunctions::get()->__('Please select a month', 'mailpoet'),
+        ]);
         $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month', 'mailpoet').'">';
         $html .= static::getMonths($block);
         $html .= '</select>';
       } else if ($date_selector === 'YYYY') {
         $block['selected'] = $year;
         $html .= '<select class="mailpoet_date_year" ';
-        $html .= static::getInputValidation($block, array(
-          'required-message' => WPFunctions::get()->__('Please select a year', 'mailpoet')
-        ));
+        $html .= static::getInputValidation($block, [
+          'required-message' => WPFunctions::get()->__('Please select a year', 'mailpoet'),
+        ]);
         $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year', 'mailpoet').'">';
         $html .= static::getYears($block);
         $html .= '</select>';
@@ -103,33 +103,33 @@ class Date extends Base {
   }
 
   static function getDateTypes() {
-    return array(
+    return [
       'year_month_day' => WPFunctions::get()->__('Year, month, day', 'mailpoet'),
       'year_month' => WPFunctions::get()->__('Year, month', 'mailpoet'),
       'month' => WPFunctions::get()->__('Month (January, February,...)', 'mailpoet'),
-      'year' => WPFunctions::get()->__('Year', 'mailpoet')
-    );
+      'year' => WPFunctions::get()->__('Year', 'mailpoet'),
+    ];
   }
 
   static function getDateFormats() {
-    return array(
-      'year_month_day' => array('MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'),
-      'year_month' => array('MM/YYYY', 'YYYY/MM'),
-      'year' => array('YYYY'),
-      'month' => array('MM')
-    );
+    return [
+      'year_month_day' => ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'],
+      'year_month' => ['MM/YYYY', 'YYYY/MM'],
+      'year' => ['YYYY'],
+      'month' => ['MM'],
+    ];
   }
   static function getMonthNames() {
-    return array(__('January', 'mailpoet'), WPFunctions::get()->__('February', 'mailpoet'), WPFunctions::get()->__('March', 'mailpoet'), WPFunctions::get()->__('April', 'mailpoet'),
+    return [__('January', 'mailpoet'), WPFunctions::get()->__('February', 'mailpoet'), WPFunctions::get()->__('March', 'mailpoet'), WPFunctions::get()->__('April', 'mailpoet'),
       WPFunctions::get()->__('May', 'mailpoet'), WPFunctions::get()->__('June', 'mailpoet'), WPFunctions::get()->__('July', 'mailpoet'), WPFunctions::get()->__('August', 'mailpoet'), WPFunctions::get()->__('September', 'mailpoet'),
-      WPFunctions::get()->__('October', 'mailpoet'), WPFunctions::get()->__('November', 'mailpoet'), WPFunctions::get()->__('December', 'mailpoet')
-    );
+      WPFunctions::get()->__('October', 'mailpoet'), WPFunctions::get()->__('November', 'mailpoet'), WPFunctions::get()->__('December', 'mailpoet'),
+    ];
   }
 
-  static function getMonths($block = array()) {
-    $defaults = array(
-      'selected' => null
-    );
+  static function getMonths($block = []) {
+    $defaults = [
+      'selected' => null,
+    ];
 
     // merge block with defaults
     $block = array_merge($defaults, $block);
@@ -151,12 +151,12 @@ class Date extends Base {
     return $html;
   }
 
-  static function getYears($block = array()) {
-    $defaults = array(
+  static function getYears($block = []) {
+    $defaults = [
       'selected' => null,
       'from' => (int)strftime('%Y') - 100,
-      'to' => (int)strftime('%Y')
-    );
+      'to' => (int)strftime('%Y'),
+    ];
 
     // is default today
     if (!empty($block['params']['is_default_today'])) {
@@ -180,10 +180,10 @@ class Date extends Base {
     return $html;
   }
 
-  static function getDays($block = array()) {
-    $defaults = array(
-      'selected' => null
-    );
+  static function getDays($block = []) {
+    $defaults = [
+      'selected' => null,
+    ];
     // is default today
     if (!empty($block['params']['is_default_today'])) {
       $defaults['selected'] = (int)strftime('%d');
@@ -218,29 +218,29 @@ class Date extends Base {
       $day_position = array_search('DD', $parsed_date_format);
       if (count($parsed_date) === 3) {
         // create date from any combination of month, day and year
-        $parsed_date = array(
+        $parsed_date = [
           'year' => $parsed_date[$year_position],
           'month' => $parsed_date[$month_position],
-          'day' => $parsed_date[$day_position]
-        );
+          'day' => $parsed_date[$day_position],
+        ];
       } else if (count($parsed_date) === 2) {
         // create date from any combination of month and year
-        $parsed_date = array(
+        $parsed_date = [
           'year' => $parsed_date[$year_position],
           'month' => $parsed_date[$month_position],
-          'day' => '01'
-        );
+          'day' => '01',
+        ];
       } else if ($date_format === 'MM' && count($parsed_date) === 1) {
         // create date from month
         if ((int)$parsed_date[$month_position] === 0) {
           $datetime = '';
           $parsed_date = false;
         } else {
-          $parsed_date = array(
+          $parsed_date = [
             'month' => $parsed_date[$month_position],
             'day' => '01',
-            'year' => date('Y')
-          );
+            'year' => date('Y'),
+          ];
         }
       } else if ($date_format === 'YYYY' && count($parsed_date) === 1) {
         // create date from year
@@ -248,11 +248,11 @@ class Date extends Base {
           $datetime = '';
           $parsed_date = false;
         } else {
-          $parsed_date = array(
+          $parsed_date = [
             'year' => $parsed_date[$year_position],
             'month' => '01',
-            'day' => '01'
-          );
+            'day' => '01',
+          ];
         }
       } else {
         $parsed_date = false;

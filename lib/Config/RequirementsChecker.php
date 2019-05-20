@@ -17,7 +17,7 @@ class RequirementsChecker {
   const TEST_VENDOR_SOURCE = 'VendorSource';
 
   public $display_error_notice;
-  public $vendor_classes = array(
+  public $vendor_classes = [
     '\ORM',
     '\Model',
     '\Swift_Mailer',
@@ -31,21 +31,21 @@ class RequirementsChecker {
     '\Cron\CronExpression',
     '\Html2Text\Html2Text',
     '\csstidy',
-  );
+  ];
 
   function __construct($display_error_notice = true) {
     $this->display_error_notice = $display_error_notice;
   }
 
   function checkAllRequirements() {
-    $available_tests = array(
+    $available_tests = [
       self::TEST_PDO_EXTENSION,
       self::TEST_FOLDER_PERMISSIONS,
       self::TEST_MBSTRING_EXTENSION,
       self::TEST_XML_EXTENSION,
-      self::TEST_VENDOR_SOURCE
-    );
-    $results = array();
+      self::TEST_VENDOR_SOURCE,
+    ];
+    $results = [];
     foreach ($available_tests as $test) {
       $callback = [$this, 'check' . $test];
       if (is_callable($callback)) {
@@ -56,15 +56,15 @@ class RequirementsChecker {
   }
 
   function checkTempAndCacheFolderCreation() {
-    $paths = array(
+    $paths = [
       'temp_path' => Env::$temp_path,
-      'cache_path' => Env::$cache_path
-    );
+      'cache_path' => Env::$cache_path,
+    ];
     if (!is_dir($paths['cache_path']) && !wp_mkdir_p($paths['cache_path'])) {
       $error = Helpers::replaceLinkTags(
         WPFunctions::get()->__('MailPoet requires write permissions inside the /wp-content/uploads folder. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
         '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#folder_permissions',
-        array('target' => '_blank')
+        ['target' => '_blank']
       );
       return $this->processError($error);
     }
@@ -85,7 +85,7 @@ class RequirementsChecker {
     $error = Helpers::replaceLinkTags(
       WPFunctions::get()->__('MailPoet requires a PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension',
-      array('target' => '_blank')
+      ['target' => '_blank']
     );
     return $this->processError($error);
   }
@@ -102,7 +102,7 @@ class RequirementsChecker {
     $error = Helpers::replaceLinkTags(
       WPFunctions::get()->__('MailPoet requires an XML PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension',
-      array('target' => '_blank')
+      ['target' => '_blank']
     );
     return $this->processError($error);
   }

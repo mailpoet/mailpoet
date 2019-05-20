@@ -25,29 +25,29 @@ class Links {
   }
 
   static function extract($content) {
-    $extracted_links = array();
+    $extracted_links = [];
     // extract link shortcodes
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract(
       $content,
-      $categories = array(Link::CATEGORY_NAME)
+      $categories = [Link::CATEGORY_NAME]
     );
     if ($shortcodes) {
       $extracted_links = array_map(function($shortcode) {
-        return array(
+        return [
           'type' => Links::LINK_TYPE_SHORTCODE,
-          'link' => $shortcode
-        );
+          'link' => $shortcode,
+        ];
       }, $shortcodes);
     }
     // extract HTML anchor tags
     $DOM = DomParser::parseStr($content);
     foreach ($DOM->query('a') as $link) {
       if (!$link->href) continue;
-      $extracted_links[] = array(
+      $extracted_links[] = [
         'type' => self::LINK_TYPE_URL,
-        'link' => $link->href
-      );
+        'link' => $link->href,
+      ];
     }
     return array_unique($extracted_links, SORT_REGULAR);
   }
@@ -56,7 +56,7 @@ class Links {
     $links = NewsletterLink::whereEqual('newsletter_id', $newsletter_id)
       ->whereEqual('queue_id', $queue_id)
       ->findMany();
-    $saved_links = array();
+    $saved_links = [];
     foreach ($links as $link) {
       $saved_links[$link->url] = $link->asArray();
     }
@@ -77,14 +77,14 @@ class Links {
       $hash = Security::generateHash();
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
-      $processed_links[$link] = array(
+      $processed_links[$link] = [
         'type' => $extracted_link['type'],
         'hash' => $hash,
         'link' => $link,
         // replace link with a temporary data tag + hash
         // it will be further replaced with the proper track API URL during sending
-        'processed_link' => self::DATA_TAG_CLICK . '-' . $hash
-      );
+        'processed_link' => self::DATA_TAG_CLICK . '-' . $hash,
+      ];
     }
     return $processed_links;
   }
@@ -114,10 +114,10 @@ class Links {
         $content
       );
     }
-    return array(
+    return [
       $content,
-      array_values($processed_links)
-    );
+      array_values($processed_links),
+    ];
   }
 
   static function replaceSubscriberData(
@@ -199,19 +199,19 @@ class Links {
   static function createUrlDataObject(
     $subscriber_id, $subscriber_email, $queue_id, $link_hash, $preview
   ) {
-    return array(
+    return [
       $subscriber_id,
       Subscriber::generateToken($subscriber_email),
       $queue_id,
       $link_hash,
-      $preview
-    );
+      $preview,
+    ];
   }
 
   static function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
-    $transformed_data = array();
+    $transformed_data = [];
     $transformed_data['subscriber_id'] = (!empty($data[0])) ? $data[0] : false;
     $transformed_data['subscriber_token'] = (!empty($data[1])) ? $data[1] : false;
     $transformed_data['queue_id'] = (!empty($data[2])) ? $data[2] : false;

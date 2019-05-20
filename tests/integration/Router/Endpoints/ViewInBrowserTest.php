@@ -30,25 +30,25 @@ class ViewInBrowserTest extends \MailPoetTest {
     // create queue
     $queue = SendingTask::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->setSubscribers(array($subscriber->id));
-    $queue->updateProcessedSubscribers(array($subscriber->id));
+    $queue->setSubscribers([$subscriber->id]);
+    $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
     // build browser preview data
-    $this->browser_preview_data = array(
+    $this->browser_preview_data = [
       'queue_id' => $queue->id,
       'subscriber_id' => $subscriber->id,
       'newsletter_id' => $newsletter->id,
       'subscriber_token' => Subscriber::generateToken($subscriber->email),
-      'preview' => false
-    );
+      'preview' => false,
+    ];
     // instantiate class
     $this->view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), new SettingsController());
   }
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
-    $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Expected::exactly(2)
-    ), $this);
+    $view_in_browser = Stub::make($this->view_in_browser, [
+      '_abort' => Expected::exactly(2),
+    ], $this);
     // newsletter ID is required
     $data = $this->browser_preview_data;
     unset($data['newsletter_id']);
@@ -60,9 +60,9 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function testItAbortsWhenBrowserPreviewDataIsInvalid() {
-    $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Expected::exactly(3)
-    ), $this);
+    $view_in_browser = Stub::make($this->view_in_browser, [
+      '_abort' => Expected::exactly(3),
+    ], $this);
     // newsletter ID is invalid
     $data = $this->browser_preview_data;
     $data['newsletter_id'] = 99;
@@ -84,11 +84,11 @@ class ViewInBrowserTest extends \MailPoetTest {
     $subscriber->save();
     $data = (object)array_merge(
       $this->browser_preview_data,
-      array(
+      [
         'queue' => $this->queue,
         'subscriber' => $subscriber,
-        'newsletter' => $this->newsletter
-      )
+        'newsletter' => $this->newsletter,
+      ]
     );
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
@@ -125,8 +125,8 @@ class ViewInBrowserTest extends \MailPoetTest {
     $result = $this->view_in_browser->_validateBrowserPreviewData($data);
     expect($result)->notEmpty();
     $queue = $this->queue;
-    $queue->setSubscribers(array());
-    $queue->updateProcessedSubscribers(array());
+    $queue->setSubscribers([]);
+    $queue->updateProcessedSubscribers([]);
     $queue->save();
     $result = $this->view_in_browser->_validateBrowserPreviewData($data);
     expect($result)->false();
@@ -136,11 +136,11 @@ class ViewInBrowserTest extends \MailPoetTest {
     $view_in_browser = $this->view_in_browser;
     $data = (object)array_merge(
       $this->browser_preview_data,
-      array(
+      [
         'queue' => $this->queue,
         'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter
-      )
+        'newsletter' => $this->newsletter,
+      ]
     );
     $data->preview = true;
 
@@ -163,11 +163,11 @@ class ViewInBrowserTest extends \MailPoetTest {
     $view_in_browser = $this->view_in_browser;
     $data = (object)array_merge(
       $this->browser_preview_data,
-      array(
+      [
         'queue' => $this->queue,
         'subscriber' => null,
-        'newsletter' => $this->newsletter
-      )
+        'newsletter' => $this->newsletter,
+      ]
     );
     $data->preview = true;
     wp_set_current_user(1);
@@ -203,10 +203,10 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function testItReturnsViewActionResult() {
-    $view_in_browser = Stub::make($this->view_in_browser, array(
+    $view_in_browser = Stub::make($this->view_in_browser, [
       '_displayNewsletter' => Expected::exactly(1),
-      'settings' => new SettingsController()
-    ), $this);
+      'settings' => new SettingsController(),
+    ], $this);
     $view_in_browser->view($this->browser_preview_data);
   }
 

@@ -13,13 +13,13 @@ class Vlogger {
   }
 
   function get() {
-    return array(
+    return [
       'name' => __("Vlogger", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getThumbnail() {
@@ -27,359 +27,359 @@ class Vlogger {
   }
 
   private function getBody() {
-    return array (
+    return  [
       'content' =>
-      array (
+       [
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
         'image' =>
-        array (
+         [
           'src' => null,
           'display' => 'scale',
-        ),
+         ],
         'styles' =>
-        array (
+         [
           'block' =>
-          array (
+           [
             'backgroundColor' => 'transparent',
-          ),
-        ),
+           ],
+         ],
         'blocks' =>
-        array (
+         [
           0 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '25px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'header',
                     'text' => '<p><a href="[link:newsletter_view_in_browser_url]">View email in browser &gt;</a></p>',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
+                       ],
                       'text' =>
-                      array (
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Merriweather Sans',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
+                       ],
                       'link' =>
-                      array (
+                       [
                         'fontColor' => '#aaaaaa',
                         'textDecoration' => 'none',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           1 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => $this->template_image_url . '/Vlogger-Header.jpg',
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#f3ba25',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '180px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center; font-size: 80px;"><span style="color: #ffffff;"><strong>STACEY</strong></span></h1>',
-                  ),
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '145px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           2 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#5527a6',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><span style="color: #ffffff;">Vlogging About Beauty, Fashion, Life Hacks &amp; My Life</span></p>',
-                  ),
-                ),
-              ),
-            ),
-          ),
+                   ],
+                 ],
+               ],
+             ],
+           ],
           3 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           4 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => $this->template_image_url . '/Vlogger-Youtube.jpg',
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#7b0000',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '63px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: center; font-size: 11px;"><span style="color: #ffffff;">L A T E S T&nbsp; V I D E O</span></p>
     <h1 style="text-align: center;"><span style="color: #ffffff;"><strong>Roses are red...</strong></span></h1>
     <p style="text-align: center;"><span style="color: #ffffff;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut fringilla velit, id malesuada nisi. Nam ac rutrum diam. Nunc diam leo, bibendum eget aliquam eget, commodo vitae lectus.</span></p>',
-                  ),
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Vlogger-PlayButton.png',
@@ -388,69 +388,69 @@ class Vlogger {
                     'width' => '50px',
                     'height' => '400px',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   3 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           5 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#e9e9e9',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Vlogger-Images-1.jpg',
@@ -459,53 +459,53 @@ class Vlogger {
                     'width' => '800px',
                     'height' => '500px',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;">Mixing it up</p>',
-                  ),
-                ),
-              ),
+                   ],
+                 ],
+               ],
               1 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Vlogger-Images-2.jpg',
@@ -514,53 +514,53 @@ class Vlogger {
                     'width' => '800px',
                     'height' => '500px',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;">Front row seats!</p>',
-                  ),
-                ),
-              ),
+                   ],
+                 ],
+               ],
               2 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Vlogger-Images-3.jpg',
@@ -569,81 +569,81 @@ class Vlogger {
                     'width' => '800px',
                     'height' => '500px',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;">Max has a birthday!</p>',
-                  ),
-                ),
-              ),
-            ),
-          ),
+                   ],
+                 ],
+               ],
+             ],
+           ],
           6 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#e9e9e9',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'button',
                     'text' => 'Check out all my latest videos',
                     'url' => '',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => '#5527a6',
                         'borderColor' => '#0074a2',
                         'borderWidth' => '0px',
@@ -656,78 +656,78 @@ class Vlogger {
                         'fontSize' => '14px',
                         'fontWeight' => 'normal',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           7 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => $this->template_image_url . '/Vlogger-WhoAmI.jpg',
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#ffffff',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '109px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<h1 style="text-align: left;"><span style="color: #5527a6;"><strong>This is my story</strong></span></h1>
     <p style="text-align: left;"><span style="color: #333333;"></span><span style="color: #333333;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut fringilla velit, id malesuada nisi. Nam ac rutrum diam. Nunc diam leo, bibendum eget aliquam eget, commodo vitae lectus.</span></p>',
-                  ),
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'button',
                     'text' => 'Go to my Youtube Page',
                     'url' => '',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => '#5527a6',
                         'borderColor' => '#0074a2',
                         'borderWidth' => '0px',
@@ -740,129 +740,129 @@ class Vlogger {
                         'fontSize' => '14px',
                         'fontWeight' => 'normal',
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   3 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '71px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
               1 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           8 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#5527a6',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><span style="color: #ffffff;"><strong>Never miss a thing</strong></span></h2>
     <p style="text-align: center;"><span style="color: #ffffff;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut fringilla velit, id malesuada nisi. Nam ac rutrum diam. Nunc diam leo, bibendum eget aliquam eget, commodo vitae lectus.</span></p>',
-                  ),
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-grey',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
+                       ],
+                     ],
                     'icons' =>
-                    array (
+                     [
                       0 =>
-                      array (
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
@@ -870,9 +870,9 @@ class Vlogger {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Youtube',
-                      ),
+                       ],
                       1 =>
-                      array (
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
                         'link' => 'http://instagram.com',
@@ -880,9 +880,9 @@ class Vlogger {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Instagram',
-                      ),
+                       ],
                       2 =>
-                      array (
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -890,9 +890,9 @@ class Vlogger {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
+                       ],
                       3 =>
-                      array (
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -900,187 +900,187 @@ class Vlogger {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           9 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#3a147d',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '32px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: left;"><strong><span style="color: #ffffff;">STACEY</span></strong></h3>',
-                  ),
-                ),
-              ),
+                   ],
+                 ],
+               ],
               1 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'footer',
                     'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
+                       ],
                       'text' =>
-                      array (
+                       [
                         'fontColor' => '#9d82cd',
                         'fontFamily' => 'Merriweather Sans',
                         'fontSize' => '12px',
                         'textAlign' => 'right',
-                      ),
+                       ],
                       'link' =>
-                      array (
+                       [
                         'fontColor' => '#ffffff',
                         'textDecoration' => 'none',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+         ],
+       ],
       'globalStyles' =>
-      array (
+       [
         'text' =>
-        array (
+         [
           'fontColor' => '#000000',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '14px',
-        ),
+         ],
         'h1' =>
-        array (
+         [
           'fontColor' => '#111111',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '30px',
-        ),
+         ],
         'h2' =>
-        array (
+         [
           'fontColor' => '#222222',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '24px',
-        ),
+         ],
         'h3' =>
-        array (
+         [
           'fontColor' => '#333333',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '22px',
-        ),
+         ],
         'link' =>
-        array (
+         [
           'fontColor' => '#5527a6',
           'textDecoration' => 'underline',
-        ),
+         ],
         'wrapper' =>
-        array (
+         [
           'backgroundColor' => '#ffffff',
-        ),
+         ],
         'body' =>
-        array (
+         [
           'backgroundColor' => '#ffffff',
-        ),
-      ),
+         ],
+       ],
       'blockDefaults' =>
-      array (
+       [
         'automatedLatestContent' =>
-        array (
+         [
           'amount' => '5',
           'withLayout' => false,
           'contentType' => 'post',
@@ -1098,14 +1098,14 @@ class Vlogger {
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
           'readMoreButton' =>
-          array (
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1118,31 +1118,31 @@ class Vlogger {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
           'divider' =>
-          array (
+           [
             'context' => 'automatedLatestContent.divider',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
+         ],
         'automatedLatestContentLayout' =>
-        array (
+         [
           'amount' => '3',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1160,14 +1160,14 @@ class Vlogger {
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
           'readMoreButton' =>
-          array (
+           [
             'text' => 'Read the post',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1180,43 +1180,43 @@ class Vlogger {
                 'fontSize' => '16px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
+               ],
+             ],
             'type' => 'button',
-          ),
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
           'divider' =>
-          array (
+           [
             'context' => 'automatedLatestContentLayout.divider',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
+               ],
+             ],
             'type' => 'divider',
-          ),
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
           'type' => 'automatedLatestContentLayout',
           'terms' =>
-          array (
-          ),
-        ),
+           [
+           ],
+         ],
         'button' =>
-        array (
+         [
           'text' => 'Read the post',
           'url' => '[postLink]',
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => '#5527a6',
               'borderColor' => '#0074a2',
               'borderWidth' => '0px',
@@ -1229,51 +1229,51 @@ class Vlogger {
               'fontSize' => '14px',
               'fontWeight' => 'normal',
               'textAlign' => 'center',
-            ),
-          ),
+             ],
+           ],
           'type' => 'button',
-        ),
+         ],
         'divider' =>
-        array (
+         [
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => 'transparent',
               'padding' => '13px',
               'borderStyle' => 'solid',
               'borderWidth' => '3px',
               'borderColor' => '#ffffff',
-            ),
-          ),
+             ],
+           ],
           'type' => 'divider',
-        ),
+         ],
         'footer' =>
-        array (
+         [
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => 'transparent',
-            ),
+             ],
             'text' =>
-            array (
+             [
               'fontColor' => '#9d82cd',
               'fontFamily' => 'Merriweather Sans',
               'fontSize' => '12px',
               'textAlign' => 'right',
-            ),
+             ],
             'link' =>
-            array (
+             [
               'fontColor' => '#ffffff',
               'textDecoration' => 'none',
-            ),
-          ),
+             ],
+           ],
           'type' => 'footer',
-        ),
+         ],
         'posts' =>
-        array (
+         [
           'amount' => '10',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1292,14 +1292,14 @@ class Vlogger {
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
           'readMoreButton' =>
-          array (
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1312,36 +1312,36 @@ class Vlogger {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
           'divider' =>
-          array (
+           [
             'context' => 'posts.divider',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
+         ],
         'social' =>
-        array (
+         [
           'iconSet' => 'full-symbol-grey',
           'icons' =>
-          array (
+           [
             0 =>
-            array (
+             [
               'type' => 'socialIcon',
               'iconType' => 'youtube',
               'link' => 'http://www.youtube.com',
@@ -1349,9 +1349,9 @@ class Vlogger {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Youtube',
-            ),
+             ],
             1 =>
-            array (
+             [
               'type' => 'socialIcon',
               'iconType' => 'instagram',
               'link' => 'http://instagram.com',
@@ -1359,9 +1359,9 @@ class Vlogger {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Instagram',
-            ),
+             ],
             2 =>
-            array (
+             [
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
@@ -1369,9 +1369,9 @@ class Vlogger {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
-            ),
+             ],
             3 =>
-            array (
+             [
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
@@ -1379,48 +1379,48 @@ class Vlogger {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
-            ),
-          ),
+             ],
+           ],
           'type' => 'social',
-        ),
+         ],
         'spacer' =>
-        array (
+         [
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => 'transparent',
               'height' => '32px',
-            ),
-          ),
+             ],
+           ],
           'type' => 'spacer',
-        ),
+         ],
         'header' =>
-        array (
+         [
           'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => 'transparent',
-            ),
+             ],
             'text' =>
-            array (
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Merriweather Sans',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
+             ],
             'link' =>
-            array (
+             [
               'fontColor' => '#aaaaaa',
               'textDecoration' => 'none',
-            ),
-          ),
+             ],
+           ],
           'type' => 'header',
-        ),
-      ),
-    );
+         ],
+       ],
+    ];
   }
 
 }

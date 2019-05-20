@@ -43,7 +43,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsTrueIfMSSKeyIsValid() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::KEY_VALID)
+      ['state' => Bridge::KEY_VALID]
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->true();
@@ -52,7 +52,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfMSSKeyIsInvalid() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::KEY_INVALID)
+      ['state' => Bridge::KEY_INVALID]
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
@@ -61,10 +61,10 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsTrueIfMSSKeyIsExpiring() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array(
+      [
         'state' => Bridge::KEY_EXPIRING,
-        'data' => array('expire_at' => date('c'))
-      )
+        'data' => ['expire_at' => date('c')],
+      ]
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->true();
@@ -73,9 +73,9 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfMSSKeyStateIsUnexpected() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array(
-        'state' => 'unexpected'
-      )
+      [
+        'state' => 'unexpected',
+      ]
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
@@ -84,9 +84,9 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfMSSKeyStateIsEmpty() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array(
-        'state' => ''
-      )
+      [
+        'state' => '',
+      ]
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
@@ -101,7 +101,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsTrueIfPremiumKeyIsValid() {
     $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::KEY_VALID)
+      ['state' => Bridge::KEY_VALID]
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->true();
@@ -110,7 +110,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfPremiumKeyIsInvalid() {
     $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::KEY_INVALID)
+      ['state' => Bridge::KEY_INVALID]
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
@@ -119,7 +119,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfPremiumKeyIsAlreadyUsed() {
     $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::KEY_ALREADY_USED)
+      ['state' => Bridge::KEY_ALREADY_USED]
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
@@ -128,10 +128,10 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsTrueIfPremiumKeyIsExpiring() {
     $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array(
+      [
         'state' => Bridge::KEY_EXPIRING,
-        'data' => array('expire_at' => date('c'))
-      )
+        'data' => ['expire_at' => date('c')],
+      ]
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->true();
@@ -140,9 +140,9 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfPremiumKeyStateIsUnexpected() {
     $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array(
-        'state' => 'unexpected'
-      )
+      [
+        'state' => 'unexpected',
+      ]
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
@@ -151,9 +151,9 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfPremiumKeyStateIsEmpty() {
     $this->settings->set(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array(
-        'state' => ''
-      )
+      [
+        'state' => '',
+      ]
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
@@ -162,19 +162,19 @@ class ServicesCheckerTest extends \MailPoetTest {
   private function setMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
-      array(
+      [
         'method' => 'MailPoet',
         'mailpoet_api_key' => 'some_key',
-      )
+      ]
     );
   }
 
   private function disableMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
-      array(
+      [
         'method' => 'PHPMail',
-      )
+      ]
     );
   }
 

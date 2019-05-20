@@ -37,22 +37,22 @@ class NewslettersTest extends \MailPoetTest {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Newsletters::class);
     $this->newsletter = Newsletter::createOrUpdate(
-      array(
+      [
         'subject' => 'My Standard Newsletter',
         'body' => Fixtures::get('newsletter_body_template'),
         'type' => Newsletter::TYPE_STANDARD,
-      ));
+      ]);
 
     $this->post_notification = Newsletter::createOrUpdate(
-      array(
+      [
         'subject' => 'My Post Notification',
         'body' => Fixtures::get('newsletter_body_template'),
-        'type' => Newsletter::TYPE_NOTIFICATION
-      ));
+        'type' => Newsletter::TYPE_NOTIFICATION,
+      ]);
   }
 
   function testItKeepsUnsentNewslettersAtTheTopWhenSortingBySentAtDate() {
-    $sent_newsletters = array();
+    $sent_newsletters = [];
     for ($i = 1; $i <= 3; $i++) {
       $sent_newsletters[$i] = Newsletter::create();
       $sent_newsletters[$i]->type = Newsletter::TYPE_STANDARD;
@@ -63,13 +63,13 @@ class NewslettersTest extends \MailPoetTest {
 
     // sorting by ASC order retains unsent newsletters at the top
     $response = $this->endpoint->listing(
-      array(
-        'params' => array(
-          'type' => 'standard'
-        ),
+      [
+        'params' => [
+          'type' => 'standard',
+        ],
         'sort_by' => 'sent_at',
-        'sort_order' => 'asc'
-      )
+        'sort_order' => 'asc',
+      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data[0]['id'])->equals($this->newsletter->id);
@@ -79,13 +79,13 @@ class NewslettersTest extends \MailPoetTest {
 
     // sorting by DESC order retains unsent newsletters at the top
     $response = $this->endpoint->listing(
-      array(
-        'params' => array(
-          'type' => 'standard'
-        ),
+      [
+        'params' => [
+          'type' => 'standard',
+        ],
         'sort_by' => 'sent_at',
-        'sort_order' => 'desc'
-      )
+        'sort_order' => 'desc',
+      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data[0]['id'])->equals($this->newsletter->id);
@@ -100,7 +100,7 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])
       ->equals('This newsletter does not exist.');
 
-    $response = $this->endpoint->get(array('id' => 'not_an_id'));
+    $response = $this->endpoint->get(['id' => 'not_an_id']);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
       ->equals('This newsletter does not exist.');
@@ -116,7 +116,7 @@ class NewslettersTest extends \MailPoetTest {
       new SettingsController(),
       new FeaturesController()
     );
-    $response = $this->endpoint->get(array('id' => $this->newsletter->id));
+    $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Newsletter::findOne($this->newsletter->id)
@@ -136,13 +136,13 @@ class NewslettersTest extends \MailPoetTest {
     $newsletter_option_field->newsletter_type = Newsletter::TYPE_STANDARD;
     $newsletter_option_field->save();
 
-    $valid_data = array(
+    $valid_data = [
       'subject' => 'My First Newsletter',
       'type' => Newsletter::TYPE_STANDARD,
-      'options' => array(
+      'options' => [
         $newsletter_option_field->name => 'some_option_value',
-      )
-    );
+      ],
+    ];
 
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
@@ -172,9 +172,9 @@ class NewslettersTest extends \MailPoetTest {
     expect(WPHooksHelper::isActionDone($hook_name))->true();
     expect(WPHooksHelper::getActionDone($hook_name)[0] instanceof Newsletter)->true();
 
-    $invalid_data = array(
-      'subject' => 'Missing newsletter type'
-    );
+    $invalid_data = [
+      'subject' => 'Missing newsletter type',
+    ];
 
     $response = $this->endpoint->save($invalid_data);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
@@ -182,10 +182,10 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanSaveAnExistingNewsletter() {
-    $newsletter_data = array(
+    $newsletter_data = [
       'id' => $this->newsletter->id,
-      'subject' => 'My Updated Newsletter'
-    );
+      'subject' => 'My Updated Newsletter',
+    ];
 
     $response = $this->endpoint->save($newsletter_data);
     $updated_newsletter = Newsletter::findOne($this->newsletter->id);
@@ -203,11 +203,11 @@ class NewslettersTest extends \MailPoetTest {
     $sending_queue->save();
     expect($sending_queue->getErrors())->false();
 
-    $newsletter_data = array(
+    $newsletter_data = [
       'id' => $this->post_notification->id,
       'subject' => 'My Updated Newsletter',
       'body' => Fixtures::get('newsletter_body_template'),
-    );
+    ];
 
     $response = $this->endpoint->save($newsletter_data);
     $updated_queue = SendingQueue::where('newsletter_id', $this->post_notification->id)
@@ -228,11 +228,11 @@ class NewslettersTest extends \MailPoetTest {
     $sending_queue->save();
     expect($sending_queue->getErrors())->false();
 
-    $newsletter_data = array(
+    $newsletter_data = [
       'id' => $this->newsletter->id,
       'subject' => 'My Updated Newsletter',
       'body' => Fixtures::get('newsletter_body_template'),
-    );
+    ];
 
     $response = $this->endpoint->save($newsletter_data);
     $updated_queue = SendingQueue::where('newsletter_id', $this->newsletter->id)
@@ -246,14 +246,14 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanUpdatePostNotificationScheduleUponSave() {
-    $newsletter_options = array(
+    $newsletter_options = [
       'intervalType',
       'timeOfDay',
       'weekDay',
       'monthDay',
       'nthWeekDay',
-      'schedule'
-    );
+      'schedule',
+    ];
     foreach ($newsletter_options as $option) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;
@@ -261,19 +261,19 @@ class NewslettersTest extends \MailPoetTest {
       $newsletter_option_field->save();
     }
 
-    $newsletter_data = array(
+    $newsletter_data = [
       'id' => $this->newsletter->id,
       'type' => Newsletter::TYPE_NOTIFICATION,
       'subject' => 'Newsletter',
-      'options' => array(
+      'options' => [
         'intervalType' => Scheduler::INTERVAL_WEEKLY,
         'timeOfDay' => '50400',
         'weekDay' => '1',
         'monthDay' => '0',
         'nthWeekDay' => '1',
-        'schedule' => '0 14 * * 1'
-      )
-    );
+        'schedule' => '0 14 * * 1',
+      ],
+    ];
     $response = $this->endpoint->save($newsletter_data);
     $saved_newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($response->data['id']);
@@ -291,14 +291,14 @@ class NewslettersTest extends \MailPoetTest {
 
   function testItCanReschedulePreviouslyScheduledSendingQueueJobs() {
     // create newsletter options
-    $newsletter_options = array(
+    $newsletter_options = [
       'intervalType',
       'timeOfDay',
       'weekDay',
       'monthDay',
       'nthWeekDay',
-      'schedule'
-    );
+      'schedule',
+    ];
     foreach ($newsletter_options as $option) {
       $newsletter_option_field = NewsletterOptionField::create();
       $newsletter_option_field->name = $option;
@@ -319,20 +319,20 @@ class NewslettersTest extends \MailPoetTest {
     $sending_queue_2->save();
 
     // save newsletter via router
-    $newsletter_data = array(
+    $newsletter_data = [
       'id' => 1,
       'type' => Newsletter::TYPE_NOTIFICATION,
       'subject' => 'Newsletter',
-      'options' => array(
+      'options' => [
         // weekly on Monday @ 7am
         'intervalType' => Scheduler::INTERVAL_WEEKLY,
         'timeOfDay' => '25200',
         'weekDay' => '1',
         'monthDay' => '0',
         'nthWeekDay' => '1',
-        'schedule' => '0 7 * * 1'
-      )
-    );
+        'schedule' => '0 7 * * 1',
+      ],
+    ];
     $newsletter = $this->endpoint->save($newsletter_data);
     $sending_queue_1 = SendingTask::createFromQueue(SendingQueue::findOne($sending_queue_1->id));
     $sending_queue_2 = SendingTask::createFromQueue(SendingQueue::findOne($sending_queue_2->id));
@@ -344,17 +344,17 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanModifySegmentsOfExistingNewsletter() {
-    $segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
+    $segment_1 = Segment::createOrUpdate(['name' => 'Segment 1']);
     $fake_segment_id = 1;
 
-    $newsletter_data = array(
+    $newsletter_data = [
       'id' => $this->newsletter->id,
       'subject' => 'My Updated Newsletter',
-      'segments' => array(
+      'segments' => [
         $segment_1->asArray(),
-        $fake_segment_id
-      )
-    );
+        $fake_segment_id,
+      ],
+    ];
 
     $response = $this->endpoint->save($newsletter_data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -370,29 +370,29 @@ class NewslettersTest extends \MailPoetTest {
   function testItCanSetANewsletterStatus() {
     // set status to sending
     $response = $this->endpoint->setStatus
-    (array(
+    ([
        'id' => $this->newsletter->id,
-       'status' => Newsletter::STATUS_SENDING
-     )
+       'status' => Newsletter::STATUS_SENDING,
+     ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['status'])->equals(Newsletter::STATUS_SENDING);
 
     // set status to draft
     $response = $this->endpoint->setStatus(
-      array(
+      [
         'id' => $this->newsletter->id,
-        'status' => Newsletter::STATUS_DRAFT
-      )
+        'status' => Newsletter::STATUS_DRAFT,
+      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['status'])->equals(Newsletter::STATUS_DRAFT);
 
     // no status specified throws an error
     $response = $this->endpoint->setStatus(
-      array(
+      [
         'id' => $this->newsletter->id,
-      )
+      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])
@@ -400,9 +400,9 @@ class NewslettersTest extends \MailPoetTest {
 
     // invalid newsletter id throws an error
     $response = $this->endpoint->setStatus(
-      array(
-        'status' => Newsletter::STATUS_DRAFT
-      )
+      [
+        'status' => Newsletter::STATUS_DRAFT,
+      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
@@ -417,11 +417,11 @@ class NewslettersTest extends \MailPoetTest {
     $schedule = sprintf('0 %d * * *', Carbon::createFromTimestamp(current_time('timestamp'))->hour); // every day at current hour
     $random_future_date = Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'); // 10 days from now
     $newsletter_option = NewsletterOption::createOrUpdate(
-      array(
+      [
         'newsletter_id' => $this->post_notification->id,
         'option_field_id' => $newsletter_option_field->id,
-        'value' => $schedule
-      )
+        'value' => $schedule,
+      ]
     );
     $sending_queue_1 = SendingTask::create();
     $sending_queue_1->newsletter_id = $this->post_notification->id;
@@ -439,10 +439,10 @@ class NewslettersTest extends \MailPoetTest {
     $sending_queue_3->save();
 
     $this->endpoint->setStatus(
-      array(
+      [
         'id' => $this->post_notification->id,
-        'status' => Newsletter::STATUS_ACTIVE
-      )
+        'status' => Newsletter::STATUS_ACTIVE,
+      ]
     );
     $tasks = ScheduledTask::findMany();
     // previously scheduled notification is rescheduled for future date
@@ -460,18 +460,18 @@ class NewslettersTest extends \MailPoetTest {
     $newsletter_option_field->save();
     $schedule = '* * * * *';
     NewsletterOption::createOrUpdate(
-      array(
+      [
         'newsletter_id' => $this->post_notification->id,
         'option_field_id' => $newsletter_option_field->id,
-        'value' => $schedule
-      )
+        'value' => $schedule,
+      ]
     );
 
     $this->endpoint->setStatus(
-      array(
+      [
         'id' => $this->post_notification->id,
-        'status' => Newsletter::STATUS_ACTIVE
-      )
+        'status' => Newsletter::STATUS_ACTIVE,
+      ]
     );
     $tasks = ScheduledTask::findMany();
     expect($tasks)->notEmpty();
@@ -483,7 +483,7 @@ class NewslettersTest extends \MailPoetTest {
     $trashed_newsletter = Newsletter::findOne($this->newsletter->id);
     expect($trashed_newsletter->deleted_at)->notNull();
 
-    $response = $this->endpoint->restore(array('id' => $this->newsletter->id));
+    $response = $this->endpoint->restore(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Newsletter::findOne($this->newsletter->id)
@@ -494,7 +494,7 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanTrashANewsletter() {
-    $response = $this->endpoint->trash(array('id' => $this->newsletter->id));
+    $response = $this->endpoint->trash(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Newsletter::findOne($this->newsletter->id)
@@ -505,7 +505,7 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanDeleteANewsletter() {
-    $response = $this->endpoint->delete(array('id' => $this->newsletter->id));
+    $response = $this->endpoint->delete(['id' => $this->newsletter->id]);
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
@@ -524,7 +524,7 @@ class NewslettersTest extends \MailPoetTest {
       new FeaturesController()
     );
 
-    $response = $this->endpoint->duplicate(array('id' => $this->newsletter->id));
+    $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Newsletter::where('subject', 'Copy of My Standard Newsletter')
@@ -537,7 +537,7 @@ class NewslettersTest extends \MailPoetTest {
     expect(WPHooksHelper::isActionDone($hook_name))->true();
     expect(WPHooksHelper::getActionDone($hook_name)[0] instanceof Newsletter)->true();
 
-    $response = $this->endpoint->duplicate(array('id' => $this->post_notification->id));
+    $response = $this->endpoint->duplicate(['id' => $this->post_notification->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Newsletter::where('subject', 'Copy of My Post Notification')
@@ -548,10 +548,10 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanCreateANewsletter() {
-    $data = array(
+    $data = [
       'subject' => 'My New Newsletter',
-      'type' => Newsletter::TYPE_STANDARD
-    );
+      'type' => Newsletter::TYPE_STANDARD,
+    ];
     $response = $this->endpoint->create($data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -566,33 +566,33 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanGetListingData() {
-    $segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
-    $segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
+    $segment_1 = Segment::createOrUpdate(['name' => 'Segment 1']);
+    $segment_2 = Segment::createOrUpdate(['name' => 'Segment 2']);
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(
-      array(
+      [
         'newsletter_id' => $this->newsletter->id,
-        'segment_id' => $segment_1->id
-      )
+        'segment_id' => $segment_1->id,
+      ]
     );
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(
-      array(
+      [
         'newsletter_id' => $this->newsletter->id,
-        'segment_id' => $segment_2->id
-      )
+        'segment_id' => $segment_2->id,
+      ]
     );
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(
-      array(
+      [
         'newsletter_id' => $this->post_notification->id,
-        'segment_id' => $segment_2->id
-      )
+        'segment_id' => $segment_2->id,
+      ]
     );
     $newsletter_segment->save();
 
@@ -623,45 +623,45 @@ class NewslettersTest extends \MailPoetTest {
 
   function testItCanFilterListing() {
     // create 2 segments
-    $segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
-    $segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
+    $segment_1 = Segment::createOrUpdate(['name' => 'Segment 1']);
+    $segment_2 = Segment::createOrUpdate(['name' => 'Segment 2']);
 
     // link standard newsletter to the 2 segments
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(
-      array(
+      [
         'newsletter_id' => $this->newsletter->id,
-        'segment_id' => $segment_1->id
-      )
+        'segment_id' => $segment_1->id,
+      ]
     );
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate
-    (array(
+    ([
        'newsletter_id' => $this->newsletter->id,
-       'segment_id' => $segment_2->id
-     )
+       'segment_id' => $segment_2->id,
+     ]
     );
     $newsletter_segment->save();
 
     // link post notification to the 2nd segment
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(
-      array(
+      [
         'newsletter_id' => $this->post_notification->id,
-        'segment_id' => $segment_2->id
-      )
+        'segment_id' => $segment_2->id,
+      ]
     );
     $newsletter_segment->save();
 
     // filter by 1st segment
     $response = $this->endpoint->listing(
-      array(
-        'filter' => array(
-          'segment' => $segment_1->id
-        )
-      )
+      [
+        'filter' => [
+          'segment' => $segment_1->id,
+        ],
+      ]
     );
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -672,11 +672,11 @@ class NewslettersTest extends \MailPoetTest {
 
     // filter by 2nd segment
     $response = $this->endpoint->listing(
-      array(
-        'filter' => array(
-          'segment' => $segment_2->id
-        )
-      )
+      [
+        'filter' => [
+          'segment' => $segment_2->id,
+        ],
+      ]
     );
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -688,11 +688,11 @@ class NewslettersTest extends \MailPoetTest {
   function testItCanLimitListing() {
     // get 1st page (limit items per page to 1)
     $response = $this->endpoint->listing(
-      array(
+      [
         'limit' => 1,
         'sort_by' => 'subject',
-        'sort_order' => 'asc'
-      )
+        'sort_order' => 'asc',
+      ]
     );
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -705,12 +705,12 @@ class NewslettersTest extends \MailPoetTest {
 
     // get 1st page (limit items per page to 1)
     $response = $this->endpoint->listing(
-      array(
+      [
         'limit' => 1,
         'offset' => 1,
         'sort_by' => 'subject',
-        'sort_order' => 'asc'
-      )
+        'sort_order' => 'asc',
+      ]
     );
 
     expect($response->meta['count'])->equals(2);
@@ -721,18 +721,18 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanBulkDeleteSelectionOfNewsletters() {
-    $selection_ids = array(
+    $selection_ids = [
       $this->newsletter->id,
-      $this->post_notification->id
-    );
+      $this->post_notification->id,
+    ];
 
     $response = $this->endpoint->bulkAction(
-      array(
-        'listing' => array(
-          'selection' => $selection_ids
-        ),
-        'action' => 'delete'
-      )
+      [
+        'listing' => [
+          'selection' => $selection_ids,
+        ],
+        'action' => 'delete',
+      ]
     );
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -741,28 +741,28 @@ class NewslettersTest extends \MailPoetTest {
 
   function testItCanBulkDeleteNewsletters() {
     $response = $this->endpoint->bulkAction(
-      array(
+      [
         'action' => 'trash',
-        'listing' => array('group' => 'all')
-      )
+        'listing' => ['group' => 'all'],
+      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(2);
 
     $response = $this->endpoint->bulkAction(
-      array(
+      [
         'action' => 'delete',
-        'listing' => array('group' => 'trash')
-      )
+        'listing' => ['group' => 'trash'],
+      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(2);
 
     $response = $this->endpoint->bulkAction(
-      array(
+      [
         'action' => 'delete',
-        'listing' => array('group' => 'trash')
-      )
+        'listing' => ['group' => 'trash'],
+      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(0);
@@ -773,12 +773,12 @@ class NewslettersTest extends \MailPoetTest {
     $unsubscribeLink = SubscriptionUrl::getUnsubscribeUrl(null);
     $manageLink = SubscriptionUrl::getManageUrl(null);
     $viewInBrowserLink = Url::getViewInBrowserUrl(null, $this->newsletter, false, false, true);
-    $data = array(
+    $data = [
       'subscriber' => $subscriber,
       'id' => $this->newsletter->id,
       'mailer' => Stub::makeEmpty(
         '\MailPoet\Mailer\Mailer',
-        array(
+        [
           'send' => function($newsletter, $subscriber, $extra_params)
             use ($unsubscribeLink, $manageLink, $viewInBrowserLink)
           {
@@ -790,49 +790,49 @@ class NewslettersTest extends \MailPoetTest {
             expect($newsletter['body']['html'])->contains('href="'.$viewInBrowserLink.'">View in browser');
             expect($newsletter['body']['html'])->contains('href="'.$unsubscribeLink.'">Unsubscribe');
             expect($newsletter['body']['html'])->contains('href="'.$manageLink.'">Manage subscription');
-            return array('response' => true);
-          }
-        )
-      )
-    );
+            return ['response' => true];
+          },
+        ]
+      ),
+    ];
     $response = $this->endpoint->sendPreview($data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
   function testItReturnsMailerErrorWhenSendingFailed() {
     $subscriber = 'test@subscriber.com';
-    $data = array(
+    $data = [
       'subscriber' => $subscriber,
       'id' => $this->newsletter->id,
       'mailer' => Stub::makeEmpty(
         '\MailPoet\Mailer\Mailer',
-        array(
+        [
           'send' => function($newsletter, $subscriber) {
             expect(is_array($newsletter))->true();
             expect($newsletter['body']['text'])->contains('Hello test');
             expect($subscriber)->equals($subscriber);
-            return array(
+            return [
               'response' => false,
               'error' => Stub::make(
                 '\MailPoet\Mailer\MailerError',
-                array(
-                  'getMessage' => 'failed'
-                )
-              )
-            );
-          }
-        )
-      )
-    );
+                [
+                  'getMessage' => 'failed',
+                ]
+              ),
+            ];
+          },
+        ]
+      ),
+    ];
     $response = $this->endpoint->sendPreview($data);
     expect($response->errors[0]['message'])->equals('The email could not be sent: failed');
   }
 
   function testItReturnsBrowserPreviewUrlWithoutProtocol() {
-    $data = array(
+    $data = [
       'id' => $this->newsletter->id,
-      'body' => 'fake body'
-    );
+      'body' => 'fake body',
+    ];
     $response = $this->endpoint->showPreview($data);
     expect($response->meta['preview_url'])->notContains('http');
     expect($response->meta['preview_url'])->regExp('!^\/\/!');
@@ -857,21 +857,21 @@ class NewslettersTest extends \MailPoetTest {
 
     $sending_queue = SendingTask::create();
     $sending_queue->newsletter_id = $newsletter->id;
-    $sending_queue->newsletter_rendered_body = array(
+    $sending_queue->newsletter_rendered_body = [
       'html' => 'html',
-      'text' => 'text'
-    );
+      'text' => 'text',
+    ];
     $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
     $sending_queue->scheduled_at = Carbon::now()->format('Y-m-d H:i');
     $sending_queue->save();
     expect($sending_queue->getErrors())->false();
 
-    $newsletter_data = array(
+    $newsletter_data = [
       'id' => $newsletter->id,
-      'options' => array(
-        'isScheduled' => false
-      )
-    );
+      'options' => [
+        'isScheduled' => false,
+      ],
+    ];
 
     $this->endpoint->save($newsletter_data);
     $newsletter = Newsletter::findOne($newsletter->id);

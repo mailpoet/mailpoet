@@ -9,20 +9,20 @@ if (!defined('ABSPATH')) exit;
 
 class Handlebars extends AbstractExtension {
   public function getFunctions() {
-    return array(
+    return [
       new TwigFunction(
         'partial',
-        array(
+        [
           $this,
-          'generatePartial'
-        ),
-        array(
+          'generatePartial',
+        ],
+        [
           'needs_environment' => true,
           'needs_context' => true,
-          'is_safe' => array('all')
-        )
-      )
-    );
+          'is_safe' => ['all'],
+        ]
+      ),
+    ];
   }
 
   public function generatePartial($env, $context) {

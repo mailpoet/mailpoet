@@ -26,25 +26,25 @@ class DefaultSubscribersGetter extends SubscribersGetter {
   protected function filter($subscribers) {
     $subscribers =  $subscribers
       ->selectMany(
-        array(
-          'list_status' => SubscriberSegment::$_table . '.status'
-        )
+        [
+          'list_status' => SubscriberSegment::$_table . '.status',
+        ]
       )
       ->left_outer_join(
         SubscriberSegment::$_table,
-        array(
+        [
           Subscriber::$_table . '.id',
           '=',
-          SubscriberSegment::$_table . '.subscriber_id'
-        )
+          SubscriberSegment::$_table . '.subscriber_id',
+        ]
       )
       ->left_outer_join(
         Segment::$_table,
-        array(
+        [
           Segment::$_table . '.id',
           '=',
-          SubscriberSegment::$_table . '.segment_id'
-        )
+          SubscriberSegment::$_table . '.segment_id',
+        ]
       )
       ->groupBy(Segment::$_table . '.id');
 

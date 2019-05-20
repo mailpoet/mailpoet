@@ -92,8 +92,8 @@ class DateTimeTest extends \MailPoetUnitTest {
       '+1 hour',
       $total_steps = 5
     ));
-    $one_hour_expected = array(
-      '00:00:00', '01:00:00', '02:00:00', '03:00:00', '04:00:00');
+    $one_hour_expected = [
+      '00:00:00', '01:00:00', '02:00:00', '03:00:00', '04:00:00'];
     expect($one_hour_interval)->equals($one_hour_expected);
 
     $quarter_hour_interval = array_keys($date_time->getTimeInterval(
@@ -101,9 +101,9 @@ class DateTimeTest extends \MailPoetUnitTest {
       '+15 minute',
       $total_steps = 5
     ));
-    $quarter_hour_expected = array(
+    $quarter_hour_expected = [
       '00:00:00', '00:15:00', '00:30:00', '00:45:00', '01:00:00',
-    );
+    ];
     expect($quarter_hour_interval)->equals($quarter_hour_expected);
 
     $offset_start_time_interval = array_keys($date_time->getTimeInterval(
@@ -111,9 +111,9 @@ class DateTimeTest extends \MailPoetUnitTest {
       '+1 hour',
       $total_steps = 5
     ));
-    $offset_start_time_expected = array(
+    $offset_start_time_expected = [
       '03:00:00', '04:00:00', '05:00:00', '06:00:00', '07:00:00',
-    );
+    ];
     expect($offset_start_time_interval)->equals($offset_start_time_expected);
   }
 }

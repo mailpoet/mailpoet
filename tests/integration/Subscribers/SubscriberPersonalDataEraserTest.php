@@ -29,17 +29,17 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
   }
 
   function testItDeletesCustomFields() {
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'email' => 'eraser.test.email.that@has.custom.fields',
-    ));
-    $custom_field1 = CustomField::createOrUpdate(array(
+    ]);
+    $custom_field1 = CustomField::createOrUpdate([
       'name' => 'Custom field1',
-      'type' => 'input'
-    ));
-    $custom_field2 = CustomField::createOrUpdate(array(
+      'type' => 'input',
+    ]);
+    $custom_field2 = CustomField::createOrUpdate([
       'name' => 'Custom field2',
-      'type' => 'input'
-    ));
+      'type' => 'input',
+    ]);
     $subscriber->setCustomField($custom_field1->id(), 'Value');
     $subscriber->setCustomField($custom_field2->id(), 'Value');
 
@@ -53,7 +53,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
   }
 
   function testItDeletesSubscriberData() {
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'email' => 'subscriber@for.anon.test',
       'first_name' => 'John',
       'last_name' => 'Doe',
@@ -62,7 +62,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
       'subscribed_ip' => 'IP1',
       'confirmed_ip' => 'IP2',
       'unconfirmed_data' => 'xyz',
-    ));
+    ]);
     $this->eraser->erase('subscriber@for.anon.test');
     $subscriber_after = Subscriber::findOne($subscriber->id());
     expect($subscriber_after->first_name)->equals('Anonymous');
@@ -74,9 +74,9 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
   }
 
   function testItDeletesSubscriberEmailAddress() {
-    $subscriber = Subscriber::createOrUpdate(array(
+    $subscriber = Subscriber::createOrUpdate([
       'email' => 'subscriber@for.anon.test',
-    ));
+    ]);
     $this->eraser->erase('subscriber@for.anon.test');
     $subscriber_after = Subscriber::findOne($subscriber->id());
     expect($subscriber_after->email)->notEquals('subscriber@for.anon.test');

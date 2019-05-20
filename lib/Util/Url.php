@@ -28,7 +28,7 @@ class Url {
     exit();
   }
 
-  function redirectBack($params = array()) {
+  function redirectBack($params = []) {
     // check mailpoet_redirect parameter
     $referer = (isset($_POST['mailpoet_redirect'])
       ? $_POST['mailpoet_redirect']
@@ -52,9 +52,9 @@ class Url {
   function redirectWithReferer($url = null) {
     $current_url = $this->getCurrentUrl();
     $url = $this->wp->addQueryArg(
-      array(
-        'mailpoet_redirect' => urlencode($current_url)
-      ),
+      [
+        'mailpoet_redirect' => urlencode($current_url),
+      ],
       $url
     );
 

@@ -74,10 +74,10 @@ class MailerTest extends \MailPoetTest {
     // when using MailPoet method, newsletters should be processed in bulk
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
-      array(
+      [
         'method' => 'MailPoet',
         'mailpoet_api_key' => 'some_key',
-      )
+      ]
     );
     $mailer_task = new MailerTask();
     expect($mailer_task->getProcessingMethod())->equals('bulk');
@@ -85,9 +85,9 @@ class MailerTest extends \MailPoetTest {
     // when using other methods, newsletters should be processed individually
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
-      array(
-        'method' => 'PHPMail'
-      )
+      [
+        'method' => 'PHPMail',
+      ]
     );
     $mailer_task = new MailerTask();
     expect($mailer_task->getProcessingMethod())->equals('individual');
@@ -107,24 +107,24 @@ class MailerTest extends \MailPoetTest {
     $php_mail_class = 'MailPoet\Mailer\Methods\PHPMail';
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
-      array(
-        'method' => 'PHPMail'
-      )
+      [
+        'method' => 'PHPMail',
+      ]
     );
     // mock mailer instance and ensure that send method is invoked
     $mailer_task = new MailerTask(
-      (object)array(
+      (object)[
         'mailer_instance' => Stub::make(
           $php_mail_class,
-          array('send' => Expected::exactly(1, function() {
+          ['send' => Expected::exactly(1, function() {
               return true;
-          })),
+          })],
           $this
         ),
         'mailer_config' => [
           'method' => null,
-        ]
-      )
+        ],
+      ]
     );
     // mailer instance should be properly configured
     expect($mailer_task->mailer->mailer_instance instanceof $php_mail_class)

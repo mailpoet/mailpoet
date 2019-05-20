@@ -12,53 +12,53 @@ use MailPoet\Subscribers\ImportExport\Export\DefaultSubscribersGetter;
 class DefaultSubscribersGetterTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $this->subscriber_fields = array(
+    $this->subscriber_fields = [
       'first_name' => 'First name',
       'last_name' => 'Last name',
       'email' => 'Email',
-      1 => 'Country'
-    );
+      1 => 'Country',
+    ];
 
-    $this->subscribers_data = array(
-      array(
+    $this->subscribers_data = [
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
-      ),
-      array(
+      ],
+      [
         'first_name' => 'Mary',
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        1 => 'Brazil'
-      ),
-      array(
+        1 => 'Brazil',
+      ],
+      [
         'first_name' => 'John',
         'last_name' => 'Kookoo',
-        'email' => 'john@kookoo.com'
-      ),
-      array(
+        'email' => 'john@kookoo.com',
+      ],
+      [
         'first_name' => 'Paul',
         'last_name' => 'Newman',
-        'email' => 'paul@newman.com'
-      )
-    );
+        'email' => 'paul@newman.com',
+      ],
+    ];
 
-    $this->custom_fields_data = array(
-      array(
+    $this->custom_fields_data = [
+      [
         'name' => 'Country',
-        'type' => 'text'
-      )
-    );
+        'type' => 'text',
+      ],
+    ];
 
-    $this->segments_data = array(
-      array(
-        'name' => 'Newspapers'
-      ),
-      array(
-        'name' => 'Journals'
-      )
-    );
+    $this->segments_data = [
+      [
+        'name' => 'Newspapers',
+      ],
+      [
+        'name' => 'Journals',
+      ],
+    ];
 
     foreach ($this->subscribers_data as $subscriber) {
       if (isset($subscriber[1])) {
@@ -107,12 +107,12 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
 
   protected function filterSubscribersData($subscribers) {
     return array_map(function($subscriber) {
-      $data = array();
+      $data = [];
       foreach ($subscriber as $key => $value) {
-        if (in_array($key, array(
+        if (in_array($key, [
           'first_name', 'last_name', 'email', 'global_status',
-          'status', 'list_status', 'segment_name', 1
-        )))
+          'status', 'list_status', 'segment_name', 1,
+        ]))
           $data[$key] = $value;
       }
       return $data;
@@ -123,7 +123,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
     $getter = new DefaultSubscribersGetter([1], 10);
     $subscribers = $getter->get();
     expect($this->filterSubscribersData($subscribers))->equals([
-      array(
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
@@ -131,9 +131,9 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNSUBSCRIBED,
         'segment_name' => 'Newspapers',
-        1 => null
-      ),
-      array(
+        1 => null,
+      ],
+      [
         'first_name' => 'Mary',
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
@@ -142,7 +142,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
-      ),
+      ],
     ]);
 
     expect($getter->get())->equals(false);
@@ -152,7 +152,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
     $getter = new DefaultSubscribersGetter([1, 2], 10);
     $subscribers = $getter->get();
     expect($this->filterSubscribersData($subscribers))->equals([
-      array(
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
@@ -160,9 +160,9 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNSUBSCRIBED,
         'segment_name' => 'Newspapers',
-        1 => null
-      ),
-      array(
+        1 => null,
+      ],
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
@@ -170,9 +170,9 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
-        1 => null
-      ),
-      array(
+        1 => null,
+      ],
+      [
         'first_name' => 'Mary',
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
@@ -181,8 +181,8 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
-      ),
-      array(
+      ],
+      [
         'first_name' => 'John',
         'last_name' => 'Kookoo',
         'email' => 'john@kookoo.com',
@@ -191,7 +191,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null,
-      ),
+      ],
     ]);
 
     expect($getter->get())->equals(false);
@@ -200,7 +200,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
   function testItGetsSubscribersInBatches() {
     $getter = new DefaultSubscribersGetter([1, 2], 2);
     expect($this->filterSubscribersData($getter->get()))->equals([
-      array(
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
@@ -208,9 +208,9 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_UNSUBSCRIBED,
         'segment_name' => 'Newspapers',
-        1 => null
-      ),
-      array(
+        1 => null,
+      ],
+      [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
         'email' => 'adam@smith.com',
@@ -218,12 +218,12 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
-        1 => null
-      ),
+        1 => null,
+      ],
     ]);
 
     expect($this->filterSubscribersData($getter->get()))->equals([
-      array(
+      [
         'first_name' => 'Mary',
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
@@ -232,8 +232,8 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Newspapers',
         1 => 'Brazil',
-      ),
-      array(
+      ],
+      [
         'first_name' => 'John',
         'last_name' => 'Kookoo',
         'email' => 'john@kookoo.com',
@@ -242,7 +242,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'list_status' => Subscriber::STATUS_SUBSCRIBED,
         'segment_name' => 'Journals',
         1 => null,
-      ),
+      ],
     ]);
 
     expect($getter->get())->equals([]);
@@ -253,7 +253,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
     $getter = new DefaultSubscribersGetter([0], 10);
     $subscribers = $getter->get();
     expect($this->filterSubscribersData($subscribers))->equals([
-      array(
+      [
         'first_name' => 'Paul',
         'last_name' => 'Newman',
         'email' => 'paul@newman.com',
@@ -261,8 +261,8 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
         'global_status' => Subscriber::STATUS_UNCONFIRMED,
         'list_status' => null,
         'segment_name' => 'Not In Segment',
-        1 => null
-      ),
+        1 => null,
+      ],
     ]);
   }
 

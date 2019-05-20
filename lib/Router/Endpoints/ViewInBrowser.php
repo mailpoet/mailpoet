@@ -16,10 +16,10 @@ if (!defined('ABSPATH')) exit;
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';
-  public $allowed_actions = array(self::ACTION_VIEW);
-  public $permissions = array(
-    'global' => AccessControl::NO_ACCESS_RESTRICTION
-  );
+  public $allowed_actions = [self::ACTION_VIEW];
+  public $permissions = [
+    'global' => AccessControl::NO_ACCESS_RESTRICTION,
+  ];
   /** @var AccessControl */
   private $access_control;
 

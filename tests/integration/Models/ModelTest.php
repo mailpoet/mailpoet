@@ -10,11 +10,11 @@ class ModelTest extends \MailPoetTest {
     $model = Stub::make('MailPoet\Models\Model');
     $pdo = Stub::make(
       'PDO',
-      array(
+      [
         'prepare' => function() use ($message) {
           throw new \PDOException($message);
-        }
-      )
+        },
+      ]
     );
     \ORM::setDb($pdo);
     try {
@@ -31,15 +31,15 @@ class ModelTest extends \MailPoetTest {
     $model->first = 'first';
     $model->last = 'last';
     expect($model->asArray('first'))->equals(
-      array(
-        'first' => 'first'
-      )
+      [
+        'first' => 'first',
+      ]
     );
     expect($model->asArray('last', 'first'))->equals(
-      array(
+      [
         'last' => 'last',
-        'first' => 'first'
-      )
+        'first' => 'first',
+      ]
     );
   }
 
@@ -47,31 +47,31 @@ class ModelTest extends \MailPoetTest {
     $model = MPModel::create();
     $model->setError('error1');
     $model->setError('error2');
-    expect($model->getErrors())->equals(array('error1', 'error2'));
+    expect($model->getErrors())->equals(['error1', 'error2']);
   }
 
   function testSetErrorsAsArray() {
     $model = MPModel::create();
-    $model->setError(array('error1'));
-    $model->setError(array('error2', 'error1'));
-    expect($model->getErrors())->equals(array('error1', 'error2'));
+    $model->setError(['error1']);
+    $model->setError(['error2', 'error1']);
+    expect($model->getErrors())->equals(['error1', 'error2']);
   }
 
   function testSetErrorsWithCode() {
     $model = MPModel::create();
     $model->setError('error1');
     $model->setError('error2', 5);
-    expect($model->getErrors())->equals(array('error1', 5 => 'error2'));
+    expect($model->getErrors())->equals(['error1', 5 => 'error2']);
   }
 
   function testSetErrorCodeForDuplicateRecords() {
     $orm = Stub::makeEmpty(
       'ORM',
-      array(
+      [
         'save' => function() {
           throw new \PDOException("error for key 'name'", MPModel::DUPLICATE_RECORD);
-        }
-      )
+        },
+      ]
     );
     $model = MPModel::create();
     $model->setError('error1');

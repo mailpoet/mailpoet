@@ -8,12 +8,12 @@ use MailPoet\Config\AccessControl;
 if (!defined('ABSPATH')) exit;
 
 class APITestNamespacedEndpointStubV2 extends APIEndpoint {
-  public $permissions = array(
+  public $permissions = [
     'global' => AccessControl::NO_ACCESS_RESTRICTION,
-    'methods' => array(
-      'test' => AccessControl::NO_ACCESS_RESTRICTION
-    )
-  );
+    'methods' => [
+      'test' => AccessControl::NO_ACCESS_RESTRICTION,
+    ],
+  ];
 
   function testVersion() {
     return $this->successResponse('v2');

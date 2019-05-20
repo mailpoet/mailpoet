@@ -84,7 +84,7 @@ class Subscription {
       // Opt-in is disabled or checkbox is unchecked
       SubscriberSegment::unsubscribeFromSegments(
         $subscriber,
-        array($wc_segment->id)
+        [$wc_segment->id]
       );
       return false;
     }
@@ -100,7 +100,7 @@ class Subscription {
 
     SubscriberSegment::subscribeToSegments(
       $subscriber,
-      array($wc_segment->id)
+      [$wc_segment->id]
     );
 
     return true;

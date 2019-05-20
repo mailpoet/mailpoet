@@ -14,10 +14,10 @@ class HelpersTest extends \MailPoetUnitTest {
   function testItReplacesLinkTagsAndAddsAttributes() {
     $source = '[link]example link[/link]';
     $link = 'http://example.com';
-    $attributes = array(
+    $attributes = [
       'class' => 'test class',
-      'target' => '_blank'
-    );
+      'target' => '_blank',
+    ];
     expect(Helpers::replaceLinkTags($source, $link, $attributes))
       ->equals('<a class="test class" target="_blank" href="' . $link . '">example link</a>');
   }
@@ -25,13 +25,13 @@ class HelpersTest extends \MailPoetUnitTest {
   function testItAcceptsCustomLinkTag() {
     $source = '[custom_link_tag]example link[/custom_link_tag]';
     $link = 'http://example.com';
-    expect(Helpers::replaceLinkTags($source, $link, array(), 'custom_link_tag'))
+    expect(Helpers::replaceLinkTags($source, $link, [], 'custom_link_tag'))
       ->equals('<a href="' . $link . '">example link</a>');
   }
 
   function testItChecksForValidJsonString() {
     expect(Helpers::isJson(123))->false();
-    $json = json_encode(array('one' => 1, 'two' => 2));
+    $json = json_encode(['one' => 1, 'two' => 2]);
     expect(Helpers::isJson($json))->true();
   }
 

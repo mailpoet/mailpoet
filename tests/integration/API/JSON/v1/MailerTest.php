@@ -8,7 +8,7 @@ use MailPoet\Mailer\MailerLog;
 class MailerTest extends \MailPoetTest {
   function testItResumesSending() {
     // create mailer log with a "paused" status
-    $mailer_log = array('status' => MailerLog::STATUS_PAUSED);
+    $mailer_log = ['status' => MailerLog::STATUS_PAUSED];
     MailerLog::updateMailerLog($mailer_log);
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);

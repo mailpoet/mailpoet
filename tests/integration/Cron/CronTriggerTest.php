@@ -24,12 +24,12 @@ class CronTriggerTest extends \MailPoetTest {
     expect(CronTrigger::DEFAULT_METHOD)->equals('WordPress');
     expect(CronTrigger::SETTING_NAME)->equals('cron_trigger');
     expect(CronTrigger::$available_methods)->equals(
-      array(
+      [
         'mailpoet' => 'MailPoet',
         'wordpress' => 'WordPress',
         'linux_cron' => 'Linux Cron',
-        'none' => 'Disabled'
-      )
+        'none' => 'Disabled',
+      ]
     );
   }
 

@@ -22,7 +22,7 @@ class MenuTest extends \MailPoetTest {
   }
 
   function testItRespectsExclusionsWhenCheckingMPPages() {
-    $exclude = array('mailpoet-welcome');
+    $exclude = ['mailpoet-welcome'];
     $result = Menu::isOnMailPoetAdminPage($exclude, 'mailpoet-welcome');
     expect($result)->false();
     $result = Menu::isOnMailPoetAdminPage($exclude, 'mailpoet-newsletters');
@@ -50,7 +50,7 @@ class MenuTest extends \MailPoetTest {
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
       new ServicesChecker(),
-      array('isMailPoetAPIKeyValid' => true),
+      ['isMailPoetAPIKeyValid' => true],
       $this
     );
     $menu->checkMailPoetAPIKey($checker);
@@ -58,7 +58,7 @@ class MenuTest extends \MailPoetTest {
 
     $checker = Stub::make(
       new ServicesChecker(),
-      array('isMailPoetAPIKeyValid' => false),
+      ['isMailPoetAPIKeyValid' => false],
       $this
     );
     $menu->checkMailPoetAPIKey($checker);
@@ -72,7 +72,7 @@ class MenuTest extends \MailPoetTest {
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
       new ServicesChecker(),
-      array('isPremiumKeyValid' => true),
+      ['isPremiumKeyValid' => true],
       $this
     );
     $menu->checkPremiumKey($checker);
@@ -80,7 +80,7 @@ class MenuTest extends \MailPoetTest {
 
     $checker = Stub::make(
       new ServicesChecker(),
-      array('isPremiumKeyValid' => false),
+      ['isPremiumKeyValid' => false],
       $this
     );
     $menu->checkPremiumKey($checker);

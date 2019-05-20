@@ -32,7 +32,7 @@ class Pages {
   /** @var UrlHelper */
   private $url_helper;
 
-  function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false, $new_subscriber_notification_sender = null) {
+  function __construct($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false, $new_subscriber_notification_sender = null) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
@@ -52,15 +52,15 @@ class Pages {
   }
 
   function initPageFilters() {
-    WPFunctions::get()->addFilter('wp_title', array($this,'setWindowTitle'), 10, 3);
-    WPFunctions::get()->addFilter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
-    WPFunctions::get()->addFilter('the_title', array($this,'setPageTitle'), 10, 1);
-    WPFunctions::get()->addFilter('the_content', array($this,'setPageContent'), 10, 1);
+    WPFunctions::get()->addFilter('wp_title', [$this,'setWindowTitle'], 10, 3);
+    WPFunctions::get()->addFilter('document_title_parts', [$this,'setWindowTitleParts'], 10, 1);
+    WPFunctions::get()->addFilter('the_title', [$this,'setPageTitle'], 10, 1);
+    WPFunctions::get()->addFilter('the_content', [$this,'setPageContent'], 10, 1);
   }
 
   function initShortcodes() {
-    WPFunctions::get()->addShortcode('mailpoet_manage', array($this, 'getManageLink'));
-    WPFunctions::get()->addShortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
+    WPFunctions::get()->addShortcode('mailpoet_manage', [$this, 'getManageLink']);
+    WPFunctions::get()->addShortcode('mailpoet_manage_subscription', [$this, 'getManageContent']);
   }
 
   function getSubscriber() {
@@ -196,7 +196,7 @@ class Pages {
     return implode(" $separator ", $title_parts);
   }
 
-  function setWindowTitleParts($meta = array()) {
+  function setWindowTitleParts($meta = []) {
     $meta['title'] = $this->setPageTitle($meta['title']);
     return $meta;
   }
@@ -245,11 +245,11 @@ class Pages {
   public function getManageContent() {
     if ($this->isPreview()) {
       $subscriber = Subscriber::create();
-      $subscriber->hydrate(array(
+      $subscriber->hydrate([
         'email' => self::DEMO_EMAIL,
         'first_name' => 'John',
-        'last_name' => 'Doe'
-      ));
+        'last_name' => 'Doe',
+      ]);
     } else if ($this->subscriber !== false) {
       $subscriber = $this->subscriber
       ->withCustomFields()
@@ -282,7 +282,7 @@ class Pages {
       $segments = Segment::getPublic()
         ->findMany();
     }
-    $subscribed_segment_ids = array();
+    $subscribed_segment_ids = [];
     if (!empty($this->subscriber->subscriptions)) {
       foreach ($this->subscriber->subscriptions as $subscription) {
         if ($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
@@ -292,104 +292,104 @@ class Pages {
     }
 
     $segments = array_map(function($segment) use($subscribed_segment_ids) {
-      return array(
+      return [
         'id' => $segment->id,
         'name' => $segment->name,
-        'is_checked' => in_array($segment->id, $subscribed_segment_ids)
-      );
+        'is_checked' => in_array($segment->id, $subscribed_segment_ids),
+      ];
     }, $segments);
 
 
-    $fields = array(
-      array(
+    $fields = [
+      [
         'id' => 'first_name',
         'type' => 'text',
-        'params' => array(
+        'params' => [
           'label' => WPFunctions::get()->__('First name', 'mailpoet'),
           'value' => $subscriber->first_name,
-          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser())
-        )
-      ),
-      array(
+          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()),
+        ],
+      ],
+      [
         'id' => 'last_name',
         'type' => 'text',
-        'params' => array(
+        'params' => [
           'label' => WPFunctions::get()->__('Last name', 'mailpoet'),
           'value' => $subscriber->last_name,
-          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser())
-        )
-      ),
-      array(
+          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()),
+        ],
+      ],
+      [
         'id' => 'status',
         'type' => 'select',
-        'params' => array(
+        'params' => [
           'required' => true,
           'label' => WPFunctions::get()->__('Status', 'mailpoet'),
-          'values' => array(
-            array(
-              'value' => array(
-                Subscriber::STATUS_SUBSCRIBED => WPFunctions::get()->__('Subscribed', 'mailpoet')
-              ),
+          'values' => [
+            [
+              'value' => [
+                Subscriber::STATUS_SUBSCRIBED => WPFunctions::get()->__('Subscribed', 'mailpoet'),
+              ],
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_SUBSCRIBED
-              )
-            ),
-            array(
-              'value' => array(
-                Subscriber::STATUS_UNSUBSCRIBED => WPFunctions::get()->__('Unsubscribed', 'mailpoet')
               ),
+            ],
+            [
+              'value' => [
+                Subscriber::STATUS_UNSUBSCRIBED => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
+              ],
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
-              )
-            ),
-            array(
-              'value' => array(
-                Subscriber::STATUS_BOUNCED => WPFunctions::get()->__('Bounced', 'mailpoet')
               ),
+            ],
+            [
+              'value' => [
+                Subscriber::STATUS_BOUNCED => WPFunctions::get()->__('Bounced', 'mailpoet'),
+              ],
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_BOUNCED
               ),
               'is_disabled' => true,
               'is_hidden' => (
                 $subscriber->status !== Subscriber::STATUS_BOUNCED
-              )
-            ),
-            array(
-              'value' => array(
-                Subscriber::STATUS_INACTIVE => WPFunctions::get()->__('Inactive', 'mailpoet')
               ),
+            ],
+            [
+              'value' => [
+                Subscriber::STATUS_INACTIVE => WPFunctions::get()->__('Inactive', 'mailpoet'),
+              ],
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_INACTIVE
               ),
               'is_hidden' => (
                 $subscriber->status !== Subscriber::STATUS_INACTIVE
-              )
-            )
-          )
-        )
-      )
-    );
+              ),
+            ],
+          ],
+        ],
+      ],
+    ];
 
     $form = array_merge(
       $fields,
       $custom_fields,
-      array(
-        array(
+      [
+        [
           'id' => 'segments',
           'type' => 'segment',
-          'params' => array(
+          'params' => [
             'label' => WPFunctions::get()->__('Your lists', 'mailpoet'),
-            'values' => $segments
-          )
-        ),
-        array(
+            'values' => $segments,
+          ],
+        ],
+        [
           'id' => 'submit',
           'type' => 'submit',
-          'params' => array(
-            'label' => WPFunctions::get()->__('Save', 'mailpoet')
-          )
-        )
-      )
+          'params' => [
+            'label' => WPFunctions::get()->__('Save', 'mailpoet'),
+          ],
+        ],
+      ]
     );
 
     $form_html = '<form method="POST" '.
@@ -418,13 +418,13 @@ class Pages {
         $form_html .= Helpers::replaceLinkTags(
           WPFunctions::get()->__('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
           WPFunctions::get()->getEditProfileUrl(),
-          array('target' => '_blank')
+          ['target' => '_blank']
         );
       } else {
         $form_html .= Helpers::replaceLinkTags(
           WPFunctions::get()->__('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
           WPFunctions::get()->wpLoginUrl(),
-          array('target' => '_blank')
+          ['target' => '_blank']
         );
       }
     } else {

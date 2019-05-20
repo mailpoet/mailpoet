@@ -18,7 +18,7 @@ class RendererTest extends \MailPoetTest {
 
   function __construct() {
     parent::__construct();
-    $this->newsletter = array(
+    $this->newsletter = [
       'body' => json_decode(
         file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true
       ),
@@ -26,8 +26,8 @@ class RendererTest extends \MailPoetTest {
       'subject' => 'Some subject',
       'preheader' => 'Some preheader',
       'type' => 'standard',
-      'status' => 'active'
-    );
+      'status' => 'active',
+    ];
     $this->renderer = new Renderer($this->newsletter);
     $this->column_renderer = new ColumnRenderer();
     $this->DOM_parser = new \pQuery();
@@ -53,14 +53,14 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItRendersOneColumn() {
-    $column_content = array(
-      'one'
-    );
-    $column_styles = array(
-      'block' => array(
-        'backgroundColor' => "#999999"
-      )
-    );
+    $column_content = [
+      'one',
+    ];
+    $column_styles = [
+      'block' => [
+        'backgroundColor' => "#999999",
+      ],
+    ];
     $DOM = $this->DOM_parser->parseStr(
       $this->column_renderer->render(
         [
@@ -78,15 +78,15 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItRendersTwoColumns() {
-    $column_content = array(
+    $column_content = [
       'one',
-      'two'
-    );
-    $column_styles = array(
-      'block' => array(
-        'backgroundColor' => "#999999"
-      )
-    );
+      'two',
+    ];
+    $column_styles = [
+      'block' => [
+        'backgroundColor' => "#999999",
+      ],
+    ];
     $DOM = $this->DOM_parser->parseStr(
       $this->column_renderer->render(
         [
@@ -104,16 +104,16 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItRendersThreeColumns() {
-    $column_content = array(
+    $column_content = [
       'one',
       'two',
-      'three'
-    );
-    $column_styles = array(
-      'block' => array(
-        'backgroundColor' => "#999999"
-      )
-    );
+      'three',
+    ];
+    $column_styles = [
+      'block' => [
+        'backgroundColor' => "#999999",
+      ],
+    ];
     $DOM = $this->DOM_parser->parseStr(
       $this->column_renderer->render(
         [
@@ -261,38 +261,38 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItDoesNotRenderImageWithoutSrc() {
-    $image = array(
+    $image = [
       'src' => '',
       'width' => '100',
       'height' => '200',
       'link' => '',
-      'alt' => 'some test alt text'
-    );
+      'alt' => 'some test alt text',
+    ];
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     expect($rendered_image)->equals('');
   }
 
   function testItForcesAbsoluteSrcForImages() {
-    $image = array(
+    $image = [
       'src' => '/relative-path',
       'width' => '100',
       'height' => '200',
       'link' => '',
       'fullWidth' => false,
-      'alt' => 'some test alt text'
-    );
+      'alt' => 'some test alt text',
+    ];
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     $site_url = get_option('siteurl');
     expect($rendered_image)->contains('src="'.$site_url.'/relative-path"');
 
-    $image = array(
+    $image = [
       'src' => '//path-without-protocol',
       'width' => '100',
       'height' => '200',
       'link' => '',
       'fullWidth' => false,
-      'alt' => 'some test alt text'
-    );
+      'alt' => 'some test alt text',
+    ];
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     expect($rendered_image)->contains('src="//path-without-protocol"');
   }
@@ -309,11 +309,11 @@ class RendererTest extends \MailPoetTest {
 
   function testItAdjustsImageDimensions() {
     // image gets scaled down when image width > column width
-    $image = array(
+    $image = [
       'width' => 800,
       'height' => 600,
-      'fullWidth' => true
-    );
+      'fullWidth' => true,
+    ];
     $new_image_dimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
     expect($new_image_dimensions['width'])->equals(660);
     expect($new_image_dimensions['height'])->equals(495);
@@ -337,40 +337,40 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItRendersImageWithAutoDimensions() {
-    $image = array(
+    $image = [
       'width' => 'auto',
       'height' => 'auto',
       'src' => 'https://example.com/image.jpg',
       'link' => '',
       'fullWidth' => false,
-      'alt' => 'some test alt text'
-    );
+      'alt' => 'some test alt text',
+    ];
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     expect($rendered_image)->contains('width="auto"');
   }
 
   function testItAdjustImageDimensionsWithPx() {
-    $image = array(
+    $image = [
       'width' => '1000px',
       'height' => '1000px',
       'src' => 'https://example.com/image.jpg',
       'link' => '',
       'fullWidth' => false,
-      'alt' => 'some test alt text'
-    );
+      'alt' => 'some test alt text',
+    ];
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     expect($rendered_image)->contains('width="620"');
   }
 
   function testItAdjustImageDimensionsWithoutPx() {
-    $image = array(
+    $image = [
       'width' => '1000',
       'height' => '1000',
       'src' => 'https://example.com/image.jpg',
       'link' => '',
       'fullWidth' => false,
-      'alt' => 'some test alt text'
-    );
+      'alt' => 'some test alt text',
+    ];
     $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
     expect($rendered_image)->contains('width="620"');
   }
@@ -516,15 +516,15 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testItDoesNotRenderSocialIconsWithoutImageSrc() {
-    $block = array(
-      'icons' => array(
+    $block = [
+      'icons' => [
         'image' => '',
         'width' => '100',
         'height' => '100',
         'link' => '',
         'iconType' => 'custom',
-      )
-    );
+      ],
+    ];
     $rendered_block = Social::render($block, self::COLUMN_BASE_WIDTH);
     expect($rendered_block)->equals('');
   }

@@ -44,13 +44,13 @@ class SettingsController {
     if ($this->defaults === null) {
       $this->defaults = [
         'mta_group' => self::DEFAULT_SENDING_METHOD_GROUP,
-        'mta' => array(
+        'mta' => [
           'method' => self::DEFAULT_SENDING_METHOD,
-          'frequency' => array(
+          'frequency' => [
             'emails' => self::DEFAULT_SENDING_FREQUENCY_EMAILS,
-            'interval' => self::DEFAULT_SENDING_FREQUENCY_INTERVAL
-          )
-        ),
+            'interval' => self::DEFAULT_SENDING_FREQUENCY_INTERVAL,
+          ],
+        ],
         CronTrigger::SETTING_NAME => [
           'method' => CronTrigger::DEFAULT_METHOD,
         ],

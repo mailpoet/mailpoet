@@ -31,7 +31,7 @@ class Text {
     $DOM = $DOM_parser->parseStr($html);
     $blockquotes = $DOM->query('blockquote');
     foreach ($blockquotes as $blockquote) {
-      $contents = array();
+      $contents = [];
       $paragraphs = $blockquote->query('p, h1, h2, h3, h4', 0);
       foreach ($paragraphs as $index => $paragraph) {
         if (preg_match('/h\d/', $paragraph->getTag())) {
@@ -174,11 +174,11 @@ class Text {
 
   static function insertLineBreak($element) {
     $element->parent->insertChild(
-      array(
+      [
         'tag_name' => 'br',
         'self_close' => true,
-        'attributes' => array()
-      ),
+        'attributes' => [],
+      ],
       $element->index() + 1
     );
     return $element;

@@ -47,7 +47,7 @@ class SendingQueue {
     $this->enforceSendingAndExecutionLimits();
     foreach (self::getRunningQueues() as $queue) {
       if (!$queue instanceof SendingTask) continue;
-      ScheduledTaskModel::touchAllByIds(array($queue->task_id));
+      ScheduledTaskModel::touchAllByIds([$queue->task_id]);
 
       Logger::getLogger('newsletters')->addInfo(
         'sending queue processing',
@@ -135,11 +135,11 @@ class SendingQueue {
   function processQueue($queue, $newsletter, $subscribers) {
     // determine if processing is done in bulk or individually
     $processing_method = $this->mailer_task->getProcessingMethod();
-    $prepared_newsletters = array();
-    $prepared_subscribers = array();
-    $prepared_subscribers_ids = array();
-    $unsubscribe_urls = array();
-    $statistics = array();
+    $prepared_newsletters = [];
+    $prepared_subscribers = [];
+    $prepared_subscribers_ids = [];
+    $unsubscribe_urls = [];
+    $statistics = [];
     foreach ($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
       $prepared_newsletters[] =
@@ -156,11 +156,11 @@ class SendingQueue {
       // save personalized unsubsribe link
       $unsubscribe_urls[] = Links::getUnsubscribeUrl($queue, $subscriber->id);
       // keep track of values for statistics purposes
-      $statistics[] = array(
+      $statistics[] = [
         'newsletter_id' => $newsletter->id,
         'subscriber_id' => $subscriber->id,
-        'queue_id' => $queue->id
-      );
+        'queue_id' => $queue->id,
+      ];
       if ($processing_method === 'individual') {
         $queue = $this->sendNewsletter(
           $queue,
@@ -168,13 +168,13 @@ class SendingQueue {
           $prepared_newsletters[0],
           $prepared_subscribers[0],
           $statistics[0],
-          array('unsubscribe_url' => $unsubscribe_urls[0])
+          ['unsubscribe_url' => $unsubscribe_urls[0]]
         );
-        $prepared_newsletters = array();
-        $prepared_subscribers = array();
-        $prepared_subscribers_ids = array();
-        $unsubscribe_urls = array();
-        $statistics = array();
+        $prepared_newsletters = [];
+        $prepared_subscribers = [];
+        $prepared_subscribers_ids = [];
+        $unsubscribe_urls = [];
+        $statistics = [];
       }
     }
     if ($processing_method === 'bulk') {
@@ -184,7 +184,7 @@ class SendingQueue {
         $prepared_newsletters,
         $prepared_subscribers,
         $statistics,
-        array('unsubscribe_url' => $unsubscribe_urls)
+        ['unsubscribe_url' => $unsubscribe_urls]
       );
     }
     return $queue;
@@ -192,7 +192,7 @@ class SendingQueue {
 
   function sendNewsletter(
     SendingTask $sending_task, $prepared_subscriber_id, $prepared_newsletter,
-    $prepared_subscriber, $statistics, $extra_params = array()
+    $prepared_subscriber, $statistics, $extra_params = []
   ) {
     // send newsletter
     $send_result = $this->mailer_task->send(
@@ -211,7 +211,7 @@ class SendingQueue {
 
   function sendNewsletters(
     SendingTask $sending_task, $prepared_subscribers_ids, $prepared_newsletters,
-    $prepared_subscribers, $statistics, $extra_params = array()
+    $prepared_subscribers, $statistics, $extra_params = []
   ) {
     // send newsletters
     $send_result = $this->mailer_task->sendBulk(

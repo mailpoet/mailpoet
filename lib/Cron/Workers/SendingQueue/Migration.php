@@ -120,15 +120,15 @@ class Migration extends SimpleWorker {
       ->select('id')
       ->findArray();
 
-    $column_list = array(
+    $column_list = [
       'status',
       'priority',
       'scheduled_at',
       'processed_at',
       'created_at',
       'updated_at',
-      'deleted_at'
-    );
+      'deleted_at',
+    ];
 
     if (!empty($queues)) {
       foreach (array_chunk($queues, self::BATCH_SIZE) as $queue_batch) {
@@ -219,11 +219,11 @@ class Migration extends SimpleWorker {
         // abort if execution limit is reached
         CronHelper::enforceExecutionLimit($this->timer);
 
-        ScheduledTaskSubscriber::createOrUpdate(array(
+        ScheduledTaskSubscriber::createOrUpdate([
           'task_id' => $task_id,
           'subscriber_id' => $sub_id,
-          'processed' => ScheduledTaskSubscriber::STATUS_UNPROCESSED
-        ));
+          'processed' => ScheduledTaskSubscriber::STATUS_UNPROCESSED,
+        ]);
       }
     }
 
@@ -233,11 +233,11 @@ class Migration extends SimpleWorker {
         // abort if execution limit is reached
         CronHelper::enforceExecutionLimit($this->timer);
 
-        ScheduledTaskSubscriber::createOrUpdate(array(
+        ScheduledTaskSubscriber::createOrUpdate([
           'task_id' => $task_id,
           'subscriber_id' => $sub_id,
-          'processed' => ScheduledTaskSubscriber::STATUS_PROCESSED
-        ));
+          'processed' => ScheduledTaskSubscriber::STATUS_PROCESSED,
+        ]);
       }
     }
 

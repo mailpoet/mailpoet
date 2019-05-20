@@ -37,28 +37,28 @@ class Handler {
     $table_name = $model_class::$_table;
     $model = \Model::factory($model_class);
     // get groups
-    $groups = array();
+    $groups = [];
     if (method_exists($model_class, 'groups')) {
       $groups = call_user_func_array(
-        array($model_class, 'groups'),
-        array($data)
+        [$model_class, 'groups'],
+        [$data]
       );
     }
 
     // get filters
-    $filters = array();
+    $filters = [];
     if (method_exists($model_class, 'filters')) {
       $filters = call_user_func_array(
-        array($model_class, 'filters'),
-        array($data)
+        [$model_class, 'filters'],
+        [$data]
       );
     }
 
     // get items and total count
     if (method_exists($model_class, 'listingQuery')) {
       $custom_query = call_user_func_array(
-        array($model_class, 'listingQuery'),
-        array($data)
+        [$model_class, 'listingQuery'],
+        [$data]
       );
 
       $count = $custom_query->count();
@@ -84,12 +84,12 @@ class Handler {
         ->findMany();
     }
 
-    return array(
+    return [
       'count' => $count,
       'filters' => $filters,
       'groups' => $groups,
-      'items' => $items
-    );
+      'items' => $items,
+    ];
   }
 
   private function setSearch(\ORMWrapper $model, array $data) {

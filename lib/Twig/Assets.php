@@ -16,33 +16,33 @@ class Assets extends AbstractExtension {
   }
 
   function getFunctions() {
-    return array(
+    return [
       new TwigFunction(
         'stylesheet',
-        array($this, 'generateStylesheet'),
-        array('is_safe' => array('all'))
+        [$this, 'generateStylesheet'],
+        ['is_safe' => ['all']]
       ),
       new TwigFunction(
         'javascript',
-        array($this, 'generateJavascript'),
-        array('is_safe' => array('all'))
+        [$this, 'generateJavascript'],
+        ['is_safe' => ['all']]
       ),
       new TwigFunction(
         'image_url',
-        array($this, 'generateImageUrl'),
-        array('is_safe' => array('all'))
+        [$this, 'generateImageUrl'],
+        ['is_safe' => ['all']]
       ),
       new TwigFunction(
         'cdn_url',
-        array($this, 'generateCdnUrl'),
-        array('is_safe' => array('all'))
-      )
-    );
+        [$this, 'generateCdnUrl'],
+        ['is_safe' => ['all']]
+      ),
+    ];
   }
 
   function generateStylesheet() {
     $stylesheets = func_get_args();
-    $output = array();
+    $output = [];
 
     foreach ($stylesheets as $stylesheet) {
       $output[] = sprintf(
@@ -57,7 +57,7 @@ class Assets extends AbstractExtension {
 
   function generateJavascript() {
     $scripts = func_get_args();
-    $output = array();
+    $output = [];
 
     foreach ($scripts as $script) {
       $output[] = sprintf(

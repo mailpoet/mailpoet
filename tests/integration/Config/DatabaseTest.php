@@ -66,11 +66,11 @@ class DatabaseTest extends \MailPoetTest {
     $message = 'Error message';
     $pdo = Stub::make(
       'PDO',
-      array(
+      [
         'prepare' => function() use ($message) {
           throw new \PDOException($message);
-        }
-      )
+        },
+      ]
     );
     \ORM::setDb($pdo);
     try {

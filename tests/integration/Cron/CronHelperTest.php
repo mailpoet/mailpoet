@@ -20,9 +20,9 @@ class CronHelperTest extends \MailPoetTest {
     $this->settings = new SettingsController();
     $this->settings->set('db_version', MAILPOET_VERSION);
     // Disable cron trigger to not run tasks like migration when pinging the daemon
-    $this->settings->set('cron_trigger', array(
-      'method' => 'none'
-    ));
+    $this->settings->set('cron_trigger', [
+      'method' => 'none',
+    ]);
     $this->settings->set('sender', [
       'name' => 'John Doe',
       'address' => 'john.doe@example.com',
@@ -42,7 +42,7 @@ class CronHelperTest extends \MailPoetTest {
     CronHelper::createDaemon($token);
     $daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($daemon)->equals(
-      array(
+      [
         'token' => $token,
         'status' => CronHelper::DAEMON_STATUS_ACTIVE,
         'updated_at' => $time,
@@ -50,7 +50,7 @@ class CronHelperTest extends \MailPoetTest {
         'run_started_at' => null,
         'run_completed_at' => null,
         'last_error' => null,
-      )
+      ]
     );
   }
 
@@ -60,7 +60,7 @@ class CronHelperTest extends \MailPoetTest {
     CronHelper::restartDaemon($token);
     $daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($daemon)->equals(
-      array(
+      [
         'token' => $token,
         'status' => CronHelper::DAEMON_STATUS_ACTIVE,
         'updated_at' => $time,
@@ -68,7 +68,7 @@ class CronHelperTest extends \MailPoetTest {
         'run_started_at' => null,
         'run_completed_at' => null,
         'last_error' => null,
-      )
+      ]
     );
   }
 
@@ -273,12 +273,12 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function testItAllowsSettingCustomCronRequestArguments() {
-    $request_args = array(
+    $request_args = [
       'blocking' => 'custom_blocking',
       'sslverify' => 'custom_ssl_verify',
       'timeout' => 'custom_timeout',
-      'user-agent' => 'custom_user_agent'
-    );
+      'user-agent' => 'custom_user_agent',
+    ];
     $filter = function($args) use ($request_args) {
       expect($args)->notEmpty();
       return $request_args;
@@ -297,9 +297,9 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function testItReturnsErrorMessageAsPingResponseWhenCronUrlCannotBeAccessed() {
-    Mock::double('MailPoet\Cron\CronHelper', array(
-      'getSiteUrl' => false
-    ));
+    Mock::double('MailPoet\Cron\CronHelper', [
+      'getSiteUrl' => false,
+    ]);
     expect(CronHelper::pingDaemon())->equals('A valid URL was not provided.');
   }
 

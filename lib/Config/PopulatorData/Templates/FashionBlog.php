@@ -13,13 +13,13 @@ class FashionBlog {
   }
 
   function get() {
-    return array(
+    return [
       'name' => __("Fashion Blog", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getThumbnail() {
@@ -27,114 +27,114 @@ class FashionBlog {
   }
 
   private function getBody() {
-    return array (
+    return  [
       'content' =>
-      array (
+       [
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
         'image' =>
-        array (
+         [
           'src' => null,
           'display' => 'scale',
-        ),
+         ],
         'styles' =>
-        array (
+         [
           'block' =>
-          array (
+           [
             'backgroundColor' => 'transparent',
-          ),
-        ),
+           ],
+         ],
         'blocks' =>
-        array (
+         [
           0 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#ffffff',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'header',
                     'text' => '<p><span style="color: #999999;"><a href="[link:newsletter_view_in_browser_url]" style="color: #999999;">View online &gt;</a></span></p>',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
+                       ],
                       'text' =>
-                      array (
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
+                       ],
                       'link' =>
-                      array (
+                       [
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   3 =>
-                  array (
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Fashion-Logo-1.png',
@@ -143,321 +143,321 @@ class FashionBlog {
                     'width' => '200px',
                     'height' => '38px',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   4 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           1 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => $this->template_image_url . '/Fashion-Header.jpg',
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#66cbba',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
               1 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '170px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center; background-color: #ffffff; line-height: 1.2; margin: 0!important; padding: 15px 10px 10px 10px;"><strong>The new season is here</strong></h2>
     <p style="text-align: center; background-color: #ffffff; padding: 10px; margin: 0!important;"><strong><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus et pellentesque</span></strong></p>
     <p style="text-align: center; background-color: #ffffff; padding: 10px 10px 30px 10px; margin: 0!important;"><a href="http://www.mystore.com" style="background-color: #222222; color: #ffffff!important; padding: 10px; text-decoration: none!important; font-weight: bold;">Start Shopping</a></p>',
-                  ),
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '170px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
               2 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           2 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           3 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => '1_2',
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => $this->template_image_url . '/Fashion-Gift.jpg',
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#66cbba',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
               1 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: right;"><strong>In a hurry?</strong></h3>
     <p style="text-align: right;">Grab a gift card from our online shop.</p>
     <p style="text-align: right;">Treat yourself or that special someone in your life.</p>',
-                  ),
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'button',
                     'text' => 'Buy a gift card',
                     'url' => '',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => '#222222',
                         'borderColor' => '#0074a2',
                         'borderWidth' => '0px',
@@ -470,137 +470,137 @@ class FashionBlog {
                         'fontSize' => '12px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'right',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   3 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           4 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           5 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><strong>Keep in touch with us online</strong></p>',
-                  ),
+                   ],
                   1 =>
-                  array (
+                   [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
+                       ],
+                     ],
                     'icons' =>
-                    array (
+                     [
                       0 =>
-                      array (
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -608,9 +608,9 @@ class FashionBlog {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
+                       ],
                       1 =>
-                      array (
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -618,9 +618,9 @@ class FashionBlog {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
+                       ],
                       2 =>
-                      array (
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
                         'link' => 'http://instagram.com',
@@ -628,11 +628,11 @@ class FashionBlog {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Instagram',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   2 =>
-                  array (
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Fashion-Logo-1.png',
@@ -641,141 +641,141 @@ class FashionBlog {
                     'width' => '142px',
                     'height' => '38px',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
+                       ],
+                     ],
+                   ],
                   3 =>
-                  array (
+                   [
                     'type' => 'footer',
                     'text' => '<p><strong><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">Unsubscribe</a> | <a href="[link:subscription_manage_url]" style="color: #000000;">Manage your subscription</a></span></strong><br />Add your postal address here!</p>',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
+                       ],
                       'text' =>
-                      array (
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
+                       ],
                       'link' =>
-                      array (
+                       [
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'none',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
           6 =>
-          array (
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
             'image' =>
-            array (
+             [
               'src' => null,
               'display' => 'scale',
-            ),
+             ],
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#ffffff',
-              ),
-            ),
+               ],
+             ],
             'blocks' =>
-            array (
+             [
               0 =>
-              array (
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
                 'image' =>
-                array (
+                 [
                   'src' => null,
                   'display' => 'scale',
-                ),
+                 ],
                 'styles' =>
-                array (
+                 [
                   'block' =>
-                  array (
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
+                   ],
+                 ],
                 'blocks' =>
-                array (
+                 [
                   0 =>
-                  array (
+                   [
                     'type' => 'spacer',
                     'styles' =>
-                    array (
+                     [
                       'block' =>
-                      array (
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '23px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+         ],
+       ],
       'globalStyles' =>
-      array (
+       [
         'text' =>
-        array (
+         [
           'fontColor' => '#000000',
           'fontFamily' => 'Arial',
           'fontSize' => '13px',
-        ),
+         ],
         'h1' =>
-        array (
+         [
           'fontColor' => '#111111',
           'fontFamily' => 'Arial',
           'fontSize' => '26px',
-        ),
+         ],
         'h2' =>
-        array (
+         [
           'fontColor' => '#222222',
           'fontFamily' => 'Arial',
           'fontSize' => '22px',
-        ),
+         ],
         'h3' =>
-        array (
+         [
           'fontColor' => '#333333',
           'fontFamily' => 'Arial',
           'fontSize' => '20px',
-        ),
+         ],
         'link' =>
-        array (
+         [
           'fontColor' => '#21759B',
           'textDecoration' => 'underline',
-        ),
+         ],
         'wrapper' =>
-        array (
+         [
           'backgroundColor' => '#ffffff',
-        ),
+         ],
         'body' =>
-        array (
+         [
           'backgroundColor' => '#ffffff',
-        ),
-      ),
+         ],
+       ],
       'blockDefaults' =>
-      array (
+       [
         'automatedLatestContent' =>
-        array (
+         [
           'amount' => '5',
           'withLayout' => false,
           'contentType' => 'post',
@@ -793,14 +793,14 @@ class FashionBlog {
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
           'readMoreButton' =>
-          array (
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -813,31 +813,31 @@ class FashionBlog {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
           'divider' =>
-          array (
+           [
             'context' => 'automatedLatestContent.divider',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
+         ],
         'automatedLatestContentLayout' =>
-        array (
+         [
           'amount' => '5',
           'withLayout' => true,
           'contentType' => 'post',
@@ -855,14 +855,14 @@ class FashionBlog {
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
           'readMoreButton' =>
-          array (
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -875,37 +875,37 @@ class FashionBlog {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
           'divider' =>
-          array (
+           [
             'context' => 'automatedLatestContentLayout.divider',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
+         ],
         'button' =>
-        array (
+         [
           'text' => 'Buy a gift card',
           'url' => '',
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => '#222222',
               'borderColor' => '#0074a2',
               'borderWidth' => '0px',
@@ -918,50 +918,50 @@ class FashionBlog {
               'fontSize' => '12px',
               'fontWeight' => 'bold',
               'textAlign' => 'right',
-            ),
-          ),
+             ],
+           ],
           'type' => 'button',
-        ),
+         ],
         'divider' =>
-        array (
+         [
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => 'transparent',
               'padding' => '13px',
               'borderStyle' => 'solid',
               'borderWidth' => '3px',
               'borderColor' => '#aaaaaa',
-            ),
-          ),
-        ),
+             ],
+           ],
+         ],
         'footer' =>
-        array (
+         [
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => 'transparent',
-            ),
+             ],
             'text' =>
-            array (
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
+             ],
             'link' =>
-            array (
+             [
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'none',
-            ),
-          ),
+             ],
+           ],
           'type' => 'footer',
-        ),
+         ],
         'posts' =>
-        array (
+         [
           'amount' => '10',
           'withLayout' => true,
           'contentType' => 'post',
@@ -980,14 +980,14 @@ class FashionBlog {
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
           'readMoreButton' =>
-          array (
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1000,36 +1000,36 @@ class FashionBlog {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
           'divider' =>
-          array (
+           [
             'context' => 'posts.divider',
             'styles' =>
-            array (
+             [
               'block' =>
-              array (
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
+         ],
         'social' =>
-        array (
+         [
           'iconSet' => 'full-symbol-black',
           'icons' =>
-          array (
+           [
             0 =>
-            array (
+             [
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
@@ -1037,9 +1037,9 @@ class FashionBlog {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
-            ),
+             ],
             1 =>
-            array (
+             [
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
@@ -1047,9 +1047,9 @@ class FashionBlog {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
-            ),
+             ],
             2 =>
-            array (
+             [
               'type' => 'socialIcon',
               'iconType' => 'instagram',
               'link' => 'http://instagram.com',
@@ -1057,48 +1057,48 @@ class FashionBlog {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Instagram',
-            ),
-          ),
+             ],
+           ],
           'type' => 'social',
-        ),
+         ],
         'spacer' =>
-        array (
+         [
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => 'transparent',
               'height' => '170px',
-            ),
-          ),
+             ],
+           ],
           'type' => 'spacer',
-        ),
+         ],
         'header' =>
-        array (
+         [
           'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
           'styles' =>
-          array (
+           [
             'block' =>
-            array (
+             [
               'backgroundColor' => 'transparent',
-            ),
+             ],
             'text' =>
-            array (
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
+             ],
             'link' =>
-            array (
+             [
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'underline',
-            ),
-          ),
+             ],
+           ],
           'type' => 'header',
-        ),
-      ),
-    );
+         ],
+       ],
+    ];
   }
 
 }

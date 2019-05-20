@@ -17,56 +17,56 @@ class AccessControl {
   const ALL_ROLES_ACCESS = 'mailpoet_all_roles_access';
 
   function getDefaultPermissions() {
-    return array(
+    return [
       self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPFunctions::get()->applyFilters(
         'mailpoet_permission_access_plugin_admin',
-        array(
+        [
           'administrator',
-          'editor'
-        )
+          'editor',
+        ]
       ),
       self::PERMISSION_MANAGE_SETTINGS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_settings',
-        array(
-          'administrator'
-        )
+        [
+          'administrator',
+        ]
       ),
       self::PERMISSION_MANAGE_FEATURES => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_features',
-        array(
-          'administrator'
-        )
+        [
+          'administrator',
+        ]
       ),
       self::PERMISSION_MANAGE_EMAILS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_emails',
-        array(
+        [
           'administrator',
-          'editor'
-        )
+          'editor',
+        ]
       ),
       self::PERMISSION_MANAGE_SUBSCRIBERS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_subscribers',
-        array(
-          'administrator'
-        )
+        [
+          'administrator',
+        ]
       ),
       self::PERMISSION_MANAGE_FORMS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_forms',
-        array(
-          'administrator'
-        )
+        [
+          'administrator',
+        ]
       ),
       self::PERMISSION_MANAGE_SEGMENTS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_segments',
-        array(
-          'administrator'
-        )
+        [
+          'administrator',
+        ]
       ),
-    );
+    ];
   }
 
   function getPermissionLabels() {
-    return array(
+    return [
       self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPFunctions::get()->__('Admin menu item', 'mailpoet'),
       self::PERMISSION_MANAGE_SETTINGS => WPFunctions::get()->__('Manage settings', 'mailpoet'),
       self::PERMISSION_MANAGE_FEATURES => WPFunctions::get()->__('Manage features', 'mailpoet'),
@@ -74,7 +74,7 @@ class AccessControl {
       self::PERMISSION_MANAGE_SUBSCRIBERS => WPFunctions::get()->__('Manage subscribers', 'mailpoet'),
       self::PERMISSION_MANAGE_FORMS => WPFunctions::get()->__('Manage forms', 'mailpoet'),
       self::PERMISSION_MANAGE_SEGMENTS => WPFunctions::get()->__('Manage segments', 'mailpoet'),
-    );
+    ];
   }
 
   function validatePermission($permission) {

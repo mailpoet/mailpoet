@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) exit;
 class SubscriberCustomField extends Model {
   public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
 
-  static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = []) {
     $custom_field = CustomField::findOne($data['custom_field_id']);
     if ($custom_field instanceof CustomField) {
       $custom_field = $custom_field->asArray();
@@ -43,10 +43,10 @@ class SubscriberCustomField extends Model {
       }
     }
 
-    return parent::_createOrUpdate($data, array(
+    return parent::_createOrUpdate($data, [
       'custom_field_id' => $data['custom_field_id'],
-      'subscriber_id' => $data['subscriber_id']
-    ));
+      'subscriber_id' => $data['subscriber_id'],
+    ]);
   }
 
   static function createMultiple($values) {

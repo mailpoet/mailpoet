@@ -61,7 +61,7 @@ class Scheduler {
   static function scheduleSubscriberWelcomeNotification($subscriber_id, $segments) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
     if (empty($newsletters)) return false;
-    $result = array();
+    $result = [];
     foreach ($newsletters as $newsletter) {
       if ($newsletter->event === 'segment' &&
         in_array($newsletter->segment, $segments)
@@ -118,7 +118,7 @@ class Scheduler {
     if (!empty($previously_scheduled_notification)) return;
     $sending_task = SendingTask::create();
     $sending_task->newsletter_id = $newsletter->id;
-    $sending_task->setSubscribers(array($subscriber_id));
+    $sending_task->setSubscribers([$subscriber_id]);
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
     $sending_task->priority = SendingQueue::PRIORITY_HIGH;
     $sending_task->scheduled_at = self::getScheduledTimeWithDelay(
@@ -132,7 +132,7 @@ class Scheduler {
     $sending_task = SendingTask::create();
     $sending_task->newsletter_id = $newsletter->id;
     if ($newsletter->sendTo === 'user' && $subscriber_id) {
-      $sending_task->setSubscribers(array($subscriber_id));
+      $sending_task->setSubscribers([$subscriber_id]);
     }
     if ($meta) {
       $sending_task->__set('meta', $meta);

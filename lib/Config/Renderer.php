@@ -28,11 +28,11 @@ class Renderer {
     $file_system = new TwigFileSystem(Env::$views_path);
     $this->renderer = new TwigEnv(
       $file_system,
-      array(
+      [
         'cache' => $this->detectCache(),
         'debug' => $this->debugging_enabled,
-        'auto_reload' => true
-      )
+        'auto_reload' => true,
+      ]
     );
 
     $this->assets_manifest_js = $this->getAssetManifest(Env::$assets_path . '/dist/js/manifest.json');
@@ -78,22 +78,22 @@ class Renderer {
   }
 
   function setupGlobalVariables() {
-    $this->renderer->addExtension(new Twig\Assets(array(
+    $this->renderer->addExtension(new Twig\Assets([
       'version' => Env::$version,
       'base_url' => Env::$base_url,
       'assets_url' => Env::$assets_url,
       'assets_manifest_js' => $this->assets_manifest_js,
-      'assets_manifest_css' => $this->assets_manifest_css
-    )));
+      'assets_manifest_css' => $this->assets_manifest_css,
+    ]));
   }
 
   function setupSyntax() {
-    $lexer = new TwigLexer($this->renderer, array(
-      'tag_comment' => array('<#', '#>'),
-      'tag_block' => array('<%', '%>'),
-      'tag_variable' => array('<%=', '%>'),
-      'interpolation' => array('%{', '}')
-    ));
+    $lexer = new TwigLexer($this->renderer, [
+      'tag_comment' => ['<#', '#>'],
+      'tag_block' => ['<%', '%>'],
+      'tag_variable' => ['<%=', '%>'],
+      'interpolation' => ['%{', '}'],
+    ]);
     $this->renderer->setLexer($lexer);
   }
 
@@ -107,7 +107,7 @@ class Renderer {
     }
   }
 
-  function render($template, $context = array()) {
+  function render($template, $context = []) {
     try {
       return $this->renderer->render($template, $context);
     } catch (\RuntimeException $e) {

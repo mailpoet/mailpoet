@@ -43,14 +43,14 @@ class Newsletter {
 
   private static function getLatestWPPost($post_ids) {
     $posts = new \WP_Query(
-      array(
+      [
         'post_type' => WPPosts::getTypes(),
         'post__in' => $post_ids,
         'posts_per_page' => 1,
         'ignore_sticky_posts' => true,
         'orderby' => 'post_date',
-        'order' => 'DESC'
-      )
+        'order' => 'DESC',
+      ]
     );
     return (!empty($posts->posts[0])) ?
       $posts->posts[0]->to_array() :

@@ -15,11 +15,11 @@ class FormsTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Forms::class);
-    $this->form_1 = Form::createOrUpdate(array('name' => 'Form 1'));
-    $this->form_2 = Form::createOrUpdate(array('name' => 'Form 2'));
-    $this->form_3 = Form::createOrUpdate(array('name' => 'Form 3'));
-    Segment::createOrUpdate(array('name' => 'Segment 1'));
-    Segment::createOrUpdate(array('name' => 'Segment 2'));
+    $this->form_1 = Form::createOrUpdate(['name' => 'Form 1']);
+    $this->form_2 = Form::createOrUpdate(['name' => 'Form 2']);
+    $this->form_3 = Form::createOrUpdate(['name' => 'Form 3']);
+    Segment::createOrUpdate(['name' => 'Segment 1']);
+    Segment::createOrUpdate(['name' => 'Segment 2']);
   }
 
   function testItCanGetAForm() {
@@ -27,11 +27,11 @@ class FormsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('This form does not exist.');
 
-    $response = $this->endpoint->get(array('id' => 'not_an_id'));
+    $response = $this->endpoint->get(['id' => 'not_an_id']);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('This form does not exist.');
 
-    $response = $this->endpoint->get(array('id' => $this->form_1->id));
+    $response = $this->endpoint->get(['id' => $this->form_1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Form::findOne($this->form_1->id)->asArray()
@@ -63,9 +63,9 @@ class FormsTest extends \MailPoetTest {
   }
 
   function testItCanSaveAForm() {
-    $form_data = array(
-      'name' => 'My first form'
-    );
+    $form_data = [
+      'name' => 'My first form',
+    ];
 
     $response = $this->endpoint->save(/* missing data */);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
@@ -121,7 +121,7 @@ class FormsTest extends \MailPoetTest {
     $trashed_form = Form::findOne($this->form_1->id);
     expect($trashed_form->deleted_at)->notNull();
 
-    $response = $this->endpoint->restore(array('id' => $this->form_1->id));
+    $response = $this->endpoint->restore(['id' => $this->form_1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Form::findOne($this->form_1->id)->asArray()
@@ -131,7 +131,7 @@ class FormsTest extends \MailPoetTest {
   }
 
   function testItCanTrashAForm() {
-    $response = $this->endpoint->trash(array('id' => $this->form_2->id));
+    $response = $this->endpoint->trash(['id' => $this->form_2->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Form::findOne($this->form_2->id)->asArray()
@@ -141,14 +141,14 @@ class FormsTest extends \MailPoetTest {
   }
 
   function testItCanDeleteAForm() {
-    $response = $this->endpoint->delete(array('id' => $this->form_3->id));
+    $response = $this->endpoint->delete(['id' => $this->form_3->id]);
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
   }
 
   function testItCanDuplicateAForm() {
-    $response = $this->endpoint->duplicate(array('id' => $this->form_1->id));
+    $response = $this->endpoint->duplicate(['id' => $this->form_1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Form::where('name', 'Copy of Form 1')->findOne()->asArray()
@@ -157,24 +157,24 @@ class FormsTest extends \MailPoetTest {
   }
 
   function testItCanBulkDeleteForms() {
-    $response = $this->endpoint->bulkAction(array(
+    $response = $this->endpoint->bulkAction([
       'action' => 'trash',
-      'listing' => array('group' => 'all')
-    ));
+      'listing' => ['group' => 'all'],
+    ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(3);
 
-    $response = $this->endpoint->bulkAction(array(
+    $response = $this->endpoint->bulkAction([
       'action' => 'delete',
-      'listing' => array('group' => 'trash')
-    ));
+      'listing' => ['group' => 'trash'],
+    ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(3);
 
-    $response = $this->endpoint->bulkAction(array(
+    $response = $this->endpoint->bulkAction([
       'action' => 'delete',
-      'listing' => array('group' => 'trash')
-    ));
+      'listing' => ['group' => 'trash'],
+    ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(0);
   }

@@ -26,19 +26,19 @@ class Form {
     $response = $this->api->processRoute();
     if ($response->status !== APIResponse::STATUS_OK) {
       return $this->url_helper->redirectBack(
-        array(
+        [
           'mailpoet_error' => ($form_id) ? $form_id : true,
-          'mailpoet_success' => null
-        )
+          'mailpoet_success' => null,
+        ]
       );
     } else {
       return (isset($response->meta['redirect_url'])) ?
         $this->url_helper->redirectTo($response->meta['redirect_url']) :
         $this->url_helper->redirectBack(
-          array(
+          [
             'mailpoet_success' => $form_id,
-            'mailpoet_error' => null
-          )
+            'mailpoet_error' => null,
+          ]
         );
     }
   }

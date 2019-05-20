@@ -6,25 +6,25 @@ use MailPoet\WP\Functions as WPFunctions;
 class ErrorResponse extends Response {
   public $errors;
 
-  function __construct($errors = array(), $meta = array(), $status = self::STATUS_NOT_FOUND) {
+  function __construct($errors = [], $meta = [], $status = self::STATUS_NOT_FOUND) {
     parent::__construct($status, $meta);
     $this->errors = $this->formatErrors($errors);
   }
 
   function getData() {
-    return (empty($this->errors)) ? null : array('errors' => $this->errors);
+    return (empty($this->errors)) ? null : ['errors' => $this->errors];
   }
 
-  function formatErrors($errors = array()) {
+  function formatErrors($errors = []) {
     return array_map(function($error, $message) {
       // sanitize SQL error
       if (preg_match('/^SQLSTATE/i', $message)) {
         $message = WPFunctions::get()->__('An unknown error occurred.', 'mailpoet');
       }
-      return array(
+      return [
         'error' => $error,
-        'message' => $message
-      );
+        'message' => $message,
+      ];
     }, array_keys($errors), array_values($errors));
   }
 }

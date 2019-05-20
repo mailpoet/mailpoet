@@ -13,20 +13,20 @@ class DeferredAdminNotices {
    * @param string $message
    */
   public function addNetworkAdminNotice($message) {
-    $notices = WPFunctions::get()->getOption(DeferredAdminNotices::OPTIONS_KEY_NAME, array());
-    $notices[] = array(
+    $notices = WPFunctions::get()->getOption(DeferredAdminNotices::OPTIONS_KEY_NAME, []);
+    $notices[] = [
       "message" => $message,
       "networkAdmin" => true,// if we'll need to display the notice to anyone else
-    );
+    ];
     WPFunctions::get()->updateOption(DeferredAdminNotices::OPTIONS_KEY_NAME, $notices);
   }
 
   public function printAndClean() {
-    $notices = WPFunctions::get()->getOption(DeferredAdminNotices::OPTIONS_KEY_NAME, array());
+    $notices = WPFunctions::get()->getOption(DeferredAdminNotices::OPTIONS_KEY_NAME, []);
 
     foreach ($notices as $notice) {
       $notice = new Notice(Notice::TYPE_WARNING, $notice["message"]);
-      WPFunctions::get()->addAction('network_admin_notices', array($notice, 'displayWPNotice'));
+      WPFunctions::get()->addAction('network_admin_notices', [$notice, 'displayWPNotice']);
     }
 
     if (!empty($notices)) {

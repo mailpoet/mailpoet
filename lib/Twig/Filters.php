@@ -14,7 +14,7 @@ class Filters extends AbstractExtension {
   }
 
   function getFilters() {
-    return array(
+    return [
       new TwigFilter(
         'intval',
         'intval'
@@ -22,7 +22,7 @@ class Filters extends AbstractExtension {
       new TwigFilter(
         'replaceLinkTags',
         'MailPoet\Util\Helpers::replaceLinkTags'
-      )
-    );
+      ),
+    ];
   }
 }

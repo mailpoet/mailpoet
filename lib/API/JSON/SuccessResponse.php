@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) exit;
 class SuccessResponse extends Response {
   public $data;
 
-  function __construct($data = array(), $meta = array(), $status = self::STATUS_OK) {
+  function __construct($data = [], $meta = [], $status = self::STATUS_OK) {
     parent::__construct($status, $meta);
     $this->data = $data;
   }
@@ -14,8 +14,8 @@ class SuccessResponse extends Response {
   function getData() {
     if ($this->data === null) return null;
 
-    return array(
-      'data' => $this->data
-    );
+    return [
+      'data' => $this->data,
+    ];
   }
 }

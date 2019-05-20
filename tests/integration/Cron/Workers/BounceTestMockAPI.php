@@ -7,10 +7,10 @@ class BounceTestMockAPI {
   function checkBounces(array $emails) {
     return array_map(
       function ($email) {
-        return array(
+        return [
           'address' => $email,
           'bounce' => preg_match('/(hard|soft)/', $email, $m) ? $m[1] : null,
-        );
+        ];
       },
       $emails
     );

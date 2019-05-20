@@ -27,7 +27,7 @@ class Emoji {
     // Loosely match the Emoji Unicode range.
     $regex = '/(&#x[2-3][0-9a-f]{3};|&#x1f[1-6][0-9a-f]{2};)/';
 
-    $matches = array();
+    $matches = [];
     if (preg_match_all($regex, $content, $matches)) {
       if (!empty($matches[1])) {
         foreach ($matches[1] as $emoji) {

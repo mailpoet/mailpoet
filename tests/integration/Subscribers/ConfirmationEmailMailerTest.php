@@ -35,13 +35,13 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
 
     $segment = Segment::createOrUpdate(
-      array(
-        'name' => 'Test segment'
-      )
+      [
+        'name' => 'Test segment',
+      ]
     );
     SubscriberSegment::subscribeToSegments(
       $subscriber,
-      array($segment->id)
+      [$segment->id]
     );
 
     $sender->sendConfirmationEmail($subscriber);

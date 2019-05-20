@@ -9,27 +9,27 @@ class AssetsTest extends \MailPoetTest {
     $this->assets_url = 'https://www.testing.com/wp-content/plugins/mailpoet/assets';
     $this->version = '1.2.3';
     $this->assets_extension = new Assets(
-      array(
+      [
         'assets_url' => $this->assets_url,
         'assets_manifest_js' => false,
         'assets_manifest_css' => false,
-        'version' => $this->version
-      )
+        'version' => $this->version,
+      ]
     );
   }
 
   function testItGeneratesJavascriptTagsForAssetsUsinManifestFile() {
-    $manifest = array(
+    $manifest = [
       'script1.js' => 'script1.hash.js',
-      'script2.js' => 'script2.hash.js'
-    );
+      'script2.js' => 'script2.hash.js',
+    ];
 
     $assets_extension = new Assets(
-      array(
+      [
         'assets_url' => $this->assets_url,
         'assets_manifest_js' => $manifest,
-        'version' => $this->version
-      )
+        'version' => $this->version,
+      ]
     );
 
     expect($assets_extension->generateJavascript('script1.js', 'script2.js'))->equals(
@@ -48,17 +48,17 @@ class AssetsTest extends \MailPoetTest {
   }
 
   function testItGeneratesStylesheetTagsForAssetsUsingManifestFile() {
-    $manifest = array(
+    $manifest = [
       'style1.css' => 'style1.hash.css',
-      'style2.css' => 'style2.hash.css'
-    );
+      'style2.css' => 'style2.hash.css',
+    ];
 
     $assets_extension = new Assets(
-      array(
+      [
         'assets_url' => $this->assets_url,
         'assets_manifest_css' => $manifest,
-        'version' => $this->version
-      )
+        'version' => $this->version,
+      ]
     );
 
     expect($assets_extension->generateStylesheet('style1.css', 'style2.css'))->equals(
