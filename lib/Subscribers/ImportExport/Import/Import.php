@@ -260,8 +260,7 @@ class Import {
     );
     if (!$existing_trashed_records) return;
     $existing_trashed_records = Helpers::flattenArray($existing_trashed_records);
-    foreach (array_chunk($existing_trashed_records, self::DB_QUERY_CHUNK_SIZE) as
-            $subscriber_ids) {
+    foreach (array_chunk($existing_trashed_records, self::DB_QUERY_CHUNK_SIZE) as $subscriber_ids) {
       Subscriber::whereIn('id', $subscriber_ids)
         ->deleteMany();
       SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)

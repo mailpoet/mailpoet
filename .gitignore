@@ -29,3 +29,4 @@ lib/DI/CachedContainer.php
 prefixer/vendor
 prefixer/build
 docker-compose.override.yml
+tasks/code_sniffer/vendor
