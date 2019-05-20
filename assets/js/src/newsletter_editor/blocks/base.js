@@ -241,6 +241,7 @@ Module.BlockToolsView = AugmentedView.extend({
       App.getChannel().trigger('hideSettings');
       return;
     }
+    document.activeElement.blur();
     App.getChannel().trigger('settingsDisplayed', this.model.cid);
     (new ViewType(_.extend({ model: this.model }, options || {}))).render();
   },

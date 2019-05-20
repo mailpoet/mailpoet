@@ -48,6 +48,7 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
     })
       .on('resizestart', function resizestart() {
         that.view.model.trigger('startResizing');
+        document.activeElement.blur();
       }).on('resizemove', function resizemove(event) {
         var onResize = that.options.onResize.bind(that);
         return onResize(event);
