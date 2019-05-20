@@ -1,9 +1,35 @@
+import jQuery from 'jquery';
 import React from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import ReactStringReplace from 'react-string-replace';
 
 class FeatureAnnouncement extends React.Component {
+  static updateLastAnnouncementSeenValue() {
+    const data = { last_announcement_seen: Math.floor(Date.now() / 1000) };
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'user_flags',
+      action: 'set',
+      data,
+    });
+  }
+
+  static showPluginUpdateNotice() {
+    if (!window.mailpoet_update_available || document.getElementById('mailpoet_update_notice')) {
+      return;
+    }
+    const updateMailPoetNotice = ReactStringReplace(
+      MailPoet.I18n.t('updateMailPoetNotice'),
+      /\[link\](.*?)\[\/link\]/,
+      match => `<a href="update-core.php">${match}</a>`
+    ).join('');
+    jQuery('#beamerOverlay').append(
+      `<p id="mailpoet_update_notice" class="mailpoet_in_beamer_update_notice">${updateMailPoetNotice}</p>`
+    );
+  }
+
   constructor(props) {
     super(props);
     this.loadBeamer = this.loadBeamer.bind(this);
@@ -53,13 +79,8 @@ class FeatureAnnouncement extends React.Component {
     this.setState({ showDot: false });
     MailPoet.Modal.loading(false);
     window.Beamer.show();
-    const data = { last_announcement_seen: Math.floor(Date.now() / 1000) };
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'user_flags',
-      action: 'set',
-      data,
-    });
+    FeatureAnnouncement.updateLastAnnouncementSeenValue();
+    FeatureAnnouncement.showPluginUpdateNotice();
   }
 
   render() {

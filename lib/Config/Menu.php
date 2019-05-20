@@ -677,6 +677,7 @@ class Menu {
     $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = $this->woocommerce_helper->isWooCommerceActive();
+    $data['is_mailpoet_update_available'] = array_key_exists(Env::$plugin_path, $this->wp->getPluginUpdates());
 
     $user_id = $data['current_wp_user']['ID'];
 

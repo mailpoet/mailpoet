@@ -23,3 +23,34 @@
   top: -4px;
   width: 10px;
 }
+
+.mailpoet_in_beamer_update_notice {
+  background: #f00;
+  bottom: 0;
+  box-sizing: border-box;
+  color: #fff;
+  font-size: 20px;
+  margin: 0;
+  padding: 20px 10px;
+  position: fixed;
+  right: -400px;
+  text-align: center;
+  transition: right .2s ease-in;
+  width: 400px;
+  z-index: 10000000000; // really has to be this high
+
+  a {
+    color: #fff;
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+
+  .beamer_show & {
+    right: 0;
+  }
+}

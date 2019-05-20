@@ -42,6 +42,7 @@ class Env {
     self::$file = $file;
     self::$path = dirname(self::$file);
     self::$plugin_name = 'mailpoet';
+    self::$plugin_path = 'mailpoet/mailpoet.php';
     self::$base_url = WPFunctions::get()->pluginsUrl('', $file);
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';

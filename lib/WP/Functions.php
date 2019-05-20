@@ -209,6 +209,10 @@ class Functions {
     return get_plugin_page_hook($plugin_page, $parent_page);
   }
 
+  function getPluginUpdates() {
+    return get_plugin_updates();
+  }
+
   function getPlugins($plugin_folder = '') {
     return get_plugins($plugin_folder);
   }
