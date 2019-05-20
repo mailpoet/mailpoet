@@ -7,6 +7,8 @@
   <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
   <!-- Disallows assignments in if, elseif and do-while loop conditions -->
   <rule ref="SlevomatCodingStandard.ControlStructures.AssignmentInCondition"/>
+  <!-- Disallows use of continue without integer operand in switch because it emits a warning in PHP 7.3 and higher. -->
+  <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
   <!-- Control structures must have at least one statement in the body -->
   <!--<rule ref="Generic.CodeAnalysis.EmptyStatement"/>-->
   <!-- For loops with only second expression should be while loops -->
