@@ -5,6 +5,8 @@
 
   <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
   <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>
+  <!-- Reports empty comments -->
+  <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
   <!-- This sniff enforces trailing commas in multi-line arrays -->
   <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
   <!-- Disallows assignments in if, elseif and do-while loop conditions -->

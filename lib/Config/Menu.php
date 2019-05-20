@@ -395,7 +395,6 @@ class Menu {
       'mailpoet-experimental',
       [$this, 'experimentalFeatures']
     );
-    //
   }
 
   function disableWPEmojis() {
