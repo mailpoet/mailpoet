@@ -56,6 +56,10 @@ const CronStatus = (props) => {
             key: MailPoet.I18n.t('lastSeenError'),
             value: lastError || MailPoet.I18n.t('none'),
           },
+          {
+            key: MailPoet.I18n.t('lastSeenErrorDate'),
+            value: status.last_error_date ? MailPoet.Date.full(status.last_error_date * 1000) : MailPoet.I18n.t('unknown'),
+          },
         ]}
       />
     </div>
