@@ -106,10 +106,12 @@ Module.ContainerBlocksView = Marionette.CollectionView.extend({
     this.triggerMethod('resizeStop', event);
   },
   removeFocusFromAnyActiveElement: function removeFocusFromAnyActiveElement(event) {
+    var elementClass;
     if (!event || !event.target) {
       return;
     }
-    if (event.target.className.indexOf('mailpoet_container_horizontal') === -1) {
+    elementClass = event.target.getAttribute('class');
+    if (elementClass && elementClass.indexOf('mailpoet_container_horizontal') === -1) {
       return;
     }
     document.activeElement.blur();
