@@ -313,7 +313,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function qaLint() {
-    return $this->_exec('./tasks/php_lint.sh lib/ tests/ mailpoet.php');
+    return $this->_exec('vendor/bin/parallel-lint lib/ tests/ mailpoet.php');
   }
 
   function qaLintJavascript() {

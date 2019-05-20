@@ -31,6 +31,8 @@
     "goaop/framework": "2.1.2",
     "guzzlehttp/guzzle": "6.3.3",
     "henrikbjorn/lurker": "^1.2",
+    "jakub-onderka/php-console-highlighter": "^0.4.0",
+    "jakub-onderka/php-parallel-lint": "^1.0",
     "kint-php/kint": "^3.0",
     "lucatume/wp-browser": "2.2.0",
     "phpcompatibility/php-compatibility": "^9.0",
