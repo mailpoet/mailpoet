@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.26.0
+Stable tag: 3.26.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -173,6 +173,13 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.26.1 - 2019-05-21 =
+* Added: Woo Commerce customers now have their own list;
+* Improved: users can now scroll through newsletter content while settings sidebar is open;
+* Fixed: sign-up confirmation no longer overwritten by default sender on page refresh;
+* Fixed: edge cases where blank post notification emails were being sent;
+* Fixed: imported subscribers from MP2 no longer marked inactive by default.
 
 = 3.26.0 - 2019-05-14 =
 * Improved: minor change of default email confirmation text;
