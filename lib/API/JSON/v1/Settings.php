@@ -7,6 +7,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -66,6 +67,31 @@ class Settings extends APIEndpoint {
     if ($old_inactivation_interval !== $new_inactivation_interval) {
       $this->onInactiveSubscribersIntervalChange();
     }
+
+    // Sync WooCommerce Customers list
+    $old_subscribe_old_woocommerce_customers = isset($old_settings['mailpoet_subscribe_old_woocommerce_customers']['enabled'])
+      ? $old_settings['mailpoet_subscribe_old_woocommerce_customers']['enabled']
+      : '0';
+    $new_subscribe_old_woocommerce_customers = isset($new_settings['mailpoet_subscribe_old_woocommerce_customers']['enabled'])
+      ? $new_settings['mailpoet_subscribe_old_woocommerce_customers']['enabled']
+      : '0';
+    if ($old_subscribe_old_woocommerce_customers !== $new_subscribe_old_woocommerce_customers) {
+      $this->onSubscribeOldWoocommerceCustomersChange();
+    }
+  }
+
+  private function onSubscribeOldWoocommerceCustomersChange() {
+    $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)
+      ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
+      ->findOne();
+    if (!$task) {
+      $task = ScheduledTask::create();
+      $task->type = WooCommerceSync::TASK_TYPE;
+      $task->status = ScheduledTask::STATUS_SCHEDULED;
+    }
+    $datetime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduled_at = $datetime->subMinute();
+    $task->save();
   }
 
   private function onInactiveSubscribersIntervalChange() {
