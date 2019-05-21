@@ -51,8 +51,8 @@ class ImportExportFactory {
       $fields = array_merge(
         $fields,
         [
-          'list_status' => WPFunctions::get()->x('List status', 'Subscription status', 'mailpoet'),
-          'global_status' => WPFunctions::get()->x('Global status', 'Subscription status', 'mailpoet'),
+          'list_status' => WPFunctions::get()->_x('List status', 'Subscription status', 'mailpoet'),
+          'global_status' => WPFunctions::get()->_x('Global status', 'Subscription status', 'mailpoet'),
           'subscribed_ip' => WPFunctions::get()->__('IP address', 'mailpoet'),
         ]
       );

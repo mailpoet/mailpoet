@@ -200,7 +200,7 @@ EOL;
     // get forms list
     $forms = Form::getPublished()->orderByAsc('name')->findArray();
     ?><p>
-      <label for="<?php $this->get_field_id( 'title' ) ?>"><?php WPFunctions::get()->e('Title:', 'mailpoet'); ?></label>
+      <label for="<?php $this->get_field_id( 'title' ) ?>"><?php WPFunctions::get()->_e('Title:', 'mailpoet'); ?></label>
       <input
         type="text"
         class="widefat"
@@ -220,7 +220,7 @@ EOL;
       </select>
     </p>
     <p>
-      <a href="javascript:;" onClick="createSubscriptionForm()" class="mailpoet_form_new"><?php WPFunctions::get()->e('Create a new form', 'mailpoet'); ?></a>
+      <a href="javascript:;" onClick="createSubscriptionForm()" class="mailpoet_form_new"><?php WPFunctions::get()->_e('Create a new form', 'mailpoet'); ?></a>
     </p>
     <script type="text/javascript">
     function createSubscriptionForm() {

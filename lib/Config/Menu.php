@@ -156,7 +156,7 @@ class Menu {
     // add limit per page to screen options
     $this->wp->addAction('load-' . $newsletters_page, function() {
       $this->wp->addScreenOption('per_page', [
-        'label' => $this->wp->x(
+        'label' => $this->wp->_x(
           'Number of newsletters per page',
           'newsletters per page (screen options)',
           'mailpoet'
@@ -194,7 +194,7 @@ class Menu {
     // add limit per page to screen options
     $this->wp->addAction('load-' . $forms_page, function() {
       $this->wp->addScreenOption('per_page', [
-        'label' => $this->wp->x(
+        'label' => $this->wp->_x(
           'Number of forms per page',
           'forms per page (screen options)',
           'mailpoet'
@@ -232,7 +232,7 @@ class Menu {
     // add limit per page to screen options
     $this->wp->addAction('load-' . $subscribers_page, function() {
       $this->wp->addScreenOption('per_page', [
-        'label' => $this->wp->x(
+        'label' => $this->wp->_x(
           'Number of subscribers per page',
           'subscribers per page (screen options)',
           'mailpoet'
@@ -283,7 +283,7 @@ class Menu {
     // add limit per page to screen options
     $this->wp->addAction('load-' . $segments_page, function() {
       $this->wp->addScreenOption('per_page', [
-        'label' => $this->wp->x(
+        'label' => $this->wp->_x(
           'Number of segments per page',
           'segments per page (screen options)',
           'mailpoet'
