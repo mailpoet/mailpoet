@@ -105,10 +105,6 @@ class Functions {
     return admin_url($path, $scheme);
   }
 
-  function arrayReplaceRecursive(array $base = [], array $replacements = []) {
-    return array_replace_recursive($base, $replacements);
-  }
-
   function currentFilter() {
     return current_filter();
   }
