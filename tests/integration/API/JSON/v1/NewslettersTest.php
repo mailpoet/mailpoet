@@ -49,6 +49,17 @@ class NewslettersTest extends \MailPoetTest {
         'body' => Fixtures::get('newsletter_body_template'),
         'type' => Newsletter::TYPE_NOTIFICATION,
       ]);
+
+    NewsletterOptionField::createOrUpdate(
+      [
+        'name' => 'isScheduled',
+        'newsletter_type' => 'standard',
+      ]);
+    NewsletterOptionField::createOrUpdate(
+      [
+        'name' => 'scheduledAt',
+        'newsletter_type' => 'standard',
+      ]);
   }
 
   function testItKeepsUnsentNewslettersAtTheTopWhenSortingBySentAtDate() {
