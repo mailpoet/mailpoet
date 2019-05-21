@@ -411,8 +411,17 @@ class Newsletter extends Model {
       $options = NewsletterOption::where('newsletter_id', $this->id)
         ->findMany();
 
+      $ignored_option_field_ids = Helpers::flattenArray(
+        NewsletterOptionField::whereIn('name', ['isScheduled', 'scheduledAt'])
+          ->select('id')
+          ->findArray()
+      );
+
       if (!empty($options)) {
         foreach ($options as $option) {
+          if (in_array($option->option_field_id, $ignored_option_field_ids)) {
+            continue;
+          }
           $relation = NewsletterOption::create();
           $relation->newsletter_id = $duplicate->id;
           $relation->option_field_id = $option->option_field_id;
