@@ -54,15 +54,15 @@ class Functions {
     return __($text, $domain);
   }
 
-  function e($text, $domain = 'default') {
+  function _e($text, $domain = 'default') {
     return _e($text, $domain);
   }
 
-  function n($single, $plural, $number, $domain = 'default') {
+  function _n($single, $plural, $number, $domain = 'default') {
     return _n($single, $plural, $number, $domain);
   }
 
-  function x($text, $context, $domain = 'default') {
+  function _x($text, $context, $domain = 'default') {
     return _x($text, $context, $domain);
   }
 

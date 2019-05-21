@@ -84,7 +84,7 @@ class API {
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
     if (!$found_segments) {
-      $exception = WPFunctions::get()->n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
+      $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
       throw new \Exception($exception);
     }
 
@@ -104,7 +104,7 @@ class API {
     if (count($found_segments_ids) !== count($segments_ids)) {
       $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
       $exception = sprintf(
-        WPFunctions::get()->n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
+        WPFunctions::get()->_n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
         implode(', ', $missing_ids)
       );
       throw new \Exception(sprintf($exception, implode(', ', $missing_ids)));
@@ -152,7 +152,7 @@ class API {
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
     if (!$found_segments) {
-      $exception = WPFunctions::get()->n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
+      $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
       throw new \Exception($exception);
     }
 
@@ -172,7 +172,7 @@ class API {
     if (count($found_segments_ids) !== count($segments_ids)) {
       $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
       $exception = sprintf(
-        WPFunctions::get()->n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
+        WPFunctions::get()->_n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
         implode(', ', $missing_ids)
       );
       throw new \Exception($exception);
