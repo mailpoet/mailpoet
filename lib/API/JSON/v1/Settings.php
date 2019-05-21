@@ -40,17 +40,15 @@ class Settings extends APIEndpoint {
             WPFunctions::get()->__('You have not specified any settings to be saved.', 'mailpoet'),
         ]);
     } else {
-      $original_inactivation_interval = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
+      $old_settings = $this->settings->getAll();
       // Will be uncommented on task [MAILPOET-1998]
       // $signup_confirmation = $this->settings->get('signup_confirmation.enabled');
       foreach ($settings as $name => $value) {
         $this->settings->set($name, $value);
       }
-      if (isset($settings['deactivate_subscriber_after_inactive_days'])
-        && $original_inactivation_interval !== (int)$settings['deactivate_subscriber_after_inactive_days']
-      ) {
-        $this->onInactiveSubscribersIntervalChange();
-      }
+
+      $this->onSettingsChange($old_settings, $this->settings->getAll());
+
       $bridge = new Bridge();
       $bridge->onSettingsSave($settings);
       // Will be uncommented on task [MAILPOET-1998]
@@ -58,6 +56,15 @@ class Settings extends APIEndpoint {
       //   Form::updateSuccessMessages();
       // }
       return $this->successResponse($this->settings->getAll());
+    }
+  }
+
+  private function onSettingsChange($old_settings, $new_settings) {
+    // Recalculate inactive subscribers
+    $old_inactivation_interval = $old_settings['deactivate_subscriber_after_inactive_days'];
+    $new_inactivation_interval = $new_settings['deactivate_subscriber_after_inactive_days'];
+    if ($old_inactivation_interval !== $new_inactivation_interval) {
+      $this->onInactiveSubscribersIntervalChange();
     }
   }
 
