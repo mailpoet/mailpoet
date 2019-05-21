@@ -35,7 +35,7 @@ class SettingsController {
       }
     }
     if (is_array($setting) && is_array($default)) {
-      return WPFunctions::get()->arrayReplaceRecursive($default, $setting);
+      return array_replace_recursive($default, $setting);
     }
     return $setting;
   }
@@ -85,7 +85,7 @@ class SettingsController {
 
   function getAll() {
     $this->ensureLoaded();
-    return WPFunctions::get()->arrayReplaceRecursive($this->getAllDefaults(), self::$settings);
+    return array_replace_recursive($this->getAllDefaults(), self::$settings);
   }
 
   function set($key, $value) {
