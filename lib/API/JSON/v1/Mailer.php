@@ -61,4 +61,9 @@ class Mailer extends APIEndpoint {
     MailerLog::resumeSending();
     return $this->successResponse(null);
   }
+
+  function getAuthorizedEmailAddresses() {
+    $authorized_emails = $this->bridge->getAuthorizedEmailAddresses();
+    return $this->successResponse($authorized_emails);
+  }
 }
