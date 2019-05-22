@@ -8,9 +8,8 @@
  * its placeholder into editor text.
  */
 
-/* jshint unused:false */
-/* global tinymce:true */
-tinymce.PluginManager.add('mailpoet_shortcodes', function tinyMceAdd(editor) {
+
+function tinyMceAdd(editor) {
   var appendLabelAndClose = function appendLabelAndCLose(shortcode) {
     editor.insertContent(shortcode);
     editor.windowManager.close();
@@ -56,4 +55,6 @@ tinymce.PluginManager.add('mailpoet_shortcodes', function tinyMceAdd(editor) {
       });
     },
   });
-});
+}
+
+export default tinyMceAdd;

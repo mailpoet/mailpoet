@@ -7,6 +7,7 @@ import Marionette from 'backbone.marionette';
 import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 import App from 'newsletter_editor/App';
 import tinymce from 'tinymce/tinymce';
+import tinymceMailpoetShortcodes from 'newsletter_editor/tinymce/mailpoet_shortcodes.js';
 
 // TinyMCE theme and plugins
 import 'tinymce/themes/modern';
@@ -44,7 +45,8 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
       return;
     }
 
-    this.$(this.options.selector).tinymce(this.options.configurationFilter({
+    tinymce.PluginManager.add('mailpoet_shortcodes', tinymceMailpoetShortcodes);
+
     tinymce.init(this.options.configurationFilter({
       target: this.el.querySelector(this.options.selector),
       inline: true,
