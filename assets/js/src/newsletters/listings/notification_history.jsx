@@ -57,7 +57,7 @@ let newsletterActions = [
   },
 ];
 
-Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', StatisticsMixin.addStatsCTAAction);
+Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', 'mailpoet', StatisticsMixin.addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletterActions);
 
 const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-line react/prefer-es6-class, max-len

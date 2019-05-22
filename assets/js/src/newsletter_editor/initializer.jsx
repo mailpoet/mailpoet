@@ -82,4 +82,4 @@ const initializeEditor = (config) => {
     });
 };
 
-Hooks.addAction('mailpoet_newsletters_editor_initialize', initializeEditor);
+Hooks.addAction('mailpoet_newsletters_editor_initialize', 'mailpoet', initializeEditor);

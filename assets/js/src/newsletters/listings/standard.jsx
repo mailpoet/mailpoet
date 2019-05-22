@@ -169,7 +169,7 @@ let newsletterActions = [
   },
 ];
 
-Hooks.addFilter('mailpoet_newsletters_listings_standard_actions', StatisticsMixin.addStatsCTAAction);
+Hooks.addFilter('mailpoet_newsletters_listings_standard_actions', 'mailpoet', StatisticsMixin.addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletterActions);
 
 const NewsletterListStandard = createReactClass({ // eslint-disable-line react/prefer-es6-class
