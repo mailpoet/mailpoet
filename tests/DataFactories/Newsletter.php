@@ -144,6 +144,37 @@ class Newsletter {
   }
 
   /**
+   * @param array $products Array of products.
+   *  $products = [
+   *    [
+   *      'id' => (int) Product Id,
+   *      'name' => (string) Product name,
+   *    ], ...
+   *  ]
+   *  You can pass an array of products created by WooCommerceProduct factory
+   * @return Newsletter
+   */
+  public function withAutomaticTypeWooCommerceProductInCategoryPurchased(array $products = []) {
+    $this->data['type'] = 'automatic';
+
+    $options = [];
+    foreach ($products as $product) {
+      foreach ($product['categories'] as $category) {
+        $options[] = ['id' => $category['id'], 'name' => $category['name']];
+      }
+    }
+
+    $this->withOptions([
+      14 => 'woocommerce', // group
+      15 => 'woocommerce_product_purchased_in_category',
+      16 => 'user', // sendTo
+      19 => 'immediate', // afterTimeType
+      20 => json_encode(['option' => $options]),
+    ]);
+    return $this;
+  }
+
+  /**
    * @param array $options
    *
    * @return Newsletter
