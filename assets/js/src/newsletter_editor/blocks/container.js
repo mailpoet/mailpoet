@@ -111,7 +111,7 @@ Module.ContainerBlocksView = Marionette.CollectionView.extend({
       return;
     }
     elementClass = event.target.getAttribute('class');
-    if (elementClass && elementClass.indexOf('mailpoet_container_horizontal') === -1) {
+    if (!elementClass || elementClass.indexOf('mailpoet_container_horizontal') === -1) {
       return;
     }
     document.activeElement.blur();
