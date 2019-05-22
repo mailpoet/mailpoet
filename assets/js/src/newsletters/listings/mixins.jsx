@@ -208,7 +208,7 @@ const StatisticsMixin = {
     }
 
     let params = {};
-    Hooks.addFilter('mailpoet_newsletters_listing_stats_before', StatisticsMixin.addStatsCTALink);
+    Hooks.addFilter('mailpoet_newsletters_listing_stats_before', 'mailpoet', StatisticsMixin.addStatsCTALink);
     params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
 
     // welcome emails provide explicit total_sent value
