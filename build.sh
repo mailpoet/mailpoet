@@ -120,26 +120,6 @@ rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/demo
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/captcha4.ttf # big font
 rm -f $plugin_name/assets/js/lib/tinymce/package.json
 
-# Remove unused TinyMCE files
-echo '[BUILD] Removing unused TinyMCE files'
-rm -f $plugin_name/assets/js/lib/tinymce/bower.json
-rm -f $plugin_name/assets/js/lib/tinymce/changelog.txt
-rm -f $plugin_name/assets/js/lib/tinymce/composer.json
-rm -f $plugin_name/assets/js/lib/tinymce/jquery.tinymce.js
-rm -f $plugin_name/assets/js/lib/tinymce/license.txt
-rm -f $plugin_name/assets/js/lib/tinymce/package.json
-rm -f $plugin_name/assets/js/lib/tinymce/readme.md
-rm -f $plugin_name/assets/js/lib/tinymce/tinymce.js
-rm -f $plugin_name/assets/js/lib/tinymce/tinymce.jquery.js
-rm -f $plugin_name/assets/js/lib/tinymce/tinymce.jquery.min.js
-
-# Remove all TinyMCE plugins except code, link, lists, paste, textcolor, and colorpicker
-find $findPreArgs $plugin_name/assets/js/lib/tinymce/plugins -mindepth 1 -type d $findMidArgs -not -iregex ".*\/(code|link|lists|paste|textcolor|colorpicker)" -print0 | xargs -0 rm -rf
-
-# Remove all non-minimized TinyMCE plugin & theme files
-rm -rf $plugin_name/assets/js/lib/tinymce/plugins/*/plugin.js
-rm -rf $plugin_name/assets/js/lib/tinymce/themes/*/theme.js
-
 # Copy release files.
 echo '[BUILD] Copying release files'
 cp license.txt $plugin_name
