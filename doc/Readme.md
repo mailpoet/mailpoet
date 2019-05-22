@@ -1,0 +1,33 @@
+# MailPoet 3 - Documentation for Integrators
+
+This is a place where we put documentation for developers who want to build an extension for MailPoet 3 plugin.
+If you are a user looking for a user guide please visit our [knowledge base](https://kb.mailpoet.com/).
+
+## MailPoet API
+MailPoet API is the officially supported way to integrate with MailPoet3 plugin. It focuses on functionality for managing subscribers.
+
+### Basics
+MailPoet API is distributed within MailPoet3 plugin and it is implemented as a PHP class.
+Currently supported version is `v1` and it works with PHP version 5.6 and higher.
+
+### Instantiation
+```php
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+}
+```
+Class `\MailPoet\API\API` becomes available once MailPoet plugin is loaded by WordPress.
+
+### Available API Methods
+* [Add List (addList)](api_methods/AddList.md)
+* [Add Subscriber (addSubscriber)](api_methods/AddSubscriber.md)
+* [Get Lists (getLists)](api_methods/GetLists.md)
+* [Get Subscriber (getSubscriber)](api_methods/GetSubscriber.md)
+* [Get Subscriber Fields (getSubscriberFields)](api_methods/GetSubscriberFields.md)
+* [Subscribe to List (subscribeToList)](api_methods/SubscribeToList.md)
+* [Subscribe to List (subscribeToLists)](api_methods/SubscribeToLists.md)
+* [Unsubscribe from List (unsubscribeFromList)](api_methods/UnsubscribeFromList.md)
+* [Unsubscribe from Lists (unsubscribeFromLists)](api_methods/UnsubscribeFromLists.md)
+
+### Usage examples
+You can check some basic examples [here](UsageExamples.md).
