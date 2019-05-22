@@ -6,6 +6,16 @@
 import Marionette from 'backbone.marionette';
 import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 import App from 'newsletter_editor/App';
+import tinymce from 'tinymce/tinymce';
+
+// TinyMCE theme and plugins
+import 'tinymce/themes/modern';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/colorpicker';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/lists';
+import 'tinymce/plugins/paste';
+import 'tinymce/plugins/textcolor';
 
 var BL = BehaviorsLookup;
 
@@ -35,6 +45,8 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
     }
 
     this.$(this.options.selector).tinymce(this.options.configurationFilter({
+    tinymce.init(this.options.configurationFilter({
+      target: this.el.querySelector(this.options.selector),
       inline: true,
 
       menubar: false,

@@ -4,15 +4,19 @@ var sinonChai = require('sinon-chai');
 var chaiJq = require('chai-jq');
 var _ = require('underscore');
 var jsdom = require('jsdom/lib/old-api.js').jsdom;
+var URL = require('url').URL;
 
 chai.use(sinonChai);
 chai.use(chaiJq);
 
 global.expect = chai.expect;
 global.sinon = sinon;
+global.URL = URL;
 
 if (!global.document || !global.window) {
-  global.document = jsdom('<html><head><script></script></head><body></body></html>', {}, {
+  global.document = jsdom('<html><head><script></script></head><body></body></html>', {
+    url: 'http://example.com',
+  }, {
     FetchExternalResources: ['script'],
     ProcessExternalResources: ['script'],
     MutationEvents: '2.0',

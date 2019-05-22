@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const webpackManifestPlugin = require('webpack-manifest-plugin');
 const webpackCleanPlugin = require('clean-webpack-plugin');
 const webpackTerserPlugin = require('terser-webpack-plugin');
+const webpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
@@ -277,6 +278,16 @@ const adminConfig = {
     form_editor: 'form_editor/webpack_index.jsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
   },
+  plugins: [
+    ...baseConfig.plugins,
+
+    new webpackCopyPlugin([
+      {
+        from: 'node_modules/tinymce/skins/lightgray',
+        to: 'skins/lightgray'
+      },
+    ])
+  ],
   optimization: {
     runtimeChunk: {
       name: 'vendor',
@@ -315,7 +326,6 @@ const adminConfig = {
   },
   externals: {
     'jquery': 'jQuery',
-    'tinymce': 'tinymce'
   }
 };
 
@@ -414,7 +424,6 @@ const testConfig = {
   },
   externals: {
     'jquery': 'jQuery',
-    'tinymce': 'tinymce',
     'interact': 'interact',
     'spectrum': 'spectrum',
   }
