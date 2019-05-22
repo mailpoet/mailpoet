@@ -63,15 +63,15 @@ class API {
     return $data;
   }
 
-  function subscribeToList($subscriber_id, $segment_id, $options = []) {
-    return $this->subscribeToLists($subscriber_id, [$segment_id], $options);
+  function subscribeToList($subscriber_id, $list_id, $options = []) {
+    return $this->subscribeToLists($subscriber_id, [$list_id], $options);
   }
 
-  function subscribeToLists($subscriber_id, array $segments_ids, $options = []) {
+  function subscribeToLists($subscriber_id, array $list_ids, $options = []) {
     $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
     $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
 
-    if (empty($segments_ids)) {
+    if (empty($list_ids)) {
       throw new \Exception(__('At least one segment ID is required.', 'mailpoet'));
     }
 
@@ -82,9 +82,9 @@ class API {
     }
 
     // throw exception when none of the segments exist
-    $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
+    $found_segments = Segment::whereIn('id', $list_ids)->findMany();
     if (!$found_segments) {
-      $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
+      $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($list_ids), 'mailpoet');
       throw new \Exception($exception);
     }
 
@@ -104,8 +104,8 @@ class API {
     }
 
     // throw an exception when one or more segments do not exist
-    if (count($found_segments_ids) !== count($segments_ids)) {
-      $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
+    if (count($found_segments_ids) !== count($list_ids)) {
+      $missing_ids = array_values(array_diff($list_ids, $found_segments_ids));
       $exception = sprintf(
         WPFunctions::get()->_n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
         implode(', ', $missing_ids)
@@ -137,12 +137,12 @@ class API {
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 
-  function unsubscribeFromList($subscriber_id, $segment_id) {
-    return $this->unsubscribeFromLists($subscriber_id, [$segment_id]);
+  function unsubscribeFromList($subscriber_id, $list_id) {
+    return $this->unsubscribeFromLists($subscriber_id, [$list_id]);
   }
 
-  function unsubscribeFromLists($subscriber_id, array $segments_ids) {
-    if (empty($segments_ids)) {
+  function unsubscribeFromLists($subscriber_id, array $list_ids) {
+    if (empty($list_ids)) {
       throw new \Exception(__('At least one segment ID is required.', 'mailpoet'));
     }
 
@@ -153,9 +153,9 @@ class API {
     }
 
     // throw exception when none of the segments exist
-    $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
+    $found_segments = Segment::whereIn('id', $list_ids)->findMany();
     if (!$found_segments) {
-      $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($segments_ids), 'mailpoet');
+      $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($list_ids), 'mailpoet');
       throw new \Exception($exception);
     }
 
@@ -172,8 +172,8 @@ class API {
     }
 
     // throw an exception when one or more segments do not exist
-    if (count($found_segments_ids) !== count($segments_ids)) {
-      $missing_ids = array_values(array_diff($segments_ids, $found_segments_ids));
+    if (count($found_segments_ids) !== count($list_ids)) {
+      $missing_ids = array_values(array_diff($list_ids, $found_segments_ids));
       $exception = sprintf(
         WPFunctions::get()->_n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
         implode(', ', $missing_ids)
@@ -190,7 +190,7 @@ class API {
       ->findArray();
   }
 
-  function addSubscriber(array $subscriber, $segments = [], $options = []) {
+  function addSubscriber(array $subscriber, $list_ids = [], $options = []) {
     $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
     $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
     $skip_subscriber_notification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true) ? true : false;
@@ -234,18 +234,18 @@ class API {
     $new_subscriber = Subscriber::findOne($new_subscriber->id);
 
     // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
-    if (!empty($segments)) {
-      $this->subscribeToLists($new_subscriber->id, $segments, [
+    if (!empty($list_ids)) {
+      $this->subscribeToLists($new_subscriber->id, $list_ids, [
         'send_confirmation_email' => $send_confirmation_email,
       ]);
 
       // schedule welcome email(s)
       if ($schedule_welcome_email && $new_subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
-        $this->_scheduleWelcomeNotification($new_subscriber, $segments);
+        $this->_scheduleWelcomeNotification($new_subscriber, $list_ids);
       }
 
       if (!$skip_subscriber_notification) {
-        $this->sendSubscriberNotification($new_subscriber, $segments);
+        $this->sendSubscriberNotification($new_subscriber, $list_ids);
       }
     }
     return $new_subscriber->withCustomFields()->withSubscriptions()->asArray();
