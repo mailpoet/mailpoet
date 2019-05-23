@@ -22,6 +22,9 @@ class GitHubController {
   /** @var HttpClient */
   private $http_client;
 
+  /** @var HttpClient */
+  private $http_client_no_base;
+
   public function __construct($username, $token, $project) {
     $this->zip_filename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $github_path = $project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium';
@@ -31,6 +34,12 @@ class GitHubController {
         'Accept' => 'application/vnd.github.v3+json',
       ],
       'base_uri' => "https://api.github.com/repos/mailpoet/$github_path/",
+    ]);
+    $this->http_client_no_base = new Client([
+      'auth' => [$username, $token],
+      'headers' => [
+        'Accept' => 'application/vnd.github.v3+json',
+      ],
     ]);
   }
 
@@ -57,6 +66,74 @@ class GitHubController {
     $this->http_client->post("issues/$pull_request_number/assignees", [
       'json' => ['assignees' => [self::QA_GITHUB_LOGIN]],
     ]);
+  }
+
+  public function checkReleasePullRequestPassed($version) {
+    $response = $this->http_client->get('pulls', [
+      'query' => [
+        'state' => 'all',
+        'head' => self::RELEASE_SOURCE_BRANCH,
+        'base' => 'master',
+        'direction' => 'desc',
+      ]
+    ]);
+    $response = json_decode($response->getBody()->getContents(), true);
+    if (sizeof($response) === 0) {
+      throw new \Exception('Failed to load release pull requests');
+    }
+    $response = array_filter($response, function ($pull_request) use ($version) {
+      return strpos($pull_request['title'], 'Release ' . $version) !== false;
+    });
+    if (sizeof($response) === 0) {
+      throw new \Exception('Release pull request not found');
+    }
+    $release_pull_request = reset($response);
+    if ($release_pull_request['state'] !== 'closed') {
+      throw new \Exception('Release pull request is still opened.');
+    }
+    if (!$release_pull_request['merged']) {
+      throw new \Exception('Release pull request has not been merged.');
+    }
+    $this->checkPullRequestChecks($release_pull_request['statuses_url']);
+    $pull_request_number = $release_pull_request['number'];
+    $this->checkPullRequestReviews($pull_request_number);
+  }
+
+  private function checkPullRequestChecks($statuses_url) {
+    $response = $this->http_client_no_base->get($statuses_url);
+    $response = json_decode($response->getBody()->getContents(), true);
+
+    // Find checks. Statuses are returned in reverse chronological order. We need to get the first of each type
+    $latest_statuses = [];
+    foreach ($response as $status) {
+      if (!isset($latest_statuses[$status['context']])) {
+        $latest_statuses[$status['context']] = $status;
+      }
+    }
+
+    $failed = [];
+    foreach ($latest_statuses as $status) {
+      if ($status['state'] !== 'success') {
+        $failed[] = $status['context'];
+      }
+    }
+    if (!empty($failed)) {
+      throw new \Exception('Release pull request build failed. Failed jobs: ' . join(', ', $failed));
+    }
+  }
+
+  private function checkPullRequestReviews($pull_request_number) {
+    $response = $this->http_client->get("pulls/$pull_request_number/reviews");
+    $response = json_decode($response->getBody()->getContents(), true);
+    $approved = 0;
+    foreach ($response as $review) {
+      if (strtolower($review['state']) === 'approved') {
+        $approved++;
+      }
+    }
+    if ($approved === 0) {
+      throw new \Exception('Pull Request has not been approved');
+    }
   }
 
   public function publishRelease($version, $changelog, $release_zip_path) {
