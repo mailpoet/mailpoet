@@ -40,13 +40,19 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   componentDidMount: function componentDidMount() {
-    this.loadItem(this.props.match.params.id);
-    this.loadAuthorizedEmailAddresses();
+    jQuery.when(
+      this.loadItem(this.props.match.params.id),
+      this.loadAuthorizedEmailAddresses()
+    ).always(() => {
+      this.setState({ loading: false });
+    });
     jQuery('#mailpoet_newsletter').parsley();
   },
 
   componentWillReceiveProps: function componentWillReceiveProps(props) {
-    this.loadItem(props.match.params.id);
+    this.loadItem(props.match.params.id).always(() => {
+      this.setState({ loading: false });
+    });
   },
 
   getFieldsByNewsletter: function getFieldsByNewsletter(newsletter) {
@@ -114,7 +120,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   loadItem: function loadItem(id) {
     this.setState({ loading: true });
 
-    MailPoet.Ajax.post({
+    return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
       action: 'get',
@@ -124,14 +130,12 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
     }).done((response) => {
       const thumbnailPromise = response.data.status === 'draft' ? this.getThumbnailPromise(response.meta.preview_url) : null;
       this.setState({
-        loading: false,
         item: response.data,
         fields: this.getFieldsByNewsletter(response.data),
         thumbnailPromise,
       });
     }).fail(() => {
       this.setState({
-        loading: false,
         item: {},
       }, () => {
         this.props.history.push('/new');
@@ -167,7 +171,10 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   loadAuthorizedEmailAddresses: function loadAuthorizedEmailAddresses() {
-    MailPoet.Ajax.post({
+    if (window.mailpoet_mta_method !== 'MailPoet') {
+      return jQuery.Deferred().resolve();
+    }
+    return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'mailer',
       action: 'getAuthorizedEmailAddresses',
