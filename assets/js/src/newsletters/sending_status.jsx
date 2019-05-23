@@ -1,13 +1,32 @@
-import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Listing from 'listing/listing.jsx';
 import { CronMixin, MailerMixin } from 'newsletters/listings/mixins.jsx';
 
-const SendingStatus = props => {
+const columns = [
+  {
+    name: 'subscriber_id',
+    label: MailPoet.I18n.t('subscriber'),
+    sortable: true,
+  },
+  {
+    name: 'status',
+    label: MailPoet.I18n.t('sendingStatus'),
+  },
+  {
+    name: 'failureReason',
+    label: MailPoet.I18n.t('failureReason'),
+  },
+];
+
+const messages = {
+  onNoItemsFound: () => MailPoet.I18n.t('noSendingTaskFound'),
+};
+
+const SendingStatus = (props) => {
   const newsletterId = props.match.params.id;
   const [newsletterSubject, setNewsletterSubject] = React.useState('');
 
@@ -20,14 +39,14 @@ const SendingStatus = props => {
         id: newsletterId,
       },
     })
-    .done(res => setNewsletterSubject(res.data.subject))
-    .fail((res) => {
-      setNewsletterSubject('');
-      MailPoet.Notice.error(
-        res.errors.map(error => error.message),
-        { scroll: true }
-      );
-    });
+      .done(res => setNewsletterSubject(res.data.subject))
+      .fail((res) => {
+        setNewsletterSubject('');
+        MailPoet.Notice.error(
+          res.errors.map(error => error.message),
+          { scroll: true }
+        );
+      });
   }, [newsletterId]);
 
   return (
@@ -44,7 +63,7 @@ const SendingStatus = props => {
         endpoint="sending_task_subscribers"
         base_url="sending-status/:id"
         onRenderItem={item => <div><ListingItem {...item} /></div>}
-        getListingItemKey={item => item.taskId + '-' + item.subscriberId}
+        getListingItemKey={item => `${item.taskId}-${item.subscriberId}`}
         columns={columns}
         messages={messages}
         auto_refresh
@@ -66,7 +85,7 @@ SendingStatus.propTypes = {
   }).isRequired,
 };
 
-const StatsLink = ({newsletterId, newsletterSubject}) => {
+const StatsLink = ({ newsletterId, newsletterSubject }) => {
   if (!newsletterId || !newsletterSubject) return null;
   if (window.mailpoet_premium_active) {
     return <p><Link to={`/stats/${newsletterId}`}>{ newsletterSubject }</Link></p>;
@@ -77,21 +96,27 @@ StatsLink.propTypes = {
   newsletterId: PropTypes.string,
   newsletterSubject: PropTypes.string,
 };
+StatsLink.defaultProps = {
+  newsletterId: null,
+  newsletterSubject: null,
+};
 
-const ListingItem = ({error, failed, taskId, processed, email, subscriberId, lastName, firstName}) => {
+const ListingItem = ({
+  error, failed, taskId, processed, email, subscriberId, lastName, firstName,
+}) => {
   const resend = () => {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sending_task_subscribers',
       action: 'resend',
-      data: {taskId, subscriberId},
+      data: { taskId, subscriberId },
     })
-    .done(res => window.mailpoet_listing.forceUpdate())
-    .fail((res) => MailPoet.Notice.error(
-      res.errors.map(error => error.message),
-      { scroll: true }
-    ));
-  }
+      .done(() => window.mailpoet_listing.forceUpdate())
+      .fail(res => MailPoet.Notice.error(
+        res.errors.map(err => err.message),
+        { scroll: true }
+      ));
+  };
 
   const rowClasses = classNames(
     'manage-column',
@@ -104,7 +129,7 @@ const ListingItem = ({error, failed, taskId, processed, email, subscriberId, las
       status = (
         <span>
           {MailPoet.I18n.t('failed')}
-          <br/>
+          <br />
           <a
             className="button"
             href="javascript:;"
@@ -130,7 +155,7 @@ const ListingItem = ({error, failed, taskId, processed, email, subscriberId, las
           </a>
         </strong>
         <p style={{ margin: 0 }}>
-          { firstName + ' ' + lastName }
+          { `${firstName} ${lastName}` }
         </p>
       </td>
       <td className="column" data-colname={MailPoet.I18n.t('sendingStatus')}>
@@ -152,25 +177,8 @@ ListingItem.propTypes = {
   processed: PropTypes.string.isRequired,
   subscriberId: PropTypes.string.isRequired,
 };
-
-const columns = [
-  {
-    name: 'subscriber_id',
-    label: MailPoet.I18n.t('subscriber'),
-    sortable: true,
-  },
-  {
-    name: 'status',
-    label: MailPoet.I18n.t('sendingStatus'),
-  },
-  {
-    name: 'failureReason',
-    label: MailPoet.I18n.t('failureReason'),
-  },
-];
-
-const messages = {
-  onNoItemsFound: () => MailPoet.I18n.t('noSendingTaskFound')
+ListingItem.defaultProps = {
+  error: '',
 };
 
 export default SendingStatus;

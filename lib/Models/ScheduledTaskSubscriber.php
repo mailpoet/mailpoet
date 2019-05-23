@@ -5,6 +5,13 @@ use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * @property int $task_id
+ * @property int $subscriber_id
+ * @property int $processed
+ * @property int $failed
+ * @property string $error
+ */
 class ScheduledTaskSubscriber extends Model {
   const STATUS_UNPROCESSED = 0;
   const STATUS_PROCESSED = 1;
@@ -70,7 +77,7 @@ class ScheduledTaskSubscriber extends Model {
 
   static function listingQuery($data) {
     $group = isset($data['group']) ? $data['group'] : 'all';
-    return self::join(Subscriber::$_table, array("subscriber_id", "=", "subscribers.id"), "subscribers")
+    return self::join(Subscriber::$_table, ["subscriber_id", "=", "subscribers.id"], "subscribers")
       ->filter($group, $data['params'])
       ->select('error', 'error')
       ->select('failed', 'failed')
@@ -92,17 +99,17 @@ class ScheduledTaskSubscriber extends Model {
       ],
       [
         'name' => self::SENDING_STATUS_SENT,
-        'label' => WPFunctions::get()->x('Sent', 'status when a newsletter has been sent', 'mailpoet'),
+        'label' => WPFunctions::get()->_x('Sent', 'status when a newsletter has been sent', 'mailpoet'),
         'count' => self::filter(self::SENDING_STATUS_SENT, $params)->count(),
       ],
       [
         'name' => self::SENDING_STATUS_FAILED,
-        'label' => WPFunctions::get()->x('Failed', 'status when the sending of a newsletter has failed', 'mailpoet'),
+        'label' => WPFunctions::get()->_x('Failed', 'status when the sending of a newsletter has failed', 'mailpoet'),
         'count' => self::filter(self::SENDING_STATUS_FAILED, $params)->count(),
       ],
       [
         'name' => self::SENDING_STATUS_UNPROCESSED,
-        'label' => WPFunctions::get()->x('Unprocessed', 'status when the sending of a newsletter has not been processed', 'mailpoet'),
+        'label' => WPFunctions::get()->_x('Unprocessed', 'status when the sending of a newsletter has not been processed', 'mailpoet'),
         'count' => self::filter(self::SENDING_STATUS_UNPROCESSED, $params)->count(),
       ],
     ];
