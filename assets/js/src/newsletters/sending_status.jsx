@@ -9,10 +9,7 @@ import { CronMixin, MailerMixin } from 'newsletters/listings/mixins.jsx';
 
 const SendingStatus = props => {
   const newsletterId = props.match.params.id;
-  const [state, setState] = React.useState({
-    error: null,
-    newsletterSubject: null,
-  });
+  const [newsletterSubject, setNewsletterSubject] = React.useState('');
 
   React.useEffect(() => {
     MailPoet.Ajax.post({
@@ -23,26 +20,24 @@ const SendingStatus = props => {
         id: newsletterId,
       },
     })
-    .done(res => setState({
-      error: null,
-      newsletterSubject: res.data.subject,
-    }))
-    .fail(() => setState({
-      newsletterSubject: null,
-      error: 'loadingNewsletterError',
-    }));
+    .done(res => setNewsletterSubject(res.data.subject))
+    .fail((res) => {
+      setNewsletterSubject('');
+      MailPoet.Notice.error(
+        res.errors.map(error => error.message),
+        { scroll: true }
+      );
+    });
   }, [newsletterId]);
 
-  const {error, newsletterSubject} = state;
   return (
     <Fragment>
       <h1>{MailPoet.I18n.t('sendingStatusTitle')}</h1>
-      <LoadingError error={error} />
       <StatsLink
         newsletterId={newsletterId}
         newsletterSubject={newsletterSubject}
       />
-      {newsletterSubject && <Listing
+      <Listing
         limit={window.mailpoet_listing_per_page}
         location={props.location}
         params={props.match.params}
@@ -58,7 +53,7 @@ const SendingStatus = props => {
           MailerMixin.checkMailerStatus(state);
           CronMixin.checkCronStatus(state);
         }}
-      /> }
+      />
     </Fragment>
   );
 };
@@ -69,18 +64,6 @@ SendingStatus.propTypes = {
       id: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
-};
-
-const LoadingError = ({error}) => {
-  if (!error) return null;
-  return (
-    <div className="notice notice-error">
-      <p>{ MailPoet.I18n.t(error) }</p>
-    </div>
-  );
-}
-LoadingError.propTypes = {
-  error: PropTypes.string,
 };
 
 const StatsLink = ({newsletterId, newsletterSubject}) => {
