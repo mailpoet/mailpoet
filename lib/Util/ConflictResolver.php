@@ -69,6 +69,9 @@ class ConflictResolver {
       foreach ($wp_styles->queue as $wp_style) {
         if (empty($wp_styles->registered[$wp_style])) continue;
         $registered_style = $wp_styles->registered[$wp_style];
+        if (!is_string($registered_style->src)) {
+          continue;
+        }
         if (!preg_match('!' . implode('|', $_this->permitted_assets_locations['styles']) . '!i', $registered_style->src)) {
           WPFunctions::get()->wpDequeueStyle($wp_style);
         }
@@ -89,6 +92,9 @@ class ConflictResolver {
       foreach ($wp_scripts->queue as $wp_script) {
         if (empty($wp_scripts->registered[$wp_script])) continue;
         $registered_script = $wp_scripts->registered[$wp_script];
+        if (!is_string($registered_script->src)) {
+          continue;
+        }
         if (!preg_match('!' . implode('|', $_this->permitted_assets_locations['scripts']) . '!i', $registered_script->src)) {
           WPFunctions::get()->wpDequeueScript($wp_script);
         }
