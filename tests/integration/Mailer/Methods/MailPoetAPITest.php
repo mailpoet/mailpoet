@@ -7,7 +7,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
-use MailPoet\Services\Bridge;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge\API;
 
 class MailPoetAPITest extends \MailPoetTest {
@@ -34,7 +34,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->sender,
       $this->reply_to,
       new MailPoetMapper(),
-      $this->makeEmpty(Bridge::class)
+      $this->makeEmpty(AuthorizedEmailsController::class)
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = [
@@ -242,7 +242,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->sender,
       $this->reply_to,
       new MailPoetMapper(),
-      $this->makeEmpty(Bridge::class, ['checkAuthorizedEmailAddresses' => Expected::once()])
+      $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()])
     );
     $mailer->api = $this->makeEmpty(
       API::class,

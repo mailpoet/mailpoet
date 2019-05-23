@@ -6,6 +6,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
@@ -58,7 +59,7 @@ class Mailer {
           $this->sender,
           $this->reply_to,
           new MailPoetMapper(),
-          new Bridge()
+          new AuthorizedEmailsController(new SettingsController, new Bridge)
         );
         break;
       case self::METHOD_SENDGRID:

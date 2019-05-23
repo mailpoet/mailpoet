@@ -5,6 +5,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 
@@ -16,19 +17,19 @@ class MailPoet {
   public $reply_to;
   public $services_checker;
 
-  /** @var Bridge */
-  private $bridge;
+  /** @var AuthorizedEmailsController */
+  private $authorized_emails_controller;
 
   /** @var MailPoetMapper */
   private $error_mapper;
 
-  function __construct($api_key, $sender, $reply_to, MailPoetMapper $error_mapper, Bridge $bridge) {
+  function __construct($api_key, $sender, $reply_to, MailPoetMapper $error_mapper, AuthorizedEmailsController $authorized_emails_controller) {
     $this->api = new API($api_key);
     $this->sender = $sender;
     $this->reply_to = $reply_to;
     $this->services_checker = new ServicesChecker();
     $this->error_mapper = $error_mapper;
-    $this->bridge = $bridge;
+    $this->authorized_emails_controller = $authorized_emails_controller;
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
@@ -59,7 +60,7 @@ class MailPoet {
       && $result['code'] === API::RESPONSE_CODE_CAN_NOT_SEND
       && $result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED
     ) {
-      $this->bridge->checkAuthorizedEmailAddresses();
+      $this->authorized_emails_controller->checkAuthorizedEmailAddresses();
     }
     return $this->error_mapper->getErrorForResult($result, $subscriber, $this->sender, $newsletter);
   }

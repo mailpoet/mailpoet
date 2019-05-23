@@ -6,7 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Services\Bridge;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -14,8 +14,8 @@ if (!defined('ABSPATH')) exit;
 
 class Mailer extends APIEndpoint {
 
-  /** @var Bridge */
-  private $bridge;
+  /** @var AuthorizedEmailsController */
+  private $authorized_emails_controller;
 
   /** @var SettingsController */
   private $settings;
@@ -24,8 +24,8 @@ class Mailer extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  function __construct(Bridge $bridge, SettingsController $settings) {
-    $this->bridge = $bridge;
+  function __construct(AuthorizedEmailsController $authorized_emails_controller, SettingsController $settings) {
+    $this->authorized_emails_controller = $authorized_emails_controller;
     $this->settings = $settings;
   }
 
@@ -55,8 +55,8 @@ class Mailer extends APIEndpoint {
   }
 
   function resumeSending() {
-    if ($this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME)) {
-      $this->bridge->checkAuthorizedEmailAddresses();
+    if ($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING)) {
+      $this->authorized_emails_controller->checkAuthorizedEmailAddresses();
     }
     MailerLog::resumeSending();
     return $this->successResponse(null);

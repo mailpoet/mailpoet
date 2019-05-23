@@ -9,6 +9,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -21,12 +22,25 @@ class Settings extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
+  /** @var Bridge */
+  private $bridge;
+
+  /** @var AuthorizedEmailsController */
+  private $authorized_emails_controller;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
 
-  function __construct(SettingsController $settings) {
+
+  public function __construct(
+    SettingsController $settings,
+    Bridge $bridge,
+    AuthorizedEmailsController $authorized_emails_controller
+  ) {
     $this->settings = $settings;
+    $this->bridge = $bridge;
+    $this->authorized_emails_controller = $authorized_emails_controller;
   }
 
   function get() {
@@ -50,8 +64,8 @@ class Settings extends APIEndpoint {
 
       $this->onSettingsChange($old_settings, $this->settings->getAll());
 
-      $bridge = new Bridge();
-      $bridge->onSettingsSave($settings);
+      $this->bridge->onSettingsSave($settings);
+      $this->authorized_emails_controller->onSettingsSave($settings);
       // Will be uncommented on task [MAILPOET-1998]
       // if ($signup_confirmation !== $this->settings->get('signup_confirmation.enabled')) {
       //   Form::updateSuccessMessages();

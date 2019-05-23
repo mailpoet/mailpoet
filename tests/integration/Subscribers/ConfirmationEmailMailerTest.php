@@ -8,6 +8,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -84,13 +85,13 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     ]);
 
     $settings = new SettingsController;
-    $settings->set(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, ['invalid_confirmation_address' => 'email@email.com']);
+    $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_confirmation_address' => 'email@email.com']);
     $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $sender = new ConfirmationEmailMailer($mailer);
 
     $result = $sender->sendConfirmationEmail($subscriber);
     expect($result)->equals(false);
-    $settings->set(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, null);
+    $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
   }
 
   function testItLimitsNumberOfConfirmationEmailsForNotLoggedInUser() {
