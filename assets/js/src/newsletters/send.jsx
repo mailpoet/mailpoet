@@ -13,6 +13,7 @@ import { fromUrl } from 'common/thumbnail.jsx';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import ReactStringReplace from 'react-string-replace';
 
 const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es6-class
   displayName: 'NewsletterSend',
@@ -83,17 +84,21 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   showInvalidFromAddressError: function showInvalidFromAddressError() {
-    const errorMessage = MailPoet.I18n.t('newsletterInvalidFromAddress')
-      .replace('%$1s', this.state.item.sender_address)
-      .replace('[i]', '<i>')
-      .replace('[/i]', '</i>')
-      .replace('[link]', '<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">')
-      .replace('[/link]', '</a>');
+    let errorMessage = ReactStringReplace(
+      MailPoet.I18n.t('newsletterInvalidFromAddress'),
+      '%$1s',
+      () => this.state.item.sender_address
+    );
+    errorMessage = ReactStringReplace(
+      errorMessage,
+      /\[link\](.*?)\[\/link\]/g,
+      match => `<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">${match}</a>`
+    );
     jQuery('#field_sender_address')
       .parsley()
       .addError(
         'invalidFromAddress',
-        { message: errorMessage, updateClass: true }
+        { message: errorMessage.join(''), updateClass: true }
       );
   },
 
