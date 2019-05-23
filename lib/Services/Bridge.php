@@ -86,33 +86,9 @@ class Bridge {
     }
   }
 
-  function checkAuthorizedEmailAddresses() {
-    $installed_at = new Carbon($this->settings->get('installed_at'));
-    $authorized_emails_release_date = new Carbon('2019-03-06');
-    if (!self::isMPSendingServiceEnabled() || $installed_at < $authorized_emails_release_date) {
-      $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, null);
-      return;
-    }
-
+  function getAuthorizedEmailAddresses() {
     $this->initApi($this->settings->get(self::API_KEY_SETTING_NAME));
-    $authorized_emails = $this->api->getAuthorizedEmailAddresses();
-    // Keep previous check result for an invalid response from API
-    if ($authorized_emails === false) {
-      return;
-    }
-
-    $default_sender_address = $this->settings->get('sender.address');
-    $signup_confirmation_address = $this->settings->get('signup_confirmation.from.address');
-    $authorized_emails = array_map('strtolower', $authorized_emails);
-    $result = [];
-    if (!in_array(strtolower($default_sender_address), $authorized_emails, true)) {
-      $result['invalid_sender_address'] = $default_sender_address;
-    }
-    if (!in_array(strtolower($signup_confirmation_address), $authorized_emails, true)) {
-      $result['invalid_confirmation_address'] = $signup_confirmation_address;
-    }
-
-    $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME, $result ?: null);
+    return $this->api->getAuthorizedEmailAddresses();
   }
 
   function checkMSSKey($api_key) {
@@ -224,8 +200,6 @@ class Bridge {
   function onSettingsSave($settings) {
     $api_key_set = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
     $premium_key_set = !empty($settings['premium']['premium_key']);
-    $sender_address_set = !empty($settings['sender']['address']);
-    $confirmation_address_set = !empty($settings['signup_confirmation']['from']['address']);
     if ($api_key_set) {
       $api_key = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'];
       $state = $this->checkMSSKey($api_key);
@@ -238,9 +212,6 @@ class Bridge {
       $premium_key = $settings['premium']['premium_key'];
       $state = $this->checkPremiumKey($premium_key);
       $this->storePremiumKeyAndState($premium_key, $state);
-    }
-    if ($sender_address_set || $confirmation_address_set) {
-      $this->checkAuthorizedEmailAddresses();
     }
   }
 }

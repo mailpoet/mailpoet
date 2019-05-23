@@ -4,7 +4,7 @@ namespace MailPoet\Test\Cron\Workers;
 use Codeception\Stub;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Services\Bridge;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 
 class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
@@ -19,7 +19,7 @@ class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
   }
 
   function testItRunsCheckOnBridge() {
-    $bridge_mock = $this->makeEmpty(Bridge::class, ['checkAuthorizedEmailAddresses' => Stub\Expected::once()]);
+    $bridge_mock = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Stub\Expected::once()]);
     $worker = new AuthorizedSendingEmailsCheck($bridge_mock);
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
   }
@@ -27,7 +27,7 @@ class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
   function testItDoesNotScheduleAutomatically() {
     $this->settings->set('mta_group', 'mailpoet');
     $this->settings->set('mta.method', 'MailPoet');
-    $bridge_mock = $this->makeEmpty(Bridge::class, ['checkAuthorizedEmailAddresses' => Stub\Expected::never()]);
+    $bridge_mock = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Stub\Expected::never()]);
     $worker = new AuthorizedSendingEmailsCheck($bridge_mock);
     $worker->process();
 

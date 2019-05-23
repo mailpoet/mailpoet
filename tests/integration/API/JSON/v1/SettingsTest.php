@@ -2,12 +2,15 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Carbon\Carbon;
+use Codeception\Stub\Expected;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
+use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
 class SettingsTest extends \MailPoetTest {
@@ -23,7 +26,11 @@ class SettingsTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->settings = new SettingsController();
     $this->settings->set('some.setting.key', true);
-    $this->endpoint = new Settings($this->settings);
+    $this->endpoint = new Settings(
+      $this->settings,
+      new Bridge,
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => true ])
+    );
   }
 
   function testItCanGetSettings() {
@@ -49,6 +56,12 @@ class SettingsTest extends \MailPoetTest {
         'new_setting' => true,
       ],
     ];
+
+    $this->endpoint = new Settings(
+      $this->settings,
+      $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()])
+    );
 
     $response = $this->endpoint->set(/* missing data */);
     expect($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);

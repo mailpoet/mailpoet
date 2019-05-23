@@ -2,6 +2,7 @@
 
 namespace MailPoet\Util\Notices;
 
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
@@ -25,7 +26,7 @@ class UnauthorizedEmailNotice {
   }
 
   function init($should_display) {
-    $validation_error = $this->settings->get(Bridge::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME);
+    $validation_error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
     if ($should_display && $validation_error) {
       return $this->display($validation_error);
     }
