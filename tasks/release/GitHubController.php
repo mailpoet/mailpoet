@@ -14,6 +14,8 @@ class GitHubController {
 
   const RELEASE_SOURCE_BRANCH = 'release';
 
+  const QA_GITHUB_LOGIN = 'michelleshull';
+
   /** @var string */
   private $zip_filename;
 
@@ -30,6 +32,37 @@ class GitHubController {
       ],
       'base_uri' => "https://api.github.com/repos/mailpoet/$github_path/",
     ]);
+  }
+
+  public function createReleasePullRequest($version) {
+    $response = $this->http_client->post('pulls', [
+      'json' => [
+        'title' => 'Release ' . $version,
+        'head' => self::RELEASE_SOURCE_BRANCH,
+        'base' => 'master',
+      ],
+    ]);
+    $response = json_decode($response->getBody()->getContents(), true);
+    $pull_request_id = $response['id'];
+    if (!$pull_request_id) {
+      throw new \Exception('Failed to create a new release pull request');
+    }
+    $this->assignPullRequest($pull_request_id);
+  }
+
+  private function assignPullRequest($pull_request_id) {
+    $response = $this->http_client->post("pulls/:$pull_request_id/requested_reviewers", [
+      'json' => ['team_reviewers' => self::QA_GITHUB_LOGIN],
+    ]);
+    if (!$response->getStatusCode() === '201') {
+      throw new \Exception('Failed to assign pull request');
+    }
+    $response = $this->http_client->post("issues/:$pull_request_id/assignees", [
+      'json' => ['assignees' => self::QA_GITHUB_LOGIN],
+    ]);
+    if (!$response->getStatusCode() === '201') {
+      throw new \Exception('Failed to assign pull request');
+    }
   }
 
   public function publishRelease($version, $changelog, $release_zip_path) {

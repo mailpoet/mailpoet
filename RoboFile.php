@@ -536,6 +536,9 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () use ($version) {
         return $this->releaseChangelogWrite($version);
       })
+      ->addCode(function () use ($version) {
+        $this->releaseCreatePullRequest($version);
+      })
       ->run();
   }
 
@@ -551,6 +554,57 @@ class RoboFile extends \Robo\Tasks {
         exit(1);
       }
     }
+  }
+  
+  public function releasePrepareGit() {
+    // make sure working directory is clean
+    $git_status = $this->taskGitStack()
+      ->printOutput(false)
+      ->exec('git status --porcelain')
+      ->run();
+    if (strlen(trim($git_status->getMessage())) > 0) {
+      throw new \Exception('Please make sure your working directory is clean before running release.');
+    }
+    // checkout master and pull from remote
+    $this->taskGitStack()
+      ->stopOnFail()
+      ->checkout('master')
+      ->pull()
+      ->run();
+    // make sure release branch doesn't exist on github
+    $release_branch_status = $this->taskGitStack()
+      ->printOutput(false)
+      ->exec('git ls-remote --heads git@github.com:mailpoet/mailpoet.git release')
+      ->run();
+    if (strlen(trim($release_branch_status->getMessage())) > 0) {
+      throw new \Exception('Delete old release branch before running release.');
+    }
+    $git_status = $this->taskGitStack()
+      ->printOutput(false)
+      ->exec('git rev-parse --verify release')
+      ->run();
+    if ($git_status->wasSuccessful()) {
+      $this->taskGitStack()
+        ->printOutput(false)
+        ->exec('git branch -D release')
+        ->run();
+    }
+    $this->taskGitStack()
+      ->printOutput(false)
+      ->exec('git checkout -b release')
+      ->run();
+  }
+
+  public function releaseCreatePullRequest($version) {
+    $this->taskGitStack()
+      ->stopOnFail()
+      ->add('-A')
+      ->commit('Release ' . $version)
+      ->tag($version)
+      ->exec('git push --set-upstream git@github.com:mailpoet/mailpoet.git release --follow-tags')
+      ->run();
+    $this->createGitHubController()
+      ->createReleasePullRequest($version);
   }
 
   public function releasePublish($version = null) {
