@@ -5,6 +5,7 @@ If you are a user looking for a user guide please visit our [knowledge base](htt
 
 ## MailPoet API
 MailPoet API is the officially supported way to integrate with MailPoet3 plugin. It focuses on functionality for managing subscribers.
+We discourage from using other functions and classes within MailPoet codebase! We do a lot of refactorings and backward compatibility is not guaranteed. 
 
 ### Basics
 MailPoet API is distributed within MailPoet3 plugin and it is implemented as a PHP class.
