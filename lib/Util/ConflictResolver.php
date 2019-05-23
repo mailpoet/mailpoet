@@ -77,10 +77,16 @@ class ConflictResolver {
         }
       }
     };
-    WPFunctions::get()->addAction('wp_print_styles', $dequeue_styles, PHP_INT_MAX);
-    WPFunctions::get()->addAction('admin_print_styles', $dequeue_styles, PHP_INT_MAX);
-    WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_styles, PHP_INT_MAX);
-    WPFunctions::get()->addAction('admin_footer', $dequeue_styles, PHP_INT_MAX);
+
+    // execute last in the following hooks
+    $execute_last = PHP_INT_MAX;
+    WPFunctions::get()->addAction('admin_enqueue_scripts', $dequeue_styles, $execute_last); // used also for styles
+    WPFunctions::get()->addAction('admin_footer', $dequeue_styles, $execute_last);
+
+    // execute first in hooks for printing (after printing is too late)
+    $execute_first = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
+    WPFunctions::get()->addAction('admin_print_styles', $dequeue_styles, $execute_first);
+    WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_styles, $execute_first);
   }
 
   function resolveScriptsConflict() {
@@ -100,8 +106,15 @@ class ConflictResolver {
         }
       }
     };
-    WPFunctions::get()->addAction('wp_print_scripts', $dequeue_scripts, PHP_INT_MAX);
-    WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_scripts, PHP_INT_MAX);
-    WPFunctions::get()->addAction('admin_footer', $dequeue_scripts, PHP_INT_MAX);
+
+    // execute last in the following hooks
+    $execute_last = PHP_INT_MAX;
+    WPFunctions::get()->addAction('admin_enqueue_scripts', $dequeue_scripts, $execute_last);
+    WPFunctions::get()->addAction('admin_footer', $dequeue_scripts, $execute_last);
+
+    // execute first in hooks for printing (after printing is too late)
+    $execute_first = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
+    WPFunctions::get()->addAction('admin_print_scripts', $dequeue_scripts, $execute_first);
+    WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_scripts, $execute_first);
   }
 }
