@@ -13,4 +13,4 @@ It returns a subscriber. See [Get Subscriber](GetSubscriber.md) for a subscriber
 An id or email of an existing subscriber. An `\Exception` is thrown when an id or email doesn't match any subscriber.
 
 ### array `$list_ids` (required)
-An array of list ids. An `\Exception` is thrown if any of list ids is invalid. In such a case the subscriber remains subscribed to all lists.
+An array of list ids. An `\Exception` is thrown if any of list ids are invalid. In such a case the subscriber remains subscribed to all lists.

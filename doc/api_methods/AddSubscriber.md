@@ -4,17 +4,17 @@
 
 ## `array addSubscriber(array $subscriber [, array $list_ids = [], array $options = []])`
 
-This method allows to create a subscriber, add them into lists and handles confirmation email and admin notification email sending and welcome email scheduling.
+This method allows a subscriber to be created, adds them into lists, and handles confirmation email and admin notification email sending and welcome email scheduling.
 
 If sign-up confirmation (double opt-in) is enabled in the MailPoet settings a subscriber is created with status `unconfirmed` otherwise the status is set to `subscribed`.
 
 *A confirmation email* is an email which is sent to a subscriber so that they can confirm his subscription. It is sent only if sign-up confirmation is enabled in the MailPoet settings.
-*A welcome email* is an automatic email which is sent to a new subscriber. This email is scheduled only if sign-up confirmation is disabled and some welcome email is configured for some of given lists. In case of required sign-up confirmation it is scheduled later after a subscriber confirms the subscription.
-*An admin notification email* is sent to the site admin to inform they about a new subscription. It is sent only if the notification feature is enabled in the MailPoet setting.
+*A welcome email* is an automatic email which is sent to a new subscriber. This email is scheduled only if sign-up confirmation is disabled and a welcome email is configured for some of given lists. In case of required sign-up confirmation, it is scheduled later after a subscriber confirms the subscription.
+*An admin notification email* is sent to the site admin to inform them about a new subscription. It is sent only if the notification feature is enabled in the MailPoet setting.
 All these emails can be disabled using `$options`.
 
 A subscriber can be added only once. This method throws an `\Exception` in case of adding an existing subscriber.
-This method throws also an `\Exception` in case that some of `$list_ids` is invalid. In such a case subscriber is created but is not subscribed to any list.
+This method also throws an `\Exception` in case that some of `$list_ids` is invalid. In such a case a subscriber is created, but is not subscribed to any list.
 There might be other `\Exceptions` because of some invalid input data such a invalid email address etc.
 
 It returns a new subscriber. See [Get Subscriber](GetSubscriber.md) for a subscriber data structure.
@@ -34,13 +34,13 @@ It has to contain an email and all required custom fields. To get defined custom
 
 ### `$list_ids` (optional)
 An array containing list ids into which subscriber will be added.
-In case that the list is empty a subscriber will be created but sending a confirmation email, notification email and scheduling welcome email will be skipped.
+In case that the list is empty a subscriber will be created; but sending a confirmation email, notification email and scheduling welcome email will be skipped.
 
 ### `$options` (optional)
 All options are optional. If omitted a default value is used.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| send_confirmation_email | boolean | true | Can be used to disable a confirmation email. Otherwise, a confirmation email is sent as described above. It is strongly recommended to keep this option set to `true` so that MailPoet settings for sign-up confirmation is respected. Turning it to `false` might lead that subscriber will be added as `unconfirmed`. |
+| send_confirmation_email | boolean | true | Can be used to disable a confirmation email. Otherwise, a confirmation email is sent as described above. It is strongly recommended to keep this option set to `true` so that MailPoet settings for sign-up confirmation are respected. Turning it to `false` might lead that subscriber to be added as `unconfirmed`. |
 | schedule_welcome_email | boolean | true | Can be used to disable a welcome email. Otherwise, a welcome email is scheduled as described above.|
 | skip_subscriber_notification | boolean | false | Can be used to disable an admin notification email. Otherwise, an admin notification email is sent as described above.|
