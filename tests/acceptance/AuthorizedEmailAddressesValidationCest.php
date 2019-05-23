@@ -91,4 +91,26 @@ class AuthorizedEmailAddressesValidationCest {
     $I->cantSee('Update the from address of Subject 1');
     $settings->withSendingMethodSmtpMailhog();
   }
+
+  function validationBeforeSendingNewsletter(\AcceptanceTester $I) {
+    $I->wantTo('Validate from address before sending newsletter');
+
+    $settings = new Settings();
+    $settings->withSendingMethodMailPoet();
+    $newsletter = (new Newsletter())
+        ->loadBodyFrom('newsletterWithText.json')
+        ->withSubject('Invalid from address')
+        ->create();
+
+    $I->login();
+    $I->amEditingNewsletter($newsletter->id);
+    $I->click('Next');
+    $I->waitForText('Sender');
+    $I->fillField('[name="sender_address"]', 'unauthorized@email.com');
+    $I->selectOptionInSelect2('WordPress Users');
+    $I->click('Send');
+    $I->waitForElement('.parsley-invalidFromAddress');
+
+    $settings->withSendingMethodSmtpMailhog();
+  }
 }
