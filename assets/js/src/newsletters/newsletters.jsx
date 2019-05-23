@@ -100,7 +100,7 @@ if (container) {
       component: NewsletterSend,
     },
     {
-      path: '/sending-status/:id',
+      path: '/sending-status/:id/(.*)?',
       component: NewsletterSendingStatus,
     },
   ];
