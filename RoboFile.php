@@ -531,7 +531,7 @@ class RoboFile extends \Robo\Tasks {
         return $this->releaseCheckIssues($version);
       })
       ->addCode(function () {
-        $this->prepareGit();
+        $this->releasePrepareGit();
       })
       ->addCode(function () use ($version) {
         return $this->releaseVersionWrite($version);
@@ -557,6 +557,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePrepareGit() {
+    // make sure working directory is clean
     $git_status = $this->taskGitStack()
       ->printOutput(false)
       ->exec('git status --porcelain')
@@ -564,10 +565,33 @@ class RoboFile extends \Robo\Tasks {
     if (strlen(trim($git_status->getMessage())) > 0) {
       throw new \Exception('Please make sure your working directory is clean before running release.');
     }
+    // checkout master and pull from remote
     $this->taskGitStack()
       ->stopOnFail()
       ->checkout('master')
       ->pull()
+      ->run();
+    // make sure release branch doesn't exist on github
+    $release_branch_status = $this->taskGitStack()
+      ->printOutput(false)
+      ->exec('git ls-remote --heads git@github.com:mailpoet/mailpoet.git release')
+      ->run();
+    if (strlen(trim($release_branch_status->getMessage())) > 0) {
+      throw new \Exception('Delete old release branch before running release.');
+    }
+    $git_status = $this->taskGitStack()
+      ->printOutput(false)
+      ->exec('git rev-parse --verify release')
+      ->run();
+    if ($git_status->wasSuccessful()) {
+      $this->taskGitStack()
+        ->printOutput(false)
+        ->exec('git branch -D release')
+        ->run();
+    }
+    $this->taskGitStack()
+      ->printOutput(false)
+      ->exec('git checkout -b release')
       ->run();
   }
 
