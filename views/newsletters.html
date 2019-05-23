@@ -38,6 +38,7 @@
       var mailpoet_installed_at = '<%= settings.installed_at %>';
       var mailpoet_mss_active = <%= json_encode(mss_active) %>;
       var mailpoet_free_plan_announcement_seen = !!+'<%= settings.free_plan_announcement_seen %>';
+      var mailpoet_mta_method = '<%= settings.mta.method %>';
     <% endautoescape %>
   </script>
 <% endblock %>
@@ -265,6 +266,7 @@
     'newsletterBeingSent': __('The newsletter is being sent...'),
     'newsletterHasBeenScheduled': __('The newsletter has been scheduled.'),
     'newsletterSendingHasBeenResumed': __('The newsletter sending has been resumed.'),
+    'newsletterInvalidFromAddress': _x('You need to authorize the email address [i]%$1s[/i] to be able to send with it. [link]Authorize my email address[/link]', 'Users need to confirm that they own the email address they want to use to send their newsletter'),
     'welcomeEmailActivated': __('Your Welcome Email is now activated!'),
     'welcomeEmailActivationFailed': __('Your Welcome Email could not be activated, please check the settings.'),
     'postNotificationActivated': __('Your post notification is now active!'),
