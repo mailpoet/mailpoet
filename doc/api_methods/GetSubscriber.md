@@ -4,7 +4,7 @@
 
 ## `array getSubscriber(string $subscriber_email)`
 
-This method throws an `\Exception` in case a subscriber with a given email address doesn’t exist.
+This method throws an `\Exception` in the event a subscriber with a given email address doesn’t exist.
 
 ## Arguments
 | Argument | Type | Description |

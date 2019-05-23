@@ -4,8 +4,8 @@
 
 ## `array getSubscriberFields()`
 
-Subscriber has a set of default properties (`email`, `first_name`, `last_name`).
-MailPoet enables to extend these properties by adding custom properties.
+Each subscriber has a set of default properties (`email`, `first_name`, `last_name`).
+MailPoet enables the extension of these properties by adding custom properties.
 This method returns list of all properties available for a subscriber (default + custom).
 
 ## Subscriber Field
@@ -13,7 +13,7 @@ This method returns list of all properties available for a subscriber (default +
 | Property | Type | Limits | Description |
 | --- | --- | --- | --- |
 | id | string | 11 chars |Field Id |
-| name | string | 90 chars | Human readable name. Intended to be used e.g. as a label for form input. |
+| name | string | 90 chars | Human readable name. Intended to be used, as an example, as a label for form input. |
 
 ## Response Example
 ```php
