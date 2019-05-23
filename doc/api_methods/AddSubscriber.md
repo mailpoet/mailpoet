@@ -6,7 +6,7 @@
 
 This method allows to create a subscriber, add them into lists and handles confirmation email and admin notification email sending and welcome email scheduling.
 
-If sign-up confirmation is enabled in the MailPoet settings a subscriber is created with status `unconfirmed` otherwise the status is set to `subscribed`.
+If sign-up confirmation (double opt-in) is enabled in the MailPoet settings a subscriber is created with status `unconfirmed` otherwise the status is set to `subscribed`.
 
 *A confirmation email* is an email which is sent to a subscriber so that they can confirm his subscription. It is sent only if sign-up confirmation is enabled in the MailPoet settings.
 *A welcome email* is an automatic email which is sent to a new subscriber. This email is scheduled only if sign-up confirmation is disabled and some welcome email is configured for some of given lists. In case of required sign-up confirmation it is scheduled later after a subscriber confirms the subscription.
@@ -41,6 +41,6 @@ All options are optional. If omitted a default value is used.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| send_confirmation_email | boolean | true | Can be used to disable a confirmation email. Otherwise, a confirmation email is sent as described above.|
+| send_confirmation_email | boolean | true | Can be used to disable a confirmation email. Otherwise, a confirmation email is sent as described above. It is strongly recommended to keep this option set to `true` so that MailPoet settings for sign-up confirmation is respected. Turning it to `false` might lead that subscriber will be added as `unconfirmed`. |
 | schedule_welcome_email | boolean | true | Can be used to disable a welcome email. Otherwise, a welcome email is scheduled as described above.|
 | skip_subscriber_notification | boolean | false | Can be used to disable an admin notification email. Otherwise, an admin notification email is sent as described above.|
