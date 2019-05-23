@@ -613,6 +613,9 @@ class RoboFile extends \Robo\Tasks {
   public function releasePublish($version = null) {
     $version = $this->releaseVersionGetNext($version);
     return $this->collectionBuilder()
+      ->addCode(function ()  use ($version) {
+        return $this->releaseCheckPullRequest($version);
+      })
       ->addCode(function () {
         return $this->releaseDownloadZip();
       })
@@ -638,6 +641,11 @@ class RoboFile extends \Robo\Tasks {
         return $this->releasePublishSlack($version);
       })
       ->run();
+  }
+
+  public function releaseCheckPullRequest($version) {
+    $this->createGitHubController()
+      ->checkReleasePullRequestPassed($version);
   }
 
   public function releaseVersionGetNext($version = null) {
