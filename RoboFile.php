@@ -555,7 +555,7 @@ class RoboFile extends \Robo\Tasks {
       }
     }
   }
-  
+
   public function releasePrepareGit() {
     // make sure working directory is clean
     $git_status = $this->taskGitStack()
@@ -603,6 +603,7 @@ class RoboFile extends \Robo\Tasks {
       ->tag($version)
       ->exec('git push --set-upstream git@github.com:mailpoet/mailpoet.git release --follow-tags')
       ->run();
+
     $this->createGitHubController()
       ->createReleasePullRequest($version);
   }
