@@ -58,6 +58,13 @@ class ConflictResolver {
         'resolveEditorConflict',
       ]
     );
+    WPFunctions::get()->addAction(
+      'mailpoet_conflict_resolver_scripts',
+      [
+        $this,
+        'resolveTinyMceConflict',
+      ]
+    );
   }
 
   function resolveRouterUrlQueryParametersConflict() {
@@ -149,5 +156,34 @@ class ConflictResolver {
       ob_end_clean();
       return '';
     });
+  }
+
+  function resolveTinyMceConflict() {
+    // WordPress TinyMCE scripts may not get enqueued as scripts when some plugins use wp_editor()
+    // or wp_enqueue_editor(). Instead, they are printed inside the footer script print actions.
+    // To unload TinyMCE we need to remove those actions.
+    $tiny_mce_footer_script_hooks = [
+      '_WP_Editors::enqueue_scripts',
+      '_WP_Editors::editor_js',
+      '_WP_Editors::force_uncompressed_tinymce',
+      '_WP_Editors::print_default_editor_scripts',
+    ];
+
+    $disable_wp_tinymce = function() use ($tiny_mce_footer_script_hooks) {
+      global $wp_filter;
+      $action_name = 'admin_print_footer_scripts';
+      if (!isset($wp_filter[$action_name])) {
+        return;
+      }
+      foreach ($wp_filter[$action_name]->callbacks as $priority => $callbacks) {
+        foreach ($tiny_mce_footer_script_hooks as $hook) {
+          if (isset($callbacks[$hook])) {
+            WPFunctions::get()->removeAction($action_name, $callbacks[$hook]['function'], $priority);
+          }
+        }
+      }
+    };
+
+    WPFunctions::get()->addAction('admin_footer', $disable_wp_tinymce, PHP_INT_MAX);
   }
 }
