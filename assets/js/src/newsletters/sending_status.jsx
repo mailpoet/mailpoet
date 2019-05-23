@@ -96,6 +96,20 @@ StatsLink.propTypes = {
 };
 
 const ListingItem = ({error, failed, taskId, processed, email, subscriberId, lastName, firstName}) => {
+  const resend = () => {
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'sending_task_subscribers',
+      action: 'resend',
+      data: {taskId, subscriberId},
+    })
+    .done(res => window.mailpoet_listing.forceUpdate())
+    .fail((res) => MailPoet.Notice.error(
+      res.errors.map(error => error.message),
+      { scroll: true }
+    ));
+  }
+
   const rowClasses = classNames(
     'manage-column',
     'column-primary',
@@ -104,7 +118,19 @@ const ListingItem = ({error, failed, taskId, processed, email, subscriberId, las
   let status = MailPoet.I18n.t('unprocessed');
   if (processed === '1') {
     if (failed === '1') {
-      status = MailPoet.I18n.t('failed');
+      status = (
+        <span>
+          {MailPoet.I18n.t('failed')}
+          <br/>
+          <a
+            className="button"
+            href="javascript:;"
+            onClick={resend}
+          >
+            {MailPoet.I18n.t('resend')}
+          </a>
+        </span>
+      );
     } else {
       status = MailPoet.I18n.t('sent');
     }
@@ -115,7 +141,7 @@ const ListingItem = ({error, failed, taskId, processed, email, subscriberId, las
         <strong>
           <a
             className="row-title"
-            href={`admin.php?page=mailpoet-subscribers#/edit/1`}
+            href={`admin.php?page=mailpoet-subscribers#/edit/${subscriberId}`}
           >
             { email }
           </a>
