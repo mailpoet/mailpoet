@@ -75,7 +75,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
   },
 
   isValidFromAddress: function isValidFromAddress() {
-    const fromAddress = jQuery('#field_sender_address').val();
+    const fromAddress = this.state.item.sender_address;
     if (window.mailpoet_mta_method !== 'MailPoet') {
       return true;
     }
@@ -84,7 +84,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
 
   showInvalidFromAddressError: function showInvalidFromAddressError() {
     const errorMessage = MailPoet.I18n.t('newsletterInvalidFromAddress')
-      .replace('%$1s', jQuery('#field_sender_address').val())
+      .replace('%$1s', this.state.item.sender_address)
       .replace('[i]', '<i>')
       .replace('[/i]', '</i>')
       .replace('[link]', '<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">')
