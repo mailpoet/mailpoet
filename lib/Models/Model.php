@@ -44,6 +44,7 @@ if (!defined('ABSPATH')) exit;
  * @method $this rawJoin(string $table, string|array $constraint, string $table_alias, array $parameters = array())
  * @method $this innerJoin(string $table, string|array $constraint, string $table_alias=null)
  * @method $this join(string $table, string|array $constraint, string $table_alias=null)
+ * @method static static join(string $table, string|array $constraint, string $table_alias=null)
  * @method $this leftOuterJoin(string $table, string|array $constraint, string $table_alias=null)
  * @method $this rightOuterJoin(string $table, string|array $constraint, string $table_alias=null)
  * @method $this fullOuterJoin(string $table, string|array $constraint, string $table_alias=null)

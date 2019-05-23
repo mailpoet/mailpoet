@@ -5,7 +5,6 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\Listing;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Config\AccessControl;
 use MailPoet\API\JSON\Error as APIError;
@@ -13,12 +12,13 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\Models\SendingQueue as SendingQueueModel;
 
 if (!defined('ABSPATH')) exit;
 
 class SendingTaskSubscribers extends APIEndpoint {
   public $permissions = [
-    'global' => AccessControl::PERMISSION_MANAGE_EMAILS
+    'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
   /** @var Listing\Handler */
@@ -42,12 +42,12 @@ class SendingTaskSubscribers extends APIEndpoint {
 
   function listing($data = []) {
     $newsletter_id = !empty($data['params']['id']) ? (int)$data['params']['id'] : false;
-    $tasks_ids = SendingQueue::select('task_id')
+    $tasks_ids = SendingQueueModel::select('task_id')
       ->where('newsletter_id', $newsletter_id)
       ->findArray();
     if (empty($tasks_ids)) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => __('This newsletter is not being sent to any subcriber yet.', 'mailpoet')
+        APIError::NOT_FOUND => __('This newsletter is not being sent to any subcriber yet.', 'mailpoet'),
       ]);
     }
     $data['params']['task_ids'] = array_map(function($item) {
@@ -67,7 +67,7 @@ class SendingTaskSubscribers extends APIEndpoint {
       'mta_log' => $this->settings->get('mta_log'),
       'mta_method' => $this->settings->get('mta.method'),
       'cron_accessible' => CronHelper::isDaemonAccessible(),
-      'current_time' => $this->wp->currentTime('mysql')
+      'current_time' => $this->wp->currentTime('mysql'),
     ]);
   }
 
@@ -78,10 +78,10 @@ class SendingTaskSubscribers extends APIEndpoint {
       ->where('subscriber_id', $subscriber_id)
       ->findOne();
     $task = ScheduledTask::findOne($task_id);
-    $sending_queue = SendingQueue::where('task_id', $task_id)->findOne();
-    if (!$task || !$task_subscriber || !$sending_queue || $task_subscriber->failed !== '1') {
+    $sending_queue = SendingQueueModel::where('task_id', $task_id)->findOne();
+    if (!$task || !$task_subscriber || !$sending_queue || $task_subscriber->failed != 1) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => __('Failed sending task not found!', 'mailpoet')
+        APIError::NOT_FOUND => __('Failed sending task not found!', 'mailpoet'),
       ]);
     }
     $newsletter = Newsletter::findOne($sending_queue->newsletter_id);
