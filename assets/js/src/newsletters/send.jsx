@@ -34,11 +34,13 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
       item: {},
       loading: true,
       thumbnailPromise: null,
+      authorizedEmailAddresses: [],
     };
   },
 
   componentDidMount: function componentDidMount() {
     this.loadItem(this.props.match.params.id);
+    this.loadAuthorizedEmailAddresses();
     jQuery('#mailpoet_newsletter').parsley();
   },
 
@@ -125,6 +127,16 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
       .catch((err) => {
         this.showError({ errors: [err] });
       });
+  },
+
+  loadAuthorizedEmailAddresses: function loadAuthorizedEmailAddresses() {
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'mailer',
+      action: 'getAuthorizedEmailAddresses',
+    }).done((response) => {
+      this.setState({ authorizedEmailAddresses: response.data });
+    });
   },
 
   handleSend: function handleSend(e) {
