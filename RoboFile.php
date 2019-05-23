@@ -539,6 +539,9 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () use ($version) {
         return $this->releaseChangelogWrite($version);
       })
+      ->addCode(function () use ($version) {
+        $this->releaseCreatePullRequest($version);
+      })
       ->run();
   }
 
@@ -593,6 +596,18 @@ class RoboFile extends \Robo\Tasks {
       ->printOutput(false)
       ->exec('git checkout -b release')
       ->run();
+  }
+
+  public function releaseCreatePullRequest($version) {
+    $this->taskGitStack()
+      ->stopOnFail()
+      ->add('-A')
+      ->commit('Release ' . $version)
+      ->tag($version)
+      ->exec('git push --set-upstream git@github.com:mailpoet/mailpoet.git release --follow-tags')
+      ->run();
+    $this->createGitHubController()
+      ->createReleasePullRequest($version);
   }
 
   public function releasePublish($version = null) {
