@@ -167,7 +167,7 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
       endpoint: 'mailer',
       action: 'getAuthorizedEmailAddresses',
     }).done((response) => {
-      this.setState({ authorizedEmailAddresses: response.data });
+      this.setState({ authorizedEmailAddresses: response.data || [] });
     });
   },
 
