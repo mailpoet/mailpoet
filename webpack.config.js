@@ -242,6 +242,30 @@ const baseConfig = {
           'babel-loader',
         ]
       },
+      {
+        test: /node_modules\/tinymce/,
+        loader: 'string-replace-loader',
+        options: {
+          // prefix TinyMCE to avoid conflicts with other plugins
+          multiple: [
+            {
+              search: 'window\\.tinymce',
+              replace: 'window.mailpoetTinymce',
+              flags: 'g',
+            },
+            {
+              search: 'tinymce\\.util',
+              replace: 'window.mailpoetTinymce.util',
+              flags: 'g',
+            },
+            {
+              search: 'resolve\\(\'tinymce',
+              replace: 'resolve(\'mailpoetTinymce',
+              flags: 'g',
+            },
+          ],
+        },
+      },
     ]
   }
 };
