@@ -530,6 +530,9 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () use ($version) {
         return $this->releaseCheckIssues($version);
       })
+      ->addCode(function () {
+        $this->prepareGit();
+      })
       ->addCode(function () use ($version) {
         return $this->releaseVersionWrite($version);
       })
@@ -550,6 +553,16 @@ class RoboFile extends \Robo\Tasks {
         $this->yell("Some pull request associated to task {$key} is not merged yet!", 40, 'red');
         exit(1);
       }
+    }
+  }
+
+  public function releasePrepareGit() {
+    $git_status = $this->taskGitStack()
+      ->printOutput(false)
+      ->exec('git status --porcelain')
+      ->run();
+    if (strlen(trim($git_status->getMessage())) > 0) {
+      throw new \Exception('Please make sure your working directory is clean before running release.');
     }
   }
 
