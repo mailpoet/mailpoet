@@ -74,6 +74,38 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
     return jQuery('#mailpoet_newsletter').parsley().isValid();
   },
 
+  isValidFromAddress: function isValidFromAddress() {
+    const fromAddress = jQuery('#field_sender_address').val();
+    if (window.mailpoet_mta_method !== 'MailPoet') {
+      return true;
+    }
+    return this.state.authorizedEmailAddresses.indexOf(fromAddress) !== -1;
+  },
+
+  showInvalidFromAddressError: function showInvalidFromAddressError() {
+    const errorMessage = MailPoet.I18n.t('newsletterInvalidFromAddress')
+      .replace('%$1s', jQuery('#field_sender_address').val())
+      .replace('[i]', '<i>')
+      .replace('[/i]', '</i>')
+      .replace('[link]', '<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">')
+      .replace('[/link]', '</a>');
+    jQuery('#field_sender_address')
+      .parsley()
+      .addError(
+        'invalidFromAddress',
+        { message: errorMessage, updateClass: true }
+      );
+  },
+
+  removeInvalidFromAddressError: function removeInvalidFromAddressError() {
+    jQuery('#field_sender_address')
+      .parsley()
+      .removeError(
+        'invalidFromAddress',
+        { updateClass: true }
+      );
+  },
+
   loadItem: function loadItem(id) {
     this.setState({ loading: true });
 
@@ -141,9 +173,14 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
 
   handleSend: function handleSend(e) {
     e.preventDefault();
+    this.removeInvalidFromAddressError();
 
     if (!this.isValid()) {
       return jQuery('#mailpoet_newsletter').parsley().validate();
+    }
+
+    if (!this.isValidFromAddress()) {
+      return this.showInvalidFromAddressError();
     }
 
     MailPoet.Modal.loading(true);
