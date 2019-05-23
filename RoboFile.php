@@ -564,6 +564,11 @@ class RoboFile extends \Robo\Tasks {
     if (strlen(trim($git_status->getMessage())) > 0) {
       throw new \Exception('Please make sure your working directory is clean before running release.');
     }
+    $this->taskGitStack()
+      ->stopOnFail()
+      ->checkout('master')
+      ->pull()
+      ->run();
   }
 
   public function releasePublish($version = null) {
