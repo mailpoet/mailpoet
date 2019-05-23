@@ -14,6 +14,8 @@ class GitHubController {
 
   const RELEASE_SOURCE_BRANCH = 'release';
 
+  const QA_GITHUB_LOGIN = 'michelleshull';
+
   /** @var string */
   private $zip_filename;
 
@@ -29,6 +31,31 @@ class GitHubController {
         'Accept' => 'application/vnd.github.v3+json',
       ],
       'base_uri' => "https://api.github.com/repos/mailpoet/$github_path/",
+    ]);
+  }
+
+  public function createReleasePullRequest($version) {
+    $response = $this->http_client->post('pulls', [
+      'json' => [
+        'title' => 'Release ' . $version,
+        'head' => self::RELEASE_SOURCE_BRANCH,
+        'base' => 'master',
+      ],
+    ]);
+    $response = json_decode($response->getBody()->getContents(), true);
+    $pull_request_number = $response['number'];
+    if (!$pull_request_number) {
+      throw new \Exception('Failed to create a new release pull request');
+    }
+    $this->assignPullRequest($pull_request_number);
+  }
+
+  private function assignPullRequest($pull_request_number) {
+    $this->http_client->post("pulls/$pull_request_number/requested_reviewers", [
+      'json' => ['reviewers' => [self::QA_GITHUB_LOGIN]],
+    ]);
+    $this->http_client->post("issues/$pull_request_number/assignees", [
+      'json' => ['assignees' => [self::QA_GITHUB_LOGIN]],
     ]);
   }
 
