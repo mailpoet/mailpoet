@@ -23,6 +23,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
       'task_id' => $this->task->id,
       'subscriber_id' => $this->subscriber->id,
     ]);
+    $this->subscribers_counter = 0;
   }
 
   function testItCanBeCreated() {
@@ -79,6 +80,123 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     ]);
     $count = ScheduledTaskSubscriber::getTotalCount($this->task->id);
     expect($count)->equals(2);
+  }
+
+  function testItCanQueryListing() {
+    $task_ids = $this->makeTasksWithSubscribers();
+
+    $all = ScheduledTaskSubscriber::listingQuery([
+      'params' => ['task_ids' => $task_ids],
+    ])->findMany();
+    expect(count($all))->equals(12);
+
+    $sent = ScheduledTaskSubscriber::listingQuery([
+      'group' => ScheduledTaskSubscriber::SENDING_STATUS_SENT,
+      'params' => ['task_ids' => $task_ids],
+    ])->findMany();
+    expect(count($sent))->equals(4);
+    foreach ($sent as $task) {
+      expect($task->processed)->equals(1);
+      expect($task->failed)->equals(0);
+    }
+
+    $unprocessed = ScheduledTaskSubscriber::listingQuery([
+      'group' => ScheduledTaskSubscriber::SENDING_STATUS_UNPROCESSED,
+      'params' => ['task_ids' => $task_ids],
+    ])->findMany();
+    expect(count($unprocessed))->equals(4);
+    foreach ($unprocessed as $task) {
+      expect($task->processed)->equals(0);
+      expect($task->failed)->equals(0);
+    }
+
+    $failed = ScheduledTaskSubscriber::listingQuery([
+      'group' => ScheduledTaskSubscriber::SENDING_STATUS_FAILED,
+      'params' => ['task_ids' => $task_ids],
+    ])->findMany();
+    expect(count($failed))->equals(4);
+    foreach ($failed as $task) {
+      expect($task->processed)->equals(1);
+      expect($task->failed)->equals(1);
+    }
+
+  }
+
+  function testItCanGetGroupsWithCounts() {
+    $task_ids = $this->makeTasksWithSubscribers();
+    $groups = ScheduledTaskSubscriber::groups([
+      'params' => ['task_ids' => $task_ids],
+    ]);
+    expect($groups)->equals([
+      [
+        'name' => 'all',
+        'label' => 'All',
+        'count' => 12,
+      ],
+      [
+        'name' => ScheduledTaskSubscriber::SENDING_STATUS_SENT,
+        'label' => 'Sent',
+        'count' => 4,
+      ],
+      [
+        'name' => ScheduledTaskSubscriber::SENDING_STATUS_FAILED,
+        'label' => 'Failed',
+        'count' => 4,
+      ],
+      [
+        'name' => ScheduledTaskSubscriber::SENDING_STATUS_UNPROCESSED,
+        'label' => 'Unprocessed',
+        'count' => 4,
+      ],
+    ]);
+  }
+
+  /**
+   * Creates completed, scheduled, paued and running tasks.
+   * Each one with unprocessed, sent and failed subscriber tasks.
+   * @return array the ids of the 4 tasks.
+   */
+  private function makeTasksWithSubscribers() {
+    $tasks = [
+      ScheduledTask::createOrUpdate(['status' => ScheduledTask::STATUS_COMPLETED]),
+      ScheduledTask::createOrUpdate(['status' => ScheduledTask::STATUS_SCHEDULED]),
+      ScheduledTask::createOrUpdate(['status' => ScheduledTask::STATUS_PAUSED]),
+      ScheduledTask::createOrUpdate(['status' => null]), // running
+    ];
+    foreach ($tasks as $task) {
+      ScheduledTaskSubscriber::createOrUpdate([
+        'task_id' => $task->id,
+        'subscriber_id' => $this->makeSubscriber()->id,
+        'processed' => 0,
+        'failed' => 0,
+      ]);
+      ScheduledTaskSubscriber::createOrUpdate([
+        'task_id' => $task->id,
+        'subscriber_id' => $this->makeSubscriber()->id,
+        'processed' => 1,
+        'failed' => 0,
+      ]);
+      ScheduledTaskSubscriber::createOrUpdate([
+        'task_id' => $task->id,
+        'subscriber_id' => $this->makeSubscriber()->id,
+        'processed' => 1,
+        'failed' => 1,
+        'error' => 'Something went wrong!',
+      ]);
+    }
+
+    return array_map(function($task) {
+      return $task->id;
+    }, $tasks);
+  }
+
+  private function makeSubscriber() {
+    $number = $this->subscribers_counter ++;
+    return $subscriber = Subscriber::createOrUpdate([
+      'last_name' => 'Last Name ' . $number,
+      'first_name' => 'First Name ' . $number,
+      'email' => 'john.doe.' . $number . '@example.com',
+    ]);
   }
 
   function _after() {
