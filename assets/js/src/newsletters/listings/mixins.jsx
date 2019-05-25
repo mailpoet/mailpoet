@@ -86,7 +86,7 @@ const QueueMixin = {
 
     if (newsletter.queue.status === 'completed') {
       label = (
-        <Link to={`/sending-status/${newsletter.id}`}>
+        <Link to={`/sending-status/${newsletter.id}`} data-automation-id={`sending_status_${newsletter.id}`}>
           <span>
             {
               MailPoet.I18n.t('newsletterQueueCompleted')

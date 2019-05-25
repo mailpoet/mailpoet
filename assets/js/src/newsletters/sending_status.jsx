@@ -145,7 +145,7 @@ const ListingItem = ({
   }
   return (
     <>
-      <td className={rowClasses}>
+      <td data-automation-id={`name_${taskId}_${subscriberId}`} className={rowClasses}>
         <strong>
           <a
             className="row-title"
@@ -158,10 +158,10 @@ const ListingItem = ({
           { `${firstName} ${lastName}` }
         </p>
       </td>
-      <td className="column" data-colname={MailPoet.I18n.t('sendingStatus')}>
+      <td className="column" data-automation-id={`status_${taskId}_${subscriberId}`} data-colname={MailPoet.I18n.t('sendingStatus')}>
         { status }
       </td>
-      <td className="column" data-colname={MailPoet.I18n.t('failureReason')}>
+      <td className="column" data-automation-id={`error_${taskId}_${subscriberId}`} data-colname={MailPoet.I18n.t('failureReason')}>
         { error }
       </td>
     </>
