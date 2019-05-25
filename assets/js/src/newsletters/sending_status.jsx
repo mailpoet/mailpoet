@@ -1,7 +1,7 @@
+import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Listing from 'listing/listing.jsx';
 import { CronMixin, MailerMixin } from 'newsletters/listings/mixins.jsx';
@@ -50,7 +50,7 @@ const SendingStatus = (props) => {
   }, [newsletterId]);
 
   return (
-    <Fragment>
+    <>
       <h1>{MailPoet.I18n.t('sendingStatusTitle')}</h1>
       <StatsLink
         newsletterId={newsletterId}
@@ -73,7 +73,7 @@ const SendingStatus = (props) => {
           CronMixin.checkCronStatus(state);
         }}
       />
-    </Fragment>
+    </>
   );
 };
 SendingStatus.propTypes = {
@@ -144,7 +144,7 @@ const ListingItem = ({
     }
   }
   return (
-    <Fragment>
+    <>
       <td className={rowClasses}>
         <strong>
           <a
@@ -164,7 +164,7 @@ const ListingItem = ({
       <td className="column" data-colname={MailPoet.I18n.t('failureReason')}>
         { error }
       </td>
-    </Fragment>
+    </>
   );
 };
 ListingItem.propTypes = {
