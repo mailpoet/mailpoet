@@ -215,7 +215,12 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
           </select>
         </p>
         <p>
-          <Link to={`/sending-status/${newsletter.id}`}>{ totalSentMessage }</Link>
+          <Link
+            to={`/sending-status/${newsletter.id}`}
+            data-automation-id={`sending_status_${newsletter.id}`}
+          >
+            { totalSentMessage }
+          </Link>
           {' '}
           <br />
           { totalScheduledMessage }

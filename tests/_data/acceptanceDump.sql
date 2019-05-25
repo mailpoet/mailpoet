@@ -302,6 +302,8 @@ CREATE TABLE `mp_mailpoet_scheduled_task_subscribers` (
   `task_id` int(11) unsigned NOT NULL,
   `subscriber_id` int(11) unsigned NOT NULL,
   `processed` int(1) NOT NULL,
+  `failed` smallint(1) NOT NULL DEFAULT 0,
+  `error` text NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`task_id`,`subscriber_id`),
   KEY subscriber_id (subscriber_id)

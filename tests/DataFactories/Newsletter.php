@@ -2,10 +2,12 @@
 namespace MailPoet\Test\DataFactories;
 
 use Carbon\Carbon;
-use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\Subscriber;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\NewsletterSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 
 class Newsletter {
 
@@ -18,6 +20,9 @@ class Newsletter {
   /** @var array */
   private $segments;
 
+  /** @var array */
+  private $task_subscribers;
+
   public function __construct() {
     $this->data = [
       'subject' => 'Some subject',
@@ -29,6 +34,7 @@ class Newsletter {
     $this->options = [];
     $this->segments = [];
     $this->queue_options = [];
+    $this->task_subscribers = [];
     $this->loadBodyFrom('newsletterWithALC.json');
     SettingsController::resetCache(); // Newsletter model reads settings so we need to ensure it use fresh data
   }
@@ -219,6 +225,16 @@ class Newsletter {
     return $this;
   }
 
+  public function beingSentToSubscriber($subscriber, array $data = []) {
+    $this->task_subscribers[] = array_merge([
+      'subscriber_id' => $subscriber->id,
+      'processed' => 1,
+      'failed' => 0,
+      'error' => '',
+    ], $data);
+    return $this;
+  }
+
   /**
    * @return \MailPoet\Models\Newsletter
    */
@@ -250,6 +266,16 @@ class Newsletter {
       $sending_task->count_processed = $this->queue_options['count_processed'];
       $sending_task->count_total = $this->queue_options['count_total'];
       $sending_task->save();
+
+      foreach ($this->task_subscribers as $data) {
+        $task_subscriber = ScheduledTaskSubscriber::createOrUpdate([
+          'subscriber_id' => $data['subscriber_id'],
+          'task_id' => $sending_task->task_id,
+          'error' => $data['error'],
+          'failed' => $data['failed'],
+          'processed' => $data['processed'],
+        ]);
+      }
     }
     return $newsletter;
   }
