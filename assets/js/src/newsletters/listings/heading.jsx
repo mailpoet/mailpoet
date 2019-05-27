@@ -5,10 +5,7 @@ import FreePlanAnnouncement from 'announcements/free_plan_announcement.jsx';
 
 const ListingHeading = () => (
   <div>
-    {
-      MailPoet.FeaturesController.isSupported('new-free-plan')
-      && <FreePlanAnnouncement />
-    }
+    <FreePlanAnnouncement />
 
     <h1 className="title">
       {MailPoet.I18n.t('pageTitle')}

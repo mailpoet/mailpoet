@@ -11,7 +11,6 @@ class FreePlanAnnouncementCest {
   const NOTICE_SELECTOR = '[data-automation-id="free-plan-announcement"]';
 
   function showAndCloseNotice(\AcceptanceTester $I) {
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_NEW_FREE_PLAN);
     $I->wantTo('Show and close free plan announcement');
     $I->login();
     $I->amOnMailPoetPage('Emails');
