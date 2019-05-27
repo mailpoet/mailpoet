@@ -51,6 +51,13 @@ class ConflictResolver {
         'resolveScriptsConflict',
       ]
     );
+    WPFunctions::get()->addAction(
+      'mailpoet_conflict_resolver_scripts',
+      [
+        $this,
+        'resolveEditorConflict',
+      ]
+    );
   }
 
   function resolveRouterUrlQueryParametersConflict() {
@@ -116,5 +123,31 @@ class ConflictResolver {
     $execute_first = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
     WPFunctions::get()->addAction('admin_print_scripts', $dequeue_scripts, $execute_first);
     WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_scripts, $execute_first);
+  }
+
+  function resolveEditorConflict() {
+
+    // mark editor as already enqueued to prevent loading its assets
+    // when wp_enqueue_editor() used by some other plugin
+    global $wp_actions;
+    $wp_actions['wp_enqueue_editor'] = 1;
+
+    // prevent editor loading when used wp_editor() used by some other plugin
+    WPFunctions::get()->addFilter('wp_editor_settings', function () {
+      ob_start();
+      return [
+        'tinymce' => false,
+        'quicktags' => false,
+      ];
+    });
+
+    WPFunctions::get()->addFilter('the_editor', function () {
+      return '';
+    });
+
+    WPFunctions::get()->addFilter('the_editor_content', function () {
+      ob_end_clean();
+      return '';
+    });
   }
 }
