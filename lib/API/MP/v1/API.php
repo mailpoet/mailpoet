@@ -211,6 +211,12 @@ class API {
 
     // separate data into default and custom fields
     list($default_fields, $custom_fields) = Subscriber::extractCustomFieldsFromFromObject($subscriber);
+
+    // filter out all incoming data that we don't want to change, like status, ip address, ...
+    $default_fields = array_intersect_key($default_fields, array_flip([
+      'email', 'first_name', 'last_name'
+    ]));
+
     // if some required default fields are missing, set their values
     $default_fields = Subscriber::setRequiredFieldsDefaultValues($default_fields);
 
