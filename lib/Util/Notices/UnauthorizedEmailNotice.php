@@ -3,7 +3,6 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Services\AuthorizedEmailsController;
-use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
@@ -27,7 +26,10 @@ class UnauthorizedEmailNotice {
 
   function init($should_display) {
     $validation_error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-    if ($should_display && $validation_error) {
+    if (
+      $should_display
+      && (isset($validation_error['invalid_sender_address']) || isset($validation_error['invalid_confirmation_address']))
+     ) {
       return $this->display($validation_error);
     }
   }
