@@ -213,9 +213,7 @@ class API {
     list($default_fields, $custom_fields) = Subscriber::extractCustomFieldsFromFromObject($subscriber);
 
     // filter out all incoming data that we don't want to change, like status, ip address, ...
-    $default_fields = array_intersect_key($default_fields, array_flip([
-      'email', 'first_name', 'last_name'
-    ]));
+    $default_fields = array_intersect_key($default_fields, array_flip(['email', 'first_name', 'last_name']));
 
     // if some required default fields are missing, set their values
     $default_fields = Subscriber::setRequiredFieldsDefaultValues($default_fields);
@@ -271,6 +269,9 @@ class API {
         WPFunctions::get()->__('This list already exists.', 'mailpoet')
       );
     }
+
+    // filter out all incoming data that we don't want to change, like type,
+    $list = array_intersect_key($list, array_flip(['name', 'description']));
 
     // add list
     $new_list = Segment::create();

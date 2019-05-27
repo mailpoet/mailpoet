@@ -586,6 +586,18 @@ class APITest extends \MailPoetTest {
     }
   }
 
+  function testItDoesOnlySaveWhiteListedPropertiesWhenAddingList() {
+    $result = $this->getApi()->addList([
+      'name' => 'Test segment123',
+      'description' => 'Description',
+      'type' => 'ignore this field',
+    ]);
+    expect($result['id'])->greaterThan(0);
+    expect($result['name'])->equals('Test segment123');
+    expect($result['description'])->equals('Description');
+    expect($result['type'])->equals('default');
+  }
+
   function testItDoesNotAddExistingList() {
     $segment = Segment::create();
     $segment->name = 'Test segment';
