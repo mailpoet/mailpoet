@@ -19,6 +19,7 @@ if (!defined('ABSPATH')) exit;
  * @property string $type
  * @property object|boolean $queue
  * @property string $hash
+ * @property string $sender_address
  * @property string $status
  * @property string|object $meta
  * @property array $options

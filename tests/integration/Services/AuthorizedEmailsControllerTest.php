@@ -5,6 +5,7 @@ namespace MailPoet\Test\Services;
 use Carbon\Carbon;
 use Codeception\Stub\Expected;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Setting;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
@@ -76,6 +77,68 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
+  function testItSetErrorForScheduledNewsletterWithUnauthorizedSender() {
+    $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_SCHEDULED);
+  }
+
+  function testItSetErrorForActiveWelcomeEmailUnauthorizedSender() {
+    $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_WELCOME, Newsletter::STATUS_ACTIVE);
+  }
+
+  function testItSetErrorForPostNotificationUnauthorizedSender() {
+    $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_NOTIFICATION, Newsletter::STATUS_ACTIVE);
+  }
+
+  function testItSetErrorForAutomaticEmailUnauthorizedSender() {
+    $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_AUTOMATIC, Newsletter::STATUS_ACTIVE);
+  }
+
+  function testItResetErrorWhenAllSendersAreCorrect() {
+    $newsletter = Newsletter::createOrUpdate([
+      'subject' => 'Subject',
+      'status' => Newsletter::STATUS_ACTIVE,
+      'type' => Newsletter::TYPE_AUTOMATIC,
+    ]);
+    $newsletter->sender_address = 'auth@email.com';
+    $newsletter->save();
+    $newsletter2 = Newsletter::createOrUpdate([
+      'subject' => 'Subject2',
+      'status' => Newsletter::STATUS_SCHEDULED,
+      'type' => Newsletter::TYPE_STANDARD,
+    ]);
+    $newsletter2->sender_address = 'auth@email.com';
+    $newsletter2->save();
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'auth@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
+    $this->setMailPoetSendingMethod();
+    $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
+    $controller->checkAuthorizedEmailAddresses();
+    $error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
+    expect($error)->null();
+  }
+
+  private function checkUnauthorizedInNewsletter($type, $status) {
+    $newsletter = Newsletter::createOrUpdate([
+      'subject' => 'Subject',
+      'status' => $status,
+      'type' => $type,
+    ]);
+    $newsletter->sender_address = 'invalid@email.com';
+    $newsletter->save();
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'auth@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
+    $this->setMailPoetSendingMethod();
+    $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
+    $controller->checkAuthorizedEmailAddresses();
+    $error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
+    expect(count($error['invalid_senders_in_newsletters']))->equals(1);
+    expect($error['invalid_senders_in_newsletters'][0]['newsletter_id'])->equals($newsletter->id);
+    expect($error['invalid_senders_in_newsletters'][0]['sender_address'])->equals('invalid@email.com');
+    expect($error['invalid_senders_in_newsletters'][0]['subject'])->equals('Subject');
+  }
+
   private function setMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
@@ -98,5 +161,6 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }
 }
