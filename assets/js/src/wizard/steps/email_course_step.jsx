@@ -12,7 +12,7 @@ const WelcomeWizardEmailCourseStep = props => (
       scrolling="no"
       frameBorder="0"
       title="Apply to course"
-      src="https://newsletters.mailpoet.com?mailpoet_form_iframe=13"
+      src="https://www.mailpoet.com?mailpoet_form_iframe=13"
       className="mailpoet_form_iframe"
       marginWidth="0"
       marginHeight="0"
