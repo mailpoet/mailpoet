@@ -3,6 +3,7 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Carbon\Carbon;
+use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
@@ -23,6 +24,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -125,7 +127,8 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      new FeaturesController()
+      new FeaturesController(),
+      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()])
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -165,7 +168,8 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      new FeaturesController()
+      new FeaturesController(),
+      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()])
     );
 
     $response = $this->endpoint->save($valid_data);
@@ -532,7 +536,8 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      new FeaturesController()
+      new FeaturesController(),
+      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()])
     );
 
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);

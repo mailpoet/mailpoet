@@ -14,10 +14,16 @@ class AuthorizedEmailsController {
   const AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING = 'authorized_emails_addresses_check';
 
   /** @var Bridge */
-  public $bridge;
+  private $bridge;
 
   /** @var SettingsController */
   private $settings;
+
+  private $automatic_email_types = [
+    Newsletter::TYPE_WELCOME,
+    Newsletter::TYPE_NOTIFICATION,
+    Newsletter::TYPE_AUTOMATIC,
+  ];
 
   function __construct(SettingsController $settingsController, Bridge $bridge) {
     $this->settings = $settingsController;
@@ -55,6 +61,18 @@ class AuthorizedEmailsController {
     }
   }
 
+  function onNewsletterUpdate(Newsletter $newsletter, Newsletter $old_newsletter = null) {
+    if ($old_newsletter === null || $newsletter->sender_address === $old_newsletter->sender_address) {
+      return;
+    }
+    if ($newsletter->type === Newsletter::TYPE_STANDARD && $newsletter->status === Newsletter::STATUS_SCHEDULED) {
+      $this->checkAuthorizedEmailAddresses();
+    }
+    if (in_array($newsletter->type, $this->automatic_email_types, true) && $newsletter->status === Newsletter::STATUS_ACTIVE) {
+      $this->checkAuthorizedEmailAddresses();
+    }
+  }
+
   private function validateAddressesInSettings($authorized_emails, $result = []) {
     $default_sender_address = $this->settings->get('sender.address');
     $signup_confirmation_address = $this->settings->get('signup_confirmation.from.address');
@@ -74,7 +92,7 @@ class AuthorizedEmailsController {
       "(`type` = '%s' AND `status` = '%s') OR (`type` IN ('%s') AND `status` = '%s')",
       Newsletter::TYPE_STANDARD,
       Newsletter::STATUS_SCHEDULED,
-      implode("', '", [ Newsletter::TYPE_WELCOME, Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_AUTOMATIC ]),
+      implode("', '", $this->automatic_email_types),
       Newsletter::STATUS_ACTIVE
     );
 

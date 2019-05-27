@@ -21,6 +21,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
@@ -47,6 +48,9 @@ class Newsletters extends APIEndpoint {
   /** @var FeaturesController */
   private $features_controller;
 
+  /** @var AuthorizedEmailsController */
+  private $authorized_emails_controller;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
@@ -57,7 +61,8 @@ class Newsletters extends APIEndpoint {
     WPFunctions $wp,
     WCHelper $woocommerce_helper,
     SettingsController $settings,
-    FeaturesController $features_controller
+    FeaturesController $features_controller,
+    AuthorizedEmailsController $authorized_emails_controller
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
@@ -65,6 +70,7 @@ class Newsletters extends APIEndpoint {
     $this->woocommerce_helper = $woocommerce_helper;
     $this->settings = $settings;
     $this->features_controller = $features_controller;
+    $this->authorized_emails_controller = $authorized_emails_controller;
   }
 
   function get($data = []) {
@@ -113,6 +119,11 @@ class Newsletters extends APIEndpoint {
         $data['body'] = $template['body'];
       }
       unset($data['template_id']);
+    }
+
+    $old_newsletter = null;
+    if (isset($data['id'])) {
+      $old_newsletter = Newsletter::findOne(intval($data['id'])) ?: null;
     }
 
     $newsletter = Newsletter::createOrUpdate($data);
@@ -190,6 +201,7 @@ class Newsletters extends APIEndpoint {
     }
 
     $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletter);
+    $this->authorized_emails_controller->onNewsletterUpdate($newsletter, $old_newsletter);
 
     $preview_url = NewsletterUrl::getViewInBrowserUrl(
       NewsletterUrl::TYPE_LISTING_EDITOR,
