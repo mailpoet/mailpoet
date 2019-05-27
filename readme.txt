@@ -19,6 +19,8 @@ Schedule your newsletters, send them right away or set it up to send new blog po
 
 Trusted by 300,000 WordPress websites since 2011.
 
+**New!** Our Premium is now free for sites with 1,000 subscribers or less.
+
 [Visit our website to see the templates or try the demo](https://www.mailpoet.com/)
 
 = All features =
@@ -54,6 +56,8 @@ Please note:
 
 = WooCommerce emails (Premium) =
 
+**All WooCommerce features are free for stores of 1,000 customers or less.**
+
 Increase your sales and stay in touch with your customers with our emails for WooCommerce!
 
 With our WooCommerce emails, you can :
@@ -65,7 +69,7 @@ With our WooCommerce emails, you can :
 
 = Premium details =
 
-MailPoet's free version is fully featured, and comes with access to a free sending plan for up to 2,000 subscribers.
+**MailPoet Premium is entirely free and includes quality sending for users with 1,000 subscribers or less. [Read more.](https://www.mailpoet.com/free-plan/)**
 
 The Premium version adds the following features:
 
@@ -76,8 +80,6 @@ The Premium version adds the following features:
 * Send to over 2,000 subscribers with your own sending method (host, SendGrid, Amazon SES)
 
 See the [short video summary on the Premium](http://beta.docs.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
-
-Visit the Premium page inside the plugin for more info.
 
 = MailPoet Sending Service =
 Sending emails and newsletter with your host is not a good idea. You might face sending speed limitations and see your emails ending up in the spam box.
@@ -90,7 +92,7 @@ To help your sending go without a hitch, we’ve created an advanced email deliv
 
 The MailPoet Sending Service is very easy to setup, you just have to enter a key in your WordPress admin and you’re all set!
 
-[Signup now](https://account.mailpoet.com/?utm_source=wordpress&utm_medium=readme&utm_campaign=mss), it’s free for your first 2,000 readers (pay as you go afterwards).
+[Signup now](https://account.mailpoet.com/?utm_source=wordpress&utm_medium=readme&utm_campaign=mss), it’s free for your first 1,000 subscribers (pay as you go afterwards).
 
 = Translations =
 
