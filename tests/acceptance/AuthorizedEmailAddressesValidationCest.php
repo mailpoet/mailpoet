@@ -3,10 +3,11 @@
 namespace MailPoet\Test\Acceptance;
 
 use Carbon\Carbon;
-use MailPoet\Mailer\Mailer;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 
 require_once __DIR__ . '/../DataFactories/Settings.php';
+require_once __DIR__ . '/../DataFactories/Newsletter.php';
 
 class AuthorizedEmailAddressesValidationCest {
   function authorizedEmailsValidation(\AcceptanceTester $I) {
@@ -52,6 +53,42 @@ class AuthorizedEmailAddressesValidationCest {
     $I->waitForText('Settings saved');
     $I->reloadPage();
     $I->cantSee($error_message_prefix);
+    $settings->withSendingMethodSmtpMailhog();
+  }
+
+  function authorizedEmailsInNewslettersValidation(\AcceptanceTester $I) {
+    $subject = 'Subject Unauthorized Welcome Email';
+    (new Newsletter())->withSubject($subject)
+      ->withActiveStatus()
+      ->withWelcomeType()
+      ->withSenderAddress('unauthorized1@email.com')
+      ->create();
+    $settings = new Settings();
+    $settings->withSendingMethodMailPoet();
+    $settings->withInstalledAt(new Carbon('2019-03-07'));
+    $I->wantTo('Check that emails are validated on setting change');
+    $I->login();
+
+    // Save settings to trigger initial validation
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="settings-submit-button"]');
+    $I->waitForText('Settings saved');
+
+    // Error notice is visible
+    $I->amOnMailPoetPage('Emails');
+    $update_link_text = 'Update the from address of ' . $subject;
+    $I->waitForText('Your automatic emails has been paused, because some email addresses hasn’t been authorized yet.');
+    $I->waitForText($update_link_text);
+
+    // Setting the correct address will fix the error
+    $I->click($update_link_text);
+    $I->switchToNextTab();
+    $I->waitForElement('[name="sender_address"]');
+    $I->fillField('[name="sender_address"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
+    $I->click('Activate');
+    $I->waitForListingItemsToLoad();
+    $I->cantSee('Your automatic emails has been paused, because some email addresses hasn’t been authorized yet.');
+    $I->cantSee('Update the from address of Subject 1');
     $settings->withSendingMethodSmtpMailhog();
   }
 }
