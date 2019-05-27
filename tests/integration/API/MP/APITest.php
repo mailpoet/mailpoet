@@ -28,34 +28,66 @@ class APITest extends \MailPoetTest {
     );
   }
 
-  function testItReturnsSubscriberFields() {
-    $custom_field = CustomField::create();
-    $custom_field->name = 'test custom field';
-    $custom_field->type = CustomField::TYPE_TEXT;
-    $custom_field->save();
-
+  function testItReturnsDefaultSubscriberFields() {
     $response = $this->getApi()->getSubscriberFields();
 
-    expect($response)->equals(
-      [
-        [
-          'id' => 'email',
-          'name' => __('Email', 'mailpoet'),
-        ],
-        [
-          'id' => 'first_name',
-          'name' => __('First name', 'mailpoet'),
-        ],
-        [
-          'id' => 'last_name',
-          'name' => __('Last name', 'mailpoet'),
-        ],
-        [
-          'id' => 'cf_' . $custom_field->id,
-          'name' => $custom_field->name,
-        ],
-      ]
-    );
+    expect($response)->contains([
+      'id' => 'email',
+      'name' => __('Email', 'mailpoet'),
+      'type' => 'text',
+      'params' => [
+        'required' => '1',
+      ],
+    ]);
+    expect($response)->contains([
+      'id' => 'first_name',
+      'name' => __('First name', 'mailpoet'),
+      'type' => 'text',
+      'params' => [
+        'required' => '',
+      ],
+    ]);
+    expect($response)->contains([
+      'id' => 'last_name',
+      'name' => __('Last name', 'mailpoet'),
+      'type' => 'text',
+      'params' => [
+        'required' => '',
+      ],
+    ]);
+  }
+
+  function testItReturnsCustomFields() {
+    $custom_field1 = CustomField::createOrUpdate([
+      'name' => 'text custom field',
+      'type' => CustomField::TYPE_TEXT,
+      'params' => ['required' => '1', 'date_type' => 'year_month_day'],
+    ]);
+    $custom_field2 = CustomField::createOrUpdate([
+      'name' => 'checkbox custom field',
+      'type' => CustomField::TYPE_CHECKBOX,
+      'params' => ['required' => ''],
+    ]);
+    $response = $this->getApi()->getSubscriberFields();
+    expect($response)->contains([
+      'id' => 'cf_' . $custom_field1->id,
+      'name' => 'text custom field',
+      'type' => 'text',
+      'params' => [
+        'required' => '1',
+        'label' => 'text custom field',
+        'date_type' => 'year_month_day',
+      ],
+    ]);
+    expect($response)->contains([
+      'id' => 'cf_' . $custom_field2->id,
+      'name' => 'checkbox custom field',
+      'type' => 'checkbox',
+      'params' => [
+        'required' => '',
+        'label' => 'checkbox custom field',
+      ],
+    ]);
   }
 
   function testItDoesNotSubscribeMissingSubscriberToLists() {
