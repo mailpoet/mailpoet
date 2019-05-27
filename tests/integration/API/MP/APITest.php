@@ -11,6 +11,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
@@ -348,6 +349,19 @@ class APITest extends \MailPoetTest {
     }
   }
 
+
+  function testItOnlyAcceptsWhitelistedProperties() {
+    $subscriber = [
+      'email' => 'test-ignore-status@example.com',
+      'first_name' => '',
+      'last_name' => '',
+      'status' => 'bounced',
+    ];
+
+    $result = $this->getApi()->addSubscriber($subscriber);
+    expect($result['status'])->equals('unconfirmed');
+  }
+
   function testItDoesNotAddExistingSubscriber() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -425,6 +439,8 @@ class APITest extends \MailPoetTest {
   }
 
   function testItSchedulesWelcomeNotificationByDefaultAfterAddingSubscriber() {
+    $settings = new SettingsController();
+    $settings->set('signup_confirmation.enabled', false);
     $API = Stub::makeEmptyExcept(
       \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
@@ -435,13 +451,14 @@ class APITest extends \MailPoetTest {
       ], $this);
     $subscriber = [
       'email' => 'test@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
     ];
     $segments = [1];
     $API->addSubscriber($subscriber, $segments);
   }
 
   function testItThrowsIfWelcomeEmailFails() {
+    $settings = new SettingsController();
+    $settings->set('signup_confirmation.enabled', false);
     $task = ScheduledTask::create();
     $task->type = 'sending';
     $task->setError("Big Error");
@@ -458,7 +475,6 @@ class APITest extends \MailPoetTest {
     $API = $this->getApi();
     $subscriber = [
       'email' => 'test@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
     ];
     $segments = [$segment->id()];
     $this->setExpectedException('\Exception');
@@ -750,6 +766,11 @@ class APITest extends \MailPoetTest {
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('This subscriber does not exist.');
     }
+  }
+
+  function _before() {
+    $settings = new SettingsController();
+    $settings->set('signup_confirmation.enabled', true);
   }
 
   function _after() {
