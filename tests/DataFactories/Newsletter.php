@@ -24,6 +24,7 @@ class Newsletter {
       'preheader' => 'Some preheader',
       'type' => 'standard',
       'status' => 'draft',
+      'sender_address' => null,
       ];
     $this->options = [];
     $this->segments = [];
@@ -49,12 +50,17 @@ class Newsletter {
   }
 
   public function withActiveStatus() {
-    $this->data['status'] = 'active';
+    $this->data['status'] = \MailPoet\Models\Newsletter::STATUS_ACTIVE;
     return $this;
   }
 
   public function withSentStatus() {
-    $this->data['status'] = 'sent';
+    $this->data['status'] = \MailPoet\Models\Newsletter::STATUS_SENT;
+    return $this;
+  }
+
+  public function withSenderAddress($address) {
+    $this->data['sender_address'] = $address;
     return $this;
   }
 
@@ -226,6 +232,10 @@ class Newsletter {
           'value' => $option_value,
         ]
       );
+    }
+    if ($this->data['sender_address']) {
+      $newsletter->sender_address = $this->data['sender_address'];
+      $newsletter->save();
     }
     foreach ($this->segments as $segment_id) {
       NewsletterSegment::createOrUpdate([
