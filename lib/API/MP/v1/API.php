@@ -41,23 +41,42 @@ class API {
       [
         'id' => 'email',
         'name' => WPFunctions::get()->__('Email', 'mailpoet'),
+        'type' => 'text',
+        'params' => [
+          'required' => '1',
+        ],
       ],
       [
         'id' => 'first_name',
         'name' => WPFunctions::get()->__('First name', 'mailpoet'),
+        'type' => 'text',
+        'params' => [
+          'required' => '',
+        ],
       ],
       [
         'id' => 'last_name',
         'name' => WPFunctions::get()->__('Last name', 'mailpoet'),
+        'type' => 'text',
+        'params' => [
+          'required' => '',
+        ],
       ],
     ];
 
-    $custom_fields = CustomField::selectMany(['id', 'name'])->findMany();
+    $custom_fields = CustomField::selectMany(['id', 'name', 'type', 'params'])->findMany();
     foreach ($custom_fields as $custom_field) {
-      $data[] = [
+      $result = [
         'id' => 'cf_' . $custom_field->id,
         'name' => $custom_field->name,
+        'type' => $custom_field->type,
       ];
+      if (is_serialized($custom_field->params)) {
+        $result['params'] = unserialize($custom_field->params);
+      } else {
+        $result['params'] = $custom_field->params;
+      }
+      $data[] = $result;
     }
 
     return $data;
