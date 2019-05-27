@@ -5,6 +5,8 @@ namespace MailPoet\Test\Services;
 use Carbon\Carbon;
 use Codeception\Stub\Expected;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Setting;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -116,6 +118,45 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller->checkAuthorizedEmailAddresses();
     $error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
     expect($error)->null();
+  }
+
+  function testItResetsUnauthorizedErrorInMailerLog() {
+    $log = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_AUTHORIZATION, 'message');
+    MailerLog::updateMailerLog($log);
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'auth@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
+    $this->setMailPoetSendingMethod();
+    $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
+    $controller->checkAuthorizedEmailAddresses();
+    $error = MailerLog::getError();
+    expect($error)->null();
+  }
+
+  function testItDoesNotResetOtherErrorInMailerLog() {
+    $log = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_SEND, 'message');
+    MailerLog::updateMailerLog($log);
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'auth@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
+    $this->setMailPoetSendingMethod();
+    $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
+    $controller->checkAuthorizedEmailAddresses();
+    $error = MailerLog::getError();
+    expect($error['operation'])->equals(MailerError::OPERATION_SEND);
+  }
+
+  function testItDoesNotResetMailerLogItErrorPersists() {
+    $log = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_AUTHORIZATION, 'message');
+    MailerLog::updateMailerLog($log);
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'invalid@email.com');
+    $this->settings->set('signup_confirmation.from.address', 'invalid@email.com');
+    $this->setMailPoetSendingMethod();
+    $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
+    $controller->checkAuthorizedEmailAddresses();
+    $error = MailerLog::getError();
+    expect($error['operation'])->equals(MailerError::OPERATION_AUTHORIZATION);
   }
 
   private function checkUnauthorizedInNewsletter($type, $status) {

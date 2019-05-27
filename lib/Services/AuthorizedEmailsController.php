@@ -3,6 +3,8 @@
 namespace MailPoet\Services;
 
 use Carbon\Carbon;
+use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Settings\SettingsController;
 
@@ -27,6 +29,7 @@ class AuthorizedEmailsController {
     $authorized_emails_release_date = new Carbon('2019-03-06');
     if (!Bridge::isMPSendingServiceEnabled() || $installed_at < $authorized_emails_release_date) {
       $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
+      $this->updateMailerLog();
       return;
     }
 
@@ -41,6 +44,7 @@ class AuthorizedEmailsController {
     $result = $this->validateAddressesInSettings($authorized_emails, $result);
     $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorized_emails, $result);
     $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, $result ?: null);
+    $this->updateMailerLog($result);
   }
 
   function onSettingsSave($settings) {
@@ -94,6 +98,19 @@ class AuthorizedEmailsController {
 
     $result['invalid_senders_in_newsletters'] = $invalid_senders_in_newsletters;
     return $result;
+  }
+
+  /**
+   * @param array|null $error
+   */
+  private function updateMailerLog(array $error = null) {
+    if ($error) {
+      return;
+    }
+    $mailer_log_error = MailerLog::getError();
+    if ($mailer_log_error && $mailer_log_error['operation'] === MailerError::OPERATION_AUTHORIZATION) {
+      MailerLog::resumeSending();
+    }
   }
 
   private function validateAuthorizedEmail($authorized_emails, $email) {
