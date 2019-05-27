@@ -20,6 +20,9 @@ class PermanentNotices {
   /** @var UnauthorizedEmailNotice */
   private $unauthorized_emails_notice;
 
+  /** @var UnauthorizedEmailInNewslettersNotice */
+  private $unauthorized_emails_in_newsletters_notice;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -29,6 +32,7 @@ class PermanentNotices {
     $this->after_migration_notice = new AfterMigrationNotice();
     $this->discounts_announcement = new DiscountsAnnouncement();
     $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(new SettingsController, $this->wp);
+    $this->unauthorized_emails_in_newsletters_notice = new UnauthorizedEmailInNewslettersNotice(new SettingsController, $this->wp);
   }
 
   public function init() {
@@ -46,6 +50,9 @@ class PermanentNotices {
     );
     $this->unauthorized_emails_notice->init(
       Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+    );
+    $this->unauthorized_emails_in_newsletters_notice->init(
+      Menu::isOnMailPoetAdminPage($exclude = null, $page_id = 'mailpoet-newsletters')
     );
     $this->discounts_announcement->init(
       empty($_GET['page'])
