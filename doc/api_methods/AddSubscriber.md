@@ -8,9 +8,10 @@ This method allows a subscriber to be created, adds them into lists, and handles
 
 If sign-up confirmation (double opt-in) is enabled in the MailPoet settings a subscriber is created with status `unconfirmed` otherwise the status is set to `subscribed`.
 
-*A confirmation email* is an email which is sent to a subscriber so that they can confirm his subscription. It is sent only if sign-up confirmation is enabled in the MailPoet settings.
-*A welcome email* is an automatic email which is sent to a new subscriber. This email is scheduled only if sign-up confirmation is disabled and a welcome email is configured for some of given lists. In case of required sign-up confirmation, it is scheduled later after a subscriber confirms the subscription.
-*An admin notification email* is sent to the site admin to inform them about a new subscription. It is sent only if the notification feature is enabled in the MailPoet setting.
+- *A confirmation email* is an email which is sent to a subscriber so that they can confirm his subscription. It is sent only if sign-up confirmation is enabled in the MailPoet settings.
+- *A welcome email* is an automatic email which is sent to a new subscriber. This email is scheduled only if sign-up confirmation is disabled and a welcome email is configured for some of given lists. In case of required sign-up confirmation, it is scheduled later after a subscriber confirms the subscription.
+- *An admin notification email* is sent to the site admin to inform them about a new subscription. It is sent only if the notification feature is enabled in the MailPoet setting.
+
 All these emails can be disabled using `$options`.
 
 A subscriber can be added only once. This method throws an `\Exception` in case of adding an existing subscriber.

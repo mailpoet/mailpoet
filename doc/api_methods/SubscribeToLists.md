@@ -6,8 +6,12 @@
 
 This method allows adding an existing subscriber into lists and handles confirmation email and admin notification email sending.
 
-*A confirmation email* is an email which is sent to a subscriber so they can confirm their subscription. It is sent only if sign-up confirmation is enabled in MailPoet settings and subscriber has not received any confirmation email yet.
-*A welcome email* is an automatic email which is sent to a new subscriber. This email is scheduled only if sign-up confirmation is disabled and some welcome email is configured for some of given lists.
+- *A confirmation email* is an email which is sent to a subscriber so they can confirm their subscription. It is sent only if sign-up confirmation is enabled in MailPoet settings and subscriber has not received any confirmation email yet.
+- *A welcome email* is an automatic email which is sent to a new subscriber. This email is scheduled only if sign-up confirmation is disabled and some welcome email is configured for some of given lists.
+- *An admin notification email* is sent to the site admin to inform them about a new subscription. It is sent only if the notification feature is enabled in the MailPoet setting.
+
+All these emails can be disabled using `$options`.
+
 
 It returns a subscriber. See [Get Subscriber](GetSubscriber.md) for a subscriber data structure.
 
@@ -25,3 +29,4 @@ All options are optional. If omitted, a default value is used.
 | --- | --- | --- | --- |
 | send_confirmation_email | boolean | true | Can be used to disable confirmation email. Otherwise, a confirmation email is sent as described above.|
 | schedule_welcome_email | boolean | true | Can be used to disable welcome email. Otherwise, a welcome email is scheduled as described above.|
+| skip_subscriber_notification | boolean | false | Can be used to disable an admin notification email. Otherwise, an admin notification email is sent as described above.|
