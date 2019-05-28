@@ -617,7 +617,7 @@ class RoboFile extends \Robo\Tasks {
   public function releasePublish($version = null) {
     $version = $this->releaseVersionGetNext($version);
     return $this->collectionBuilder()
-      ->addCode(function ()  use ($version) {
+      ->addCode(function () use ($version) {
         return $this->releaseCheckPullRequest($version);
       })
       ->addCode(function () {
