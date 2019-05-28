@@ -1,0 +1,23 @@
+.mailpoet_history_wrapper {
+  display: flex;
+  padding: 12px 20px;
+}
+
+.mailpoet_history_arrow {
+  cursor: pointer;
+  margin-right: 20px;
+
+  svg {
+    display: inline-block;
+    height: 26px;
+    stroke: #0074a2;
+    vertical-align: top;
+    width: 26px;
+  }
+}
+
+.mailpoet_history_arrow_inactive {
+  cursor: not-allowed;
+
+  svg { stroke: #a4a4a4; }
+}
