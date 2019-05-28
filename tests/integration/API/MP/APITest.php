@@ -245,19 +245,43 @@ class APITest extends \MailPoetTest {
     $segments = [$segment->id];
 
     // should not send
-    $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false]);
+    $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => true]);
     expect($sent)->equals(false);
 
     // should send
-    $API->subscribeToLists($subscriber->email, $segments);
+    $API->subscribeToLists($subscriber->email, $segments, ['skip_subscriber_notification' => true]);
     expect($sent)->equals(true);
 
     // should not send
     $sent = false;
     $subscriber->count_confirmations = 1;
     $subscriber->save();
-    $API->subscribeToLists($subscriber->email, $segments);
+    $API->subscribeToLists($subscriber->email, $segments, ['skip_subscriber_notification' => true]);
     expect($sent)->equals(false);
+  }
+
+  function testItSendsNotifiationEmailWhenBeingAddedToList() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
+    $subscriber->save();
+    $segment = Segment::createOrUpdate([
+      'name' => 'Default',
+      'type' => Segment::TYPE_DEFAULT,
+    ]);
+    $segment->save();
+    $segments = [$segment->id];
+
+    // should not send
+    $notificationMailer = $this->make(NewSubscriberNotificationMailer::class, ['send' => \Codeception\Stub\Expected::never()]);
+    $API = new \MailPoet\API\MP\v1\API($notificationMailer, $this->makeEmpty(ConfirmationEmailMailer::class), $this->makeEmpty(RequiredCustomFieldValidator::class));
+    $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => true]);
+
+
+    // should send
+    $notificationMailer = $this->make(NewSubscriberNotificationMailer::class, ['send' => \Codeception\Stub\Expected::once()]);
+    $API = new \MailPoet\API\MP\v1\API($notificationMailer, $this->makeEmpty(ConfirmationEmailMailer::class), $this->makeEmpty(RequiredCustomFieldValidator::class));
+    $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => false]);
   }
 
   function testItSubscribesSubscriberWithEmailIdentifier() {
@@ -293,7 +317,7 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT,
       ]
     );
-    $API->subscribeToLists($subscriber->id, [$segment->id]);
+    $API->subscribeToLists($subscriber->id, [$segment->id], ['skip_subscriber_notification' => true]);
   }
 
   function testItDoesNotScheduleWelcomeNotificationAfterSubscribingSubscriberToListsIfStatusIsNotSubscribed() {
@@ -312,7 +336,7 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT,
       ]
     );
-    $API->subscribeToLists($subscriber->id, [$segment->id]);
+    $API->subscribeToLists($subscriber->id, [$segment->id], ['skip_subscriber_notification' => true]);
   }
 
   function testItDoesNotScheduleWelcomeNotificationAfterSubscribingSubscriberToListsWhenDisabledByOption() {
@@ -332,7 +356,7 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT,
       ]
     );
-    $options = ['schedule_welcome_email' => false];
+    $options = ['schedule_welcome_email' => false, 'skip_subscriber_notification' => true];
     $API->subscribeToLists($subscriber->id, [$segment->id], $options);
   }
 

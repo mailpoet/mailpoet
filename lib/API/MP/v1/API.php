@@ -89,6 +89,7 @@ class API {
   function subscribeToLists($subscriber_id, array $list_ids, $options = []) {
     $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
     $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
+    $skip_subscriber_notification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true) ? true : false;
 
     if (empty($list_ids)) {
       throw new \Exception(__('At least one segment ID is required.', 'mailpoet'));
@@ -151,6 +152,10 @@ class API {
           WPFunctions::get()->__(sprintf('Subscriber added to lists, but confirmation email failed to send: %s', strtolower(implode(', ', $subscriber->getErrors()))), 'mailpoet')
         );
       }
+    }
+
+    if (!$skip_subscriber_notification) {
+      $this->sendSubscriberNotification($subscriber, $found_segments_ids);
     }
 
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
