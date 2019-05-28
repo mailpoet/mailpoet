@@ -15,7 +15,7 @@ This method returns list of all properties available for a subscriber (default +
 | id | string | 11 chars |Field Id |
 | name | string | 90 chars | Human readable name. Intended to be used, as an example, as a label for form input. |
 | type | string | - | Type of the field. Possible values are: `text`, `date`, `textarea`, `radio`, `checkbox`, `select` |
-| params | array | - | Contains various information, see examples bellow. |
+| params | array | - | Contains various information, see examples below. |
 
 ## Response Example
 ```php
@@ -55,7 +55,7 @@ This method returns list of all properties available for a subscriber (default +
          'value' => 'value 1',
        ],
        1 => [
-         'is_checked' => '1', 
+         'is_checked' => '1',
          'value' => 'value 2',
        ],
      ],
