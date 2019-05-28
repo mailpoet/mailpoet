@@ -566,7 +566,8 @@ class RoboFile extends \Robo\Tasks {
       ->exec('git status --porcelain')
       ->run();
     if (strlen(trim($git_status->getMessage())) > 0) {
-      throw new \Exception('Please make sure your working directory is clean before running release.');
+      $this->yell('Please make sure your working directory is clean before running release.', 40, 'red');
+      exit(1);
     }
     // checkout master and pull from remote
     $this->taskGitStack()
@@ -580,7 +581,8 @@ class RoboFile extends \Robo\Tasks {
       ->exec('git ls-remote --heads git@github.com:mailpoet/mailpoet.git release')
       ->run();
     if (strlen(trim($release_branch_status->getMessage())) > 0) {
-      throw new \Exception('Delete old release branch before running release.');
+      $this->yell('Delete old release branch before running release.', 40, 'red');
+      exit(1);
     }
     $git_status = $this->taskGitStack()
       ->printOutput(false)
