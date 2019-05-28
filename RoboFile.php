@@ -608,8 +608,7 @@ class RoboFile extends \Robo\Tasks {
       ->stopOnFail()
       ->add('-A')
       ->commit('Release ' . $version)
-      ->tag($version)
-      ->exec('git push --set-upstream git@github.com:mailpoet/mailpoet.git release --follow-tags')
+      ->exec('git push --set-upstream git@github.com:mailpoet/mailpoet.git release')
       ->run();
     $this->createGitHubController()
       ->createReleasePullRequest($version);
