@@ -22,9 +22,6 @@ class GitHubController {
   /** @var HttpClient */
   private $http_client;
 
-  /** @var HttpClient */
-  private $http_client_no_base;
-
   public function __construct($username, $token, $project) {
     $this->zip_filename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $github_path = $project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium';
@@ -34,12 +31,6 @@ class GitHubController {
         'Accept' => 'application/vnd.github.v3+json',
       ],
       'base_uri' => "https://api.github.com/repos/mailpoet/$github_path/",
-    ]);
-    $this->http_client_no_base = new Client([
-      'auth' => [$username, $token],
-      'headers' => [
-        'Accept' => 'application/vnd.github.v3+json',
-      ],
     ]);
   }
 
@@ -100,7 +91,7 @@ class GitHubController {
   }
 
   private function checkPullRequestChecks($statuses_url) {
-    $response = $this->http_client_no_base->get($statuses_url);
+    $response = $this->http_client->get($statuses_url);
     $response = json_decode($response->getBody()->getContents(), true);
 
     // Find checks. Statuses are returned in reverse chronological order. We need to get the first of each type
