@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.26.1
+Stable tag: 3.27.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -175,6 +175,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.27.0 - 2019-05-28 =
+* Added: API documentation for developers on github.com/mailpoet/mailpoet;
+* Fixed: duplicating scheduled newsletters to not include the original scheduled date;
+* Fixed: some translations that could previously be only in English.
 
 = 3.26.1 - 2019-05-21 =
 * Added: Woo Commerce customers now have their own list;
