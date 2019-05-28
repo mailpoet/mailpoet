@@ -357,6 +357,7 @@ const testConfig = {
       'components/config.spec.js',
       'components/content.spec.js',
       'components/heading.spec.js',
+      'components/history.spec.js',
       'components/save.spec.js',
       'components/sidebar.spec.js',
       'components/styles.spec.js',
