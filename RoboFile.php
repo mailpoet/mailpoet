@@ -584,16 +584,19 @@ class RoboFile extends \Robo\Tasks {
       $this->yell('Delete old release branch before running release.', 40, 'red');
       exit(1);
     }
+    // check if local branch with name "release" exists
     $git_status = $this->taskGitStack()
       ->printOutput(false)
       ->exec('git rev-parse --verify release')
       ->run();
     if ($git_status->wasSuccessful()) {
+      // delete local "release" branch
       $this->taskGitStack()
         ->printOutput(false)
         ->exec('git branch -D release')
         ->run();
     }
+    // create a new "release" branch and switch to it.
     $this->taskGitStack()
       ->printOutput(false)
       ->exec('git checkout -b release')
