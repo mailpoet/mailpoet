@@ -163,6 +163,7 @@ testHelpers.loadTemplate('blocks/text/widget.hbs', window, { id: 'newsletter_edi
 testHelpers.loadTemplate('blocks/text/settings.hbs', window, { id: 'newsletter_editor_template_text_settings' });
 
 testHelpers.loadTemplate('components/heading.hbs', window, { id: 'newsletter_editor_template_heading' });
+testHelpers.loadTemplate('components/history.hbs', window, { id: 'newsletter_editor_template_history' });
 testHelpers.loadTemplate('components/save.hbs', window, { id: 'newsletter_editor_template_save' });
 testHelpers.loadTemplate('components/styles.hbs', window, { id: 'newsletter_editor_template_styles' });
 
@@ -177,6 +178,7 @@ global.templates = {
   styles: Handlebars.compile(jQuery('#newsletter_editor_template_styles').html()),
   save: Handlebars.compile(jQuery('#newsletter_editor_template_save').html()),
   heading: Handlebars.compile(jQuery('#newsletter_editor_template_heading').html()),
+  history: Handlebars.compile(jQuery('#newsletter_editor_template_history').html()),
 
   sidebar: Handlebars.compile(jQuery('#newsletter_editor_template_sidebar').html()),
   sidebarContent: Handlebars.compile(jQuery('#newsletter_editor_template_sidebar_content').html()),

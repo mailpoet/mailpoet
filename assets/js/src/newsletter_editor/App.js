@@ -12,6 +12,7 @@ var AppView = Marionette.View.extend({
     sidebarRegion: '#mailpoet_editor_sidebar',
     bottomRegion: '#mailpoet_editor_bottom',
     headingRegion: '#mailpoet_editor_heading',
+    historyRegion: '#mailpoet_editor_history',
     topRegion: '#mailpoet_editor_top',
   },
 

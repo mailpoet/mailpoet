@@ -238,6 +238,10 @@
     'newsletter/templates/components/heading.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_history',
+    'newsletter/templates/components/history.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_save',
     'newsletter/templates/components/save.hbs'
   ) %>
@@ -450,6 +454,9 @@
       ),
       heading: Handlebars.compile(
         jQuery('#newsletter_editor_template_heading').html()
+      ),
+      history: Handlebars.compile(
+        jQuery('#newsletter_editor_template_history').html()
       ),
 
       sidebar: Handlebars.compile(
