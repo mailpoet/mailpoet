@@ -178,8 +178,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 = 3.27.0 - 2019-05-28 =
 * Added: API documentation for developers on github.com/mailpoet/mailpoet;
-* Fixed: duplicating scheduled newsletters to not include the original scheduled date;
-* Fixed: some translations that could previously be only in English.
+* Fixed: email editor's text editing not working due to TinyMCE conflict with some plugins;
+* Fixed: some translations that could previously be only in English;
+* Fixed: duplicating scheduled newsletters to not include the original scheduled date.
 
 = 3.26.1 - 2019-05-21 =
 * Added: Woo Commerce customers now have their own list;
