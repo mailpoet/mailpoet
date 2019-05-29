@@ -47,6 +47,11 @@ Module.StylesModel = SuperModel.extend({
     // apply model defaults recursively (not only on top level)
     this.set(jQuery.extend(true, {}, this.defaults, data));
     this.on('change', function () { App.getChannel().trigger('autoSave'); }); // eslint-disable-line func-names
+    App.getChannel().on('historyUpdate', this.onHistoryUpdate, this);
+  },
+
+  onHistoryUpdate: function onHistoryUpdate(json) {
+    this.set(json.globalStyles);
   },
 });
 
