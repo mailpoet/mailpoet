@@ -12,6 +12,11 @@ Module.HistoryView = Marionette.View.extend({
     undo: null,
   },
 
+  events: {
+    'click #mailpoet-history-arrow-undo': 'undo',
+    'click #mailpoet-history-arrow-redo': 'redo',
+  },
+
   model: {
     states: [], // from newest
     currentStateIndex: 0,
@@ -50,6 +55,18 @@ Module.HistoryView = Marionette.View.extend({
 
   canRedo: function canRedo() {
     return this.model.currentStateIndex !== 0;
+  },
+
+  undo: function undo() {
+    if (!this.canUndo()) {
+      return;
+    }
+  },
+
+  redo: function redo() {
+    if (!this.canRedo()) {
+      return;
+    }
   },
 
   updateArrowsUI: function updateArrowsUI() {
