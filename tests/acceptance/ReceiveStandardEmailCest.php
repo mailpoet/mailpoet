@@ -7,7 +7,7 @@ use Codeception\Util\Locator;
 class ReceiveStandardEmailCest {
 
   function receiveStandardEmail(\AcceptanceTester $I) {
-    $newsletter_title = 'Receive Test';
+    $newsletter_title = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $standard_template = '[data-automation-id=\'select_template_0\']';
     $title_element = '[data-automation-id=\'newsletter_title\']';
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
