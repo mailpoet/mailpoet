@@ -34,7 +34,7 @@ Module.HistoryView = Marionette.View.extend({
   onAttach: function onRender() {
     this.elements.redo = jQuery('#mailpoet-history-arrow-redo');
     this.elements.undo = jQuery('#mailpoet-history-arrow-undo');
-    this.updateArrowsUI();
+    this.setCurrentState(App.toJSON());
   },
 
   setCurrentState: function setCurrentState(json) {
@@ -44,7 +44,7 @@ Module.HistoryView = Marionette.View.extend({
     if (this.model.currentStateIndex > 0) {
       this.model.states.splice(0, this.model.currentStateIndex);
     }
-    this.model.states.unshift(json.body);
+    this.model.states.unshift(JSON.stringify(json.body));
     this.model.currentStateIndex = 0;
     this.model.states.length = Math.min(this.model.states.length, this.MAX_HISTORY_STATES);
     this.updateArrowsUI();
