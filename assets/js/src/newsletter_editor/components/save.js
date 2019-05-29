@@ -11,6 +11,7 @@ import _ from 'underscore';
 
 var Module = {};
 var saveTimeout;
+var skipNextAutoSave;
 
 // Save editor contents to server
 Module.save = function () {
@@ -292,6 +293,10 @@ Module.autoSave = function () {
 
   Module._cancelAutosave();
   saveTimeout = setTimeout(function () {
+    if (skipNextAutoSave) {
+      skipNextAutoSave = false;
+      return;
+    }
     App.getChannel().request('save').always(function () {
       Module._cancelAutosave();
     });
@@ -303,6 +308,10 @@ Module._cancelAutosave = function () {
 
   clearTimeout(saveTimeout);
   saveTimeout = undefined;
+};
+
+Module.onHistoryUpdate = function onHistoryUpdate() {
+  skipNextAutoSave = true;
 };
 
 Module.beforeExitWithUnsavedChanges = function (e) {
@@ -325,6 +334,7 @@ App.on('before:start', function (BeforeStartApp) {
   var Application = BeforeStartApp;
   Application.save = Module.save;
   Application.getChannel().on('autoSave', Module.autoSave);
+  Application.getChannel().on('historyUpdate', Module.onHistoryUpdate);
 
   window.onbeforeunload = Module.beforeExitWithUnsavedChanges;
 
