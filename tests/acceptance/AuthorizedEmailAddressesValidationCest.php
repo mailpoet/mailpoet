@@ -77,7 +77,7 @@ class AuthorizedEmailAddressesValidationCest {
     // Error notice is visible
     $I->amOnMailPoetPage('Emails');
     $update_link_text = 'Update the from address of ' . $subject;
-    $I->waitForText('Your automatic emails has been paused, because some email addresses hasn’t been authorized yet.');
+    $I->waitForText('Your automatic emails have been paused, because some email addresses haven’t been authorized yet.');
     $I->waitForText($update_link_text);
 
     // Setting the correct address will fix the error
@@ -87,7 +87,7 @@ class AuthorizedEmailAddressesValidationCest {
     $I->fillField('[name="sender_address"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
     $I->click('Activate');
     $I->waitForListingItemsToLoad();
-    $I->cantSee('Your automatic emails has been paused, because some email addresses hasn’t been authorized yet.');
+    $I->cantSee('Your automatic emails have been paused, because some email addresses haven’t been authorized yet.');
     $I->cantSee('Update the from address of Subject 1');
     $settings->withSendingMethodSmtpMailhog();
   }
