@@ -36,11 +36,13 @@ class RevenueTrackingCookieCest {
 
   function cookieIsStoredOnClick(\AcceptanceTester $I) {
     $I->wantTo('Test Revenue cookie is saved');
-    $newsletter_subject = 'Receive Test';
+    $newsletter_subject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $newsletter = (new Newsletter())->withSubject($newsletter_subject)->create();
     // make sure the settings is disabled
     $this->settings->withTrackingEnabled()->withCookieRevenueTrackingDisabled();
     $segment_name = $I->createListWithSubscriber();
+    // make sure a post exists
+    $I->cli('post create --allow-root --post_status=publish --post_type=post --post_title=Lorem --post_content=Ipsum');
 
     $I->login();
     // enable the settings
@@ -73,11 +75,13 @@ class RevenueTrackingCookieCest {
 
   function cookieIsNotStoredWhenSettingsDisabled(\AcceptanceTester $I) {
     $I->wantTo('Test Revenue cookie is saved');
-    $newsletter_subject = 'Receive Test';
+    $newsletter_subject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $newsletter = (new Newsletter())->withSubject($newsletter_subject)->create();
     // make sure the settings is enabled
     $this->settings->withTrackingEnabled()->withCookieRevenueTracking();
     $segment_name = $I->createListWithSubscriber();
+    // make sure a post exists
+    $I->cli('post create --allow-root --post_status=publish --post_type=post --post_title=Lorem --post_content=Ipsum');
 
     $I->login();
     // dis the settings

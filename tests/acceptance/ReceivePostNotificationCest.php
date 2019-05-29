@@ -24,7 +24,7 @@ class ReceivePostNotificationCest {
 
   function receivePostNotification(\AcceptanceTester $I) {
     $I->wantTo('Receive a post notification email');
-    $newsletter_subject = 'Post Notification Receive Test';
+    $newsletter_subject = 'Post Notification Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $post_title = 'A post ' . \MailPoet\Util\Security::generateRandomString();
 
     $segment_factory = new Segment();
