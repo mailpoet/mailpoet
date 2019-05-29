@@ -28,16 +28,16 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   initialize: function initialize() {
-    App.getChannel().on('afterEditorSave', this.setCurrentState, this);
+    App.getChannel().on('afterEditorSave', this.addState, this);
   },
 
   onAttach: function onRender() {
     this.elements.redo = jQuery('#mailpoet-history-arrow-redo');
     this.elements.undo = jQuery('#mailpoet-history-arrow-undo');
-    this.setCurrentState(App.toJSON());
+    this.addState(App.toJSON());
   },
 
-  setCurrentState: function setCurrentState(json) {
+  addState: function addState(json) {
     if (!json || !json.body) {
       return;
     }
@@ -51,7 +51,7 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   canUndo: function canUndo() {
-    return this.model.currentStateIndex < (this.model.states.length - 1)
+    return this.model.currentStateIndex < (this.model.states.length - 1);
   },
 
   canRedo: function canRedo() {
@@ -78,11 +78,11 @@ Module.HistoryView = Marionette.View.extend({
     if (this.canUndo()) {
       this.elements.undo.removeClass('mailpoet_history_arrow_inactive');
       this.elements.undo.prop('title', MailPoet.I18n.t('canUndo'));
-    };
+    }
     if (this.canRedo()) {
       this.elements.redo.removeClass('mailpoet_history_arrow_inactive');
       this.elements.redo.prop('title', MailPoet.I18n.t('canRedo'));
-    };
+    }
   },
 });
 
