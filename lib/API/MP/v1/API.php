@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\API\MP\v1;
 
+use MailPoet\CustomFields\ApiDataSanitizer;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -26,14 +27,19 @@ class API {
   /** @var RequiredCustomFieldValidator */
   private $required_custom_field_validator;
 
+  /** @var ApiDataSanitizer */
+  private $custom_fields_data_sanitizer;
+
   public function __construct(
     NewSubscriberNotificationMailer $new_subscriber_notification_mailer,
     ConfirmationEmailMailer $confirmation_email_mailer,
-    RequiredCustomFieldValidator $required_custom_field_validator
+    RequiredCustomFieldValidator $required_custom_field_validator,
+    ApiDataSanitizer $custom_fields_data_sanitizer
   ) {
     $this->new_subscriber_notification_mailer = $new_subscriber_notification_mailer;
     $this->confirmation_email_mailer = $confirmation_email_mailer;
     $this->required_custom_field_validator = $required_custom_field_validator;
+    $this->custom_fields_data_sanitizer = $custom_fields_data_sanitizer;
   }
 
   function getSubscriberFields() {
@@ -80,6 +86,23 @@ class API {
     }
 
     return $data;
+  }
+
+  function addSubscriberField(array $data = []) {
+    try {
+      $custom_field = CustomField::createOrUpdate($this->custom_fields_data_sanitizer->sanitize($data));
+      $errors = $custom_field->getErrors();
+      if (!empty($errors)) {
+        throw new \Exception('Failed to save a new subscriber field');
+      }
+      $custom_field = CustomField::findOne($custom_field->id);
+      if (!$custom_field instanceof CustomField) {
+        throw new \Exception('Failed to create a new subscriber field');
+      }
+      return $custom_field->asArray();
+    } catch (\InvalidArgumentException $e) {
+      throw new \Exception($e->getMessage(), $e->getCode(), $e);
+    }
   }
 
   function subscribeToList($subscriber_id, $list_id, $options = []) {
