@@ -45,7 +45,7 @@ class UnauthorizedEmailInNewslettersNotice {
   }
 
   private function getMessageText() {
-    $message = $this->wp->__('<b>Your automatic emails has been paused</b>, because some email addresses hasn’t been authorized yet.');
+    $message = $this->wp->__('<b>Your automatic emails have been paused,</b> because some email addresses haven’t been authorized yet.');
     return "<p>$message</p>";
   }
 
