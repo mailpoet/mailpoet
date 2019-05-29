@@ -62,12 +62,18 @@ Module.HistoryView = Marionette.View.extend({
     if (!this.canUndo()) {
       return;
     }
+    this.model.currentStateIndex += 1;
+    this.updateArrowsUI();
+    this.applyState(this.model.currentStateIndex);
   },
 
   redo: function redo() {
     if (!this.canRedo()) {
       return;
     }
+    this.model.currentStateIndex -= 1;
+    this.updateArrowsUI();
+    this.applyState(this.model.currentStateIndex);
   },
 
   updateArrowsUI: function updateArrowsUI() {
@@ -83,6 +89,11 @@ Module.HistoryView = Marionette.View.extend({
       this.elements.redo.removeClass('mailpoet_history_arrow_inactive');
       this.elements.redo.prop('title', MailPoet.I18n.t('canRedo'));
     }
+  },
+
+  applyState: function applyState(index) {
+    const stateToApply = JSON.parse(this.model.states[index]);
+    App.getChannel().trigger('historyUpdate', stateToApply);
   },
 });
 
