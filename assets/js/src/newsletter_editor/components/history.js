@@ -1,5 +1,6 @@
 import App from 'newsletter_editor/App';
 import jQuery from 'jquery';
+import MailPoet from 'mailpoet';
 import Marionette from 'backbone.marionette';
 
 var Module = {};
@@ -71,12 +72,16 @@ Module.HistoryView = Marionette.View.extend({
 
   updateArrowsUI: function updateArrowsUI() {
     this.elements.undo.addClass('mailpoet_history_arrow_inactive');
+    this.elements.undo.prop('title', MailPoet.I18n.t('canNotUndo'));
     this.elements.redo.addClass('mailpoet_history_arrow_inactive');
+    this.elements.redo.prop('title', MailPoet.I18n.t('canNotRedo'));
     if (this.canUndo()) {
       this.elements.undo.removeClass('mailpoet_history_arrow_inactive');
+      this.elements.undo.prop('title', MailPoet.I18n.t('canUndo'));
     };
     if (this.canRedo()) {
       this.elements.redo.removeClass('mailpoet_history_arrow_inactive');
+      this.elements.redo.prop('title', MailPoet.I18n.t('canRedo'));
     };
   },
 });
