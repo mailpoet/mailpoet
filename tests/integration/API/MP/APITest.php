@@ -6,6 +6,7 @@ use AspectMock\Test as Mock;
 use Codeception\Util\Fixtures;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use MailPoet\CustomFields\ApiDataSanitizer;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
@@ -24,7 +25,8 @@ class APITest extends \MailPoetTest {
     return new \MailPoet\API\MP\v1\API(
       Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
-      Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate')
+      Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate'),
+      Stub::makeEmptyExcept(ApiDataSanitizer::class, 'validate')
     );
   }
 
