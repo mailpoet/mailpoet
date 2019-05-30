@@ -50,7 +50,7 @@ The common properties for all types:
 | Property | Type | Description |
 | --- | --- | --- |
 | date_type | string | Possible values are: Values: `year_month_day`, `year_month`, `month`, `day` |
-| date_format | string | Values: for year_month_day: 'MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD', for year_month: 'YYYY/MM', 'MM/YY', for year: 'YYYY', for month: 'MM' |
+| date_format | string | Values: for year_month_day: `MM/DD/YYYY`, `DD/MM/YYYY`, `YYYY/MM/DD`, for year_month: `YYYY/MM`, `MM/YY`, for year: `YYYY`, for month: `MM` |
 
 ## Response
 
@@ -60,6 +60,6 @@ The common properties for all types:
 | name | string | 90 chars | Human readable name. Intended to be used, as an example, as a label for form input. |
 | type | string | - | Type of the field. Possible values are: `text`, `date`, `textarea`, `radio`, `checkbox`, `select` |
 | params | array | - | Contains various information, see examples below. |
-| created_at | string\|null | - | UTC time of creation in 'Y-m-d H:i:s' format |
-| updated_at | string | - | UTC time of last update in 'Y-m-d H:i:s' format |
+| created_at | string\|null | - | UTC time of creation in `Y-m-d H:i:s` format |
+| updated_at | string | - | UTC time of last update in `Y-m-d H:i:s` format |
 
