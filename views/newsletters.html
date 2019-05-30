@@ -4,39 +4,41 @@
   <div id="newsletters_container"></div>
 
   <script type="text/javascript">
-    var mailpoet_update_available = <%= is_mailpoet_update_available ? 'true' : 'false' %>
-    var mailpoet_listing_per_page = <%= items_per_page %>;
-    var mailpoet_display_nps_poll = <%= settings.display_nps_poll ? 'true' : 'false' %>;
-    var mailpoet_segments = <%= json_encode(segments) %>;
-    var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
-    var mailpoet_installed_days_ago = <%= installed_days_ago %>;
-    var mailpoet_current_wp_user = <%= json_encode(current_wp_user) %>;
-    var mailpoet_current_wp_user_firstname = '<%= current_wp_user_firstname %>';
-    var mailpoet_lists = <%= json_encode(lists) %>;
-    var mailpoet_roles = <%= json_encode(roles) %>;
-    var mailpoet_current_date = <%= json_encode(current_date) %>;
-    var mailpoet_current_time = <%= json_encode(current_time) %>;
-    var mailpoet_schedule_time_of_day = <%= json_encode(schedule_time_of_day) %>;
-    var mailpoet_date_display_format = "<%= wp_date_format() %>";
-    var mailpoet_start_of_week = "<%= wp_start_of_week() %>";
-    var mailpoet_site_url = "<%= site_url %>";
-    var mailpoet_date_storage_format = "Y-m-d";
-    var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
-    var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
-    var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
-    var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
-    var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
-    var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
-    var mailpoet_user_locale = '<%= get_locale() %>';
-    var mailpoet_congratulations_success_image = '<%= cdn_url('newsletter/congrat-illu-success.20181121-1440.png') %>';
-    var mailpoet_congratulations_loading_image = '<%= cdn_url('newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png') %>';
-    var mailpoet_main_page = '<%= mailpoet_main_page %>';
-    var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20181207-1345.png') %>';
-    <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
-    var mailpoet_is_new_user = <%= newUser %>;
-    var mailpoet_installed_at = '<%= settings.installed_at %>';
-    var mailpoet_mss_active = <%= json_encode(mss_active) %>;
-    var mailpoet_free_plan_announcement_seen = !!+'<%= settings.free_plan_announcement_seen %>';
+    <% autoescape 'js' %>
+      var mailpoet_update_available = <%= is_mailpoet_update_available ? 'true' : 'false' %>
+      var mailpoet_listing_per_page = <%= items_per_page %>;
+      var mailpoet_display_nps_poll = <%= settings.display_nps_poll ? 'true' : 'false' %>;
+      var mailpoet_segments = <%= json_encode(segments) %>;
+      var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
+      var mailpoet_installed_days_ago = <%= installed_days_ago %>;
+      var mailpoet_current_wp_user = <%= json_encode(current_wp_user) %>;
+      var mailpoet_current_wp_user_firstname = '<%= current_wp_user_firstname %>';
+      var mailpoet_lists = <%= json_encode(lists) %>;
+      var mailpoet_roles = <%= json_encode(roles) %>;
+      var mailpoet_current_date = <%= json_encode(current_date) %>;
+      var mailpoet_current_time = <%= json_encode(current_time) %>;
+      var mailpoet_schedule_time_of_day = <%= json_encode(schedule_time_of_day) %>;
+      var mailpoet_date_display_format = "<%= wp_date_format() %>";
+      var mailpoet_start_of_week = "<%= wp_start_of_week() %>";
+      var mailpoet_site_url = "<%= site_url %>";
+      var mailpoet_date_storage_format = "Y-m-d";
+      var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
+      var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
+      var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
+      var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
+      var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
+      var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
+      var mailpoet_user_locale = '<%= get_locale() %>';
+      var mailpoet_congratulations_success_image = '<%= cdn_url('newsletter/congrat-illu-success.20181121-1440.png') %>';
+      var mailpoet_congratulations_loading_image = '<%= cdn_url('newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png') %>';
+      var mailpoet_main_page = '<%= mailpoet_main_page %>';
+      var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20181207-1345.png') %>';
+      <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
+      var mailpoet_is_new_user = <%= newUser %>;
+      var mailpoet_installed_at = '<%= settings.installed_at %>';
+      var mailpoet_mss_active = <%= json_encode(mss_active) %>;
+      var mailpoet_free_plan_announcement_seen = !!+'<%= settings.free_plan_announcement_seen %>';
+    <% endautoescape %>
   </script>
 <% endblock %>
 
