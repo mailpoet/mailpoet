@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) exit;
 
 class Clicks {
 
+  const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
 
   /** @var SettingsController */
@@ -54,7 +55,7 @@ class Clicks {
   private function sendRevenueCookie(StatisticsClicks $clicks) {
     if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled') === "1") {
       setcookie(
-        'mailpoet_revenue_tracking',
+        self::REVENUE_TRACKING_COOKIE_NAME,
         serialize([
           'statistics_clicks' => $clicks->id,
           'created_at' => time(),
