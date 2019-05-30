@@ -19,7 +19,7 @@ class ApiDataSanitizer {
   }
 
   private function checkMandatoryStringParameter(array $data, $parameter_name) {
-    if (!isset($data[$parameter_name]) || empty($data[$parameter_name])) {
+    if (empty($data[$parameter_name])) {
       throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" is missing', 'mailpoet'), $parameter_name));
     }
     if (!is_string($data[$parameter_name])) {
@@ -89,7 +89,7 @@ class ApiDataSanitizer {
   }
 
   private function getExtraParamsForCheckbox($params) {
-    if (!isset($params['values']) || empty($params['values']) || count($params['values']) > 1) {
+    if (empty($params['values']) || count($params['values']) > 1) {
       throw new InvalidArgumentException(__('You need to pass exactly one value for checkbox', 'mailpoet'));
     }
     $value = reset($params['values']);
@@ -138,7 +138,7 @@ class ApiDataSanitizer {
   }
 
   private function getExtraParamsForSelect($params) {
-    if (!isset($params['values']) || empty($params['values'])) {
+    if (empty($params['values'])) {
       throw new InvalidArgumentException(__('You need to pass some values for this type', 'mailpoet'));
     }
     $values = [];
@@ -149,7 +149,7 @@ class ApiDataSanitizer {
   }
 
   private function sanitizeValue($value) {
-    if (!isset($value['value']) || empty($value['value'])) {
+    if (empty($value['value'])) {
       throw new InvalidArgumentException(__('Value cannot be empty', 'mailpoet'));
     }
     $result = ['value' => $value['value']];
