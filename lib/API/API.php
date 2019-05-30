@@ -8,6 +8,12 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFou
 if (!defined('ABSPATH')) exit;
 
 class API {
+
+  /**
+   * @param string $version
+   * @return \MailPoet\API\MP\v1\API
+   * @throws \Exception
+   */
   static function MP($version) {
     $api_class = sprintf('%s\MP\%s\API', __NAMESPACE__, $version);
     try {
