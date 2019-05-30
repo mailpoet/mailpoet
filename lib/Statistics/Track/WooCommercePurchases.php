@@ -76,9 +76,9 @@ class WooCommercePurchases {
   }
 
   private function getClickCookie() {
-    if (empty($_COOKIE['mailpoet_revenue_tracking'])) {
+    if (empty($_COOKIE[Clicks::REVENUE_TRACKING_COOKIE_NAME])) {
       return null;
     }
-    return unserialize($_COOKIE['mailpoet_revenue_tracking']);
+    return unserialize($_COOKIE[Clicks::REVENUE_TRACKING_COOKIE_NAME]);
   }
 }
