@@ -13,6 +13,7 @@ use MailPoet\Tasks\Sending;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use PHPUnit_Framework_MockObject_MockObject;
 use WC_Order;
+use function MailPoet\Util\array_column;
 
 class WooCommercePurchasesTest extends \MailPoetTest {
   /** @var Subscriber */
@@ -139,6 +140,84 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
     $woocommerce_purchases->trackPurchase($order_mock->get_id());
     expect(count(StatisticsWooCommercePurchases::findMany()))->equals(0);
+  }
+
+  function testItTracksByCookie() {
+    $order_email = 'order.email@example.com';
+    $cookie_email = 'cookie.email@example.com';
+    $this->createSubscriber($order_email);
+    $cookie_email_subscriber = $this->createSubscriber($cookie_email);
+
+    $click = $this->createClick($this->link, $cookie_email_subscriber);
+    $_COOKIE['mailpoet_revenue_tracking'] = serialize([
+      'statistics_clicks' => $click->id,
+      'created_at' => time(),
+    ]);
+
+    $order_mock = $this->createOrderMock($order_email);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    $purchase_stats = StatisticsWooCommercePurchases::findMany();
+    expect(count($purchase_stats))->equals(1);
+    expect($purchase_stats[0]->click_id)->equals($click->id);
+  }
+
+  function testItDoesNotTrackByCookieWhenTrackedByOrder() {
+    $order_email = 'order.email@example.com';
+    $cookie_email = 'cookie.email@example.com';
+    $order_email_subscriber = $this->createSubscriber($order_email);
+    $cookie_email_subscriber = $this->createSubscriber($cookie_email);
+
+    // both clicks are in the same newsletter
+    $order_email_click = $this->createClick($this->link, $order_email_subscriber);
+    $cookie_email_click = $this->createClick($this->link, $cookie_email_subscriber);
+
+    $_COOKIE['mailpoet_revenue_tracking'] = serialize([
+      'statistics_clicks' => $cookie_email_click->id,
+      'created_at' => time(),
+    ]);
+
+    $order_mock = $this->createOrderMock($order_email);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    $purchase_stats = StatisticsWooCommercePurchases::findMany();
+    expect(count($purchase_stats))->equals(1);
+    expect($purchase_stats[0]->click_id)->equals($order_email_click->id);
+  }
+
+  function testItTracksByBothOrderAndCookieForDifferentNewsletters() {
+    $order_email = 'order.email@example.com';
+    $cookie_email = 'cookie.email@example.com';
+    $order_email_subscriber = $this->createSubscriber($order_email);
+    $cookie_email_subscriber = $this->createSubscriber($cookie_email);
+
+    // click by order email subscriber
+    $order_email_click = $this->createClick($this->link, $order_email_subscriber);
+
+    // click by cookie email subscriber in a different newsletter
+    $newsletter = $this->createNewsletter();
+    $queue = $this->createQueue($newsletter, $this->subscriber);
+    $link = $this->createLink($newsletter, $queue);
+    $cookie_email_click = $this->createClick($link, $cookie_email_subscriber);
+
+    $_COOKIE['mailpoet_revenue_tracking'] = serialize([
+      'statistics_clicks' => $cookie_email_click->id,
+      'created_at' => time(),
+    ]);
+
+    $order_mock = $this->createOrderMock($order_email);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock));
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    $purchase_stats = StatisticsWooCommercePurchases::findMany();
+    expect(count($purchase_stats))->equals(2);
+    foreach ($purchase_stats as $stats) {
+      if ($stats->click_id === $order_email_click->id) {
+        expect($stats->newsletter_id)->equals($this->newsletter->id);
+      } else {
+        expect($stats->click_id)->equals($cookie_email_click->id);
+        expect($stats->newsletter_id)->equals($newsletter->id);
+      }
+    }
   }
 
   function _after() {
