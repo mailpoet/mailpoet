@@ -127,35 +127,6 @@ We welcome experienced translators to translate directly on [our Transifex proje
 
 Have a question for us? Reach us at security@ our domain.
 
-== Installation ==
-
-= Minimum requirements =
-PHP version 5.6 or greater. We highly recommend PHP 7.1 or greater. Speak to your host about upgrading. It's easier than you think!
-Visit our [Minimum and Recommended Requirements](https://beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3) page for a detailed list of server requirements and instructions to upgrade your PHP version.
-
-There are 3 ways to install this plugin:
-
-= 1. The super easy way =
-1. In your WordPress dashboard, navigate to Plugins > Add New
-1. Search for `MailPoet`
-1. Click on "install now"
-1. Activate the plugin
-1. A new `MailPoet` menu will appear in your WordPress dashboard
-
-= 2. The easy way =
-1. Download the plugin (.zip file) by using the blue "download" button underneath the plugin banner at the top
-1. In your WordPress dashboard, navigate to Plugins > Add New
-1. Click on "Upload Plugin"
-1. Upload the .zip file
-1. Activate the plugin
-1. A new `MailPoet` menu will appear in your WordPress dashboard
-
-= 3. The old-fashioned and reliable way (FTP) =
-1. Download the plugin (.zip file) by using the blue "download" button underneath the plugin banner at the top
-1. Extract the archive and then upload, via FTP, the `mailpoet` folder to the `<WP install folder>/wp-content/plugins/` folder on your host
-1. Activate the plugin
-1. A new `MailPoet` menu will appear in your WordPress dashboard
-
 == Frequently Asked Questions ==
 
 Question: Is it MailPoet or Mail poet?
