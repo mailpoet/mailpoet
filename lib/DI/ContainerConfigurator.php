@@ -83,6 +83,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\BulkActionFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);
+    // Notices
+    $container->autowire(\MailPoet\Util\Notices\PermanentNotices::class);
     // Router
     $container->autowire(\MailPoet\Router\Endpoints\CronDaemon::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\Subscription::class)->setPublic(true);

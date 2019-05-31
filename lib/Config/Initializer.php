@@ -52,6 +52,9 @@ class Initializer {
   /** @var CronTrigger */
   private $cron_trigger;
 
+  /** @var PermanentNotices */
+  private $permanent_notices;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -64,7 +67,8 @@ class Initializer {
     Hooks $hooks,
     Changelog $changelog,
     Menu $menu,
-    CronTrigger $cron_trigger
+    CronTrigger $cron_trigger,
+    PermanentNotices $permanent_notices
   ) {
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
@@ -76,6 +80,7 @@ class Initializer {
       $this->changelog = $changelog;
       $this->menu = $menu;
       $this->cron_trigger = $cron_trigger;
+      $this->permanent_notices = $permanent_notices;
   }
 
   function init() {
@@ -302,8 +307,7 @@ class Initializer {
   }
 
   function setupPermanentNotices() {
-    $notices = new PermanentNotices();
-    $notices->init();
+    $this->permanent_notices->init();
   }
 
   function handleFailedInitialization($exception) {
