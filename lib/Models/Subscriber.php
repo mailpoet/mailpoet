@@ -601,6 +601,12 @@ class Subscriber extends Model {
     ->count();
   }
 
+  static function getInactiveSubscribersCount() {
+    return self::where('status', self::STATUS_INACTIVE)
+    ->whereNull('deleted_at')
+    ->count();
+  }
+
   static function bulkTrash($orm) {
     $count = parent::bulkAction($orm, function($subscriber_ids) {
       Subscriber::rawExecute(join(' ', [
