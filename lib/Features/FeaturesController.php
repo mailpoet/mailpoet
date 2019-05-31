@@ -10,12 +10,14 @@ class FeaturesController {
   //   const FEATURE_NAME_OF_FEATURE = 'name-of-feature';
   const FEATURE_DISPLAY_WOOCOMMERCE_REVENUES = 'display-woocommerce-revenues'; // may also have 'display_revenues' setting
   const FEATURE_ABANDONED_SHOPPING_CART = 'abandoned-shopping-cart';
+  const FEATURE_INACTIVE_SUBSCRIBERS_NOTICE = 'inactive-subscribers-notice';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES => false,
     self::FEATURE_ABANDONED_SHOPPING_CART => false,
+    self::FEATURE_INACTIVE_SUBSCRIBERS_NOTICE => false,
   ];
 
   /** @var array */
