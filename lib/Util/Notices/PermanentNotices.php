@@ -23,6 +23,9 @@ class PermanentNotices {
   /** @var UnauthorizedEmailInNewslettersNotice */
   private $unauthorized_emails_in_newsletters_notice;
 
+  /** @var InactiveSubscribersNotice */
+  private $inactive_subscribers_notice;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -33,6 +36,7 @@ class PermanentNotices {
     $this->discounts_announcement = new DiscountsAnnouncement();
     $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(new SettingsController, $this->wp);
     $this->unauthorized_emails_in_newsletters_notice = new UnauthorizedEmailInNewslettersNotice(new SettingsController, $this->wp);
+    $this->inactive_subscribers_notice = new InactiveSubscribersNotice(new SettingsController, $this->wp);
   }
 
   public function init() {
@@ -54,6 +58,9 @@ class PermanentNotices {
     $this->unauthorized_emails_in_newsletters_notice->init(
       Menu::isOnMailPoetAdminPage($exclude = null, $page_id = 'mailpoet-newsletters')
     );
+    $this->inactive_subscribers_notice->init(
+      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+    );
     $this->discounts_announcement->init(
       empty($_GET['page'])
       && $this->wp->isAdmin()
@@ -72,6 +79,9 @@ class PermanentNotices {
         break;
       case (DiscountsAnnouncement::OPTION_NAME):
         $this->discounts_announcement->disable();
+        break;
+      case (InactiveSubscribersNotice::OPTION_NAME):
+        $this->inactive_subscribers_notice->disable();
         break;
     }
   }
