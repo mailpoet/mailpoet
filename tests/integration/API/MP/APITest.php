@@ -26,7 +26,7 @@ class APITest extends \MailPoetTest {
       Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
       Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate'),
-      Stub::makeEmptyExcept(ApiDataSanitizer::class, 'validate')
+      Stub::makeEmpty(ApiDataSanitizer::class)
     );
   }
 
@@ -276,13 +276,23 @@ class APITest extends \MailPoetTest {
 
     // should not send
     $notificationMailer = $this->make(NewSubscriberNotificationMailer::class, ['send' => \Codeception\Stub\Expected::never()]);
-    $API = new \MailPoet\API\MP\v1\API($notificationMailer, $this->makeEmpty(ConfirmationEmailMailer::class), $this->makeEmpty(RequiredCustomFieldValidator::class));
+    $API = new \MailPoet\API\MP\v1\API(
+      $notificationMailer,
+      $this->makeEmpty(ConfirmationEmailMailer::class),
+      $this->makeEmpty(RequiredCustomFieldValidator::class),
+      $this->makeEmpty(ApiDataSanitizer::class)
+    );
     $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => true]);
 
 
     // should send
     $notificationMailer = $this->make(NewSubscriberNotificationMailer::class, ['send' => \Codeception\Stub\Expected::once()]);
-    $API = new \MailPoet\API\MP\v1\API($notificationMailer, $this->makeEmpty(ConfirmationEmailMailer::class), $this->makeEmpty(RequiredCustomFieldValidator::class));
+    $API = new \MailPoet\API\MP\v1\API(
+      $notificationMailer,
+      $this->makeEmpty(ConfirmationEmailMailer::class),
+      $this->makeEmpty(RequiredCustomFieldValidator::class),
+      $this->makeEmpty(ApiDataSanitizer::class)
+    );
     $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => false]);
   }
 
