@@ -28,6 +28,12 @@ class InactiveSubscribersNotice {
       return;
     }
 
+    // don't display notice if user has changed the default inactive time range
+    $inactive_days = $this->settings->get('deactivate_subscriber_after_inactive_days');
+    if ($inactive_days !== SettingsController::DEFAULT_DEACTIVATE_SUBSCRIBER_AFTER_INACTIVE_DAYS) {
+      return;
+    }
+
     $inactive_subscribers_count = Subscriber::getInactiveSubscribersCount();
     if ($inactive_subscribers_count < self::MIN_INACTIVE_SUBSCRIBERS_COUNT) {
       return;
