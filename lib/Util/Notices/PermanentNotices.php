@@ -8,6 +8,9 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class PermanentNotices {
 
+  /** @var WPFunctions */
+  private $wp;
+
   /** @var PHPVersionWarnings */
   private $php_version_warnings;
 
@@ -26,17 +29,14 @@ class PermanentNotices {
   /** @var InactiveSubscribersNotice */
   private $inactive_subscribers_notice;
 
-  /** @var WPFunctions */
-  private $wp;
-
-  public function __construct() {
-    $this->wp = WPFunctions::get();
+  public function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
     $this->php_version_warnings = new PHPVersionWarnings();
     $this->after_migration_notice = new AfterMigrationNotice();
     $this->discounts_announcement = new DiscountsAnnouncement();
-    $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(new SettingsController, $this->wp);
-    $this->unauthorized_emails_in_newsletters_notice = new UnauthorizedEmailInNewslettersNotice(new SettingsController, $this->wp);
-    $this->inactive_subscribers_notice = new InactiveSubscribersNotice(new SettingsController, $this->wp);
+    $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(new SettingsController, $wp);
+    $this->unauthorized_emails_in_newsletters_notice = new UnauthorizedEmailInNewslettersNotice(new SettingsController, $wp);
+    $this->inactive_subscribers_notice = new InactiveSubscribersNotice(new SettingsController, $wp);
   }
 
   public function init() {
