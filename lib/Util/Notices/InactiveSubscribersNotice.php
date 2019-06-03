@@ -56,6 +56,7 @@ class InactiveSubscribersNotice {
 
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
 
-    return Notice::displaySuccess($notice, $extra_classes, self::OPTION_NAME, false);
+    Notice::displaySuccess($notice, $extra_classes, self::OPTION_NAME, false);
+    return $notice;
   }
 }
