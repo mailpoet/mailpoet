@@ -126,7 +126,7 @@ class Settings {
     return $this;
   }
 
-  function withDeactivateSubscriberAfter3Months() {
+  function withDeactivateSubscriberAfter6Months() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 180);
     return $this;
   }
