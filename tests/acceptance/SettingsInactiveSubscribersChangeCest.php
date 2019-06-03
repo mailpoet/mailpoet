@@ -23,7 +23,7 @@ class SettingsInactiveSubscribersChangeCest {
     for ($i = 0; $i < self::INACTIVE_SUBSCRIBERS_COUNT; $i++) {
       (new Subscriber())->withStatus('inactive')->withSegments([$segment])->create();
     }
-    (new Settings)->withDeactivateSubscriberAfter3Months()->withTrackingEnabled();
+    (new Settings)->withDeactivateSubscriberAfter6Months()->withTrackingEnabled();
     $scheduled_tasks_factory = new ScheduledTask();
     $scheduled_tasks_factory->deleteAll();
   }
