@@ -12,7 +12,6 @@ This method allows adding an existing subscriber into lists and handles confirma
 
 All these emails can be disabled using `$options`.
 
-
 It returns a subscriber. See [Get Subscriber](GetSubscriber.md) for a subscriber data structure.
 
 ## Arguments
@@ -30,3 +29,23 @@ All options are optional. If omitted, a default value is used.
 | send_confirmation_email | boolean | true | Can be used to disable confirmation email. Otherwise, a confirmation email is sent as described above.|
 | schedule_welcome_email | boolean | true | Can be used to disable welcome email. Otherwise, a welcome email is scheduled as described above.|
 | skip_subscriber_notification | boolean | false | Can be used to disable an admin notification email. Otherwise, an admin notification email is sent as described above.|
+
+## Error handling
+
+All expected errors from the API are exceptions of class `\MailPoet\API\MP\v1\APIException`. 
+Code of the exception is populated to distinguish between different errors.
+
+An exception of base class `\Exception` can be thrown when something unexpected happens.
+
+Codes description:
+
+| Code | Description |
+| --- | ---  |
+| 3 | No lists provided |
+| 4 | Invalid subscriber that does not exist |
+| 5 | Invalid list that does not exist |
+| 6 | Trying to subscribe to a WordPress Users list |
+| 7 | Trying to subscribe to a WooCommerce Customers list |
+| 8 | Trying to subscribe to a list that doesn’t support that |
+| 10 | Confirmation email failed to send |
+| 17 | Welcome email failed to send |
