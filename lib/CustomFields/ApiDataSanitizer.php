@@ -20,16 +20,16 @@ class ApiDataSanitizer {
 
   private function checkMandatoryStringParameter(array $data, $parameter_name) {
     if (empty($data[$parameter_name])) {
-      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" is missing', 'mailpoet'), $parameter_name));
+      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" is missing', 'mailpoet'), $parameter_name), 1001);
     }
     if (!is_string($data[$parameter_name])) {
-      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" has to be string', 'mailpoet'), $parameter_name));
+      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" has to be string', 'mailpoet'), $parameter_name), 1002);
     }
   }
 
   private function checkParamsType($data) {
     if (isset($data['params']) && !is_array($data['params'])) {
-      throw new InvalidArgumentException(sprintf(__('Params has to be array', 'mailpoet')));
+      throw new InvalidArgumentException(sprintf(__('Params has to be array', 'mailpoet')), 1003);
     }
   }
 
@@ -74,7 +74,7 @@ class ApiDataSanitizer {
       return $this->getExtraParamsForDate($data['params']);
     }
 
-    throw new InvalidArgumentException(sprintf(__('Invalid type "%s"', 'mailpoet'), $type));
+    throw new InvalidArgumentException(sprintf(__('Invalid type "%s"', 'mailpoet'), $type), 1004);
   }
 
   private function getExtraParamsForText($params) {
@@ -83,14 +83,14 @@ class ApiDataSanitizer {
       if (in_array($validate, ['number', 'alphanum', 'phone'], true)) {
         return ['validate' => $validate];
       }
-      throw new InvalidArgumentException(__('Validate parameter is not valid', 'mailpoet'));
+      throw new InvalidArgumentException(__('Validate parameter is not valid', 'mailpoet'), 1005);
     }
     return [];
   }
 
   private function getExtraParamsForCheckbox($params) {
     if (empty($params['values']) || count($params['values']) > 1) {
-      throw new InvalidArgumentException(__('You need to pass exactly one value for checkbox', 'mailpoet'));
+      throw new InvalidArgumentException(__('You need to pass exactly one value for checkbox', 'mailpoet'), 1006);
     }
     $value = reset($params['values']);
     return ['values' => [$this->sanitizeValue($value)]];
@@ -109,13 +109,13 @@ class ApiDataSanitizer {
     switch ($date_type) {
       case 'year_month_day':
         if (!in_array($input_date_format, ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'], true)) {
-          throw new InvalidArgumentException(__('Invalid date_format for year_month_day', 'mailpoet'));
+          throw new InvalidArgumentException(__('Invalid date_format for year_month_day', 'mailpoet'), 1007);
         }
         $date_format = $input_date_format;
         break;
       case 'year_month':
         if (!in_array($input_date_format, ['YYYY/MM', 'MM/YY'], true)) {
-          throw new InvalidArgumentException(__('Invalid date_format for year_month', 'mailpoet'));
+          throw new InvalidArgumentException(__('Invalid date_format for year_month', 'mailpoet'), 1007);
         }
         $date_format = $input_date_format;
         break;
@@ -129,7 +129,7 @@ class ApiDataSanitizer {
         $date_format = 'DD';
         break;
       default:
-        throw new InvalidArgumentException(__('Invalid value for date_type', 'mailpoet'));
+        throw new InvalidArgumentException(__('Invalid value for date_type', 'mailpoet'), 1008);
     }
     return [
       'date_type' => $date_type,
@@ -139,7 +139,7 @@ class ApiDataSanitizer {
 
   private function getExtraParamsForSelect($params) {
     if (empty($params['values'])) {
-      throw new InvalidArgumentException(__('You need to pass some values for this type', 'mailpoet'));
+      throw new InvalidArgumentException(__('You need to pass some values for this type', 'mailpoet'), 1009);
     }
     $values = [];
     foreach ($params['values'] as $value) {
@@ -150,7 +150,7 @@ class ApiDataSanitizer {
 
   private function sanitizeValue($value) {
     if (empty($value['value'])) {
-      throw new InvalidArgumentException(__('Value cannot be empty', 'mailpoet'));
+      throw new InvalidArgumentException(__('Value cannot be empty', 'mailpoet'), 1010);
     }
     $result = ['value' => $value['value']];
     if (isset($value['is_checked']) && $value['is_checked']) {
