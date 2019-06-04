@@ -45,3 +45,19 @@ All options are optional. If omitted a default value is used.
 | send_confirmation_email | boolean | true | Can be used to disable a confirmation email. Otherwise, a confirmation email is sent as described above. It is strongly recommended to keep this option set to `true` so that MailPoet settings for sign-up confirmation are respected. Turning it to `false` might lead that subscriber to be added as `unconfirmed`. |
 | schedule_welcome_email | boolean | true | Can be used to disable a welcome email. Otherwise, a welcome email is scheduled as described above.|
 | skip_subscriber_notification | boolean | false | Can be used to disable an admin notification email. Otherwise, an admin notification email is sent as described above.|
+
+## Error handling
+
+All expected errors from the API are exceptions of class `\MailPoet\API\MP\v1\APIException`. 
+Code of the exception is populated to distinguish between different errors.
+
+An exception of base class `\Exception` can be thrown when something unexpected happens.
+
+Codes description:
+
+| Code | Description |
+| --- | ---  |
+| 11 | Missing email address |
+| 12 | Trying to create a subscriber that already exists |
+| 13 | The subscriber couldn’t be created in the database |
+| 17 | Welcome email failed to send |

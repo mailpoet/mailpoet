@@ -63,3 +63,25 @@ The common properties for all types:
 | created_at | string\|null | - | UTC time of creation in `Y-m-d H:i:s` format |
 | updated_at | string | - | UTC time of last update in `Y-m-d H:i:s` format |
 
+## Error handling
+
+All expected errors from the API are exceptions of class `\MailPoet\API\MP\v1\APIException`. 
+Code of the exception is populated to distinguish between different errors.
+
+An exception of base class `\Exception` can be thrown when something unexpected happens.
+
+Codes description:
+
+| Code | Description |
+| --- | ---  |
+| 1 | The subscriber couldn’t be created in the database |
+| 1001 | Missing a mandatory field in the `$data` argument |
+| 1002 | A mandatory field in the `$data` argument has wrong type |
+| 1003 | `$params` is not an array |
+| 1004 | Attempting to create a field with an unknown type |
+| 1005 | Incorrect validate parameter for text type |
+| 1006 | Passing a `values` array for the checkbox type that has incorrect number of values |
+| 1007 | Incorrect `date_format` value |
+| 1008 | Incorrect `date_type` value |
+| 1009 | Missing `values` for select or radio types |
+| 1010 | Empty `value` for select or radio types |
