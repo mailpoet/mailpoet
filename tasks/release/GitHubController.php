@@ -79,12 +79,6 @@ class GitHubController {
       throw new \Exception('Release pull request not found');
     }
     $release_pull_request = reset($response);
-    if ($release_pull_request['state'] !== 'closed') {
-      throw new \Exception('Release pull request is still opened.');
-    }
-    if (!$release_pull_request['merged']) {
-      throw new \Exception('Release pull request has not been merged.');
-    }
     $this->checkPullRequestChecks($release_pull_request['statuses_url']);
     $pull_request_number = $release_pull_request['number'];
     $this->checkPullRequestReviews($pull_request_number);
