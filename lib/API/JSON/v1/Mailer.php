@@ -7,6 +7,7 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -17,6 +18,9 @@ class Mailer extends APIEndpoint {
   /** @var AuthorizedEmailsController */
   private $authorized_emails_controller;
 
+  /** @var Bridge */
+  private $bridge;
+
   /** @var SettingsController */
   private $settings;
 
@@ -24,9 +28,10 @@ class Mailer extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  function __construct(AuthorizedEmailsController $authorized_emails_controller, SettingsController $settings) {
+  function __construct(AuthorizedEmailsController $authorized_emails_controller, SettingsController $settings, Bridge $bridge) {
     $this->authorized_emails_controller = $authorized_emails_controller;
     $this->settings = $settings;
+    $this->bridge = $bridge;
   }
 
   function send($data = []) {
