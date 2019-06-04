@@ -35,7 +35,7 @@
     "html2canvas": "^1.0.0-alpha.12",
     "interact.js": "~1.2.8",
     "intro.js": "2.9.0",
-    "jquery": "3.3.1",
+    "jquery": "3.4.0",
     "moment": "^2.22.1",
     "papaparse": "4.1.1",
     "parsleyjs": "^2.8.1",
