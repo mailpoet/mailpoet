@@ -17,6 +17,7 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
@@ -48,6 +49,9 @@ class WorkersFactory {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
+  /** @var WooCommercePurchases */
+  private $woocommerce_purchases;
+
   /** @var AuthorizedEmailsController */
   private $authorized_emails_controller;
 
@@ -69,6 +73,7 @@ class WorkersFactory {
     WooCommerceSegment $woocommerce_segment,
     InactiveSubscribersController $inactive_subscribers_controller,
     WooCommerceHelper $woocommerce_helper,
+    WooCommercePurchases $woocommerce_purchases,
     AuthorizedEmailsController $authorized_emails_controller,
     SubscribersFinder $subscribers_finder
   ) {
@@ -81,6 +86,7 @@ class WorkersFactory {
     $this->woocommerce_segment = $woocommerce_segment;
     $this->inactive_subscribers_controller = $inactive_subscribers_controller;
     $this->woocommerce_helper = $woocommerce_helper;
+    $this->woocommerce_purchases = $woocommerce_purchases;
     $this->authorized_emails_controller = $authorized_emails_controller;
     $this->subscribers_finder = $subscribers_finder;
   }
@@ -139,4 +145,8 @@ class WorkersFactory {
     return new AuthorizedSendingEmailsCheck($this->authorized_emails_controller, $timer);
   }
 
+  /** @return WooCommerceOrders */
+  function createWooCommerceOrdersWorker($timer) {
+    return new WooCommerceOrders($this->woocommerce_helper, $this->woocommerce_purchases, $timer);
+  }
 }

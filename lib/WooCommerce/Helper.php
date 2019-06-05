@@ -27,6 +27,10 @@ class Helper {
     return wc_get_order($order);
   }
 
+  function wcGetOrders(array $args) {
+    return wc_get_orders($args);
+  }
+
   function wcPrice($price, array $args = []) {
     return wc_price($price, $args);
   }

@@ -20,6 +20,14 @@ function wc_get_order($order = false) {
   return false;
 }
 
+/**
+ * @param  mixed[] $args
+ * @return WC_Order[]|int[]|\stdClass
+ */
+function wc_get_orders($args) {
+  return [];
+}
+
 function wc_price(float $price, array $args = []): string {
   return '';
 }
