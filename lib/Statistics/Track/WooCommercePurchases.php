@@ -19,23 +19,26 @@ class WooCommercePurchases {
     $this->woocommerce_helper = $woocommerce_helper;
   }
 
-  function trackPurchase($id) {
+  function trackPurchase($id, $use_cookies = true) {
     $order = $this->woocommerce_helper->wcGetOrder($id);
     if (!$order instanceof WC_Order) {
       return;
     }
 
-    $order_email_clicks = $this->getClicks($order->get_billing_email(), $order->get_date_created());
-    $cookie_email_clicks = $this->getClicks($this->getSubscriberEmailFromCookie(), $order->get_date_created());
-
     // track purchases from all clicks matched by order email
     $processed_newsletter_ids_map = [];
+    $order_email_clicks = $this->getClicks($order->get_billing_email(), $order->get_date_created());
     foreach ($order_email_clicks as $click) {
       StatisticsWooCommercePurchases::createOrUpdateByClickAndOrder($click, $order);
       $processed_newsletter_ids_map[$click->newsletter_id] = true;
     }
 
+    if (!$use_cookies) {
+      return;
+    }
+
     // track purchases from clicks matched by cookie email (only for newsletters not tracked by order)
+    $cookie_email_clicks = $this->getClicks($this->getSubscriberEmailFromCookie(), $order->get_date_created());
     foreach ($cookie_email_clicks as $click) {
       if (isset($processed_newsletter_ids_map[$click->newsletter_id])) {
         continue; // do not track click for newsletters that were already tracked by order email

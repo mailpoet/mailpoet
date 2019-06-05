@@ -54,5 +54,6 @@ class Daemon {
     yield $this->workers_factory->createInactiveSubscribersWorker($this->timer);
     yield $this->workers_factory->createWooCommerceSyncWorker($this->timer);
     yield $this->workers_factory->createAuthorizedSendingEmailsCheckWorker($this->timer);
+    yield $this->workers_factory->createWooCommerceOrdersWorker($this->timer);
   }
 }
