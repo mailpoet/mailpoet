@@ -132,8 +132,12 @@ class Hooks {
           'register_form',
           [$this->subscription_registration, 'extendForm']
         );
-        $this->wp->addAction(
-          'register_post',
+        // we need to process new users while they are registered.
+        // We used `register_post` before but that is too soon
+        //   because if registration fails during `registration_errors` we will keep the user as subscriber.
+        // So we are hooking to `registration_error` with a low priority.
+        $this->wp->addFilter(
+          'registration_errors',
           [$this->subscription_registration, 'onRegister'],
           60,
           3

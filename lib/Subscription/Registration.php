@@ -54,9 +54,9 @@ class Registration {
   }
 
   function onRegister(
+    $errors,
     $user_login,
-    $user_email = null,
-    $errors = null
+    $user_email = null
   ) {
     if (
       empty($errors->errors)
@@ -68,6 +68,7 @@ class Registration {
         $user_email
       );
     }
+    return $errors;
   }
 
   private function subscribeNewUser($name, $email) {
