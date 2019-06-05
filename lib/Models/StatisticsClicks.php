@@ -54,7 +54,7 @@ class StatisticsClicks extends Model {
       ->orderByAsc('url');
   }
 
-  static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTimeInterface $before, $since_days_ago) {
+  static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTimeInterface $from, DateTimeInterface $to) {
     // subquery to find latest click IDs for each newsletter
     $table = self::$_table;
     $latest_click_ids_per_newsletter_query = "
@@ -67,16 +67,16 @@ class StatisticsClicks extends Model {
       )
       FROM $table c
       WHERE c.subscriber_id = :subscriber_id
-      AND c.updated_at < :before
-      AND c.updated_at > DATE_SUB(NOW(), INTERVAL :since_days_ago DAY)
+      AND c.updated_at > :from
+      AND c.updated_at < :to
       GROUP BY c.newsletter_id
     ";
 
     return static::tableAlias('clicks')
       ->whereRaw("clicks.id IN ($latest_click_ids_per_newsletter_query)", [
         'subscriber_id' => $subscriber->id,
-        'before' => $before->format('Y-m-d H:i:s'),
-        'since_days_ago' => $since_days_ago,
+        'from' => $from->format('Y-m-d H:i:s'),
+        'to' => $to->format('Y-m-d H:i:s'),
       ])
       ->findMany();
   }
