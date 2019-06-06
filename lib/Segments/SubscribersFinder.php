@@ -11,10 +11,14 @@ use function MailPoet\Util\array_column;
 
 class SubscribersFinder {
 
+  /** @var WPFunctions */
   private $wp;
 
-  function __construct() {
-    $this->wp = new WPFunctions;
+  function __construct(WPFunctions $wp = null) {
+    if (!$wp) {
+      $wp = new WPFunctions;
+    }
+    $this->wp = $wp;
   }
 
   function findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids) {

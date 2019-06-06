@@ -14,6 +14,7 @@ use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCh
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -55,6 +56,9 @@ class WorkersFactory {
    */
   private $renderer;
 
+  /** @var SubscribersFinder */
+  private $subscribers_finder;
+
   public function __construct(
     SendingErrorHandler $sending_error_handler,
     StatsNotificationScheduler $scheduler,
@@ -65,7 +69,8 @@ class WorkersFactory {
     WooCommerceSegment $woocommerce_segment,
     InactiveSubscribersController $inactive_subscribers_controller,
     WooCommerceHelper $woocommerce_helper,
-    AuthorizedEmailsController $authorized_emails_controller
+    AuthorizedEmailsController $authorized_emails_controller,
+    SubscribersFinder $subscribers_finder
   ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->scheduler = $scheduler;
@@ -77,11 +82,12 @@ class WorkersFactory {
     $this->inactive_subscribers_controller = $inactive_subscribers_controller;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->authorized_emails_controller = $authorized_emails_controller;
+    $this->subscribers_finder = $subscribers_finder;
   }
 
   /** @return SchedulerWorker */
   function createScheduleWorker($timer) {
-    return new SchedulerWorker($timer);
+    return new SchedulerWorker($this->subscribers_finder, $timer);
   }
 
   /** @return SendingQueueWorker */
