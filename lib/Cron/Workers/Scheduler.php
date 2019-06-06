@@ -122,6 +122,7 @@ class Scheduler {
       'post notification set status to sending',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );
+    $this->reScheduleBounceTask();
     return true;
   }
 
@@ -158,6 +159,7 @@ class Scheduler {
     $task->save();
     // update newsletter status
     $newsletter->setStatus(Newsletter::STATUS_SENDING);
+    $this->reScheduleBounceTask();
     return true;
   }
 
@@ -231,6 +233,18 @@ class Scheduler {
       return $queue->task_id;
     }, $scheduled_queues);
     ScheduledTask::touchAllByIds($ids);
+  }
+
+  private function reScheduleBounceTask() {
+    $bounce_tasks = Bounce::getScheduledTasks($future = true);
+    if (count($bounce_tasks)) {
+      $bounce_task = reset($bounce_tasks);
+      if (Carbon::createFromTimestamp(current_time('timestamp'))->addHour(42)->lessThan($bounce_task->scheduled_at)) {
+        $random_offset = rand(-6 * 60 * 60, 6 * 60 * 60);
+        $bounce_task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->addSecond((36 * 60 * 60) + $random_offset);
+        $bounce_task->save();
+      }
+    }
   }
 
   static function getScheduledQueues() {
