@@ -18,16 +18,21 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class Scheduler {
-  public $timer;
-  private $wp;
   const UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT = 5;
   const TASK_BATCH_SIZE = 5;
 
-  function __construct($timer = false) {
+  public $timer;
+  private $wp;
+
+  /** @var SubscribersFinder */
+  private $subscribers_finder;
+
+  function __construct(SubscribersFinder $subscribers_finder, $timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
     $this->wp = new WPFunctions();
+    $this->subscribers_finder = $subscribers_finder;
   }
 
   function process() {
@@ -93,8 +98,7 @@ class Scheduler {
 
     // ensure that subscribers are in segments
 
-    $finder = new SubscribersFinder();
-    $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
+    $subscribers_count = $this->subscribers_finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
     if (empty($subscribers_count)) {
       Logger::getLogger('post-notifications')->addInfo(
@@ -124,8 +128,7 @@ class Scheduler {
   function processScheduledAutomaticEmail($newsletter, $queue) {
     if ($newsletter->sendTo === 'segment') {
       $segment = Segment::findOne($newsletter->segment);
-      $finder = new SubscribersFinder();
-      $result = $finder->addSubscribersToTaskFromSegments($queue->task(), [$segment]);
+      $result = $this->subscribers_finder->addSubscribersToTaskFromSegments($queue->task(), [$segment]);
       if (empty($result)) {
         $queue->delete();
         return false;
@@ -148,8 +151,7 @@ class Scheduler {
 
   function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
     $segments = $newsletter->segments()->findMany();
-    $finder = new SubscribersFinder();
-    $finder->addSubscribersToTaskFromSegments($task->task(), $segments);
+    $this->subscribers_finder->addSubscribersToTaskFromSegments($task->task(), $segments);
     // update current queue
     $task->updateCount();
     $task->status = null;

@@ -107,6 +107,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Segments
     $container->autowire(\MailPoet\Segments\SubscribersListings::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
+    $container->autowire(\MailPoet\Segments\SubscribersFinder::class);
     // Services
     $container->autowire(\MailPoet\Services\Bridge::class);
     $container->autowire(\MailPoet\Services\AuthorizedEmailsController::class);
