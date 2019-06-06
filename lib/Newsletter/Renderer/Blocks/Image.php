@@ -11,7 +11,7 @@ class Image {
       return '';
     }
     if (substr($element['src'], 0, 1) == '/' && substr($element['src'], 1, 1) != '/') {
-      $element['src'] = WPFunctions::get()->getOption('siteurl') . $element['src'];
+      $element['src'] = WPFunctions::get()->getOption('home') . $element['src'];
     }
 
     $element['width'] = str_replace('px', '', $element['width']);
