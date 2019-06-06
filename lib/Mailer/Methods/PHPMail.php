@@ -67,6 +67,18 @@ class PHPMail {
     if (!empty($extra_params['unsubscribe_url'])) {
       $this->mailer->addCustomHeader('List-Unsubscribe', $extra_params['unsubscribe_url']);
     }
+
+    // Enforce base64 encoding when lines are too long, otherwise quoted-printable encoding
+    // is automatically used which can occasionally break the email body.
+    // Explanation:
+    //   The bug occurs on Unix systems where mail() function passes email to a variation of
+    //   sendmail command which expects only NL as line endings (POSIX). Since quoted-printable
+    //   requires CRLF some of those commands convert LF to CRLF which can break the email body
+    //   because it already (correctly) uses CRLF. Such CRLF then (wrongly) becomes CRCRLF.
+    if (\PHPMailer::hasLineLongerThanMax($mailer->Body)) {
+      $mailer->Encoding = 'base64';
+    }
+
     return $mailer;
   }
 
