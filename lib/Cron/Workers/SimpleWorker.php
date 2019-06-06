@@ -125,6 +125,10 @@ abstract class SimpleWorker {
     return $date;
   }
 
+  /**
+   * @param bool $future
+   * @return ScheduledTask[]
+   */
   static function getScheduledTasks($future = false) {
     $dateWhere = ($future) ? 'whereGt' : 'whereLte';
     $wp = new WPFunctions();

@@ -552,6 +552,38 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler->process();
   }
 
+  function testItReSchedulesBounceTask() {
+    $task = ScheduledTask::createOrUpdate([
+      'type' => 'bounce',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addMonths(1),
+    ]);
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
+    $queue = $this->_createQueue($newsletter->id);
+    $finder = $this->makeEmpty(SubscribersFinder::class);
+    $scheduler = new Scheduler($finder);
+
+    $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
+    $refetched_task = ScheduledTask::where('id', $task->id)->findOne();
+    expect($refetched_task->scheduled_at)->lessThan(Carbon::createFromTimestamp(current_time('timestamp'))->addHours(42));
+  }
+
+  function testItDoesNotReSchedulesBounceTaskWhenSoon() {
+    $task = ScheduledTask::createOrUpdate([
+      'type' => 'bounce',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addMinute(5),
+    ]);
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
+    $queue = $this->_createQueue($newsletter->id);
+    $finder = $this->makeEmpty(SubscribersFinder::class);
+    $scheduler = new Scheduler($finder);
+
+    $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
+    $refetched_task = ScheduledTask::where('id', $task->id)->findOne();
+    expect($refetched_task->scheduled_at)->lessThan(Carbon::createFromTimestamp(current_time('timestamp'))->addHours(1));
+  }
+
   function testItProcessesScheduledJobsWhenNewsletterIsScheduled() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_SCHEDULED);
     $queue = $this->_createQueue($newsletter->id);
