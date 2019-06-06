@@ -93,11 +93,11 @@ class API {
       $custom_field = CustomField::createOrUpdate($this->custom_fields_data_sanitizer->sanitize($data));
       $errors = $custom_field->getErrors();
       if (!empty($errors)) {
-        throw new APIException('Failed to save a new subscriber field ' . join(', ', $errors), 1);
+        throw new APIException('Failed to save a new subscriber field ' . join(', ', $errors), APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
       }
       $custom_field = CustomField::findOne($custom_field->id);
       if (!$custom_field instanceof CustomField) {
-        throw new APIException('Failed to create a new subscriber field', 1);
+        throw new APIException('Failed to create a new subscriber field', APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
       }
       return $custom_field->asArray();
     } catch (\InvalidArgumentException $e) {
@@ -115,33 +115,33 @@ class API {
     $skip_subscriber_notification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true) ? true : false;
 
     if (empty($list_ids)) {
-      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), 3);
+      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
     }
 
     // throw exception when subscriber does not exist
     $subscriber = Subscriber::findOne($subscriber_id);
     if (!$subscriber) {
-      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), 4);
+      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
     }
 
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $list_ids)->findMany();
     if (!$found_segments) {
       $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($list_ids), 'mailpoet');
-      throw new APIException($exception, 5);
+      throw new APIException($exception, APIException::LIST_NOT_EXISTS);
     }
 
     // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
     $found_segments_ids = [];
     foreach ($found_segments as $found_segment) {
       if ($found_segment->type === Segment::TYPE_WP_USERS) {
-        throw new APIException(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $found_segment->id), 'mailpoet'), 6);
+        throw new APIException(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $found_segment->id), 'mailpoet'), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
       }
       if ($found_segment->type === Segment::TYPE_WC_USERS) {
-        throw new APIException(__(sprintf("Can't subscribe to a WooCommerce Customers list with ID %d.", $found_segment->id), 'mailpoet'), 7);
+        throw new APIException(__(sprintf("Can't subscribe to a WooCommerce Customers list with ID %d.", $found_segment->id), 'mailpoet'), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
       }
       if ($found_segment->type !== Segment::TYPE_DEFAULT) {
-        throw new APIException(__(sprintf("Can't subscribe to a list with ID %d.", $found_segment->id), 'mailpoet'), 8);
+        throw new APIException(__(sprintf("Can't subscribe to a list with ID %d.", $found_segment->id), 'mailpoet'), APIException::SUBSCRIBING_TO_LIST_NOT_ALLOWED);
       }
       $found_segments_ids[] = $found_segment->id;
     }
@@ -153,7 +153,7 @@ class API {
         WPFunctions::get()->_n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
         implode(', ', $missing_ids)
       );
-      throw new APIException(sprintf($exception, implode(', ', $missing_ids)), 5);
+      throw new APIException(sprintf($exception, implode(', ', $missing_ids)), APIException::LIST_NOT_EXISTS);
     }
 
     SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
@@ -173,7 +173,7 @@ class API {
       if (!$result && $subscriber->getErrors()) {
         throw new APIException(
           WPFunctions::get()->__(sprintf('Subscriber added to lists, but confirmation email failed to send: %s', strtolower(implode(', ', $subscriber->getErrors()))), 'mailpoet'),
-        10);
+        APIException::CONFIRMATION_FAILED_TO_SEND);
       }
     }
 
@@ -190,30 +190,30 @@ class API {
 
   function unsubscribeFromLists($subscriber_id, array $list_ids) {
     if (empty($list_ids)) {
-      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), 3);
+      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
     }
 
     // throw exception when subscriber does not exist
     $subscriber = Subscriber::findOne($subscriber_id);
     if (!$subscriber) {
-      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), 4);
+      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
     }
 
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $list_ids)->findMany();
     if (!$found_segments) {
       $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($list_ids), 'mailpoet');
-      throw new APIException($exception, 5);
+      throw new APIException($exception, APIException::LIST_NOT_EXISTS);
     }
 
     // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
     $found_segments_ids = [];
     foreach ($found_segments as $segment) {
       if ($segment->type === Segment::TYPE_WP_USERS) {
-        throw new APIException(__(sprintf("Can't unsubscribe from a WordPress Users list with ID %d.", $segment->id), 'mailpoet'), 6);
+        throw new APIException(__(sprintf("Can't unsubscribe from a WordPress Users list with ID %d.", $segment->id), 'mailpoet'), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
       }
       if ($segment->type === Segment::TYPE_WC_USERS) {
-        throw new APIException(__(sprintf("Can't unsubscribe from a WooCommerce Customers list with ID %d.", $segment->id), 'mailpoet'), 7);
+        throw new APIException(__(sprintf("Can't unsubscribe from a WooCommerce Customers list with ID %d.", $segment->id), 'mailpoet'), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
       }
       $found_segments_ids[] = $segment->id;
     }
@@ -225,7 +225,7 @@ class API {
         WPFunctions::get()->_n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missing_ids), 'mailpoet'),
         implode(', ', $missing_ids)
       );
-      throw new APIException($exception, 5);
+      throw new APIException($exception, APIException::LIST_NOT_EXISTS);
     }
 
     SubscriberSegment::unsubscribeFromSegments($subscriber, $found_segments_ids);
@@ -246,7 +246,7 @@ class API {
     if (empty($subscriber['email'])) {
       throw new APIException(
         WPFunctions::get()->__('Subscriber email address is required.', 'mailpoet'),
-        11
+        APIException::EMAIL_ADDRESS_REQUIRED
       );
     }
 
@@ -254,7 +254,7 @@ class API {
     if (Subscriber::findOne($subscriber['email'])) {
       throw new APIException(
         WPFunctions::get()->__('This subscriber already exists.', 'mailpoet'),
-        12
+        APIException::SUBSCRIBER_EXISTS
       );
     }
 
@@ -277,7 +277,7 @@ class API {
     if ($new_subscriber->getErrors() !== false) {
       throw new APIException(
         WPFunctions::get()->__(sprintf('Failed to add subscriber: %s', strtolower(implode(', ', $new_subscriber->getErrors()))), 'mailpoet'),
-        13
+        APIException::FAILED_TO_SAVE_SUBSCRIBER
       );
     }
     if (!empty($custom_fields)) {
@@ -310,7 +310,7 @@ class API {
     if (empty($list['name'])) {
       throw new APIException(
         WPFunctions::get()->__('List name is required.', 'mailpoet'),
-        14
+        APIException::LIST_NAME_REQUIRED
       );
     }
 
@@ -318,7 +318,7 @@ class API {
     if (Segment::where('name', $list['name'])->findOne()) {
       throw new APIException(
         WPFunctions::get()->__('This list already exists.', 'mailpoet'),
-        15
+        APIException::LIST_EXISTS
       );
     }
 
@@ -332,14 +332,14 @@ class API {
     if ($new_list->getErrors() !== false) {
       throw new APIException(
         WPFunctions::get()->__(sprintf('Failed to add list: %s', strtolower(implode(', ', $new_list->getErrors()))), 'mailpoet'),
-        16
+        APIException::FAILED_TO_SAVE_LIST
       );
     }
 
     // reload list to get the saved created|updated|delete dates/other fields
     $new_list = Segment::findOne($new_list->id);
     if (!$new_list instanceof Segment) {
-      throw new APIException(WPFunctions::get()->__('Failed to add list', 'mailpoet'), 16);
+      throw new APIException(WPFunctions::get()->__('Failed to add list', 'mailpoet'), APIException::FAILED_TO_SAVE_LIST);
     }
 
     return $new_list->asArray();
@@ -349,7 +349,7 @@ class API {
     $subscriber = Subscriber::findOne($subscriber_email);
     // throw exception when subscriber does not exist
     if (!$subscriber) {
-      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), 4);
+      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
     }
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
@@ -365,7 +365,7 @@ class API {
         if ($queue instanceof Sending && $queue->getErrors()) {
           throw new APIException(
             WPFunctions::get()->__(sprintf('Subscriber added, but welcome email failed to send: %s', strtolower(implode(', ', $queue->getErrors()))), 'mailpoet'),
-            17
+            APIException::WELCOME_FAILED_TO_SEND
           );
         }
       }

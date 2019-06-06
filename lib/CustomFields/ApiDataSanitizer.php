@@ -7,6 +7,17 @@ use MailPoet\Models\CustomField;
 
 class ApiDataSanitizer {
 
+  const ERROR_MANDATORY_ARGUMENT_MISSING = 1001;
+  const ERROR_MANDATORY_ARGUMENT_WRONG_TYPE = 1002;
+  const ERROR_PARAMS_WRONG_TYPE = 1003;
+  const ERROR_INVALID_TYPE = 1004;
+  const ERROR_INVALID_VALIDATE = 1005;
+  const ERROR_CHECKBOX_WRONG_VALUES_COUNT = 1006;
+  const ERROR_INVALID_DATE_FORMAT = 1007;
+  const ERROR_INVALID_DATE_TYPE = 1008;
+  const ERROR_NO_VALUES = 1009;
+  const ERROR_NO_VALUE = 1010;
+
   function sanitize(array $data = []) {
     $this->checkMandatoryStringParameter($data, 'name');
     $this->checkMandatoryStringParameter($data, 'type');
@@ -20,16 +31,16 @@ class ApiDataSanitizer {
 
   private function checkMandatoryStringParameter(array $data, $parameter_name) {
     if (empty($data[$parameter_name])) {
-      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" is missing', 'mailpoet'), $parameter_name), 1001);
+      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" is missing', 'mailpoet'), $parameter_name), self::ERROR_MANDATORY_ARGUMENT_MISSING);
     }
     if (!is_string($data[$parameter_name])) {
-      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" has to be string', 'mailpoet'), $parameter_name), 1002);
+      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" has to be string', 'mailpoet'), $parameter_name), self::ERROR_MANDATORY_ARGUMENT_WRONG_TYPE);
     }
   }
 
   private function checkParamsType($data) {
     if (isset($data['params']) && !is_array($data['params'])) {
-      throw new InvalidArgumentException(sprintf(__('Params has to be array', 'mailpoet')), 1003);
+      throw new InvalidArgumentException(sprintf(__('Params has to be array', 'mailpoet')), self::ERROR_PARAMS_WRONG_TYPE);
     }
   }
 
@@ -74,7 +85,7 @@ class ApiDataSanitizer {
       return $this->getExtraParamsForDate($data['params']);
     }
 
-    throw new InvalidArgumentException(sprintf(__('Invalid type "%s"', 'mailpoet'), $type), 1004);
+    throw new InvalidArgumentException(sprintf(__('Invalid type "%s"', 'mailpoet'), $type), self::ERROR_INVALID_TYPE);
   }
 
   private function getExtraParamsForText($params) {
@@ -83,14 +94,14 @@ class ApiDataSanitizer {
       if (in_array($validate, ['number', 'alphanum', 'phone'], true)) {
         return ['validate' => $validate];
       }
-      throw new InvalidArgumentException(__('Validate parameter is not valid', 'mailpoet'), 1005);
+      throw new InvalidArgumentException(__('Validate parameter is not valid', 'mailpoet'), self::ERROR_INVALID_VALIDATE);
     }
     return [];
   }
 
   private function getExtraParamsForCheckbox($params) {
     if (empty($params['values']) || count($params['values']) > 1) {
-      throw new InvalidArgumentException(__('You need to pass exactly one value for checkbox', 'mailpoet'), 1006);
+      throw new InvalidArgumentException(__('You need to pass exactly one value for checkbox', 'mailpoet'), self::ERROR_CHECKBOX_WRONG_VALUES_COUNT);
     }
     $value = reset($params['values']);
     return ['values' => [$this->sanitizeValue($value)]];
@@ -109,13 +120,13 @@ class ApiDataSanitizer {
     switch ($date_type) {
       case 'year_month_day':
         if (!in_array($input_date_format, ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'], true)) {
-          throw new InvalidArgumentException(__('Invalid date_format for year_month_day', 'mailpoet'), 1007);
+          throw new InvalidArgumentException(__('Invalid date_format for year_month_day', 'mailpoet'), self::ERROR_INVALID_DATE_FORMAT);
         }
         $date_format = $input_date_format;
         break;
       case 'year_month':
         if (!in_array($input_date_format, ['YYYY/MM', 'MM/YY'], true)) {
-          throw new InvalidArgumentException(__('Invalid date_format for year_month', 'mailpoet'), 1007);
+          throw new InvalidArgumentException(__('Invalid date_format for year_month', 'mailpoet'), self::ERROR_INVALID_DATE_FORMAT);
         }
         $date_format = $input_date_format;
         break;
@@ -129,7 +140,7 @@ class ApiDataSanitizer {
         $date_format = 'DD';
         break;
       default:
-        throw new InvalidArgumentException(__('Invalid value for date_type', 'mailpoet'), 1008);
+        throw new InvalidArgumentException(__('Invalid value for date_type', 'mailpoet'), self::ERROR_INVALID_DATE_TYPE);
     }
     return [
       'date_type' => $date_type,
@@ -139,7 +150,7 @@ class ApiDataSanitizer {
 
   private function getExtraParamsForSelect($params) {
     if (empty($params['values'])) {
-      throw new InvalidArgumentException(__('You need to pass some values for this type', 'mailpoet'), 1009);
+      throw new InvalidArgumentException(__('You need to pass some values for this type', 'mailpoet'), self::ERROR_NO_VALUES);
     }
     $values = [];
     foreach ($params['values'] as $value) {
@@ -150,7 +161,7 @@ class ApiDataSanitizer {
 
   private function sanitizeValue($value) {
     if (empty($value['value'])) {
-      throw new InvalidArgumentException(__('Value cannot be empty', 'mailpoet'), 1010);
+      throw new InvalidArgumentException(__('Value cannot be empty', 'mailpoet'), self::ERROR_NO_VALUE);
     }
     $result = ['value' => $value['value']];
     if (isset($value['is_checked']) && $value['is_checked']) {
