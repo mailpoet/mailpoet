@@ -6,6 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class ConflictResolver {
   public $permitted_assets_locations = [
     'styles' => [
+      'mailpoet',
       // WP default
       '^/wp-admin',
       '^/wp-includes',
@@ -17,6 +18,7 @@ class ConflictResolver {
       'wpt-tx-updater-network',
     ],
     'scripts' => [
+      'mailpoet',
       // WP default
       '^/wp-admin',
       '^/wp-includes',
