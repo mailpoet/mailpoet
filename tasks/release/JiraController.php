@@ -61,6 +61,20 @@ class JiraController {
     throw new \Exception('Unknown project version');
   }
 
+  function getLastVersion() {
+    $response = $this->http_client->get("project/$this->project/version", [
+      'query' => [
+        'maxResults' => 1,
+        'orderBy' => '-sequence',
+      ]
+    ]);
+    $version = json_decode($response->getBody()->getContents(), true);
+    if (empty($version) || empty($version['values'])) {
+      throw new \Exception('No version found');
+    }
+    return reset($version['values']);
+  }
+
   function getLastReleasedVersion() {
     $response = $this->http_client->get("project/$this->project/versions");
     $versions = json_decode($response->getBody()->getContents(), true);
