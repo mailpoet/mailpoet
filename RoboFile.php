@@ -36,8 +36,8 @@ class RoboFile extends \Robo\Tasks {
 
   function watch() {
     $this->say('Warning: this lints and compiles all files, not just the changed one. Use separate tasks watch:js and watch:css for faster and more efficient watching.');
-    $css_files = $this->rsearch('assets/css/src/', array('scss'));
-    $js_files = $this->rsearch('assets/js/src/', array('js', 'jsx'));
+    $css_files = $this->rsearch('assets/css/src/', ['scss']);
+    $js_files = $this->rsearch('assets/js/src/', ['js', 'jsx']);
 
     $this->taskWatch()
       ->monitor($js_files, function() {
@@ -50,7 +50,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watchCss() {
-    $css_files = $this->rsearch('assets/css/src/', array('scss'));
+    $css_files = $this->rsearch('assets/css/src/', ['scss']);
     $this->taskWatch()
       ->monitor($css_files, function($changedFile) {
         $file = $changedFile->getResource()->getResource();
@@ -71,10 +71,10 @@ class RoboFile extends \Robo\Tasks {
   function compileAll($opts = ['env' => null]) {
     $collection = $this->collectionBuilder();
     $collection->addCode(function() use ($opts) {
-      return call_user_func(array($this, 'compileJs'), $opts);
+      return call_user_func([$this, 'compileJs'], $opts);
     });
     $collection->addCode(function() use ($opts) {
-      return call_user_func(array($this, 'compileCss'), $opts);
+      return call_user_func([$this, 'compileCss'], $opts);
     });
     return $collection->run();
   }
@@ -126,9 +126,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function translationsBuild() {
-    return $this->_exec('./node_modules/.bin/grunt makepot'.
-      ' --gruntfile='.__DIR__.'/tasks/makepot/makepot.js'.
-      ' --base_path='.__DIR__
+    return $this->_exec('./node_modules/.bin/grunt makepot' .
+      ' --gruntfile=' . __DIR__ . '/tasks/makepot/makepot.js' .
+      ' --base_path=' . __DIR__
     );
   }
 
@@ -191,12 +191,12 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testCoverage($opts=['file' => null, 'xml' => false]) {
-    $command = join(' ', array(
+    $command = join(' ', [
       'vendor/bin/codecept run -s acceptance',
       (($opts['file']) ? $opts['file'] : ''),
       '--coverage',
-      ($opts['xml']) ? '--coverage-xml' : '--coverage-html'
-    ));
+      ($opts['xml']) ? '--coverage-xml' : '--coverage-html',
+    ]);
 
     if ($opts['xml']) {
       $command .= ' --xml';
@@ -208,11 +208,11 @@ class RoboFile extends \Robo\Tasks {
   function testJavascript($xml_output_file = null) {
     $this->compileJs();
 
-    $command = join(' ', array(
+    $command = join(' ', [
       './node_modules/.bin/mocha',
       '-r tests/javascript/mochaTestHelper.js',
-      'tests/javascript/testBundles/**/*.js'
-    ));
+      'tests/javascript/testBundles/**/*.js',
+    ]);
 
     if (!empty($xml_output_file)) {
       $command .= sprintf(
@@ -284,7 +284,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     $configurator = new \MailPoet\DI\ContainerConfigurator();
-    $dump_file = __DIR__ .  '/generated/' . $configurator->getDumpClassname() . '.php';
+    $dump_file = __DIR__ . '/generated/' . $configurator->getDumpClassname() . '.php';
     $this->say('Deleting DI Container');
     $this->_exec("rm -f $dump_file");
     $this->say('Generating DI container cache');
@@ -296,19 +296,19 @@ class RoboFile extends \Robo\Tasks {
       $dump_file,
       $dumper->dump([
         'class' => $configurator->getDumpClassname(),
-        'namespace' => $configurator->getDumpNamespace()
+        'namespace' => $configurator->getDumpNamespace(),
       ])
     );
   }
 
   function qa() {
     $collection = $this->collectionBuilder();
-    $collection->addCode(array($this, 'qaLint'));
+    $collection->addCode([$this, 'qaLint']);
     $collection->addCode(function() {
       return $this->qaCodeSniffer('all');
     });
-    $collection->addCode(array($this, 'qaLintJavascript'));
-    $collection->addCode(array($this, 'qaLintCss'));
+    $collection->addCode([$this, 'qaLintJavascript']);
+    $collection->addCode([$this, 'qaLintCss']);
     return $collection->run();
   }
 
@@ -332,20 +332,20 @@ class RoboFile extends \Robo\Tasks {
     }
     return $this->collectionBuilder()
       ->taskExec(
-        './tasks/code_sniffer/vendor/bin/phpcs '.
-        '--standard=./tasks/code_sniffer/MailPoet '.
-        '--runtime-set testVersion 5.6-7.3 '.
-        '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
-        './lib/Util/pQuery/*,./lib/Config/PopulatorData/Templates/* '.
-        'lib/ '.
+        './tasks/code_sniffer/vendor/bin/phpcs ' .
+        '--standard=./tasks/code_sniffer/MailPoet ' .
+        '--runtime-set testVersion 5.6-7.3 ' .
+        '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,' .
+        './lib/Util/pQuery/*,./lib/Config/PopulatorData/Templates/* ' .
+        'lib/ ' .
         $severityFlag
       )
       ->taskExec(
-        './tasks/code_sniffer/vendor/bin/phpcs '.
-        '--standard=./tasks/code_sniffer/MailPoet '.
-        '--runtime-set testVersion 5.6-7.3 '.
-        '--ignore=./tests/unit/_bootstrap.php,./tests/unit/_fixtures.php,./tests/integration/_bootstrap.php,./tests/integration/_fixtures.php '.
-        'tests/unit tests/integration tests/acceptance tests/DataFactories '.
+        './tasks/code_sniffer/vendor/bin/phpcs ' .
+        '--standard=./tasks/code_sniffer/MailPoet ' .
+        '--runtime-set testVersion 5.6-7.3 ' .
+        '--ignore=./tests/unit/_bootstrap.php,./tests/unit/_fixtures.php,./tests/integration/_bootstrap.php,./tests/integration/_fixtures.php ' .
+        'tests/unit tests/integration tests/acceptance tests/DataFactories ' .
         $severityFlag
       )
       ->run();
@@ -360,11 +360,11 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec('rm -rf ' . __DIR__ . '/vendor/nikic')
       ->taskExec('cd ' . __DIR__ . ' && ./composer.phar dump-autoload')
       ->taskExec(
-        'WP_ROOT="'.getenv('WP_ROOT').'" '.
-        'php -d memory_limit=2G '.
-        "$dir/phpstan.phar analyse ".
-        "--configuration $dir/tasks/phpstan/phpstan.neon ".
-        '--level 5 '.
+        'WP_ROOT="' . getenv('WP_ROOT') . '" ' .
+        'php -d memory_limit=2G ' .
+        "$dir/phpstan.phar analyse " .
+        "--configuration $dir/tasks/phpstan/phpstan.neon " .
+        '--level 5 ' .
         "$dir/lib"
       )
       ->dir(__DIR__ . '/tasks/phpstan')
@@ -439,7 +439,7 @@ class RoboFile extends \Robo\Tasks {
     if (file_exists("$svn_dir/trunk_new") || file_exists("$svn_dir/trunk_old")) {
       $collection->taskFileSystemStack()
         ->stopOnFail()
-        ->remove(array("$svn_dir/trunk_new", "$svn_dir/trunk_old"));
+        ->remove(["$svn_dir/trunk_new", "$svn_dir/trunk_old"]);
     }
 
     // Extract the distributable zip to tmp trunk dir
@@ -713,7 +713,7 @@ class RoboFile extends \Robo\Tasks {
     $circleci_controller = $this->createCircleCiController();
     $path = $circleci_controller->downloadLatestBuild(self::ZIP_BUILD_PATH);
     $this->say('Release ZIP downloaded to: ' . $path);
-    $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path)/pow(1024, 2)));
+    $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
   }
 
   public function releasePublishGithub($version = null) {
@@ -743,11 +743,11 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Release '$version[name]' info was published on Slack.");
   }
 
-  protected function rsearch($folder, $extensions = array()) {
+  protected function rsearch($folder, $extensions = []) {
     $dir = new RecursiveDirectoryIterator($folder);
     $iterator = new RecursiveIteratorIterator($dir);
 
-    $pattern = '/^.+\.('.join($extensions, '|').')$/i';
+    $pattern = '/^.+\.(' . join($extensions, '|') . ')$/i';
 
     $files = new RegexIterator(
       $iterator,
@@ -755,7 +755,7 @@ class RoboFile extends \Robo\Tasks {
       RecursiveRegexIterator::GET_MATCH
     );
 
-    $list = array();
+    $list = [];
     foreach ($files as $file) {
       $list[] = $file[0];
     }
