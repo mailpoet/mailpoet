@@ -42,10 +42,7 @@ const SendingStatus = (props) => {
       .done(res => setNewsletterSubject(res.data.subject))
       .fail((res) => {
         setNewsletterSubject('');
-        MailPoet.Notice.error(
-          res.errors.map(error => error.message),
-          { scroll: true }
-        );
+        MailPoet.Notice.showApiErrorNotice(res);
       });
   }, [newsletterId]);
 
@@ -77,7 +74,9 @@ const SendingStatus = (props) => {
   );
 };
 SendingStatus.propTypes = {
-  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -112,10 +111,7 @@ const ListingItem = ({
       data: { taskId, subscriberId },
     })
       .done(() => window.mailpoet_listing.forceUpdate())
-      .fail(res => MailPoet.Notice.error(
-        res.errors.map(err => err.message),
-        { scroll: true }
-      ));
+      .fail(res => MailPoet.Notice.showApiErrorNotice(res));
   };
 
   const rowClasses = classNames(

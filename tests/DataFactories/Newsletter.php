@@ -225,7 +225,7 @@ class Newsletter {
     return $this;
   }
 
-  public function beingSentToSubscriber($subscriber, array $data = []) {
+  public function withSubscriber($subscriber, array $data = []) {
     $this->task_subscribers[] = array_merge([
       'subscriber_id' => $subscriber->id,
       'processed' => 1,
