@@ -63,6 +63,21 @@ Module.findModels = function findModels(predicate) {
   return _.filter(blocks, predicate);
 };
 
+Module.renderContent = function renderContent(content) {
+  if (App._contentContainerView) {
+    App._contentContainer.destroy();
+  }
+  if (App._contentContainerView) {
+    App._contentContainerView.destroy();
+  }
+  App._contentContainer = new (App.getBlockTypeModel('container'))(content, { parse: true });
+  App._contentContainerView = new (App.getBlockTypeView('container'))({
+    model: App._contentContainer,
+    renderOptions: { depth: 0 },
+  });
+  App._appView.showChildView('contentRegion', App._contentContainerView);
+};
+
 App.on('before:start', function appBeforeStart(Application, options) {
   var BeforeStartApp = Application;
   // Expose block methods globally
@@ -88,14 +103,11 @@ App.on('start', function appOnStart(Application, options) {
       { static: true }
     );
   }
+  Module.renderContent(bodyContent);
 
-  StartApp._contentContainer = new (StartApp.getBlockTypeModel('container'))(bodyContent, { parse: true });
-  StartApp._contentContainerView = new (StartApp.getBlockTypeView('container'))({
-    model: StartApp._contentContainer,
-    renderOptions: { depth: 0 },
-  });
-
-  StartApp._appView.showChildView('contentRegion', StartApp._contentContainerView);
+  StartApp.getChannel().on('historyUpdate', function onHistoryUpdate(json) {
+    Module.renderContent(json.content);
+  }, this);
 });
 
 
