@@ -92,7 +92,7 @@ class Newsletters extends APIEndpoint {
       return $this->successResponse($newsletter, ['preview_url' => $preview_url]);
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -226,7 +226,7 @@ class Newsletters extends APIEndpoint {
 
     if ($newsletter === false) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
       ]);
     }
 
@@ -274,7 +274,7 @@ class Newsletters extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -293,7 +293,7 @@ class Newsletters extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -306,7 +306,7 @@ class Newsletters extends APIEndpoint {
       return $this->successResponse(null, ['count' => 1]);
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -335,7 +335,7 @@ class Newsletters extends APIEndpoint {
       }
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -370,7 +370,7 @@ class Newsletters extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -445,7 +445,7 @@ class Newsletters extends APIEndpoint {
       }
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
       ]);
     }
   }

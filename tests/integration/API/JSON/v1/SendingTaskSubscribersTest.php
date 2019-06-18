@@ -72,7 +72,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     ]);
     expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($res->errors[0]['message'])
-      ->equals('This newsletter is not being sent to any subcriber yet.');
+      ->equals('This email has not been sent yet.');
   }
 
   function testListingReturnsErrorIfNewsletterNotBeingSent() {
@@ -87,7 +87,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     ]);
     expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($res->errors[0]['message'])
-      ->equals('This newsletter is not being sent to any subcriber yet.');
+      ->equals('This email has not been sent yet.');
   }
 
   function testItReturnsListing() {

@@ -47,7 +47,7 @@ class SendingTaskSubscribers extends APIEndpoint {
       ->findArray();
     if (empty($tasks_ids)) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => __('This newsletter is not being sent to any subcriber yet.', 'mailpoet'),
+        APIError::NOT_FOUND => __( 'This email has not been sent yet.', 'mailpoet'),
       ]);
     }
     $data['params']['task_ids'] = array_column($tasks_ids, 'task_id');
