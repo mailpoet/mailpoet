@@ -39,6 +39,36 @@ const MailerError = (props) => {
     message += message ? ', ' : '';
     message += MailPoet.I18n.t('mailerErrorCode').replace('%$1s', code);
   }
+
+  // allow <a> tags with some attributes
+  const links = [];
+  message = message.replace(/<a.*?>.*?<\/a>/g, (match) => {
+    links.push(match);
+    return `[link-${links.length - 1}]`;
+  });
+
+  message = ReactStringReplace(message, /\[link-(\d+)\]/g, (match) => {
+    const link = new DOMParser().parseFromString(links[match], 'text/xml').firstChild;
+    return (
+      <a
+        key={`a-${match}`}
+        href={link.getAttribute('href')}
+        target={link.getAttribute('target')}
+        rel={link.getAttribute('rel')}
+      >
+        { link.textContent }
+      </a>
+    );
+  });
+
+  // allow <br> tags
+  let brKey = 0;
+  message = ReactStringReplace(
+    message,
+    /(<br\s*\/?>)/g,
+    () => <br key={`br-${brKey++}`} /> // eslint-disable-line no-plusplus
+  );
+
   return (
     <div className="mailpoet_notice notice notice-error">
       <p>
