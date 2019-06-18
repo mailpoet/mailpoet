@@ -30,8 +30,8 @@ class SendingStatusCest {
         'count_processed' => 2,
         'count_total' => 2,
       ])
-      ->beingSentToSubscriber($lucky_subscriber)
-      ->beingSentToSubscriber($unlucky_subscriber, [
+      ->withSubscriber($lucky_subscriber)
+      ->withSubscriber($unlucky_subscriber, [
         'failed' => 1,
         'error' => 'Oh no!',
       ])

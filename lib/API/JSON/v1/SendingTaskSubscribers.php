@@ -50,9 +50,7 @@ class SendingTaskSubscribers extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter is not being sent to any subcriber yet.', 'mailpoet'),
       ]);
     }
-    $data['params']['task_ids'] = array_map(function($item) {
-      return $item['task_id'];
-    }, $tasks_ids);
+    $data['params']['task_ids'] = array_column($tasks_ids, 'task_id');
     $listing_data = $this->listing_handler->get('\MailPoet\Models\ScheduledTaskSubscriber', $data);
 
     $items = [];
