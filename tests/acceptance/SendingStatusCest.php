@@ -42,8 +42,6 @@ class SendingStatusCest {
     $I->waitForText($newsletter->subject);
     // I click on the "Sent to 3 of 3" link
     $I->click('[data-automation-id="sending_status_' . $newsletter->id . '"]');
-    // Check I am on the sending status page
-    $I->seeInCurrentUrl('?page=mailpoet-newsletters#/sending-status/' . $newsletter->id);
     $I->waitForText('Sending status');
     // I see the subscribers with related statuses
     $task_id = $newsletter->getQueue()->task_id;
