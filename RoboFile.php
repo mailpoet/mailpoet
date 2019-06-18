@@ -351,6 +351,53 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  function qaFixFile($filePath) {
+    if (substr($filePath, -4) === '.php') {
+      // fix PHPCS rules
+      return $this->collectionBuilder()
+        ->taskExec(
+          './tasks/code_sniffer/vendor/bin/phpcbf ' .
+            '--standard=./tasks/code_sniffer/MailPoet ' .
+            '--runtime-set testVersion 5.6-7.3 ' .
+            $filePath . ' -n'
+        )
+        ->run();
+    }
+    if (substr($filePath, -4) === '.jsx') {
+      // fix ESLint using ES6 rules
+      return $this->collectionBuilder()
+        ->taskExec(
+          'npx eslint -c .eslintrc.es6.json ' .
+            '--max-warnings 0 ' .
+            '--fix ' .
+            $filePath
+        )
+        ->run();
+    }
+    if (substr($filePath, -8) === '.spec.js') {
+      // fix ESLint using tests rules
+      return $this->collectionBuilder()
+        ->taskExec(
+          'npx eslint -c .eslintrc.tests.json ' .
+            '--max-warnings 0 ' .
+            '--fix ' .
+            $filePath
+        )
+        ->run();
+    }
+    if (substr($filePath, -3) === '.js') {
+      // fix ESLint using ES5 rules
+      return $this->collectionBuilder()
+        ->taskExec(
+          'npx eslint -c .eslintrc.es5.json ' .
+            '--max-warnings 0 ' .
+            '--fix ' .
+            $filePath
+        )
+        ->run();
+    }
+  }
+
   function qaPhpstan() {
     // PHPStan must be run out of main plugin directory to avoid its autoloading
     // from vendor/autoload.php where some dev dependencies cause conflicts.
