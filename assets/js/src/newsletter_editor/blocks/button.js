@@ -117,6 +117,7 @@ Module.ButtonBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.ButtonWidgetView = base.WidgetView.extend({
+  id: 'automation_editor_block_button',
   getTemplate: function () { return window.templates.buttonInsertion; },
   behaviors: {
     DraggableBehavior: {
