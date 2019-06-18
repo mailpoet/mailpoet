@@ -111,12 +111,12 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->get(); // missing id
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
-      ->equals('This newsletter does not exist.');
+      ->equals('This email does not exist.');
 
     $response = $this->endpoint->get(['id' => 'not_an_id']);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
-      ->equals('This newsletter does not exist.');
+      ->equals('This email does not exist.');
 
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
@@ -421,7 +421,7 @@ class NewslettersTest extends \MailPoetTest {
     );
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
-      ->equals('This newsletter does not exist.');
+      ->equals('This email does not exist.');
   }
 
   function testItReschedulesPastDuePostNotificationsWhenStatusIsSetBackToActive() {
