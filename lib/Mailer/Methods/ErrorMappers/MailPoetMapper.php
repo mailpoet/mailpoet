@@ -109,13 +109,26 @@ class MailPoetMapper {
   }
 
   private function getAccountBannedMessage() {
-    return Helpers::replaceLinkTags(
-      WPFunctions::get()->__('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
+    $message = WPFunctions::get()->__('The MailPoet Sending Service has stopped sending your emails for one of the following reasons:', 'mailpoet');
+
+    $subscriber_limit_message = Helpers::replaceLinkTags(
+      WPFunctions::get()->__('You may have reached the subscriber limit of your plan. [link]Manage your subscriptions[/link].', 'mailpoet'),
+      'https://account.mailpoet.com/account',
+      [
+        'target' => '_blank',
+        'rel' => 'noopener noreferrer',
+      ]
+    );
+
+    $deliverability_message = Helpers::replaceLinkTags(
+      WPFunctions::get()->__('You may have had a poor deliverability rate. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
       'https://www.mailpoet.com/support/',
       [
         'target' => '_blank',
         'rel' => 'noopener noreferrer',
       ]
     );
+
+    return "$message<br><br>$subscriber_limit_message<br>$deliverability_message<br>";
   }
 }
