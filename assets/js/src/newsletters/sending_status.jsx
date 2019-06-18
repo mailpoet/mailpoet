@@ -28,6 +28,7 @@ const messages = {
 
 const SendingStatus = (props) => {
   const newsletterId = props.match.params.id;
+  const [isLoading, setIsLoading] = React.useState(true);
   const [newsletterSubject, setNewsletterSubject] = React.useState('');
 
   React.useEffect(() => {
@@ -39,9 +40,11 @@ const SendingStatus = (props) => {
         id: newsletterId,
       },
     })
-      .done(res => setNewsletterSubject(res.data.subject))
+      .done((res) => {
+        setNewsletterSubject(res.data.subject);
+        setIsLoading(false);
+      })
       .fail((res) => {
-        setNewsletterSubject('');
         MailPoet.Notice.showApiErrorNotice(res);
       });
   }, [newsletterId]);
@@ -53,6 +56,7 @@ const SendingStatus = (props) => {
         newsletterId={newsletterId}
         newsletterSubject={newsletterSubject}
       />
+      {!isLoading && (
       <Listing
         limit={window.mailpoet_listing_per_page}
         location={props.location}
@@ -70,6 +74,7 @@ const SendingStatus = (props) => {
           CronMixin.checkCronStatus(state);
         }}
       />
+      )}
     </>
   );
 };
