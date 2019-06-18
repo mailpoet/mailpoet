@@ -2,6 +2,7 @@ import App from 'newsletter_editor/App';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import Marionette from 'backbone.marionette';
+import Mousetrap from 'mousetrap';
 
 var Module = {};
 
@@ -28,7 +29,14 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   initialize: function initialize() {
+    var that = this;
     App.getChannel().on('afterEditorSave', this.addState, this);
+    Mousetrap.bind(['ctrl+z', 'command+z'], function keyboardUndo() {
+      that.undo();
+    });
+    Mousetrap.bind(['shift+ctrl+z', 'shift+command+z'], function keyboardRedo() {
+      that.redo();
+    });
   },
 
   onAttach: function onRender() {
