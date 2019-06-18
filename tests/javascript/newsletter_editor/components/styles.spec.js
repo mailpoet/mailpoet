@@ -26,6 +26,7 @@ describe('Styles', function () {
       var mock = sinon.mock({ trigger: function () {} }).expects('trigger').once().withExactArgs('autoSave');
       EditorApplication.getChannel = function () {
         return {
+          on: function () {},
           trigger: mock,
         };
       };
