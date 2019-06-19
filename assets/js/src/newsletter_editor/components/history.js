@@ -67,14 +67,14 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   canRedo: function canRedo() {
-    return this.model.currentStateIndex !== 0;
+    return this.model.currentStateIndex > 0;
   },
 
   undo: function undo() {
     if (!this.canUndo()) {
       return;
     }
-    this.model.currentStateIndex += 1;
+    this.model.currentStateIndex = Math.min(this.model.statesStack.length - 1, this.model.currentStateIndex + 1);
     this.updateArrowsUI();
     this.applyState(this.model.currentStateIndex);
   },
@@ -83,7 +83,7 @@ Module.HistoryView = Marionette.View.extend({
     if (!this.canRedo()) {
       return;
     }
-    this.model.currentStateIndex -= 1;
+    this.model.currentStateIndex = Math.max(0, this.model.currentStateIndex - 1);
     this.updateArrowsUI();
     this.applyState(this.model.currentStateIndex);
   },
