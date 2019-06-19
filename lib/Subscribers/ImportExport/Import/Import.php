@@ -158,7 +158,7 @@ class Import {
       if ($validation_rule === 'email') {
         $data = array_map(
           function($index, $email) use(&$invalid_records, $validator) {
-            if (!$validator->validateEmail($email)) {
+            if (!$validator->validateNonRoleEmail($email)) {
               $invalid_records[] = $index;
             }
             return strtolower($email);

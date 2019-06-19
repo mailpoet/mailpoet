@@ -26,6 +26,12 @@ class ModelValidatorTest extends \MailPoetTest {
     expect($this->validator->validateEmail('a@b.c'))->false();
   }
 
+  function testItValidatesNonRoleEmail() {
+    expect($this->validator->validateNonRoleEmail('test'))->false();
+    expect($this->validator->validateNonRoleEmail('webmaster@example.com'))->false();
+    expect($this->validator->validateNonRoleEmail('test@example.com'))->true();
+  }
+
   function testItValidatesRenderedNewsletterBody() {
     expect($this->validator->validateRenderedNewsletterBody('test'))->false();
     expect($this->validator->validateRenderedNewsletterBody(serialize('test')))->false();
