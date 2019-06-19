@@ -13,6 +13,40 @@ class ModelValidator extends \Sudzy\Engine {
   const EMAIL_MIN_LENGTH = 6;
   const EMAIL_MAX_LENGTH = 150;
 
+  const ROLE_EMAILS = [
+    'abuse',
+    'compliance',
+    'devnull',
+    'dns',
+    'ftp',
+    'hostmaster',
+    'inoc',
+    'ispfeedback',
+    'ispsupport',
+    'list-request',
+    'list',
+    'maildaemon',
+    'noc',
+    'no-reply',
+    'noreply',
+    'null',
+    'phish',
+    'phishing',
+    'postmaster',
+    'privacy',
+    'registrar',
+    'root',
+    'security',
+    'spam',
+    'sysadmin',
+    'undisclosed-recipients',
+    'unsubscribe',
+    'usenet',
+    'uucp',
+    'webmaster',
+    'www',
+  ];
+
   function __construct() {
     parent::__construct();
     $this->validators = [
@@ -38,6 +72,12 @@ class ModelValidator extends \Sudzy\Engine {
     $permitted_length = (strlen($email) >= self::EMAIL_MIN_LENGTH && strlen($email) <= self::EMAIL_MAX_LENGTH);
     $valid_email = WPFunctions::get()->isEmail($email) !== false && parent::_isEmail($email, null);
     return ($permitted_length && $valid_email);
+  }
+
+  function validateNonRoleEmail($email) {
+    if (!$this->validateEmail($email)) return false;
+    $first_part = strtolower(substr($email, 0, strpos($email, '@')));
+    return array_search($first_part, self::ROLE_EMAILS) === false;
   }
 
   function validateRenderedNewsletterBody($newsletter_body) {
