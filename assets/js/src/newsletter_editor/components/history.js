@@ -1,5 +1,4 @@
 import App from 'newsletter_editor/App';
-import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import Marionette from 'backbone.marionette';
 import Mousetrap from 'mousetrap';
@@ -40,8 +39,8 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   onAttach: function onRender() {
-    this.elements.redo = jQuery('#mailpoet-history-arrow-redo');
-    this.elements.undo = jQuery('#mailpoet-history-arrow-undo');
+    this.elements.redo = document.getElementById('mailpoet-history-arrow-redo');
+    this.elements.undo = document.getElementById('mailpoet-history-arrow-undo');
     this.addState(App.toJSON());
   },
 
@@ -90,18 +89,10 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   updateArrowsUI: function updateArrowsUI() {
-    this.elements.undo.addClass('mailpoet_history_arrow_inactive');
-    this.elements.undo.prop('title', MailPoet.I18n.t('canNotUndo'));
-    this.elements.redo.addClass('mailpoet_history_arrow_inactive');
-    this.elements.redo.prop('title', MailPoet.I18n.t('canNotRedo'));
-    if (this.canUndo()) {
-      this.elements.undo.removeClass('mailpoet_history_arrow_inactive');
-      this.elements.undo.prop('title', MailPoet.I18n.t('canUndo'));
-    }
-    if (this.canRedo()) {
-      this.elements.redo.removeClass('mailpoet_history_arrow_inactive');
-      this.elements.redo.prop('title', MailPoet.I18n.t('canRedo'));
-    }
+    this.elements.undo.classList.toggle('mailpoet_history_arrow_inactive', !this.canUndo());
+    this.elements.redo.classList.toggle('mailpoet_history_arrow_inactive', !this.canRedo());
+    this.elements.undo.setAttribute('title', MailPoet.I18n.t(this.canUndo() ? 'canUndo' : 'canNotUndo'));
+    this.elements.redo.setAttribute('title', MailPoet.I18n.t(this.canRedo() ? 'canRedo' : 'canNotRedo'));
   },
 
   applyState: function applyState(index) {
