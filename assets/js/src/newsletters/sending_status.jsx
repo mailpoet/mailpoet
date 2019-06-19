@@ -28,7 +28,6 @@ const messages = {
 
 const SendingStatus = (props) => {
   const newsletterId = props.match.params.id;
-  const [isLoading, setIsLoading] = React.useState(true);
   const [newsletterSubject, setNewsletterSubject] = React.useState('');
 
   React.useEffect(() => {
@@ -40,13 +39,8 @@ const SendingStatus = (props) => {
         id: newsletterId,
       },
     })
-      .done((res) => {
-        setNewsletterSubject(res.data.subject);
-        setIsLoading(false);
-      })
-      .fail((res) => {
-        MailPoet.Notice.showApiErrorNotice(res);
-      });
+      .done(res => setNewsletterSubject(res.data.subject))
+      .fail(res => MailPoet.Notice.showApiErrorNotice(res));
   }, [newsletterId]);
 
   return (
@@ -56,25 +50,7 @@ const SendingStatus = (props) => {
         newsletterId={newsletterId}
         newsletterSubject={newsletterSubject}
       />
-      {!isLoading && (
-      <Listing
-        limit={window.mailpoet_listing_per_page}
-        location={props.location}
-        params={props.match.params}
-        endpoint="sending_task_subscribers"
-        base_url="sending-status/:id"
-        onRenderItem={item => <div><ListingItem {...item} /></div>}
-        getListingItemKey={item => `${item.taskId}-${item.subscriberId}`}
-        columns={columns}
-        messages={messages}
-        auto_refresh
-        sort_by="created_at"
-        afterGetItems={(state) => {
-          MailerMixin.checkMailerStatus(state);
-          CronMixin.checkCronStatus(state);
-        }}
-      />
-      )}
+      <SendingStatusListing location={props.location} params={props.match.params} />
     </>
   );
 };
@@ -86,6 +62,39 @@ SendingStatus.propTypes = {
     params: PropTypes.shape({
       id: PropTypes.string.isRequired,
     }).isRequired,
+  }).isRequired,
+};
+
+const compareProps = (prev, next) => (
+  prev.location.pathname === next.location.pathname
+  && prev.params.id === next.params.id
+);
+
+const SendingStatusListing = React.memo(({ location, params }) => (
+  <Listing
+    limit={window.mailpoet_listing_per_page}
+    location={location}
+    params={params}
+    endpoint="sending_task_subscribers"
+    base_url="sending-status/:id"
+    onRenderItem={item => <div><ListingItem {...item} /></div>}
+    getListingItemKey={item => `${item.taskId}-${item.subscriberId}`}
+    columns={columns}
+    messages={messages}
+    auto_refresh
+    sort_by="created_at"
+    afterGetItems={(state) => {
+      MailerMixin.checkMailerStatus(state);
+      CronMixin.checkCronStatus(state);
+    }}
+  />
+), compareProps);
+SendingStatusListing.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }).isRequired,
+  params: PropTypes.shape({
+    id: PropTypes.string.isRequired,
   }).isRequired,
 };
 
