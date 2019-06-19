@@ -126,7 +126,7 @@ jQuery(document).ready(() => {
     jQuery('#subscribers_data_import_results:visible').hide();
 
     // show parse statistics if any duplicate/invalid records were found
-    if (subscribers.invalid.length || subscribers.duplicate.length) {
+    if (subscribers.invalid.length || subscribers.duplicate.length || subscribers.role.length) {
       // count repeating e-mails inside duplicate array and present them in
       // 'email (xN)' format
       duplicates = {};
@@ -145,7 +145,7 @@ jQuery(document).ready(() => {
       importResults = {
         notice: MailPoet.I18n.t('importNoticeSkipped').replace(
           '%1$s',
-          `<strong>${subscribers.invalid.length + subscribers.duplicate.length}</strong>`
+          `<strong>${subscribers.invalid.length + subscribers.duplicate.length + subscribers.role.length}</strong>`
         ),
         invalid: (subscribers.invalid.length)
           ? MailPoet.I18n.t('importNoticeInvalid')
@@ -156,6 +156,11 @@ jQuery(document).ready(() => {
           ? MailPoet.I18n.t('importNoticeDuplicate')
             .replace('%1$s', `<strong>${subscribers.duplicate.length}</strong>`)
             .replace('%2$s', subscribers.duplicate.join(', '))
+          : null,
+        role: (subscribers.role.length)
+          ? MailPoet.I18n.t('importNoticeRoleBased')
+            .replace('%1$s', `<strong>${subscribers.role.length.toLocaleString()}</strong>`)
+            .replace('%2$s', subscribers.role.join(', '))
           : null,
       };
       jQuery('#subscribers_data_parse_results').html(
