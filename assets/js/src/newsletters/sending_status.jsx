@@ -82,7 +82,8 @@ const SendingStatusListing = React.memo(({ location, params }) => (
     columns={columns}
     messages={messages}
     auto_refresh
-    sort_by="created_at"
+    sort_by="failed"
+    sort_order="desc"
     afterGetItems={(state) => {
       MailerMixin.checkMailerStatus(state);
       CronMixin.checkCronStatus(state);
