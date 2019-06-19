@@ -46,13 +46,18 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   addState: function addState(json) {
+    var stringifiedBody;
     if (!json || !json.body) {
+      return;
+    }
+    stringifiedBody = JSON.stringify(json.body);
+    if (this.model.states[this.model.currentStateIndex] === stringifiedBody) {
       return;
     }
     if (this.model.currentStateIndex > 0) {
       this.model.states.splice(0, this.model.currentStateIndex);
     }
-    this.model.states.unshift(JSON.stringify(json.body));
+    this.model.states.unshift(stringifiedBody);
     this.model.currentStateIndex = 0;
     this.model.states.length = Math.min(this.model.states.length, this.MAX_HISTORY_STATES);
     this.updateArrowsUI();
