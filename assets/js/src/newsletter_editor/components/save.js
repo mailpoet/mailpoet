@@ -295,6 +295,7 @@ Module.autoSave = function () {
   saveTimeout = setTimeout(function () {
     if (skipNextAutoSave) {
       skipNextAutoSave = false;
+      Module._cancelAutosave();
       return;
     }
     App.getChannel().request('save').always(function () {
