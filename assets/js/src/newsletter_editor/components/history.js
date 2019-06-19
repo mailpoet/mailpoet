@@ -58,7 +58,10 @@ Module.HistoryView = Marionette.View.extend({
     }
     this.model.statesStack.unshift(stringifiedBody);
     this.model.currentStateIndex = 0;
-    this.model.statesStack.length = Math.min(this.model.statesStack.length, this.MAX_HISTORY_STATES);
+    this.model.statesStack.length = Math.min(
+      this.model.statesStack.length,
+      this.MAX_HISTORY_STATES
+    );
     this.updateArrowsUI();
   },
 
@@ -74,7 +77,10 @@ Module.HistoryView = Marionette.View.extend({
     if (!this.canUndo()) {
       return;
     }
-    this.model.currentStateIndex = Math.min(this.model.statesStack.length - 1, this.model.currentStateIndex + 1);
+    this.model.currentStateIndex = Math.min(
+      this.model.statesStack.length - 1,
+      this.model.currentStateIndex + 1
+    );
     this.updateArrowsUI();
     this.applyState(this.model.currentStateIndex);
   },
