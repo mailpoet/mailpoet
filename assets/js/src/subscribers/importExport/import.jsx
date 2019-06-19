@@ -161,6 +161,10 @@ jQuery(document).ready(() => {
           ? MailPoet.I18n.t('importNoticeRoleBased')
             .replace('%1$s', `<strong>${subscribers.role.length.toLocaleString()}</strong>`)
             .replace('%2$s', subscribers.role.join(', '))
+            .replace(
+              /\[link](.+)\[\/link]/,
+              '<a href="https://kb.mailpoet.com/article/270-role-based-email-addresses-are-not-allowed" target="_blank" rel="noopener noreferrer">$1</a>'
+            )
           : null,
       };
       jQuery('#subscribers_data_parse_results').html(
