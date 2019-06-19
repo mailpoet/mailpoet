@@ -8,3 +8,5 @@ fff@example.com,Mary-Anne,Smith-Jones,subscribed,subscribed,WordPress Users
 ggg@example.com,Zoë,Ельцин,subscribed,subscribed,WordPress Users
 hhh@example.com,Null,d’Arcy,subscribed,subscribed,WordPress Users
 iii@example.com,Sarah-Beth,Stinger-Bee,subscribed,subscribed,WordPress Users
+invalidemail,Ignore,Ignore,subscribed,subscribed,WordPress Users
+webmaster@example.com,RoleBased,Ignore,subscribed,subscribed,WordPress Users

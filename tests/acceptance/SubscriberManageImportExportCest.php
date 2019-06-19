@@ -11,6 +11,10 @@ class SubscriberManageImportExportCest {
     $I->amOnMailPoetPage ('Subscribers');
     $I->click('[data-automation-id="import-subscribers-button"]');
     $this->uploadCsvFile($I);
+    $I->waitForText('2 records had issues and were skipped');
+    $I->click('[data-automation-id="show-more-details"]');
+    $I->waitForText('1 emails are not valid:');
+    $I->waitForText('1 role-based addresses are not permitted');
     $this->chooseListAndConfirm($I);
     $I->see('9 subscribers added to');
     // Test reimporting the same list
