@@ -20,7 +20,7 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   model: {
-    states: [], // from newest
+    statesStack: [],
     currentStateIndex: 0,
   },
 
@@ -51,20 +51,20 @@ Module.HistoryView = Marionette.View.extend({
       return;
     }
     stringifiedBody = JSON.stringify(json.body);
-    if (this.model.states[this.model.currentStateIndex] === stringifiedBody) {
+    if (this.model.statesStack[this.model.currentStateIndex] === stringifiedBody) {
       return;
     }
     if (this.model.currentStateIndex > 0) {
-      this.model.states.splice(0, this.model.currentStateIndex);
+      this.model.statesStack.splice(0, this.model.currentStateIndex);
     }
-    this.model.states.unshift(stringifiedBody);
+    this.model.statesStack.unshift(stringifiedBody);
     this.model.currentStateIndex = 0;
-    this.model.states.length = Math.min(this.model.states.length, this.MAX_HISTORY_STATES);
+    this.model.statesStack.length = Math.min(this.model.statesStack.length, this.MAX_HISTORY_STATES);
     this.updateArrowsUI();
   },
 
   canUndo: function canUndo() {
-    return this.model.currentStateIndex < (this.model.states.length - 1);
+    return this.model.currentStateIndex < (this.model.statesStack.length - 1);
   },
 
   canRedo: function canRedo() {
@@ -105,7 +105,7 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   applyState: function applyState(index) {
-    const stateToApply = JSON.parse(this.model.states[index]);
+    const stateToApply = JSON.parse(this.model.statesStack[index]);
     App.getChannel().trigger('historyUpdate', stateToApply);
   },
 });
