@@ -64,7 +64,7 @@ Module.findModels = function findModels(predicate) {
 };
 
 Module.renderContent = function renderContent(content) {
-  if (App._contentContainerView) {
+  if (App._contentContainer) {
     App._contentContainer.destroy();
   }
   if (App._contentContainerView) {
