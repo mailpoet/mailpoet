@@ -3,6 +3,42 @@
 import jQuery from 'jquery';
 import _ from 'underscore';
 
+const ROLE_EMAILS = [
+  'abuse',
+  'compliance',
+  'devnull',
+  'dns',
+  'ftp',
+  'hostmaster',
+  'inoc',
+  'ispfeedback',
+  'ispsupport',
+  'list-request',
+  'list',
+  'maildaemon',
+  'noc',
+  'no-reply',
+  'noreply',
+  'null',
+  'phish',
+  'phishing',
+  'postmaster',
+  'privacy',
+  'registrar',
+  'root',
+  'security',
+  'spam',
+  'sysadmin',
+  'undisclosed-recipients',
+  'unsubscribe',
+  'usenet',
+  'uucp',
+  'webmaster',
+  'www',
+];
+
+const isRoleEmail = email => ROLE_EMAILS.findIndex(element => email.startsWith(element)) >= 0;
+
 const detectAndCleanupEmail = (emailString) => {
   let test;
   // decode HTML entities
@@ -31,6 +67,9 @@ const detectAndCleanupEmail = (emailString) => {
   if (!window.mailpoet_email_regex.test(email)) {
     return false;
   }
+  if (isRoleEmail(email)) {
+    return false;
+  }
   return email;
 };
 
@@ -39,6 +78,7 @@ function sanitizeCSVData(csvData) {
   const parsedEmails = [];
   const duplicateEmails = [];
   const invalidEmails = [];
+  const roleEmails = [];
   let emailColumnPosition = null;
   let columnCount = null;
   let isHeaderFound = false;
@@ -82,6 +122,8 @@ function sanitizeCSVData(csvData) {
         email = detectAndCleanupEmail(rowData[emailColumnPosition]);
         if (_.has(parsedEmails, email)) {
           duplicateEmails.push(email);
+        } else if (isRoleEmail(rowData[emailColumnPosition])) {
+          roleEmails.push(rowData[emailColumnPosition]);
         } else if (!window.mailpoet_email_regex.test(email)) {
           invalidEmails.push(rowData[emailColumnPosition]);
         } else {
@@ -116,6 +158,7 @@ function sanitizeCSVData(csvData) {
       subscribersCount: processedSubscribers.length,
       duplicate: duplicateEmails,
       invalid: invalidEmails,
+      role: roleEmails,
     };
   }
   return null;
