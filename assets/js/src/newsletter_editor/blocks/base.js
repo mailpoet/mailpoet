@@ -99,8 +99,6 @@ Module.BlockView = AugmentedView.extend({
   },
   initialize: function initialize() {
     this.on('showSettings', this.showSettings, this);
-    this.on('dom:refresh', this.showBlock, this);
-    this._isFirstRender = true;
   },
   addHighlight: function addHighlight() {
     this.$el.addClass('mailpoet_highlight');
@@ -141,12 +139,6 @@ Module.BlockView = AugmentedView.extend({
   enableDragging: function enableDragging() {
     this.$el.removeClass('mailpoet_ignore_drag');
   },
-  showBlock: function showBlock() {
-    if (this._isFirstRender) {
-      this.transitionIn();
-      this._isFirstRender = false;
-    }
-  },
   deleteBlock: function deleteBlock() {
     this.transitionOut().then(function deleteBlockDestroy() {
       this.model.destroy();
@@ -157,9 +149,6 @@ Module.BlockView = AugmentedView.extend({
       this.model.toJSON(),
       { at: this.model.collection.findIndex(this.model) }
     );
-  },
-  transitionIn: function transitionIn() {
-    return this._transition('slideDown', 'fadeIn', 'easeOut');
   },
   transitionOut: function transitionOut() {
     return this._transition('slideUp', 'fadeOut', 'easeIn');
