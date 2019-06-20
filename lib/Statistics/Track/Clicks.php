@@ -70,7 +70,7 @@ class Clicks {
   }
 
   private function sendAbandonedCartCookie($subscriber) {
-    if ($this->settings_controller->get('accept_cookie_revenue_tracking')) {
+    if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
       setcookie(
         self::ABANDONED_CART_COOKIE_NAME,
         serialize([
