@@ -265,7 +265,7 @@ class APITest extends \MailPoetTest {
   function testItSendsNotifiationEmailWhenBeingAddedToList() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
     $segment = Segment::createOrUpdate([
       'name' => 'Default',
@@ -555,7 +555,9 @@ class APITest extends \MailPoetTest {
       'addSubscriber',
       [
         '_scheduleWelcomeNotification' => Expected::never(),
-        'new_subscriber_notification_mailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'new_subscriber_notification_mailer' => Stub::makeEmpty(
+          NewSubscriberNotificationMailer::class, ['send' => Expected::never()]
+        ),
         'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
       ], $this);
     $subscriber = [

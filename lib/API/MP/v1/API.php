@@ -177,7 +177,7 @@ class API {
       }
     }
 
-    if (!$skip_subscriber_notification) {
+    if (!$skip_subscriber_notification && ($subscriber->status === Subscriber::STATUS_SUBSCRIBED)) {
       $this->sendSubscriberNotification($subscriber, $found_segments_ids);
     }
 
@@ -298,7 +298,7 @@ class API {
         $this->_scheduleWelcomeNotification($new_subscriber, $list_ids);
       }
 
-      if (!$skip_subscriber_notification) {
+      if (!$skip_subscriber_notification && ($new_subscriber->status === Subscriber::STATUS_SUBSCRIBED)) {
         $this->sendSubscriberNotification($new_subscriber, $list_ids);
       }
     }
