@@ -7,10 +7,6 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 
-require_once __DIR__ . '/../DataFactories/Settings.php';
-require_once __DIR__ . '/../DataFactories/Form.php';
-require_once __DIR__ . '/../DataFactories/Segment.php';
-
 class SubscribeToMultipleListsCest {
 
   function _before(\AcceptanceTester $I) {

@@ -6,9 +6,6 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 use MailPoet\Util\Security;
 
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-require_once __DIR__ . '/../DataFactories/WooCommerceProduct.php';
-
 class EditorProductsCest {
 
   const EDITOR_PRODUCTS_SELECTOR = '.mailpoet_products_container > .mailpoet_block > .mailpoet_container';

@@ -4,8 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-
 class EditorSpacerBlockCest {
   function addSpacer(\AcceptanceTester $I) {
     $I->wantTo('add spacer block to newsletter');

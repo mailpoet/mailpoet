@@ -4,8 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-
 class EditorTextBlockCest {
   const TINYMCE_SELECTOR = '.mce-tinymce';
   const TEXT_BLOCK_SELECTOR = '.mailpoet_text_block';

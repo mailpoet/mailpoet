@@ -5,8 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Test\DataFactories\Features;
 
-require_once __DIR__ . '/../DataFactories/Features.php';
-
 class FreePlanAnnouncementCest {
   const NOTICE_SELECTOR = '[data-automation-id="free-plan-announcement"]';
 

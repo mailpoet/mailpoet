@@ -5,8 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Test\DataFactories\Settings;
 
-require_once __DIR__ . '/../DataFactories/Settings.php';
-
 class SettingsPageBasicsCest {
 
   function checkSettingsPagesLoad(\AcceptanceTester $I) {

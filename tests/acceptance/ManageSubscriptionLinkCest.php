@@ -5,8 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Settings;
 
-require_once __DIR__ . '/../DataFactories/Settings.php';
-
 class ManageSubscriptionLinkCest {
 
   function __construct() {

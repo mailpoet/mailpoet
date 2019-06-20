@@ -6,8 +6,6 @@ use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use MailPoet\Test\DataFactories\Newsletter;
 
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-
 class EditorLineHeightCest {
   function changeLineHeight(\AcceptanceTester $I) {
     $textSize = '10';

@@ -5,9 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 
-require_once __DIR__ . '/../DataFactories/Segment.php';
-require_once __DIR__ . '/../DataFactories/Subscriber.php';
-
 class SubscriberCountShortcodeCest {
   function createSubscriberCountPageWithShortcode(\AcceptanceTester $I) {
     $I->wantTo('Create page with MP subscriber shortcode');
@@ -28,4 +25,4 @@ class SubscriberCountShortcodeCest {
     $I->waitForText($pageTitle);
     $I->waitForText("$pageText 1");
   }
-} 
+}

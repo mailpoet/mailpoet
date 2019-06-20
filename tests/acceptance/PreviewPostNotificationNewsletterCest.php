@@ -4,8 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-
 class PreviewPostNotificationNewsletterCest {
   function previewStandardNewsletter(\AcceptanceTester $I) {
     $newsletterName = 'Preview in Browser Post Notification';

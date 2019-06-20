@@ -7,11 +7,6 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 
-require_once __DIR__ . '/../DataFactories/Segment.php';
-require_once __DIR__ . '/../DataFactories/Subscriber.php';
-require_once __DIR__ . '/../DataFactories/Settings.php';
-require_once __DIR__ . '/../DataFactories/ScheduledTask.php';
-
 class SettingsInactiveSubscribersChangeCest {
 
   const INACTIVE_SUBSCRIBERS_COUNT = 2;

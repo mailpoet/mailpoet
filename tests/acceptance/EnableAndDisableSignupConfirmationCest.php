@@ -5,8 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use AcceptanceTester;
 use MailPoet\Test\DataFactories\Settings;
 
-require_once __DIR__ . '/../DataFactories/Settings.php';
-
 class EnableAndDisableSignupConfirmationCest {
 
   function disableSignupConfirmation(AcceptanceTester $I) {

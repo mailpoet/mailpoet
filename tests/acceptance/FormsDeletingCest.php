@@ -4,8 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Form;
 
-require_once __DIR__ . '/../DataFactories/Form.php';
-
 class FormsDeletingCest {
 
   function moveFormToTrash(\AcceptanceTester $I) {
