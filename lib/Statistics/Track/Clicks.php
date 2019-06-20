@@ -56,7 +56,7 @@ class Clicks {
   }
 
   private function sendRevenueCookie(StatisticsClicks $clicks) {
-    if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled') === "1") {
+    if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
       setcookie(
         self::REVENUE_TRACKING_COOKIE_NAME,
         serialize([
