@@ -4,8 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Subscriber;
 
-require_once __DIR__ . '/../DataFactories/Subscriber.php';
-
 class SubscribersListingCest {
 
   function subscribersListing(\AcceptanceTester $I) {

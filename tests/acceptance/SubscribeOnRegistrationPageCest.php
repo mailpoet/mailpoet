@@ -4,8 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Segment;
 
-require_once __DIR__ . '/../DataFactories/Segment.php';
-
 class SubscribeOnRegistrationPageCest {
   function allowSubscribeOnRegistrationPage(\AcceptanceTester $I) {
     $I->wantTo('Allow users to subscribe to lists on site registration page');

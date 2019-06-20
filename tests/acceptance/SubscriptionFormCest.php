@@ -6,9 +6,6 @@ use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 
-require_once __DIR__ . '/../DataFactories/Settings.php';
-require_once __DIR__ . '/../DataFactories/Form.php';
-
 class SubscriptionFormCest {
 
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;

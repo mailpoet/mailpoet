@@ -10,11 +10,6 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Settings;
 
-require_once __DIR__ . '/../DataFactories/Settings.php';
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-require_once __DIR__ . '/../DataFactories/Segment.php';
-require_once __DIR__ . '/../DataFactories/Subscriber.php';
-
 class ReceivePostNotificationCest {
 
   function _before() {

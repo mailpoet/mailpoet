@@ -2,11 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-require_once __DIR__ . '/../DataFactories/Settings.php';
-require_once __DIR__ . '/../DataFactories/WooCommerceProduct.php';
-require_once __DIR__ . '/../DataFactories/WooCommerceCustomer.php';
-require_once __DIR__ . '/../DataFactories/WooCommerceOrder.php';
-
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceCustomer;
 use MailPoet\Test\DataFactories\WooCommerceOrder;

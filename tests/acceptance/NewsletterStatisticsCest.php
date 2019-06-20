@@ -2,15 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-require_once __DIR__ . '/../DataFactories/Features.php';
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-require_once __DIR__ . '/../DataFactories/NewsletterLink.php';
-require_once __DIR__ . '/../DataFactories/Settings.php';
-require_once __DIR__ . '/../DataFactories/StatisticsClicks.php';
-require_once __DIR__ . '/../DataFactories/StatisticsWooCommercePurchases.php';
-require_once __DIR__ . '/../DataFactories/Subscriber.php';
-require_once __DIR__ . '/../DataFactories/WooCommerceOrder.php';
-
 use MailPoet\Features\FeaturesController;
 use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter;

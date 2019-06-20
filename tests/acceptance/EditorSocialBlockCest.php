@@ -4,8 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-
 class EditorSocialBlockCest {
   function addSocialBlock(\AcceptanceTester $I) {
     $I->wantTo('add social block to newsletter');

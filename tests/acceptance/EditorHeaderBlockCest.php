@@ -4,8 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-
 class EditorHeaderBlockCest {
   function addHeader(\AcceptanceTester $I) {
     $I->wantTo('add header block to newsletter');
