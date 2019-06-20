@@ -173,10 +173,10 @@ jQuery(document).ready(() => {
     }
 
     jQuery('.mailpoet_subscribers_data_parse_results_details_show')
-      .click((event) => {
+      .click(function detailsClick() {
         const details = jQuery('.mailpoet_subscribers_data_parse_results_details');
-        jQuery(details).toggle();
-        event.currentTarget.text((jQuery(details).is(':visible'))
+        details.toggle();
+        jQuery(this).text((details.is(':visible'))
           ? MailPoet.I18n.t('hideDetails')
           : MailPoet.I18n.t('showDetails'));
       });
