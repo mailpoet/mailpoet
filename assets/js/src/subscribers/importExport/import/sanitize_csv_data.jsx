@@ -37,7 +37,7 @@ const ROLE_EMAILS = [
   'www',
 ];
 
-const isRoleEmail = email => ROLE_EMAILS.findIndex(element => email.startsWith(element)) >= 0;
+const isRoleEmail = email => ROLE_EMAILS.findIndex(element => email.startsWith(`${element}@`)) >= 0;
 
 const detectAndCleanupEmail = (emailString) => {
   let test;
