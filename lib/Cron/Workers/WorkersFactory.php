@@ -136,7 +136,7 @@ class WorkersFactory {
   }
 
   /** @return Beamer */
-  function createBeamerWorker($timer) {
+  function createBeamerkWorker($timer) {
     return new Beamer($this->settings, $timer);
   }
 

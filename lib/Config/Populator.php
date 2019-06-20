@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use MailPoet\Config\PopulatorData\DefaultForm;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
+use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\NewsletterTemplate;
@@ -139,6 +140,7 @@ class Populator {
     $this->updateMetaFields();
     $this->scheduleInitialInactiveSubscribersCheck();
     $this->scheduleAuthorizedSendingEmailsCheck();
+    $this->initLastAnnouncementDate();
     // Will be uncommented on task [MAILPOET-1998]
     // $this->updateFormsSuccessMessages();
   }
@@ -547,6 +549,13 @@ class Populator {
       AuthorizedSendingEmailsCheck::TASK_TYPE,
       Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
     );
+  }
+
+  private function initLastAnnouncementDate() {
+    if (!$this->settings->get('last_announcement_date')) {
+      $beamer = new Beamer($this->settings);
+      $beamer->setLastAnnouncementDate();
+    }
   }
 
   private function scheduleTask($type, $datetime) {
