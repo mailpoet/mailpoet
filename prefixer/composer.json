@@ -4,7 +4,9 @@
     "symfony/dependency-injection": "3.4.26",
     "monolog/monolog": "^1.23",
     "sabberworm/php-css-parser": "^8.1",
-    "twig/twig": "1.38.4"
+    "twig/twig": "1.38.4",
+    "symfony/polyfill-php72": "^1.11",
+    "symfony/polyfill-mbstring": "^1.11"
   },
   "scripts": {
     "post-update-cmd": "@process",

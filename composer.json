@@ -17,9 +17,7 @@
     "swiftmailer/swiftmailer": "dev-tls",
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
-    "soundasleep/html2text": "dev-master",
-    "symfony/polyfill-php72": "^1.9",
-    "symfony/polyfill-mbstring": "^1.9"
+    "soundasleep/html2text": "dev-master"
   },
   "require-dev": {
     "codeception/aspect-mock": "2.0.1",

@@ -35,7 +35,16 @@ return [
   'patchers' => [
     function (string $filePath, string $prefix, string $contents): string {
       // Change the contents here.
-
+      if (
+        strpos($filePath, 'vendor/symfony/polyfill-mbstring/bootstrap.php')
+        || strpos($filePath, 'vendor/symfony/polyfill-php72/bootstrap.php')
+      ) {
+        return str_replace(
+          'namespace MailPoetVendor;',
+          '',
+          $contents
+        );
+      }
       return $contents;
     },
   ],
