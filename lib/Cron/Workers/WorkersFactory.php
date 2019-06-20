@@ -135,6 +135,11 @@ class WorkersFactory {
     return new ExportFilesCleanup($timer);
   }
 
+  /** @return Beamer */
+  function createBeamerWorker($timer) {
+    return new Beamer($this->settings, $timer);
+  }
+
   /** @return InactiveSubscribers */
   function createInactiveSubscribersWorker($timer) {
     return new InactiveSubscribers($this->inactive_subscribers_controller, $this->settings, $timer);
