@@ -5,6 +5,7 @@ use MailPoet\Models\StatisticsClicks;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -20,8 +21,12 @@ class Clicks {
   /** @var SettingsController */
   private $settings_controller;
 
-  public function __construct(SettingsController $settings_controller) {
+  /** @var Cookies */
+  private $cookies;
+
+  public function __construct(SettingsController $settings_controller, Cookies $cookies) {
     $this->settings_controller = $settings_controller;
+    $this->cookies = $cookies;
   }
 
   /**
@@ -57,27 +62,31 @@ class Clicks {
 
   private function sendRevenueCookie(StatisticsClicks $clicks) {
     if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
-      setcookie(
+      $this->cookies->set(
         self::REVENUE_TRACKING_COOKIE_NAME,
-        serialize([
+        [
           'statistics_clicks' => $clicks->id,
           'created_at' => time(),
-        ]),
-        time() + self::REVENUE_TRACKING_COOKIE_EXPIRY,
-        '/'
+        ],
+        [
+          'expires' => time() + self::REVENUE_TRACKING_COOKIE_EXPIRY,
+          'path' => '/',
+        ]
       );
     }
   }
 
   private function sendAbandonedCartCookie($subscriber) {
     if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
-      setcookie(
+      $this->cookies->set(
         self::ABANDONED_CART_COOKIE_NAME,
-        serialize([
+        [
           'subscriber_id' => $subscriber->id,
-        ]),
-        time() + self::ABANDONED_CART_COOKIE_EXPIRY,
-        '/'
+        ],
+        [
+          'expires' => time() + self::ABANDONED_CART_COOKIE_EXPIRY,
+          'path' => '/',
+        ]
       );
     }
   }

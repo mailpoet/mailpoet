@@ -13,6 +13,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Util\Cookies;
 
 class TrackTest extends \MailPoetTest {
   function _before() {
@@ -50,7 +51,7 @@ class TrackTest extends \MailPoetTest {
       'preview' => false,
     ];
     // instantiate class
-    $this->track = new Track(new Clicks(new SettingsController()), new Opens());
+    $this->track = new Track(new Clicks(new SettingsController(), new Cookies()), new Opens());
   }
 
   function testItReturnsFalseWhenTrackDataIsMissing() {
