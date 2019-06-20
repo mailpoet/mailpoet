@@ -17,6 +17,7 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
+use MailPoet\Cron\Workers\Beamer as BeamerWorker;
 
 if (!defined('ABSPATH')) exit;
 
@@ -111,6 +112,17 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
+    // Beamer
+    $beamer_due_checks = self::getTasksCount([
+      'type' => BeamerWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
+    ]);
+    $beamer_future_checks = self::getTasksCount([
+      'type' => BeamerWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTask::STATUS_SCHEDULED],
+    ]);
 
     // Authorized email addresses check
     $authorized_email_addresses_tasks = self::getTasksCount([
@@ -125,6 +137,7 @@ class WordPress {
     $sending_service_key_check_active = ($mp_sending_enabled && ($msskeycheck_due_tasks || !$msskeycheck_future_tasks));
     $premium_key_check_active = ($premium_key_specified && ($premium_keycheck_due_tasks || !$premium_keycheck_future_tasks));
     $migration_active = !$migration_disabled && ($migration_due_tasks || (!$migration_completed_tasks && !$migration_future_tasks));
+    $beamer_active = $beamer_due_checks || !$beamer_future_checks;
 
     return (
       $migration_active
@@ -136,6 +149,7 @@ class WordPress {
       || $inactive_subscribers_tasks
       || $woo_commerce_sync_tasks
       || $authorized_email_addresses_tasks
+      || $beamer_active
     );
   }
 
@@ -148,12 +162,12 @@ class WordPress {
 
   static private function loadTasksCounts(WPFunctions $wp) {
     $query = sprintf(
-      "select 
-        type, 
-        status, 
-        count(*) as count, 
-        case when scheduled_at <= '%s' then '%s' else '%s' end as scheduled_in 
-      from %s 
+      "select
+        type,
+        status,
+        count(*) as count,
+        case when scheduled_at <= '%s' then '%s' else '%s' end as scheduled_in
+      from %s
       where deleted_at is null
       group by type, status, scheduled_in
       ",

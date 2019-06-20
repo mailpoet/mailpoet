@@ -706,10 +706,11 @@ class Menu {
 
     $user_id = $data['current_wp_user']['ID'];
 
+    $last_announcement_date = $this->settings->get('last_announcement_date');
     $last_announcement_seen = $this->user_flags->get('last_announcement_seen');
     $data['feature_announcement_has_news'] = (
       empty($last_announcement_seen) ||
-      $last_announcement_seen < strtotime(self::LAST_ANNOUNCEMENT_DATE)
+      $last_announcement_seen < $last_announcement_date
     );
     $data['last_announcement_seen'] = $last_announcement_seen;
 
