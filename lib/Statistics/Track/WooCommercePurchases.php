@@ -4,6 +4,7 @@ namespace MailPoet\Statistics\Track;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Models\Subscriber;
+use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper;
 use WC_Order;
 
@@ -15,8 +16,12 @@ class WooCommercePurchases {
   /** @var Helper */
   private $woocommerce_helper;
 
-  function __construct(Helper $woocommerce_helper) {
+  /** @var Cookies */
+  private $cookies;
+
+  function __construct(Helper $woocommerce_helper, Cookies $cookies) {
     $this->woocommerce_helper = $woocommerce_helper;
+    $this->cookies = $cookies;
   }
 
   function trackPurchase($id, $use_cookies = true) {
@@ -61,12 +66,12 @@ class WooCommercePurchases {
   }
 
   private function getSubscriberEmailFromCookie() {
-    $click_cookie = $this->getClickCookie();
-    if (!$click_cookie) {
+    $cookie_data = $this->cookies->get(Clicks::REVENUE_TRACKING_COOKIE_NAME);
+    if (!$cookie_data) {
       return null;
     }
 
-    $click = StatisticsClicks::findOne($click_cookie['statistics_clicks']);
+    $click = StatisticsClicks::findOne($cookie_data['statistics_clicks']);
     if (!$click) {
       return null;
     }
@@ -76,12 +81,5 @@ class WooCommercePurchases {
       return $subscriber->email;
     }
     return null;
-  }
-
-  private function getClickCookie() {
-    if (empty($_COOKIE[Clicks::REVENUE_TRACKING_COOKIE_NAME])) {
-      return null;
-    }
-    return unserialize($_COOKIE[Clicks::REVENUE_TRACKING_COOKIE_NAME]);
   }
 }
