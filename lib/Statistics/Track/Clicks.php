@@ -14,6 +14,9 @@ class Clicks {
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
 
+  const ABANDONED_CART_COOKIE_NAME = 'mailpoet_abandoned_cart_tracking';
+  const ABANDONED_CART_COOKIE_EXPIRY = 10 * 365 * 24 * 60 * 60; // 10 years (~ no expiry)
+
   /** @var SettingsController */
   private $settings_controller;
 
@@ -69,11 +72,11 @@ class Clicks {
   private function sendAbandonedCartCookie($subscriber) {
     if ($this->settings_controller->get('accept_cookie_revenue_tracking')) {
       setcookie(
-        'mailpoet_abandoned_cart_tracking',
+        self::ABANDONED_CART_COOKIE_NAME,
         serialize([
           'subscriber_id' => $subscriber->id,
         ]),
-        time() + (10 * 365 * 24 * 60 * 60), // practically no expiry
+        time() + self::ABANDONED_CART_COOKIE_EXPIRY,
         '/'
       );
     }
