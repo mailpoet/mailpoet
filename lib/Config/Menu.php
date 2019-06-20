@@ -13,6 +13,7 @@ use MailPoet\Listing;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
+use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
@@ -788,6 +789,7 @@ class Menu {
       'date_formats' => Block\Date::getDateFormats(),
       'month_names' => Block\Date::getMonthNames(),
       'sub_menu' => 'mailpoet-subscribers',
+      'role_based_emails' => json_encode(ModelValidator::ROLE_EMAILS),
     ]);
 
     $data['is_new_user'] = $this->isNewUser();

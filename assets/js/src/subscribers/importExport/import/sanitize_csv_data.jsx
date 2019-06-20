@@ -3,41 +3,7 @@
 import jQuery from 'jquery';
 import _ from 'underscore';
 
-const ROLE_EMAILS = [
-  'abuse',
-  'compliance',
-  'devnull',
-  'dns',
-  'ftp',
-  'hostmaster',
-  'inoc',
-  'ispfeedback',
-  'ispsupport',
-  'list-request',
-  'list',
-  'maildaemon',
-  'noc',
-  'no-reply',
-  'noreply',
-  'null',
-  'phish',
-  'phishing',
-  'postmaster',
-  'privacy',
-  'registrar',
-  'root',
-  'security',
-  'spam',
-  'sysadmin',
-  'undisclosed-recipients',
-  'unsubscribe',
-  'usenet',
-  'uucp',
-  'webmaster',
-  'www',
-];
-
-const isRoleEmail = email => ROLE_EMAILS.findIndex(element => email.startsWith(`${element}@`)) >= 0;
+const isRoleEmail = email => window.roleBasedEmails.findIndex(element => email.startsWith(`${element}@`)) >= 0;
 
 const detectAndCleanupEmail = (emailString) => {
   let test;
