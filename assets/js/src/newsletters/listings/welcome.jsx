@@ -9,7 +9,8 @@ import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
 import {
-  StatisticsMixin,
+  renderStatistics,
+  addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/mixins.jsx';
@@ -154,7 +155,7 @@ let newsletterActions = [
   },
 ];
 
-Hooks.addFilter('mailpoet_newsletters_listings_welcome_notification_actions', 'mailpoet', StatisticsMixin.addStatsCTAAction);
+Hooks.addFilter('mailpoet_newsletters_listings_welcome_notification_actions', 'mailpoet', addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletterActions);
 
 const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/prefer-es6-class
@@ -166,8 +167,6 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
       params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     }).isRequired,
   },
-
-  mixins: [StatisticsMixin],
 
   updateStatus: function updateStatus(e) {
     // make the event persist so that we can still override the selected value
@@ -333,7 +332,7 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
         </td>
         { (mailpoetTrackingEnabled === true) ? (
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
-            { this.renderStatistics(
+            { renderStatistics(
               newsletter,
               newsletter.total_sent > 0 && newsletter.statistics
             ) }

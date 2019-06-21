@@ -13,7 +13,8 @@ import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
 import {
   renderQueueStatus,
-  StatisticsMixin,
+  renderStatistics,
+  addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/mixins.jsx';
@@ -57,7 +58,7 @@ let newsletterActions = [
   },
 ];
 
-Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', 'mailpoet', StatisticsMixin.addStatsCTAAction);
+Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', 'mailpoet', addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletterActions);
 
 const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-line react/prefer-es6-class, max-len
@@ -69,8 +70,6 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
       params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     }).isRequired,
   },
-
-  mixins: [StatisticsMixin],
 
   renderItem: function renderItem(newsletter, actions, meta) {
     const rowClasses = classNames(
@@ -103,7 +102,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
         </td>
         { (mailpoetTrackingEnabled === true) ? (
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
-            { this.renderStatistics(newsletter, undefined, meta.current_time) }
+            { renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
         ) : null }
         <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
