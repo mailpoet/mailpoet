@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import Listing from 'listing/listing.jsx';
-import { checkCronStatus, checkMailerStatus } from 'newsletters/listings/mixins.jsx';
+import { checkCronStatus, checkMailerStatus } from 'newsletters/listings/utils.jsx';
 
 const columns = [
   {
