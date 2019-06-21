@@ -417,19 +417,17 @@ const StatisticsMixin = {
   },
 };
 
-const MailerMixin = {
-  checkMailerStatus: function checkMailerStatus(state) {
-    if (state.meta.mta_log.error && state.meta.mta_log.error.operation === 'authorization') {
-      MailPoet.Notice.hide('mailpoet_notice_being_sent');
-      MailPoet.Notice.error(
-        state.meta.mta_log.error.error_message,
-        { static: true, id: 'mailpoet_authorization_error' }
-      );
-      jQuery('.js-button-resume-sending').on('click', () => {
-        jQuery('[data-id="mailpoet_authorization_error"]').slideUp();
-      });
-    }
-  },
+export const checkMailerStatus = (state) => {
+  if (state.meta.mta_log.error && state.meta.mta_log.error.operation === 'authorization') {
+    MailPoet.Notice.hide('mailpoet_notice_being_sent');
+    MailPoet.Notice.error(
+      state.meta.mta_log.error.error_message,
+      { static: true, id: 'mailpoet_authorization_error' }
+    );
+    jQuery('.js-button-resume-sending').on('click', () => {
+      jQuery('[data-id="mailpoet_authorization_error"]').slideUp();
+    });
+  }
 };
 
 const CronMixin = {
@@ -472,5 +470,4 @@ const CronMixin = {
 
 export { QueueMixin };
 export { StatisticsMixin };
-export { MailerMixin };
 export { CronMixin };

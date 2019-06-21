@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import Listing from 'listing/listing.jsx';
-import { CronMixin, MailerMixin } from 'newsletters/listings/mixins.jsx';
+import { CronMixin, checkMailerStatus } from 'newsletters/listings/mixins.jsx';
 
 const columns = [
   {
@@ -85,7 +85,7 @@ const SendingStatusListing = React.memo(({ location, params }) => (
     sort_by="failed"
     sort_order="desc"
     afterGetItems={(state) => {
-      MailerMixin.checkMailerStatus(state);
+      checkMailerStatus(state);
       CronMixin.checkCronStatus(state);
     }}
   />
