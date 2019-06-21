@@ -12,7 +12,7 @@ import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
 import {
-  QueueMixin,
+  renderQueueStatus,
   StatisticsMixin,
   checkCronStatus,
   checkMailerStatus,
@@ -70,7 +70,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
     }).isRequired,
   },
 
-  mixins: [QueueMixin, StatisticsMixin],
+  mixins: [StatisticsMixin],
 
   renderItem: function renderItem(newsletter, actions, meta) {
     const rowClasses = classNames(
@@ -96,7 +96,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
           { actions }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { this.renderQueueStatus(newsletter, meta.mta_log) }
+          { renderQueueStatus(newsletter, meta.mta_log) }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           { segments }
