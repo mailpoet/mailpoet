@@ -10,7 +10,7 @@ import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
 import {
   StatisticsMixin,
-  CronMixin,
+  checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/mixins.jsx';
 
@@ -167,7 +167,7 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
     }).isRequired,
   },
 
-  mixins: [StatisticsMixin, CronMixin],
+  mixins: [StatisticsMixin],
 
   updateStatus: function updateStatus(e) {
     // make the event persist so that we can still override the selected value
@@ -370,7 +370,7 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
           auto_refresh
           sort_by="updated_at"
           sort_order="desc"
-          afterGetItems={(state) => { checkMailerStatus(state); this.checkCronStatus(state); }}
+          afterGetItems={(state) => { checkMailerStatus(state); checkCronStatus(state); }}
         />
       </div>
     );
