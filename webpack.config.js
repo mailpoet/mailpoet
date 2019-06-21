@@ -131,6 +131,13 @@ const baseConfig = {
         ]
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/statistics.jsx'),
+        use: [
+          'expose-loader?' + globalPrefix + '.NewslettersListingsStatistics',
+          'babel-loader',
+        ]
+      },
+      {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/tabs.jsx'),
         use: [
           'expose-loader?' + globalPrefix + '.NewslettersListingsTabs',
@@ -258,6 +265,7 @@ const adminConfig = {
       'newsletters/breadcrumb.jsx',
       'newsletters/listings/tabs.jsx',
       'newsletters/listings/utils.jsx',
+      'newsletters/listings/statistics.jsx',
       'newsletters/listings/heading.jsx',
       'announcements/feature_announcement.jsx',
       'announcements/free_plan_announcement.jsx',
