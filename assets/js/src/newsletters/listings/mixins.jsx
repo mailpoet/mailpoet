@@ -430,44 +430,41 @@ export const checkMailerStatus = (state) => {
   }
 };
 
-const CronMixin = {
-  checkCronStatus: (state) => {
-    if (state.meta.cron_accessible !== false) {
-      MailPoet.Notice.hide('mailpoet_cron_error');
-      return;
-    }
+export const checkCronStatus = (state) => {
+  if (state.meta.cron_accessible !== false) {
+    MailPoet.Notice.hide('mailpoet_cron_error');
+    return;
+  }
 
-    const cronPingCheckNotice = ReactStringReplace(
-      MailPoet.I18n.t('cronNotAccessibleNotice'),
-      /\[link\](.*?)\[\/link\]/g,
-      match => (
-        <a
-          href="https://beta.docs.mailpoet.com/article/231-sending-does-not-work"
-          target="_blank"
-          rel="noopener noreferrer"
-          key="check-cron"
-        >
-          { match }
-        </a>
-      )
-    );
+  const cronPingCheckNotice = ReactStringReplace(
+    MailPoet.I18n.t('cronNotAccessibleNotice'),
+    /\[link\](.*?)\[\/link\]/g,
+    match => (
+      <a
+        href="https://beta.docs.mailpoet.com/article/231-sending-does-not-work"
+        target="_blank"
+        rel="noopener noreferrer"
+        key="check-cron"
+      >
+        { match }
+      </a>
+    )
+  );
 
-    MailPoet.Notice.error(
-      '',
-      { static: true, id: 'mailpoet_cron_error' }
-    );
+  MailPoet.Notice.error(
+    '',
+    { static: true, id: 'mailpoet_cron_error' }
+  );
 
-    ReactDOM.render(
-      (
-        <div>
-          <p>{cronPingCheckNotice}</p>
-        </div>
-      ),
-      jQuery('[data-id="mailpoet_cron_error"]')[0]
-    );
-  },
+  ReactDOM.render(
+    (
+      <div>
+        <p>{cronPingCheckNotice}</p>
+      </div>
+    ),
+    jQuery('[data-id="mailpoet_cron_error"]')[0]
+  );
 };
 
 export { QueueMixin };
 export { StatisticsMixin };
-export { CronMixin };

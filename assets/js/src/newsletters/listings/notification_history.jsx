@@ -14,7 +14,7 @@ import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import {
   QueueMixin,
   StatisticsMixin,
-  CronMixin,
+  checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/mixins.jsx';
 
@@ -70,7 +70,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
     }).isRequired,
   },
 
-  mixins: [QueueMixin, StatisticsMixin, CronMixin],
+  mixins: [QueueMixin, StatisticsMixin],
 
   renderItem: function renderItem(newsletter, actions, meta) {
     const rowClasses = classNames(
@@ -142,7 +142,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
           auto_refresh
           sort_by="sent_at"
           sort_order="desc"
-          afterGetItems={(state) => { checkMailerStatus(state); this.checkCronStatus(state); }}
+          afterGetItems={(state) => { checkMailerStatus(state); checkCronStatus(state); }}
         />
       </div>
     );
