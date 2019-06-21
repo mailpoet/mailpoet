@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import HelpTooltip from 'help-tooltip.jsx';
 import StatsBadge from 'newsletters/badges/stats.jsx';
-import { trackStatsCTAClicked } from 'newsletters/listings/mixins.jsx';
+import { trackStatsCTAClicked } from 'newsletters/listings/utils.jsx';
 
 const wrapInLink = (content, params, id, totalSent) => {
   if (totalSent <= 0 || !params.link) {

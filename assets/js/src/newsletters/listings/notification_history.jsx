@@ -17,7 +17,7 @@ import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
-} from 'newsletters/listings/mixins.jsx';
+} from 'newsletters/listings/utils.jsx';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 

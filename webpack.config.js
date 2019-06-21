@@ -124,9 +124,9 @@ const baseConfig = {
         ]
       },
       {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/mixins.jsx'),
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/utils.jsx'),
         use: [
-          'expose-loader?' + globalPrefix + '.NewslettersListingsMixins',
+          'expose-loader?' + globalPrefix + '.NewslettersListingsUtils',
           'babel-loader',
         ]
       },
@@ -257,7 +257,7 @@ const adminConfig = {
       'newsletters/badges/stats.jsx',
       'newsletters/breadcrumb.jsx',
       'newsletters/listings/tabs.jsx',
-      'newsletters/listings/mixins.jsx',
+      'newsletters/listings/utils.jsx',
       'newsletters/listings/heading.jsx',
       'announcements/feature_announcement.jsx',
       'announcements/free_plan_announcement.jsx',

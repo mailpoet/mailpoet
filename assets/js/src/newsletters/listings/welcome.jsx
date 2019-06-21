@@ -13,7 +13,7 @@ import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
-} from 'newsletters/listings/mixins.jsx';
+} from 'newsletters/listings/utils.jsx';
 
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
