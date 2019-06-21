@@ -8,8 +8,8 @@ import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
+import Statistics from 'newsletters/listings/statistics.jsx';
 import {
-  renderStatistics,
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
@@ -332,10 +332,10 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
         </td>
         { (mailpoetTrackingEnabled === true) ? (
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
-            { renderStatistics(
-              newsletter,
-              newsletter.total_sent > 0 && newsletter.statistics
-            ) }
+            <Statistics
+              newsletter={newsletter}
+              isSent={newsletter.total_sent > 0 && newsletter.statistics}
+            />
           </td>
         ) : null }
         <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
