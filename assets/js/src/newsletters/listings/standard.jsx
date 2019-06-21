@@ -11,8 +11,8 @@ import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import QueueStatus from 'newsletters/listings/queue_status.jsx';
+import Statistics from 'newsletters/listings/statistics.jsx';
 import {
-  renderStatistics,
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
@@ -213,7 +213,7 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
         </td>
         { (mailpoetTrackingEnabled === true) ? (
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
-            { renderStatistics(newsletter, undefined, meta.current_time) }
+            <Statistics newsletter={newsletter} currentTime={meta.current_time} />
           </td>
         ) : null }
         <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
