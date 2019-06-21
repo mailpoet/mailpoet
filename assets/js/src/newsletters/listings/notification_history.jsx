@@ -11,8 +11,8 @@ import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
+import QueueStatus from 'newsletters/listings/queue_status.jsx';
 import {
-  renderQueueStatus,
   renderStatistics,
   addStatsCTAAction,
   checkCronStatus,
@@ -95,7 +95,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
           { actions }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { renderQueueStatus(newsletter, meta.mta_log) }
+          <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           { segments }
