@@ -15,8 +15,10 @@ class ManageWelcomeEmailCest {
   }
 
   private function createWelcomeEmailWithTitle(\AcceptanceTester $I, $newsletterTitle) {
-    $newsletterFactory = new Newsletter();
-    $newsletterFactory->withSubject($newsletterTitle)->withWelcomeType()->create();
+    return (new Newsletter())
+        ->withSubject($newsletterTitle)
+        ->withWelcomeType()
+        ->create();
   }
 
   function saveWelcomeNewsletterAsDraft(\AcceptanceTester $I) {
@@ -43,15 +45,10 @@ class ManageWelcomeEmailCest {
   }
 
   function editWelcomeEmail(\AcceptanceTester $I) {
-    $newsletterTitle = 'Edit Welcome Email Test';
-    $this->createWelcomeEmailWithTitle($I, $newsletterTitle);
+    $newsletter = $this->createWelcomeEmailWithTitle($I, 'Edit Welcome Email Test');
     $I->wantTo('Edit a welcome newsletter');
     $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletterTitle);
-    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
-    $I->waitForElement($this->titleElement);
+    $I->amEditingNewsletter($newsletter->id);
     $I->fillField($this->titleElement, 'Edit Test Welcome Edited');
     $I->click('Next');
     $I->waitForText('Reply-to');
@@ -110,20 +107,15 @@ class ManageWelcomeEmailCest {
 
   function saveWelcomeEmailAsTemplate (\AcceptanceTester $I) {
     $I->wantTo('Save welcome email as a template');
-    $newsletterTitle = 'Save Welcome Email As Template Test';
     $templateTitle = 'Welcome Template Test Title';
     $templateDescr = 'Welcome Template Test Descr';
-    $this->createWelcomeEmailWithTitle($I, $newsletterTitle);
+    $newsletter = $this->createWelcomeEmailWithTitle($I, 'Save Welcome Email As Template Test');
 
     $saveTemplateOption = '[data-automation-id="newsletter_save_as_template_option"]';
     $saveTemplateButton = '[data-automation-id="newsletter_save_as_template_button"]';
 
     $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletterTitle);
-    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
-    $I->waitForElement($this->titleElement);
+    $I->amEditingNewsletter($newsletter->id);
     $I->click('[data-automation-id="newsletter_save_options_toggle"]');
     $I->waitForElement($saveTemplateOption);
     $I->click($saveTemplateOption);

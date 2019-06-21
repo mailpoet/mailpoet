@@ -16,17 +16,12 @@ class EditorLineHeightCest {
     $headingLineHeight = '2.0';
 
     $I->wantTo('Edit line height settings in a newsletter');
-    $newsletterTitle = 'Newsletter Title';
-    (new Newsletter())
-      ->withSubject($newsletterTitle)
+    $newsletter = (new Newsletter())
       ->loadBodyFrom('newsletterWithText.json')
       ->create();
 
     $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($newsletterTitle);
-    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
-    $I->waitForElement('.mailpoet_styles_region');
+    $I->amEditingNewsletter($newsletter->id);
     $I->click('.mailpoet_styles_region');
 
     // set text sizes
