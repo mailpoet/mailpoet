@@ -8,18 +8,11 @@ class EditorImageBlockCest {
   function addImage(\AcceptanceTester $I) {
     $I->wantTo('add image block to newsletter');
     $I->cli('media import /wp-core/wp-content/plugins/mailpoet/tests/_data/unicornsplaceholder.png --allow-root');
-    $newsletterTitle = 'Image Block Newsletter';
-    (new Newsletter())
-      ->withSubject($newsletterTitle)
+    $newsletter = (new Newsletter())
       ->loadBodyFrom('newsletterWithText.json')
       ->create();
     $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($newsletterTitle);
-    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
-    // Create image block
-    $I->waitForText('Image');
-    $I->waitForElementNotVisible('.velocity-animating');
+    $I->amEditingNewsletter($newsletter->id);
     $I->dragAndDrop('#automation_editor_block_image', '#mce_0');
     $I->waitForText('Add images');
     $I->click('Media Library');

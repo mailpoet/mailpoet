@@ -7,21 +7,14 @@ use MailPoet\Test\DataFactories\Newsletter;
 class EditorFooterBlockCest {
   function addFooter(\AcceptanceTester $I) {
     $I->wantTo('add Footer block to newsletter');
-    $newsletterTitle = 'Footer Block Newsletter';
     $footerInEditor = ('[data-automation-id="footer"]');
     $footerSettingsIcon = ('[data-automation-id="settings_tool"]');
     $footerSettingsAssertion = ('[data-automation-id="footer_done_button"]');
-    (new Newsletter())
-      ->withSubject($newsletterTitle)
+    $newsletter = (new Newsletter())
       ->loadBodyFrom('newsletterWithTextNoFooter.json')
       ->create();
     $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($newsletterTitle);
-    $I->clickItemRowActionByItemName($newsletterTitle, 'Edit');
-    // Create Footer block
-    $I->waitForText('Footer');
-    $I->waitForElementNotVisible('.velocity-animating');
+    $I->amEditingNewsletter($newsletter->id);
     $I->dragAndDrop('#automation_editor_block_footer', '#mce_0');
     //Open settings by clicking on block
     $I->moveMouseOver($footerInEditor, 3, 2);

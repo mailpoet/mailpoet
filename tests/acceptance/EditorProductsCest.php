@@ -29,12 +29,8 @@ class EditorProductsCest {
   /** @var WooCommerceProduct */
   private $product_factory;
 
-  private $newsletterTitle = 'Editor Products Test';
-
   private function initializeNewsletter(\AcceptanceTester $I) {
-    $this->newsletterTitle = 'Newsletter Title';
-    (new Newsletter())
-      ->withSubject($this->newsletterTitle)
+    $this->newsletter = (new Newsletter())
       ->loadBodyFrom('newsletterWithText.json')
       ->create();
   }
@@ -44,11 +40,8 @@ class EditorProductsCest {
     $I->deactivateWooCommerce();
 
     $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($this->newsletterTitle);
-    $I->clickItemRowActionByItemName($this->newsletterTitle, 'Edit');
+    $I->amEditingNewsletter($this->newsletter->id);
 
-    $I->waitForText('Spacer');
     $I->waitForElementNotVisible('#automation_editor_block_products');
   }
 
@@ -89,14 +82,9 @@ class EditorProductsCest {
 
   private function filterProducts(\AcceptanceTester $I) {
     $I->wantTo('Filter products');
-
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($this->newsletterTitle);
-    $I->clickItemRowActionByItemName($this->newsletterTitle, 'Edit');
+    $I->amEditingNewsletter($this->newsletter->id);
 
     // Create products block
-    $I->waitForText('Products');
-    $I->waitForElementNotVisible('.velocity-animating');
     $I->dragAndDrop('#automation_editor_block_products', '#mce_0');
     $I->waitForText('PRODUCT SELECTION');
 
