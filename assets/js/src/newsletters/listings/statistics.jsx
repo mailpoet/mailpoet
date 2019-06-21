@@ -240,10 +240,10 @@ Statistics.propTypes = {
     id: PropTypes.number.isRequired,
     queue: PropTypes.shape({
       status: PropTypes.string,
-      count_processed: PropTypes.number.isRequired,
-      count_total: PropTypes.number.isRequired,
-      created_at: PropTypes.instanceOf(Date),
-      scheduled_at: PropTypes.instanceOf(Date),
+      count_processed: PropTypes.string.isRequired,
+      count_total: PropTypes.string.isRequired,
+      created_at: PropTypes.string,
+      scheduled_at: PropTypes.string,
     }),
     total_sent: PropTypes.number,
     statistics: PropTypes.shape({
@@ -254,7 +254,7 @@ Statistics.propTypes = {
     }),
   }).isRequired,
   isSent: PropTypes.bool,
-  currentTime: PropTypes.instanceOf(Date),
+  currentTime: PropTypes.string,
 };
 Statistics.defaultProps = {
   isSent: undefined,

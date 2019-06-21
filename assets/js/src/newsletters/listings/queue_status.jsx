@@ -159,9 +159,9 @@ QueueStatus.propTypes = {
     id: PropTypes.number.isRequired,
     queue: PropTypes.shape({
       status: PropTypes.string,
-      count_processed: PropTypes.number.isRequired,
-      count_total: PropTypes.number.isRequired,
-      scheduled_at: PropTypes.instanceOf(Date),
+      count_processed: PropTypes.string.isRequired,
+      count_total: PropTypes.string.isRequired,
+      scheduled_at: PropTypes.string,
     }),
   }).isRequired,
   mailerLog: PropTypes.shape({
