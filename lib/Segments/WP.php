@@ -48,7 +48,7 @@ class WP {
           'email' => $wp_user->user_email,
           'first_name' => $first_name,
           'last_name' => $last_name,
-          'status' => Subscriber::STATUS_SUBSCRIBED,
+          'status' => Subscriber::STATUS_UNCONFIRMED,
           'source' => Source::WORDPRESS_USER,
         ];
 
