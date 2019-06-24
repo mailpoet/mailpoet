@@ -244,6 +244,20 @@ class WPTest extends \MailPoetTest  {
     expect($db_subscriber)->isEmpty();
   }
 
+  function testItMarksSpammySubscribersAsUnconfirmed() {
+    $random_number = rand();
+    $id = $this->insertUser($random_number);
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'user-sync-test' . $random_number . '@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'wp_user_id' => $id,
+    ]);
+    update_user_meta($id, 'default_password_nag', '1');
+    WP::synchronizeUsers();
+    $db_subscriber = Subscriber::findOne($subscriber->id);
+    expect($db_subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+  }
+
   function _before() {
     parent::_before();
     $this->cleanData();
