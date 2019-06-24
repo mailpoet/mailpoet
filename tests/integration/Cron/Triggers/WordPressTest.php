@@ -14,6 +14,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
+use MailPoet\Cron\Workers\Beamer;
 
 class WordPressTest extends \MailPoetTest {
 
@@ -30,6 +31,7 @@ class WordPressTest extends \MailPoetTest {
     $this->settings->set('cron_trigger', [
       'method' => 'none',
     ]);
+    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, Carbon::createFromTimestamp(current_time('timestamp') + 600));
   }
 
   function testItRequiresScheduledQueuesToExecute() {
@@ -82,6 +84,12 @@ class WordPressTest extends \MailPoetTest {
   function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
     $this->_enableMigration();
     $this->_addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
+    expect(WordPress::checkExecutionRequirements())->true();
+  }
+
+  function testItExecutesWhenBeamerTaskIsDue() {
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->_addScheduledTask(Beamer::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
     expect(WordPress::checkExecutionRequirements())->true();
   }
 
@@ -162,15 +170,16 @@ class WordPressTest extends \MailPoetTest {
     return $queue->save();
   }
 
-  function _addScheduledTask($type, $status) {
+  function _addScheduledTask($type, $status, $scheduled_at = null) {
+    if (!$scheduled_at && $status === ScheduledTask::STATUS_SCHEDULED) {
+      $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    }
     $task = ScheduledTask::create();
     $task->hydrate(
       [
         'type' => $type,
         'status' => $status,
-        'scheduled_at' => ($status === ScheduledTask::STATUS_SCHEDULED) ?
-          Carbon::createFromTimestamp(current_time('timestamp')) :
-          null,
+        'scheduled_at' => $scheduled_at,
       ]
     );
     return $task->save();

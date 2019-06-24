@@ -553,7 +553,7 @@ class Populator {
 
   private function initLastAnnouncementDate() {
     if (!$this->settings->get('last_announcement_date')) {
-      $beamer = new Beamer($this->settings);
+      $beamer = new Beamer($this->settings, WPFunctions::get());
       $beamer->setLastAnnouncementDate();
     }
   }
