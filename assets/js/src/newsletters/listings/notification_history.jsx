@@ -3,7 +3,6 @@ import createReactClass from 'create-react-class';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
-import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
@@ -57,9 +56,7 @@ let newsletterActions = [
     },
   },
 ];
-
-Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', 'mailpoet', addStatsCTAAction);
-newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletterActions);
+newsletterActions = addStatsCTAAction(newsletterActions);
 
 const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-line react/prefer-es6-class, max-len
   displayName: 'NewsletterListNotificationHistory',

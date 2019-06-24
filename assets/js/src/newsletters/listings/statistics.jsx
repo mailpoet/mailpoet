@@ -35,17 +35,6 @@ const wrapInLink = (content, params, id, totalSent) => {
   );
 };
 
-const addStatsCTALink = (params) => {
-  if (window.mailpoet_premium_active) {
-    return params;
-  }
-  const newParams = params;
-  newParams.link = 'admin.php?page=mailpoet-premium';
-  newParams.externalLink = true;
-  newParams.onClick = trackStatsCTAClicked;
-  return newParams;
-};
-
 const Statistics = ({ newsletter, isSent, currentTime }) => {
   let sent = isSent;
   if (sent === undefined) {
@@ -60,9 +49,10 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
     );
   }
 
-  let params = {};
-  Hooks.addFilter('mailpoet_newsletters_listing_stats_before', 'mailpoet', addStatsCTALink);
-  params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
+  const params = {
+    link: `/stats/${newsletter.id}`,
+    onClick: Hooks.applyFilters('mailpoet_newsletters_listing_stats_tracking', trackStatsCTAClicked),
+  };
 
   // welcome emails provide explicit total_sent value
   const totalSent = Number((newsletter.total_sent || newsletter.queue.count_processed));

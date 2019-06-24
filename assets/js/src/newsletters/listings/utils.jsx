@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Link } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
+import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 
@@ -12,16 +14,16 @@ export const trackStatsCTAClicked = () => {
 };
 
 export const addStatsCTAAction = (actions) => {
-  if (window.mailpoet_premium_active) {
-    return actions;
-  }
   actions.unshift({
     name: 'stats',
-    link: function link() {
+    link: function link(newsletter) {
       return (
-        <a href="admin.php?page=mailpoet-premium" onClick={trackStatsCTAClicked}>
+        <Link
+          to={`/stats/${newsletter.id}`}
+          onClick={Hooks.applyFilters('mailpoet_newsletters_listing_stats_tracking', trackStatsCTAClicked)}
+        >
           {MailPoet.I18n.t('statsListingActionTitle')}
-        </a>
+        </Link>
       );
     },
     display: function display(newsletter) {
