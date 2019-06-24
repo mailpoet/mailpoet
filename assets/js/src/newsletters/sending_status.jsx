@@ -101,10 +101,7 @@ SendingStatusListing.propTypes = {
 
 const StatsLink = ({ newsletterId, newsletterSubject }) => {
   if (!newsletterId || !newsletterSubject) return null;
-  if (window.mailpoet_premium_active) {
-    return <p><Link to={`/stats/${newsletterId}`}>{ newsletterSubject }</Link></p>;
-  }
-  return <p><a href="admin.php?page=mailpoet-premium">{newsletterSubject}</a></p>;
+  return <p><Link to={`/stats/${newsletterId}`}>{ newsletterSubject }</Link></p>;
 };
 StatsLink.propTypes = {
   newsletterId: PropTypes.string,

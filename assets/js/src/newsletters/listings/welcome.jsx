@@ -17,7 +17,6 @@ import {
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
-import Hooks from 'wp-js-hooks';
 
 const mailpoetRoles = window.mailpoet_roles || {};
 const mailpoetSegments = window.mailpoet_segments || {};
@@ -153,9 +152,7 @@ let newsletterActions = [
     name: 'trash',
   },
 ];
-
-Hooks.addFilter('mailpoet_newsletters_listings_welcome_notification_actions', 'mailpoet', addStatsCTAAction);
-newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletterActions);
+newsletterActions = addStatsCTAAction(newsletterActions);
 
 class NewsletterListWelcome extends React.Component {
   static displayName = 'NewsletterListWelcome';

@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
-import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 
 import confirmAlert from 'common/confirm_alert.jsx';
@@ -167,9 +166,7 @@ let newsletterActions = [
     name: 'trash',
   },
 ];
-
-Hooks.addFilter('mailpoet_newsletters_listings_standard_actions', 'mailpoet', addStatsCTAAction);
-newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletterActions);
+newsletterActions = addStatsCTAAction(newsletterActions);
 
 class NewsletterListStandard extends React.Component {
   static displayName = 'NewsletterListStandard';
