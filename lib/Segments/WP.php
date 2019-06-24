@@ -140,13 +140,13 @@ class WP {
         WHERE mps.wp_user_id IS NULL AND %2$s.user_email != ""
       ', $subscribers_table, $wpdb->users))->findArray();
 
-    Subscriber::rawExecute(sprintf('
+    Subscriber::rawExecute(sprintf( '
       INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at, source)
-        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP(), "%3$s" FROM %2$s wu
+        SELECT wu.id, wu.user_email, "%4$s", CURRENT_TIMESTAMP(), "%3$s" FROM %2$s wu
           LEFT JOIN %1$s mps ON wu.id = mps.wp_user_id
           WHERE mps.wp_user_id IS NULL AND wu.user_email != ""
       ON DUPLICATE KEY UPDATE wp_user_id = wu.id
-    ', $subscribers_table, $wpdb->users, Source::WORDPRESS_USER));
+    ', $subscribers_table, $wpdb->users, Source::WORDPRESS_USER, Subscriber::STATUS_UNCONFIRMED));
 
     return $inserterd_user_ids;
   }

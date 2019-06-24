@@ -39,8 +39,10 @@ class WPTest extends \MailPoetTest  {
     $this->insertUser();
     $this->insertUser();
     WP::synchronizeUsers();
-    $subscribersCount = $this->getSubscribersCount();
-    expect($subscribersCount)->equals(2);
+    $subscribers = Subscriber::whereLike("email", "user-sync-test%")->findMany();
+    expect(count($subscribers))->equals(2);
+    expect($subscribers[0]->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+    expect($subscribers[1]->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
   function testItSynchronizeNewUsers() {
@@ -64,6 +66,7 @@ class WPTest extends \MailPoetTest  {
     $wp_subscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wp_subscriber)->notEmpty();
     expect($wp_subscriber->id)->equals($subscriber->id);
+    expect($wp_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   function testItSynchronizeEmails() {
