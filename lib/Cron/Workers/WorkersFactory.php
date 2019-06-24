@@ -22,6 +22,7 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class WorkersFactory {
 
@@ -137,7 +138,7 @@ class WorkersFactory {
 
   /** @return Beamer */
   function createBeamerkWorker($timer) {
-    return new Beamer($this->settings, $timer);
+    return new Beamer($this->settings, WPFunctions::get(), $timer);
   }
 
   /** @return InactiveSubscribers */
