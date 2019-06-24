@@ -2,6 +2,8 @@
 namespace MailPoet\Segments;
 
 use MailPoet\Models\ModelValidator;
+use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
@@ -91,6 +93,7 @@ class WP {
     self::updateFirstNameIfMissing();
     self::insertUsersToSegment();
     self::removeOrphanedSubscribers();
+    self::markSpammyWordpressUsersAsUnconfirmed();
 
     return true;
   }
@@ -219,5 +222,18 @@ class WP {
       ->findResultSet()
       ->set('wp_user_id', null)
       ->delete();
+  }
+
+  private static function markSpammyWordpressUsersAsUnconfirmed() {
+    global $wpdb;
+    $query = '
+      UPDATE %s as subscribers
+      LEFT JOIN %s as clicks ON subscribers.id=clicks.subscriber_id 
+      LEFT JOIN %s as opens ON subscribers.id=opens.subscriber_id 
+      JOIN %s as usermeta ON usermeta.user_id=subscribers.wp_user_id AND usermeta.meta_key = "default_password_nag" AND usermeta.meta_value = "1"
+      SET `status` = "unconfirmed"
+      WHERE `wp_user_id` IS NOT NULL AND `status` = "subscribed" AND `confirmed_at` IS NULL AND clicks.id IS NULL AND opens.id IS NULL
+    ';
+    $wpdb->query(sprintf($query, Subscriber::$_table, StatisticsClicks::$_table, StatisticsOpens::$_table, $wpdb->usermeta));
   }
 }
