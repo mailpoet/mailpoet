@@ -52,15 +52,15 @@ class Form extends React.Component {
     }
   }
 
-  componentWillReceiveProps(props) {
-    if (props.params.id === undefined) {
+  componentDidUpdate() {
+    if (this.props.params.id === undefined && this.state.loading) {
       setImmediate(() => {
         this.setState({
           loading: false,
           item: {},
         });
       });
-      if (props.item === undefined) {
+      if (this.props.item === undefined) {
         this.formRef.current.reset();
       }
     }
