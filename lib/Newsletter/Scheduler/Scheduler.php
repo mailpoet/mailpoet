@@ -123,6 +123,27 @@ class Scheduler {
     }
   }
 
+  static function cancelAutomaticEmail($group, $event, $subscriber_id) {
+    $newsletters = self::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
+    if (empty($newsletters)) {
+      return false;
+    }
+
+    foreach ($newsletters as $newsletter) {
+      if ($newsletter->event !== $event) {
+        continue;
+      }
+
+      // try to find existing scheduled task for given subscriber
+      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->id, $subscriber_id);
+      if ($task) {
+        SendingQueue::where('task_id', $task->id)->deleteMany();
+        ScheduledTaskSubscriber::where('task_id', $task->id)->deleteMany();
+        $task->delete();
+      }
+    }
+  }
+
   static function scheduleWPUserWelcomeNotification(
     $subscriber_id,
     $wp_user,
