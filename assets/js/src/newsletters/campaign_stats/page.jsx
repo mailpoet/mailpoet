@@ -30,10 +30,9 @@ class CampaignStatsPage extends React.Component {
     this.loadItem(match.params.id);
   }
 
-  componentWillReceiveProps(props) {
-    const { match } = this.props;
-    if (match.params.id !== props.match.params.id) {
-      this.loadItem(props.match.params.id);
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.loadItem(this.props.match.params.id);
     }
   }
 
