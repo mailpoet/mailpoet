@@ -41,9 +41,9 @@ class Populator {
   private $wp;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
 
-  function __construct() {
-    $this->settings = new SettingsController();
-    $this->wp = new WPFunctions();
+  function __construct(SettingsController $settings, WPFunctions $wp) {
+    $this->settings = $settings;
+    $this->wp = $wp;
     $this->prefix = Env::$db_prefix;
     $this->models = [
       'newsletter_option_fields',

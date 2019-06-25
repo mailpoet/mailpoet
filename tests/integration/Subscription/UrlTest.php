@@ -6,11 +6,13 @@ use MailPoet\Subscription\Url;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 use MailPoet\Config\Populator;
+use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class UrlTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $populator = new Populator();
+    $populator = new Populator(new SettingsController, WPFunctions::get());
     $populator->up();
   }
 

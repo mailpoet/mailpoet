@@ -9,6 +9,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -23,10 +24,10 @@ class MailerTest extends \MailPoetTest {
     parent::_before();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
-    $populator = new Populator();
+    $this->settings = new SettingsController();
+    $populator = new Populator($this->settings, WPFunctions::get());
     $populator->up();
     $this->mailer_task = new MailerTask();
-    $this->settings = new SettingsController();
     $this->sender = $this->settings->get('sender');
   }
 

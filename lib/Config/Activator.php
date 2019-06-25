@@ -11,16 +11,19 @@ class Activator {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings) {
+  /** @var Populator */
+  private $populator;
+
+  function __construct(SettingsController $settings, Populator $populator) {
     $this->settings = $settings;
+    $this->populator = $populator;
   }
 
   function activate() {
     $migrator = new Migrator();
     $migrator->up();
 
-    $populator = new Populator();
-    $populator->up();
+    $this->populator->up();
     $this->updateDbVersion();
 
     $caps = new Capabilities();
