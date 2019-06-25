@@ -216,7 +216,8 @@ class MP2Migrator {
    *
    */
   private function eraseMP3Data() {
-    $activator = new Activator(new SettingsController());
+    $settings = new SettingsController();
+    $activator = new Activator($settings, new Populator($settings, WPFunctions::get()));
     $activator->deactivate();
     $activator->activate();
 

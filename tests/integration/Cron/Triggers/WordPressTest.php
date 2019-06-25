@@ -31,6 +31,7 @@ class WordPressTest extends \MailPoetTest {
     $this->settings->set('cron_trigger', [
       'method' => 'none',
     ]);
+    ScheduledTask::where('type', Beamer::TASK_TYPE)->deleteMany();
     $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, Carbon::createFromTimestamp(current_time('timestamp') + 600));
   }
 
