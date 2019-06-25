@@ -11,6 +11,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
@@ -23,9 +24,9 @@ class ShortcodesTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $populator = new Populator();
-    $populator->up();
     $this->settings = new SettingsController();
+    $populator = new Populator($this->settings, WPFunctions::get());
+    $populator->up();
     $this->WP_user = $this->_createWPUser();
     $this->WP_post = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();

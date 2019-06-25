@@ -46,7 +46,8 @@ class SendingQueueTest extends \MailPoetTest {
     parent::_before();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
-    $populator = new Populator();
+    $this->settings = new SettingsController();
+    $populator = new Populator($this->settings, WPFunctions::get());
     $populator->up();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';
@@ -83,7 +84,6 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter_link->hash = 'abcde';
     $this->newsletter_link->save();
     $this->sending_error_handler = new SendingErrorHandler();
-    $this->settings = new SettingsController();
     $this->stats_notifications_worker = new StatsNotificationsScheduler($this->settings);
     $this->sending_queue_worker = new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker);
   }
