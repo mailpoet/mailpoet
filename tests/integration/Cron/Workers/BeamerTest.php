@@ -8,6 +8,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class BeamerTest extends \MailPoetTest {
+
   function testItSetsLastAnnouncementDate() {
     $oldDate = '2019-05-18T10:25:00.000Z';
     $newDate = '2019-05-22T10:25:00.000Z';
@@ -21,6 +22,7 @@ class BeamerTest extends \MailPoetTest {
     ]);
     $beamer = new Beamer($settings, $wp);
     $beamer->setLastAnnouncementDate();
-    expect($settings->get('last_announcement_date'))->equals( Carbon::createFromTimeString($newDate)->getTimestamp());
+    expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($newDate)->getTimestamp());
   }
+
 }
