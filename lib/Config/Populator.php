@@ -140,7 +140,7 @@ class Populator {
     $this->updateMetaFields();
     $this->scheduleInitialInactiveSubscribersCheck();
     $this->scheduleAuthorizedSendingEmailsCheck();
-    $this->initLastAnnouncementDate();
+    $this->scheduleBeamer();
     // Will be uncommented on task [MAILPOET-1998]
     // $this->updateFormsSuccessMessages();
   }
@@ -551,10 +551,12 @@ class Populator {
     );
   }
 
-  private function initLastAnnouncementDate() {
+  private function scheduleBeamer() {
     if (!$this->settings->get('last_announcement_date')) {
-      $beamer = new Beamer($this->settings, WPFunctions::get());
-      $beamer->setLastAnnouncementDate();
+      $this->scheduleTask(
+        Beamer::TASK_TYPE,
+        Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+      );
     }
   }
 
