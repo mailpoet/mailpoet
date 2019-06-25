@@ -1,3 +1,4 @@
+import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -5,9 +6,9 @@ import ReactStringReplace from 'react-string-replace';
 import PropTypes from 'prop-types';
 import NewsletterGeneralStats from './newsletter_stats.jsx';
 import NewsletterStatsInfo from './newsletter_info.jsx';
-import ClickedLinksTable from './clicked_links_table.jsx';
 import SubscriberEngagementListing from './subscriber_engagement.jsx';
 import PurchasedProducts from './purchased_products.jsx';
+import PremiumBanner from './premium_banner.jsx';
 
 class CampaignStatsPage extends React.Component {
   constructor(props) {
@@ -194,7 +195,7 @@ class CampaignStatsPage extends React.Component {
         <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
 
         <div className="mailpoet_stat_triple-spaced">
-          <ClickedLinksTable links={newsletter.clicked_links} />
+          {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
         </div>
 
         <div className="mailpoet_stat_triple-spaced">
