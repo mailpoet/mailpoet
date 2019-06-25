@@ -38,7 +38,7 @@ Trusted by 300,000 WordPress websites since 2011.
 * Easy to use WordPress newsletter builder
 * Beautiful responsive templates
 * No configuration needed: works out of the box
-* We offer a free sending plan for those with 2,000 subscribers or less
+* Small site owners with lists of 1,000 subscribers or less get the Premium for free. [Read More](https://www.mailpoet.com/free-plan/)
 * GDPR compliant
 
 = See it in action =
@@ -56,7 +56,7 @@ Please note:
 
 = WooCommerce emails (Premium) =
 
-**All WooCommerce features are free for stores of 1,000 customers or less.**
+**All WooCommerce features are free for stores of 1,000 customers or less. [Read More](https://www.mailpoet.com/free-plan/)**
 
 Increase your sales and stay in touch with your customers with our emails for WooCommerce!
 
@@ -82,6 +82,8 @@ The Premium version adds the following features:
 See the [short video summary on the Premium](http://beta.docs.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
 
 = MailPoet Sending Service =
+**MailPoet Sending Service is free for your first 1,000 subscribers (pay as you go afterwards). [Read More](https://www.mailpoet.com/free-plan/)**
+
 Sending emails and newsletter with your host is not a good idea. You might face sending speed limitations and see your emails ending up in the spam box.
 
 To help your sending go without a hitch, we’ve created an advanced email delivery infrastructure built for WordPress. Our technology allows you to:
@@ -91,8 +93,6 @@ To help your sending go without a hitch, we’ve created an advanced email deliv
 * Get all your emails automatically signed with SPF & DKIM
 
 The MailPoet Sending Service is very easy to setup, you just have to enter a key in your WordPress admin and you’re all set!
-
-[Signup now](https://account.mailpoet.com/?utm_source=wordpress&utm_medium=readme&utm_campaign=mss), it’s free for your first 1,000 subscribers (pay as you go afterwards).
 
 = Translations =
 
