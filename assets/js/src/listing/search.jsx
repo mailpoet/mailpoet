@@ -12,8 +12,12 @@ class ListingSearch extends React.Component {
     this.onChange = this.onChange.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ search: nextProps.search });
+  componentDidUpdate(prevProps) {
+    if (prevProps.search !== this.props.search) {
+      setImmediate(() => {
+        this.setState({ search: this.props.search });
+      });
+    }
   }
 
   onChange(e) {
