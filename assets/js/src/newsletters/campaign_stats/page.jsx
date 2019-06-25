@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import NewsletterGeneralStats from './newsletter_stats.jsx';
 import NewsletterStatsInfo from './newsletter_info.jsx';
 import SubscriberEngagementListing from './subscriber_engagement.jsx';
-import PurchasedProducts from './purchased_products.jsx';
 import PremiumBanner from './premium_banner.jsx';
 
 class CampaignStatsPage extends React.Component {
@@ -199,7 +198,7 @@ class CampaignStatsPage extends React.Component {
         </div>
 
         <div className="mailpoet_stat_triple-spaced">
-          <PurchasedProducts newsletter={newsletter} />
+          {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
         </div>
 
         <h2>{MailPoet.I18n.t('subscriberEngagement')}</h2>
