@@ -2,11 +2,9 @@ import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import ReactStringReplace from 'react-string-replace';
 import PropTypes from 'prop-types';
 import NewsletterGeneralStats from './newsletter_stats.jsx';
 import NewsletterStatsInfo from './newsletter_info.jsx';
-import SubscriberEngagementListing from './subscriber_engagement.jsx';
 import PremiumBanner from './premium_banner.jsx';
 
 class CampaignStatsPage extends React.Component {
@@ -15,11 +13,7 @@ class CampaignStatsPage extends React.Component {
     this.state = {
       item: {},
       loading: true,
-      savingSegment: false,
-      segmentCreated: false,
-      segmentErrors: [],
     };
-    this.handleCreateSegment = this.handleCreateSegment.bind(this);
   }
 
   componentDidMount() {
@@ -34,35 +28,6 @@ class CampaignStatsPage extends React.Component {
     if (prevProps.match.params.id !== this.props.match.params.id) {
       this.loadItem(this.props.match.params.id);
     }
-  }
-
-  handleCreateSegment(group, newsletter, linkId) {
-    const name = `${newsletter.subject} – ${group}`;
-    this.setState({ savingSegment: true, segmentCreated: false, segmentErrors: [] });
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'dynamic_segments',
-      action: 'save',
-      data: {
-        segmentType: 'email',
-        action: group === 'unopened' ? 'notOpened' : group,
-        newsletter_id: newsletter.id,
-        link_id: linkId,
-        name,
-      },
-    }).always(() => {
-      this.setState({ savingSegment: false });
-    }).done(() => {
-      this.setState({
-        segmentCreated: true,
-        segmentName: name,
-      });
-    }).fail((response) => {
-      this.setState({
-        segmentErrors:
-          response.errors.map(error => ((error.error === 409) ? MailPoet.I18n.t('segmentExists') : error.message)),
-      });
-    });
   }
 
   loadItem(id) {
@@ -98,57 +63,8 @@ class CampaignStatsPage extends React.Component {
     });
   }
 
-  renderCreateSegmentSuccess() {
-    const { segmentCreated, segmentName } = this.state;
-    let segmentCreatedSuccessMessage;
-
-    if (segmentCreated) {
-      let message = ReactStringReplace(
-        MailPoet.I18n.t('successMessage'),
-        /\[link\](.*?)\[\/link\]/g,
-        (match, i) => (
-          <a
-            key={i}
-            href="?page=mailpoet-newsletters#/new"
-          >
-            {match}
-          </a>
-        )
-      );
-
-      message = ReactStringReplace(message, '%s', () => segmentName);
-
-      segmentCreatedSuccessMessage = (
-        <div className="mailpoet_notice notice inline notice-success">
-          <p>{message}</p>
-        </div>
-      );
-    }
-
-    return segmentCreatedSuccessMessage;
-  }
-
-  renderCreateSegmentError() {
-    const { segmentErrors } = this.state;
-    let error;
-
-    if (segmentErrors.length > 0) {
-      error = (
-        <div>
-          {segmentErrors.map(errorMessage => (
-            <div className="mailpoet_notice notice inline error" key={`error-${errorMessage}`}>
-              <p>{errorMessage}</p>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    return error;
-  }
-
   render() {
-    const { item, loading, savingSegment } = this.state;
+    const { item, loading } = this.state;
     const newsletter = item;
     const { match, location } = this.props;
 
@@ -201,17 +117,7 @@ class CampaignStatsPage extends React.Component {
         </div>
 
         <h2>{MailPoet.I18n.t('subscriberEngagement')}</h2>
-
-        {this.renderCreateSegmentSuccess()}
-        {this.renderCreateSegmentError()}
-
-        <SubscriberEngagementListing
-          location={location}
-          params={match.params}
-          newsletter={newsletter}
-          handleCreateSegment={this.handleCreateSegment}
-          savingSegment={savingSegment}
-        />
+        {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
       </div>
     );
   }
