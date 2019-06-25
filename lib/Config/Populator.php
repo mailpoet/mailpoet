@@ -37,10 +37,13 @@ class Populator {
   private $default_segment;
   /** @var SettingsController */
   private $settings;
+  /** @var WPFunctions */
+  private $wp;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
 
   function __construct() {
     $this->settings = new SettingsController();
+    $this->wp = new WPFunctions();
     $this->prefix = Env::$db_prefix;
     $this->models = [
       'newsletter_option_fields',
@@ -146,7 +149,7 @@ class Populator {
   }
 
   private function createMailPoetPage() {
-    $pages = WPFunctions::get()->getPosts([
+    $pages = $this->wp->getPosts([
       'posts_per_page' => 1,
       'orderby' => 'date',
       'order' => 'DESC',
@@ -178,7 +181,7 @@ class Populator {
   }
 
   private function createDefaultSettings() {
-    $current_user = WPFunctions::get()->wpGetCurrentUser();
+    $current_user = $this->wp->wpGetCurrentUser();
     $settings_db_version = $this->settings->fetch('db_version');
 
     // set cron trigger option to default method
@@ -204,8 +207,8 @@ class Populator {
       $this->settings->set('signup_confirmation', [
         'enabled' => true,
         'from' => [
-          'name' => WPFunctions::get()->getOption('blogname'),
-          'address' => WPFunctions::get()->getOption('admin_email'),
+          'name' => $this->wp->getOption('blogname'),
+          'address' => $this->wp->getOption('admin_email'),
         ],
         'reply_to' => $sender,
       ]);
@@ -248,7 +251,7 @@ class Populator {
     if (empty($woocommerce_optin_on_checkout)) {
       $this->settings->set('woocommerce.optin_on_checkout', [
         'enabled' => empty($settings_db_version), // enable on new installs only
-        'message' => WPFunctions::get()->_x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites"),
+        'message' => $this->wp->_x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites"),
       ]);
     }
 
@@ -298,9 +301,9 @@ class Populator {
     if (Segment::where('type', 'default')->count() === 0) {
       $this->default_segment = Segment::create();
       $this->default_segment->hydrate([
-        'name' => WPFunctions::get()->__('My First List', 'mailpoet'),
+        'name' => $this->wp->__('My First List', 'mailpoet'),
         'description' =>
-          WPFunctions::get()->__('This list is automatically created when you install MailPoet.', 'mailpoet'),
+          $this->wp->__('This list is automatically created when you install MailPoet.', 'mailpoet'),
       ]);
       $this->default_segment->save();
     }
@@ -537,7 +540,7 @@ class Populator {
   private function scheduleInitialInactiveSubscribersCheck() {
     $this->scheduleTask(
       InactiveSubscribers::TASK_TYPE,
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHour()
+      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addHour()
     );
   }
 
@@ -547,7 +550,7 @@ class Populator {
     }
     $this->scheduleTask(
       AuthorizedSendingEmailsCheck::TASK_TYPE,
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
     );
   }
 
@@ -555,7 +558,7 @@ class Populator {
     if (!$this->settings->get('last_announcement_date')) {
       $this->scheduleTask(
         Beamer::TASK_TYPE,
-        Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+        Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
       );
     }
   }
