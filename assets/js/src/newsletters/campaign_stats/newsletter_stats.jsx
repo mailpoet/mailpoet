@@ -1,9 +1,8 @@
+import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import StatsBadge from 'newsletters/badges/stats.jsx';
 import PropTypes from 'prop-types';
-
-import RevenuesStats from './revenues_stats.jsx';
 
 const NewsletterGeneralStats = ({ newsletter }) => {
   const totalSent = newsletter.total_sent || 0;
@@ -47,9 +46,7 @@ const NewsletterGeneralStats = ({ newsletter }) => {
             headline={headlineClicked}
           />
         </div>
-        <RevenuesStats
-          revenue={newsletter.statistics.revenue}
-        />
+        {Hooks.applyFilters('mailpoet_newsletters_revenues_stats', null, newsletter.statistics.revenue)}
         <div>
           <StatsBadge
             stat="unsubscribed"
@@ -69,9 +66,7 @@ const NewsletterGeneralStats = ({ newsletter }) => {
         <div className="mailpoet_stat_big mailpoet_stat_spaced">
           {headlineClicked}
         </div>
-        <RevenuesStats
-          revenue={newsletter.statistics.revenue}
-        />
+        {Hooks.applyFilters('mailpoet_newsletters_revenues_stats', null, newsletter.statistics.revenue)}
         <div>
           {headlineUnsubscribed}
         </div>
