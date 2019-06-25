@@ -1,6 +1,6 @@
 import MailPoet from 'mailpoet';
 import React from 'react';
-import StatsBadge from 'stats-badge';
+import StatsBadge from 'newsletters/badges/stats.jsx';
 import PropTypes from 'prop-types';
 
 import RevenuesStats from './revenues_stats.jsx';
