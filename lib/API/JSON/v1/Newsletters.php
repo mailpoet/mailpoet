@@ -97,6 +97,32 @@ class Newsletters extends APIEndpoint {
     }
   }
 
+  function getWithStats($data = []) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
+    $newsletter = Newsletter::findOne($id);
+    if ($newsletter instanceof Newsletter) {
+      $newsletter = $newsletter
+        ->withSegments()
+        ->withOptions()
+        ->withSendingQueue()
+        ->withTotalSent()
+        ->withStatistics($this->woocommerce_helper, $this->features_controller);
+
+      $preview_url = NewsletterUrl::getViewInBrowserUrl(
+        NewsletterUrl::TYPE_LISTING_EDITOR,
+        $newsletter,
+        Subscriber::getCurrentWPUser()
+      );
+
+      $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter->asArray());
+      return $this->successResponse($newsletter, ['preview_url' => $preview_url]);
+    } else {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+      ]);
+    }
+  }
+
   function save($data = []) {
     $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
 
