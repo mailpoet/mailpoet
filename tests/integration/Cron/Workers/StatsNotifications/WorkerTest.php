@@ -31,6 +31,12 @@ class WorkerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var Newsletter */
+  private $newsletter;
+
+  /** @var SendingQueue */
+  private $queue;
+
   function _before() {
     parent::_before();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
@@ -45,7 +51,7 @@ class WorkerTest extends \MailPoetTest {
       'enabled' => true,
       'address' => 'email@example.com',
     ]);
-    $newsletter = Newsletter::createOrUpdate([
+    $this->newsletter = Newsletter::createOrUpdate([
       'subject' => 'Email Subject1',
       'type' => Newsletter::TYPE_STANDARD,
     ]);
@@ -60,24 +66,24 @@ class WorkerTest extends \MailPoetTest {
       'processed_at' => null,
     ]);
     StatsNotification::createOrUpdate([
-      'newsletter_id' => $newsletter->id(),
+      'newsletter_id' => $this->newsletter->id(),
       'task_id' => $stats_notifications_task->id(),
     ]);
-    $queue = SendingQueue::createOrUpdate([
+    $this->queue = SendingQueue::createOrUpdate([
       'newsletter_rendered_subject' => 'Email Subject',
       'task_id' => $sending_task->id(),
-      'newsletter_id' => $newsletter->id(),
+      'newsletter_id' => $this->newsletter->id(),
       'count_processed' => 5,
     ]);
     $link = NewsletterLink::createOrUpdate([
       'url' => 'Link url',
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
       'hash' => 'xyz',
     ]);
     StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
       'subscriber_id' => '5',
       'link_id' => $link->id(),
       'count' => 5,
@@ -85,21 +91,21 @@ class WorkerTest extends \MailPoetTest {
     ]);
     $link2 = NewsletterLink::createOrUpdate([
       'url' => 'Link url2',
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
       'hash' => 'xyzd',
     ]);
     StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
       'subscriber_id' => '6',
       'link_id' => $link2->id(),
       'count' => 5,
       'created_at' => '2018-01-02 15:16:17',
     ]);
     StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
       'subscriber_id' => '7',
       'link_id' => $link2->id(),
       'count' => 5,
@@ -107,20 +113,20 @@ class WorkerTest extends \MailPoetTest {
     ]);
     StatisticsOpens::createOrUpdate([
       'subscriber_id' => '10',
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
       'created_at' => '2017-01-02 12:23:45',
     ]);
     StatisticsOpens::createOrUpdate([
       'subscriber_id' => '11',
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
       'created_at' => '2017-01-02 21:23:45',
     ]);
     StatisticsUnsubscribes::createOrUpdate([
       'subscriber_id' => '12',
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
       'created_at' => '2017-01-02 21:23:45',
     ]);
   }
@@ -184,6 +190,48 @@ class WorkerTest extends \MailPoetTest {
         $this->callback(function($context){
           return ($context['topLink'] === 'Link url2')
             && ($context['topLinkClicks'] === 2);
+        }));
+
+    $this->stats_notifications->process();
+  }
+
+  function testReplacesShortcodeLinks() {
+    $link = NewsletterLink::createOrUpdate([
+      'url' => '[link:subscription_manage_url]',
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
+      'hash' => 'xyzd',
+    ]);
+    StatisticsClicks::createOrUpdate([
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
+      'subscriber_id' => '6',
+      'link_id' => $link->id(),
+      'count' => 1505,
+      'created_at' => '2018-01-02 15:16:17',
+    ]);
+    StatisticsClicks::createOrUpdate([
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
+      'subscriber_id' => '7',
+      'link_id' => $link->id(),
+      'count' => 2,
+      'created_at' => '2018-01-02 15:16:17',
+    ]);
+    StatisticsClicks::createOrUpdate([
+      'newsletter_id' => $this->newsletter->id(),
+      'queue_id' => $this->queue->id(),
+      'subscriber_id' => '8',
+      'link_id' => $link->id(),
+      'count' => 2,
+      'created_at' => '2018-01-02 15:16:17',
+    ]);
+    $this->renderer->expects($this->exactly(2)) // html + text template
+    ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function($context){
+          return ($context['topLink'] === 'Manage subscription link');
         }));
 
     $this->stats_notifications->process();

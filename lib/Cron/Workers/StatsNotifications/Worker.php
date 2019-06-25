@@ -139,7 +139,8 @@ class Worker {
     ];
     if ($link) {
       $context['topLinkClicks'] = (int)$link->clicksCount;
-      $context['topLink'] = $link->url;
+      $mappings = self::getShortcodeLinksMapping();
+      $context['topLink'] = isset($mappings[$link->url]) ? $mappings[$link->url] : $link->url;
     }
     return $context;
   }
@@ -149,6 +150,14 @@ class Worker {
     $task->processed_at = new Carbon;
     $task->scheduled_at = null;
     $task->save();
+  }
+
+  public static function getShortcodeLinksMapping() {
+    return [
+      '[link:subscription_unsubscribe_url]' => __('Unsubscribe link', 'mailpoet'),
+      '[link:subscription_manage_url]' => __('Manage subscription link', 'mailpoet'),
+      '[link:newsletter_view_in_browser_url]' => __('View in browser link', 'mailpoet'),
+    ];
   }
 
 }
