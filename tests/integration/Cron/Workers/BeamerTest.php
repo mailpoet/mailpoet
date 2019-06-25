@@ -21,8 +21,51 @@ class BeamerTest extends \MailPoetTest {
       ]),
     ]);
     $beamer = new Beamer($settings, $wp);
-    $beamer->setLastAnnouncementDate();
+    $done = $beamer->setLastAnnouncementDate();
+    expect($done)->equals(true);
     expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($newDate)->getTimestamp());
+  }
+
+  function testItDoesNothingIfNoResponse() {
+    $oldDate = '2019-05-18T10:25:00.000Z';
+    $settings = new SettingsController;
+    $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemoteGet' => null,
+      'wpRemoteRetrieveBody' => null,
+    ]);
+    $beamer = new Beamer($settings, $wp);
+    $done = $beamer->setLastAnnouncementDate();
+    expect($done)->equals(false);
+    expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
+  }
+
+  function testItDoesNothingIfWrongResponse() {
+    $oldDate = '2019-05-18T10:25:00.000Z';
+    $settings = new SettingsController;
+    $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemoteGet' => null,
+      'wpRemoteRetrieveBody' => '[{"corrupted":"json data',
+    ]);
+    $beamer = new Beamer($settings, $wp);
+    $done = $beamer->setLastAnnouncementDate();
+    expect($done)->equals(false);
+    expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
+  }
+
+  function testItDoesNothingIfEmptyList() {
+    $oldDate = '2019-05-18T10:25:00.000Z';
+    $settings = new SettingsController;
+    $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemoteGet' => null,
+      'wpRemoteRetrieveBody' => '[]',
+    ]);
+    $beamer = new Beamer($settings, $wp);
+    $done = $beamer->setLastAnnouncementDate();
+    expect($done)->equals(false);
+    expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
   }
 
 }
