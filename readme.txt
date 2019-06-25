@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.29.0
+Stable tag: 3.30.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -146,6 +146,19 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.30.0 - 2019-06-25 =
+* Added: emails can be sent without stopping for certain error types;
+* Added: by popular demand, undo/redo! Use our UI or keyboard shortcuts.
+* Improved: disallow import of role addresses, e.g. postmaster@, to improve deliverability;
+* Improved: notification for users with many inactive subscriber, alerting them that users are being changed to inactive;
+* improved: stats page readability;
+* Improved: bounce sync timing for MSS users;
+* Fixed: misbehaving MailPoet icon in WP Admin now stops hiding itself and other icons;
+* Fixed: some admins were receiving new subscriber notifications twice;
+* Fixed: empty posts widget can now be deleted;
+* Fixed: email rendering was broken for some users when using particular link types;
+* Fixed: display error in sign-up form.
 
 = 3.29.0 - 2019-06-18 =
 * Fixed: improved timing of subscribing via the WP registration form to reject subscribers rejected by WP registration protection. Special thanks to customer David for helping troubleshoot this issue.
