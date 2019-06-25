@@ -77,8 +77,10 @@ class Congratulate extends React.Component {
     this.tick();
   }
 
-  componentWillReceiveProps(props) {
-    this.loadNewsletter(props.match.params.id);
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.loadNewsletter(this.props.match.params.id);
+    }
   }
 
   tick() {
