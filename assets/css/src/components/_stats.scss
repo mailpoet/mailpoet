@@ -29,6 +29,12 @@
   width: 60%;
 }
 
+.mailpoet_stats_premium_banner {
+  background-color: $info-message-background-color;
+  padding: 10px;
+  text-align: center;
+}
+
 @media screen and (max-width: 520px) {
   .mailpoet_stat_info {
     display: none;

@@ -39,6 +39,8 @@
       var mailpoet_mss_active = <%= json_encode(mss_active) %>;
       var mailpoet_free_plan_announcement_seen = !!+'<%= settings.free_plan_announcement_seen %>';
       var mailpoet_mta_method = '<%= settings.mta.method %>';
+      var mailpoet_subscribers_count = <%= subscribers_count %>;
+      var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
     <% endautoescape %>
   </script>
 <% endblock %>
@@ -373,6 +375,11 @@
     'readMoreOnStats': __('Read more on stats.'),
     'clickedLinks': __('Clicked Links'),
     'subscriberEngagement': __('Subscriber Engagement'),
+
+    'premiumBannerTitle': __('Buy the Premium to see your stats', 'mailpoet'),
+    'premiumBannerCtaFree': __('Sign Up for Free', 'mailpoet'),
+    'premiumBannerCtaPremium': __('Purchase Now', 'mailpoet'),
+    'premiumBannerLink': __('Learn more about Premium', 'mailpoet'),
   }) %>
 <% endblock %>
 
