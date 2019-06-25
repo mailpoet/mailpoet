@@ -9,6 +9,7 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -82,6 +83,46 @@ class Scheduler {
     }
   }
 
+  static function scheduleOrRescheduleAutomaticEmail($group, $event, $subscriber_id, $meta = false, $time_offset = 0) {
+    $newsletters = self::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
+    if (empty($newsletters)) {
+      return false;
+    }
+
+    foreach ($newsletters as $newsletter) {
+      if ($newsletter->event !== $event) {
+        continue;
+      }
+
+      // try to find existing scheduled task for given subscriber
+      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->id, $subscriber_id);
+      if ($task) {
+        self::rescheduleAutomaticEmailSendingTask($newsletter, $task, $time_offset);
+      } else {
+        self::createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta, $time_offset);
+      }
+    }
+  }
+
+  static function rescheduleAutomaticEmail($group, $event, $subscriber_id, $time_offset = 0) {
+    $newsletters = self::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
+    if (empty($newsletters)) {
+      return false;
+    }
+
+    foreach ($newsletters as $newsletter) {
+      if ($newsletter->event !== $event) {
+        continue;
+      }
+
+      // try to find existing scheduled task for given subscriber
+      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->id, $subscriber_id);
+      if ($task) {
+        self::rescheduleAutomaticEmailSendingTask($newsletter, $task, $time_offset);
+      }
+    }
+  }
+
   static function scheduleWPUserWelcomeNotification(
     $subscriber_id,
     $wp_user,
@@ -128,7 +169,7 @@ class Scheduler {
     return $sending_task->save();
   }
 
-  static function createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta) {
+  static function createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta, $time_offset = 0) {
     $sending_task = SendingTask::create();
     $sending_task->newsletter_id = $newsletter->id;
     if ($newsletter->sendTo === 'user' && $subscriber_id) {
@@ -139,11 +180,19 @@ class Scheduler {
     }
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
     $sending_task->priority = SendingQueue::PRIORITY_MEDIUM;
-    $sending_task->scheduled_at = self::getScheduledTimeWithDelay(
-      $newsletter->afterTimeType,
-      $newsletter->afterTimeNumber
-    );
+
+    $scheduled_at = self::getScheduledTimeWithDelay($newsletter->afterTimeType, $newsletter->afterTimeNumber);
+    $scheduled_at->addSeconds($time_offset);
+    $sending_task->scheduled_at = $scheduled_at;
     return $sending_task->save();
+  }
+
+  static function rescheduleAutomaticEmailSendingTask($newsletter, $task, $time_offset = 0) {
+    // compute new 'scheduled_at' from now
+    $scheduled_at = self::getScheduledTimeWithDelay($newsletter->afterTimeType, $newsletter->afterTimeNumber);
+    $scheduled_at->addSeconds($time_offset);
+    $task->scheduled_at = $scheduled_at;
+    $task->save();
   }
 
   static function createPostNotificationSendingTask($newsletter) {

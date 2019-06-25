@@ -138,4 +138,20 @@ class ScheduledTask extends Model {
       'WHERE `id` IN (' . join(',', $ids) . ')'
     );
   }
+
+  /**
+   * @return ScheduledTask|null
+   */
+  static function findOneScheduledByNewsletterIdAndSubscriberId($newsletter_id, $subscriber_id) {
+    return ScheduledTask::tableAlias('tasks')
+      ->select('tasks.*')
+      ->innerJoin(SendingQueue::$_table, 'queues.task_id = tasks.id', 'queues')
+      ->innerJoin(ScheduledTaskSubscriber::$_table, 'task_subscribers.task_id = tasks.id', 'task_subscribers')
+      ->where('queues.newsletter_id', $newsletter_id)
+      ->where('tasks.status', ScheduledTask::STATUS_SCHEDULED)
+      ->where('task_subscribers.subscriber_id', $subscriber_id)
+      ->whereNull('queues.deleted_at')
+      ->whereNull('tasks.deleted_at')
+      ->findOne() ?: null;
+  }
 }
