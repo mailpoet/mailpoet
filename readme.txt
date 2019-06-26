@@ -19,7 +19,7 @@ Schedule your newsletters, send them right away or set it up to send new blog po
 
 Trusted by 300,000 WordPress websites since 2011.
 
-**New!** Our Premium is now free for sites with 1,000 subscribers or less.
+**New!** Our Premium is now free for sites with 1,000 subscribers or fewer.
 
 [Visit our website to see the templates or try the demo](https://www.mailpoet.com/)
 
@@ -38,7 +38,7 @@ Trusted by 300,000 WordPress websites since 2011.
 * Easy to use WordPress newsletter builder
 * Beautiful responsive templates
 * No configuration needed: works out of the box
-* Small site owners with lists of 1,000 subscribers or less get the Premium for free. [Read More](https://www.mailpoet.com/free-plan/)
+* Small site owners with lists of 1,000 subscribers or fewer get the Premium for free. [Read More](https://www.mailpoet.com/free-plan/)
 * GDPR compliant
 
 = See it in action =
@@ -56,7 +56,7 @@ Please note:
 
 = WooCommerce emails (Premium) =
 
-**All WooCommerce features are free for stores of 1,000 customers or less. [Read More](https://www.mailpoet.com/free-plan/)**
+**All WooCommerce features are free for stores of 1,000 customers or fewer. [Read More](https://www.mailpoet.com/free-plan/)**
 
 Increase your sales and stay in touch with your customers with our emails for WooCommerce!
 
@@ -69,7 +69,7 @@ With our WooCommerce emails, you can :
 
 = Premium details =
 
-**MailPoet Premium is entirely free and includes quality sending for users with 1,000 subscribers or less. [Read more.](https://www.mailpoet.com/free-plan/)**
+**MailPoet Premium is entirely free and includes quality sending for users with 1,000 subscribers or fewer. [Read more.](https://www.mailpoet.com/free-plan/)**
 
 The Premium version adds the following features:
 
