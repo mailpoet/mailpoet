@@ -104,9 +104,12 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     }
   },
 
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    const params = nextProps.params || {};
-    this.initWithParams(params);
+  componentDidUpdate: function componentDidUpdate(prevProps) {
+    const params = this.props.params || {};
+    const prevParams = prevProps.params || {};
+    if (!_.isEqual(params, prevParams)) {
+      this.initWithParams(params);
+    }
   },
 
   componentWillUnmount: function componentWillUnmount() {
