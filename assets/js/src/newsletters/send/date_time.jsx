@@ -13,8 +13,15 @@ class DateTime extends React.Component {
     this.state = this.buildStateFromProps(props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState(this.buildStateFromProps(nextProps));
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.value !== prevProps.value
+      || this.props.defaultDateTime !== prevProps.defaultDateTime
+    ) {
+      setImmediate(() => {
+        this.setState(this.buildStateFromProps(this.props));
+      });
+    }
   }
 
   getDateTime = () => [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
@@ -72,6 +79,7 @@ class DateTime extends React.Component {
 }
 
 DateTime.propTypes = {
+  value: PropTypes.string,
   defaultDateTime: PropTypes.string.isRequired,
   dateDisplayFormat: PropTypes.string.isRequired,
   dateStorageFormat: PropTypes.string.isRequired,
@@ -88,6 +96,7 @@ DateTime.defaultProps = {
   name: '',
   disabled: false,
   timeValidation: undefined,
+  value: undefined,
 };
 
 export default DateTime;
