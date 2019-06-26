@@ -305,6 +305,8 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function testItReschedulesQueueDeliveryWhenMailpoetSubscriberHasNotConfirmedSubscription() {
+    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
     $subscriber = $this->_createSubscriber($wp_user_id = null, 'unsubscribed');
     $segment = $this->_createSegment();
     $subscriber_segment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
@@ -792,6 +794,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   function _after() {
+    Carbon::setTestNow();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
