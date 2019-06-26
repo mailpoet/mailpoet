@@ -117,12 +117,12 @@ class ConfirmationEmailMailer {
       $this->mailer->getReplyToNameAndAddress($reply_to);
       $result = $this->mailer->send($email, $subscriber);
       if ($result['response'] === false) {
-        $subscriber->setError($result['error'] instanceof MailerError ? $result['error']->getMessage() : 'Unknown Error.');
+        $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
         return false;
       };
       return true;
     } catch (\Exception $e) {
-      $subscriber->setError($e->getMessage());
+      $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
       return false;
     }
   }
