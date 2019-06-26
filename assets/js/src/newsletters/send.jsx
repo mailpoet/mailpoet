@@ -49,10 +49,12 @@ const NewsletterSend = createReactClass({ // eslint-disable-line react/prefer-es
     jQuery('#mailpoet_newsletter').parsley();
   },
 
-  componentWillReceiveProps: function componentWillReceiveProps(props) {
-    this.loadItem(props.match.params.id).always(() => {
-      this.setState({ loading: false });
-    });
+  componentDidUpdate: function componentDidUpdate(prevProps) {
+    if (this.props.match.params.id !== prevProps.match.params.id) {
+      this.loadItem(this.props.match.params.id).always(() => {
+        this.setState({ loading: false });
+      });
+    }
   },
 
   getFieldsByNewsletter: function getFieldsByNewsletter(newsletter) {
