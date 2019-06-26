@@ -69,7 +69,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $sender->sendConfirmationEmail($subscriber);
     // error is set on the subscriber model object
-    expect($subscriber->getErrors()[0])->equals('send error');
+    expect($subscriber->getErrors()[0])->equals('Something went wrong with your subscription. Please contact the website owner.');
   }
 
   function testItDoesntSendWhenMSSIsActiveAndConfirmationEmailIsNotAuthorized() {
