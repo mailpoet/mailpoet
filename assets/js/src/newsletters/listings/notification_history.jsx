@@ -1,5 +1,4 @@
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
@@ -61,17 +60,17 @@ let newsletterActions = [
 Hooks.addFilter('mailpoet_newsletters_listings_notification_history_actions', 'mailpoet', addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletterActions);
 
-const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-line react/prefer-es6-class, max-len
-  displayName: 'NewsletterListNotificationHistory',
+class NewsletterListNotificationHistory extends React.Component {
+  static displayName = 'NewsletterListNotificationHistory';
 
-  propTypes: {
+  static propTypes = {
     location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
     match: PropTypes.shape({
       params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     }).isRequired,
-  },
+  };
 
-  renderItem: function renderItem(newsletter, actions, meta) {
+  renderItem = (newsletter, actions, meta) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -110,9 +109,9 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
         </td>
       </div>
     );
-  },
+  };
 
-  render: function render() {
+  render() {
     return (
       <div>
         <ListingHeading />
@@ -145,7 +144,7 @@ const NewsletterListNotificationHistory = createReactClass({ // eslint-disable-l
         />
       </div>
     );
-  },
-});
+  }
+}
 
 export default NewsletterListNotificationHistory;

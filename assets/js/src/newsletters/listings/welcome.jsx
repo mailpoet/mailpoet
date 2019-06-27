@@ -1,5 +1,4 @@
 import React from 'react';
-import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
@@ -158,17 +157,17 @@ let newsletterActions = [
 Hooks.addFilter('mailpoet_newsletters_listings_welcome_notification_actions', 'mailpoet', addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletterActions);
 
-const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/prefer-es6-class
-  displayName: 'NewsletterListWelcome',
+class NewsletterListWelcome extends React.Component {
+  static displayName = 'NewsletterListWelcome';
 
-  propTypes: {
+  static propTypes = {
     location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
     match: PropTypes.shape({
       params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     }).isRequired,
-  },
+  };
 
-  updateStatus: function updateStatus(e) {
+  updateStatus = (e) => {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -193,9 +192,9 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
       // reset value to actual newsletter's status
       e.target.value = response.status;
     });
-  },
+  };
 
-  renderStatus: function renderStatus(newsletter) {
+  renderStatus = (newsletter) => {
     const totalSentMessage = MailPoet.I18n.t('sentToXSubscribers')
       .replace('%$1d', newsletter.total_sent.toLocaleString());
     const totalScheduledMessage = MailPoet.I18n.t('scheduledToXSubscribers')
@@ -226,9 +225,9 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
         </p>
       </div>
     );
-  },
+  };
 
-  renderSettings: function renderSettings(newsletter) {
+  renderSettings = (newsletter) => {
     let sendingEvent;
     let sendingDelay;
     let segment;
@@ -302,9 +301,9 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
         { sendingEvent }
       </span>
     );
-  },
+  };
 
-  renderItem: function renderItem(newsletter, actions) {
+  renderItem = (newsletter, actions) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -343,9 +342,9 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
         </td>
       </div>
     );
-  },
+  };
 
-  render: function render() {
+  render() {
     return (
       <div>
         <ListingHeading />
@@ -373,7 +372,7 @@ const NewsletterListWelcome = createReactClass({ // eslint-disable-line react/pr
         />
       </div>
     );
-  },
-});
+  }
+}
 
 export default NewsletterListWelcome;
