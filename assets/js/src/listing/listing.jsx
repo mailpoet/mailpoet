@@ -1,6 +1,5 @@
 import jQuery from 'jquery';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import _ from 'underscore';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -15,11 +14,11 @@ import ListingItems from 'listing/listing_items.jsx';
 import MailerError from 'listing/notices.jsx';
 import { withRouter } from 'react-router-dom';
 
-const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
-  displayName: 'Listing',
+class Listing extends React.Component {
+  static displayName = 'Listing';
 
   /* eslint-disable react/require-default-props */
-  propTypes: {
+  static propTypes = {
     limit: PropTypes.number,
     sort_by: PropTypes.string,
     sort_order: PropTypes.string,
@@ -49,10 +48,11 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     history: PropTypes.shape({
       push: PropTypes.func.isRequired,
     }).isRequired,
-  },
+  };
+
   /* eslint-enable react/require-default-props */
 
-  getDefaultProps: () => ({
+  static defaultProps = {
     limit: 10,
     sort_by: null,
     sort_order: undefined,
@@ -70,29 +70,15 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     renderExtraActions: undefined,
     onBeforeSelectFilter: undefined,
     getListingItemKey: undefined,
-  }),
+  };
 
-  getInitialState: function getInitialState() {
-    return {
-      loading: false,
-      search: '',
-      page: 1,
-      count: 0,
-      limit: 10,
-      sort_by: null,
-      sort_order: null,
-      items: [],
-      groups: [],
-      group: 'all',
-      filters: {},
-      filter: {},
-      selected_ids: [],
-      selection: false,
-      meta: {},
-    };
-  },
+  constructor(props) {
+    super(props);
+    this.formRef = React.createRef();
+    this.state = this.getEmptyState();
+  }
 
-  componentDidMount: function componentDidMount() {
+  componentDidMount() {
     this.isComponentMounted = true;
     const params = this.props.params || {};
     this.initWithParams(params);
@@ -102,21 +88,39 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         this.getItems();
       });
     }
-  },
+  }
 
-  componentDidUpdate: function componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps) {
     const params = this.props.params || {};
     const prevParams = prevProps.params || {};
     if (!_.isEqual(params, prevParams)) {
       this.initWithParams(params);
     }
-  },
+  }
 
-  componentWillUnmount: function componentWillUnmount() {
+  componentWillUnmount() {
     this.isComponentMounted = false;
-  },
+  }
 
-  setParams: function setParams() {
+  getEmptyState = () => ({
+    loading: false,
+    search: '',
+    page: 1,
+    count: 0,
+    limit: 10,
+    sort_by: null,
+    sort_order: null,
+    items: [],
+    groups: [],
+    group: 'all',
+    filters: {},
+    filter: {},
+    selected_ids: [],
+    selection: false,
+    meta: {},
+  });
+
+  setParams = () => {
     if (this.props.location) {
       const params = Object.keys(this.state)
         .filter(key => (
@@ -152,9 +156,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         this.props.history.push(`${url}`);
       }
     }
-  },
+  };
 
-  getUrlWithParams: function getUrlWithParams(params) {
+  getUrlWithParams = (params) => {
     let baseUrl = (this.props.base_url !== undefined)
       ? this.props.base_url
       : null;
@@ -164,9 +168,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
       return `/${baseUrl}/${params}`;
     }
     return `/${params}`;
-  },
+  };
 
-  setBaseUrlParams: function setBaseUrlParams(baseUrl) {
+  setBaseUrlParams = (baseUrl) => {
     let ret = baseUrl;
     if (ret.indexOf(':') !== -1) {
       const params = this.getParams();
@@ -178,9 +182,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     }
 
     return ret;
-  },
+  };
 
-  getParams: function getParams() {
+  getParams = () => {
     const params = _.omit(this.props.params, 'splat');
     // TODO:
     // find a way to set the "type" in the routes definition
@@ -189,16 +193,16 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
       params.type = this.props.type;
     }
     return params;
-  },
+  };
 
-  getParam: function getParam(param) {
+  getParam = (param) => {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
     if (!matches) return null;
     return [matches[1], matches[2]];
-  },
+  };
 
-  getItems: function getItems() {
+  getItems = () => {
     if (!this.isComponentMounted) return;
 
     this.setState({ loading: true });
@@ -249,10 +253,10 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         );
       }
     });
-  },
+  };
 
-  initWithParams: function initWithParams(params) {
-    const state = this.getInitialState();
+  initWithParams = (params) => {
+    const state = this.getEmptyState();
     // check for url params
     _.mapObject(params, (param) => {
       if (!param) return;
@@ -295,9 +299,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     this.setState(state, () => {
       this.getItems();
     });
-  },
+  };
 
-  handleRestoreItem: function handleRestoreItem(id) {
+  handleRestoreItem = (id) => {
     this.setState({
       loading: true,
       page: 1,
@@ -324,9 +328,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         { scroll: true }
       );
     });
-  },
+  };
 
-  handleTrashItem: function handleTrashItem(id) {
+  handleTrashItem = (id) => {
     this.setState({
       loading: true,
       page: 1,
@@ -353,9 +357,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         { scroll: true }
       );
     });
-  },
+  };
 
-  handleDeleteItem: function handleDeleteItem(id) {
+  handleDeleteItem = (id) => {
     this.setState({
       loading: true,
       page: 1,
@@ -382,30 +386,28 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         { scroll: true }
       );
     });
-  },
+  };
 
-  handleEmptyTrash: function handleEmptyTrash() {
-    return this.handleBulkAction('all', {
-      action: 'delete',
-      group: 'trash',
-    }).done((response) => {
-      if (
-        this.props.messages !== undefined
+  handleEmptyTrash = () => this.handleBulkAction('all', {
+    action: 'delete',
+    group: 'trash',
+  }).done((response) => {
+    if (
+      this.props.messages !== undefined
         && this.props.messages.onDelete !== undefined
-      ) {
-        this.props.messages.onDelete(response);
-      }
-      // redirect to default group
-      this.handleGroup('all');
-    }).fail((response) => {
-      MailPoet.Notice.error(
-        response.errors.map(error => error.message),
-        { scroll: true }
-      );
-    });
-  },
+    ) {
+      this.props.messages.onDelete(response);
+    }
+    // redirect to default group
+    this.handleGroup('all');
+  }).fail((response) => {
+    MailPoet.Notice.error(
+      response.errors.map(error => error.message),
+      { scroll: true }
+    );
+  });
 
-  handleBulkAction: function handleBulkAction(selectedIds, params) {
+  handleBulkAction = (selectedIds, params) => {
     if (
       this.state.selection === false
       && this.state.selected_ids.length === 0
@@ -444,9 +446,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         );
       }
     });
-  },
+  };
 
-  handleSearch: function handleSearch(search) {
+  handleSearch = (search) => {
     this.setState({
       search,
       page: 1,
@@ -455,18 +457,18 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     }, () => {
       this.setParams();
     });
-  },
+  };
 
-  handleSort: function handleSort(sortBy, sortOrder = 'asc') {
+  handleSort = (sortBy, sortOrder = 'asc') => {
     this.setState({
       sort_by: sortBy,
       sort_order: (sortOrder === 'asc') ? 'asc' : 'desc',
     }, () => {
       this.setParams();
     });
-  },
+  };
 
-  handleSelectItem: function handleSelectItem(id, isChecked) {
+  handleSelectItem = (id, isChecked) => {
     this.setState((prevState) => {
       let selectedIds = prevState.selected_ids;
       let selection = false;
@@ -488,9 +490,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         selected_ids: selectedIds,
       };
     });
-  },
+  };
 
-  handleSelectItems: function handleSelectItems(isChecked) {
+  handleSelectItems = (isChecked) => {
     if (isChecked === false) {
       this.clearSelection();
     } else {
@@ -503,9 +505,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         };
       });
     }
-  },
+  };
 
-  handleSelectAll: function handleSelectAll() {
+  handleSelectAll = () => {
     if (this.state.selection === 'all') {
       this.clearSelection();
     } else {
@@ -514,25 +516,25 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         selected_ids: [],
       });
     }
-  },
+  };
 
-  clearSelection: function clearSelection() {
+  clearSelection = () => {
     this.setState({
       selection: false,
       selected_ids: [],
     });
-  },
+  };
 
-  handleFilter: function handleFilter(filters) {
+  handleFilter = (filters) => {
     this.setState({
       filter: filters,
       page: 1,
     }, () => {
       this.setParams();
     });
-  },
+  };
 
-  handleGroup: function handleGroup(group) {
+  handleGroup = (group) => {
     // reset search
     jQuery('#search_input').val('');
 
@@ -544,9 +546,9 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     }, () => {
       this.setParams();
     });
-  },
+  };
 
-  handleSetPage: function handleSetPage(page) {
+  handleSetPage = (page) => {
     this.setState({
       page,
       selection: false,
@@ -554,18 +556,18 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
     }, () => {
       this.setParams();
     });
-  },
+  };
 
-  handleRenderItem: function handleRenderItem(item, actions) {
+  handleRenderItem = (item, actions) => {
     const render = this.props.onRenderItem(item, actions, this.state.meta);
     return render.props.children;
-  },
+  };
 
-  handleRefreshItems: function handleRefreshItems() {
+  handleRefreshItems = () => {
     this.getItems();
-  },
+  };
 
-  render: function render() {
+  render() {
     const items = this.state.items;
     const sortBy = this.state.sort_by;
     const sortOrder = this.state.sort_order;
@@ -735,7 +737,7 @@ const Listing = createReactClass({ // eslint-disable-line react/prefer-es6-class
         </div>
       </>
     );
-  },
-});
+  }
+}
 
 export default withRouter(Listing);

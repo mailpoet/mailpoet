@@ -1,5 +1,4 @@
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -160,18 +159,17 @@ const newsletterActions = [
   },
 ];
 
-const NewsletterListNotification = createReactClass({ // eslint-disable-line react/prefer-es6-class
+class NewsletterListNotification extends React.Component {
+  static displayName = 'NewsletterListNotification';
 
-  displayName: 'NewsletterListNotification',
-
-  propTypes: {
+  static propTypes = {
     location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
     match: PropTypes.shape({
       params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     }).isRequired,
-  },
+  };
 
-  updateStatus: function updateStatus(e) {
+  updateStatus = (e) => {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -196,22 +194,20 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
       // reset value to actual newsletter's status
       e.target.value = response.status;
     });
-  },
+  };
 
-  renderStatus: function renderStatus(newsletter) {
-    return (
-      <select
-        data-id={newsletter.id}
-        defaultValue={newsletter.status}
-        onChange={this.updateStatus}
-      >
-        <option value="active">{ MailPoet.I18n.t('active') }</option>
-        <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
-      </select>
-    );
-  },
+  renderStatus = newsletter => (
+    <select
+      data-id={newsletter.id}
+      defaultValue={newsletter.status}
+      onChange={this.updateStatus}
+    >
+      <option value="active">{ MailPoet.I18n.t('active') }</option>
+      <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
+    </select>
+  );
 
-  renderSettings: function renderSettings(newsletter) {
+  renderSettings = (newsletter) => {
     let sendingFrequency;
 
     // get list of segments' name
@@ -280,9 +276,9 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
         { sendingToSegments }
       </span>
     );
-  },
+  };
 
-  renderHistoryLink: function renderHistoryLink(newsletter) {
+  renderHistoryLink = (newsletter) => {
     const childrenCount = Number((newsletter.children_count));
     if (childrenCount === 0) {
       return (
@@ -297,9 +293,9 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
         { MailPoet.I18n.t('viewHistory') }
       </Link>
     );
-  },
+  };
 
-  renderItem: function renderItem(newsletter, actions) {
+  renderItem = (newsletter, actions) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -333,9 +329,9 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
         </td>
       </div>
     );
-  },
+  };
 
-  render: function render() {
+  render() {
     return (
       <div>
         <ListingHeading />
@@ -363,7 +359,7 @@ const NewsletterListNotification = createReactClass({ // eslint-disable-line rea
         />
       </div>
     );
-  },
-});
+  }
+}
 
 export default NewsletterListNotification;

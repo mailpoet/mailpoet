@@ -1,5 +1,4 @@
 import React from 'react';
-import createReactClass from 'create-react-class';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
@@ -172,17 +171,17 @@ let newsletterActions = [
 Hooks.addFilter('mailpoet_newsletters_listings_standard_actions', 'mailpoet', addStatsCTAAction);
 newsletterActions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletterActions);
 
-const NewsletterListStandard = createReactClass({ // eslint-disable-line react/prefer-es6-class
-  displayName: 'NewsletterListStandard',
+class NewsletterListStandard extends React.Component {
+  static displayName = 'NewsletterListStandard';
 
-  propTypes: {
+  static propTypes = {
     location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
     match: PropTypes.shape({
       params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     }).isRequired,
-  },
+  };
 
-  renderItem: function renderItem(newsletter, actions, meta) {
+  renderItem = (newsletter, actions, meta) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -221,9 +220,9 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
         </td>
       </div>
     );
-  },
+  };
 
-  render: function render() {
+  render() {
     return (
       <div>
         <ListingHeading />
@@ -251,7 +250,7 @@ const NewsletterListStandard = createReactClass({ // eslint-disable-line react/p
         />
       </div>
     );
-  },
-});
+  }
+}
 
 export default NewsletterListStandard;
