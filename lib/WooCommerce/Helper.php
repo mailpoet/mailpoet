@@ -19,6 +19,10 @@ class Helper {
     return class_exists('WooCommerce');
   }
 
+  function WC() {
+    return WC();
+  }
+
   function wcGetCustomerOrderCount($user_id) {
     return wc_get_customer_order_count($user_id);
   }

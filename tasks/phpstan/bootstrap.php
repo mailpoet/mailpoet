@@ -8,6 +8,13 @@ if(!class_exists('\MailPoet\Premium\DI\ContainerConfigurator')) {
   require_once './PremiumContainerConfigurator.php';
 }
 
+class WooCommerce {}
+
+/**
+ * @return WooCommerce
+ */
+function WC() {}
+
 function wc_get_customer_order_count(int $user_id): int {
   return 0;
 }
