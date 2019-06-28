@@ -1,51 +1,144 @@
 import React from 'react';
-import _ from 'underscore';
-import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
+import APIErrorsNotice from 'notices/api_errors_notice.jsx';
 
-const pauseSending = (newsletter) => {
-  MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
-    endpoint: 'sendingQueue',
-    action: 'pause',
-    data: {
-      newsletter_id: newsletter.id,
-    },
-  }).done(() => {
-    jQuery(`#resume_${newsletter.id}`).show();
-    jQuery(`#pause_${newsletter.id}`).hide();
-  }).fail((response) => {
-    if (response.errors.length > 0) {
-      MailPoet.Notice.error(
-        response.errors.map(error => error.message),
-        { scroll: true }
-      );
-    }
-  });
+const QueuePropType = PropTypes.shape({
+  status: PropTypes.string,
+  count_processed: PropTypes.string.isRequired,
+  count_total: PropTypes.string.isRequired,
+  scheduled_at: PropTypes.string,
+});
+
+const NewsletterPropType = PropTypes.shape({
+  id: PropTypes.number.isRequired,
+  queue: QueuePropType,
+});
+
+const QueueSendingProgress = ({ queue }) => {
+  const progressClasses = classNames(
+    'mailpoet_progress',
+    { mailpoet_progress_complete: queue.status === 'completed' }
+  );
+    // calculate percentage done
+  let percentage = Math.round(
+    (queue.count_processed * 100) / (queue.count_total)
+  );
+  let progressBarWidth = 0;
+  if (Number.isFinite(percentage)) {
+    progressBarWidth = percentage;
+    percentage += '%';
+  } else {
+    percentage = MailPoet.I18n.t('noSubscribers');
+  }
+
+  return (
+    <div className={progressClasses}>
+      <span
+        className="mailpoet_progress_bar"
+        style={{ width: `${progressBarWidth}%` }}
+      />
+      <span className="mailpoet_progress_label">
+        {percentage}
+      </span>
+    </div>
+  );
+};
+QueueSendingProgress.propTypes = {
+  queue: QueuePropType.isRequired,
 };
 
-const resumeSending = (newsletter) => {
-  MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
-    endpoint: 'sendingQueue',
-    action: 'resume',
-    data: {
-      newsletter_id: newsletter.id,
-    },
-  }).done(() => {
-    jQuery(`#pause_${newsletter.id}`).show();
-    jQuery(`#resume_${newsletter.id}`).hide();
-  }).fail((response) => {
-    if (response.errors.length > 0) {
-      MailPoet.Notice.error(
-        response.errors.map(error => error.message),
-        { scroll: true }
-      );
-    }
-  });
+const QueueCompleted = ({ newsletter }) => (
+  <Link to={`/sending-status/${newsletter.id}`} data-automation-id={`sending_status_${newsletter.id}`}>
+    <span>
+      {
+        MailPoet.I18n.t('newsletterQueueCompleted')
+          .replace('%$1d', parseInt(newsletter.queue.count_processed, 10).toLocaleString())
+          .replace('%$2d', parseInt(newsletter.queue.count_total, 10).toLocaleString())
+      }
+    </span>
+  </Link>
+);
+QueueCompleted.propTypes = {
+  newsletter: NewsletterPropType.isRequired,
+};
+
+const LinkButton = ({ className, onClick, children }) => (
+  <a
+    className={classNames('button', className)}
+    style={{ display: 'inline-block' }}
+    href="javascript:;"
+    onClick={onClick}
+  >
+    {children}
+  </a>
+);
+LinkButton.propTypes = {
+  className: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+  children: PropTypes.string.isRequired,
+};
+LinkButton.defaultProps = {
+  className: '',
+};
+
+const QueueSending = ({ newsletter }) => {
+  const [paused, setPaused] = React.useState(newsletter.queue.status === 'paused');
+  const [errors, setErrors] = React.useState([]);
+
+  const pauseSending = () => {
+    setErrors([]);
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'sendingQueue',
+      action: 'pause',
+      data: {
+        newsletter_id: newsletter.id,
+      },
+    })
+      .done(() => setPaused(true))
+      .fail(response => setErrors(response.errors));
+  };
+
+  const resumeSending = () => {
+    setErrors([]);
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'sendingQueue',
+      action: 'resume',
+      data: {
+        newsletter_id: newsletter.id,
+      },
+    })
+      .done(() => setPaused(false))
+      .fail(response => setErrors(response.errors));
+  };
+
+  return (
+    <>
+      <APIErrorsNotice errors={errors} />
+      <span>
+        {parseInt(newsletter.queue.count_processed, 10).toLocaleString()}
+        /
+        {parseInt(newsletter.queue.count_total, 10).toLocaleString()}
+        &nbsp;&nbsp;
+        {paused && <LinkButton onClick={resumeSending}>{MailPoet.I18n.t('resume')}</LinkButton>}
+        {!paused && (
+        <LinkButton
+          className="mailpoet_pause"
+          onClick={pauseSending}
+        >
+          {MailPoet.I18n.t('pause')}
+        </LinkButton>
+        )}
+      </span>
+    </>
+  );
+};
+QueueSending.propTypes = {
+  newsletter: NewsletterPropType.isRequired,
 };
 
 const QueueStatus = ({ newsletter, mailerLog }) => {
@@ -68,102 +161,19 @@ const QueueStatus = ({ newsletter, mailerLog }) => {
       </span>
     );
   }
-  const progressClasses = classNames(
-    'mailpoet_progress',
-    { mailpoet_progress_complete: newsletter.queue.status === 'completed' }
-  );
-
-  // calculate percentage done
-  let percentage = Math.round(
-    (newsletter.queue.count_processed * 100) / (newsletter.queue.count_total)
-  );
-
-  let label;
-
-  if (newsletter.queue.status === 'completed') {
-    label = (
-      <Link to={`/sending-status/${newsletter.id}`} data-automation-id={`sending_status_${newsletter.id}`}>
-        <span>
-          {
-            MailPoet.I18n.t('newsletterQueueCompleted')
-              .replace('%$1d', parseInt(newsletter.queue.count_processed, 10).toLocaleString())
-              .replace('%$2d', parseInt(newsletter.queue.count_total, 10).toLocaleString())
-          }
-        </span>
-      </Link>
-    );
-  } else {
-    const resumeSendingClick = _.partial(resumeSending, newsletter);
-    const pauseSendingClick = _.partial(pauseSending, newsletter);
-    label = (
-      <span>
-        {parseInt(newsletter.queue.count_processed, 10).toLocaleString()}
-        /
-        {parseInt(newsletter.queue.count_total, 10).toLocaleString()}
-        &nbsp;&nbsp;
-        <a
-          id={`resume_${newsletter.id}`}
-          className="button"
-          style={{
-            display: (newsletter.queue.status === 'paused')
-              ? 'inline-block' : 'none',
-          }}
-          href="javascript:;"
-          onClick={resumeSendingClick}
-        >
-          {MailPoet.I18n.t('resume')}
-        </a>
-        <a
-          id={`pause_${newsletter.id}`}
-          className="button mailpoet_pause"
-          style={{
-            display: (newsletter.queue.status === null)
-              ? 'inline-block' : 'none',
-          }}
-          href="javascript:;"
-          onClick={pauseSendingClick}
-        >
-          {MailPoet.I18n.t('pause')}
-        </a>
-      </span>
-    );
-  }
-
-  let progressBarWidth = 0;
-  if (Number.isFinite(percentage)) {
-    progressBarWidth = percentage;
-    percentage += '%';
-  } else {
-    percentage = MailPoet.I18n.t('noSubscribers');
-  }
 
   return (
     <div>
-      <div className={progressClasses}>
-        <span
-          className="mailpoet_progress_bar"
-          style={{ width: `${progressBarWidth}%` }}
-        />
-        <span className="mailpoet_progress_label">
-          {percentage}
-        </span>
-      </div>
+      <QueueSendingProgress queue={newsletter.queue} />
       <p style={{ textAlign: 'center' }}>
-        {label}
+        {newsletter.queue.status === 'completed' && <QueueCompleted newsletter={newsletter} />}
+        {newsletter.queue.status !== 'completed' && <QueueSending newsletter={newsletter} />}
       </p>
     </div>
   );
 };
 QueueStatus.propTypes = {
-  newsletter: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    queue: PropTypes.shape({
-      status: PropTypes.string,
-      count_processed: PropTypes.string.isRequired,
-      count_total: PropTypes.string.isRequired,
-      scheduled_at: PropTypes.string,
-    }),
-  }).isRequired,
+  newsletter: NewsletterPropType.isRequired,
   mailerLog: PropTypes.shape({
     status: PropTypes.string,
   }).isRequired,
