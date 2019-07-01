@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import SelectMethod from './step_method_selection/select_import_method.jsx';
@@ -23,7 +24,7 @@ const getNextStepLink = (importData) => {
 };
 
 function StepMethodSelection({
-  navigate,
+  history,
 }) {
   const [method, setMethod] = useState(undefined);
   const [pastedCsvData, setPastedCsvData] = useState('');
@@ -31,10 +32,8 @@ function StepMethodSelection({
 
   const finish = (parsedData) => {
     window.importData.step_method_selection = parsedData;
-    navigate(
-      getNextStepLink(window.importData.step_method_selection),
-      { trigger: true }
-    );
+    setStepMethodSelection(parsedData);
+    history.push(getNextStepLink(parsedData));
   };
 
   const processLocal = () => {
@@ -92,7 +91,9 @@ function StepMethodSelection({
 }
 
 StepMethodSelection.propTypes = {
-  navigate: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
-export default StepMethodSelection;
+export default withRouter(StepMethodSelection);
