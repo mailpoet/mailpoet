@@ -49,7 +49,7 @@ function StepMethodSelection({
   };
 
   return (
-    <>
+    <div className="mailpoet_method_selection_step">
       <SelectMethod
         activeMethod={method}
         onMethodChange={setMethod}
@@ -87,7 +87,7 @@ function StepMethodSelection({
           />
         ) : null
       }
-    </>
+    </div>
   );
 }
 
