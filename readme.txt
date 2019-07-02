@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.30.0
+Stable tag: 3.31.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -146,6 +146,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.31.0 - 2019-07-02 =
+* Improved: better error reporting and admin messages;
+* Improved: known spam registrations to be automatically removed from your "WordPress Users" list;
+* Improved: rendering shortcodes in Stats emails;
+* Fixed: WordPress users to require confirmed opt-in to join your subscribers list.
 
 = 3.30.0 - 2019-06-25 =
 * Added: emails can be sent without stopping for certain error types;
