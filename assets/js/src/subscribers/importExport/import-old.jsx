@@ -11,97 +11,19 @@ import StepInputValidation from './import/step_input_validation.jsx';
 import StepMethodSelection from './import/step_method_selection.jsx';
 import StepResults from './import/step_results.jsx';
 
-const SUBSCRIBERS_LIMIT_FOR_VALIDATION = 500;
-
-function getDataManipulationPreviousStepLink(importData) {
-  if (importData === undefined) {
-    return 'step_method_selection';
-  }
-  if (importData.subscribersCount === undefined) {
-    return 'step_method_selection';
-  }
-  if (importData.subscribersCount < SUBSCRIBERS_LIMIT_FOR_VALIDATION) {
-    return 'step_method_selection';
-  }
-  return 'step_input_validation';
-}
 
 jQuery(document).ready(() => {
-  if (!jQuery('#mailpoet_subscribers_import').length) {
-    return;
-  }
-  jQuery('input[name="select_method"]').attr('checked', false);
-  // configure router
-  const router = new (Backbone.Router.extend({
-    routes: {
-      '': 'home',
-      step_method_selection: 'step_method_selection',
-      step_input_validation: 'step_input_validation',
-      step_data_manipulation: 'step_data_manipulation',
-      step_results: 'step_results',
-    },
-    home() {
-      this.navigate('step_method_selection', { trigger: true });
-    },
-  }))();
-
-  function showCurrentStep() {
-    MailPoet.Notice.hide();
-    MailPoet.Modal.loading(false);
-    jQuery('#mailpoet_subscribers_import > div[id^="step"]').hide();
-    jQuery(window.location.hash).show();
-  }
-
-  router.on('route:step_method_selection', () => {
-    showCurrentStep();
-
-    const container = document.getElementById('step_method_selection');
-
-    if (container) {
-      ReactDOM.render(
-        <StepMethodSelection
-          navigate={router.navigate}
-        />,
-        container
-      );
-    }
-  });
-
-  router.on('route:step_input_validation', () => {
-    if (typeof (window.importData.step_method_selection) === 'undefined') {
-      router.navigate('step_method_selection', { trigger: true });
-      return;
-    }
-    showCurrentStep();
-    const container = document.getElementById('step_input_validation');
-
-    if (container) {
-      ReactDOM.render(
-        <StepInputValidation
-          navigate={router.navigate}
-          importData={window.importData.step_method_selection}
-        />,
-        container
-      );
-    }
-  });
 
   router.on('route:step_data_manipulation', () => {
     let fillerPosition;
-    let importResults;
-    let duplicates;
-    if (typeof (window.importData.step_method_selection) === 'undefined') {
-      router.navigate('step_method_selection', { trigger: true });
-      return;
-    }
+
     // define reusable variables
     const nextStepButton = jQuery('#next_step');
-    const previousStepButton = jQuery('#return_to_previous');
+
     // create a copy of subscribers object for further manipulation
     const subscribers = jQuery.extend(true, {}, window.importData.step_method_selection);
     const subscribersDataTemplate = Handlebars.compile(jQuery('#subscribers_data_template').html());
     const subscribersDataTemplatePartial = Handlebars.compile(jQuery('#subscribers_data_template_partial').html());
-    const subscribersDataParseResultsTemplate = Handlebars.compile(jQuery('#subscribers_data_parse_results_template').html());
     const segmentSelectElement = jQuery('#mailpoet_segments_select');
     const maxRowsToShow = 10;
     const filler = '. . .';
@@ -109,8 +31,6 @@ jQuery(document).ready(() => {
     // elements as in the subscribers' data row
     const fillerArray = Array(...new Array(subscribers.subscribers[0].length))
       .map(String.prototype.valueOf, filler);
-
-    showCurrentStep();
 
     function toggleNextStepButton(condition) {
       const disabled = 'button-disabled';
@@ -125,61 +45,6 @@ jQuery(document).ready(() => {
     jQuery('#subscribers_data_parse_results:visible').html('');
     jQuery('#subscribers_data_import_results:visible').hide();
 
-    // show parse statistics if any duplicate/invalid records were found
-    if (subscribers.invalid.length || subscribers.duplicate.length || subscribers.role.length) {
-      // count repeating e-mails inside duplicate array and present them in
-      // 'email (xN)' format
-      duplicates = {};
-      subscribers.duplicate.forEach((subscriberEmail) => {
-        duplicates[subscriberEmail] = (duplicates[subscriberEmail] || 0) + 1;
-      });
-      subscribers.duplicate = [];
-      Object.keys(duplicates).forEach((email) => {
-        if (duplicates[email] > 1) {
-          subscribers.duplicate.push(`${email} (x${duplicates[email]})`);
-        } else {
-          subscribers.duplicate.push(email);
-        }
-      });
-
-      importResults = {
-        notice: MailPoet.I18n.t('importNoticeSkipped').replace(
-          '%1$s',
-          `<strong>${subscribers.invalid.length + subscribers.duplicate.length + subscribers.role.length}</strong>`
-        ),
-        invalid: (subscribers.invalid.length)
-          ? MailPoet.I18n.t('importNoticeInvalid')
-            .replace('%1$s', `<strong>${subscribers.invalid.length.toLocaleString()}</strong>`)
-            .replace('%2$s', subscribers.invalid.join(', '))
-          : null,
-        duplicate: (subscribers.duplicate.length)
-          ? MailPoet.I18n.t('importNoticeDuplicate')
-            .replace('%1$s', `<strong>${subscribers.duplicate.length}</strong>`)
-            .replace('%2$s', subscribers.duplicate.join(', '))
-          : null,
-        role: (subscribers.role.length)
-          ? MailPoet.I18n.t('importNoticeRoleBased')
-            .replace('%1$s', `<strong>${subscribers.role.length.toLocaleString()}</strong>`)
-            .replace('%2$s', subscribers.role.join(', '))
-            .replace(
-              /\[link](.+)\[\/link]/,
-              '<a href="https://kb.mailpoet.com/article/270-role-based-email-addresses-are-not-allowed" target="_blank" rel="noopener noreferrer">$1</a>'
-            )
-          : null,
-      };
-      jQuery('#subscribers_data_parse_results').html(
-        subscribersDataParseResultsTemplate(importResults)
-      );
-    }
-
-    jQuery('.mailpoet_subscribers_data_parse_results_details_show')
-      .click(function detailsClick() {
-        const details = jQuery('.mailpoet_subscribers_data_parse_results_details');
-        details.toggle();
-        jQuery(this).text((details.is(':visible'))
-          ? MailPoet.I18n.t('hideDetails')
-          : MailPoet.I18n.t('showDetails'));
-      });
 
     // show available segments
     if (window.mailpoetSegments.length) {
@@ -610,12 +475,6 @@ jQuery(document).ready(() => {
         filterSubscribers();
       });
 
-    previousStepButton.off().on('click', () => {
-      router.navigate(
-        getDataManipulationPreviousStepLink(window.importData.step_method_selection),
-        { trigger: true }
-      );
-    });
 
     nextStepButton.off().on('click', (event) => {
       const columns = {};
