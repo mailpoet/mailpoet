@@ -25,13 +25,13 @@ const getNextStepLink = (importData) => {
 
 function StepMethodSelection({
   history,
+  setStepMethodSelection,
 }) {
   const [method, setMethod] = useState(undefined);
   const [pastedCsvData, setPastedCsvData] = useState('');
   const [file, setFile] = useState(undefined);
 
   const finish = (parsedData) => {
-    window.importData.step_method_selection = parsedData;
     setStepMethodSelection(parsedData);
     history.push(getNextStepLink(parsedData));
   };
@@ -94,6 +94,7 @@ StepMethodSelection.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  setStepMethodSelection: PropTypes.func.isRequired,
 };
 
 export default withRouter(StepMethodSelection);

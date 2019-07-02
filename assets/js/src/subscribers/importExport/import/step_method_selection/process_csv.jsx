@@ -14,12 +14,12 @@ function papaParserConfig(done) {
       if (sanitizedData) {
         done(sanitizedData);
       } else {
-        MailPoet.Modal.loading(false);
         let errorNotice = MailPoet.I18n.t('noValidRecords');
         errorNotice = errorNotice.replace('[link]', MailPoet.I18n.t('csvKBLink'));
         errorNotice = errorNotice.replace('[/link]', '</a>');
         MailPoet.Notice.error(errorNotice);
       }
+      MailPoet.Modal.loading(false);
     },
   };
 }
