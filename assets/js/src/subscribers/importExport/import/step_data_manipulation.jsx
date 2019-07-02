@@ -18,16 +18,16 @@ function getPreviousStepLink(importData, subscribersLimitForValidation) {
 
 function StepDataManipulation({
   history,
-  stepMethodSelection,
+  stepMethodSelectionData,
   subscribersLimitForValidation,
 }) {
   useEffect(
     () => {
-      if (typeof (stepMethodSelection) === 'undefined') {
+      if (typeof (stepMethodSelectionData) === 'undefined') {
         history.replace('step_method_selection');
       }
     },
-    [stepMethodSelection],
+    [stepMethodSelectionData],
   );
 
   return (
@@ -35,7 +35,7 @@ function StepDataManipulation({
       <PreviousNextStepButtons
         canGoNext={false}
         onPreviousAction={() => (
-          history.push(getPreviousStepLink(stepMethodSelection, subscribersLimitForValidation))
+          history.push(getPreviousStepLink(stepMethodSelectionData, subscribersLimitForValidation))
         )}
         onNextAction={() => history.push('todo')}
       />
@@ -48,7 +48,7 @@ StepDataManipulation.propTypes = {
     push: PropTypes.func.isRequired,
     replace: PropTypes.func.isRequired,
   }).isRequired,
-  stepMethodSelection: PropTypes.shape({
+  stepMethodSelectionData: PropTypes.shape({
     duplicate: PropTypes.arrayOf(PropTypes.string),
     header: PropTypes.arrayOf(PropTypes.string),
     invalid: PropTypes.arrayOf(PropTypes.string),
@@ -60,7 +60,7 @@ StepDataManipulation.propTypes = {
 };
 
 StepDataManipulation.defaultProps = {
-  stepMethodSelection: undefined,
+  stepMethodSelectionData: undefined,
 };
 
 export default withRouter(StepDataManipulation);

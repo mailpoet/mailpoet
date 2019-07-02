@@ -13,7 +13,7 @@ const container = document.getElementById('import_container');
 const subscribersLimitForValidation = 500;
 
 const ImportSubscribers = () => {
-  const [stepMethodSelection, setStepMethodSelection] = useState(undefined);
+  const [stepMethodSelectionData, setStepMethodSelectionData] = useState(undefined);
   return (
     <HashRouter>
       <Switch>
@@ -22,7 +22,7 @@ const ImportSubscribers = () => {
           render={props => (
             <StepMethodSelection
               {...props}
-              setStepMethodSelection={setStepMethodSelection}
+              setStepMethodSelectionData={setStepMethodSelectionData}
               subscribersLimitForValidation={subscribersLimitForValidation}
             />
           )}
@@ -32,7 +32,7 @@ const ImportSubscribers = () => {
           render={props => (
             <StepInputValidation
               {...props}
-              stepMethodSelection={stepMethodSelection}
+              stepMethodSelectionData={stepMethodSelectionData}
             />
           )}
         />
@@ -41,7 +41,7 @@ const ImportSubscribers = () => {
           render={props => (
             <StepDataManipulation
               {...props}
-              stepMethodSelection={stepMethodSelection}
+              stepMethodSelectionData={stepMethodSelectionData}
               subscribersLimitForValidation={subscribersLimitForValidation}
             />
           )}
