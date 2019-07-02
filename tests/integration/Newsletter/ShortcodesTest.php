@@ -89,7 +89,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcode_details = ['action' => 'd'];
     expect(Date::process($shortcode_details))->equals(date_i18n('d', current_time('timestamp')));
     $shortcode_details = ['action' => 'dordinal'];
-    expect(Date::process($shortcode_details))->equals(date_i18n('dS', current_time('timestamp')));
+    expect(Date::process($shortcode_details))->equals(date_i18n('jS', current_time('timestamp')));
     $shortcode_details = ['action' => 'dtext'];
     expect(Date::process($shortcode_details))->equals(date_i18n('l', current_time('timestamp')));
     $shortcode_details = ['action' => 'm'];
