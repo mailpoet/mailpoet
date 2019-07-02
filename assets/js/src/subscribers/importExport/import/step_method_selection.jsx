@@ -8,16 +8,14 @@ import MethodUpload from './step_method_selection/method_upload.jsx';
 import MethodMailChimp from './step_method_selection/method_mailchimp.jsx';
 import processCsv from './step_method_selection/process_csv.jsx';
 
-const SUBSCRIBERS_LIMIT_FOR_VALIDATION = 500;
-
-const getNextStepLink = (importData) => {
+const getNextStepLink = (importData, subscribersLimitForValidation) => {
   if (importData === undefined) {
     return 'step_data_manipulation';
   }
   if (importData.subscribersCount === undefined) {
     return 'step_data_manipulation';
   }
-  if (importData.subscribersCount < SUBSCRIBERS_LIMIT_FOR_VALIDATION) {
+  if (importData.subscribersCount < subscribersLimitForValidation) {
     return 'step_data_manipulation';
   }
   return 'step_input_validation';
@@ -26,6 +24,7 @@ const getNextStepLink = (importData) => {
 function StepMethodSelection({
   history,
   setStepMethodSelection,
+  subscribersLimitForValidation,
 }) {
   const [method, setMethod] = useState(undefined);
   const [pastedCsvData, setPastedCsvData] = useState('');
@@ -33,7 +32,7 @@ function StepMethodSelection({
 
   const finish = (parsedData) => {
     setStepMethodSelection(parsedData);
-    history.push(getNextStepLink(parsedData));
+    history.push(getNextStepLink(parsedData, subscribersLimitForValidation));
   };
 
   const processLocal = () => {
@@ -95,6 +94,7 @@ StepMethodSelection.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
   setStepMethodSelection: PropTypes.func.isRequired,
+  subscribersLimitForValidation: PropTypes.number.isRequired,
 };
 
 export default withRouter(StepMethodSelection);
