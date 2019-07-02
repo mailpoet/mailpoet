@@ -1,8 +1,26 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import PreviousNextStepButtons from './previous_next_step_buttons.jsx';
 
-function StepDataManipulation({ history, stepMethodSelection }) {
+function getPreviousStepLink(importData, subscribersLimitForValidation) {
+  if (importData === undefined) {
+    return 'step_method_selection';
+  }
+  if (importData.subscribersCount === undefined) {
+    return 'step_method_selection';
+  }
+  if (importData.subscribersCount < subscribersLimitForValidation) {
+    return 'step_method_selection';
+  }
+  return 'step_input_validation';
+}
+
+function StepDataManipulation({
+  history,
+  stepMethodSelection,
+  subscribersLimitForValidation,
+}) {
   useEffect(
     () => {
       if (typeof (stepMethodSelection) === 'undefined') {
@@ -14,7 +32,13 @@ function StepDataManipulation({ history, stepMethodSelection }) {
 
   return (
     <>
-      
+      <PreviousNextStepButtons
+        canGoNext={false}
+        onPreviousAction={() => (
+          history.push(getPreviousStepLink(stepMethodSelection, subscribersLimitForValidation))
+        )}
+        onNextAction={() => history.push('todo')}
+      />
     </>
   );
 }
@@ -32,6 +56,7 @@ StepDataManipulation.propTypes = {
     subscribersCount: PropTypes.number,
     subscribers: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
   }),
+  subscribersLimitForValidation: PropTypes.number.isRequired,
 };
 
 StepDataManipulation.defaultProps = {
