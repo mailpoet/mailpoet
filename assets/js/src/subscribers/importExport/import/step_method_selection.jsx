@@ -23,7 +23,7 @@ const getNextStepLink = (importData, subscribersLimitForValidation) => {
 
 function StepMethodSelection({
   history,
-  setStepMethodSelection,
+  setStepMethodSelectionData,
   subscribersLimitForValidation,
 }) {
   const [method, setMethod] = useState(undefined);
@@ -31,7 +31,7 @@ function StepMethodSelection({
   const [file, setFile] = useState(undefined);
 
   const finish = (parsedData) => {
-    setStepMethodSelection(parsedData);
+    setStepMethodSelectionData(parsedData);
     history.push(getNextStepLink(parsedData, subscribersLimitForValidation));
   };
 
@@ -93,7 +93,7 @@ StepMethodSelection.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-  setStepMethodSelection: PropTypes.func.isRequired,
+  setStepMethodSelectionData: PropTypes.func.isRequired,
   subscribersLimitForValidation: PropTypes.number.isRequired,
 };
 

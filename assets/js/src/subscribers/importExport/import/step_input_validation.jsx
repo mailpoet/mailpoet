@@ -50,7 +50,7 @@ class StepInputValidation extends Component {
   }
 
   componentDidMount() {
-    if (typeof (this.props.stepMethodSelection) === 'undefined') {
+    if (typeof (this.props.stepMethodSelectionData) === 'undefined') {
       this.props.history.replace('step_method_selection');
     }
   }
@@ -132,7 +132,7 @@ StepInputValidation.propTypes = {
     push: PropTypes.func.isRequired,
     replace: PropTypes.func.isRequired,
   }).isRequired,
-  stepMethodSelection: PropTypes.shape({
+  stepMethodSelectionData: PropTypes.shape({
     duplicate: PropTypes.arrayOf(PropTypes.string),
     header: PropTypes.arrayOf(PropTypes.string),
     invalid: PropTypes.arrayOf(PropTypes.string),
@@ -143,7 +143,7 @@ StepInputValidation.propTypes = {
 };
 
 StepInputValidation.defaultProps = {
-  stepMethodSelection: undefined,
+  stepMethodSelectionData: undefined,
 };
 
 export default withRouter(StepInputValidation);
