@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
@@ -46,6 +47,12 @@ class StepInputValidation extends Component {
       sentOnceLastYear: false,
       understand: false,
     };
+  }
+
+  componentDidMount() {
+    if (typeof (this.props.stepMethodSelection) === 'undefined') {
+      this.props.history.replace('step_method_selection');
+    }
   }
 
   isFormValid() {
@@ -112,8 +119,8 @@ class StepInputValidation extends Component {
         </p>
         <PreviousNextStepButtons
           canGoNext={this.isFormValid()}
-          onPreviousAction={() => this.props.navigate('step_method_selection', { trigger: true })}
-          onNextAction={() => this.props.navigate('step_data_manipulation', { trigger: true })}
+          onPreviousAction={() => this.props.history.push('step_method_selection')}
+          onNextAction={() => this.props.history.push('step_data_manipulation')}
         />
       </div>
     );
@@ -121,7 +128,22 @@ class StepInputValidation extends Component {
 }
 
 StepInputValidation.propTypes = {
-  navigate: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+    replace: PropTypes.func.isRequired,
+  }).isRequired,
+  stepMethodSelection: PropTypes.shape({
+    duplicate: PropTypes.arrayOf(PropTypes.string),
+    header: PropTypes.arrayOf(PropTypes.string),
+    invalid: PropTypes.arrayOf(PropTypes.string),
+    role: PropTypes.arrayOf(PropTypes.string),
+    subscribersCount: PropTypes.number,
+    subscribers: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  }),
 };
 
-export default StepInputValidation;
+StepInputValidation.defaultProps = {
+  stepMethodSelection: undefined,
+};
+
+export default withRouter(StepInputValidation);
