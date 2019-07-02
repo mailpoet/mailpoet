@@ -9,7 +9,7 @@ class Date {
   ) {
     $action_mapping = [
       'd' => 'd',
-      'dordinal' => 'dS',
+      'dordinal' => 'jS',
       'dtext' => 'l',
       'm' => 'm',
       'mtext' => 'F',
