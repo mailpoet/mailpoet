@@ -54,7 +54,8 @@
   "autoload-dev": {
     "psr-4": {
       "MailPoetTasks\\Release\\": "tasks/release",
-      "MailPoet\\Test\\DataFactories\\": "tests/DataFactories"
+      "MailPoet\\Test\\DataFactories\\": "tests/DataFactories",
+      "MailPoet\\Test\\DataGenerator\\": "tests/DataGenerator"
     }
   },
   "scripts": {
