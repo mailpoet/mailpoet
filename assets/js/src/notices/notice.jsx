@@ -22,7 +22,7 @@ const Notice = (props) => {
 
   if (hidden) return null;
   return ReactDOM.createPortal(
-    <div ref={elementRef} className={`mailpoet_${props.type}_notice`}>{props.children}</div>,
+    <div ref={elementRef} className={`mailpoet_base_notice mailpoet_${props.type}_notice`}>{props.children}</div>,
     document.getElementById('mailpoet_notices')
   );
 };
