@@ -88,15 +88,15 @@
             errorFound = true;
           }
           // if reCAPTCHA is enabled but keys are emty, show error
-          var enabled = $('input[name="re_captcha[enabled]"]:checked').val(),
-              site_key = $('input[name="re_captcha[site_token]"]').val().trim(),
-              secret_key = $('input[name="re_captcha[secret_token]"]').val().trim();
+          var enabled = $('input[name="captcha[type]"]:checked').val() == 'recaptcha',
+              site_key = $('input[name="captcha[recaptcha_site_token]"]').val().trim(),
+              secret_key = $('input[name="captcha[recaptcha_secret_token]"]').val().trim();
           if (enabled && (site_key == '' || secret_key == '')) {
-            $('#settings_re_captcha_tokens_error').show();
+            $('#settings_recaptcha_tokens_error').show();
             window.location.href = '#advanced';
             errorFound = true;
           } else {
-            $('#settings_re_captcha_tokens_error').hide();
+            $('#settings_recaptcha_tokens_error').hide();
           }
           // if new subscriber notification is enabled but sender is empty, show error
           var notifications_enabled = $('input[name="subscriber_email_notification[enabled]"]:checked').val(),
@@ -202,15 +202,15 @@
         $('input[data-toggle]').each(toggleContent);
 
         function toggleReCaptchaSettings() {
-          if ($('input[name="re_captcha[enabled]"]:checked').val()) {
-            $('#settings_re_captcha_tokens').show();
+          if ($('input[name="captcha[type]"]:checked').val() == 'recaptcha') {
+            $('#settings_recaptcha_tokens').show();
           } else {
-            $('#settings_re_captcha_tokens').hide();
+            $('#settings_recaptcha_tokens').hide();
           }
         }
-        $('input[name="re_captcha[enabled]"]').on('click', toggleReCaptchaSettings);
+        $('input[name="captcha[type]"]').on('click', toggleReCaptchaSettings);
         toggleReCaptchaSettings();
-        $('#settings_re_captcha_tokens_error').hide();
+        $('#settings_recaptcha_tokens_error').hide();
 
         $('#settings_subscriber_email_notification_error').hide();
         $('#settings_stats_notifications_error').hide();
