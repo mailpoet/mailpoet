@@ -122,9 +122,9 @@ function sanitizeCSVData(csvData) {
       ) ? processedSubscribers.shift() : null,
       subscribers: processedSubscribers,
       subscribersCount: processedSubscribers.length,
-      duplicate: duplicateEmails,
-      invalid: invalidEmails,
-      role: roleEmails,
+      duplicate: _.uniq(duplicateEmails),
+      invalid: _.uniq(invalidEmails),
+      role: _.uniq(roleEmails),
     };
   }
   return null;
