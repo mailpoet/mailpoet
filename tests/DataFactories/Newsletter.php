@@ -70,6 +70,20 @@ class Newsletter {
     return $this;
   }
 
+  /**
+   * @param string $created_at in format Y-m-d H:i:s
+   * @return Newsletter
+   */
+  public function withCreatedAt($created_at) {
+    $this->data['created_at'] = $created_at;
+    return $this;
+  }
+
+  public function withParentId($parent_id) {
+    $this->data['parent_id'] = $parent_id;
+    return $this;
+  }
+
   public function withImmediateSendingSettings() {
     $this->withOptions([
       8 => 'immediately', # intervalType
@@ -101,11 +115,20 @@ class Newsletter {
   /**
    * @return Newsletter
    */
-  public function withWelcomeType() {
+  public function withPostNotificationHistoryType() {
+    $this->data['type'] = \MailPoet\Models\Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $this->withOptions([]);
+    return $this;
+  }
+
+  /**
+   * @return Newsletter
+   */
+  public function withWelcomeType($segment_id = 2) {
     $this->data['type'] = 'welcome';
     $this->withOptions([
       3 => 'segment', // event
-      4 => '2', // segment
+      4 => $segment_id, // segment
       5 => 'subscriber', // role
       6 => '1', // afterTimeNumber
       7 => 'immediate', // afterTimeType

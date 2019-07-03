@@ -27,6 +27,15 @@ class NewsletterLink {
     return $this;
   }
 
+  /**
+   * @param string $created_at in format Y-m-d H:i:s
+   * @return NewsletterLink
+   */
+  public function withCreatedAt($created_at) {
+    $this->data['created_at'] = $created_at;
+    return $this;
+  }
+
   /** @return NewsletterLinkModel */
   public function create() {
     return NewsletterLinkModel::createOrUpdate($this->data);
