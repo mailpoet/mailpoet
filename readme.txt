@@ -64,7 +64,7 @@ With our WooCommerce emails, you can :
 
 * Welcome your new customers when they make their first purchase
 * Upsell by sending emails to customers who purchased a specific product or a specific product category
-* Convert more customers by reaching those who abandoned their cart (soon)
+* Convert more customers by reaching those who abandoned their cart
 * Reward and engage your customers who have spent a certain amount on your shop (soon)
 
 = Premium details =
