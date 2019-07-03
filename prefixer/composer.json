@@ -6,7 +6,8 @@
     "sabberworm/php-css-parser": "^8.1",
     "twig/twig": "1.38.4",
     "symfony/polyfill-php72": "^1.11",
-    "symfony/polyfill-mbstring": "^1.11"
+    "symfony/polyfill-mbstring": "^1.11",
+    "gregwar/captcha": "^1.1"
   },
   "scripts": {
     "post-update-cmd": "@process",

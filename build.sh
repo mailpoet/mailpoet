@@ -97,6 +97,8 @@ rm -rf $plugin_name/vendor/twig/twig/test
 echo '[BUILD] Removing risky and demo files from vendor libraries'
 rm -f $plugin_name/vendor/j4mie/idiorm/demo.php
 rm -f $plugin_name/vendor/cerdic/css-tidy/css_optimiser.php
+rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/demo
+rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/captcha4.ttf # big font
 rm -f $plugin_name/assets/js/lib/tinymce/package.json
 
 # Remove unused TinyMCE files
