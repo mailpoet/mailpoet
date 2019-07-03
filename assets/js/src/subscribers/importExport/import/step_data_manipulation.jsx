@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import PreviousNextStepButtons from './previous_next_step_buttons.jsx';
@@ -24,6 +24,7 @@ function StepDataManipulation({
   stepMethodSelectionData,
   subscribersLimitForValidation,
 }) {
+  const [selectedSegments, setSelectedSegments] = useState([]);
   useEffect(
     () => {
       if (typeof (stepMethodSelectionData) === 'undefined') {
@@ -47,10 +48,10 @@ function StepDataManipulation({
           subscribers={stepMethodSelectionData.subscribers}
           header={stepMethodSelectionData.header}
         />
-        <SelectSegment />
+        <SelectSegment setSelectedSegments={setSelectedSegments} />
       </div>
       <PreviousNextStepButtons
-        canGoNext={false}
+        canGoNext={selectedSegments.length > 0}
         onPreviousAction={() => (
           history.push(getPreviousStepLink(stepMethodSelectionData, subscribersLimitForValidation))
         )}
