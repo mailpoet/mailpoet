@@ -44,6 +44,15 @@
   margin: 0 7px;
 }
 
+.mailpoet_captcha_form {
+  .mailpoet_validate_success { color: #468847; }
+  .mailpoet_validate_error { color: #b94a48; }
+}
+
+.mailpoet_captcha_update {
+  cursor: pointer;
+}
+
 @keyframes mailpoet-bouncedelay {
   0%,
   80%,

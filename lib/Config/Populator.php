@@ -175,6 +175,7 @@ class Populator {
         'unsubscribe' => $mailpoet_page_id,
         'manage' => $mailpoet_page_id,
         'confirmation' => $mailpoet_page_id,
+        'captcha' => $mailpoet_page_id,
       ]);
     }
   }

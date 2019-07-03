@@ -2,6 +2,7 @@
 namespace MailPoet\Form;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -50,8 +51,8 @@ class Renderer {
       '<label class="mailpoet_hp_email_label">' . WPFunctions::get()->__('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
       '';
     foreach ($blocks as $key => $block) {
-      if ($block['type'] == 'submit' && $settings->get('re_captcha.enabled')) {
-        $site_key = $settings->get('re_captcha.site_token');
+      if ($block['type'] == 'submit' && $settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
+        $site_key = $settings->get('captcha.recaptcha_site_token');
         $html .= '<div class="mailpoet_recaptcha" data-sitekey="' . $site_key . '">
           <div class="mailpoet_recaptcha_container"></div>
           <noscript>
