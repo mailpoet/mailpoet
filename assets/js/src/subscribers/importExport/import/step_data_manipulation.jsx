@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import PreviousNextStepButtons from './previous_next_step_buttons.jsx';
 import Warnings from './step_data_manipulation/warnings.jsx';
+import MatchTable from './step_data_manipulation/match_table.jsx';
 
 function getPreviousStepLink(importData, subscribersLimitForValidation) {
   if (importData === undefined) {
@@ -31,11 +32,21 @@ function StepDataManipulation({
     [stepMethodSelectionData],
   );
 
+  if (typeof (stepMethodSelectionData) === 'undefined') {
+    return null;
+  }
   return (
     <>
       <Warnings
         stepMethodSelectionData={stepMethodSelectionData}
       />
+      <div className="inside">
+        <MatchTable
+          subscribersCount={stepMethodSelectionData.subscribersCount}
+          subscribers={stepMethodSelectionData.subscribers}
+          header={stepMethodSelectionData.header}
+        />
+      </div>
       <PreviousNextStepButtons
         canGoNext={false}
         onPreviousAction={() => (
