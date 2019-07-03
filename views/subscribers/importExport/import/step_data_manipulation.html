@@ -6,12 +6,7 @@
 
   <div class="inside">
     <br>
-    <!-- Subscribers Data -->
-    <div id="subscribers_data">
-      <table class="mailpoet_subscribers widefat fixed">
-        <!-- Template data -->
-      </table>
-    </div>
+
 
     <table class="mailpoet_subscribers form-table">
       <tbody>
@@ -54,62 +49,8 @@
           </label>
         </td>
       </tr>
-      <tr>
-        <th style="width: 300px;">
-          <a href="javascript:;" id="return_to_previous"
-             class="button-primary wysija button"><%= __('Previous step') %> </a>
-          &nbsp;&nbsp;
-          <a href="javascript:;" id="next_step"
-           data-automation-id="import-next-step"
-           class="button-primary wysija button-disabled"><%= __('Next step') %> </a>
-        </th>
-      </tr>
       </tbody>
     </table>
-
-    <!-- subscribers data template -->
-    <script id="subscribers_data_template" type="text/x-handlebars-template">
-      <thead>
-      <th>
-        <%= __('Match data') %>
-      </th>
-      {{#show_and_match_columns .}}
-      {{#.}}
-      <th>
-        <select class="mailpoet_subscribers_column_data_match" data-column-id="{{column_id}}" data-validation-rule="false" id="column_{{@index}}">
-      </th>
-      {{/.}}
-      {{/show_and_match_columns}}
-      </thead>
-      <tbody>
-      {{> subscribers_data_template_partial}}
-      </tbody>
-    </script>
-
-    <script id="subscribers_data_template_partial" type="text/x-handlebars-template">
-      {{#if header}}
-      <tr class="mailpoet_header">
-        <td></td>
-        {{#header}}
-        <td>
-          {{this}}
-        </td>
-        {{/header}}
-      </tr>
-      {{/if}}
-      {{#subscribers}}
-      <tr>
-        <td>
-          {{calculate_index @index}}
-        </td>
-        {{#.}}
-        <td>
-          {{sanitize_data this}}
-        </td>
-        {{/.}}
-      </tr>
-      {{/subscribers}}
-    </script>
 
     <!-- New segment template -->
     <script id="new_segment_template" type="text/x-handlebars-template">

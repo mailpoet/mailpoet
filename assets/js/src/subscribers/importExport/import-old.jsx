@@ -159,7 +159,6 @@ jQuery(document).ready(() => {
       : new Handlebars.SafeString(Handlebars.Utils.escapeExpression(data))));
 
 
-
     nextStepButton.off().on('click', (event) => {
       const columns = {};
       const queue = new jQuery.AsyncQueue();
