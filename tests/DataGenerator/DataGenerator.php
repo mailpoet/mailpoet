@@ -18,6 +18,7 @@ class DataGenerator {
   }
 
   function run($generator_name) {
+    ini_set('memory_limit','1024M');
     $timer = time();
     try {
       $generator = $this->createGenerator($generator_name);
@@ -41,6 +42,7 @@ class DataGenerator {
 
   private function log($timer, $message) {
     $duration = time() - $timer;
-    $this->console->message("[{$duration}s] $message")->writeln();
+    $memory = round(memory_get_usage()/1048576);
+    $this->console->message("[{$duration}s][{$memory}MB] $message")->writeln();
   }
 }
