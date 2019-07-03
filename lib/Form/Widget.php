@@ -8,6 +8,7 @@ use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -117,8 +118,8 @@ class Widget extends \WP_Widget {
       true
     );
 
-    $captcha = $this->settings->get('re_captcha');
-    if (!empty($captcha['enabled'])) {
+    $captcha = $this->settings->get('captcha');
+    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
       WPFunctions::get()->wpEnqueueScript(
         'mailpoet_recaptcha',
         self::RECAPTCHA_API_URL,

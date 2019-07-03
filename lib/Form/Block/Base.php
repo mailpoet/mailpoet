@@ -111,6 +111,8 @@ abstract class Base {
   protected static function getFieldName($block = []) {
     if ((int)$block['id'] > 0) {
       return 'cf_' . $block['id'];
+    } elseif (isset($block['params']['obfuscate']) && !$block['params']['obfuscate']) {
+      return $block['id'];
     } else {
       $obfuscator = new FieldNameObfuscator();
       return $obfuscator->obfuscate($block['id']);//obfuscate field name for spambots

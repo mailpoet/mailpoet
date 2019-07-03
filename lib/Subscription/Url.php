@@ -8,6 +8,16 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Url {
+  static function getCaptchaUrl(Subscriber $subscriber = null) {
+    $post = WPFunctions::get()->getPost(self::getSetting('subscription.pages.captcha'));
+    return self::getSubscriptionUrl($post, 'captcha', $subscriber);
+  }
+
+  static function getCaptchaImageUrl($width, $height) {
+    $post = WPFunctions::get()->getPost(self::getSetting('subscription.pages.captcha'));
+    return self::getSubscriptionUrl($post, 'captchaImage', null, ['width' => $width, 'height' => $height]);
+  }
+
   static function getConfirmationUrl(Subscriber $subscriber = null) {
     $post = WPFunctions::get()->getPost(self::getSetting('subscription.pages.confirmation'));
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
@@ -24,7 +34,10 @@ class Url {
   }
 
   static function getSubscriptionUrl(
-    $post = null, $action = null, Subscriber $subscriber = null
+    $post = null,
+    $action = null,
+    Subscriber $subscriber = null,
+    $data = null
   ) {
     if ($post === null || $action === null) return;
 
@@ -35,7 +48,7 @@ class Url {
         'token' => Subscriber::generateToken($subscriber->email),
         'email' => $subscriber->email,
       ];
-    } else {
+    } elseif (is_null($data)) {
       $data = [
         'preview' => 1,
       ];
