@@ -3,6 +3,7 @@ namespace MailPoet\Cron\Triggers;
 
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\WooCommerceOrders;
 use MailPoet\Services\Bridge;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\MailerLog;
@@ -131,6 +132,13 @@ class WordPress {
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
 
+    // WooCommerce orders revenues sync
+    $woo_commerce_orders_tasks = self::getTasksCount([
+      'type' => WooCommerceOrders::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
+    ]);
+
     // check requirements for each worker
     $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);
     $bounce_sync_active = ($mp_sending_enabled && ($bounce_due_tasks || !$bounce_future_tasks));
@@ -150,6 +158,7 @@ class WordPress {
       || $woo_commerce_sync_tasks
       || $authorized_email_addresses_tasks
       || $beamer_active
+      || $woo_commerce_orders_tasks
     );
   }
 
