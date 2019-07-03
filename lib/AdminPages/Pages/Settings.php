@@ -13,6 +13,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Installation;
 use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -89,6 +90,7 @@ class Settings {
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts(),
       ],
+      'built_in_captcha_supported' => (new Captcha)->isSupported(),
     ];
 
     $data['is_new_user'] = $this->installation->isNewInstallation();

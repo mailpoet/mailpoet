@@ -23,6 +23,7 @@ use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -217,13 +218,21 @@ class Populator {
       $this->settings->set('installed_at', date("Y-m-d H:i:s"));
     }
 
-    // set reCaptcha settings
+    // set captcha settings
+    $captcha = $this->settings->fetch('captcha');
     $re_captcha = $this->settings->fetch('re_captcha');
-    if (empty($re_captcha)) {
-      $this->settings->set('re_captcha', [
-        'enabled' => false,
-        'site_token' => '',
-        'secret_token' => '',
+    if (empty($captcha)) {
+      $subscription_captcha = new Captcha;
+      $captcha_type = Captcha::TYPE_DISABLED;
+      if (!empty($re_captcha['enabled'])) {
+        $captcha_type = Captcha::TYPE_RECAPTCHA;
+      } elseif ($subscription_captcha->isSupported()) {
+        $captcha_type = Captcha::TYPE_BUILTIN;
+      }
+      $this->settings->set('captcha', [
+        'type' => $captcha_type,
+        'recaptcha_site_token' => !empty($re_captcha['site_token']) ? $re_captcha['site_token'] : '',
+        'recaptcha_secret_token' => !empty($re_captcha['secret_token']) ? $re_captcha['secret_token'] : '',
       ]);
     }
 
