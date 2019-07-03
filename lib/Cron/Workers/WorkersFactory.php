@@ -153,6 +153,6 @@ class WorkersFactory {
 
   /** @return WooCommerceOrders */
   function createWooCommerceOrdersWorker($timer) {
-    return new WooCommerceOrders($this->woocommerce_helper, $this->woocommerce_purchases, $timer);
+    return new WooCommerceOrders($this->woocommerce_helper, $this->woocommerce_purchases, $this->features_controller, $timer);
   }
 }
