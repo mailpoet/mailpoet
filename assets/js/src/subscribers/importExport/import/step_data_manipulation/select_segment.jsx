@@ -1,19 +1,27 @@
-import React, { useLayoutEffect, useContext } from 'react';
+import React, { useLayoutEffect, useContext, useState } from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
 import ImportContext from '../context.jsx';
 
-import { createSelection } from './generate_segment_selection.jsx';
+import { createSelection, destroySelection } from './generate_segment_selection.jsx';
+import createNewSegment from './create_new_segment.jsx';
 
 function SelectSegment({ setSelectedSegments }) {
   const { segments: originalSegments } = useContext(ImportContext);
+  const [selectionSegments, setSelectionSegments] = useState(originalSegments);
 
   useLayoutEffect(() => {
-    createSelection(originalSegments, (segments) => {
+    createSelection(selectionSegments, (segments) => {
       setSelectedSegments(segments);
     });
-  });
+  }, [selectionSegments]);
+
+  const onCreateNewSegment = (segment) => {
+    destroySelection();
+    setSelectedSegments([]);
+    setSelectionSegments([...selectionSegments, segment]);
+  };
 
   return (
     <>
@@ -30,7 +38,21 @@ function SelectSegment({ setSelectedSegments }) {
           <option />
         </select>
       </label>
-      <a className="mailpoet_create_segment">{MailPoet.I18n.t('createANewList')}</a>
+      <a
+        className="mailpoet_create_segment"
+        onClick={() => createNewSegment(onCreateNewSegment)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+          ) {
+            event.preventDefault();
+            createNewSegment(onCreateNewSegment);
+          }
+        }}
+      >
+        {MailPoet.I18n.t('createANewList')}
+      </a>
     </>
   );
 }

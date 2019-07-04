@@ -9,29 +9,7 @@
 
 
     <table class="mailpoet_subscribers form-table">
-      <tbody>
-      <!-- MP3 Segments -->
-      <tr class="mailpoet_segments mailpoet_hidden">
-        <th scope="row">
-          <label>
-            <%= __('Pick one or more list(s)') %>
-            <p class="description"><%= __('Pick the list that you want to import these subscribers to.') %>
-          </label>
-        </th>
-        <td>
-          <select id="mailpoet_segments_select" data-placeholder="<%= _x('Select', 'Verb') %>" multiple="multiple"></select>
-          <a href="javascript:;" class="mailpoet_create_segment"><%= __('Create a new list') %></a>
-        </td>
-      </tr>
-      <tr class="mailpoet_no_segments mailpoet_hidden">
-        <th scope="row">
-          <%=
-          __('To add subscribers to a mailing segment, [link]create a list[/link].')
-          |replaceLinkTags('javascript:;', {'target' : '_blank', 'class' : 'mailpoet_create_segment'})
-          |raw
-          %>
-        </th>
-      </tr>
+      
       <tr>
         <th scope="row">
           <label>
