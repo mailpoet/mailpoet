@@ -15,32 +15,12 @@ import StepResults from './import/step_results.jsx';
 jQuery(document).ready(() => {
 
   router.on('route:step_data_manipulation', () => {
-    let fillerPosition;
 
     // define reusable variables
     const nextStepButton = jQuery('#next_step');
 
     // create a copy of subscribers object for further manipulation
-    const subscribers = jQuery.extend(true, {}, window.importData.step_method_selection);
-    const subscribersDataTemplate = Handlebars.compile(jQuery('#subscribers_data_template').html());
-    const subscribersDataTemplatePartial = Handlebars.compile(jQuery('#subscribers_data_template_partial').html());
     const segmentSelectElement = jQuery('#mailpoet_segments_select');
-    const maxRowsToShow = 10;
-    const filler = '. . .';
-    // create an array of filler data with the same number of
-    // elements as in the subscribers' data row
-    const fillerArray = Array(...new Array(subscribers.subscribers[0].length))
-      .map(String.prototype.valueOf, filler);
-
-    function toggleNextStepButton(condition) {
-      const disabled = 'button-disabled';
-      if (condition === 'on') {
-        nextStepButton.removeClass(disabled);
-        return;
-      }
-      nextStepButton.addClass(disabled);
-    }
-
 
 
     nextStepButton.off().on('click', (event) => {
