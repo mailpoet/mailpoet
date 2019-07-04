@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 
 function UpdateExistingSubscribers({ updateExistingSubscribers, setUpdateExistingSubscribers }) {
   return (
-    <>
-      {MailPoet.I18n.t('updateExistingSubscribers')}
+    <div className="mailpoet_update_existing_subscribers">
+      <div className="mailpoet_label_description">{MailPoet.I18n.t('updateExistingSubscribers')}</div>
       <label htmlFor="update_existing_subscribers">
         <input
           id="update_existing_subscribers"
@@ -26,7 +26,7 @@ function UpdateExistingSubscribers({ updateExistingSubscribers, setUpdateExistin
         />
         {MailPoet.I18n.t('updateExistingSubscribersNo')}
       </label>
-    </>
+    </div>
   );
 }
 

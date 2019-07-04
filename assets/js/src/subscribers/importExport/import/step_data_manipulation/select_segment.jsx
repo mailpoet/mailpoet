@@ -24,12 +24,14 @@ function SelectSegment({ setSelectedSegments }) {
   };
 
   return (
-    <>
+    <div className="mailpoet_import_select_segment">
       <label htmlFor="mailpoet_segments_select">
-        {MailPoet.I18n.t('pickLists')}
-        <p className="description">
-          {MailPoet.I18n.t('pickListsDescription')}
-        </p>
+        <div className="mailpoet_label_description">
+          <b>{MailPoet.I18n.t('pickLists')}</b>
+          <p className="description">
+            {MailPoet.I18n.t('pickListsDescription')}
+          </p>
+        </div>
         <select
           id="mailpoet_segments_select"
           data-placeholder={MailPoet.I18n.t('select')}
@@ -53,7 +55,7 @@ function SelectSegment({ setSelectedSegments }) {
       >
         {MailPoet.I18n.t('createANewList')}
       </a>
-    </>
+    </div>
   );
 }
 

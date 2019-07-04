@@ -40,22 +40,20 @@ function StepDataManipulation({
     return null;
   }
   return (
-    <>
+    <div className="mailpoet_data_manipulation_step">
       <Warnings
         stepMethodSelectionData={stepMethodSelectionData}
       />
-      <div className="inside">
-        <MatchTable
-          subscribersCount={stepMethodSelectionData.subscribersCount}
-          subscribers={stepMethodSelectionData.subscribers}
-          header={stepMethodSelectionData.header}
-        />
-        <SelectSegment setSelectedSegments={setSelectedSegments} />
-        <UpdateExistingSubscribers
-          setUpdateExistingSubscribers={setUpdateExistingSubscribers}
-          updateExistingSubscribers={updateExistingSubscribers}
-        />
-      </div>
+      <MatchTable
+        subscribersCount={stepMethodSelectionData.subscribersCount}
+        subscribers={stepMethodSelectionData.subscribers}
+        header={stepMethodSelectionData.header}
+      />
+      <SelectSegment setSelectedSegments={setSelectedSegments} />
+      <UpdateExistingSubscribers
+        setUpdateExistingSubscribers={setUpdateExistingSubscribers}
+        updateExistingSubscribers={updateExistingSubscribers}
+      />
       <PreviousNextStepButtons
         canGoNext={selectedSegments.length > 0}
         onPreviousAction={() => (
@@ -63,7 +61,7 @@ function StepDataManipulation({
         )}
         onNextAction={() => history.push('todo')}
       />
-    </>
+    </div>
   );
 }
 
