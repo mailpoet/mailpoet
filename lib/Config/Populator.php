@@ -177,6 +177,9 @@ class Populator {
         'confirmation' => $mailpoet_page_id,
         'captcha' => $mailpoet_page_id,
       ]);
+    } elseif (empty($subscription['captcha'])) {
+      // For existing installations
+      $this->settings->set('subscription.pages', array_merge($subscription, ['captcha' => $mailpoet_page_id]));
     }
   }
 

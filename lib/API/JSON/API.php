@@ -3,6 +3,7 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -79,7 +80,7 @@ class API {
     $this->setRequestData($_POST);
 
     $ignoreToken = (
-      $this->settings->get('re_captcha.enabled') &&
+      $this->settings->get('captcha.type') != Captcha::TYPE_DISABLED &&
       $this->_request_endpoint === 'subscribers' &&
       $this->_request_method === 'subscribe'
     );
