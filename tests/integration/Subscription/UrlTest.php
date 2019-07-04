@@ -16,6 +16,20 @@ class UrlTest extends \MailPoetTest {
     $populator->up();
   }
 
+  function testItReturnsTheCaptchaUrl() {
+    $url = Url::getCaptchaUrl();
+    expect($url)->notNull();
+    expect($url)->contains('action=captcha');
+    expect($url)->contains('endpoint=subscription');
+  }
+
+  function testItReturnsTheCaptchaImageUrl() {
+    $url = Url::getCaptchaImageUrl(250, 100);
+    expect($url)->notNull();
+    expect($url)->contains('action=captchaImage');
+    expect($url)->contains('endpoint=subscription');
+  }
+
   function testItReturnsTheConfirmationUrl() {
     // preview
     $url = Url::getConfirmationUrl(null);
