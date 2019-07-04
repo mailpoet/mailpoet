@@ -179,6 +179,7 @@ class Initializer {
 
   function initialize() {
     try {
+      $this->setupSession();
       $this->maybeDbUpdate();
       $this->setupInstaller();
       $this->setupUpdater();
@@ -205,6 +206,11 @@ class Initializer {
     }
 
     define(self::INITIALIZED, true);
+  }
+
+  function setupSession() {
+    $session = new Session;
+    $session->init();
   }
 
   function maybeDbUpdate() {

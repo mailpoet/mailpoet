@@ -60,11 +60,22 @@ jQuery(function ($) { // eslint-disable-line func-names
           data: formData.data,
         })
           .fail(function handleFailedPost(response) {
-            form.find('.mailpoet_validate_error').html(
-              response.errors.map(function buildErrorMessage(error) {
-                return error.message;
-              }).join('<br />')
-            ).show();
+            if (
+              response.meta !== undefined
+                && response.meta.redirect_url !== undefined
+            ) {
+              // go to page
+              window.top.location.href = response.meta.redirect_url;
+            } else {
+              if (response.meta && response.meta.refresh_captcha) {
+                $('.mailpoet_captcha_update').click();
+              }
+              form.find('.mailpoet_validate_error').html(
+                response.errors.map(function buildErrorMessage(error) {
+                  return error.message;
+                }).join('<br />')
+              ).show();
+            }
           })
           .done(function handleRecaptcha(response) {
             if (window.grecaptcha && formData.recaptcha) {
@@ -83,6 +94,10 @@ jQuery(function ($) { // eslint-disable-line func-names
             } else {
               // display success message
               form.find('.mailpoet_validate_success').show();
+              // hide elements marked with a class
+              form.find('.mailpoet_form_hide_on_success').each(function hideOnSuccess() {
+                $(this).hide();
+              });
             }
 
             // reset form
@@ -108,6 +123,15 @@ jQuery(function ($) { // eslint-disable-line func-names
           });
         return false;
       });
+    });
+
+    $('.mailpoet_captcha_update').click(function updateCaptcha(e) {
+      var captcha = $('img.mailpoet_captcha');
+      var captchaSrc = captcha.attr('src');
+      var hashPos = captchaSrc.indexOf('#');
+      var newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
+      captcha.attr('src', newSrc + '#' + new Date().getTime());
+      e.preventDefault();
     });
   });
 });

@@ -25,7 +25,9 @@ class Form {
     $form_id = (!empty($request_data['data']['form_id'])) ? (int)$request_data['data']['form_id'] : false;
     $response = $this->api->processRoute();
     if ($response->status !== APIResponse::STATUS_OK) {
-      return $this->url_helper->redirectBack(
+      return (isset($response->meta['redirect_url'])) ?
+      $this->url_helper->redirectTo($response->meta['redirect_url']) :
+      $this->url_helper->redirectBack(
         [
           'mailpoet_error' => ($form_id) ? $form_id : true,
           'mailpoet_success' => null,

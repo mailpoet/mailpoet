@@ -2,6 +2,10 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberIP;
+use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Gregwar\Captcha\CaptchaBuilder;
 
 class Captcha {
@@ -12,11 +16,57 @@ class Captcha {
   const SESSION_KEY = 'mailpoet_captcha';
   const SESSION_FORM_KEY = 'mailpoet_captcha_form';
 
+  /** @var WPFunctions */
+  private $wp;
+
+  function __construct(WPFunctions $wp = null) {
+    if ($wp === null) {
+      $wp = new WPFunctions;
+    }
+    $this->wp = $wp;
+  }
+
   function isSupported() {
     return extension_loaded('gd') && function_exists('imagettftext');
   }
 
-  function renderImage($width = null, $height = null) {
+  function isRequired($subscriber_email = null) {
+    if ($this->wp->isUserLoggedIn()) {
+      return false;
+    }
+
+    // Check limits per recipient
+    $subscription_captcha_recipient_limit = $this->wp->applyFilters('mailpoet_subscription_captcha_recipient_limit', 1);
+    if ($subscriber_email) {
+      $subscriber = Subscriber::where('email', $subscriber_email)->findOne();
+      if ($subscriber instanceof Subscriber
+        && $subscriber->count_confirmations >= $subscription_captcha_recipient_limit
+      ) {
+        return true;
+      }
+    }
+
+    // Check limits per IP address
+    $subscription_captcha_window = $this->wp->applyFilters('mailpoet_subscription_captcha_window', MONTH_IN_SECONDS);
+
+    $subscriber_ip = Helpers::getIP();
+
+    if (!empty($subscriber_ip)) {
+      $subscription_count = SubscriberIP::where('ip', $subscriber_ip)
+        ->whereRaw(
+          '(`created_at` >= NOW() - INTERVAL ? SECOND)',
+          [(int)$subscription_captcha_window]
+        )->count();
+
+      if ($subscription_count > 0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function renderImage($width = null, $height = null, $return = false) {
     if (!$this->isSupported()) {
       return false;
     }
@@ -35,6 +85,10 @@ class Captcha {
       ->build($width ?: 220, $height ?: 60, $font);
 
     $_SESSION[self::SESSION_KEY] = $builder->getPhrase();
+
+    if ($return) {
+      return $builder->get();
+    }
 
     header('Content-Type: image/jpeg');
     $builder->output();

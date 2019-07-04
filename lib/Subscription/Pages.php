@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\CustomField;
@@ -290,6 +291,8 @@ class Pages {
     );
 
     $form_id = isset($_SESSION[Captcha::SESSION_FORM_KEY]['form_id']) ? (int)$_SESSION[Captcha::SESSION_FORM_KEY]['form_id'] : 0;
+    $form_model = FormModel::findOne($form_id);
+    $form_model = $form_model->asArray();
 
     $form_html = '<form method="POST" ' .
       'action="' . admin_url('admin-post.php?action=mailpoet_subscription_form') . '" ' .
@@ -315,7 +318,7 @@ class Pages {
     $form_html .= FormRenderer::renderBlocks($form, $honeypot = false);
     $form_html .= '</div>';
     $form_html .= '<div class="mailpoet_message">';
-    $form_html .= '<p class="mailpoet_validate_success" style="display:none;">Check your inbox or spam folder to confirm your subscription.</p>';
+    $form_html .= '<p class="mailpoet_validate_success" style="display:none;">' . $form_model['settings']['success_message'] . '</p>';
     $form_html .= '<p class="mailpoet_validate_error" style="display:none;"></p>';
     $form_html .= '</div>';
     $form_html .= '</form>';

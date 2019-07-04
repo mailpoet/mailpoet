@@ -14,7 +14,6 @@ class Throttling {
     $subscription_limit_base = $wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
 
     $subscriber_ip = Helpers::getIP();
-    $wp = new WPFunctions;
 
     if ($subscription_limit_enabled && !$wp->isUserLoggedIn()) {
       if (!empty($subscriber_ip)) {
@@ -43,12 +42,14 @@ class Throttling {
     $ip->ip = $subscriber_ip;
     $ip->save();
 
-    self::purge($subscription_limit_window);
+    self::purge();
 
     return false;
   }
 
-  static function purge($interval) {
+  static function purge() {
+    $wp = new WPFunctions;
+    $interval = $wp->applyFilters('mailpoet_subscription_purge_window', MONTH_IN_SECONDS);
     return SubscriberIP::whereRaw(
       '(`created_at` < NOW() - INTERVAL ? SECOND)',
       [$interval]
