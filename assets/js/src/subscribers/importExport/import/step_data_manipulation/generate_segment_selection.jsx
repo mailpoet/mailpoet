@@ -46,7 +46,13 @@ export function destroySelection() {
   const segmentSelectElement = jQuery('select#mailpoet_segments_select');
   if (segmentSelectElement.data('select2')) {
     segmentSelectElement
-      .html('')
       .select2('destroy');
+    segmentSelectElement
+      .find('option')
+      .remove();
+    segmentSelectElement
+      .off('select2:unselecting')
+      .off('change')
+      .off('select2:opening');
   }
 }
