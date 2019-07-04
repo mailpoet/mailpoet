@@ -3,6 +3,8 @@ namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
 use MailPoet\API\JSON\API;
+use MailPoet\API\JSON\ErrorResponse;
+use MailPoet\API\JSON\Response;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form as FormModel;
@@ -118,6 +120,23 @@ class FormTest extends \MailPoetTest {
     expect(SubscriberModel::findMany())->isEmpty();
     expect($result['mailpoet_error'])->equals($this->form->id);
     expect($result['mailpoet_success'])->null();
+  }
+
+  function testItDoesNotSubscribeAndRedirectsToRedirectUrlIfPresent() {
+    $redirect_url = 'http://test/';
+    $url_helper = Stub::make(UrlHelper::class, [
+      'redirectTo' => function($params) {
+        return $params;
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'processRoute' => function() use ($redirect_url) {
+        return new ErrorResponse([], ['redirect_url' => $redirect_url], Response::STATUS_BAD_REQUEST);
+      },
+    ], $this);
+    $form_controller = new Form($api, $url_helper);
+    $result = $form_controller->onSubmit($this->request_data);
+    expect($result)->equals($redirect_url);
   }
 
   function _after() {

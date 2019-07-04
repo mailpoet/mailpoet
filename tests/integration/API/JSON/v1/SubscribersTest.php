@@ -20,6 +20,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscription\Captcha;
 
 class SubscribersTest extends \MailPoetTest {
 
@@ -479,8 +480,8 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
-  function testItCannotSubscribeWithoutCaptchaWhenEnabled() {
-    $this->settings->set('re_captcha', ['enabled' => true]);
+  function testItCannotSubscribeWithoutReCaptchaWhenEnabled() {
+    $this->settings->set('captcha', ['type' => Captcha::TYPE_RECAPTCHA]);
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
@@ -488,7 +489,43 @@ class SubscribersTest extends \MailPoetTest {
     ]);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
-    $this->settings->set('re_captcha', []);
+    $this->settings->set('captcha', []);
+  }
+
+  function testItCannotSubscribeWithoutBuiltInCaptchaWhenEnabled() {
+    $this->settings->set('captcha', ['type' => Captcha::TYPE_BUILTIN]);
+    $email = 'toto@mailpoet.com';
+    $subscriber = Subscriber::create();
+    $subscriber->email = $email;
+    $subscriber->count_confirmations = 1;
+    $subscriber->save();
+    $response = $this->endpoint->subscribe([
+      $this->obfuscatedEmail => $email,
+      'form_id' => $this->form->id,
+      $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
+    ]);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
+    $this->settings->set('captcha', []);
+  }
+
+  function testItCanSubscribeWithBuiltInCaptchaWhenEnabled() {
+    $this->settings->set('captcha', ['type' => Captcha::TYPE_BUILTIN]);
+    $email = 'toto@mailpoet.com';
+    $subscriber = Subscriber::create();
+    $subscriber->email = $email;
+    $subscriber->count_confirmations = 1;
+    $subscriber->save();
+    $captcha_value = 'ihg5w';
+    $_SESSION[Captcha::SESSION_KEY] = $captcha_value;
+    $response = $this->endpoint->subscribe([
+      $this->obfuscatedEmail => $email,
+      'form_id' => $this->form->id,
+      $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
+      'captcha' => $captcha_value,
+    ]);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    $this->settings->set('captcha', []);
   }
 
   function testItCannotSubscribeWithoutMandatoryCustomField() {
