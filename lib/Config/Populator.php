@@ -7,6 +7,8 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Doctrine\Entities\UserFlag;
+use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\Form;
@@ -15,7 +17,6 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\UserFlag;
 use MailPoet\Models\Setting;
 use MailPoet\Segments\WP;
 use MailPoet\Services\Bridge;
@@ -281,11 +282,7 @@ class Populator {
     $last_announcement_seen = $this->settings->fetch('last_announcement_seen');
     if (!empty($last_announcement_seen)) {
       foreach ($last_announcement_seen as $user_id => $value) {
-        UserFlag::createOrUpdate([
-          'user_id' => $user_id,
-          'name' => 'last_announcement_seen',
-          'value' => $value,
-        ]);
+        $this->createOrUpdateUserFlag($user_id, 'last_announcement_seen', $value);
       }
       $this->settings->delete('last_announcement_seen');
     }
@@ -296,14 +293,27 @@ class Populator {
     if (!empty($users_seen_editor_tutorial)) {
       foreach ($users_seen_editor_tutorial as $setting) {
         $user_id = substr($setting->name, $prefix_length);
-        UserFlag::createOrUpdate([
-          'user_id' => $user_id,
-          'name' => 'editor_tutorial_seen',
-          'value' => $setting->value,
-        ]);
+        $this->createOrUpdateUserFlag($user_id, 'editor_tutorial_seen', $setting->value);
       }
       Setting::whereLike('name', $prefix . '%')->deleteMany();
     }
+  }
+
+  private function createOrUpdateUserFlag($user_id, $name, $value) {
+    $user_flags_repository = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG)->get(UserFlagsRepository::class);
+    $flag = $user_flags_repository->findOneBy([
+      'user_id' => $user_id,
+      'name' => $name,
+    ]);
+
+    if (!$flag) {
+      $flag = new UserFlag();
+      $flag->setUserId($user_id);
+      $flag->setName($name);
+      $user_flags_repository->persist($flag);
+    }
+    $flag->setValue($value);
+    $user_flags_repository->flush();
   }
 
   private function createDefaultSegments() {
