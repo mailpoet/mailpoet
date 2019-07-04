@@ -163,6 +163,7 @@ class Initializer {
     try {
       $this->renderer = $this->renderer_factory->getRenderer();
       $this->setupWidget();
+      $this->hooks->init();
     } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
@@ -270,7 +271,6 @@ class Initializer {
   function postInitialize() {
     if (!defined(self::INITIALIZED)) return;
     try {
-      $this->hooks->init();
       $this->api->init();
       $this->router->init();
       $this->setupUserLocale();
