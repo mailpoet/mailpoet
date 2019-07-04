@@ -5,6 +5,7 @@ import PreviousNextStepButtons from './previous_next_step_buttons.jsx';
 import Warnings from './step_data_manipulation/warnings.jsx';
 import MatchTable from './step_data_manipulation/match_table.jsx';
 import SelectSegment from './step_data_manipulation/select_segment.jsx';
+import UpdateExistingSubscribers from './step_data_manipulation/update_existing_subscribers.jsx';
 
 function getPreviousStepLink(importData, subscribersLimitForValidation) {
   if (importData === undefined) {
@@ -25,6 +26,7 @@ function StepDataManipulation({
   subscribersLimitForValidation,
 }) {
   const [selectedSegments, setSelectedSegments] = useState([]);
+  const [updateExistingSubscribers, setUpdateExistingSubscribers] = useState(true);
   useEffect(
     () => {
       if (typeof (stepMethodSelectionData) === 'undefined') {
@@ -49,6 +51,10 @@ function StepDataManipulation({
           header={stepMethodSelectionData.header}
         />
         <SelectSegment setSelectedSegments={setSelectedSegments} />
+        <UpdateExistingSubscribers
+          setUpdateExistingSubscribers={setUpdateExistingSubscribers}
+          updateExistingSubscribers={updateExistingSubscribers}
+        />
       </div>
       <PreviousNextStepButtons
         canGoNext={selectedSegments.length > 0}
