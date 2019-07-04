@@ -1,11 +1,13 @@
 <?php
+
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\v1\UserFlags;
-use MailPoet\Models\UserFlag;
+use MailPoet\Doctrine\Entities\UserFlag;
+use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Settings\UserFlagsController;
 
 class UserFlagsTest extends \MailPoetTest {
@@ -17,9 +19,9 @@ class UserFlagsTest extends \MailPoetTest {
   private $user_flags;
 
   function _before() {
-    parent::_before();
-    UserFlag::deleteMany();
-    $this->user_flags = Stub::make(new UserFlagsController, [
+    $this->cleanup();
+    $this->user_flags = Stub::make(UserFlagsController::class, [
+      'user_flags_repository' => $this->di_container->get(UserFlagsRepository::class),
       'defaults' => [
         'flag_1' => 'default_value_1',
         'flag_2' => 'default_value_2',
@@ -52,5 +54,14 @@ class UserFlagsTest extends \MailPoetTest {
       'flag_2' => 'default_value_2',
       'flag_3' => 'new_value_3',
     ]);
+  }
+
+  function _after() {
+    $this->cleanup();
+  }
+
+  private function cleanup() {
+    $table_name = $this->entity_manager->getClassMetadata(UserFlag::class)->getTableName();
+    $this->entity_manager->getConnection()->executeUpdate("TRUNCATE $table_name");
   }
 }
