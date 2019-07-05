@@ -2,6 +2,8 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Stub;
+use MailPoet\Config\Activator;
+use MailPoet\Config\Populator;
 use MailPoet\Models\Setting;
 use MailPoet\API\JSON\v1\Setup;
 use MailPoet\WP\Functions as WPFunctions;
@@ -22,7 +24,9 @@ class SetupTest extends \MailPoetTest {
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
 
-    $router = new Setup($wp);
+    $settings = new SettingsController();
+    $populator = new Populator($settings, $wp, new Captcha());
+    $router = new Setup($wp, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
