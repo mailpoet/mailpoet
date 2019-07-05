@@ -1,5 +1,9 @@
 <?php
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
+
 if ((boolean)getenv('MULTISITE') === true) {
   // REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
   $_SERVER['REQUEST_URI'] = '/' . getenv('WP_TEST_MULTISITE_SLUG');
@@ -38,13 +42,12 @@ $models = [
   'StatisticsNewsletters',
   'StatisticsUnsubscribes',
 ];
-$destroy = function($model) {
+
+$connection = ContainerWrapper::getInstance(WP_DEBUG)->get(Connection::class);
+$destroy = function($model) use ($connection) {
   $class = new \ReflectionClass('\MailPoet\Models\\' . $model);
   $table = $class->getStaticPropertyValue('_table');
-  $db = ORM::getDb();
-  $db->beginTransaction();
-  $db->exec('TRUNCATE ' . $table);
-  $db->commit();
+  $connection->executeUpdate("TRUNCATE $table");
 };
 array_map($destroy, $models);
 
@@ -145,8 +148,26 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $preserveGlobalState = false;
   protected $inIsolation = false;
 
-  function _before() {
+  /** @var ContainerWrapper */
+  protected $di_container;
+
+  /** @var Connection */
+  protected $connection;
+
+  /** @var EntityManager */
+  protected $entity_manager;
+
+  function setUp() {
+    $this->di_container = ContainerWrapper::getInstance(WP_DEBUG);
+    $this->connection = $this->di_container->get(Connection::class);
+    $this->entity_manager = $this->di_container->get(EntityManager::class);
     \MailPoet\Settings\SettingsController::resetCache();
+    parent::setUp();
+  }
+
+  function tearDown() {
+    $this->entity_manager->clear();
+    parent::tearDown();
   }
 
   /**
