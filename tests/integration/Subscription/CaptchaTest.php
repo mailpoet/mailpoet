@@ -40,6 +40,7 @@ class CaptchaTest extends \MailPoetTest {
   }
 
   function testItRendersImage() {
+    if (!$this->captcha->isSupported()) return;
     expect_that(empty($_SESSION[Captcha::SESSION_KEY]));
     $image = $this->captcha->renderImage(null, null, true);
     expect($image)->notEmpty();
