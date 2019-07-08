@@ -3,7 +3,6 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Menu;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -30,10 +29,7 @@ class PermanentNotices {
   /** @var InactiveSubscribersNotice */
   private $inactive_subscribers_notice;
 
-  /** @var FeaturesController */
-  private $features_controller;
-
-  public function __construct(WPFunctions $wp, FeaturesController $features_controller) {
+  public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
     $this->php_version_warnings = new PHPVersionWarnings();
     $this->after_migration_notice = new AfterMigrationNotice();
@@ -41,7 +37,6 @@ class PermanentNotices {
     $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(new SettingsController, $wp);
     $this->unauthorized_emails_in_newsletters_notice = new UnauthorizedEmailInNewslettersNotice(new SettingsController, $wp);
     $this->inactive_subscribers_notice = new InactiveSubscribersNotice(new SettingsController, $wp);
-    $this->features_controller = $features_controller;
   }
 
   public function init() {
@@ -64,8 +59,7 @@ class PermanentNotices {
       Menu::isOnMailPoetAdminPage($exclude = null, $page_id = 'mailpoet-newsletters')
     );
     $this->inactive_subscribers_notice->init(
-      $this->features_controller->isSupported(FeaturesController::FEATURE_INACTIVE_SUBSCRIBERS_NOTICE)
-      && Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
     );
     $this->discounts_announcement->init(
       empty($_GET['page'])
