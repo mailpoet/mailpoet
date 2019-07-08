@@ -148,13 +148,13 @@ class GeneratorHelper {
   public function createCompletedWooCommerceOrder($subscriber_id, $email, $products = [], Carbon $completed_at = null) {
     $address = [
       'first_name' => "name_$subscriber_id",
-      'last_name'  => "lastname_$subscriber_id",
-      'email'      => $email,
-      'phone'      => '123-456-789',
-      'address_1'  => "$subscriber_id Main st.",
-      'city'       => "City of $subscriber_id",
-      'postcode'   => '92121',
-      'country'    => 'France',
+      'last_name' => "lastname_$subscriber_id",
+      'email' => $email,
+      'phone' => '123-456-789',
+      'address_1' => "$subscriber_id Main st.",
+      'city' => "City of $subscriber_id",
+      'postcode' => '92121',
+      'country' => 'France',
     ];
 
     $order = wc_create_order();
