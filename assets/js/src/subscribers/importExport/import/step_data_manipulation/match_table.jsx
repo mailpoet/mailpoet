@@ -28,20 +28,18 @@ function MatchTable({
       <tr>
         <th>{MailPoet.I18n.t('matchData')}</th>
         {
-          matchedColumnTypes.map((columnType, i) => {
-            return (
-              // eslint-disable-next-line react/no-array-index-key
-              <th key={columnType.column_id + i}>
-                <select
-                  className="mailpoet_subscribers_column_data_match"
-                  data-column-id={columnType.column_id}
-                  data-validation-rule="false"
-                  data-column-index={i}
-                  id={`column_${i}`}
-                />
-              </th>
-            );
-          })
+          matchedColumnTypes.map((columnType, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <th key={columnType.column_id + i}>
+              <select
+                className="mailpoet_subscribers_column_data_match"
+                data-column-id={columnType.column_id}
+                data-validation-rule="false"
+                data-column-index={i}
+                id={`column_${i}`}
+              />
+            </th>
+          ))
         }
       </tr>
     );

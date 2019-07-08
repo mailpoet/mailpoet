@@ -15,7 +15,7 @@ function SelectSegment({ setSelectedSegments }) {
     createSelection(selectionSegments, (segments) => {
       setSelectedSegments(segments);
     });
-  }, [selectionSegments]);
+  }, [selectionSegments, setSelectedSegments]);
 
   const onCreateNewSegment = (segment) => {
     destroySelection();
