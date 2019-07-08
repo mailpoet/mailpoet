@@ -225,27 +225,44 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
     </div>
   );
 };
+
+const StatisticsPropType = PropTypes.shape({
+  clicked: PropTypes.number,
+  opened: PropTypes.number,
+  unsubscribed: PropTypes.number,
+  revenue: PropTypes.shape({
+    count: PropTypes.number,
+    currency: PropTypes.string,
+    formatted: PropTypes.string,
+    value: PropTypes.number,
+  }),
+});
+
+const QueuePropType = PropTypes.shape({
+  status: PropTypes.string,
+  count_processed: PropTypes.string.isRequired,
+  count_total: PropTypes.string.isRequired,
+  created_at: PropTypes.string,
+  scheduled_at: PropTypes.string,
+});
+
 Statistics.propTypes = {
   newsletter: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    queue: PropTypes.shape({
-      status: PropTypes.string,
-      count_processed: PropTypes.string.isRequired,
-      count_total: PropTypes.string.isRequired,
-      created_at: PropTypes.string,
-      scheduled_at: PropTypes.string,
-    }),
+    queue: PropTypes.oneOfType([
+      QueuePropType,
+      PropTypes.bool,
+    ]),
     total_sent: PropTypes.number,
-    statistics: PropTypes.shape({
-      clicked: PropTypes.number,
-      opened: PropTypes.number,
-      unsubscribed: PropTypes.number,
-      revenue: PropTypes.number,
-    }),
+    statistics: PropTypes.oneOfType([
+      StatisticsPropType,
+      PropTypes.bool,
+    ]),
   }).isRequired,
   isSent: PropTypes.bool,
   currentTime: PropTypes.string,
 };
+
 Statistics.defaultProps = {
   isSent: undefined,
   currentTime: undefined,

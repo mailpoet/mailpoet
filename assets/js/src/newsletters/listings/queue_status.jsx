@@ -14,7 +14,10 @@ const QueuePropType = PropTypes.shape({
 
 const NewsletterPropType = PropTypes.shape({
   id: PropTypes.number.isRequired,
-  queue: QueuePropType,
+  queue: PropTypes.oneOfType([
+    QueuePropType,
+    PropTypes.bool,
+  ]),
 });
 
 const QueueSendingProgress = ({ queue }) => {

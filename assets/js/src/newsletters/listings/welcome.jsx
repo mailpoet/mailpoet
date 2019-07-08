@@ -330,7 +330,7 @@ class NewsletterListWelcome extends React.Component {
           <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
             <Statistics
               newsletter={newsletter}
-              isSent={newsletter.total_sent > 0 && newsletter.statistics}
+              isSent={newsletter.total_sent > 0 && !!newsletter.statistics}
             />
           </td>
         ) : null }
