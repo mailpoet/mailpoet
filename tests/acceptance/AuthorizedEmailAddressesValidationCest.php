@@ -57,7 +57,7 @@ class AuthorizedEmailAddressesValidationCest {
     $subject = 'Subject Unauthorized Welcome Email';
     (new Newsletter())->withSubject($subject)
       ->withActiveStatus()
-      ->withWelcomeType()
+      ->withWelcomeTypeForSegment()
       ->withSenderAddress('unauthorized1@email.com')
       ->create();
     $settings = new Settings();

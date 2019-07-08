@@ -124,7 +124,7 @@ class Newsletter {
   /**
    * @return Newsletter
    */
-  public function withWelcomeType($segment_id = 2) {
+  public function withWelcomeTypeForSegment($segment_id = 2) {
     $this->data['type'] = 'welcome';
     $this->withOptions([
       3 => 'segment', // event

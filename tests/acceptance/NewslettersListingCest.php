@@ -17,7 +17,7 @@ class NewslettersListingCest {
     $welcome_email = (new Newsletter())
       ->withSentStatus()
       ->withSubject($welcome_email_subject)
-      ->withWelcomeType()
+      ->withWelcomeTypeForSegment()
       ->create();
     $post_notification_email = (new Newsletter())
       ->withSentStatus()

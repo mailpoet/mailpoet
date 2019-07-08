@@ -17,7 +17,7 @@ class ManageWelcomeEmailCest {
   private function createWelcomeEmailWithTitle(\AcceptanceTester $I, $newsletterTitle) {
     return (new Newsletter())
         ->withSubject($newsletterTitle)
-        ->withWelcomeType()
+        ->withWelcomeTypeForSegment()
         ->create();
   }
 

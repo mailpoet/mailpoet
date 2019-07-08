@@ -113,7 +113,7 @@ class WooCommercePastRevenues {
     $welcome_email = $email_factory
       ->withSubject("Welcome email")
       ->withActiveStatus()
-      ->withWelcomeType()
+      ->withWelcomeTypeForSegment($subscribers_list->id())
       ->withSegments([$subscribers_list])
       ->withCreatedAt($minimal_created_at_date)
       ->create();
