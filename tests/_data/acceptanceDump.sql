@@ -473,6 +473,7 @@ CREATE TABLE `mp_mailpoet_subscribers` (
   `unconfirmed_data` longtext COLLATE utf8mb4_unicode_520_ci,
   `is_woocommerce_user` int(1) NOT NULL DEFAULT 0,
   `source` ENUM("form", "imported", "administrator", "api", "wordpress_user", "unknown") DEFAULT "unknown",
+  `count_confirmations` int(11) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `wp_user_id` (`wp_user_id`),
