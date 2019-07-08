@@ -34,7 +34,7 @@ class DataGenerator {
   private function createGenerator($generator_name) {
     switch ($generator_name) {
       case self::PAST_REVENUES_GENERATOR:
-        return new WooCommercePastRevenues(new GeneratorHelper());
+        return new WooCommercePastRevenues();
       default:
         throw new \Exception("Missing or unknown generator name. Possible values: \n " . self::PAST_REVENUES_GENERATOR);
     }
