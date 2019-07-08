@@ -284,6 +284,12 @@ class WPTest extends \MailPoetTest  {
 
   function testItMarksSpammySubscribersWithUserStatus2AsUnconfirmed() {
     global $wpdb;
+    $column_exists = $wpdb->query(sprintf('SHOW COLUMNS FROM `%s` LIKE "user_status"', $wpdb->users));
+    if (!$column_exists) {
+      // This column is deprecated in WP, is no longer used by the core
+      // and either may not be present, or may be removed in the future.
+      return false;
+    }
     $random_number = rand();
     $id = $this->insertUser($random_number);
     $subscriber = Subscriber::createOrUpdate([
