@@ -120,6 +120,10 @@ class WooCommercePastRevenues {
     $sent_welcome_emails = [];
     foreach ($subscribers_ids as $subscriber_id) {
       $sent_welcome_emails[$subscriber_id] = $this->helper->createSentEmailData($welcome_email, $minimal_created_at_date, [$subscriber_id], $subscribers_list->id);
+      $batch_log = $this->getBatchLog('Welcome emails sent', count($sent_welcome_emails));
+      if ($batch_log) {
+        yield $batch_log;
+      }
     }
 
     yield "Welcome emails done";
@@ -177,60 +181,60 @@ class WooCommercePastRevenues {
       foreach ($emails_to_send as $email) {
         $sent_automatic_emails[$subscriber_id][] = $this->helper->createSentEmailData($email, $this->getRandomDateInPast(), [$subscriber_id], $subscribers_list->id);
       }
+      $batch_log = $this->getBatchLog('Automatic emails sent', count($sent_automatic_emails));
+      if ($batch_log) {
+        yield $batch_log;
+      }
     }
     yield "Automatic emails done";
 
-    // Clicks
-    $subscribers_clicks = [];
+    // Clicks and orders
+    // Pick random subscribers which will have an order
+    $subscribers_with_orders = array_flip(array_intersect_key(
+      $subscribers_ids,
+      array_flip(array_rand($subscribers_ids, self::SUBSCRIBERS_WITH_ORDERS_COUNT))
+    ));
+    $i = 0;
     foreach ($subscribers_ids as $subscriber_id) {
-      $subscribers_clicks[$subscriber_id] = [];
+      $i++;
+      $subscriber_click_times = [];
       $subscriber_received_emails = array_merge(
         $sent_automatic_emails[$subscriber_id],
         [$sent_welcome_emails[$subscriber_id]],
         $sent_post_notifications,
         $sent_standard_newsletters
       );
-      // Pick random half of received emails and generate opens and clicks
+      // Pick amount of received emails and generate opens and clicks
+      $opened_count = floor(count($subscriber_received_emails)/rand(2,5));
       $emails_to_click = array_intersect_key(
         $subscriber_received_emails,
-        array_flip(array_rand($subscriber_received_emails, ceil(count($subscriber_received_emails)/2)))
+        array_flip(array_rand($subscriber_received_emails, $opened_count))
       );
+      // Click and open selected emails
       foreach ($emails_to_click as $email) {
-        $this->helper->openSentNewsletter($email, $subscriber_id);
-        $subscribers_clicks[$subscriber_id][] = $this->helper->clickSentNewsletter($email, $subscriber_id);
+        $click_created_at = (new Carbon())->setTimestamp($email['sent_at'])->addHours(1)->toDateTimeString();
+        $this->helper->openSentNewsletter($email, $subscriber_id, $click_created_at);
+        $this->helper->clickSentNewsletter($email, $subscriber_id, $click_created_at);
+        $subscriber_click_times[] = $click_created_at;
       }
-      $batch_log = $this->getBatchLog('Subscriber clicks', count($subscribers_clicks));
+      // Create order
+      if (isset($subscribers_with_orders[$subscriber_id])) {
+        // Pick a random logged click time and generate an order day after the click
+        $click_time = $subscriber_click_times[array_rand($subscriber_click_times)];
+        $order_completed_at = (new Carbon($click_time))->addDay();
+        $this->helper->createCompletedWooCommerceOrder(
+          $subscriber_id,
+          $subscriber_emails[$subscriber_id],
+          [$products[array_rand($products)]],
+          $order_completed_at
+        );
+      }
+      $batch_log = $this->getBatchLog('Subscriber clicks and orders', $i);
       if ($batch_log) {
         yield $batch_log;
       }
     }
-    yield "Clicks done";
-
-    // ORDERS
-    // Select random subscribers to generate orders for them
-    $subscribers_with_purchase_clicks = array_intersect_key(
-      $subscribers_clicks,
-      array_flip(array_rand($subscribers_clicks, self::SUBSCRIBERS_WITH_ORDERS_COUNT))
-    );
-    $i = 0;
-    foreach ($subscribers_with_purchase_clicks as $subscriber_id => $clicks) {
-      $i++;
-      // Pick a random logged click and generate an order day after the click
-      $click = $clicks[array_rand($clicks)];
-      $order_completed_at = (new Carbon($click->created_at))->addDay();
-
-      $this->helper->createCompletedWooCommerceOrder(
-        $subscriber_id,
-        $subscriber_emails[$subscriber_id],
-        [$products[array_rand($products)]],
-        $order_completed_at
-      );
-      $batch_log = $this->getBatchLog('Orders', $i);
-      if ($batch_log) {
-        yield $batch_log;
-      }
-    }
-    yield "Orders done";
+    yield "Clicks and Orders done";
     $this->restoreDatabaseTables();
   }
 
@@ -266,6 +270,7 @@ class WooCommercePastRevenues {
     \ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
     \ORM::rawExecute("ALTER TABLE `" . StatisticsOpens::$_table . "` DISABLE KEYS");
     \ORM::rawExecute("ALTER TABLE `" . StatisticsClicks::$_table . "` DISABLE KEYS");
+    \ORM::rawExecute("SET UNIQUE_CHECKS = 0;");
   }
 
   private function restoreDatabaseTables() {
@@ -287,5 +292,6 @@ class WooCommercePastRevenues {
     \ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
     \ORM::rawExecute("ALTER TABLE `" . StatisticsOpens::$_table . "` ENABLE KEYS");
     \ORM::rawExecute("ALTER TABLE `" . StatisticsClicks::$_table . "` ENABLE KEYS");
+    \ORM::rawExecute("SET UNIQUE_CHECKS = 1;");
   }
 }

@@ -58,10 +58,20 @@ class GeneratorHelper {
     $task->save();
 
     // Add subscribers to task
+    $batch_data = [];
     foreach($subscribers_ids as $subscriber_id) {
-      $task_subscriber = ScheduledTaskSubscriber::createOrUpdate(['task_id' => $task->id, 'subscriber_id' => $subscriber_id, 'processed' => true]);
-      $task_subscriber->created_at = $sent_at;
-      $task_subscriber->save();
+      $batch_data[] = "({$task->id}, $subscriber_id, 1, '$sent_at')";
+      if (count($batch_data) % 1000 === 0) {
+        \ORM::rawExecute(
+          "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ',  $batch_data)
+        );
+        $batch_data = [];
+      }
+    }
+    if ($batch_data) {
+      \ORM::rawExecute(
+        "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ',  $batch_data)
+      );
     }
 
     // Sending queue
@@ -89,45 +99,39 @@ class GeneratorHelper {
     }
 
     return [
-      'newsletter' => $newsletter,
-      'task' => $task,
-      'queue' => $queue,
-      'sent_at' => $sent_at,
-      'link' => $link
+      'newsletter_id' => $newsletter->id,
+      'task_id' => $task->id,
+      'queue_id' => $queue->id,
+      'sent_at' => strtotime($sent_at),
+      'link_id' => $link->id,
     ];
   }
 
   /**
    * @return StatisticsOpens
    */
-  public function openSentNewsletter(array $sent_newsletter_data, $subscriber_id, $hours_after_send = 1) {
-    $created_at = (new Carbon($sent_newsletter_data['sent_at']))->addHours($hours_after_send)->toDateTimeString();
-    $opened = StatisticsOpens::createOrUpdate([
+  public function openSentNewsletter(array $sent_newsletter_data, $subscriber_id, $created_at) {
+    StatisticsOpens::createOrUpdate([
       'subscriber_id' => $subscriber_id,
-      'newsletter_id' => $sent_newsletter_data['newsletter']->id,
-      'queue_id' => $sent_newsletter_data['queue']->id,
+      'newsletter_id' => $sent_newsletter_data['newsletter_id'],
+      'queue_id' => $sent_newsletter_data['queue_id'],
       'created_at' => $created_at,
-    ]);
-    $opened->save();
-    return $opened;
+    ])->save();
   }
 
   /**
-   * @return StatisticsClicks
+   * @return array
    */
-  public function clickSentNewsletter(array $sent_newsletter_data, $subscriber_id, $hours_after_send = 1) {
-    $created_at = (new Carbon($sent_newsletter_data['sent_at']))->addHours($hours_after_send)->toDateTimeString();
-    $click = StatisticsClicks::createOrUpdate([
+  public function clickSentNewsletter(array $sent_newsletter_data, $subscriber_id, $created_at) {
+    StatisticsClicks::createOrUpdate([
       'subscriber_id' => $subscriber_id,
-      'newsletter_id' => $sent_newsletter_data['newsletter']->id,
-      'queue_id' => $sent_newsletter_data['queue']->id,
-      'link_id' => $sent_newsletter_data['link']->id,
+      'newsletter_id' => $sent_newsletter_data['newsletter_id'],
+      'queue_id' => $sent_newsletter_data['queue_id'],
+      'link_id' => $sent_newsletter_data['link_id'],
       'count' => 1,
       'created_at' => $created_at,
       'updated_at' => $created_at,
-    ]);
-    $click->save();
-    return $click;
+    ])->save();
   }
 
   /**
