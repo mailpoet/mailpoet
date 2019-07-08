@@ -6,6 +6,7 @@ import Warnings from './step_data_manipulation/warnings.jsx';
 import MatchTable from './step_data_manipulation/match_table.jsx';
 import SelectSegment from './step_data_manipulation/select_segment.jsx';
 import UpdateExistingSubscribers from './step_data_manipulation/update_existing_subscribers.jsx';
+import doImport from './step_data_manipulation/do_import.jsx';
 
 function getPreviousStepLink(importData, subscribersLimitForValidation) {
   if (importData === undefined) {
@@ -24,6 +25,7 @@ function StepDataManipulation({
   history,
   stepMethodSelectionData,
   subscribersLimitForValidation,
+  setStepDataManipulationData,
 }) {
   const [selectedSegments, setSelectedSegments] = useState([]);
   const [updateExistingSubscribers, setUpdateExistingSubscribers] = useState(true);
@@ -33,8 +35,20 @@ function StepDataManipulation({
         history.replace('step_method_selection');
       }
     },
-    [stepMethodSelectionData],
+    [stepMethodSelectionData, history],
   );
+
+  const importSubscribers = () => {
+    doImport(
+      stepMethodSelectionData.subscribers,
+      selectedSegments,
+      updateExistingSubscribers,
+      (importResults) => {
+        setStepDataManipulationData(importResults);
+        history.push('step_results');
+      }
+    );
+  };
 
   if (typeof (stepMethodSelectionData) === 'undefined') {
     return null;
@@ -59,7 +73,7 @@ function StepDataManipulation({
         onPreviousAction={() => (
           history.push(getPreviousStepLink(stepMethodSelectionData, subscribersLimitForValidation))
         )}
-        onNextAction={() => history.push('todo')}
+        onNextAction={importSubscribers}
       />
     </div>
   );
@@ -79,6 +93,7 @@ StepDataManipulation.propTypes = {
     subscribers: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
   }),
   subscribersLimitForValidation: PropTypes.number.isRequired,
+  setStepDataManipulationData: PropTypes.func.isRequired,
 };
 
 StepDataManipulation.defaultProps = {
