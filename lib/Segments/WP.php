@@ -235,5 +235,18 @@ class WP {
       WHERE `wp_user_id` IS NOT NULL AND `status` = "subscribed" AND `confirmed_at` IS NULL AND clicks.id IS NULL AND opens.id IS NULL
     ';
     $wpdb->query(sprintf($query, Subscriber::$_table, StatisticsClicks::$_table, StatisticsOpens::$_table, $wpdb->usermeta));
+
+
+    $column_exists = $wpdb->query(sprintf('SHOW COLUMNS FROM `%s` LIKE "user_status"', $wpdb->users));
+    if ($column_exists) {
+      $query = '
+      UPDATE %s as subscribers
+      JOIN %s as users ON users.ID=subscribers.wp_user_id
+      SET `status` = "unconfirmed"
+      WHERE `status` = "subscribed" AND users.user_status = 2
+    ';
+      $wpdb->query(sprintf($query, Subscriber::$_table, $wpdb->users));
+    }
+
   }
 }
