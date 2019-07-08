@@ -24,6 +24,8 @@ class WooCommercePastRevenues {
   const SUBSCRIBERS_WITH_ORDERS_COUNT = 45;
   const PRODUCTS_COUNT = 50;
   const LOG_BATCH_SIZE = 10;
+  const POST_NOTIFICATIONS_HISTORY = 30;
+  const STANDARD_NEWSLETTER = 30;
 
   /** @var GeneratorHelper */
   private $helper;
@@ -71,7 +73,7 @@ class WooCommercePastRevenues {
     $email_factory = new Newsletter();
     // Create sent standard newsletters
     $sent_standard_newsletters = [];
-    for ($i = 1; $i <= 10; $i++) {
+    for ($i = 1; $i <= self::STANDARD_NEWSLETTER; $i++) {
       $sent_at = $this->getRandomDateInPast();
       $newsletter = $email_factory
         ->withSubject("Standard $i")
@@ -92,7 +94,7 @@ class WooCommercePastRevenues {
       ->withCreatedAt($minimal_created_at_date)
       ->create();
     $sent_post_notifications = [];
-    for ($i = 1; $i <= 10; $i++) {
+    for ($i = 1; $i <= self::POST_NOTIFICATIONS_HISTORY; $i++) {
       $sent_at = $this->getRandomDateInPast();
       $newsletter = $email_factory
         ->withSubject("Post notification history $i")
