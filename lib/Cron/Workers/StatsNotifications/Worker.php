@@ -132,8 +132,6 @@ class Worker {
       'topLinkClicks' => 0,
       'linkSettings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings#basics'),
       'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->id()),
-      'premiumPage' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium'),
-      'premiumPluginActive' => WPFunctions::get()->isPluginActive('mailpoet-premium/mailpoet-premium.php'),
       'clicked' => $clicked,
       'opened' => $opened,
     ];

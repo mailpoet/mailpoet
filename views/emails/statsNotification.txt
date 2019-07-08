@@ -27,13 +27,9 @@
   <%= __('%s unique clicks')|replace({'%s': topLinkClicks}) %>
 <% endif %>
 
-<% if premiumPluginActive %>
 <%= __('View all stats') %>
   <%= linkStats %>
-<% else %>
-<%= __('See Premium features') %>
-  <%= premiumPage %>
-<% endif %>
+
 
 <%= __('How to improve my open rate?') %> https://www.mailpoet.com/how-to-improve-open-rates/
 <%= __('And my click rate?') %> https://www.mailpoet.com/how-to-improve-click-rates/
