@@ -3,7 +3,7 @@ jobs:
   build_and_code_qa:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.3_20190306.1
+      - image: mailpoet/wordpress:7.3_20190705.2
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
@@ -58,7 +58,7 @@ jobs:
   static_analysis:
     working_directory: /home/circleci/mailpoet
     docker:
-    - image: mailpoet/wordpress:7.3_20190306.1
+    - image: mailpoet/wordpress:7.3_20190705.2
     - image: circleci/mysql:5.7-ram
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -76,7 +76,7 @@ jobs:
   php5_unit:
     working_directory: /home/circleci/mailpoet
     docker:
-    - image: mailpoet/wordpress:5.6.30_20180417.1
+    - image: mailpoet/wordpress:5.6.40_20190709.2
     - image: circleci/mysql:5.7-ram
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -104,7 +104,7 @@ jobs:
   php5_integration_and_js:
     working_directory: /home/circleci/mailpoet
     docker:
-    - image: mailpoet/wordpress:5.6.30_20180417.1
+    - image: mailpoet/wordpress:5.6.40_20190709.2
     - image: circleci/mysql:5.7-ram
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -289,7 +289,7 @@ jobs:
   php7_unit:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.3_20190306.1
+      - image: mailpoet/wordpress:7.3_20190705.2
       - image: circleci/mysql:5.7-ram
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -320,7 +320,7 @@ jobs:
   php7_integration:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.3_20190306.1
+      - image: mailpoet/wordpress:7.3_20190705.2
       - image: circleci/mysql:5.7-ram
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -351,7 +351,7 @@ jobs:
   php7_integration_multisite:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.3_20190306.1
+      - image: mailpoet/wordpress:7.3_20190705.2
       - image: circleci/mysql:5.7-ram
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
@@ -382,7 +382,7 @@ jobs:
   build_release_zip:
     working_directory: /home/circleci/mailpoet
     docker:
-      - image: mailpoet/wordpress:7.3_20190306.1
+      - image: mailpoet/wordpress:7.3_20190705.2
       - image: circleci/mysql:5.7-ram
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
