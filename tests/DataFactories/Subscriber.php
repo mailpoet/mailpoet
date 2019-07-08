@@ -57,6 +57,15 @@ class Subscriber {
   }
 
   /**
+   * @param int $count
+   * @return $this
+   */
+  public function withCountConfirmations($count) {
+    $this->data['count_confirmations'] = $count;
+    return $this;
+  }
+
+  /**
    * @param \MailPoet\Models\Segment[] $segments
    * @return $this
    */

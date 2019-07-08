@@ -136,6 +136,11 @@ class Settings {
     return $this;
   }
 
+  function withCaptchaType($type = null) {
+    $this->settings->set('captcha.type', $type);
+    return $this;
+  }
+
   function withInstalledAt(\DateTime $date) {
     $this->settings->set('installed_at', $date);
     return $this;
