@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Settings\UserFlagsRepository;
+use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\Form;
@@ -152,6 +153,7 @@ class Populator {
     $this->scheduleAuthorizedSendingEmailsCheck();
     $this->scheduleBeamer();
     $this->updateLastSubscribedAt();
+    $this->enableStatsNotificationsForAutomatedEmails();
     // Will be uncommented on task [MAILPOET-1998]
     // $this->updateFormsSuccessMessages();
   }
@@ -253,14 +255,15 @@ class Populator {
       $sender = $this->settings->fetch('sender', []);
       $this->settings->set('subscriber_email_notification', [
         'enabled' => true,
+        'automated' => true,
         'address' => isset($sender['address']) ? $sender['address'] : null,
       ]);
     }
 
-    $stats_notifications = $this->settings->fetch('stats_notifications');
+    $stats_notifications = $this->settings->fetch(Worker::SETTINGS_KEY);
     if (empty($stats_notifications)) {
       $sender = $this->settings->fetch('sender', []);
-      $this->settings->set('stats_notifications', [
+      $this->settings->set(Worker::SETTINGS_KEY, [
         'enabled' => true,
         'address' => isset($sender['address']) ? $sender['address'] : null,
       ]);
@@ -629,5 +632,15 @@ class Populator {
       return;
     }
     Form::updateSuccessMessages();
+  }
+
+  private function enableStatsNotificationsForAutomatedEmails() {
+    if (version_compare($this->settings->get('db_version', '3.31.2'), '3.31.1', '>')) {
+      return;
+    }
+    $settings = $this->settings->get(Worker::SETTINGS_KEY);
+    $settings['automated'] = true;
+    $this->settings->set(Worker::SETTINGS_KEY, $settings);
+
   }
 }
