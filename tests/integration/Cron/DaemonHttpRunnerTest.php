@@ -257,6 +257,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createScheduleWorker' => $worker,
       'createQueueWorker' => $worker,
       'createStatsNotificationsWorker' => $worker,
+      'createStatsNotificationsWorkerForAutomatedEmails' => $worker,
       'createSendingServiceKeyCheckWorker' => $worker,
       'createPremiumKeyCheckWorker' => $worker,
       'createBounceWorker' => $worker,

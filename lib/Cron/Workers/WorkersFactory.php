@@ -3,10 +3,11 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Config\Renderer;
-use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationScheduler;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
+use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsWorkerForAutomatedEmails;
+use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationScheduler;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
@@ -30,7 +31,7 @@ class WorkersFactory {
   private $sending_error_handler;
 
   /** @var StatsNotificationScheduler */
-  private $scheduler;
+  private $statsNotificationsScheduler;
 
   /** @var Mailer */
   private $mailer;
@@ -66,7 +67,7 @@ class WorkersFactory {
 
   public function __construct(
     SendingErrorHandler $sending_error_handler,
-    StatsNotificationScheduler $scheduler,
+    StatsNotificationScheduler $statsNotificationsScheduler,
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
@@ -79,7 +80,7 @@ class WorkersFactory {
     SubscribersFinder $subscribers_finder
   ) {
     $this->sending_error_handler = $sending_error_handler;
-    $this->scheduler = $scheduler;
+    $this->statsNotificationsScheduler = $statsNotificationsScheduler;
     $this->mailer = $mailer;
     $this->renderer = $renderer;
     $this->settings = $settings;
@@ -99,11 +100,17 @@ class WorkersFactory {
 
   /** @return SendingQueueWorker */
   function createQueueWorker($timer) {
-    return new SendingQueueWorker($this->sending_error_handler, $this->scheduler, $timer);
+    return new SendingQueueWorker($this->sending_error_handler, $this->statsNotificationsScheduler, $timer);
   }
 
+  /** @return StatsNotificationsWorker */
   function createStatsNotificationsWorker($timer) {
     return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $this->features_controller, $this->woocommerce_helper, $timer);
+  }
+
+  /** @return StatsNotificationsWorkerForAutomatedEmails */
+  function createStatsNotificationsWorkerForAutomatedEmails($timer) {
+    return new StatsNotificationsWorkerForAutomatedEmails($this->settings, $timer);
   }
 
   /** @return SendingServiceKeyCheckWorker */
