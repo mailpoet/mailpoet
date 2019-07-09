@@ -282,29 +282,32 @@
           <%= _x('Stats notifications', 'name of a setting to automatically send statistics (newsletter open rate, click rate, etc) by email') %>
         </label>
         <p class="description">
-          <%= __('Enter the email address that should receive your newsletter’s stats 24 hours after it has been sent.') %>
+          <%= _x(
+            'Enter the email address that should receive your newsletter’s stats 24 hours after it has been sent, or every first Monday of the month for Welcome Emails and WooCommerce emails.',
+            'Please reuse the current translations of “Welcome Emails”'
+          ) %>
       <td>
         <p>
           <label>
             <input
-              type="radio"
+              type="checkbox"
               name="stats_notifications[enabled]"
               value="1"
               <% if(settings.stats_notifications.enabled) %>
                 checked
               <% endif %>
-            /><%= __('Yes') %>
+            /><%= __('Newsletters and Post Notifications') %>
           </label>
-          &nbsp;
+          <br>
           <label>
             <input
-              type="radio"
-              name="stats_notifications[enabled]"
+              type="checkbox"
+              name="stats_notifications[automated]"
               value=""
-              <% if not(settings.stats_notifications.enabled) %>
+              <% if settings.stats_notifications.automated %>
                 checked
               <% endif %>
-            ><%= __('No') %>
+            ><%= _x('Welcome Emails and WooCommerce emails', 'Please reuse the current translations of “Welcome Emails”') %>
           </label>
           <br>
           <input type="email"
