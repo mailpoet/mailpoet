@@ -28,6 +28,8 @@ jobs:
             touch .env
             ./do install
             ./do compile:all --env production
+            ./do doctrine:generate-metadata
+            ./do doctrine:generate-proxies
       - save_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
           paths:
