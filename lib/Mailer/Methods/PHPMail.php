@@ -10,6 +10,8 @@ if (!defined('ABSPATH')) exit;
 require_once ABSPATH . WPINC . '/class-phpmailer.php';
 
 class PHPMail {
+  use BlacklistTrait;
+
   public $sender;
   public $reply_to;
   public $return_path;
@@ -29,6 +31,10 @@ class PHPMail {
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
+    if ($this->isBlacklisted($subscriber)) {
+      $error = $this->error_mapper->getBlacklistError($subscriber);
+      return Mailer::formatMailerErrorResult($error);
+    }
     try {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extra_params);
       $result = $mailer->send();

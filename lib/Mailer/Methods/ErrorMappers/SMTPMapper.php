@@ -7,7 +7,10 @@ use MailPoet\Mailer\SubscriberError;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SMTPMapper {
+  use BlacklistErrorMapperTrait;
   use ConnectionErrorMapperTrait;
+
+  const METHOD = Mailer::METHOD_SMTP;
 
   /**
    * @see https://swiftmailer.symfony.com/docs/sending.html

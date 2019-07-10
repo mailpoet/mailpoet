@@ -9,6 +9,8 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class SendGrid {
+  use BlacklistTrait;
+
   public $url = 'https://api.sendgrid.com/api/mail.send.json';
   public $api_key;
   public $sender;
@@ -28,6 +30,10 @@ class SendGrid {
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
+    if ($this->isBlacklisted($subscriber)) {
+      $error = $this->error_mapper->getBlacklistError($subscriber);
+      return Mailer::formatMailerErrorResult($error);
+    }
     $result = $this->wp->wpRemotePost(
       $this->url,
       $this->request($newsletter, $subscriber, $extra_params)

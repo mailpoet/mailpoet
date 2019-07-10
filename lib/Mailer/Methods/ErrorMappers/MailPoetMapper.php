@@ -2,6 +2,7 @@
 namespace MailPoet\Mailer\Methods\ErrorMappers;
 
 use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Services\Bridge\API;
 use InvalidArgumentException;
@@ -14,7 +15,10 @@ if (!defined('ABSPATH')) exit;
 
 
 class MailPoetMapper {
+  use BlacklistErrorMapperTrait;
   use ConnectionErrorMapperTrait;
+
+  const METHOD = Mailer::METHOD_MAILPOET;
 
   const TEMPORARY_UNAVAILABLE_RETRY_INTERVAL = 300; // seconds
 

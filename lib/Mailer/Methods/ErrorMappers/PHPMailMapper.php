@@ -7,7 +7,10 @@ use MailPoet\Mailer\SubscriberError;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PHPMailMapper {
+  use BlacklistErrorMapperTrait;
   use ConnectionErrorMapperTrait;
+
+  const METHOD = Mailer::METHOD_PHPMAIL;
 
   function getErrorFromException(\Exception $e, $subscriber) {
     $level = MailerError::LEVEL_HARD;

@@ -7,7 +7,10 @@ use MailPoet\Mailer\SubscriberError;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SendGridMapper {
+  use BlacklistErrorMapperTrait;
   use ConnectionErrorMapperTrait;
+
+  const METHOD = Mailer::METHOD_SENDGRID;
 
   function getErrorFromResponse($response, $subscriber) {
     $response = (!empty($response['errors'][0])) ?
