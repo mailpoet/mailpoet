@@ -12,22 +12,18 @@ trait BlacklistTrait {
     return $this->getBlacklist()->isBlacklisted($email);
   }
 
-  function getSubscriberEmailForBlacklistCheck($subscriber) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
+  private function getSubscriberEmailForBlacklistCheck($subscriber_string) {
+    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber_string, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
-      return $subscriber;
+      return $subscriber_string;
     }
     return $subscriber_data['email'];
   }
 
-  function getBlacklist() {
+  private function getBlacklist() {
     if (!$this->blacklist instanceof Blacklist) {
       $this->blacklist = new Blacklist();
     }
     return $this->blacklist;
-  }
-
-  function setBlacklist(Blacklist $blacklist) {
-    $this->blacklist = $blacklist;
   }
 }

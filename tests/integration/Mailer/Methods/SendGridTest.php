@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
+use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\SendGrid;
@@ -86,10 +87,13 @@ class SendGridTest extends \MailPoetTest {
 
   function testItChecksBlacklistBeforeSending() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
-    $blacklist = new Blacklist();
-    $blacklist->addEmail($blacklisted_subscriber);
-    $this->mailer->setBlacklist($blacklist);
-    $result = $this->mailer->send(
+    $blacklist = Stub::make(new Blacklist(), ['isBlacklisted' => true], $this);
+    $mailer = Stub::make(
+      $this->mailer,
+      ['blacklist' => $blacklist, 'error_mapper' => new SendGridMapper()],
+      $this
+    );
+    $result = $mailer->send(
       $this->newsletter,
       $blacklisted_subscriber
     );

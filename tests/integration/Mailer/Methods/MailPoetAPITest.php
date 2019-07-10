@@ -259,10 +259,21 @@ class MailPoetAPITest extends \MailPoetTest {
 
   function testItChecksBlacklistBeforeSendingToASingleSubscriber() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
-    $blacklist = new Blacklist();
-    $blacklist->addEmail($blacklisted_subscriber);
-    $this->mailer->setBlacklist($blacklist);
-    $result = $this->mailer->send(
+    $blacklist = Stub::make(new Blacklist(), ['isBlacklisted' => true], $this);
+    $mailer = Stub::make(
+      $this->mailer,
+      [
+        'blacklist' => $blacklist,
+        'error_mapper' => new MailPoetMapper(),
+        'services_checker' => Stub::make(
+          new ServicesChecker(),
+          ['isMailPoetAPIKeyValid' => true],
+          $this
+        ),
+      ],
+      $this
+    );
+    $result = $mailer->send(
       $this->newsletter,
       $blacklisted_subscriber
     );
@@ -274,10 +285,21 @@ class MailPoetAPITest extends \MailPoetTest {
 
   function testItChecksBlacklistBeforeSendingToMultipleSubscribers() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
-    $blacklist = new Blacklist();
-    $blacklist->addEmail($blacklisted_subscriber);
-    $this->mailer->setBlacklist($blacklist);
-    $result = $this->mailer->send(
+    $blacklist = Stub::make(new Blacklist(), ['isBlacklisted' => true], $this);
+    $mailer = Stub::make(
+      $this->mailer,
+      [
+        'blacklist' => $blacklist,
+        'error_mapper' => new MailPoetMapper(),
+        'services_checker' => Stub::make(
+          new ServicesChecker(),
+          ['isMailPoetAPIKeyValid' => true],
+          $this
+        ),
+      ],
+      $this
+    );
+    $result = $mailer->send(
       $this->newsletter,
       ['good@example.com', $blacklisted_subscriber, 'good2@example.com']
     );
