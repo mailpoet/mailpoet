@@ -1,5 +1,5 @@
 <?php
-__halt_compiler();
+
 namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 
 use MailPoet\Mailer\MailerError;
@@ -18,6 +18,15 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     parent::_before();
     $this->mapper = new MailPoetMapper();
     $this->subscribers = ['a@example.com', 'c d <b@example.com>'];
+  }
+
+  function testCreateBlacklistError() {
+    $error = $this->mapper->getBlacklistError($this->subscribers[1]);
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
+    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
+    expect($error->getMessage())->contains('unknown error');
+    expect($error->getMessage())->contains('MailPoet');
   }
 
   function testCreateConnectionError() {
@@ -53,14 +62,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->equals(Helpers::replaceLinkTags(
-      __('You currently are not permitted to send any emails with MailPoet Sending Service, which may have happened due to poor deliverability. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
-      'https://www.mailpoet.com/support/',
-      array(
-        'target' => '_blank',
-        'rel' => 'noopener noreferrer',
-      )
-    ));
+    expect($error->getMessage())->contains('The MailPoet Sending Service has stopped sending your emails for one of the following reasons');
   }
 
   function testGetErrorUnauthorizedEmail() {
@@ -107,7 +109,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $api_result = [
       'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
       'status' => API::SENDING_STATUS_SEND_ERROR,
-      'message' => '[{"index":0,"errors":{"subject":"subject is missing"}},{"index":1,"errors":{"subject":"subject is missing"}}]'
+      'message' => '[{"index":0,"errors":{"subject":"subject is missing"}},{"index":1,"errors":{"subject":"subject is missing"}}]',
     ];
     $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
     expect($error)->isInstanceOf(MailerError::class);
@@ -125,7 +127,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $api_result = [
       'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
       'status' => API::SENDING_STATUS_SEND_ERROR,
-      'message' => '[{"errors":{"subject":"subject is missing"}},{"errors":{"subject":"subject is missing"}}]'
+      'message' => '[{"errors":{"subject":"subject is missing"}},{"errors":{"subject":"subject is missing"}}]',
     ];
     $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
     expect($error)->isInstanceOf(MailerError::class);

@@ -1,8 +1,10 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\PHPMail;
+use MailPoet\Subscription\Blacklist;
 
 class PHPMailTest extends \MailPoetTest {
   function _before() {
@@ -110,6 +112,21 @@ class PHPMailTest extends \MailPoetTest {
         'email' => 'test@test.com',
         'name' => 'First Last',
       ]);
+  }
+
+  function testItChecksBlacklistBeforeSending() {
+    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklist = new Blacklist();
+    $blacklist->addEmail($blacklisted_subscriber);
+    $this->mailer->setBlacklist($blacklist);
+    $result = $this->mailer->send(
+      $this->newsletter,
+      $blacklisted_subscriber
+    );
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getMessage())->contains('unknown error');
+    expect($result['error']->getMessage())->contains('PHPMail has returned an unknown error.');
   }
 
   function testItCanSend() {

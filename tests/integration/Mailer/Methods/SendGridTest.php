@@ -1,8 +1,10 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\SendGrid;
+use MailPoet\Subscription\Blacklist;
 
 class SendGridTest extends \MailPoetTest {
   function _before() {
@@ -80,6 +82,20 @@ class SendGridTest extends \MailPoetTest {
       $this->subscriber
     );
     expect($result['response'])->false();
+  }
+
+  function testItChecksBlacklistBeforeSending() {
+    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklist = new Blacklist();
+    $blacklist->addEmail($blacklisted_subscriber);
+    $this->mailer->setBlacklist($blacklist);
+    $result = $this->mailer->send(
+      $this->newsletter,
+      $blacklisted_subscriber
+    );
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getMessage())->contains('SendGrid has returned an unknown error.');
   }
 
   function testItCanSend() {
