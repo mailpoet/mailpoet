@@ -1,8 +1,10 @@
 <?php
 namespace MailPoet\Test\Mailer\Methods;
 
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Mailer\Methods\SMTP;
+use MailPoet\Subscription\Blacklist;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SMTPTest extends \MailPoetTest {
@@ -169,6 +171,20 @@ class SMTPTest extends \MailPoetTest {
     );
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport()->getTimeout())->equals(20);
+  }
+
+  function testItChecksBlacklistBeforeSending() {
+    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklist = new Blacklist();
+    $blacklist->addEmail($blacklisted_subscriber);
+    $this->mailer->setBlacklist($blacklist);
+    $result = $this->mailer->send(
+      $this->newsletter,
+      $blacklisted_subscriber
+    );
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getMessage())->contains('SMTP has returned an unknown error.');
   }
 
   function testItCanSend() {

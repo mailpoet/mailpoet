@@ -9,6 +9,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge\API;
+use MailPoet\Subscription\Blacklist;
 
 class MailPoetAPITest extends \MailPoetTest {
   function _before() {
@@ -254,5 +255,35 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $mailer->send([$this->newsletter], [$this->subscriber]);
+  }
+
+  function testItChecksBlacklistBeforeSendingToASingleSubscriber() {
+    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklist = new Blacklist();
+    $blacklist->addEmail($blacklisted_subscriber);
+    $this->mailer->setBlacklist($blacklist);
+    $result = $this->mailer->send(
+      $this->newsletter,
+      $blacklisted_subscriber
+    );
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getMessage())->contains('unknown error');
+    expect($result['error']->getMessage())->contains('MailPoet has returned an unknown error.');
+  }
+
+  function testItChecksBlacklistBeforeSendingToMultipleSubscribers() {
+    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklist = new Blacklist();
+    $blacklist->addEmail($blacklisted_subscriber);
+    $this->mailer->setBlacklist($blacklist);
+    $result = $this->mailer->send(
+      $this->newsletter,
+      ['good@example.com', $blacklisted_subscriber, 'good2@example.com']
+    );
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getMessage())->contains('unknown error');
+    expect($result['error']->getMessage())->contains('MailPoet has returned an unknown error.');
   }
 }
