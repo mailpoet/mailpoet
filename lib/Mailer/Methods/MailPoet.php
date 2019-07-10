@@ -12,6 +12,8 @@ use MailPoet\Services\Bridge\API;
 if (!defined('ABSPATH')) exit;
 
 class MailPoet {
+  use BlacklistTrait;
+
   public $api;
   public $sender;
   public $reply_to;
@@ -35,6 +37,14 @@ class MailPoet {
   function send($newsletter, $subscriber, $extra_params = []) {
     if ($this->services_checker->isMailPoetAPIKeyValid() === false) {
       return Mailer::formatMailerErrorResult($this->error_mapper->getInvalidApiKeyError());
+    }
+
+    $subscribers_for_blacklist_check = is_array($subscriber) ? $subscriber : [$subscriber];
+    foreach ($subscribers_for_blacklist_check as $sub) {
+      if ($this->isBlacklisted($sub)) {
+        $error = $this->error_mapper->getBlacklistError($sub);
+        return Mailer::formatMailerErrorResult($error);
+      }
     }
 
     $message_body = $this->getBody($newsletter, $subscriber, $extra_params);
@@ -124,5 +134,9 @@ class MailPoet {
       );
     }
     return $body;
+  }
+
+  function checkBlacklist(array $subscribers) {
+
   }
 }

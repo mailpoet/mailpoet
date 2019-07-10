@@ -8,6 +8,8 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class SMTP {
+  use BlacklistTrait;
+
   public $host;
   public $port;
   public $authentication;
@@ -48,6 +50,10 @@ class SMTP {
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
+    if ($this->isBlacklisted($subscriber)) {
+      $error = $this->error_mapper->getBlacklistError($subscriber);
+      return Mailer::formatMailerErrorResult($error);
+    }
     try {
       $message = $this->createMessage($newsletter, $subscriber, $extra_params);
       $result = $this->mailer->send($message);

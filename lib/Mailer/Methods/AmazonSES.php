@@ -8,6 +8,8 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class AmazonSES {
+  use BlacklistTrait;
+
   public $aws_access_key;
   public $aws_secret_key;
   public $aws_region;
@@ -67,6 +69,10 @@ class AmazonSES {
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
+    if ($this->isBlacklisted($subscriber)) {
+      $error = $this->error_mapper->getBlacklistError($subscriber);
+      return Mailer::formatMailerErrorResult($error);
+    }
     try {
       $result = $this->wp->wpRemotePost(
         $this->url,
