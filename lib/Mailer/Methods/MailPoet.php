@@ -135,8 +135,4 @@ class MailPoet {
     }
     return $body;
   }
-
-  function checkBlacklist(array $subscribers) {
-
-  }
 }

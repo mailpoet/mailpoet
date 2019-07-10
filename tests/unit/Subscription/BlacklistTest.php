@@ -7,7 +7,7 @@ class BlacklistTest extends \MailPoetUnitTest {
     $blacklist = new Blacklist();
     $result = $blacklist->isBlacklisted($email);
     expect($result)->equals(false);
-    $blacklist->addEmail($email);
+    $blacklist = new Blacklist([$email]);
     $result = $blacklist->isBlacklisted($email);
     expect($result)->equals(true);
   }
