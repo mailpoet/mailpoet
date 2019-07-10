@@ -4,6 +4,7 @@ namespace MailPoet\Test\Mailer\Methods;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\AmazonSES;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
+use MailPoet\Subscription\Blacklist;
 
 class AmazonSESTest extends \MailPoetTest {
   function _before() {
@@ -231,6 +232,20 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getMessage())->contains('does not comply with RFC 2822');
+  }
+
+  function testItChecksBlacklistBeforeSending() {
+    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklist = new Blacklist();
+    $blacklist->addEmail($blacklisted_subscriber);
+    $this->mailer->setBlacklist($blacklist);
+    $result = $this->mailer->send(
+      $this->newsletter,
+      $blacklisted_subscriber
+    );
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getMessage())->contains('AmazonSES has returned an unknown error.');
   }
 
   function testItCanSend() {
