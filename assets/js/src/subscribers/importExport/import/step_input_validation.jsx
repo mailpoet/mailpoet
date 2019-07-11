@@ -5,7 +5,7 @@ import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
 import PreviousNextStepButtons from './previous_next_step_buttons.jsx';
 
-const renderServicesMessage = () => {
+const ServicesMessage = () => {
   let message = ReactStringReplace(MailPoet.I18n.t('useServices'), '%1$s', () => (
     <a
       href="https://www.briteverify.com"
@@ -101,7 +101,7 @@ class StepInputValidation extends Component {
           {MailPoet.I18n.t('emailAddressesWillBounce')}
         </p>
         <p className="description">
-          {renderServicesMessage()}
+          <ServicesMessage />
         </p>
         <label htmlFor="understand">
           <input
