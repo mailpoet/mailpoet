@@ -6,8 +6,9 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Activator;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Config\Populator;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 
 if (!defined('ABSPATH')) exit;
 
@@ -24,7 +25,8 @@ class Setup extends APIEndpoint {
   function reset() {
     try {
       $settings = new SettingsController();
-      $activator = new Activator($settings, new Populator($settings, $this->wp));
+      $captcha = new Captcha();
+      $activator = new Activator($settings, new Populator($settings, $this->wp, $captcha));
       $activator->deactivate();
       $activator->activate();
       $this->wp->doAction('mailpoet_setup_reset');

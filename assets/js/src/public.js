@@ -22,6 +22,15 @@ jQuery(function ($) { // eslint-disable-line func-names
     return (window.location.hostname === link.hostname);
   }
 
+  function updateCaptcha(e) {
+    var captcha = $('img.mailpoet_captcha');
+    var captchaSrc = captcha.attr('src');
+    var hashPos = captchaSrc.indexOf('#');
+    var newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
+    captcha.attr('src', newSrc + '#' + new Date().getTime());
+    if (e) e.preventDefault();
+  }
+
   $(function () { // eslint-disable-line func-names
     // setup form validation
     $('form.mailpoet_form').each(function () { // eslint-disable-line func-names
@@ -68,7 +77,7 @@ jQuery(function ($) { // eslint-disable-line func-names
               window.top.location.href = response.meta.redirect_url;
             } else {
               if (response.meta && response.meta.refresh_captcha) {
-                $('.mailpoet_captcha_update').click();
+                updateCaptcha();
               }
               form.find('.mailpoet_validate_error').html(
                 response.errors.map(function buildErrorMessage(error) {
@@ -125,13 +134,6 @@ jQuery(function ($) { // eslint-disable-line func-names
       });
     });
 
-    $('.mailpoet_captcha_update').click(function updateCaptcha(e) {
-      var captcha = $('img.mailpoet_captcha');
-      var captchaSrc = captcha.attr('src');
-      var hashPos = captchaSrc.indexOf('#');
-      var newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
-      captcha.attr('src', newSrc + '#' + new Date().getTime());
-      e.preventDefault();
-    });
+    $('.mailpoet_captcha_update').on('click', updateCaptcha);
   });
 });

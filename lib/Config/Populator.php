@@ -38,11 +38,18 @@ class Populator {
   private $settings;
   /** @var WPFunctions */
   private $wp;
+  /** @var Captcha */
+  private $captcha;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
 
-  function __construct(SettingsController $settings, WPFunctions $wp) {
+  function __construct(
+    SettingsController $settings,
+    WPFunctions $wp,
+    Captcha $captcha
+  ) {
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->captcha = $captcha;
     $this->prefix = Env::$db_prefix;
     $this->models = [
       'newsletter_option_fields',
@@ -226,11 +233,10 @@ class Populator {
     $captcha = $this->settings->fetch('captcha');
     $re_captcha = $this->settings->fetch('re_captcha');
     if (empty($captcha)) {
-      $subscription_captcha = new Captcha;
       $captcha_type = Captcha::TYPE_DISABLED;
       if (!empty($re_captcha['enabled'])) {
         $captcha_type = Captcha::TYPE_RECAPTCHA;
-      } elseif ($subscription_captcha->isSupported()) {
+      } elseif ($this->captcha->isSupported()) {
         $captcha_type = Captcha::TYPE_BUILTIN;
       }
       $this->settings->set('captcha', [

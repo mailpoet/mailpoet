@@ -292,6 +292,9 @@ class Pages {
 
     $form_id = isset($_SESSION[Captcha::SESSION_FORM_KEY]['form_id']) ? (int)$_SESSION[Captcha::SESSION_FORM_KEY]['form_id'] : 0;
     $form_model = FormModel::findOne($form_id);
+    if (!$form_model instanceof FormModel) {
+      return false;
+    }
     $form_model = $form_model->asArray();
 
     $form_html = '<form method="POST" ' .

@@ -10,6 +10,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Notices\AfterMigrationNotice;
 use MailPoet\Util\ProgressBar;
 use MailPoet\WP\Functions as WPFunctions;
@@ -217,7 +218,8 @@ class MP2Migrator {
    */
   private function eraseMP3Data() {
     $settings = new SettingsController();
-    $activator = new Activator($settings, new Populator($settings, WPFunctions::get()));
+    $captcha = new Captcha();
+    $activator = new Activator($settings, new Populator($settings, WPFunctions::get(), $captcha));
     $activator->deactivate();
     $activator->activate();
 

@@ -90,6 +90,14 @@ class Captcha {
       return $builder->get();
     }
 
+    header("Expires: Sat, 01 Jan 2019 01:00:00 GMT"); // time in the past
+    header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+    header("Cache-Control: no-store, no-cache, must-revalidate");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+    header('X-Cache-Enabled: False');
+    header('X-LiteSpeed-Cache-Control: no-cache');
+
     header('Content-Type: image/jpeg');
     $builder->output();
     exit;

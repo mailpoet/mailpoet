@@ -37,6 +37,9 @@ class Settings {
   /** @var ServicesChecker */
   private $services_checker;
 
+  /** @var Captcha */
+  private $captcha;
+
   /** @var FeaturesController */
   private $features_controller;
 
@@ -50,7 +53,8 @@ class Settings {
     WPFunctions $wp,
     ServicesChecker $services_checker,
     FeaturesController $features_controller,
-    Installation $installation
+    Installation $installation,
+    Captcha $captcha
   ) {
     $this->page_renderer = $page_renderer;
     $this->settings = $settings;
@@ -59,6 +63,7 @@ class Settings {
     $this->services_checker = $services_checker;
     $this->features_controller = $features_controller;
     $this->installation = $installation;
+    $this->captcha = $captcha;
   }
 
   function render() {
@@ -90,7 +95,7 @@ class Settings {
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts(),
       ],
-      'built_in_captcha_supported' => (new Captcha)->isSupported(),
+      'built_in_captcha_supported' => $this->captcha->isSupported(),
     ];
 
     $data['is_new_user'] = $this->installation->isNewInstallation();

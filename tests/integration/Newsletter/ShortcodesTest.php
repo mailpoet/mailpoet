@@ -10,6 +10,7 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -25,7 +26,7 @@ class ShortcodesTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->settings = new SettingsController();
-    $populator = new Populator($this->settings, WPFunctions::get());
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha);
     $populator->up();
     $this->WP_user = $this->_createWPUser();
     $this->WP_post = $this->_createWPPost();
