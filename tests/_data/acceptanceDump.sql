@@ -385,7 +385,8 @@ INSERT INTO `mp_mailpoet_settings` (`id`, `name`, `value`, `created_at`, `update
 (22,	'analytics',	'a:1:{s:7:\"enabled\";s:0:\"\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
 (23,	'premium',	'a:1:{s:11:\"premium_key\";s:0:\"\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
 (24,	'user_seen_editor_tutorial1',	'1',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(25,	'display_nps_poll',	'0',	'2018-12-13 14:20:00',	'2018-12-13 14:20:00');
+(25,	'display_nps_poll',	'0',	'2018-12-13 14:20:00',	'2018-12-13 14:20:00'),
+(26,	'captcha',	'a:3:{s:20:"recaptcha_site_token";s:0:"";s:22:"recaptcha_secret_token";s:0:"";s:4:"type";s:0:"";}',	'2019-07-11 15:35:00',	'2019-07-11 15:35:00');
 
 DROP TABLE IF EXISTS `mp_mailpoet_statistics_clicks`;
 CREATE TABLE `mp_mailpoet_statistics_clicks` (

@@ -56,5 +56,6 @@ class SubscriptionCaptchaCest {
   function _after(\AcceptanceTester $I) {
     $I->cli('widget reset sidebar-1 --allow-root');
     $I->cli('db query "TRUNCATE TABLE mp_mailpoet_subscriber_ips" --allow-root');
+    $this->settings_factory->withCaptchaType(Captcha::TYPE_DISABLED);
   }
 }
