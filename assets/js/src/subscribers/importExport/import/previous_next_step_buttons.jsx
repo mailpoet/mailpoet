@@ -9,22 +9,6 @@ const PreviousNextStepButtons = ({
   onPreviousAction,
   onNextAction,
 }) => {
-  const showPreviousStep = () => {
-    if (hidePrevious) return null;
-    return (
-      <>
-        <button
-          className="button-primary wysija button"
-          type="button"
-          onClick={() => onPreviousAction()}
-        >
-          {MailPoet.I18n.t('previousStep')}
-        </button>
-        &nbsp;&nbsp;
-      </>
-    );
-  };
-
   const nextStepClasses = classNames(
     'button-primary',
     'wysija',
@@ -32,7 +16,18 @@ const PreviousNextStepButtons = ({
   );
   return (
     <div className="mailpoet_import_step_buttons">
-      {showPreviousStep()}
+      {!hidePrevious && (
+        <>
+          <button
+            className="button-primary wysija button"
+            type="button"
+            onClick={() => onPreviousAction()}
+          >
+            {MailPoet.I18n.t('previousStep')}
+          </button>
+        &nbsp;&nbsp;
+        </>
+      )}
       <button
         type="button"
         data-automation-id="import-next-step"
