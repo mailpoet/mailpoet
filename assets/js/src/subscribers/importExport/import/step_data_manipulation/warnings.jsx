@@ -4,17 +4,22 @@ import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import classNames from 'classnames';
 
-const getSingleWarning = (warningTranslation, subscribers) => {
+const SingleWarning = ({ translation, subscribers }) => {
   let warning = '';
   if (subscribers.length) {
     warning = ReactStringReplace(
-      warningTranslation.replace('%2$s', subscribers.join(', ')),
+      translation.replace('%2$s', subscribers.join(', ')),
       '%1$s',
-      () => <strong key={warningTranslation}>{subscribers.length.toLocaleString()}</strong>
+      () => <strong key={translation}>{subscribers.length.toLocaleString()}</strong>
     );
     warning = <p>{warning}</p>;
   }
   return warning;
+};
+
+SingleWarning.propTypes = {
+  translation: PropTypes.string.isRequired,
+  subscribers: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const Warnings = ({
@@ -29,9 +34,9 @@ const Warnings = ({
     { mailpoet_hidden: !detailsShown },
   );
 
-  const invalidWarning = getSingleWarning(MailPoet.I18n.t('importNoticeInvalid'), invalid);
+  const invalidWarning = <SingleWarning translation={MailPoet.I18n.t('importNoticeInvalid')} subscribers={invalid} />;
 
-  const duplicateWarning = getSingleWarning(MailPoet.I18n.t('importNoticeDuplicate'), duplicate);
+  const duplicateWarning = <SingleWarning translation={MailPoet.I18n.t('importNoticeDuplicate')} subscribers={duplicate} />;
 
   let roleBasedWarning = '';
   if (role.length) {
