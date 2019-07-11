@@ -39,6 +39,9 @@ class Pages {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var CaptchaRenderer */
+  private $captcha_renderer;
+
   function __construct(
     NewSubscriberNotificationMailer $new_subscriber_notification_sender,
     WPFunctions $wp,
@@ -49,6 +52,7 @@ class Pages {
     $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
     $this->settings = $settings;
     $this->url_helper = $url_helper;
+    $this->captcha_renderer = new CaptchaRenderer;
   }
 
   function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
@@ -162,7 +166,7 @@ class Pages {
       // when it's our own page, generate page title based on requested action
       switch ($this->action) {
         case self::ACTION_CAPTCHA:
-          return $this->getCaptchaTitle();
+          return $this->captcha_renderer->getCaptchaPageTitle();
 
         case self::ACTION_CONFIRM:
           return $this->getConfirmTitle();
@@ -189,7 +193,7 @@ class Pages {
 
       switch ($this->action) {
         case self::ACTION_CAPTCHA:
-          $content = $this->getCaptchaContent();
+          $content = $this->captcha_renderer->getCaptchaPageContent();
           break;
         case self::ACTION_CONFIRM:
           $content = $this->getConfirmContent();
@@ -225,10 +229,6 @@ class Pages {
     return $meta;
   }
 
-  private function getCaptchaTitle() {
-    return WPFunctions::get()->__("Confirm you’re not a robot", 'mailpoet');
-  }
-
   private function getConfirmTitle() {
     if ($this->isPreview()) {
       $title = sprintf(
@@ -262,70 +262,6 @@ class Pages {
     if ($this->isPreview() || $this->subscriber !== false) {
       return $this->wp->__("You are now unsubscribed.", 'mailpoet');
     }
-  }
-
-  private function getCaptchaContent() {
-    $fields = [
-      [
-        'id' => 'captcha',
-        'type' => 'text',
-        'params' => [
-          'label' => WPFunctions::get()->__('Type in the input the characters you see in the picture above:', 'mailpoet'),
-          'value' => '',
-          'obfuscate' => false,
-        ],
-      ],
-    ];
-
-    $form = array_merge(
-      $fields,
-      [
-        [
-          'id' => 'submit',
-          'type' => 'submit',
-          'params' => [
-            'label' => WPFunctions::get()->__('Subscribe', 'mailpoet'),
-          ],
-        ],
-      ]
-    );
-
-    $form_id = isset($_SESSION[Captcha::SESSION_FORM_KEY]['form_id']) ? (int)$_SESSION[Captcha::SESSION_FORM_KEY]['form_id'] : 0;
-    $form_model = FormModel::findOne($form_id);
-    if (!$form_model instanceof FormModel) {
-      return false;
-    }
-    $form_model = $form_model->asArray();
-
-    $form_html = '<form method="POST" ' .
-      'action="' . admin_url('admin-post.php?action=mailpoet_subscription_form') . '" ' .
-      'class="mailpoet_form mailpoet_captcha_form" ' .
-      'novalidate>';
-    $form_html .= '<input type="hidden" name="data[form_id]" value="' . $form_id . '" />';
-    $form_html .= '<input type="hidden" name="api_version" value="v1" />';
-    $form_html .= '<input type="hidden" name="endpoint" value="subscribers" />';
-    $form_html .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
-    $form_html .= '<input type="hidden" name="mailpoet_redirect" ' .
-      'value="' . htmlspecialchars($this->url_helper->getCurrentUrl(), ENT_QUOTES) . '" />';
-
-    $width = 220;
-    $height = 60;
-    $captcha_url = Url::getCaptchaImageUrl($width, $height);
-
-    $form_html .= '<div class="mailpoet_form_hide_on_success">';
-    $form_html .= '<p class="mailpoet_paragraph">';
-    $form_html .= '<img class="mailpoet_captcha mailpoet_captcha_update" src="' . $captcha_url . '" width="' . $width . '" height="' . $height . '" title="' . WPFunctions::get()->__('Click to refresh the captcha', 'mailpoet') . '" />';
-    $form_html .= '</p>';
-
-    // subscription form
-    $form_html .= FormRenderer::renderBlocks($form, $honeypot = false);
-    $form_html .= '</div>';
-    $form_html .= '<div class="mailpoet_message">';
-    $form_html .= '<p class="mailpoet_validate_success" style="display:none;">' . $form_model['settings']['success_message'] . '</p>';
-    $form_html .= '<p class="mailpoet_validate_error" style="display:none;"></p>';
-    $form_html .= '</div>';
-    $form_html .= '</form>';
-    return $form_html;
   }
 
   private function getConfirmContent() {
