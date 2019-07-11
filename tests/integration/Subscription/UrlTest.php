@@ -7,12 +7,13 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 use MailPoet\Config\Populator;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
 
 class UrlTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $populator = new Populator(new SettingsController, WPFunctions::get());
+    $populator = new Populator(new SettingsController, WPFunctions::get(), new Captcha);
     $populator->up();
   }
 

@@ -30,6 +30,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\Url;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -47,7 +48,7 @@ class SendingQueueTest extends \MailPoetTest {
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
     $this->settings = new SettingsController();
-    $populator = new Populator($this->settings, WPFunctions::get());
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha);
     $populator->up();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';
