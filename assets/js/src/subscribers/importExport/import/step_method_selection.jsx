@@ -52,39 +52,33 @@ function StepMethodSelection({
         activeMethod={method}
         onMethodChange={setMethod}
       />
-      { method === 'paste-method'
-        ? (
-          <MethodPaste
-            onValueChange={setPastedCsvData}
-            onFinish={processLocal}
-            canFinish={!!pastedCsvData.trim()}
-            data={pastedCsvData}
-          />
-        ) : null
-      }
-      { method === 'file-method'
-        ? (
-          <MethodUpload
-            onValueChange={setFile}
-            onFinish={processLocal}
-            canFinish={!!file}
-            data={file}
-          />
-        ) : null
-      }
-      { method === 'mailchimp-method'
-        ? (
-          <MethodMailChimp
-            onFinish={(data) => {
-              MailPoet.trackEvent('Subscribers import started', {
-                source: 'MailChimp',
-                'MailPoet Free version': window.mailpoet_version,
-              });
-              finish(data);
-            }}
-          />
-        ) : null
-      }
+      { method === 'paste-method' && (
+      <MethodPaste
+        onValueChange={setPastedCsvData}
+        onFinish={processLocal}
+        canFinish={!!pastedCsvData.trim()}
+        data={pastedCsvData}
+      />
+      )}
+      { method === 'file-method' && (
+      <MethodUpload
+        onValueChange={setFile}
+        onFinish={processLocal}
+        canFinish={!!file}
+        data={file}
+      />
+      )}
+      { method === 'mailchimp-method' && (
+      <MethodMailChimp
+        onFinish={(data) => {
+          MailPoet.trackEvent('Subscribers import started', {
+            source: 'MailChimp',
+            'MailPoet Free version': window.mailpoet_version,
+          });
+          finish(data);
+        }}
+      />
+      )}
     </div>
   );
 }

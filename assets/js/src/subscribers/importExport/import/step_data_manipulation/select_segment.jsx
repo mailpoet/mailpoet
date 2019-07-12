@@ -46,8 +46,7 @@ function SelectSegment({ setSelectedSegments }) {
         role="button"
         tabIndex={0}
         onKeyDown={(event) => {
-          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-          ) {
+          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))) {
             event.preventDefault();
             createNewSegment(onCreateNewSegment);
           }
