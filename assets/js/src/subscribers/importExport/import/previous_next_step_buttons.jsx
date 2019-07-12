@@ -21,7 +21,7 @@ const PreviousNextStepButtons = ({
           <button
             className="button-primary wysija button"
             type="button"
-            onClick={() => onPreviousAction()}
+            onClick={onPreviousAction}
           >
             {MailPoet.I18n.t('previousStep')}
           </button>
