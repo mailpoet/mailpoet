@@ -4,8 +4,10 @@ namespace MailPoet\Config;
 
 use Carbon\Carbon;
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -72,6 +74,9 @@ class Menu {
   /** @var Installation */
   private $installation;
 
+  /** @var ContainerWrapper */
+  private $container;
+
   private $subscribers_over_limit;
 
   function __construct(
@@ -84,7 +89,8 @@ class Menu {
     UserFlagsController $user_flags,
     PageRenderer $page_renderer,
     Listing\PageLimit $listing_page_limit,
-    Installation $installation
+    Installation $installation,
+    ContainerWrapper $containerWrapper
   ) {
     $this->access_control = $access_control;
     $this->wp = $wp;
@@ -96,6 +102,7 @@ class Menu {
     $this->page_renderer = $page_renderer;
     $this->listing_page_limit = $listing_page_limit;
     $this->installation = $installation;
+    $this->container = $containerWrapper;
   }
 
   function init() {
@@ -439,15 +446,7 @@ class Menu {
   }
 
   function welcomeWizard() {
-    if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
-    $data = [
-      'is_mp2_migration_complete' => (bool)$this->settings->get(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY),
-      'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
-      'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
-      'sender' => $this->settings->get('sender'),
-      'admin_email' => get_option('admin_email'),
-    ];
-    $this->page_renderer->displayPage('welcome_wizard.html', $data);
+    $this->container->get(WelcomeWizard::class)->render();
   }
 
   function wooCommerceListImport() {
