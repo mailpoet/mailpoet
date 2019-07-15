@@ -5,9 +5,9 @@ namespace MailPoet\Config;
 use Carbon\Carbon;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\Newsletters;
+use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
@@ -23,7 +23,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
-use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
@@ -33,7 +32,6 @@ use MailPoet\Tasks\State;
 use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
-use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Readme;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -41,9 +39,6 @@ if (!defined('ABSPATH')) exit;
 
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
-
-  /** @var WooCommerceHelper */
-  private $woocommerce_helper;
 
   /** @var Renderer */
   public $renderer;
@@ -84,7 +79,6 @@ class Menu {
     SettingsController $settings,
     FeaturesController $featuresController,
     WPFunctions $wp,
-    WooCommerceHelper $woocommerce_helper,
     ServicesChecker $servicesChecker,
     UserFlagsController $user_flags,
     PageRenderer $page_renderer,
@@ -96,7 +90,6 @@ class Menu {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->features_controller = $featuresController;
-    $this->woocommerce_helper = $woocommerce_helper;
     $this->servicesChecker = $servicesChecker;
     $this->user_flags = $user_flags;
     $this->page_renderer = $page_renderer;
@@ -522,44 +515,9 @@ class Menu {
     $this->page_renderer->displayPage('premium.html', $data);
   }
 
-
   function settings() {
-    $settings = $this->settings->getAll();
-    $flags = $this->_getFlags();
-
-    // force MSS key check even if the method isn't active
-    $mp_api_key_valid = $this->servicesChecker->isMailPoetAPIKeyValid(false, true);
-
-    $data = [
-      'settings' => $settings,
-      'segments' => Segment::getSegmentsWithSubscriberCount(),
-      'cron_trigger' => CronTrigger::getAvailableMethods(),
-      'total_subscribers' => Subscriber::getTotalSubscribers(),
-      'premium_plugin_active' => License::getLicense(),
-      'premium_key_valid' => !empty($this->premium_key_valid),
-      'mss_active' => Bridge::isMPSendingServiceEnabled(),
-      'mss_key_valid' => !empty($mp_api_key_valid),
-      'members_plugin_active' => $this->wp->isPluginActive('members/members.php'),
-      'pages' => Pages::getAll(),
-      'flags' => $flags,
-      'current_user' => $this->wp->wpGetCurrentUser(),
-      'linux_cron_path' => dirname(dirname(__DIR__)),
-      'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
-      'display_revenues' => $this->features_controller->isSupported(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES),
-      'ABSPATH' => ABSPATH,
-      'hosts' => [
-        'web' => Hosts::getWebHosts(),
-        'smtp' => Hosts::getSMTPHosts(),
-      ],
-    ];
-
-    $data['is_new_user'] = $this->installation->isNewInstallation();
-
-    $data = array_merge($data, Installer::getPremiumStatus());
-
-    $this->page_renderer->displayPage('settings.html', $data);
+    $this->container->get(Settings::class)->render();
   }
-
 
   function help() {
     $tasks_state = new State();
@@ -591,32 +549,6 @@ class Menu {
 
   function experimentalFeatures() {
     $this->page_renderer->displayPage('experimental-features.html', []);
-  }
-
-  private function _getFlags() {
-    // flags (available features on WP install)
-    $flags = [];
-
-    if (is_multisite()) {
-      // get multisite registration option
-      $registration = $this->wp->applyFilters(
-        'wpmu_registration_enabled',
-        $this->wp->getSiteOption('registration', 'all')
-      );
-
-      // check if users can register
-      $flags['registration_enabled'] =
-        !(in_array($registration, [
-          'none',
-          'blog',
-        ]));
-    } else {
-      // check if users can register
-      $flags['registration_enabled'] =
-        (bool)get_option('users_can_register', false);
-    }
-
-    return $flags;
   }
 
   function subscribers() {

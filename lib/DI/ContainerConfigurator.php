@@ -31,6 +31,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // AdminPages
     $container->autowire(\MailPoet\AdminPages\PageRenderer::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Newsletters::class);
+    $container->autowire(\MailPoet\AdminPages\Pages\Settings::class);
     $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class);
     // Analytics
     $container->autowire(\MailPoet\Analytics\Reporter::class)->setPublic(true);
