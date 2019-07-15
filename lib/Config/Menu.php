@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\Forms;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\MP2Migration;
@@ -437,7 +438,7 @@ class Menu {
   }
 
   function experimentalFeatures() {
-    $this->page_renderer->displayPage('experimental-features.html', []);
+    $this->container->get(ExperimentalFeatures::class)->render();
   }
 
   function subscribers() {
