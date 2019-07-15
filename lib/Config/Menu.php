@@ -27,6 +27,7 @@ use MailPoet\Settings\UserFlagsController;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\State;
+use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -68,6 +69,9 @@ class Menu {
   /** @var Listing\PageLimit */
   private $listing_page_limit;
 
+  /** @var Installation */
+  private $installation;
+
   private $subscribers_over_limit;
 
   function __construct(
@@ -79,7 +83,8 @@ class Menu {
     ServicesChecker $servicesChecker,
     UserFlagsController $user_flags,
     PageRenderer $page_renderer,
-    Listing\PageLimit $listing_page_limit
+    Listing\PageLimit $listing_page_limit,
+    Installation $installation
   ) {
     $this->access_control = $access_control;
     $this->wp = $wp;
@@ -90,6 +95,7 @@ class Menu {
     $this->user_flags = $user_flags;
     $this->page_renderer = $page_renderer;
     $this->listing_page_limit = $listing_page_limit;
+    $this->installation = $installation;
   }
 
   function init() {
@@ -548,7 +554,7 @@ class Menu {
       ],
     ];
 
-    $data['is_new_user'] = $this->isNewUser();
+    $data['is_new_user'] = $this->installation->isNewInstallation();
 
     $data = array_merge($data, Installer::getPremiumStatus());
 
@@ -662,7 +668,7 @@ class Menu {
     $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
 
-    $data['is_new_user'] = $this->isNewUser();
+    $data['is_new_user'] = $this->installation->isNewInstallation();
 
     $this->page_renderer->displayPage('forms.html', $data);
   }
@@ -767,7 +773,7 @@ class Menu {
       ],
     ];
 
-    $data['is_new_user'] = $this->isNewUser();
+    $data['is_new_user'] = $this->installation->isNewInstallation();
 
     $this->wp->wpEnqueueScript('jquery-ui');
     $this->wp->wpEnqueueScript('jquery-ui-datepicker');
@@ -804,7 +810,7 @@ class Menu {
       'role_based_emails' => json_encode(ModelValidator::ROLE_EMAILS),
     ]);
 
-    $data['is_new_user'] = $this->isNewUser();
+    $data['is_new_user'] = $this->installation->isNewInstallation();
 
     $this->page_renderer->displayPage('subscribers/importExport/import.html', $data);
   }
@@ -921,15 +927,5 @@ class Menu {
       && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
     $checker = $checker ?: $this->servicesChecker;
     $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
-  }
-
-  function isNewUser() {
-    $installed_at = $this->settings->get('installed_at');
-    if (is_null($installed_at)) {
-      return true;
-    }
-    $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));
-    $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    return $current_time->diffInDays($installed_at) <= 30;
   }
 }
