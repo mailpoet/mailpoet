@@ -7,7 +7,9 @@ use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
+use MailPoet\AdminPages\Pages\Premium;
 use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
+use MailPoet\AdminPages\Pages\Segments;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\Subscribers;
 use MailPoet\AdminPages\Pages\Update;
@@ -427,13 +429,7 @@ class Menu {
   }
 
   function premium() {
-    $data = [
-      'subscriber_count' => Subscriber::getTotalSubscribers(),
-      'sub_menu' => self::MAIN_PAGE_SLUG,
-      'display_discount' => time() <= strtotime('2018-11-30 23:59:59'),
-    ];
-
-    $this->page_renderer->displayPage('premium.html', $data);
+    $this->container->get(Premium::class)->render();
   }
 
   function settings() {
@@ -453,9 +449,7 @@ class Menu {
   }
 
   function segments() {
-    $data = [];
-    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('segments');
-    $this->page_renderer->displayPage('segments.html', $data);
+    $this->container->get(Segments::class)->render();
   }
 
   function forms() {
