@@ -7,12 +7,12 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Util\Installation;
-use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MenuTest extends \MailPoetTest {
@@ -97,12 +97,12 @@ class MenuTest extends \MailPoetTest {
       $settings,
       new FeaturesController(),
       $wp,
-      new WooCommerceHelper($wp),
       new ServicesChecker,
       new UserFlagsController,
       $renderer,
       new PageLimit($wp),
-      new Installation($settings, $wp)
+      new Installation($settings, $wp),
+      ContainerWrapper::getInstance()
     );
   }
 }
