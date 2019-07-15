@@ -34,6 +34,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\NewsletterEditor::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Newsletters::class);
     $container->autowire(\MailPoet\AdminPages\Pages\MP2Migration::class);
+    $container->autowire(\MailPoet\AdminPages\Pages\RevenueTrackingPermission::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Settings::class);
     $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class);
     $container->autowire(\MailPoet\AdminPages\Pages\WooCommerceListImport::class);
