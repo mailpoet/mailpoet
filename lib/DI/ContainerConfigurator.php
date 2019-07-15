@@ -33,6 +33,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\Help::class);
     $container->autowire(\MailPoet\AdminPages\Pages\NewsletterEditor::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Newsletters::class);
+    $container->autowire(\MailPoet\AdminPages\Pages\MP2Migration::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Settings::class);
     $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class);
     // Analytics
@@ -69,6 +70,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\Hooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Initializer::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Menu::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\MP2Migrator::class);
     $container->autowire(\MailPoet\Config\RendererFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\ServicesChecker::class);
     $container->autowire(\MailPoet\Config\Shortcodes::class)

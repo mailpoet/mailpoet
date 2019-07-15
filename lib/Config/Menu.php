@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use Carbon\Carbon;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\Help;
+use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
 use MailPoet\AdminPages\Pages\Settings;
@@ -417,13 +418,7 @@ class Menu {
   }
 
   function migration() {
-    $mp2_migrator = new MP2Migrator();
-    $mp2_migrator->init();
-    $data = [
-      'log_file_url' => $mp2_migrator->log_file_url,
-      'progress_url' => $mp2_migrator->progressbar->url,
-    ];
-    $this->page_renderer->displayPage('mp2migration.html', $data);
+    $this->container->get(MP2Migration::class)->render();
   }
 
   function welcomeWizard() {
