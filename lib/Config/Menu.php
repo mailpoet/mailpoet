@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
+use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\MP2Migration;
@@ -20,12 +21,7 @@ use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Form\Block;
-use MailPoet\Form\Renderer as FormRenderer;
-use MailPoet\Models\Form;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Settings\Pages;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -468,24 +464,7 @@ class Menu {
   }
 
   function formEditor() {
-    $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
-    $form = Form::findOne($id);
-    if ($form instanceof Form) {
-      $form = $form->asArray();
-    }
-
-    $data = [
-      'form' => $form,
-      'pages' => Pages::getAll(),
-      'segments' => Segment::getSegmentsWithSubscriberCount(),
-      'styles' => FormRenderer::getStyles($form),
-      'date_types' => Block\Date::getDateTypes(),
-      'date_formats' => Block\Date::getDateFormats(),
-      'month_names' => Block\Date::getMonthNames(),
-      'sub_menu' => 'mailpoet-forms',
-    ];
-
-    $this->page_renderer->displayPage('form/editor.html', $data);
+    $this->container->get(FormEditor::class)->render();
   }
 
   function setPageTitle($title) {
