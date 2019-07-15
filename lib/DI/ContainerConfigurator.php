@@ -28,6 +28,8 @@ class ContainerConfigurator implements IContainerConfigurator {
       ContainerWrapper::class,
       'getInstance',
       ]);
+    // AdminPages
+    $container->autowire(\MailPoet\AdminPages\PageRenderer::class);
     // Analytics
     $container->autowire(\MailPoet\Analytics\Reporter::class)->setPublic(true);
     // API
