@@ -11,6 +11,7 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Util\Installation;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -90,16 +91,18 @@ class MenuTest extends \MailPoetTest {
 
   private function getMenu(PageRenderer $renderer) {
     $wp = new WPFunctions;
+    $settings = new SettingsController;
     return new Menu(
       new AccessControl(),
-      new SettingsController(),
+      $settings,
       new FeaturesController(),
       $wp,
       new WooCommerceHelper($wp),
       new ServicesChecker,
       new UserFlagsController,
       $renderer,
-      new PageLimit($wp)
+      new PageLimit($wp),
+      new Installation($settings, $wp)
     );
   }
 }
