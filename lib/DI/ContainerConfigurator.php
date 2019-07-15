@@ -36,6 +36,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\MP2Migration::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Settings::class);
     $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class);
+    $container->autowire(\MailPoet\AdminPages\Pages\WooCommerceListImport::class);
     // Analytics
     $container->autowire(\MailPoet\Analytics\Reporter::class)->setPublic(true);
     // API
