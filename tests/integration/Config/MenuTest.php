@@ -6,13 +6,13 @@ use Codeception\Util\Stub;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
-use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Listing\PageLimit;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-use MailPoet\WP\Functions;
+use MailPoet\WP\Functions as WPFunctions;
 
 class MenuTest extends \MailPoetTest {
   function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
@@ -89,15 +89,17 @@ class MenuTest extends \MailPoetTest {
   }
 
   private function getMenu(PageRenderer $renderer) {
+    $wp = new WPFunctions;
     return new Menu(
       new AccessControl(),
       new SettingsController(),
       new FeaturesController(),
-      new Functions(),
-      new WooCommerceHelper(new Functions()),
+      $wp,
+      new WooCommerceHelper($wp),
       new ServicesChecker,
       new UserFlagsController,
-      $renderer
+      $renderer,
+      new PageLimit($wp)
     );
   }
 }

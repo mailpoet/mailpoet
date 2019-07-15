@@ -65,6 +65,9 @@ class Menu {
   /** @var PageRenderer */
   private $page_renderer;
 
+  /** @var Listing\PageLimit */
+  private $listing_page_limit;
+
   private $subscribers_over_limit;
 
   function __construct(
@@ -75,7 +78,8 @@ class Menu {
     WooCommerceHelper $woocommerce_helper,
     ServicesChecker $servicesChecker,
     UserFlagsController $user_flags,
-    PageRenderer $page_renderer
+    PageRenderer $page_renderer,
+    Listing\PageLimit $listing_page_limit
   ) {
     $this->access_control = $access_control;
     $this->wp = $wp;
@@ -85,6 +89,7 @@ class Menu {
     $this->servicesChecker = $servicesChecker;
     $this->user_flags = $user_flags;
     $this->page_renderer = $page_renderer;
+    $this->listing_page_limit = $listing_page_limit;
   }
 
   function init() {
@@ -612,7 +617,7 @@ class Menu {
   function subscribers() {
     $data = [];
 
-    $data['items_per_page'] = $this->getLimitPerPage('subscribers');
+    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('subscribers');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
     $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
     usort($segments, function ($a, $b) {
@@ -645,7 +650,7 @@ class Menu {
 
   function segments() {
     $data = [];
-    $data['items_per_page'] = $this->getLimitPerPage('segments');
+    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('segments');
     $this->page_renderer->displayPage('segments.html', $data);
   }
 
@@ -654,7 +659,7 @@ class Menu {
 
     $data = [];
 
-    $data['items_per_page'] = $this->getLimitPerPage('forms');
+    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
 
     $data['is_new_user'] = $this->isNewUser();
@@ -672,7 +677,7 @@ class Menu {
 
     $data = [];
 
-    $data['items_per_page'] = $this->getLimitPerPage('newsletters');
+    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('newsletters');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
     $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
     usort($segments, function ($a, $b) {
@@ -916,19 +921,6 @@ class Menu {
       && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
     $checker = $checker ?: $this->servicesChecker;
     $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
-  }
-
-  function getLimitPerPage($model = null) {
-    if ($model === null) {
-      return Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
-    }
-
-    $listing_per_page = $this->wp->getUserMeta(
-      $this->wp->getCurrentUserId(), 'mailpoet_' . $model . '_per_page', true
-    );
-    return (!empty($listing_per_page))
-      ? (int)$listing_per_page
-      : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
   }
 
   function isNewUser() {
