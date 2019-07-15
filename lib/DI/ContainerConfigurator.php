@@ -31,6 +31,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // AdminPages
     $container->autowire(\MailPoet\AdminPages\PageRenderer::class);
     $container->autowire(\MailPoet\AdminPages\Pages\ExperimentalFeatures::class);
+    $container->autowire(\MailPoet\AdminPages\Pages\FormEditor::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Forms::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Help::class);
     $container->autowire(\MailPoet\AdminPages\Pages\NewsletterEditor::class);
