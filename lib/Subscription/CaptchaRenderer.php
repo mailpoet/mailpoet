@@ -11,12 +11,16 @@ class CaptchaRenderer {
   /** @var UrlHelper */
   private $url_helper;
 
-  function __construct() {
-    $this->url_helper = new UrlHelper(new WPFunctions());
+  /** @var WPFunctions */
+  private $wp;
+
+  function __construct(UrlHelper $url_helper, WPFunctions $wp) {
+    $this->url_helper = $url_helper;
+    $this->wp = $wp;
   }
 
   public function getCaptchaPageTitle() {
-    return WPFunctions::get()->__("Confirm you’re not a robot", 'mailpoet');
+    return $this->wp->__("Confirm you’re not a robot", 'mailpoet');
   }
 
   public function getCaptchaPageContent() {
@@ -25,7 +29,7 @@ class CaptchaRenderer {
         'id' => 'captcha',
         'type' => 'text',
         'params' => [
-          'label' => WPFunctions::get()->__('Type in the input the characters you see in the picture above:', 'mailpoet'),
+          'label' => $this->wp->__('Type in the input the characters you see in the picture above:', 'mailpoet'),
           'value' => '',
           'obfuscate' => false,
         ],
@@ -39,7 +43,7 @@ class CaptchaRenderer {
           'id' => 'submit',
           'type' => 'submit',
           'params' => [
-            'label' => WPFunctions::get()->__('Subscribe', 'mailpoet'),
+            'label' => $this->wp->__('Subscribe', 'mailpoet'),
           ],
         ],
       ]
@@ -69,7 +73,7 @@ class CaptchaRenderer {
 
     $form_html .= '<div class="mailpoet_form_hide_on_success">';
     $form_html .= '<p class="mailpoet_paragraph">';
-    $form_html .= '<img class="mailpoet_captcha mailpoet_captcha_update" src="' . $captcha_url . '" width="' . $width . '" height="' . $height . '" title="' . WPFunctions::get()->__('Click to refresh the captcha', 'mailpoet') . '" />';
+    $form_html .= '<img class="mailpoet_captcha mailpoet_captcha_update" src="' . $captcha_url . '" width="' . $width . '" height="' . $height . '" title="' . $this->wp->__('Click to refresh the captcha', 'mailpoet') . '" />';
     $form_html .= '</p>';
 
     // subscription form

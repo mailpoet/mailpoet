@@ -51,16 +51,18 @@ class Captcha {
 
     $subscriber_ip = Helpers::getIP();
 
-    if (!empty($subscriber_ip)) {
-      $subscription_count = SubscriberIP::where('ip', $subscriber_ip)
-        ->whereRaw(
-          '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-          [(int)$subscription_captcha_window]
-        )->count();
+    if (empty($subscriber_ip)) {
+      return false;
+    }
 
-      if ($subscription_count > 0) {
-        return true;
-      }
+    $subscription_count = SubscriberIP::where('ip', $subscriber_ip)
+      ->whereRaw(
+        '(`created_at` >= NOW() - INTERVAL ? SECOND)',
+        [(int)$subscription_captcha_window]
+      )->count();
+
+    if ($subscription_count > 0) {
+      return true;
     }
 
     return false;

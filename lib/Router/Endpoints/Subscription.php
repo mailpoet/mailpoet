@@ -33,7 +33,7 @@ class Subscription {
   }
 
   function captcha($data) {
-    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CAPTCHA, $data);
+    $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CAPTCHA, $data);
   }
 
   function captchaImage($data) {
@@ -49,7 +49,7 @@ class Subscription {
   }
 
   function manage($data) {
-    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_MANAGE, $data);
+    $this->initSubscriptionPage(UserSubscription\Pages::ACTION_MANAGE, $data);
   }
 
   function unsubscribe($data) {
