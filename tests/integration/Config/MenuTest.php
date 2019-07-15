@@ -8,7 +8,6 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Listing\PageLimit;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Installation;
 use MailPoet\WP\Functions as WPFunctions;
@@ -95,7 +94,6 @@ class MenuTest extends \MailPoetTest {
       $wp,
       new ServicesChecker,
       $renderer,
-      new PageLimit($wp),
       new Installation($settings, $wp),
       ContainerWrapper::getInstance()
     );

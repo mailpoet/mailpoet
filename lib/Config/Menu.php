@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\AdminPages\Pages\Forms;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
@@ -49,9 +50,6 @@ class Menu {
   /** @var PageRenderer */
   private $page_renderer;
 
-  /** @var Listing\PageLimit */
-  private $listing_page_limit;
-
   /** @var Installation */
   private $installation;
 
@@ -65,7 +63,6 @@ class Menu {
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     PageRenderer $page_renderer,
-    Listing\PageLimit $listing_page_limit,
     Installation $installation,
     ContainerWrapper $containerWrapper
   ) {
@@ -73,7 +70,6 @@ class Menu {
     $this->wp = $wp;
     $this->servicesChecker = $servicesChecker;
     $this->page_renderer = $page_renderer;
-    $this->listing_page_limit = $listing_page_limit;
     $this->installation = $installation;
     $this->container = $containerWrapper;
   }
@@ -454,15 +450,7 @@ class Menu {
 
   function forms() {
     if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
-
-    $data = [];
-
-    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('forms');
-    $data['segments'] = Segment::findArray();
-
-    $data['is_new_user'] = $this->installation->isNewInstallation();
-
-    $this->page_renderer->displayPage('forms.html', $data);
+    $this->container->get(Forms::class)->render();
   }
 
   function newsletters() {
