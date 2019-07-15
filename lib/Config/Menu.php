@@ -4,31 +4,26 @@ namespace MailPoet\Config;
 
 use Carbon\Carbon;
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\Newsletters;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
-use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
-use MailPoet\Helpscout\Beacon;
 use MailPoet\Listing;
-use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
-use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
-use MailPoet\Tasks\Sending;
-use MailPoet\Tasks\State;
 use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
@@ -520,31 +515,7 @@ class Menu {
   }
 
   function help() {
-    $tasks_state = new State();
-    $system_info_data = Beacon::getData();
-    $system_status_data = [
-      'cron' => [
-        'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
-        'isReachable' => CronHelper::pingDaemon(true),
-      ],
-      'mss' => [
-        'enabled' => (Bridge::isMPSendingServiceEnabled()) ?
-          ['isReachable' => Bridge::pingBridge()] :
-          false,
-      ],
-      'cronStatus' => CronHelper::getDaemon(),
-      'queueStatus' => MailerLog::getMailerLog(),
-    ];
-    $system_status_data['cronStatus']['accessible'] = CronHelper::isDaemonAccessible();
-    $system_status_data['queueStatus']['tasksStatusCounts'] = $tasks_state->getCountsPerStatus();
-    $system_status_data['queueStatus']['latestTasks'] = $tasks_state->getLatestTasks(Sending::TASK_TYPE);
-    $this->page_renderer->displayPage(
-      'help.html',
-      [
-        'systemInfoData' => $system_info_data,
-        'systemStatusData' => $system_status_data,
-      ]
-    );
+    $this->container->get(Help::class)->render();
   }
 
   function experimentalFeatures() {

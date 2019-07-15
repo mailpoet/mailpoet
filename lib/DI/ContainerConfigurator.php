@@ -30,6 +30,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ]);
     // AdminPages
     $container->autowire(\MailPoet\AdminPages\PageRenderer::class);
+    $container->autowire(\MailPoet\AdminPages\Pages\Help::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Newsletters::class);
     $container->autowire(\MailPoet\AdminPages\Pages\Settings::class);
     $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class);
@@ -121,6 +122,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Services
     $container->autowire(\MailPoet\Services\Bridge::class);
     $container->autowire(\MailPoet\Services\AuthorizedEmailsController::class);
+    // Tasks
+    $container->autowire(\MailPoet\Tasks\State::class);
     // Settings
     $container->autowire(\MailPoet\Settings\SettingsController::class)->setPublic(true);
     // User Flags
