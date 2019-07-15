@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
@@ -15,13 +14,14 @@ use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
 use MailPoet\AdminPages\Pages\Segments;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\Subscribers;
+use MailPoet\AdminPages\Pages\SubscribersAPIKeyInvalid;
 use MailPoet\AdminPages\Pages\SubscribersExport;
 use MailPoet\AdminPages\Pages\SubscribersImport;
+use MailPoet\AdminPages\Pages\SubscribersLimitExceeded;
 use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Subscriber;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -42,9 +42,6 @@ class Menu {
   /** @var ServicesChecker */
   private $servicesChecker;
 
-  /** @var PageRenderer */
-  private $page_renderer;
-
   /** @var ContainerWrapper */
   private $container;
 
@@ -54,13 +51,11 @@ class Menu {
     AccessControl $access_control,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
-    PageRenderer $page_renderer,
     ContainerWrapper $containerWrapper
   ) {
     $this->access_control = $access_control;
     $this->wp = $wp;
     $this->servicesChecker = $servicesChecker;
-    $this->page_renderer = $page_renderer;
     $this->container = $containerWrapper;
   }
 
@@ -439,14 +434,14 @@ class Menu {
   }
 
   function forms() {
-    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceeded();
     $this->container->get(Forms::class)->render();
   }
 
   function newsletters() {
-    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceeded();
     if (isset($this->mp_api_key_valid) && $this->mp_api_key_valid === false) {
-      return $this->displayMailPoetAPIKeyInvalidTemplate();
+      return $this->displayMailPoetAPIKeyInvalid();
     }
     $this->container->get(Newsletters::class)->render();
   }
@@ -467,26 +462,22 @@ class Menu {
     $this->container->get(FormEditor::class)->render();
   }
 
+  private function displaySubscriberLimitExceeded() {
+    $this->container->get(SubscribersLimitExceeded::class)->render();
+    exit;
+  }
+
+  private function displayMailPoetAPIKeyInvalid() {
+    $this->container->get(SubscribersAPIKeyInvalid::class)->render();
+    exit;
+  }
+
   function setPageTitle($title) {
     return sprintf(
       '%s - %s',
       $this->wp->__('MailPoet', 'mailpoet'),
       $title
     );
-  }
-
-  function displaySubscriberLimitExceededTemplate() {
-    $this->page_renderer->displayPage('limit.html', [
-      'limit' => SubscribersFeature::SUBSCRIBERS_LIMIT,
-    ]);
-    exit;
-  }
-
-  function displayMailPoetAPIKeyInvalidTemplate() {
-    $this->page_renderer->displayPage('invalidkey.html', [
-      'subscriber_count' => Subscriber::getTotalSubscribers(),
-    ]);
-    exit;
   }
 
   static function isOnMailPoetAdminPage(array $exclude = null, $screen_id = null) {
