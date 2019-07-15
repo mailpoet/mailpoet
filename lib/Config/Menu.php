@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use Carbon\Carbon;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\MP2Migration;
@@ -10,6 +9,7 @@ use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
 use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
 use MailPoet\AdminPages\Pages\Settings;
+use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
@@ -23,12 +23,10 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Pages;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
-use MailPoet\WP\Readme;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -41,8 +39,6 @@ class Menu {
 
   /** @var AccessControl */
   private $access_control;
-  /** @var SettingsController */
-  private $settings;
 
   /** @var WPFunctions */
   private $wp;
@@ -65,7 +61,6 @@ class Menu {
 
   function __construct(
     AccessControl $access_control,
-    SettingsController $settings,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     PageRenderer $page_renderer,
@@ -75,7 +70,6 @@ class Menu {
   ) {
     $this->access_control = $access_control;
     $this->wp = $wp;
-    $this->settings = $settings;
     $this->servicesChecker = $servicesChecker;
     $this->page_renderer = $page_renderer;
     $this->listing_page_limit = $listing_page_limit;
@@ -430,47 +424,7 @@ class Menu {
   }
 
   function update() {
-    global $wp;
-    $current_url = $this->wp->homeUrl(add_query_arg($wp->query_string, $wp->request));
-    $redirect_url =
-      (!empty($_GET['mailpoet_redirect']))
-        ? urldecode($_GET['mailpoet_redirect'])
-        : $this->wp->wpGetReferer();
-
-    if (
-      $redirect_url === $current_url
-      or
-      strpos($redirect_url, 'mailpoet') === false
-    ) {
-      $redirect_url = $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG);
-    }
-
-    $data = [
-      'settings' => $this->settings->getAll(),
-      'current_user' => $this->wp->wpGetCurrentUser(),
-      'redirect_url' => $redirect_url,
-      'sub_menu' => self::MAIN_PAGE_SLUG,
-    ];
-
-    $data['is_new_user'] = true;
-    $data['is_old_user'] = false;
-    if (!empty($data['settings']['installed_at'])) {
-      $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
-      $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-      $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
-      $data['is_old_user'] = $current_time->diffInMonths($installed_at) >= 6;
-      $data['stop_call_for_rating'] = isset($data['settings']['stop_call_for_rating']) ? $data['settings']['stop_call_for_rating'] : false;
-    }
-
-    $readme_file = Env::$path . '/readme.txt';
-    if (is_readable($readme_file)) {
-      $changelog = Readme::parseChangelog(file_get_contents($readme_file), 1);
-      if ($changelog) {
-        $data['changelog'] = $changelog;
-      }
-    }
-
-    $this->page_renderer->displayPage('update.html', $data);
+    $this->container->get(Update::class)->render();
   }
 
   function premium() {
