@@ -9,6 +9,7 @@ use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
 use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
 use MailPoet\AdminPages\Pages\Settings;
+use MailPoet\AdminPages\Pages\Subscribers;
 use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
@@ -16,12 +17,10 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Listing;
-use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Services\Bridge;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Installation;
@@ -450,37 +449,7 @@ class Menu {
   }
 
   function subscribers() {
-    $data = [];
-
-    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('subscribers');
-    $segments = Segment::getSegmentsWithSubscriberCount($type = false);
-    $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
-    usort($segments, function ($a, $b) {
-      return strcasecmp($a["name"], $b["name"]);
-    });
-    $data['segments'] = $segments;
-
-    $data['custom_fields'] = array_map(function($field) {
-      $field['params'] = unserialize($field['params']);
-
-      if (!empty($field['params']['values'])) {
-        $values = [];
-
-        foreach ($field['params']['values'] as $value) {
-          $values[$value['value']] = $value['value'];
-        }
-        $field['params']['values'] = $values;
-      }
-      return $field;
-    }, CustomField::findArray());
-
-    $data['date_formats'] = Block\Date::getDateFormats();
-    $data['month_names'] = Block\Date::getMonthNames();
-
-    $data['premium_plugin_active'] = License::getLicense();
-    $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
-
-    $this->page_renderer->displayPage('subscribers/subscribers.html', $data);
+    $this->container->get(Subscribers::class)->render();
   }
 
   function segments() {
