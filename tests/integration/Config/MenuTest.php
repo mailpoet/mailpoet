@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
+use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\Renderer;
@@ -44,7 +45,7 @@ class MenuTest extends \MailPoetTest {
   }
 
   function testItChecksMailpoetAPIKey() {
-    $renderer = Stub::make(new Renderer());
+    $renderer = Stub::make(PageRenderer::class);
     $menu = $this->getMenu($renderer);
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
@@ -66,7 +67,7 @@ class MenuTest extends \MailPoetTest {
   }
 
   function testItChecksPremiumKey() {
-    $renderer = Stub::make(new Renderer());
+    $renderer = Stub::make(PageRenderer::class);
     $menu = $this->getMenu($renderer);
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
@@ -87,16 +88,16 @@ class MenuTest extends \MailPoetTest {
     expect($menu->premium_key_valid)->false();
   }
 
-  private function getMenu(Renderer $renderer) {
+  private function getMenu(PageRenderer $renderer) {
     return new Menu(
-      $renderer,
       new AccessControl(),
       new SettingsController(),
       new FeaturesController(),
       new Functions(),
       new WooCommerceHelper(new Functions()),
       new ServicesChecker,
-      new UserFlagsController
+      new UserFlagsController,
+      $renderer
     );
   }
 }

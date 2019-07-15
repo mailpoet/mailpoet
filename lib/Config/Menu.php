@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use Carbon\Carbon;
+use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Features\FeaturesController;
@@ -30,7 +31,6 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\DateTime;
-use MailPoet\WP\Notice as WPNotice;
 use MailPoet\WP\Readme;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -62,19 +62,21 @@ class Menu {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var PageRenderer */
+  private $page_renderer;
+
   private $subscribers_over_limit;
 
   function __construct(
-    Renderer $renderer,
     AccessControl $access_control,
     SettingsController $settings,
     FeaturesController $featuresController,
     WPFunctions $wp,
     WooCommerceHelper $woocommerce_helper,
     ServicesChecker $servicesChecker,
-    UserFlagsController $user_flags
+    UserFlagsController $user_flags,
+    PageRenderer $page_renderer
   ) {
-    $this->renderer = $renderer;
     $this->access_control = $access_control;
     $this->wp = $wp;
     $this->settings = $settings;
@@ -82,6 +84,7 @@ class Menu {
     $this->woocommerce_helper = $woocommerce_helper;
     $this->servicesChecker = $servicesChecker;
     $this->user_flags = $user_flags;
+    $this->page_renderer = $page_renderer;
   }
 
   function init() {
@@ -421,7 +424,7 @@ class Menu {
       'log_file_url' => $mp2_migrator->log_file_url,
       'progress_url' => $mp2_migrator->progressbar->url,
     ];
-    $this->displayPage('mp2migration.html', $data);
+    $this->page_renderer->displayPage('mp2migration.html', $data);
   }
 
   function welcomeWizard() {
@@ -433,7 +436,7 @@ class Menu {
       'sender' => $this->settings->get('sender'),
       'admin_email' => get_option('admin_email'),
     ];
-    $this->displayPage('welcome_wizard.html', $data);
+    $this->page_renderer->displayPage('welcome_wizard.html', $data);
   }
 
   function wooCommerceListImport() {
@@ -441,7 +444,7 @@ class Menu {
     $data = [
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
     ];
-    $this->displayPage('woocommerce_list_import.html', $data);
+    $this->page_renderer->displayPage('woocommerce_list_import.html', $data);
   }
 
   function revenueTrackingPermission() {
@@ -452,7 +455,7 @@ class Menu {
     $data = [
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
     ];
-    $this->displayPage('revenue_tracking_permission.html', $data);
+    $this->page_renderer->displayPage('revenue_tracking_permission.html', $data);
   }
 
   function update() {
@@ -496,7 +499,7 @@ class Menu {
       }
     }
 
-    $this->displayPage('update.html', $data);
+    $this->page_renderer->displayPage('update.html', $data);
   }
 
   function premium() {
@@ -506,7 +509,7 @@ class Menu {
       'display_discount' => time() <= strtotime('2018-11-30 23:59:59'),
     ];
 
-    $this->displayPage('premium.html', $data);
+    $this->page_renderer->displayPage('premium.html', $data);
   }
 
 
@@ -544,7 +547,7 @@ class Menu {
 
     $data = array_merge($data, Installer::getPremiumStatus());
 
-    $this->displayPage('settings.html', $data);
+    $this->page_renderer->displayPage('settings.html', $data);
   }
 
 
@@ -567,7 +570,7 @@ class Menu {
     $system_status_data['cronStatus']['accessible'] = CronHelper::isDaemonAccessible();
     $system_status_data['queueStatus']['tasksStatusCounts'] = $tasks_state->getCountsPerStatus();
     $system_status_data['queueStatus']['latestTasks'] = $tasks_state->getLatestTasks(Sending::TASK_TYPE);
-    $this->displayPage(
+    $this->page_renderer->displayPage(
       'help.html',
       [
         'systemInfoData' => $system_info_data,
@@ -577,7 +580,7 @@ class Menu {
   }
 
   function experimentalFeatures() {
-    $this->displayPage('experimental-features.html', []);
+    $this->page_renderer->displayPage('experimental-features.html', []);
   }
 
   private function _getFlags() {
@@ -637,13 +640,13 @@ class Menu {
     $data['premium_plugin_active'] = License::getLicense();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
 
-    $this->displayPage('subscribers/subscribers.html', $data);
+    $this->page_renderer->displayPage('subscribers/subscribers.html', $data);
   }
 
   function segments() {
     $data = [];
     $data['items_per_page'] = $this->getLimitPerPage('segments');
-    $this->displayPage('segments.html', $data);
+    $this->page_renderer->displayPage('segments.html', $data);
   }
 
   function forms() {
@@ -656,7 +659,7 @@ class Menu {
 
     $data['is_new_user'] = $this->isNewUser();
 
-    $this->displayPage('forms.html', $data);
+    $this->page_renderer->displayPage('forms.html', $data);
   }
 
   function newsletters() {
@@ -764,7 +767,7 @@ class Menu {
     $this->wp->wpEnqueueScript('jquery-ui');
     $this->wp->wpEnqueueScript('jquery-ui-datepicker');
 
-    $this->displayPage('newsletters.html', $data);
+    $this->page_renderer->displayPage('newsletters.html', $data);
   }
 
   function newletterEditor() {
@@ -782,7 +785,7 @@ class Menu {
     $this->wp->wpEnqueueScript('tinymce-wplink', $this->wp->includesUrl('js/tinymce/plugins/wplink/plugin.js'));
     $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));
 
-    $this->displayPage('newsletter/editor.html', $data);
+    $this->page_renderer->displayPage('newsletter/editor.html', $data);
   }
 
   function import() {
@@ -798,14 +801,14 @@ class Menu {
 
     $data['is_new_user'] = $this->isNewUser();
 
-    $this->displayPage('subscribers/importExport/import.html', $data);
+    $this->page_renderer->displayPage('subscribers/importExport/import.html', $data);
   }
 
   function export() {
     $export = new ImportExportFactory(ImportExportFactory::EXPORT_ACTION);
     $data = $export->bootstrap();
     $data['sub_menu'] = 'mailpoet-subscribers';
-    $this->displayPage('subscribers/importExport/export.html', $data);
+    $this->page_renderer->displayPage('subscribers/importExport/export.html', $data);
   }
 
   function formEditor() {
@@ -826,7 +829,7 @@ class Menu {
       'sub_menu' => 'mailpoet-forms',
     ];
 
-    $this->displayPage('form/editor.html', $data);
+    $this->page_renderer->displayPage('form/editor.html', $data);
   }
 
   function setPageTitle($title) {
@@ -838,14 +841,14 @@ class Menu {
   }
 
   function displaySubscriberLimitExceededTemplate() {
-    $this->displayPage('limit.html', [
+    $this->page_renderer->displayPage('limit.html', [
       'limit' => SubscribersFeature::SUBSCRIBERS_LIMIT,
     ]);
     exit;
   }
 
   function displayMailPoetAPIKeyInvalidTemplate() {
-    $this->displayPage('invalidkey.html', [
+    $this->page_renderer->displayPage('invalidkey.html', [
       'subscriber_count' => Subscriber::getTotalSubscribers(),
     ]);
     exit;
@@ -926,18 +929,6 @@ class Menu {
     return (!empty($listing_per_page))
       ? (int)$listing_per_page
       : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
-  }
-
-  function displayPage($template, $data) {
-    $defaults = [
-      'feature_flags' => $this->features_controller->getAllFlags(),
-    ];
-    try {
-      echo $this->renderer->render($template, $data + $defaults);
-    } catch (\Exception $e) {
-      $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
-      $notice->displayWPNotice();
-    }
   }
 
   function isNewUser() {
