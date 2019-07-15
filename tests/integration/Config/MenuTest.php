@@ -11,7 +11,6 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\UserFlagsController;
 use MailPoet\Util\Installation;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -98,7 +97,6 @@ class MenuTest extends \MailPoetTest {
       new FeaturesController(),
       $wp,
       new ServicesChecker,
-      new UserFlagsController,
       $renderer,
       new PageLimit($wp),
       new Installation($settings, $wp),

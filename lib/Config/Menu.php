@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use Carbon\Carbon;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\Help;
+use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
@@ -18,11 +19,9 @@ use MailPoet\Models\Form;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\UserFlagsController;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -35,8 +34,6 @@ if (!defined('ABSPATH')) exit;
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
 
-  /** @var Renderer */
-  public $renderer;
   public $mp_api_key_valid;
   public $premium_key_valid;
 
@@ -48,8 +45,6 @@ class Menu {
   /** @var FeaturesController */
   private $features_controller;
 
-  /** @var UserFlagsController */
-  private $user_flags;
   /** @var WPFunctions */
   private $wp;
   /** @var ServicesChecker */
@@ -75,7 +70,6 @@ class Menu {
     FeaturesController $featuresController,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
-    UserFlagsController $user_flags,
     PageRenderer $page_renderer,
     Listing\PageLimit $listing_page_limit,
     Installation $installation,
@@ -86,7 +80,6 @@ class Menu {
     $this->settings = $settings;
     $this->features_controller = $featuresController;
     $this->servicesChecker = $servicesChecker;
-    $this->user_flags = $user_flags;
     $this->page_renderer = $page_renderer;
     $this->listing_page_limit = $listing_page_limit;
     $this->installation = $installation;
@@ -584,21 +577,7 @@ class Menu {
   }
 
   function newletterEditor() {
-    $subscriber = Subscriber::getCurrentWPUser();
-    $subscriber_data = $subscriber ? $subscriber->asArray() : [];
-    $data = [
-      'shortcodes' => ShortcodesHelper::getShortcodes(),
-      'settings' => $this->settings->getAll(),
-      'editor_tutorial_seen' => $this->user_flags->get('editor_tutorial_seen'),
-      'current_wp_user' => array_merge($subscriber_data, $this->wp->wpGetCurrentUser()->to_array()),
-      'sub_menu' => self::MAIN_PAGE_SLUG,
-      'mss_active' => Bridge::isMPSendingServiceEnabled(),
-    ];
-    $this->wp->wpEnqueueMedia();
-    $this->wp->wpEnqueueScript('tinymce-wplink', $this->wp->includesUrl('js/tinymce/plugins/wplink/plugin.js'));
-    $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));
-
-    $this->page_renderer->displayPage('newsletter/editor.html', $data);
+    $this->container->get(NewsletterEditor::class)->render();
   }
 
   function import() {
