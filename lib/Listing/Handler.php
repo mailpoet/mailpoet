@@ -141,7 +141,7 @@ class Handler {
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
       'limit' => (isset($data['limit'])
         ? (int)$data['limit']
-        : self::DEFAULT_LIMIT_PER_PAGE
+        : PageLimit::DEFAULT_LIMIT_PER_PAGE
       ),
       // searching
       'search' => (isset($data['search']) ? $data['search'] : null),

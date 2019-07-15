@@ -89,6 +89,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\BulkActionFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);
+    $container->autowire(\MailPoet\Listing\PageLimit::class);
     // Notices
     $container->autowire(\MailPoet\Util\Notices\PermanentNotices::class);
     // Router
