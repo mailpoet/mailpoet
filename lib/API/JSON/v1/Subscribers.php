@@ -246,8 +246,12 @@ class Subscribers extends APIEndpoint {
   }
 
   private function validateCaptcha($captcha_settings, $data) {
+    if (empty($captcha_settings['type'])) {
+      return true;
+    }
+
     $is_builtin_captcha_required = false;
-    if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
+    if ($captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
       $is_builtin_captcha_required = $this->subscription_captcha->isRequired(isset($data['email']) ? $data['email'] : '');
       if ($is_builtin_captcha_required && empty($data['captcha'])) {
         $meta = [];
@@ -258,49 +262,47 @@ class Subscribers extends APIEndpoint {
       }
     }
 
-    if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_RECAPTCHA && empty($data['recaptcha'])) {
+    if ($captcha_settings['type'] === Captcha::TYPE_RECAPTCHA && empty($data['recaptcha'])) {
       return $this->badRequest([
         APIError::BAD_REQUEST => WPFunctions::get()->__('Please check the CAPTCHA.', 'mailpoet'),
       ]);
     }
 
-    if (!empty($captcha_settings['type'])) {
-      if ($captcha_settings['type'] === Captcha::TYPE_RECAPTCHA) {
-        $res = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
-        $res = WPFunctions::get()->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', [
-          'body' => [
-            'secret' => $captcha_settings['recaptcha_secret_token'],
-            'response' => $res,
-          ],
+    if ($captcha_settings['type'] === Captcha::TYPE_RECAPTCHA) {
+      $res = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
+      $res = WPFunctions::get()->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', [
+        'body' => [
+          'secret' => $captcha_settings['recaptcha_secret_token'],
+          'response' => $res,
+        ],
+      ]);
+      if (is_wp_error($res)) {
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet'),
         ]);
-        if (is_wp_error($res)) {
-          return $this->badRequest([
-            APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet'),
-          ]);
-        }
-        $res = json_decode(wp_remote_retrieve_body($res));
-        if (empty($res->success)) {
-          return $this->badRequest([
-            APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet'),
-          ]);
-        }
-      } elseif ($captcha_settings['type'] === Captcha::TYPE_BUILTIN && $is_builtin_captcha_required) {
-        if (empty($_SESSION[Captcha::SESSION_KEY])) {
-          return $this->badRequest([
-            APIError::BAD_REQUEST => WPFunctions::get()->__('Please regenerate the CAPTCHA.', 'mailpoet'),
-          ]);
-        } elseif (!hash_equals(strtolower($data['captcha']), $_SESSION[Captcha::SESSION_KEY])) {
-          $_SESSION[Captcha::SESSION_KEY] = null;
-          $meta = [];
-          $meta['refresh_captcha'] = true;
-          return $this->badRequest([
-            APIError::BAD_REQUEST => WPFunctions::get()->__('The characters entered do not match with the previous captcha.', 'mailpoet'),
-          ], $meta);
-        } else {
-          // Captcha has been verified, invalidate the session vars
-          $_SESSION[Captcha::SESSION_KEY] = null;
-          $_SESSION[Captcha::SESSION_FORM_KEY] = null;
-        }
+      }
+      $res = json_decode(wp_remote_retrieve_body($res));
+      if (empty($res->success)) {
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet'),
+        ]);
+      }
+    } elseif ($captcha_settings['type'] === Captcha::TYPE_BUILTIN && $is_builtin_captcha_required) {
+      if (empty($_SESSION[Captcha::SESSION_KEY])) {
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__('Please regenerate the CAPTCHA.', 'mailpoet'),
+        ]);
+      } elseif (!hash_equals(strtolower($data['captcha']), $_SESSION[Captcha::SESSION_KEY])) {
+        $_SESSION[Captcha::SESSION_KEY] = null;
+        $meta = [];
+        $meta['refresh_captcha'] = true;
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__('The characters entered do not match with the previous captcha.', 'mailpoet'),
+        ], $meta);
+      } else {
+        // Captcha has been verified, invalidate the session vars
+        $_SESSION[Captcha::SESSION_KEY] = null;
+        $_SESSION[Captcha::SESSION_FORM_KEY] = null;
       }
     }
 

@@ -46,18 +46,20 @@ class Pages {
     NewSubscriberNotificationMailer $new_subscriber_notification_sender,
     WPFunctions $wp,
     SettingsController $settings,
-    UrlHelper $url_helper
+    UrlHelper $url_helper,
+    CaptchaRenderer $captcha_renderer
   ) {
     $this->wp = $wp;
     $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
     $this->settings = $settings;
     $this->url_helper = $url_helper;
-    $this->captcha_renderer = new CaptchaRenderer;
+    $this->captcha_renderer = $captcha_renderer;
   }
 
   function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
     $this->action = $action;
     $this->data = $data;
+    $this->wp = new WPFunctions();
     $this->subscriber = $this->getSubscriber();
     if ($init_page_filters) $this->initPageFilters();
     if ($init_shortcodes) $this->initShortcodes();
