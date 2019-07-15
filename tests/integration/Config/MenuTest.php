@@ -8,8 +8,6 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Settings\SettingsController;
-use MailPoet\Util\Installation;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MenuTest extends \MailPoetTest {
@@ -88,13 +86,11 @@ class MenuTest extends \MailPoetTest {
 
   private function getMenu(PageRenderer $renderer) {
     $wp = new WPFunctions;
-    $settings = new SettingsController;
     return new Menu(
       new AccessControl(),
       $wp,
       new ServicesChecker,
       $renderer,
-      new Installation($settings, $wp),
       ContainerWrapper::getInstance()
     );
   }

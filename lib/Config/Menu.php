@@ -14,20 +14,18 @@ use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
 use MailPoet\AdminPages\Pages\Segments;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\Subscribers;
+use MailPoet\AdminPages\Pages\SubscribersExport;
+use MailPoet\AdminPages\Pages\SubscribersImport;
 use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
-use MailPoet\Listing;
 use MailPoet\Models\Form;
-use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\Pages;
-use MailPoet\Subscribers\ImportExport\ImportExportFactory;
-use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -51,9 +49,6 @@ class Menu {
   /** @var PageRenderer */
   private $page_renderer;
 
-  /** @var Installation */
-  private $installation;
-
   /** @var ContainerWrapper */
   private $container;
 
@@ -64,14 +59,12 @@ class Menu {
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     PageRenderer $page_renderer,
-    Installation $installation,
     ContainerWrapper $containerWrapper
   ) {
     $this->access_control = $access_control;
     $this->wp = $wp;
     $this->servicesChecker = $servicesChecker;
     $this->page_renderer = $page_renderer;
-    $this->installation = $installation;
     $this->container = $containerWrapper;
   }
 
@@ -467,26 +460,11 @@ class Menu {
   }
 
   function import() {
-    $import = new ImportExportFactory(ImportExportFactory::IMPORT_ACTION);
-    $data = $import->bootstrap();
-    $data = array_merge($data, [
-      'date_types' => Block\Date::getDateTypes(),
-      'date_formats' => Block\Date::getDateFormats(),
-      'month_names' => Block\Date::getMonthNames(),
-      'sub_menu' => 'mailpoet-subscribers',
-      'role_based_emails' => json_encode(ModelValidator::ROLE_EMAILS),
-    ]);
-
-    $data['is_new_user'] = $this->installation->isNewInstallation();
-
-    $this->page_renderer->displayPage('subscribers/importExport/import.html', $data);
+    $this->container->get(SubscribersImport::class)->render();
   }
 
   function export() {
-    $export = new ImportExportFactory(ImportExportFactory::EXPORT_ACTION);
-    $data = $export->bootstrap();
-    $data['sub_menu'] = 'mailpoet-subscribers';
-    $this->page_renderer->displayPage('subscribers/importExport/export.html', $data);
+    $this->container->get(SubscribersExport::class)->render();
   }
 
   function formEditor() {
