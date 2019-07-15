@@ -10,6 +10,7 @@ use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
+use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
@@ -426,11 +427,7 @@ class Menu {
   }
 
   function wooCommerceListImport() {
-    if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
-    $data = [
-      'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
-    ];
-    $this->page_renderer->displayPage('woocommerce_list_import.html', $data);
+    $this->container->get(WooCommerceListImport::class)->render();
   }
 
   function revenueTrackingPermission() {
