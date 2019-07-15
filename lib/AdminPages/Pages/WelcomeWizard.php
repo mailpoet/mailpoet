@@ -43,7 +43,7 @@ class WelcomeWizard {
       'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG),
       'sender' => $this->settings->get('sender'),
-      'admin_email' => get_option('admin_email'),
+      'admin_email' => $this->wp->getOption('admin_email'),
     ];
     $this->page_renderer->displayPage('welcome_wizard.html', $data);
   }
