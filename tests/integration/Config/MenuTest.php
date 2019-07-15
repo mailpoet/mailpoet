@@ -92,7 +92,6 @@ class MenuTest extends \MailPoetTest {
     $settings = new SettingsController;
     return new Menu(
       new AccessControl(),
-      $settings,
       $wp,
       new ServicesChecker,
       $renderer,
