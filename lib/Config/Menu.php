@@ -8,11 +8,11 @@ use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
+use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Listing;
@@ -44,9 +44,6 @@ class Menu {
   /** @var SettingsController */
   private $settings;
 
-  /** @var FeaturesController */
-  private $features_controller;
-
   /** @var WPFunctions */
   private $wp;
   /** @var ServicesChecker */
@@ -69,7 +66,6 @@ class Menu {
   function __construct(
     AccessControl $access_control,
     SettingsController $settings,
-    FeaturesController $featuresController,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     PageRenderer $page_renderer,
@@ -80,7 +76,6 @@ class Menu {
     $this->access_control = $access_control;
     $this->wp = $wp;
     $this->settings = $settings;
-    $this->features_controller = $featuresController;
     $this->servicesChecker = $servicesChecker;
     $this->page_renderer = $page_renderer;
     $this->listing_page_limit = $listing_page_limit;
@@ -431,14 +426,7 @@ class Menu {
   }
 
   function revenueTrackingPermission() {
-    if (!$this->features_controller->isSupported(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES)) {
-      return;
-    }
-    if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
-    $data = [
-      'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . self::MAIN_PAGE_SLUG),
-    ];
-    $this->page_renderer->displayPage('revenue_tracking_permission.html', $data);
+    $this->container->get(RevenueTrackingPermission::class)->render();
   }
 
   function update() {
