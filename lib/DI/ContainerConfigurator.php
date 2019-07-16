@@ -29,7 +29,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       'getInstance',
       ]);
     // AdminPages
-    $container->autowire(\MailPoet\AdminPages\PageRenderer::class);
+    $container->autowire(\MailPoet\AdminPages\PageRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\ExperimentalFeatures::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\FormEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Forms::class)->setPublic(true);
@@ -109,7 +109,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\BulkActionFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);
-    $container->autowire(\MailPoet\Listing\PageLimit::class);
+    $container->autowire(\MailPoet\Listing\PageLimit::class)->setPublic(true);
     // Notices
     $container->autowire(\MailPoet\Util\Notices\PermanentNotices::class);
     // Router
