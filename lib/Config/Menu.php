@@ -39,8 +39,9 @@ class Menu {
 
   /** @var WPFunctions */
   private $wp;
+
   /** @var ServicesChecker */
-  private $servicesChecker;
+  private $services_checker;
 
   /** @var ContainerWrapper */
   private $container;
@@ -50,13 +51,13 @@ class Menu {
   function __construct(
     AccessControl $access_control,
     WPFunctions $wp,
-    ServicesChecker $servicesChecker,
-    ContainerWrapper $containerWrapper
+    ServicesChecker $services_checker,
+    ContainerWrapper $container
   ) {
     $this->access_control = $access_control;
     $this->wp = $wp;
-    $this->servicesChecker = $servicesChecker;
-    $this->container = $containerWrapper;
+    $this->services_checker = $services_checker;
+    $this->container = $container;
   }
 
   function init() {
@@ -532,7 +533,7 @@ class Menu {
     if (self::isOnMailPoetAdminPage()) {
       $show_notices = isset($_REQUEST['page'])
         && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false;
-      $checker = $checker ?: $this->servicesChecker;
+      $checker = $checker ?: $this->services_checker;
       $this->mp_api_key_valid = $checker->isMailPoetAPIKeyValid($show_notices);
     }
   }
@@ -540,7 +541,7 @@ class Menu {
   function checkPremiumKey(ServicesChecker $checker = null) {
     $show_notices = isset($_SERVER['SCRIPT_NAME'])
       && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
-    $checker = $checker ?: $this->servicesChecker;
+    $checker = $checker ?: $this->services_checker;
     $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
   }
 }
