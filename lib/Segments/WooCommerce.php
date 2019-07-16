@@ -19,6 +19,9 @@ class WooCommerce {
   /** @var WPFunctions */
   private $wp;
 
+  private $mailpoet_email_collation;
+  private $wp_postmeta_value_collation;
+
   function __construct(SettingsController $settings, WPFunctions $wp) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -95,6 +98,7 @@ class WooCommerce {
   }
 
   function synchronizeCustomers() {
+    $this->getColumnCollation();
 
     WP::synchronizeUsers(); // synchronize registered users
 
@@ -110,6 +114,27 @@ class WooCommerce {
     $this->updateStatus();
 
     return true;
+  }
+
+  private function getColumnCollation() {
+    global $wpdb;
+    $mailpoet_email_column = $wpdb->get_row(
+      'SHOW FULL COLUMNS FROM ' . MP_SUBSCRIBERS_TABLE . ' WHERE Field = "email"'
+    );
+    $this->mailpoet_email_collation = $mailpoet_email_column->Collation;
+    $wp_postmeta_value_column = $wpdb->get_row(
+      'SHOW FULL COLUMNS FROM ' . $wpdb->postmeta . ' WHERE Field = "meta_value"'
+    );
+    $this->wp_postmeta_value_collation = $wp_postmeta_value_column->Collation;
+  }
+
+  private function needsCollationChange($collation1, $collation2) {
+    if ($collation1 === $collation2) {
+      return false;
+    }
+    $charset1 = substr($collation1, 0, strpos($collation1, '_'));
+    $charset2 = substr($collation2, 0, strpos($collation2, '_'));
+    return $charset1 === $charset2;
   }
 
   private function markRegisteredCustomers() {
@@ -169,32 +194,40 @@ class WooCommerce {
 
   private function updateFirstNames() {
     global $wpdb;
+    $collate = '';
+    if ($this->needsCollationChange($this->mailpoet_email_collation, $this->wp_postmeta_value_collation)) {
+      $collate = ' COLLATE ' . $this->mailpoet_email_collation;
+    }
     $subscribers_table = Subscriber::$_table;
     Subscriber::rawExecute(sprintf('
       UPDATE %1$s mps
-        JOIN %2$s wppm ON mps.email = wppm.meta_value AND wppm.meta_key = "_billing_email"
+        JOIN %2$s wppm ON mps.email = wppm.meta_value %3$s AND wppm.meta_key = "_billing_email"
         JOIN %2$s wppm2 ON wppm2.post_id = wppm.post_id AND wppm2.meta_key = "_billing_first_name"
         JOIN (SELECT MAX(post_id) AS max_id FROM %2$s WHERE meta_key = "_billing_email" GROUP BY meta_value) AS tmaxid ON tmaxid.max_id = wppm.post_id
       SET mps.first_name = wppm2.meta_value
         WHERE mps.first_name = ""
         AND mps.is_woocommerce_user = 1
         AND wppm2.meta_value IS NOT NULL
-    ', $subscribers_table, $wpdb->postmeta));
+    ', $subscribers_table, $wpdb->postmeta, $collate));
   }
 
   private function updateLastNames() {
     global $wpdb;
+    $collate = '';
+    if ($this->needsCollationChange($this->mailpoet_email_collation, $this->wp_postmeta_value_collation)) {
+      $collate = ' COLLATE ' . $this->mailpoet_email_collation;
+    }
     $subscribers_table = Subscriber::$_table;
     Subscriber::rawExecute(sprintf('
       UPDATE %1$s mps
-        JOIN %2$s wppm ON mps.email = wppm.meta_value AND wppm.meta_key = "_billing_email"
+        JOIN %2$s wppm ON mps.email = wppm.meta_value %3$s AND wppm.meta_key = "_billing_email"
         JOIN %2$s wppm2 ON wppm2.post_id = wppm.post_id AND wppm2.meta_key = "_billing_last_name"
         JOIN (SELECT MAX(post_id) AS max_id FROM %2$s WHERE meta_key = "_billing_email" GROUP BY meta_value) AS tmaxid ON tmaxid.max_id = wppm.post_id
       SET mps.last_name = wppm2.meta_value
         WHERE mps.last_name = ""
         AND mps.is_woocommerce_user = 1
         AND wppm2.meta_value IS NOT NULL
-    ', $subscribers_table, $wpdb->postmeta));
+    ', $subscribers_table, $wpdb->postmeta, $collate));
   }
 
   private function insertUsersToSegment() {
@@ -284,9 +317,6 @@ class WooCommerce {
 
     // Insert WC customer emails to a temporary table and ensure matching collations
     // between MailPoet and WooCommerce emails for left join to use an index
-    $mailpoet_email_column = $wpdb->get_row(
-      'SHOW FULL COLUMNS FROM ' . MP_SUBSCRIBERS_TABLE . ' WHERE Field = "email"'
-    );
     $tmp_table_name = Env::$db_prefix . 'tmp_wc_emails';
     Subscriber::rawExecute(sprintf('
       CREATE TEMPORARY TABLE %1$s
@@ -295,7 +325,7 @@ class WooCommerce {
         JOIN %4$s wpp ON wppm.post_id = wpp.ID
         AND wpp.post_type = "shop_order"
         WHERE wppm.meta_key = "_billing_email"
-    ', $tmp_table_name, $mailpoet_email_column->Collation, $wpdb->postmeta, $wpdb->posts));
+    ', $tmp_table_name, $this->mailpoet_email_collation, $wpdb->postmeta, $wpdb->posts));
 
     // Remove WC list guest users which aren't WC customers anymore
     Subscriber::tableAlias('mps')
