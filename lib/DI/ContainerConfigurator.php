@@ -30,25 +30,25 @@ class ContainerConfigurator implements IContainerConfigurator {
       ]);
     // AdminPages
     $container->autowire(\MailPoet\AdminPages\PageRenderer::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\ExperimentalFeatures::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\FormEditor::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\Forms::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\Help::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\NewsletterEditor::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\Newsletters::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\MP2Migration::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\Premium::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\RevenueTrackingPermission::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\Segments::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\Settings::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\Subscribers::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersAPIKeyInvalid::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersExport::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersImport::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersLimitExceeded::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\Update::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class);
-    $container->autowire(\MailPoet\AdminPages\Pages\WooCommerceListImport::class);
+    $container->autowire(\MailPoet\AdminPages\Pages\ExperimentalFeatures::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\FormEditor::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Forms::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Help::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\NewsletterEditor::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Newsletters::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\MP2Migration::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Premium::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\RevenueTrackingPermission::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Segments::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Settings::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Subscribers::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersAPIKeyInvalid::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersExport::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersImport::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersLimitExceeded::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Update::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\WooCommerceListImport::class)->setPublic(true);
     // Analytics
     $container->autowire(\MailPoet\Analytics\Reporter::class)->setPublic(true);
     // API
