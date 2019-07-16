@@ -48,6 +48,10 @@ $destroy = function($model) {
 };
 array_map($destroy, $models);
 
+// save plugin version to avoid running migrations (that cause $GLOBALS serialization errors)
+$settings = new \MailPoet\Settings\SettingsController();
+$settings->set('db_version', \MailPoet\Config\Env::$version);
+
 $cacheDir = '/tmp';
 if (is_dir(getenv('WP_TEST_CACHE_PATH'))) {
   $cacheDir = getenv('WP_TEST_CACHE_PATH');
