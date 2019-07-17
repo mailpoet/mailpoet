@@ -44,7 +44,7 @@ class AutomatedEmails extends SimpleWorker {
   function processTaskStrategy(ScheduledTask $task) {
     // TODO
     // TODO refactor \MailPoet\Cron\Workers\StatsNotifications\Worker  and Scheduler and share the code
-    // TODO refactor the views templates mailpoet/views/emails/statsNotification.html and txt and share them
+    // TODO settings isn't saved properly :(
   }
 
   static function getNextRunDate() {
