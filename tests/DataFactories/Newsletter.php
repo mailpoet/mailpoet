@@ -2,7 +2,6 @@
 namespace MailPoet\Test\DataFactories;
 
 use Carbon\Carbon;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Settings\SettingsController;

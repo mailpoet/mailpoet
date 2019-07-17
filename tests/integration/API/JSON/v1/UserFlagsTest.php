@@ -7,7 +7,6 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\v1\UserFlags;
 use MailPoet\Models\UserFlag;
 use MailPoet\Settings\UserFlagsController;
-use MailPoet\WP\Functions as WPFunctions;
 
 class UserFlagsTest extends \MailPoetTest {
 

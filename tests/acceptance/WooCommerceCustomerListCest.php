@@ -4,7 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceCustomer;
-use MailPoet\Test\DataFactories\WooCommerceOrder;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 
 class WooCommerceCustomerListCest {

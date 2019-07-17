@@ -2,7 +2,6 @@
 namespace MailPoet\Test\WP;
 
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\Config\Env;
 
 class FunctionsTest extends \MailPoetTest {
   function _before() {

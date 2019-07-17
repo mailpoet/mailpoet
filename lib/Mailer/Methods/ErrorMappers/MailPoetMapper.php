@@ -6,7 +6,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Services\Bridge\API;
 use InvalidArgumentException;
-use MailPoet\Util\FreeDomains;
 use MailPoet\Util\Helpers;
 
 use MailPoet\WP\Functions as WPFunctions;

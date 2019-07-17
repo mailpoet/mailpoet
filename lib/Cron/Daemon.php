@@ -2,7 +2,6 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\WorkersFactory;
-use MailPoet\Settings\SettingsController;
 
 if (!defined('ABSPATH')) exit;
 

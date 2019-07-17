@@ -3,7 +3,6 @@
 namespace MailPoet\Test\DataGenerator;
 
 use Codeception\Lib\Console\Output;
-use MailPoet\Test\DataGenerator\Generators\GeneratorHelper;
 use MailPoet\Test\DataGenerator\Generators\WooCommercePastRevenues;
 
 class DataGenerator {

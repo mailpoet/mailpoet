@@ -2,7 +2,6 @@
 
 namespace MailPoet\Services;
 
-use Carbon\Carbon;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge\API;

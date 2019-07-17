@@ -10,7 +10,6 @@ use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WP\Notice as WPNotice;
-use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;

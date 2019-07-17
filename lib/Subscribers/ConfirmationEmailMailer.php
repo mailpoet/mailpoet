@@ -4,7 +4,6 @@ namespace MailPoet\Subscribers;
 
 use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Mailer\MailerError;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
