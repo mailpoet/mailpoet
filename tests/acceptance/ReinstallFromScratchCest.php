@@ -9,12 +9,6 @@ use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 use PHPUnit_Framework_Assert as Asserts;
 
-require_once __DIR__ . '/../DataFactories/Form.php';
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-require_once __DIR__ . '/../DataFactories/Segment.php';
-require_once __DIR__ . '/../DataFactories/Settings.php';
-require_once __DIR__ . '/../DataFactories/Subscriber.php';
-
 class ReinstallFromScratchCest {
 
   function reinstallFromScratch(\AcceptanceTester $I) {

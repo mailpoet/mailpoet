@@ -2,10 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-require_once __DIR__ . '/../DataFactories/Settings.php';
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-require_once __DIR__ . '/../DataFactories/Subscriber.php';
-
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Subscriber;
 
