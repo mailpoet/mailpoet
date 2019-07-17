@@ -21,6 +21,13 @@ class Subscription {
     'global' => AccessControl::NO_ACCESS_RESTRICTION,
   ];
 
+  /** @var UserSubscription\Pages */
+  private $subscription_pages;
+
+  function __construct(UserSubscription\Pages $subscription_pages) {
+    $this->subscription_pages = $subscription_pages;
+  }
+
   function confirm($data) {
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM, $data);
     $subscription->confirm();
@@ -36,6 +43,6 @@ class Subscription {
   }
 
   private function initSubscriptionPage($action, $data) {
-    return new UserSubscription\Pages($action, $data, true, true);
+    return $this->subscription_pages->init($action, $data, true, true);
   }
 }

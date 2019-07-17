@@ -4,6 +4,7 @@ namespace MailPoet\Test\Config;
 use Codeception\Util\Fixtures;
 use Helper\WordPress;
 use MailPoet\Config\Shortcodes;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
@@ -27,7 +28,7 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   function testItGetsArchives() {
-    $shortcodes = new Shortcodes();
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
       $args = func_get_args();
       $filter_name = array_shift($args);
@@ -65,7 +66,7 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriber->wp_user_id = $wp_user->ID;
     $subscriber->save();
 
-    $shortcodes = new Shortcodes();
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
     expect($result)->contains('form method="POST"');
@@ -77,7 +78,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect((new WPFunctions)->isUserLoggedIn())->true();
     expect(Subscriber::findOne($wp_user->data->user_email))->false();
 
-    $shortcodes = new Shortcodes();
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
     expect($result)->contains('Subscription management form is only available to mailing lists subscribers.');
@@ -87,7 +88,7 @@ class ShortcodesTest extends \MailPoetTest {
     wp_set_current_user(0);
     expect((new WPFunctions)->isUserLoggedIn())->false();
 
-    $shortcodes = new Shortcodes();
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
     expect($result)->contains('Subscription management form is only available to mailing lists subscribers.');
@@ -102,7 +103,7 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriber->wp_user_id = $wp_user->ID;
     $subscriber->save();
 
-    $shortcodes = new Shortcodes();
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
     expect($result)->contains('Manage your subscription');
@@ -113,7 +114,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect((new WPFunctions)->isUserLoggedIn())->true();
     expect(Subscriber::findOne($wp_user->data->user_email))->false();
 
-    $shortcodes = new Shortcodes();
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
     expect($result)->contains('Link to subscription management page is only available to mailing lists subscribers.');
@@ -123,7 +124,7 @@ class ShortcodesTest extends \MailPoetTest {
     wp_set_current_user(0);
     expect((new WPFunctions)->isUserLoggedIn())->false();
 
-    $shortcodes = new Shortcodes();
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
     expect($result)->contains('Link to subscription management page is only available to mailing lists subscribers.');

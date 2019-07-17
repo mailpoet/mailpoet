@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Form\Widget;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -10,26 +11,31 @@ use MailPoet\Subscription\Pages;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
+  /** @var Pages */
+  private $subscription_pages;
+
+  /** @var WPFunctions */
   private $wp;
 
-  function __construct() {
-    $this->wp = new WPFunctions;
+  function __construct(Pages $subscription_pages, WPFunctions $wp) {
+    $this->subscription_pages = $subscription_pages;
+    $this->wp = $wp;
   }
 
   function init() {
     // form widget shortcode
-    WPFunctions::get()->addShortcode('mailpoet_form', [$this, 'formWidget']);
+    $this->wp->addShortcode('mailpoet_form', [$this, 'formWidget']);
 
     // subscribers count shortcode
-    WPFunctions::get()->addShortcode('mailpoet_subscribers_count', [
+    $this->wp->addShortcode('mailpoet_subscribers_count', [
       $this, 'getSubscribersCount',
     ]);
-    WPFunctions::get()->addShortcode('wysija_subscribers_count', [
+    $this->wp->addShortcode('wysija_subscribers_count', [
       $this, 'getSubscribersCount',
     ]);
 
     // archives page
-    WPFunctions::get()->addShortcode('mailpoet_archive', [
+    $this->wp->addShortcode('mailpoet_archive', [
       $this, 'getArchive',
     ]);
 
@@ -39,18 +45,18 @@ class Shortcodes {
     $this->wp->addFilter('mailpoet_archive_subject', [
       $this, 'renderArchiveSubject',
     ], 2, 3);
-
+    // initialize subscription pages data
+    $this->subscription_pages->init();
     // initialize subscription management shortcodes
-    $subscription_page = new Pages();
-    $subscription_page->initShortcodes();
+    $this->subscription_pages->initShortcodes();
   }
 
   function formWidget($params = []) {
     // IMPORTANT: fixes conflict with MagicMember
-    WPFunctions::get()->removeShortcode('user_list');
+    $this->wp->removeShortcode('user_list');
 
     if (isset($params['id']) && (int)$params['id'] > 0) {
-      $form_widget = new \MailPoet\Form\Widget();
+      $form_widget = new Widget();
       return $form_widget->widget([
         'form' => (int)$params['id'],
         'form_type' => 'shortcode',
@@ -66,9 +72,9 @@ class Shortcodes {
     }
 
     if (empty($segment_ids)) {
-      return WPFunctions::get()->numberFormatI18n(Subscriber::filter('subscribed')->count());
+      return $this->wp->numberFormatI18n(Subscriber::filter('subscribed')->count());
     } else {
-      return WPFunctions::get()->numberFormatI18n(
+      return $this->wp->numberFormatI18n(
         SubscriberSegment::whereIn('segment_id', $segment_ids)
           ->select('subscriber_id')->distinct()
           ->filter('subscribed')
@@ -94,7 +100,7 @@ class Shortcodes {
     if (empty($newsletters)) {
       return $this->wp->applyFilters(
         'mailpoet_archive_no_newsletters',
-        WPFunctions::get()->__('Oops! There are no newsletters to display.', 'mailpoet')
+        $this->wp->__('Oops! There are no newsletters to display.', 'mailpoet')
       );
     } else {
       $title = $this->wp->applyFilters('mailpoet_archive_title', '');
@@ -119,8 +125,8 @@ class Shortcodes {
   }
 
   function renderArchiveDate($newsletter) {
-    return WPFunctions::get()->dateI18n(
-      WPFunctions::get()->getOption('date_format'),
+    return $this->wp->dateI18n(
+      $this->wp->getOption('date_format'),
       strtotime($newsletter->processed_at)
     );
   }
