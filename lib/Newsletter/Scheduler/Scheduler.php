@@ -326,6 +326,8 @@ class Scheduler {
     $wp = new WPFunctions();
     $current_time = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     switch ($after_time_type) {
+      case 'minutes':
+        return $current_time->addMinutes($after_time_number);
       case 'hours':
         return $current_time->addHours($after_time_number);
       case 'days':
