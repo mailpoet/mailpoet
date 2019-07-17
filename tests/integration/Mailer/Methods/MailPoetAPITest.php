@@ -9,7 +9,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Subscription\Blacklist;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 
 class MailPoetAPITest extends \MailPoetTest {
   function _before() {
@@ -259,7 +259,7 @@ class MailPoetAPITest extends \MailPoetTest {
 
   function testItChecksBlacklistBeforeSendingToASingleSubscriber() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
-    $blacklist = Stub::make(new Blacklist(), ['isBlacklisted' => true], $this);
+    $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
       [
@@ -285,7 +285,7 @@ class MailPoetAPITest extends \MailPoetTest {
 
   function testItChecksBlacklistBeforeSendingToMultipleSubscribers() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
-    $blacklist = Stub::make(new Blacklist(), ['isBlacklisted' => true], $this);
+    $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
       [

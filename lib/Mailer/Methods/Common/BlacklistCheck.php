@@ -1,15 +1,22 @@
 <?php
-namespace MailPoet\Mailer\Methods;
+namespace MailPoet\Mailer\Methods\Common;
 
 use MailPoet\Subscription\Blacklist;
 
-trait BlacklistTrait {
+class BlacklistCheck {
   /** @var Blacklist */
   private $blacklist;
 
+  public function __construct(Blacklist $blacklist = null) {
+    if (is_null($blacklist)) {
+      $blacklist = new Blacklist();
+    }
+    $this->blacklist = $blacklist;
+  }
+
   function isBlacklisted($subscriber) {
     $email = $this->getSubscriberEmailForBlacklistCheck($subscriber);
-    return $this->getBlacklist()->isBlacklisted($email);
+    return $this->blacklist->isBlacklisted($email);
   }
 
   private function getSubscriberEmailForBlacklistCheck($subscriber_string) {
@@ -18,12 +25,5 @@ trait BlacklistTrait {
       return $subscriber_string;
     }
     return $subscriber_data['email'];
-  }
-
-  private function getBlacklist() {
-    if (!$this->blacklist instanceof Blacklist) {
-      $this->blacklist = new Blacklist();
-    }
-    return $this->blacklist;
   }
 }

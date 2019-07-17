@@ -5,7 +5,7 @@ use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Mailer\Methods\SMTP;
-use MailPoet\Subscription\Blacklist;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SMTPTest extends \MailPoetTest {
@@ -176,7 +176,7 @@ class SMTPTest extends \MailPoetTest {
 
   function testItChecksBlacklistBeforeSending() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
-    $blacklist = Stub::make(new Blacklist(), ['isBlacklisted' => true], $this);
+    $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
       ['blacklist' => $blacklist, 'error_mapper' => new SMTPMapper()],

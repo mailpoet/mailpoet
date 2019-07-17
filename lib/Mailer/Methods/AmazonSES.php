@@ -2,14 +2,13 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class AmazonSES {
-  use BlacklistTrait;
-
   public $aws_access_key;
   public $aws_secret_key;
   public $aws_region;
@@ -33,6 +32,9 @@ class AmazonSES {
 
   /** @var AmazonSESMapper */
   private $error_mapper;
+
+  /** @var BlacklistCheck */
+  private $blacklist;
 
   private $wp;
 
@@ -66,10 +68,11 @@ class AmazonSES {
     $this->date_without_time = gmdate('Ymd');
     $this->error_mapper = $error_mapper;
     $this->wp = new WPFunctions();
+    $this->blacklist = new BlacklistCheck();
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
-    if ($this->isBlacklisted($subscriber)) {
+    if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->error_mapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }

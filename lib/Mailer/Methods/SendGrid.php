@@ -3,14 +3,13 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class SendGrid {
-  use BlacklistTrait;
-
   public $url = 'https://api.sendgrid.com/api/mail.send.json';
   public $api_key;
   public $sender;
@@ -18,6 +17,9 @@ class SendGrid {
 
   /** @var SendGridMapper */
   private $error_mapper;
+
+  /** @var BlacklistCheck */
+  private $blacklist;
 
   private $wp;
 
@@ -27,10 +29,11 @@ class SendGrid {
     $this->reply_to = $reply_to;
     $this->error_mapper = $error_mapper;
     $this->wp = new WPFunctions();
+    $this->blacklist = new BlacklistCheck();
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
-    if ($this->isBlacklisted($subscriber)) {
+    if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->error_mapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }

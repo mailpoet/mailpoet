@@ -5,7 +5,7 @@ use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\AmazonSES;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
-use MailPoet\Subscription\Blacklist;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 
 class AmazonSESTest extends \MailPoetTest {
   function _before() {
@@ -237,7 +237,7 @@ class AmazonSESTest extends \MailPoetTest {
 
   function testItChecksBlacklistBeforeSending() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
-    $blacklist = Stub::make(new Blacklist(), ['isBlacklisted' => true], $this);
+    $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
       ['blacklist' => $blacklist, 'error_mapper' => new AmazonSESMapper()],
