@@ -9,7 +9,6 @@ const MAX_SUBSCRIBERS_SHOWN = 10;
 
 function ColumnDataMatch({ header, subscribers }) {
   const matchedColumnTypes = matchColumns(subscribers, header);
-  // selectedColumns = _.pluck(matchedColumnTypes, 'column_id');
   return (
     <tr>
       <th>{MailPoet.I18n.t('matchData')}</th>
@@ -105,12 +104,8 @@ function MatchTable({
   subscribers,
   header,
 }) {
-  const selectedColumns = [];
-
   useLayoutEffect(() => {
-    generateColumnSelection((selectedOptionId, columnIndex) => {
-      selectedColumns[columnIndex] = selectedOptionId;
-    });
+    generateColumnSelection();
   });
 
   return (

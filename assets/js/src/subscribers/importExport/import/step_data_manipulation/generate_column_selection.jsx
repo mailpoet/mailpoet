@@ -1,7 +1,7 @@
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 
-export default (selectColumnType) => {
+export default () => {
   jQuery('select.mailpoet_subscribers_column_data_match')
     .select2({
       data: window.mailpoetColumnsSelect2,
@@ -69,8 +69,6 @@ export default (selectColumnType) => {
               });
             jQuery(selectElement).data('column-id', newColumnData.id);
             jQuery(selectElement).data('validation-rule', false);
-            const columnIndex = jQuery(selectElement).data('column-index');
-            selectColumnType(newColumnData.id, columnIndex);
             // close popup
             MailPoet.Modal.close();
           }).fail((response) => {
@@ -108,8 +106,6 @@ export default (selectColumnType) => {
       const selectElement = selectEvent.currentTarget;
       const selectedOptionId = selectEvent.params.data.id;
       jQuery(selectElement).data('column-id', selectedOptionId);
-      const columnIndex = jQuery(selectElement).data('column-index');
-      selectColumnType(selectedOptionId, columnIndex);
     });
   jQuery.map(
     jQuery('.mailpoet_subscribers_column_data_match'), (element) => {
