@@ -3,12 +3,9 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 
-require_once __DIR__ . '/../DataFactories/Features.php';
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 require_once __DIR__ . '/../DataFactories/Settings.php';
 
@@ -17,17 +14,12 @@ class RevenueTrackingCookieCest {
   /** @var Settings */
   private $settings;
 
-  /** @var Features */
-  private $features;
-
-  protected function _inject(Settings $settings, Features $features) {
+  protected function _inject(Settings $settings) {
     $this->settings = $settings;
-    $this->features = $features;
   }
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
-    $this->features->withFeatureEnabled(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES);
   }
 
   function _after(\AcceptanceTester $I) {

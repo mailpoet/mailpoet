@@ -5,7 +5,6 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use Carbon\Carbon;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -33,9 +32,6 @@ class Worker {
   /** @var SettingsController */
   private $settings;
 
-  /** @var FeaturesController */
-  private $features_controller;
-
   /** @var WCHelper */
   private $woocommerce_helper;
 
@@ -43,7 +39,6 @@ class Worker {
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
-    FeaturesController $features_controller,
     WCHelper $woocommerce_helper,
     $timer = false
   ) {
@@ -51,7 +46,6 @@ class Worker {
     $this->renderer = $renderer;
     $this->mailer = $mailer;
     $this->settings = $settings;
-    $this->features_controller = $features_controller;
     $this->woocommerce_helper = $woocommerce_helper;
   }
 
@@ -109,7 +103,7 @@ class Worker {
     return $newsletter
       ->withSendingQueue()
       ->withTotalSent()
-      ->withStatistics($this->woocommerce_helper, $this->features_controller);
+      ->withStatistics($this->woocommerce_helper);
   }
 
   /**

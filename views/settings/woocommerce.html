@@ -80,33 +80,31 @@
       </p>
     </td>
   </tr>
-  <% if display_revenues %>
-    <tr>
-      <th scope="row">
-        <label for="settings[mailpoet_accept_cookie_revenue_tracking]">
-          <%= _x('Enable browser cookies', 'Option in settings page: the user can accept or forbid MailPoet to use browser cookies') %>
-        </label>
-        <p class="description">
-          <%= _x('If you enable this option, MailPoet will use browser cookies for more precise WooCommerce tracking. This is practical for abandoned cart emails for example.', 'Browser cookies are data created by websites and stored in visitors web browser') %>
-        </p>
-      </th>
-      <td>
-        <p>
-          <input
-            type="checkbox"
-            value="1"
-            id="settings[mailpoet_accept_cookie_revenue_tracking]"
-            data-automation-id="accept_cookie_revenue_tracking"
-            name="woocommerce[accept_cookie_revenue_tracking][enabled]"
-            <% if(settings.woocommerce.accept_cookie_revenue_tracking.enabled == "1") %>checked="checked"<% endif %>
-          >
-          <input
-            type="hidden"
-            value="1"
-            name="woocommerce[accept_cookie_revenue_tracking][set]"
-          >
-        </p>
-      </td>
-    </tr>
-  <% endif %>
+  <tr>
+    <th scope="row">
+      <label for="settings[mailpoet_accept_cookie_revenue_tracking]">
+        <%= _x('Enable browser cookies', 'Option in settings page: the user can accept or forbid MailPoet to use browser cookies') %>
+      </label>
+      <p class="description">
+        <%= _x('If you enable this option, MailPoet will use browser cookies for more precise WooCommerce tracking. This is practical for abandoned cart emails for example.', 'Browser cookies are data created by websites and stored in visitors web browser') %>
+      </p>
+    </th>
+    <td>
+      <p>
+        <input
+          type="checkbox"
+          value="1"
+          id="settings[mailpoet_accept_cookie_revenue_tracking]"
+          data-automation-id="accept_cookie_revenue_tracking"
+          name="woocommerce[accept_cookie_revenue_tracking][enabled]"
+          <% if(settings.woocommerce.accept_cookie_revenue_tracking.enabled == "1") %>checked="checked"<% endif %>
+        >
+        <input
+          type="hidden"
+          value="1"
+          name="woocommerce[accept_cookie_revenue_tracking][set]"
+        >
+      </p>
+    </td>
+  </tr>
 </table>

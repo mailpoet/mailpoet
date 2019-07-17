@@ -8,7 +8,6 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\API\JSON\v1\Newsletters;
@@ -127,7 +126,6 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      new FeaturesController(),
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()])
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
@@ -168,7 +166,6 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      new FeaturesController(),
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()])
     );
 
@@ -536,7 +533,6 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      new FeaturesController(),
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()])
     );
 

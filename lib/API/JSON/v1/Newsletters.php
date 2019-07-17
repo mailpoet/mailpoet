@@ -8,7 +8,6 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -45,9 +44,6 @@ class Newsletters extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
-  /** @var FeaturesController */
-  private $features_controller;
-
   /** @var AuthorizedEmailsController */
   private $authorized_emails_controller;
 
@@ -61,7 +57,6 @@ class Newsletters extends APIEndpoint {
     WPFunctions $wp,
     WCHelper $woocommerce_helper,
     SettingsController $settings,
-    FeaturesController $features_controller,
     AuthorizedEmailsController $authorized_emails_controller
   ) {
     $this->bulk_action = $bulk_action;
@@ -69,7 +64,6 @@ class Newsletters extends APIEndpoint {
     $this->wp = $wp;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->settings = $settings;
-    $this->features_controller = $features_controller;
     $this->authorized_emails_controller = $authorized_emails_controller;
   }
 
@@ -106,7 +100,7 @@ class Newsletters extends APIEndpoint {
         ->withOptions()
         ->withSendingQueue()
         ->withTotalSent()
-        ->withStatistics($this->woocommerce_helper, $this->features_controller);
+        ->withStatistics($this->woocommerce_helper);
 
       $preview_url = NewsletterUrl::getViewInBrowserUrl(
         NewsletterUrl::TYPE_LISTING_EDITOR,
@@ -483,13 +477,13 @@ class Newsletters extends APIEndpoint {
         $newsletter
           ->withSegments(true)
           ->withSendingQueue()
-          ->withStatistics($this->woocommerce_helper, $this->features_controller);
+          ->withStatistics($this->woocommerce_helper);
       } else if ($newsletter->type === Newsletter::TYPE_WELCOME || $newsletter->type === Newsletter::TYPE_AUTOMATIC) {
         $newsletter
           ->withOptions()
           ->withTotalSent()
           ->withScheduledToBeSent()
-          ->withStatistics($this->woocommerce_helper, $this->features_controller);
+          ->withStatistics($this->woocommerce_helper);
       } else if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withOptions()
@@ -499,7 +493,7 @@ class Newsletters extends APIEndpoint {
         $newsletter
           ->withSegments(true)
           ->withSendingQueue()
-          ->withStatistics($this->woocommerce_helper, $this->features_controller);
+          ->withStatistics($this->woocommerce_helper);
       }
 
       if ($newsletter->status === Newsletter::STATUS_SENT ||
