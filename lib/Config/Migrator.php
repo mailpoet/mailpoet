@@ -208,8 +208,10 @@ class Migrator {
       'unconfirmed_data longtext,',
       "source enum('form','imported','administrator','api','wordpress_user','woocommerce_user','woocommerce_checkout','unknown') DEFAULT 'unknown',",
       'count_confirmations int(11) unsigned NOT NULL DEFAULT 0,',
+      'unsubscribe_token varchar(15) NULL,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
+      'UNIQUE KEY unsubscribe_token (unsubscribe_token),',
       'KEY wp_user_id (wp_user_id),',
       'KEY updated_at (updated_at),',
       'KEY status_deleted_at (status,deleted_at),',
@@ -275,7 +277,9 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
+      'unsubscribe_token varchar(15) NULL,',
       'PRIMARY KEY  (id),',
+      'UNIQUE KEY unsubscribe_token (unsubscribe_token),',
       'KEY type_status (type,status)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
