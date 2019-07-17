@@ -13,7 +13,6 @@ use MailPoet\Tasks\Sending;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use PHPUnit_Framework_MockObject_MockObject;
 use WC_Order;
-use function MailPoet\Util\array_column;
 
 class WooCommercePurchasesTest extends \MailPoetTest {
   /** @var Subscriber */

@@ -3,7 +3,6 @@ namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 

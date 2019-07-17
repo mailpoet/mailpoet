@@ -6,8 +6,6 @@ require_once __DIR__ . '/../DataFactories/Settings.php';
 require_once __DIR__ . '/../DataFactories/Newsletter.php';
 require_once __DIR__ . '/../DataFactories/Subscriber.php';
 
-use Codeception\Util\Locator;
-use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Subscriber;
 

@@ -2,7 +2,6 @@
 namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
-use MailPoet\Cron\CronHelper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;

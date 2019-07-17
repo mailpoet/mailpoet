@@ -9,7 +9,6 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 
-use MailPoet\WP\Functions;
 use MailPoet\Settings\SettingsController;
 
 class NewSubscriberNotificationMailerTest extends \MailPoetTest {

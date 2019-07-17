@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Config;
 
 use Codeception\Stub;
-use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
 use MailPoet\WP\Functions as WPFunctions;
 

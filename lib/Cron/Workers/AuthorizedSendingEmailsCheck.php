@@ -1,12 +1,9 @@
 <?php
 namespace MailPoet\Cron\Workers;
 
-use MailPoet\Cron\CronHelper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
-use MailPoet\Settings\SettingsController;
-use MailPoet\Subscribers\InactiveSubscribersController;
 
 if (!defined('ABSPATH')) exit;
 

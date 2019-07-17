@@ -2,16 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter;
-use MailPoet\Test\DataFactories\NewsletterLink;
-use MailPoet\Test\DataFactories\Settings;
-use MailPoet\Test\DataFactories\StatisticsClicks;
-use MailPoet\Test\DataFactories\StatisticsWooCommercePurchases;
-use MailPoet\Test\DataFactories\Subscriber;
-use MailPoet\Test\DataFactories\WooCommerceOrder;
-use MailPoet\Test\DataFactories\WooCommerceProduct;
 
 class StatsPageCest {
 
