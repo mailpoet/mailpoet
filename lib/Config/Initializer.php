@@ -55,6 +55,9 @@ class Initializer {
   /** @var PermanentNotices */
   private $permanent_notices;
 
+  /** @var Shortcodes */
+  private $shortcodes;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -68,7 +71,8 @@ class Initializer {
     Changelog $changelog,
     Menu $menu,
     CronTrigger $cron_trigger,
-    PermanentNotices $permanent_notices
+    PermanentNotices $permanent_notices,
+    Shortcodes $shortcodes
   ) {
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
@@ -81,6 +85,7 @@ class Initializer {
       $this->menu = $menu;
       $this->cron_trigger = $cron_trigger;
       $this->permanent_notices = $permanent_notices;
+      $this->shortcodes = $shortcodes;
   }
 
   function init() {
@@ -248,8 +253,7 @@ class Initializer {
   }
 
   function setupShortcodes() {
-    $shortcodes = new Shortcodes();
-    $shortcodes->init();
+    $this->shortcodes->init();
   }
 
   function setupImages() {

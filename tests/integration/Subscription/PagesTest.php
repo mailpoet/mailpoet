@@ -3,6 +3,7 @@ namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
 use Codeception\Util\Fixtures;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -30,11 +31,12 @@ class PagesTest extends \MailPoetTest {
     expect($this->subscriber->getErrors())->false();
     $this->test_data['email'] = $this->subscriber->email;
     $this->test_data['token'] = Subscriber::generateToken($this->subscriber->email);
+    $this->pages = ContainerWrapper::getInstance()->get(Pages::class);
   }
 
   function testItConfirmsSubscription() {
     $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
-    $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
+    $subscription = $this->pages->init($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     $subscription->confirm();
     $confirmed_subscriber = Subscriber::findOne($this->subscriber->id);
     expect($confirmed_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
@@ -45,13 +47,13 @@ class PagesTest extends \MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
-    $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
+    $subscription = $this->pages->init($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     expect($subscription->confirm())->false();
   }
 
   function testItSendsWelcomeNotificationUponConfirmingSubscription() {
     $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
-    $subscription = new Pages($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
+    $subscription = $this->pages->init($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     // create segment
     $segment = Segment::create();
     $segment->hydrate(['name' => 'List #1']);
@@ -104,7 +106,7 @@ class PagesTest extends \MailPoetTest {
   }
 
   function testItUnsubscribes() {
-    $pages = new Pages($action = 'unsubscribe', $this->test_data);
+    $pages = $this->pages->init($action = 'unsubscribe', $this->test_data);
     $pages->unsubscribe();
     $updated_subscriber = Subscriber::findOne($this->subscriber->id);
     expect($updated_subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
@@ -112,7 +114,7 @@ class PagesTest extends \MailPoetTest {
 
   function testItDoesntUnsubscribeWhenPreviewing() {
     $this->test_data['preview'] = 1;
-    $pages = new Pages($action = 'unsubscribe', $this->test_data);
+    $pages = $this->pages->init($action = 'unsubscribe', $this->test_data);
     $pages->unsubscribe();
     $updated_subscriber = Subscriber::findOne($this->subscriber->id);
     expect($updated_subscriber->status)->notEquals(Subscriber::STATUS_UNSUBSCRIBED);

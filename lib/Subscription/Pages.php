@@ -24,27 +24,38 @@ class Pages {
   private $action;
   private $data;
   private $subscriber;
+
   /** @var NewSubscriberNotificationMailer */
   private $new_subscriber_notification_sender;
+
   /** @var SettingsController */
   private $settings;
 
   /** @var UrlHelper */
   private $url_helper;
 
-  function __construct($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false, $new_subscriber_notification_sender = null) {
+  /** @var WPFunctions */
+  private $wp;
+
+  function __construct(
+    NewSubscriberNotificationMailer $new_subscriber_notification_sender,
+    WPFunctions $wp,
+    SettingsController $settings,
+    UrlHelper $url_helper
+  ) {
+    $this->wp = $wp;
+    $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
+    $this->settings = $settings;
+    $this->url_helper = $url_helper;
+  }
+
+  function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
     if ($init_page_filters) $this->initPageFilters();
     if ($init_shortcodes) $this->initShortcodes();
-    if ($new_subscriber_notification_sender) {
-      $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
-    } else {
-      $this->new_subscriber_notification_sender = new NewSubscriberNotificationMailer();
-    }
-    $this->settings = new SettingsController();
-    $this->url_helper = new UrlHelper(new WPFunctions());
+    return $this;
   }
 
   private function isPreview() {
@@ -52,21 +63,25 @@ class Pages {
   }
 
   function initPageFilters() {
-    WPFunctions::get()->addFilter('wp_title', [$this,'setWindowTitle'], 10, 3);
-    WPFunctions::get()->addFilter('document_title_parts', [$this,'setWindowTitleParts'], 10, 1);
-    WPFunctions::get()->addFilter('the_title', [$this,'setPageTitle'], 10, 1);
-    WPFunctions::get()->addFilter('the_content', [$this,'setPageContent'], 10, 1);
+    $this->wp->addFilter('wp_title', [$this,'setWindowTitle'], 10, 3);
+    $this->wp->addFilter('document_title_parts', [$this,'setWindowTitleParts'], 10, 1);
+    $this->wp->addFilter('the_title', [$this,'setPageTitle'], 10, 1);
+    $this->wp->addFilter('the_content', [$this,'setPageContent'], 10, 1);
   }
 
   function initShortcodes() {
-    WPFunctions::get()->addShortcode('mailpoet_manage', [$this, 'getManageLink']);
-    WPFunctions::get()->addShortcode('mailpoet_manage_subscription', [$this, 'getManageContent']);
+    $this->wp->addShortcode('mailpoet_manage', [$this, 'getManageLink']);
+    $this->wp->addShortcode('mailpoet_manage_subscription', [$this, 'getManageContent']);
   }
 
-  function getSubscriber() {
+  private function getSubscriber() {
+    if (!is_null($this->subscriber)) {
+      return $this->subscriber;
+    }
+
     $token = (isset($this->data['token'])) ? $this->data['token'] : null;
     $email = (isset($this->data['email'])) ? $this->data['email'] : null;
-    $wp_user = WPFunctions::get()->wpGetCurrentUser();
+    $wp_user = $this->wp->wpGetCurrentUser();
 
     if (!$email && $wp_user->exists()) {
       return Subscriber::where('wp_user_id', $wp_user->ID)->findOne();
@@ -82,6 +97,7 @@ class Pages {
   }
 
   function confirm() {
+    $this->subscriber = $this->getSubscriber();
     if ($this->subscriber === false || $this->subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
       return false;
     }
@@ -130,13 +146,13 @@ class Pages {
     global $post;
 
     if ($this->isPreview() === false && $this->subscriber === false) {
-      return WPFunctions::get()->__("Hmmm... we don't have a record of you.", 'mailpoet');
+      return $this->wp->__("Hmmm... we don't have a record of you.", 'mailpoet');
     }
 
     if (
-      ($post->post_title !== WPFunctions::get()->__('MailPoet Page', 'mailpoet'))
+      ($post->post_title !== $this->wp->__('MailPoet Page', 'mailpoet'))
       ||
-      ($page_title !== WPFunctions::get()->singlePostTitle('', false))
+      ($page_title !== $this->wp->singlePostTitle('', false))
     ) {
       // when it's a custom page, just return the original page title
       return $page_title;
@@ -160,7 +176,7 @@ class Pages {
 
     // if we're not in preview mode and the subscriber does not exist
     if ($this->isPreview() === false && $this->subscriber === false) {
-      return WPFunctions::get()->__("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
+      return $this->wp->__("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
 
     if (strpos($page_content, '[mailpoet_page]') !== false) {
@@ -204,7 +220,7 @@ class Pages {
   private function getConfirmTitle() {
     if ($this->isPreview()) {
       $title = sprintf(
-        WPFunctions::get()->__("You have subscribed to: %s", 'mailpoet'),
+        $this->wp->__("You have subscribed to: %s", 'mailpoet'),
         'demo 1, demo 2'
       );
     } else {
@@ -213,10 +229,10 @@ class Pages {
       }, $this->subscriber->segments()->findMany());
 
       if (empty($segment_names)) {
-        $title = WPFunctions::get()->__("You are now subscribed!", 'mailpoet');
+        $title = $this->wp->__("You are now subscribed!", 'mailpoet');
       } else {
         $title = sprintf(
-          WPFunctions::get()->__("You have subscribed to: %s", 'mailpoet'),
+          $this->wp->__("You have subscribed to: %s", 'mailpoet'),
           join(', ', $segment_names)
         );
       }
@@ -226,19 +242,19 @@ class Pages {
 
   private function getManageTitle() {
     if ($this->isPreview() || $this->subscriber !== false) {
-      return WPFunctions::get()->__("Manage your subscription", 'mailpoet');
+      return $this->wp->__("Manage your subscription", 'mailpoet');
     }
   }
 
   private function getUnsubscribeTitle() {
     if ($this->isPreview() || $this->subscriber !== false) {
-      return WPFunctions::get()->__("You are now unsubscribed.", 'mailpoet');
+      return $this->wp->__("You are now unsubscribed.", 'mailpoet');
     }
   }
 
   private function getConfirmContent() {
     if ($this->isPreview() || $this->subscriber !== false) {
-      return WPFunctions::get()->__("Yup, we've added you to our email list. You'll hear from us shortly.", 'mailpoet');
+      return $this->wp->__("Yup, we've added you to our email list. You'll hear from us shortly.", 'mailpoet');
     }
   }
 
@@ -255,7 +271,7 @@ class Pages {
       ->withCustomFields()
       ->withSubscriptions();
     } else {
-      return WPFunctions::get()->__('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
+      return $this->wp->__('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
 
     $custom_fields = array_map(function($custom_field) use($subscriber) {
@@ -305,7 +321,7 @@ class Pages {
         'id' => 'first_name',
         'type' => 'text',
         'params' => [
-          'label' => WPFunctions::get()->__('First name', 'mailpoet'),
+          'label' => $this->wp->__('First name', 'mailpoet'),
           'value' => $subscriber->first_name,
           'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()),
         ],
@@ -314,7 +330,7 @@ class Pages {
         'id' => 'last_name',
         'type' => 'text',
         'params' => [
-          'label' => WPFunctions::get()->__('Last name', 'mailpoet'),
+          'label' => $this->wp->__('Last name', 'mailpoet'),
           'value' => $subscriber->last_name,
           'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()),
         ],
@@ -324,11 +340,11 @@ class Pages {
         'type' => 'select',
         'params' => [
           'required' => true,
-          'label' => WPFunctions::get()->__('Status', 'mailpoet'),
+          'label' => $this->wp->__('Status', 'mailpoet'),
           'values' => [
             [
               'value' => [
-                Subscriber::STATUS_SUBSCRIBED => WPFunctions::get()->__('Subscribed', 'mailpoet'),
+                Subscriber::STATUS_SUBSCRIBED => $this->wp->__('Subscribed', 'mailpoet'),
               ],
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_SUBSCRIBED
@@ -336,7 +352,7 @@ class Pages {
             ],
             [
               'value' => [
-                Subscriber::STATUS_UNSUBSCRIBED => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
+                Subscriber::STATUS_UNSUBSCRIBED => $this->wp->__('Unsubscribed', 'mailpoet'),
               ],
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
@@ -344,7 +360,7 @@ class Pages {
             ],
             [
               'value' => [
-                Subscriber::STATUS_BOUNCED => WPFunctions::get()->__('Bounced', 'mailpoet'),
+                Subscriber::STATUS_BOUNCED => $this->wp->__('Bounced', 'mailpoet'),
               ],
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_BOUNCED
@@ -356,7 +372,7 @@ class Pages {
             ],
             [
               'value' => [
-                Subscriber::STATUS_INACTIVE => WPFunctions::get()->__('Inactive', 'mailpoet'),
+                Subscriber::STATUS_INACTIVE => $this->wp->__('Inactive', 'mailpoet'),
               ],
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_INACTIVE
@@ -378,7 +394,7 @@ class Pages {
           'id' => 'segments',
           'type' => 'segment',
           'params' => [
-            'label' => WPFunctions::get()->__('Your lists', 'mailpoet'),
+            'label' => $this->wp->__('Your lists', 'mailpoet'),
             'values' => $segments,
           ],
         ],
@@ -386,7 +402,7 @@ class Pages {
           'id' => 'submit',
           'type' => 'submit',
           'params' => [
-            'label' => WPFunctions::get()->__('Save', 'mailpoet'),
+            'label' => $this->wp->__('Save', 'mailpoet'),
           ],
         ],
       ]
@@ -413,22 +429,22 @@ class Pages {
     // special case for WP users as they cannot edit their subscriber's email
     if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
       // check if subscriber's associated WP user is the currently logged in WP user
-      $wp_current_user = WPFunctions::get()->wpGetCurrentUser();
+      $wp_current_user = $this->wp->wpGetCurrentUser();
       if ($wp_current_user->user_email === $subscriber->email) {
         $form_html .= Helpers::replaceLinkTags(
-          WPFunctions::get()->__('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
-          WPFunctions::get()->getEditProfileUrl(),
+          $this->wp->__('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
+          $this->wp->getEditProfileUrl(),
           ['target' => '_blank']
         );
       } else {
         $form_html .= Helpers::replaceLinkTags(
-          WPFunctions::get()->__('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
-          WPFunctions::get()->wpLoginUrl(),
+          $this->wp->__('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
+          $this->wp->wpLoginUrl(),
           ['target' => '_blank']
         );
       }
     } else {
-      $form_html .= WPFunctions::get()->__('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet');
+      $form_html .= $this->wp->__('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet');
     }
     $form_html .= '</span>';
     $form_html .= '</p>';
@@ -450,13 +466,13 @@ class Pages {
   }
 
   function getManageLink($params) {
-    if (!$this->subscriber) return WPFunctions::get()->__('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
+    if (!$this->subscriber) return $this->wp->__('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
 
     // get label or display default label
     $text = (
       isset($params['text'])
       ? htmlspecialchars($params['text'])
-      : WPFunctions::get()->__('Manage your subscription', 'mailpoet')
+      : $this->wp->__('Manage your subscription', 'mailpoet')
     );
 
     return '<a href="' . Url::getManageUrl(
