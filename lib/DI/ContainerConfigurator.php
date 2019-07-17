@@ -99,6 +99,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setArgument('$container', new Reference(ContainerWrapper::class));
     // Mailer
     $container->autowire(\MailPoet\Mailer\Mailer::class);
+    $container->autowire(\MailPoet\Mailer\Methods\Common\BlacklistCheck::class);
     // Subscribers
     $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);

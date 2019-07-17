@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 
 if (!defined('ABSPATH')) exit;
@@ -10,8 +11,6 @@ if (!defined('ABSPATH')) exit;
 require_once ABSPATH . WPINC . '/class-phpmailer.php';
 
 class PHPMail {
-  use BlacklistTrait;
-
   public $sender;
   public $reply_to;
   public $return_path;
@@ -19,6 +18,9 @@ class PHPMail {
 
   /** @var PHPMailMapper  */
   private $error_mapper;
+
+  /** @var BlacklistCheck */
+  private $blacklist;
 
   function __construct($sender, $reply_to, $return_path, PHPMailMapper $error_mapper) {
     $this->sender = $sender;
@@ -28,10 +30,11 @@ class PHPMail {
       $this->sender['from_email'];
     $this->mailer = $this->buildMailer();
     $this->error_mapper = $error_mapper;
+    $this->blacklist = new BlacklistCheck();
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
-    if ($this->isBlacklisted($subscriber)) {
+    if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->error_mapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }

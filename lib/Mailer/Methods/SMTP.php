@@ -2,14 +2,13 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class SMTP {
-  use BlacklistTrait;
-
   public $host;
   public $port;
   public $authentication;
@@ -25,6 +24,9 @@ class SMTP {
 
   /** @var SMTPMapper */
   private $error_mapper;
+
+  /** @var BlacklistCheck */
+  private $blacklist;
 
   private $wp;
 
@@ -47,10 +49,11 @@ class SMTP {
     $this->mailer_logger = new \Swift_Plugins_Loggers_ArrayLogger();
     $this->mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($this->mailer_logger));
     $this->error_mapper = $error_mapper;
+    $this->blacklist = new BlacklistCheck();
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
-    if ($this->isBlacklisted($subscriber)) {
+    if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->error_mapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }

@@ -4,6 +4,7 @@ namespace MailPoet\Mailer\Methods;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
@@ -12,8 +13,6 @@ use MailPoet\Services\Bridge\API;
 if (!defined('ABSPATH')) exit;
 
 class MailPoet {
-  use BlacklistTrait;
-
   public $api;
   public $sender;
   public $reply_to;
@@ -25,6 +24,9 @@ class MailPoet {
   /** @var MailPoetMapper */
   private $error_mapper;
 
+  /** @var BlacklistCheck */
+  private $blacklist;
+
   function __construct($api_key, $sender, $reply_to, MailPoetMapper $error_mapper, AuthorizedEmailsController $authorized_emails_controller) {
     $this->api = new API($api_key);
     $this->sender = $sender;
@@ -32,6 +34,7 @@ class MailPoet {
     $this->services_checker = new ServicesChecker();
     $this->error_mapper = $error_mapper;
     $this->authorized_emails_controller = $authorized_emails_controller;
+    $this->blacklist = new BlacklistCheck();
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
@@ -41,7 +44,7 @@ class MailPoet {
 
     $subscribers_for_blacklist_check = is_array($subscriber) ? $subscriber : [$subscriber];
     foreach ($subscribers_for_blacklist_check as $sub) {
-      if ($this->isBlacklisted($sub)) {
+      if ($this->blacklist->isBlacklisted($sub)) {
         $error = $this->error_mapper->getBlacklistError($sub);
         return Mailer::formatMailerErrorResult($error);
       }
