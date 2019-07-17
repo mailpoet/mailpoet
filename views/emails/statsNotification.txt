@@ -6,22 +6,10 @@
 <%= subject %>
 
 <%= __('open rate') %>: <%= number_format_i18n(opened) %>%
-<% if opened > 30 %>
-  <%= __('EXCELLENT') %>
-<% elseif opened > 10 %>
-  <%= __('GOOD') %>
-<% else %>
-  <%= __('BAD') %>
-<% endif %>
+  <%= opened_stats_text(opened) %>
 
 <%= __('click rate') %>: <%= number_format_i18n(clicked) %>%
-<% if clicked > 3 %>
-  <%= __('EXCELLENT') %>
-<% elseif clicked > 1 %>
- <%= __('GOOD') %>
-<% else %>
- <%= __('BAD') %>
-<% endif %>
+  <%= clicked_stats_text(opened) %>
 
 <% if topLinkClicks > 0 %>
 <%= __('Most clicked link') %>

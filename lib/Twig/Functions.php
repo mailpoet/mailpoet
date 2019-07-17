@@ -128,6 +128,26 @@ class Functions extends AbstractExtension {
         [$this, 'getWPStartOfWeek'],
         ['is_safe' => ['all']]
       ),
+      new TwigFunction(
+        'opened_stats_color',
+        [$this, 'openedStatsColor'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'clicked_stats_color',
+        [$this, 'clickedStatsColor'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'opened_stats_text',
+        [$this, 'openedStatsText'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'clicked_stats_text',
+        [$this, 'clickedStatsText'],
+        ['is_safe' => ['all']]
+      ),
     ];
   }
 
@@ -224,5 +244,45 @@ class Functions extends AbstractExtension {
 
   function isWoocommerceActive() {
     return $this->woocommerce_helper->isWooCommerceActive();
+  }
+
+  function openedStatsColor($opened) {
+    if ($opened > 30) {
+      return '#2993ab';
+    } elseif ($opened > 10) {
+      return '#f0b849';
+    } else {
+      return '#d54e21';
+    }
+  }
+
+  function clickedStatsColor($clicked) {
+    if ($clicked > 3) {
+      return '#2993ab';
+    } elseif ($clicked > 1) {
+      return '#f0b849';
+    } else {
+      return '#d54e21';
+    }
+  }
+
+  function openedStatsText($opened) {
+    if ($opened > 30) {
+      return __('EXCELLENT', 'mailpoet');
+    } elseif ($opened > 10) {
+      return __('GOOD', 'mailpoet');
+    } else {
+      return __('BAD', 'mailpoet');
+    }
+  }
+
+  function clickedStatsText($clicked) {
+    if ($clicked > 3) {
+      return __('EXCELLENT', 'mailpoet');
+    } elseif ($clicked > 1) {
+      return __('GOOD', 'mailpoet');
+    } else {
+      return __('BAD', 'mailpoet');
+    }
   }
 }
