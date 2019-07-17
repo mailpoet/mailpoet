@@ -2,7 +2,6 @@
 namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Statistics\Track\WooCommercePurchases;
@@ -21,25 +20,17 @@ class WooCommerceOrders extends SimpleWorker {
   /** @var WooCommercePurchases */
   private $woocommerce_purchases;
 
-  /** @var FeaturesController */
-  private $features_controller;
-
   function __construct(
     WCHelper $woocommerce_helper,
     WooCommercePurchases $woocommerce_purchases,
-    FeaturesController $features_controller,
     $timer = false
   ) {
     $this->woocommerce_helper = $woocommerce_helper;
     $this->woocommerce_purchases = $woocommerce_purchases;
-    $this->features_controller = $features_controller;
     parent::__construct($timer);
   }
 
   function checkProcessingRequirements() {
-    if (!$this->features_controller->isSupported(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES)) {
-      return false;
-    }
     return $this->woocommerce_helper->isWooCommerceActive() && empty(self::getCompletedTasks()); // run only once
   }
 

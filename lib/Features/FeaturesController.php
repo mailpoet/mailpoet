@@ -8,12 +8,10 @@ class FeaturesController {
 
   // Define features below in the following form:
   //   const FEATURE_NAME_OF_FEATURE = 'name-of-feature';
-  const FEATURE_DISPLAY_WOOCOMMERCE_REVENUES = 'display-woocommerce-revenues'; // may also have 'display_revenues' setting
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
-    self::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES => false,
   ];
 
   /** @var array */

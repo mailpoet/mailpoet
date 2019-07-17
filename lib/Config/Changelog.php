@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Url;
 use MailPoet\WooCommerce\Helper;
@@ -21,21 +20,16 @@ class Changelog {
   /** @var Url */
   private $url_helper;
 
-  /** @var FeaturesController */
-  private $features_controller;
-
   function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Helper $wooCommerceHelper,
-    Url $url_helper,
-    FeaturesController $features_controller
+    Url $url_helper
   ) {
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->settings = $settings;
     $this->wp = $wp;
     $this->url_helper = $url_helper;
-    $this->features_controller = $features_controller;
   }
 
   function init() {
@@ -69,9 +63,7 @@ class Changelog {
       $this->checkWelcomeWizard();
     }
     $this->checkWooCommerceListImportPage();
-    if ($this->features_controller->isSupported(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES)) {
-      $this->checkRevenueTrackingPermissionPage();
-    }
+    $this->checkRevenueTrackingPermissionPage();
   }
 
   private function checkMp2Migration($version) {

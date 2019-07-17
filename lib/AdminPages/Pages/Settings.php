@@ -6,7 +6,6 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
@@ -40,9 +39,6 @@ class Settings {
   /** @var Captcha */
   private $captcha;
 
-  /** @var FeaturesController */
-  private $features_controller;
-
   /** @var Installation */
   private $installation;
 
@@ -52,7 +48,6 @@ class Settings {
     WooCommerceHelper $woocommerce_helper,
     WPFunctions $wp,
     ServicesChecker $services_checker,
-    FeaturesController $features_controller,
     Installation $installation,
     Captcha $captcha
   ) {
@@ -61,7 +56,6 @@ class Settings {
     $this->woocommerce_helper = $woocommerce_helper;
     $this->wp = $wp;
     $this->services_checker = $services_checker;
-    $this->features_controller = $features_controller;
     $this->installation = $installation;
     $this->captcha = $captcha;
   }
@@ -89,7 +83,6 @@ class Settings {
       'current_user' => $this->wp->wpGetCurrentUser(),
       'linux_cron_path' => dirname(dirname(__DIR__)),
       'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
-      'display_revenues' => $this->features_controller->isSupported(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES),
       'ABSPATH' => ABSPATH,
       'hosts' => [
         'web' => Hosts::getWebHosts(),

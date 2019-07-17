@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Models;
 use Carbon\Carbon;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -560,8 +559,8 @@ class Newsletter extends Model {
     return $this;
   }
 
-  function withStatistics(WCHelper $woocommerce_helper, FeaturesController $features_controller) {
-    $statistics = $this->getStatistics($woocommerce_helper, $features_controller);
+  function withStatistics(WCHelper $woocommerce_helper) {
+    $statistics = $this->getStatistics($woocommerce_helper);
     $this->statistics = $statistics;
     return $this;
   }
@@ -571,7 +570,7 @@ class Newsletter extends Model {
     return $renderer->render();
   }
 
-  function getStatistics(WCHelper $woocommerce_helper, FeaturesController $features_controller) {
+  function getStatistics(WCHelper $woocommerce_helper) {
     if (($this->type !== self::TYPE_WELCOME) && ($this->queue === false)) {
       return false;
     }
@@ -600,10 +599,7 @@ class Newsletter extends Model {
     }
 
     // WooCommerce revenues
-    if (
-      $features_controller->isSupported(FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES)
-      && $woocommerce_helper->isWooCommerceActive()
-    ) {
+    if ($woocommerce_helper->isWooCommerceActive()) {
       $currency = $woocommerce_helper->getWoocommerceCurrency();
       $row = StatisticsWooCommercePurchases::selectExpr('SUM(order_price_total) AS total')
         ->selectExpr('count(*)', 'count')

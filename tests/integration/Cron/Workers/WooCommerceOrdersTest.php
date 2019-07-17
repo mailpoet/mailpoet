@@ -4,8 +4,6 @@ namespace MailPoet\Test\Cron\Workers;
 
 use DateTime;
 use MailPoet\Cron\Workers\WooCommerceOrders;
-use MailPoet\Features\FeaturesController;
-use MailPoet\Models\FeatureFlag;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Statistics\Track\WooCommercePurchases;
@@ -26,11 +24,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->woocommerce_helper = $this->createMock(WooCommerceHelper::class);
     $this->woocommerce_purchases = $this->createMock(WooCommercePurchases::class);
 
-    FeatureFlag::createOrUpdate([
-      'name' => FeaturesController::FEATURE_DISPLAY_WOOCOMMERCE_REVENUES,
-      'value' => true,
-    ]);
-    $this->worker = new WooCommerceOrders($this->woocommerce_helper, $this->woocommerce_purchases, new FeaturesController(), microtime(true));
+    $this->worker = new WooCommerceOrders($this->woocommerce_helper, $this->woocommerce_purchases, microtime(true));
   }
 
   function testItDoesNotRunIfWooCommerceIsDisabled() {
@@ -146,7 +140,6 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    \ORM::raw_execute('TRUNCATE ' . FeatureFlag::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
   }

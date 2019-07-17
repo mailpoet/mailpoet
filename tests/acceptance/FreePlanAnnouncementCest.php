@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-
 class FreePlanAnnouncementCest {
   const NOTICE_SELECTOR = '[data-automation-id="free-plan-announcement"]';
 
