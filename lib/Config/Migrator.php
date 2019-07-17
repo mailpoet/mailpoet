@@ -201,6 +201,7 @@ class Migrator {
       'subscribed_ip varchar(45) NULL,',
       'confirmed_ip varchar(45) NULL,',
       'confirmed_at timestamp NULL,',
+      'last_subscribed_at timestamp NULL,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
@@ -211,7 +212,8 @@ class Migrator {
       'UNIQUE KEY email (email),',
       'KEY wp_user_id (wp_user_id),',
       'KEY updated_at (updated_at),',
-      'KEY status_deleted_at (status,deleted_at)',
+      'KEY status_deleted_at (status,deleted_at),',
+      'KEY last_subscribed_at (last_subscribed_at)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
