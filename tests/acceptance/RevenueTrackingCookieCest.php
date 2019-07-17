@@ -6,9 +6,6 @@ use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 
-require_once __DIR__ . '/../DataFactories/Newsletter.php';
-require_once __DIR__ . '/../DataFactories/Settings.php';
-
 class RevenueTrackingCookieCest {
 
   /** @var Settings */

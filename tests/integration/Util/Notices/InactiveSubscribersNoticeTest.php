@@ -9,9 +9,6 @@ use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
-require_once __DIR__ . '/../../../DataFactories/Settings.php';
-require_once __DIR__ . '/../../../DataFactories/Subscriber.php';
-
 class InactiveSubscribersNoticeTest extends \MailPoetTest {
   function testItDisplays() {
     $this->createSubscribers(50);

@@ -5,10 +5,6 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 use Mailpoet\Models\Form as FormModel;
 
-require_once __DIR__ . '/../DataFactories/Form.php';
-require_once __DIR__ . '/../DataFactories/Segment.php';
-require_once __DIR__ . '/../DataFactories/Subscriber.php';
-
 /**
  * Inherited Methods
  * @method void wantToTest($text)
