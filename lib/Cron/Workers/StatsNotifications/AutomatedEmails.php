@@ -21,8 +21,30 @@ class AutomatedEmails extends SimpleWorker {
     $this->settings = $settings;
   }
 
+  function checkProcessingRequirements() {
+    $settings = $this->settings->get(Worker::SETTINGS_KEY);
+    if (!is_array($settings)) {
+      return false;
+    }
+    if (!isset($settings['automated'])) {
+      return false;
+    }
+    if (!isset($settings['address'])) {
+      return false;
+    }
+    if (empty(trim($settings['address']))) {
+      return false;
+    }
+    if (!(bool)$this->settings->get('tracking.enabled')) {
+      return false;
+    }
+    return (bool)$settings['automated'];
+  }
+
   function processTaskStrategy(ScheduledTask $task) {
     // TODO
+    // TODO refactor \MailPoet\Cron\Workers\StatsNotifications\Worker  and Scheduler and share the code
+    // TODO refactor the views templates mailpoet/views/emails/statsNotification.html and txt and share them
   }
 
   static function getNextRunDate() {
