@@ -2,5 +2,15 @@
 
 <% block content %>
 
+<%= __('Your monthly stats are in!') %>
 
+<% for newsletter in newsletters %>
+------------------------------------------
+  <%= newsletter.subject %>
+  <%= __('open rate') %>: <%= number_format_i18n(newsletter.opened, 1) %>% (<%= opened_stats_text(newsletter.opened) %>)
+  <%= __('click rate') %>: <%= number_format_i18n(newsletter.clicked, 1) %>% (<%= clicked_stats_text(newsletter.clicked) %>)
+  <%= __('View all stats') %>
+    <%= newsletter.linkStats %>
+<% endfor %>
+------------------------------------------
 <% endblock %>
