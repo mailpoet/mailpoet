@@ -4,6 +4,7 @@ namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Env;
 use MailPoet\Doctrine\ConnectionFactory;
+use MailPoet\Doctrine\SerializableConnection;
 use MailPoetVendor\Doctrine\DBAL\Driver\PDOMySql;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySqlPlatform;
 use PDO;
@@ -13,6 +14,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $connection_factory = new ConnectionFactory();
     $connection = $connection_factory->createConnection();
 
+    expect($connection)->isInstanceOf(SerializableConnection::class);
     expect($connection->getWrappedConnection())->isInstanceOf(PDO::class);
     expect($connection->getDriver())->isInstanceOf(PDOMySql\Driver::class);
     expect($connection->getDatabasePlatform())->isInstanceOf(MySqlPlatform::class);

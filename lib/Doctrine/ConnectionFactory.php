@@ -16,6 +16,7 @@ class ConnectionFactory {
   function createConnection() {
     $platform_class = self::PLATFORM_CLASS;
     $connection_params = [
+      'wrapperClass' => SerializableConnection::class,
       'driver' => self::DRIVER,
       'platform' => new $platform_class,
       'host' => Env::$db_host,
