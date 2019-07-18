@@ -14,6 +14,11 @@ class Settings {
     $this->settings = new SettingsController();
   }
 
+  // TODO: not yet complete, more settings will be moved from acceptanceDump.sql
+  function withDefaultSettings() {
+    $this->withCookieRevenueTracking();
+  }
+
   function withConfirmationEmailSubject($subject = null) {
     if ($subject === null) {
       $subject = sprintf('Confirm your subscription to %1$s', get_option('blogname'));

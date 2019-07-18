@@ -38,3 +38,6 @@ modules:
         - WPCLI:
             path: /wp-core
             throw: true
+extensions:
+    enabled:
+        - SettingsExtension
