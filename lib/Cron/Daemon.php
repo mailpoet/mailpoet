@@ -44,7 +44,6 @@ class Daemon {
   private function getWorkers() {
     yield $this->workers_factory->createMigrationWorker($this->timer);
     yield $this->workers_factory->createStatsNotificationsWorker($this->timer);
-    yield $this->workers_factory->createStatsNotificationsWorkerForAutomatedEmails($this->timer);
     yield $this->workers_factory->createScheduleWorker($this->timer);
     yield $this->workers_factory->createQueueWorker($this->timer);
     yield $this->workers_factory->createSendingServiceKeyCheckWorker($this->timer);
@@ -56,5 +55,6 @@ class Daemon {
     yield $this->workers_factory->createWooCommerceSyncWorker($this->timer);
     yield $this->workers_factory->createAuthorizedSendingEmailsCheckWorker($this->timer);
     yield $this->workers_factory->createWooCommerceOrdersWorker($this->timer);
+    yield $this->workers_factory->createStatsNotificationsWorkerForAutomatedEmails($this->timer);
   }
 }
