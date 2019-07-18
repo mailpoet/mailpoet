@@ -1,62 +1,21 @@
 <?php
+
 namespace MailPoet\Config;
 
-use ORM as ORM;
-use PDO as PDO;
+use ORM;
+use PDO;
 
 if (!defined('ABSPATH')) exit;
 
-require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-
 class Database {
-  public $driver_option_wait_timeout = 60;
-
-  function init() {
-    $this->setupConnection();
+  function init(PDO $pdo) {
+    ORM::setDb($pdo);
     $this->setupLogging();
-    $this->setupDriverOptions();
     $this->defineTables();
-  }
-
-  function setupConnection() {
-    ORM::configure(Env::$db_source_name);
-    ORM::configure('username', Env::$db_username);
-    ORM::configure('password', Env::$db_password);
   }
 
   function setupLogging() {
     ORM::configure('logging', WP_DEBUG);
-  }
-
-  function setupDriverOptions() {
-    $driver_options = [
-      'TIME_ZONE = "' . Env::$db_timezone_offset . '"',
-      'sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))',
-    ];
-
-    if (!empty(Env::$db_charset)) {
-      $character_set = 'NAMES ' . Env::$db_charset;
-      if (!empty(Env::$db_collation)) {
-        $character_set .= ' COLLATE ' . Env::$db_collation;
-      }
-      $driver_options[] = $character_set;
-    }
-
-    ORM::configure('driver_options', [
-      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driver_options),
-    ]);
-
-    try {
-      $current_options = ORM::for_table("")
-        ->raw_query('SELECT @@session.wait_timeout as wait_timeout')
-        ->findOne();
-      if ($current_options && (int)$current_options->wait_timeout < $this->driver_option_wait_timeout) {
-        ORM::raw_execute('SET SESSION wait_timeout = ' . $this->driver_option_wait_timeout);
-      }
-    } catch (\PDOException $e) {
-      // Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
-      throw new \Exception($e->getMessage());
-    }
   }
 
   function defineTables() {

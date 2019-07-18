@@ -84,6 +84,6 @@ class ModelTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::setDb(null);
+    \ORM::setDb($this->connection->getWrappedConnection());
   }
 }

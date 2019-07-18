@@ -57,6 +57,9 @@ class Initializer {
   /** @var Shortcodes */
   private $shortcodes;
 
+  /** @var DatabaseInitializer */
+  private $database_initializer;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -71,7 +74,8 @@ class Initializer {
     Menu $menu,
     CronTrigger $cron_trigger,
     PermanentNotices $permanent_notices,
-    Shortcodes $shortcodes
+    Shortcodes $shortcodes,
+    DatabaseInitializer $database_initializer
   ) {
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
@@ -85,6 +89,7 @@ class Initializer {
       $this->cron_trigger = $cron_trigger;
       $this->permanent_notices = $permanent_notices;
       $this->shortcodes = $shortcodes;
+      $this->database_initializer = $database_initializer;
   }
 
   function init() {
@@ -100,7 +105,7 @@ class Initializer {
     $this->setupLocalizer();
 
     try {
-      $this->setupDB();
+      $this->database_initializer->initializeConnection();
     } catch (\Exception $e) {
       return WPNotice::displayError(Helpers::replaceLinkTags(
         WPFunctions::get()->__('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
@@ -156,11 +161,6 @@ class Initializer {
 
   function runActivator() {
     return $this->activator->activate();
-  }
-
-  function setupDB() {
-    $database = new Database();
-    $database->init();
   }
 
   function preInitialize() {
