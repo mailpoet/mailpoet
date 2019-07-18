@@ -65,7 +65,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\RendererFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\ServicesChecker::class);
     $container->autowire(\MailPoet\Config\Shortcodes::class)
-      ->setShared(false);
+      ->setShared(false); // Get a new instance each time $container->get() is called, needed for tests
     $container->register(\MailPoet\Config\Renderer::class)
       ->setPublic(true)
       ->setFactory([new Reference(\MailPoet\Config\RendererFactory::class), 'getRenderer']);
@@ -124,7 +124,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Manage::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Pages::class)->setPublic(true)
-      ->setShared(false);
+      ->setShared(false); // Get a new instance each time $container->get() is called, needed for tests
     $container->autowire(\MailPoet\Subscription\Registration::class)->setPublic(true);
     // Newsletter
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
