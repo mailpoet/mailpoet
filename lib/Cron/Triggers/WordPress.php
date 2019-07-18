@@ -3,6 +3,7 @@ namespace MailPoet\Cron\Triggers;
 
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
 use MailPoet\Cron\Workers\WooCommerceOrders;
 use MailPoet\Services\Bridge;
 use MailPoet\Cron\CronHelper;
@@ -101,6 +102,12 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
+    // stats notifications for auto emails
+    $auto_stats_notifications_tasks = self::getTasksCount([
+      'type' => AutomatedEmails::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
+    ]);
     // inactive subscribers check
     $inactive_subscribers_tasks = self::getTasksCount([
       'type' => InactiveSubscribers::TASK_TYPE,
@@ -154,6 +161,7 @@ class WordPress {
       || $sending_service_key_check_active
       || $premium_key_check_active
       || $stats_notifications_tasks
+      || $auto_stats_notifications_tasks
       || $inactive_subscribers_tasks
       || $woo_commerce_sync_tasks
       || $authorized_email_addresses_tasks

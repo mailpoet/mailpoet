@@ -110,7 +110,7 @@ class WorkersFactory {
 
   /** @return StatsNotificationsWorkerForAutomatedEmails */
   function createStatsNotificationsWorkerForAutomatedEmails($timer) {
-    return new StatsNotificationsWorkerForAutomatedEmails($this->settings, $timer);
+    return new StatsNotificationsWorkerForAutomatedEmails($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $timer);
   }
 
   /** @return SendingServiceKeyCheckWorker */

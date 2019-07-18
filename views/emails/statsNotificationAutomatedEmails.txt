@@ -1,0 +1,6 @@
+<% extends 'emails/statsNotificationLayout.txt' %>
+
+<% block content %>
+
+
+<% endblock %>
