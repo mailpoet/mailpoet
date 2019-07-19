@@ -600,16 +600,14 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
     ]);
 
-    try {
-      $this->endpoint->subscribe([
-        $this->obfuscatedEmail => 'tata@mailpoet.com',
-        'form_id' => $this->form->id,
-        $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
-      ]);
-      $this->fail('It should not be possible to subscribe a second time so soon');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('You need to wait 1 minutes before subscribing again.');
-    }
+    $response = $this->endpoint->subscribe([
+      $this->obfuscatedEmail => 'tata@mailpoet.com',
+      'form_id' => $this->form->id,
+      $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
+    ]);
+
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
   }
 
   function testItCannotMassResubscribe() {
@@ -627,16 +625,14 @@ class SubscribersTest extends \MailPoetTest {
     $subscriber->updated_at = Carbon::now();
     $subscriber->save();
 
-    try {
-      $this->endpoint->subscribe([
-        $this->obfuscatedEmail => $subscriber->email,
-        'form_id' => $this->form->id,
-        $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
-      ]);
-      $this->fail('It should not be possible to resubscribe a second time so soon');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('You need to wait 1 minutes before subscribing again.');
-    }
+    $response = $this->endpoint->subscribe([
+      $this->obfuscatedEmail => $subscriber->email,
+      'form_id' => $this->form->id,
+      $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
+    ]);
+
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
   }
 
   function testItSchedulesWelcomeEmailNotificationWhenSubscriberIsAdded() {

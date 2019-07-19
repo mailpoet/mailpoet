@@ -162,7 +162,7 @@ class Subscribers extends APIEndpoint {
     $captcha_settings = $this->settings->get('captcha');
 
     if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
-      if (empty($data['captcha'])) {
+      if (!isset($data['captcha'])) {
         // Save form data to session
         $_SESSION[Captcha::SESSION_FORM_KEY] = array_merge($data, ['form_id' => $form_id]);
       } elseif (!empty($_SESSION[Captcha::SESSION_FORM_KEY])) {
@@ -207,7 +207,11 @@ class Subscribers extends APIEndpoint {
 
     if ($timeout > 0) {
       $time_to_wait = SubscriptionThrottling::secondsToTimeString($timeout);
-      throw new \Exception(sprintf(__('You need to wait %s before subscribing again.', 'mailpoet'), $time_to_wait));
+      $meta = [];
+      $meta['refresh_captcha'] = true;
+      return $this->badRequest([
+        APIError::BAD_REQUEST => sprintf(WPFunctions::get()->__('You need to wait %s before subscribing again.', 'mailpoet'), $time_to_wait),
+      ], $meta);
     }
 
     $subscriber = $this->subscriber_actions->subscribe($data, $segment_ids);
@@ -216,6 +220,12 @@ class Subscribers extends APIEndpoint {
     if ($errors !== false) {
       return $this->badRequest($errors);
     } else {
+      if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
+        // Captcha has been verified, invalidate the session vars
+        $_SESSION[Captcha::SESSION_KEY] = null;
+        $_SESSION[Captcha::SESSION_FORM_KEY] = null;
+      }
+
       $meta = [];
 
       if ($form !== false) {
@@ -300,10 +310,6 @@ class Subscribers extends APIEndpoint {
         return $this->badRequest([
           APIError::BAD_REQUEST => WPFunctions::get()->__('The characters entered do not match with the previous captcha.', 'mailpoet'),
         ], $meta);
-      } else {
-        // Captcha has been verified, invalidate the session vars
-        $_SESSION[Captcha::SESSION_KEY] = null;
-        $_SESSION[Captcha::SESSION_FORM_KEY] = null;
       }
     }
 

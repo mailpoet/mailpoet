@@ -23,12 +23,18 @@ jQuery(function ($) { // eslint-disable-line func-names
   }
 
   function updateCaptcha(e) {
-    var captcha = $('img.mailpoet_captcha');
-    var captchaSrc = captcha.attr('src');
-    var hashPos = captchaSrc.indexOf('#');
-    var newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
+    var captcha;
+    var captchaSrc;
+    var hashPos;
+    var newSrc;
+    captcha = $('img.mailpoet_captcha');
+    if (!captcha.length) return false;
+    captchaSrc = captcha.attr('src');
+    hashPos = captchaSrc.indexOf('#');
+    newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
     captcha.attr('src', newSrc + '#' + new Date().getTime());
     if (e) e.preventDefault();
+    return true;
   }
 
   $(function () { // eslint-disable-line func-names
