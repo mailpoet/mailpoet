@@ -206,7 +206,8 @@ class Subscribers extends APIEndpoint {
     $timeout = SubscriptionThrottling::throttle();
 
     if ($timeout > 0) {
-      throw new \Exception(sprintf(__('You need to wait %d seconds before subscribing again.', 'mailpoet'), $timeout));
+      $time_to_wait = SubscriptionThrottling::secondsToTimeString($timeout);
+      throw new \Exception(sprintf(__('You need to wait %s before subscribing again.', 'mailpoet'), $time_to_wait));
     }
 
     $subscriber = $this->subscriber_actions->subscribe($data, $segment_ids);
