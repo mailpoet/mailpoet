@@ -31,7 +31,7 @@ class Captcha {
   }
 
   function isRequired($subscriber_email = null) {
-    if ($this->wp->isUserLoggedIn()) {
+    if ($this->isUserExemptFromCaptcha()) {
       return false;
     }
 
@@ -66,6 +66,15 @@ class Captcha {
     }
 
     return false;
+  }
+
+  private function isUserExemptFromCaptcha() {
+    if (!$this->wp->isUserLoggedIn()) {
+      return false;
+    }
+    $user = $this->wp->wpGetCurrentUser();
+    $roles = $this->wp->applyFilters('mailpoet_subscription_captcha_exclude_roles', ['administrator', 'editor']);
+    return !empty(array_intersect($roles, (array)$user->roles));
   }
 
   function renderImage($width = null, $height = null, $return = false) {
