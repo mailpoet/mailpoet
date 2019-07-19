@@ -608,7 +608,7 @@ class SubscribersTest extends \MailPoetTest {
       ]);
       $this->fail('It should not be possible to subscribe a second time so soon');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('You need to wait 60 seconds before subscribing again.');
+      expect($e->getMessage())->equals('You need to wait 1 minutes before subscribing again.');
     }
   }
 
@@ -635,7 +635,7 @@ class SubscribersTest extends \MailPoetTest {
       ]);
       $this->fail('It should not be possible to resubscribe a second time so soon');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('You need to wait 60 seconds before subscribing again.');
+      expect($e->getMessage())->equals('You need to wait 1 minutes before subscribing again.');
     }
   }
 

@@ -55,6 +55,16 @@ class ThrottlingTest extends \MailPoetTest {
     expect(SubscriberIP::count())->equals(1);
   }
 
+  function testItConvertsSecondsToTimeString() {
+    expect(Throttling::secondsToTimeString(122885))->equals('34 hours 8 minutes 5 seconds');
+    expect(Throttling::secondsToTimeString(3660))->equals('1 hours 1 minutes');
+    expect(Throttling::secondsToTimeString(3601))->equals('1 hours 1 seconds');
+    expect(Throttling::secondsToTimeString(3600))->equals('1 hours');
+    expect(Throttling::secondsToTimeString(61))->equals('1 minutes 1 seconds');
+    expect(Throttling::secondsToTimeString(60))->equals('1 minutes');
+    expect(Throttling::secondsToTimeString(59))->equals('59 seconds');
+  }
+
   function _after() {
     SubscriberIP::deleteMany();
   }

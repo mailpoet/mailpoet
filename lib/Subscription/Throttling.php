@@ -55,4 +55,17 @@ class Throttling {
       [$interval]
     )->deleteMany();
   }
+
+  static function secondsToTimeString($seconds) {
+    $wp = new WPFunctions;
+    $hrs = floor($seconds / 3600);
+    $min = floor($seconds % 3600 / 60);
+    $sec = $seconds % 3600 % 60;
+    $result = [
+      'hours' => $hrs ? sprintf($wp->__('%d hours', 'mailpoet'), $hrs) : '',
+      'minutes' => $min ? sprintf($wp->__('%d minutes', 'mailpoet'), $min) : '',
+      'seconds' => $sec ? sprintf($wp->__('%d seconds', 'mailpoet'), $sec) : '',
+    ];
+    return join(' ', array_filter($result));
+  }
 }
