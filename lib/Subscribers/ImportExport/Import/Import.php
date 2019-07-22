@@ -282,10 +282,17 @@ class Import {
     return $subscribers;
   }
 
-  function setSubscriptionStatusToSubscribed($subscribers_data) {
+  private function setSubscriptionStatusToSubscribed($subscribers_data) {
     if (!in_array('status', $subscribers_data['fields'])) return $subscribers_data;
     $subscribers_data['data']['status'] = array_map(function() {
       return Subscriber::STATUS_SUBSCRIBED;
+    }, $subscribers_data['data']['status']);
+
+    if (!in_array('last_subscribed_at', $subscribers_data['fields'])) {
+      $subscribers_data['fields'][] = 'last_subscribed_at';
+    }
+    $subscribers_data['data']['last_subscribed_at'] = array_map(function() {
+      return $this->created_at;
     }, $subscribers_data['data']['status']);
     return $subscribers_data;
   }
