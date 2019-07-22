@@ -129,6 +129,35 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber_updated->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
+  function testItUpdateLastSubscribedAtCorrectly() {
+    $subscriber = Subscriber::where('email', $this->test_data['email'])->findOne();
+    $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
+    $subscriber->last_subscribed_at = null;
+    $subscriber->save();
+    $subscriber_updated = Subscriber::where('email', $this->test_data['email'])
+      ->findOne();
+    expect($subscriber_updated->last_subscribed_at)->null();
+
+    // Change to subscribed updates last_updated_at
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+    $subscriber_updated = Subscriber::where('email', $this->test_data['email'])
+      ->findOne();
+    $last_subscribed_at = new Carbon($subscriber_updated->last_updated_at);
+    expect($last_subscribed_at)->lessThan((new Carbon())->addSeconds(2));
+    expect($last_subscribed_at)->greaterThan((new Carbon())->subSeconds(2));
+
+    // Change to other status keeps last_updated_at
+    $last_subscribed_at = (new Carbon())->subHour();
+    $subscriber->last_subscribed_at = $last_subscribed_at;
+    $subscriber->save();
+    $subscriber->status = Subscriber::STATUS_INACTIVE;
+    $subscriber->save();
+    $subscriber_updated = Subscriber::where('email', $this->test_data['email'])
+      ->findOne();
+    expect($subscriber_updated->last_subscribed_at)->equals($last_subscribed_at->toDateTimeString());
+  }
+
   function testItHasSearchFilter() {
     $subscriber = Subscriber::filter('search', 'john')
       ->findOne();
