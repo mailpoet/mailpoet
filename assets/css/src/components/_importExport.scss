@@ -149,6 +149,19 @@ tr {
   cursor: pointer;
 }
 
+.mailpoet_import_validation_step {
+  display: flex;
+  flex-direction: column;
+
+  .mailpoet_import_step_buttons {
+    margin-top: 40px;
+  }
+
+  h2 {
+    margin-bottom: 40px;
+  }
+}
+
 .mailpoet_method_selection_step {
   align-items: flex-start;
   display: flex;
