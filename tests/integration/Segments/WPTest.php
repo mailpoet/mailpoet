@@ -5,14 +5,19 @@ namespace MailPoet\Test\Segments;
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 use Carbon\Carbon;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WP;
+use MailPoet\Settings\SettingsController;
 
 class WPTest extends \MailPoetTest  {
 
   private $userIds = [];
+
+  /** @var SettingsController */
+  private $settings;
 
   function testSynchronizeUserKeepsStatusOfOldUser() {
     $random_number = rand();
@@ -27,7 +32,17 @@ class WPTest extends \MailPoetTest  {
     expect($db_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testSynchronizeUserStatusIsUnsubscribedForNewUsers() {
+  function testSynchronizeUserStatusIsSubscribedForNewUserWithSignUpConfirmationDisabled() {
+    $this->settings->set('signup_confirmation', ['enabled' => '0']);
+    $random_number = rand();
+    $id = $this->insertUser($random_number);
+    WP::synchronizeUser($id);
+    $wp_subscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
+    expect($wp_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
+  function testSynchronizeUserStatusIsUnconfirmedForNewUserWithSignUpConfirmationEnabled() {
+    $this->settings->set('signup_confirmation', ['enabled' => '1']);
     $random_number = rand();
     $id = $this->insertUser($random_number);
     WP::synchronizeUser($id);
@@ -35,7 +50,19 @@ class WPTest extends \MailPoetTest  {
     expect($wp_subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
-  function testItSynchronizeUsers() {
+  function testSynchronizeUsersStatusIsSubscribedForNewUsersWithSignUpConfirmationDisabled() {
+    $this->settings->set('signup_confirmation', ['enabled' => '0']);
+    $this->insertUser();
+    $this->insertUser();
+    WP::synchronizeUsers();
+    $subscribers = Subscriber::whereLike("email", "user-sync-test%")->findMany();
+    expect(count($subscribers))->equals(2);
+    expect($subscribers[0]->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscribers[1]->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
+  function testSynchronizeUsersStatusIsUnconfirmedForNewUsersWithSignUpConfirmationEnabled() {
+    $this->settings->set('signup_confirmation', ['enabled' => '1']);
     $this->insertUser();
     $this->insertUser();
     WP::synchronizeUsers();
@@ -307,6 +334,7 @@ class WPTest extends \MailPoetTest  {
 
   function _before() {
     parent::_before();
+    $this->settings = ContainerWrapper::getInstance()->get(SettingsController::class);
     $this->cleanData();
   }
 
