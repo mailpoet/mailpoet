@@ -8,6 +8,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 
 if (!defined('ABSPATH')) exit;
@@ -44,13 +45,14 @@ class WP {
         if (empty($wp_user->first_name) && empty($wp_user->last_name)) {
           $first_name = $wp_user->display_name;
         }
+        $signup_confirmation_enabled = (new SettingsController())->get('signup_confirmation.enabled');
         // subscriber data
         $data = [
           'wp_user_id' => $wp_user->ID,
           'email' => $wp_user->user_email,
           'first_name' => $first_name,
           'last_name' => $last_name,
-          'status' => Subscriber::STATUS_UNCONFIRMED,
+          'status' => $signup_confirmation_enabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED,
           'source' => Source::WORDPRESS_USER,
         ];
 
@@ -133,6 +135,7 @@ class WP {
   private static function insertSubscribers() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
+    $signup_confirmation_enabled = (new SettingsController())->get('signup_confirmation.enabled');
 
     $inserterd_user_ids = \ORM::for_table($wpdb->users)->raw_query(sprintf(
       'SELECT %2$s.id, %2$s.user_email as email FROM %2$s
@@ -140,13 +143,19 @@ class WP {
         WHERE mps.wp_user_id IS NULL AND %2$s.user_email != ""
       ', $subscribers_table, $wpdb->users))->findArray();
 
-    Subscriber::rawExecute(sprintf( '
-      INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at, source)
+    Subscriber::rawExecute(sprintf(
+      '
+        INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at, source)
         SELECT wu.id, wu.user_email, "%4$s", CURRENT_TIMESTAMP(), "%3$s" FROM %2$s wu
           LEFT JOIN %1$s mps ON wu.id = mps.wp_user_id
           WHERE mps.wp_user_id IS NULL AND wu.user_email != ""
-      ON DUPLICATE KEY UPDATE wp_user_id = wu.id
-    ', $subscribers_table, $wpdb->users, Source::WORDPRESS_USER, Subscriber::STATUS_UNCONFIRMED));
+        ON DUPLICATE KEY UPDATE wp_user_id = wu.id
+      ',
+      $subscribers_table,
+      $wpdb->users,
+      Source::WORDPRESS_USER,
+      $signup_confirmation_enabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED
+    ));
 
     return $inserterd_user_ids;
   }
