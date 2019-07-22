@@ -64,6 +64,7 @@ class Settings {
     $settings = $this->settings->getAll();
     $flags = $this->getFlags();
 
+    $premium_key_valid = $this->services_checker->isPremiumKeyValid(false);
     // force MSS key check even if the method isn't active
     $mp_api_key_valid = $this->services_checker->isMailPoetAPIKeyValid(false, true);
 
@@ -73,7 +74,7 @@ class Settings {
       'cron_trigger' => CronTrigger::getAvailableMethods(),
       'total_subscribers' => Subscriber::getTotalSubscribers(),
       'premium_plugin_active' => License::getLicense(),
-      'premium_key_valid' => !empty($this->premium_key_valid),
+      'premium_key_valid' => !empty($premium_key_valid),
       'mss_active' => Bridge::isMPSendingServiceEnabled(),
       'mss_key_valid' => !empty($mp_api_key_valid),
       'members_plugin_active' => $this->wp->isPluginActive('members/members.php'),
