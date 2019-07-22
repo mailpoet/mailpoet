@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
 function InitialQuestion({
-  importSource,
-  setImportSource,
+  onSubmit,
   history,
-  onNextStep,
 }) {
+  const [importSource, setImportSource] = useState(undefined);
+
   function isFormValid() {
     return importSource !== undefined;
   }
@@ -37,7 +37,7 @@ function InitialQuestion({
       <PreviousNextStepButtons
         canGoNext={isFormValid()}
         onPreviousAction={() => history.push('step_method_selection')}
-        onNextAction={onNextStep}
+        onNextAction={() => onSubmit(importSource)}
       />
     </>
   );
@@ -47,13 +47,7 @@ InitialQuestion.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-  importSource: PropTypes.string,
-  setImportSource: PropTypes.func.isRequired,
-  onNextStep: PropTypes.func.isRequired,
-};
-
-InitialQuestion.defaultProps = {
-  importSource: undefined,
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default InitialQuestion;

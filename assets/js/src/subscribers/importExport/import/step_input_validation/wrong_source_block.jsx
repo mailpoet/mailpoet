@@ -1,7 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-function Block() {
+function WrongSourceBlock() {
   return (
     <div className="mailpoet_import_block">
       <p>{MailPoet.I18n.t('validationStepBlock1')}</p>
@@ -18,4 +18,4 @@ function Block() {
   );
 }
 
-export default Block;
+export default WrongSourceBlock;

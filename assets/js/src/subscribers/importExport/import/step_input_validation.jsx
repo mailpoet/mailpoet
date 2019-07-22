@@ -3,11 +3,12 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import InitialQuestion from './step_input_validation/initial_question.jsx';
-import Block from './step_input_validation/block.jsx';
+import WrongSourceBlock from './step_input_validation/wrong_source_block.jsx';
+import LastSentQuestion from './step_input_validation/last_sent_question.jsx';
 
 function StepInputValidation({ stepMethodSelectionData, history }) {
   const [importSource, setImportSource] = useState(undefined);
-  const [questionAnswered, setQuestionAnswered] = useState(false);
+  const [lastSent, setLastSent] = useState(undefined);
 
   useEffect(
     () => {
@@ -20,17 +21,21 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
 
   return (
     <div className="mailpoet_import_validation_step">
-      {!questionAnswered && (
+      {importSource === undefined && (
         <InitialQuestion
-          importSource={importSource}
-          setImportSource={setImportSource}
+          onSubmit={setImportSource}
           history={history}
-          onNextStep={() => setQuestionAnswered(true)}
         />
       )}
 
-      {questionAnswered && importSource === 'address-book' && (
-        <Block />
+      {importSource === 'address-book' && (
+        <WrongSourceBlock />
+      )}
+
+      {importSource === 'existing-list' && lastSent === undefined && (
+        <LastSentQuestion
+          onSubmit={() => {}}
+        />
       )}
     </div>
   );
