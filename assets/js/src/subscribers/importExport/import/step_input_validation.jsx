@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import InitialQuestion from './step_input_validation/initial_question.jsx';
 import WrongSourceBlock from './step_input_validation/wrong_source_block.jsx';
+import OldListBlock from './step_input_validation/old_list_block.jsx';
 import LastSentQuestion from './step_input_validation/last_sent_question.jsx';
 
 function StepInputValidation({ stepMethodSelectionData, history }) {
@@ -18,6 +19,13 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
     },
     [stepMethodSelectionData, history],
   );
+
+  function lastSentSubmit(when) {
+    setLastSent(when);
+    if (when === 'recently') {
+      history.push('step_data_manipulation');
+    }
+  }
 
   return (
     <div className="mailpoet_import_validation_step">
@@ -34,8 +42,12 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
 
       {importSource === 'existing-list' && lastSent === undefined && (
         <LastSentQuestion
-          onSubmit={() => {}}
+          onSubmit={lastSentSubmit}
         />
+      )}
+
+      {importSource === 'existing-list' && lastSent === 'notRecently' && (
+        <OldListBlock />
       )}
     </div>
   );
