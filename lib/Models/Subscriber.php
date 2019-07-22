@@ -412,6 +412,11 @@ class Subscriber extends Model {
       $new_status = $subscriber->status;
     }
 
+    // Update last_subscribed_at when status changes to subscribed
+    if ($old_status !== self::STATUS_SUBSCRIBED && $subscriber->status === self::STATUS_SUBSCRIBED) {
+      $subscriber->set('last_subscribed_at', WPFunctions::get()->currentTime('mysql'));
+    }
+
     if ($subscriber->save()) {
       if (!empty($custom_fields)) {
         $subscriber->saveCustomFields($custom_fields);
