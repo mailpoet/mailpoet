@@ -1,28 +1,32 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import PreviousNextStepButtons from './previous_next_step_buttons.jsx';
+
+import InitialQuestion from './step_input_validation/initial_question.jsx';
 
 function StepInputValidation({ stepMethodSelectionData, history }) {
+  const [importSource, setImportSource] = useState(undefined);
+  const [questionAnswered, setQuestionAnswered] = useState(false);
+
   useEffect(
     () => {
-      if (typeof (stepMethodSelectionData) === 'undefined') {
+      if (stepMethodSelectionData === 'undefined') {
         history.replace('step_method_selection');
       }
     },
     [stepMethodSelectionData, history],
   );
 
-  function isFormValid() {
-    return false;
-  }
   return (
     <div className="mailpoet_import_validation_step">
-      <PreviousNextStepButtons
-        canGoNext={isFormValid()}
-        onPreviousAction={() => history.push('step_method_selection')}
-        onNextAction={() => history.push('step_data_manipulation')}
-      />
+      {!questionAnswered && (
+        <InitialQuestion
+          importSource={importSource}
+          setImportSource={setImportSource}
+          history={history}
+          onNextStep={() => setQuestionAnswered(true)}
+        />
+      )}
     </div>
   );
 }
