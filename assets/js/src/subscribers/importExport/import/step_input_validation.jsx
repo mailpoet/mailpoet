@@ -13,7 +13,7 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
 
   useEffect(
     () => {
-      if (stepMethodSelectionData === 'undefined') {
+      if (stepMethodSelectionData === undefined) {
         history.replace('step_method_selection');
       }
     },
