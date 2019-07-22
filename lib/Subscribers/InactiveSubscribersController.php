@@ -94,9 +94,9 @@ class InactiveSubscribersController {
         JOIN $scheduled_task_subcribres_table as sts ON s.id = sts.subscriber_id
         JOIN ($scheduled_task_ids_query) task_ids ON task_ids.id = sts.task_id
         LEFT OUTER JOIN $statistics_opens_table as so ON s.id = so.subscriber_id AND so.created_at > ?
-      WHERE s.created_at < ? AND (s.confirmed_at IS NULL OR s.confirmed_at < ?) AND s.status = ? AND so.id IS NULL
+      WHERE s.last_subscribed_at < ? AND s.status = ? AND so.id IS NULL
       GROUP BY s.id LIMIT ?",
-      [$threshold_date_iso, $threshold_date_iso, $threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $batch_size]
+      [$threshold_date_iso, $threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $batch_size]
     )->findArray();
 
     $ids_to_deactivate = array_map(
@@ -136,7 +136,7 @@ class InactiveSubscribersController {
     } else {
       $ids_to_activate = \ORM::forTable($subscribers_table)->select("$subscribers_table.id")
         ->leftOuterJoin($stats_opens_table, "$subscribers_table.id = $stats_opens_table.subscriber_id AND $stats_opens_table.created_at > '$threshold_date'")
-        ->whereLt("$subscribers_table.created_at", $threshold_date)
+        ->whereLt("$subscribers_table.last_subscribed_at", $threshold_date)
         ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
         ->whereRaw("$stats_opens_table.id IS NOT NULL")
         ->limit($batch_size)

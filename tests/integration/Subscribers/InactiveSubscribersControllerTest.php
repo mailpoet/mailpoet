@@ -93,11 +93,11 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotDeactivateNewlyConfirmedSubscriberWithUnopenedEmail() {
+  function testItDoesNotDeactivateNewlyResubscribedSubscriberWithUnopenedEmail() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
-    $subscriber->confirmed_at = (new Carbon())->subDays(2)->toDateTimeString();
+    $subscriber->last_subscribed_at = (new Carbon())->subDays(2)->toDateTimeString();
     $subscriber->save();
     $this->addSubcriberToTask($subscriber, $task);
 
@@ -250,6 +250,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $created_at = (new Carbon())->subDays($created_days_ago)->toDateTimeString();
     $subscriber = Subscriber::createOrUpdate(['email' => $email, 'status' => $status]);
     $subscriber->created_at = $created_at;
+    $subscriber->last_subscribed_at = $created_at;
     $subscriber->save();
     return $subscriber;
   }
