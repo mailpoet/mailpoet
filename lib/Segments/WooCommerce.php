@@ -163,8 +163,8 @@ class WooCommerce {
       ')->findArray();
 
     Subscriber::rawExecute(sprintf('
-      INSERT IGNORE INTO %1$s (is_woocommerce_user, email, status, created_at, source)
-      SELECT 1, wppm.meta_value, "%2$s", CURRENT_TIMESTAMP(), "%3$s" FROM `' . $wpdb->prefix . 'postmeta` wppm
+      INSERT IGNORE INTO %1$s (is_woocommerce_user, email, status, created_at, last_subscribed_at, source)
+      SELECT 1, wppm.meta_value, "%2$s", CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), "%3$s" FROM `' . $wpdb->prefix . 'postmeta` wppm
         JOIN `' . $wpdb->prefix . 'posts` p ON wppm.post_id = p.ID AND p.post_type = "shop_order"
         WHERE wppm.meta_key = "_billing_email" AND wppm.meta_value != ""
         ' . ($order_id ? ' AND p.ID = "' . $order_id . '"' : '') . '
