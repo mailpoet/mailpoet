@@ -12,7 +12,7 @@ import StepResults from './import/step_results.jsx';
 
 const container = document.getElementById('import_container');
 
-const subscribersLimitForValidation = 0;
+const subscribersLimitForValidation = 200;
 
 const ImportSubscribers = () => {
   const [stepMethodSelectionData, setStepMethodSelectionData] = useState(undefined);
