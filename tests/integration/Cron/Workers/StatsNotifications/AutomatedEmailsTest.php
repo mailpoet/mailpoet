@@ -42,7 +42,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
         $this->mailer,
         $this->renderer,
         $this->settings,
-        $this->makeEmpty(WCHelper::class)
+        $this->makeEmpty(WCHelper::class),
       ])
       ->setMethods(['getNewsletters'])
       ->getMock();

@@ -78,10 +78,9 @@ class AutomatedEmails extends SimpleWorker {
     } catch (\Exception $e) {
       if (WP_DEBUG) {
         throw $e;
-       }
+      }
     }
     return true;
-    // TODO settings isn't saved properly :(
   }
 
   /**
