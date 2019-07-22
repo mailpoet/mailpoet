@@ -18,6 +18,7 @@ if (!defined('ABSPATH')) exit;
  * @property string|null $subscribed_ip
  * @property string|null $confirmed_ip
  * @property string|null $confirmed_at
+ * @property string|null $last_subscribed_at
  * @property string|null $deleted_at
  * @property string|null $source
  * @property int $count_confirmations
@@ -706,6 +707,7 @@ class Subscriber extends Model {
       'email',
       'created_at',
       'status',
+      'last_subscribed_at',
     ];
     // check if there is anything to update after excluding ignored columns
     if (!array_diff($columns, $ignore_columns_on_update)) return;
