@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-require_once __DIR__ . '/../_data/MailPoetImportList.csv';
-
 class SubscriberManageImportExportCest {
   function importUsersToSubscribersViaCSV(\AcceptanceTester $I) {
     $I->wantTo('Import a subscriber list from CSV');
