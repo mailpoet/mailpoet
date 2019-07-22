@@ -31,7 +31,13 @@ function ColumnDataMatch({ header, subscribers }) {
 }
 ColumnDataMatch.propTypes = {
   header: PropTypes.arrayOf(PropTypes.string).isRequired,
-  subscribers: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  subscribers: PropTypes.arrayOf( // all subscribers
+    PropTypes.arrayOf( // single subscribers
+      PropTypes.oneOfType( // properties of a subscriber
+        [PropTypes.string, PropTypes.number]
+      )
+    )
+  ).isRequired,
 };
 
 function Header({ header }) {
@@ -51,12 +57,16 @@ function Subscriber({ subscriber, index }) {
     <>
       <td>{index}</td>
       {/* eslint-disable-next-line react/no-array-index-key */}
-      {subscriber.map((field, i) => <td key={field + index + i}>{field}</td>)}
+      {subscriber.map((field, i) => <td key={`${field}-${index}-${i}`}>{field}</td>)}
     </>
   );
 }
 Subscriber.propTypes = {
-  subscriber: PropTypes.arrayOf(PropTypes.string).isRequired,
+  subscriber: PropTypes.arrayOf(
+    PropTypes.oneOfType( // properties of a subscriber
+      [PropTypes.string, PropTypes.number]
+    )
+  ).isRequired,
   index: PropTypes.node.isRequired,
 };
 
@@ -69,7 +79,8 @@ function Subscribers({ subscribers, subscribersCount }) {
         subscribers
           .slice(0, MAX_SUBSCRIBERS_SHOWN)
           .map((subscriber, i) => (
-            <tr key={subscriber[0]}>
+            // eslint-disable-next-line react/no-array-index-key
+            <tr key={`${subscriber[0]}-${i}`}>
               <Subscriber subscriber={subscriber} index={i + 1} />
             </tr>
           ))
@@ -96,7 +107,13 @@ function Subscribers({ subscribers, subscribersCount }) {
 }
 Subscribers.propTypes = {
   subscribersCount: PropTypes.number.isRequired,
-  subscribers: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  subscribers: PropTypes.arrayOf( // all subscribers
+    PropTypes.arrayOf( // single subscribers
+      PropTypes.oneOfType( // properties of a subscriber
+        [PropTypes.string, PropTypes.number]
+      )
+    )
+  ).isRequired,
 };
 
 function MatchTable({
@@ -125,7 +142,13 @@ function MatchTable({
 
 MatchTable.propTypes = {
   subscribersCount: PropTypes.number,
-  subscribers: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  subscribers: PropTypes.arrayOf( // all subscribers
+    PropTypes.arrayOf( // single subscribers
+      PropTypes.oneOfType( // properties of a subscriber
+        [PropTypes.string, PropTypes.number]
+      )
+    )
+  ),
   header: PropTypes.arrayOf(PropTypes.string),
 };
 
