@@ -150,6 +150,7 @@ class Populator {
     $this->scheduleInitialInactiveSubscribersCheck();
     $this->scheduleAuthorizedSendingEmailsCheck();
     $this->scheduleBeamer();
+    $this->updateLastSubscribedAt();
     // Will be uncommented on task [MAILPOET-1998]
     // $this->updateFormsSuccessMessages();
   }
@@ -578,6 +579,21 @@ class Populator {
         Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
       );
     }
+  }
+
+  private function updateLastSubscribedAt() {
+    global $wpdb;
+    // perform once for versions below or equal to 3.33.0
+    if (version_compare($this->settings->get('db_version', '3.33.1'), '3.33.0', '>')) {
+      return false;
+    }
+    $query = "UPDATE `%s` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != '%s';";
+    $wpdb->query(sprintf(
+      $query,
+      Subscriber::$_table,
+      Subscriber::STATUS_UNCONFIRMED
+    ));
+    return true;
   }
 
   private function scheduleTask($type, $datetime) {
