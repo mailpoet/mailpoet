@@ -149,32 +149,6 @@ tr {
   cursor: pointer;
 }
 
-.mailpoet_import_validation_step {
-  display: flex;
-  flex-direction: column;
-  max-width: 600px;
-
-  .mailpoet_import_step_buttons {
-    flex-direction: row;
-    margin-top: 1.5em;
-  }
-
-  p {
-    margin-left: 2em;
-  }
-
-  label {
-    margin-bottom: .3em;
-    margin-top: 1.5em;
-    padding-left: 35px;
-    text-indent: -35px;
-
-    input {
-      margin-right: .5em;
-    }
-  }
-}
-
 .mailpoet_method_selection_step {
   align-items: flex-start;
   display: flex;
