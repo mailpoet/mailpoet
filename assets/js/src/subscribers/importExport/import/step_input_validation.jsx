@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import InitialQuestion from './step_input_validation/initial_question.jsx';
+import Block from './step_input_validation/block.jsx';
 
 function StepInputValidation({ stepMethodSelectionData, history }) {
   const [importSource, setImportSource] = useState(undefined);
@@ -26,6 +27,10 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
           history={history}
           onNextStep={() => setQuestionAnswered(true)}
         />
+      )}
+
+      {questionAnswered && importSource === 'address-book' && (
+        <Block />
       )}
     </div>
   );

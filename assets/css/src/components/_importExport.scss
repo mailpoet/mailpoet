@@ -150,8 +150,10 @@ tr {
 }
 
 .mailpoet_import_validation_step {
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
+  width: 600px;
 
   .mailpoet_import_step_buttons {
     margin-top: 40px;
@@ -159,6 +161,12 @@ tr {
 
   h2 {
     margin-bottom: 40px;
+  }
+
+  .mailpoet_import_block {
+    p {
+      font-weight: bold;
+    }
   }
 }
 
