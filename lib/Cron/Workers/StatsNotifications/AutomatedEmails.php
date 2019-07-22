@@ -82,7 +82,6 @@ class AutomatedEmails extends SimpleWorker {
     }
     return true;
     // TODO settings isn't saved properly :(
-    // TODO there is a weird image at the and of template but I don't know what that is...
   }
 
   /**
