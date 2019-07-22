@@ -8,7 +8,7 @@ import MethodUpload from './step_method_selection/method_upload.jsx';
 import MethodMailChimp from './step_method_selection/method_mailchimp.jsx';
 import processCsv from './step_method_selection/process_csv.jsx';
 
-const getNextStepLink = (importData, subscribersLimitForValidation) => {
+const getNextStepLink = (importData, subscribersLimitForValidation, method) => {
   if (importData === undefined) {
     return 'step_data_manipulation';
   }
@@ -16,6 +16,9 @@ const getNextStepLink = (importData, subscribersLimitForValidation) => {
     return 'step_data_manipulation';
   }
   if (importData.subscribersCount < subscribersLimitForValidation) {
+    return 'step_data_manipulation';
+  }
+  if (method === 'mailchimp-method') {
     return 'step_data_manipulation';
   }
   return 'step_input_validation';
@@ -32,7 +35,7 @@ function StepMethodSelection({
 
   const finish = (parsedData) => {
     setStepMethodSelectionData(parsedData);
-    history.push(getNextStepLink(parsedData, subscribersLimitForValidation));
+    history.push(getNextStepLink(parsedData, subscribersLimitForValidation, method));
   };
 
   const processLocal = () => {
