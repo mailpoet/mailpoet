@@ -110,8 +110,9 @@ class MailChimp {
 
     return [
       'subscribers' => $subscribers,
-      'invalid' => false,
-      'duplicate' => false,
+      'invalid' => [],
+      'duplicate' => [],
+      'role' => [],
       'header' => $header,
       'subscribersCount' => count($subscribers),
     ];

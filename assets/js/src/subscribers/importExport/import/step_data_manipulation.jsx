@@ -90,7 +90,13 @@ StepDataManipulation.propTypes = {
     invalid: PropTypes.arrayOf(PropTypes.string),
     role: PropTypes.arrayOf(PropTypes.string),
     subscribersCount: PropTypes.number,
-    subscribers: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+    subscribers: PropTypes.arrayOf( // all subscribers
+      PropTypes.arrayOf( // single subscribers
+        PropTypes.oneOfType( // properties of a subscriber
+          [PropTypes.string, PropTypes.number]
+        )
+      )
+    ),
   }),
   subscribersLimitForValidation: PropTypes.number.isRequired,
   setStepDataManipulationData: PropTypes.func.isRequired,
