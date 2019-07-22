@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Newsletter as NewsletterModel;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 
 if (!defined('ABSPATH')) exit;
@@ -41,7 +42,18 @@ class Newsletter {
     }
   }
 
+  public static function ensureConsistentQueryType(\WP_Query $query) {
+    // Queries with taxonomies are autodetected as 'is_archive=true' and 'is_home=false'
+    // while queries without them end up being 'is_archive=false' and 'is_home=true'.
+    // This is to fix that by always enforcing constistent behavior.
+    $query->is_archive = true;
+    $query->is_home = false;
+  }
+
   private static function getLatestWPPost($post_ids) {
+    // set low priority to execute 'ensureConstistentQueryType' before any other filter
+    $filter_priority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
+    WPFunctions::get()->addAction('pre_get_posts', [get_called_class(), 'ensureConsistentQueryType'], $filter_priority);
     $posts = new \WP_Query(
       [
         'post_type' => WPPosts::getTypes(),
@@ -52,6 +64,7 @@ class Newsletter {
         'order' => 'DESC',
       ]
     );
+    WPFunctions::get()->removeAction('pre_get_posts', [get_called_class(), 'ensureConsistentQueryType'], $filter_priority);
     return (!empty($posts->posts[0])) ?
       $posts->posts[0]->to_array() :
       false;
