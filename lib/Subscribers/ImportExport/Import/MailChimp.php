@@ -69,6 +69,7 @@ class MailChimp {
 
     $bytes_fetched = 0;
     $subscribers = [];
+    $duplicate = [];
     $header = [];
     foreach ($lists as $list) {
       $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
@@ -91,8 +92,10 @@ class MailChimp {
             } elseif (md5(implode(',', $header)) !== $header_hash) {
               return $this->throwException('headers');
             }
+          } elseif (isset($subscribers[$obj[0]])) {
+            $duplicate[] = $obj[0];
           } else {
-            $subscribers[] = $obj;
+            $subscribers[$obj[0]] = $obj;
           }
           $i++;
         }
@@ -109,9 +112,9 @@ class MailChimp {
     }
 
     return [
-      'subscribers' => $subscribers,
+      'subscribers' => array_values($subscribers),
       'invalid' => [],
-      'duplicate' => [],
+      'duplicate' => $duplicate,
       'role' => [],
       'header' => $header,
       'subscribersCount' => count($subscribers),
