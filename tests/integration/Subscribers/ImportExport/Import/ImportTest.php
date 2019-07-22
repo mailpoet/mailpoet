@@ -436,7 +436,7 @@ class ImportTest extends \MailPoetTest {
     expect($updated_subscriber->status)->equals('unsubscribed');
   }
 
-  function testItImportsNewsSubscribersWithSubscribedStatus() {
+  function testItImportsNewsSubscribersWithSubscribedStatusAndLastSubscribedAt() {
     $data = $this->test_data;
     $data['columns']['status'] = ['index' => 4];
     $data['subscribers'][0][] = 'unsubscribed';
@@ -453,6 +453,29 @@ class ImportTest extends \MailPoetTest {
     expect($new_subscribers[1]->status)->equals('subscribed');
     expect($new_subscribers[0]->source)->equals('imported');
     expect($new_subscribers[1]->source)->equals('imported');
+    $test_time = date('Y-m-d H:i:s', $this->test_data['timestamp']);
+    expect($new_subscribers[0]->last_subscribed_at)->equals($test_time);
+    expect($new_subscribers[1]->last_subscribed_at)->equals($test_time);
+  }
+
+  function testItDoesNotUpdateExistingSubscribersLastSubscribedAtWhenItIsPresent() {
+    $data = $this->test_data;
+    $data['columns']['last_subscribed_at'] = ['index' => 4];
+    $data['subscribers'][0][] = '2018-12-12 12:12:00';
+    $data['subscribers'][1][] = '2018-12-12 12:12:00';
+    $import = new Import($data);
+    $existing_subscriber = Subscriber::create();
+    $existing_subscriber->hydrate(
+      [
+        'first_name' => 'Adam',
+        'last_name' => 'Smith',
+        'email' => 'Adam@Smith.com',
+        'last_subscribed_at' => '2017-12-12 12:12:00',
+      ]);
+    $existing_subscriber->save();
+    $import->process();
+    $updated_subscriber = Subscriber::where('email', $existing_subscriber->email)->findOne();
+    expect($updated_subscriber->last_subscribed_at)->equals('2017-12-12 12:12:00');
   }
 
   function testItRunsImport() {
