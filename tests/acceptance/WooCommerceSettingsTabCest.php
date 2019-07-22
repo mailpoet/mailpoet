@@ -26,7 +26,7 @@ class WooCommerceSettingsTabCest {
     // The tab is hidden when WooCommerce is deactivated
     $I->deactivateWooCommerce();
     $I->amOnMailpoetPage('Settings');
-    $I->dontSee('WooCommerce');
+    $I->dontSeeElement('[data-automation-id="woocommerce_settings_tab"]');
     $I->seeNoJSErrors();
   }
 
