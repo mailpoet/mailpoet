@@ -927,7 +927,9 @@ class RoboFile extends \Robo\Tasks {
 
   private function createDoctrineEntityManager() {
     define('ABSPATH', getenv('WP_ROOT') . '/');
-    \MailPoet\Config\Env::$db_prefix = '';
+    if (\MailPoet\Config\Env::$db_prefix === null) {
+      \MailPoet\Config\Env::$db_prefix = ''; // ensure some prefix is set
+    }
     $configuration = (new \MailPoet\Doctrine\ConfigurationFactory(true))->createConfiguration();
     $platform_class = \MailPoet\Doctrine\ConnectionFactory::PLATFORM_CLASS;
     return \MailPoetVendor\Doctrine\ORM\EntityManager::create([
