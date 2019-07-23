@@ -5,6 +5,8 @@ namespace MailPoet\Test\Doctrine\EventListeners;
 use Carbon\Carbon;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
+use MailPoet\Doctrine\EventListeners\TimestampListener;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/TimestampEntity.php';
 
@@ -12,12 +14,18 @@ class TimestampListenerTest extends \MailPoetTest {
   /** @var Carbon */
   private $now;
 
+  /** @var WPFunctions */
+  private $wp;
+
   /** @var string */
   private $table_name;
 
   function _before() {
-    $this->now = Carbon::now();
-    Carbon::setTestNow($this->now);
+    $timestamp = time();
+    $this->now = Carbon::createFromTimestamp($timestamp);
+    $this->wp = $this->make(WPFunctions::class, [
+      'currentTime' => $timestamp,
+    ]);
 
     $this->table_name = $this->entity_manager->getClassMetadata(TimestampEntity::class)->getTableName();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
@@ -64,7 +72,6 @@ class TimestampListenerTest extends \MailPoetTest {
 
   function _after() {
     parent::_after();
-    Carbon::setTestNow();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
   }
 
@@ -75,7 +82,8 @@ class TimestampListenerTest extends \MailPoetTest {
     $metadata_driver = $configuration->newDefaultAnnotationDriver([__DIR__]);
     $configuration->setMetadataDriverImpl($metadata_driver);
 
-    $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration);
+    $timestamp_listener = new TimestampListener($this->wp);
+    $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration, $timestamp_listener);
     return $entity_manager_factory->createEntityManager();
   }
 }
