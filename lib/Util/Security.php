@@ -5,14 +5,20 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Security {
   const HASH_LENGTH = 12;
+  const UNSUBSCRIBE_TOKEN_LENGTH = 15;
 
   static function generateToken($action = 'mailpoet_token') {
     return WPFunctions::get()->wpCreateNonce($action);
   }
 
+  /**
+   * Generate random lowercase alphanumeric string.
+   * 1 lowercase alphanumeric character = 6 bits (because log2(36) = 5.17)
+   * So 3 bytes = 4 characters
+   */
   static function generateRandomString($length = 5) {
     $length = max(5, (int)$length);
-    $string = bin2hex(random_bytes($length)); // phpcs:ignore
+    $string = base_convert(bin2hex(random_bytes(ceil(3 * $length / 4))), 16, 36); // phpcs:ignore
     return substr($string, 0, $length);
   }
 
@@ -27,5 +33,15 @@ class Security {
       0,
       $length
     );
+  }
+
+  static public function generateUnsubscribeToken($model) {
+    $token = self::generateRandomString(self::UNSUBSCRIBE_TOKEN_LENGTH);
+    $found = $model::whereEqual('unsubscribe_token', $token)->count();
+    while ($found > 0) {
+      $token = self::generateRandomString(self::UNSUBSCRIBE_TOKEN_LENGTH);
+      $found = $model::whereEqual('unsubscribe_token', $token)->count();
+    }
+    return $token;
   }
 }
