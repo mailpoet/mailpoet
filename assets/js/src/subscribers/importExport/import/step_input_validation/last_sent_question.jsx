@@ -20,7 +20,12 @@ function LastSentQuestion({ onSubmit }) {
   return (
     <>
       <h2>{MailPoet.I18n.t('validationStepLastSentHeading')}</h2>
-      <select value={value} onChange={handleChange} className="mailpoet_last_sent">
+      <select
+        value={value}
+        onChange={handleChange}
+        className="mailpoet_last_sent"
+        data-automation-id="last_sent_to_list"
+      >
         <option value="over2years">{MailPoet.I18n.t('validationStepLastSentOption1')}</option>
         <option value="1to2years">{MailPoet.I18n.t('validationStepLastSentOption2')}</option>
         <option value="less1year">{MailPoet.I18n.t('validationStepLastSentOption3')}</option>
@@ -29,6 +34,7 @@ function LastSentQuestion({ onSubmit }) {
       <button
         type="button"
         className="button button-primary"
+        data-automation-id="last_sent_to_list_next"
         onClick={handleSubmit}
       >
         {MailPoet.I18n.t('validationStepLastSentNext')}

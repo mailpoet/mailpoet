@@ -18,6 +18,7 @@ function InitialQuestion({
       <h2>{MailPoet.I18n.t('validationStepHeading')}</h2>
       <label htmlFor="existing-list">
         <input
+          data-automation-id="mailpoet_import_validation_step_option1"
           type="radio"
           id="existing-list"
           checked={importSource === 'existing-list'}
@@ -27,6 +28,7 @@ function InitialQuestion({
       </label>
       <label htmlFor="address-book">
         <input
+          data-automation-id="mailpoet_import_validation_step_option2"
           type="radio"
           id="address-book"
           checked={importSource === 'address-book'}
