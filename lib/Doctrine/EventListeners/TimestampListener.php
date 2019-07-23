@@ -5,6 +5,7 @@ namespace MailPoet\Doctrine\EventListeners;
 use Carbon\Carbon;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\Event\LifecycleEventArgs;
 use ReflectionObject;
 
@@ -12,8 +13,8 @@ class TimestampListener {
   /** @var Carbon */
   private $now;
 
-  function __construct() {
-    $this->now = Carbon::now();
+  function __construct(WPFunctions $wp) {
+    $this->now = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
   }
 
   function prePersist(LifecycleEventArgs $event_args) {

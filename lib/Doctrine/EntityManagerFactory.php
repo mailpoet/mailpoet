@@ -16,9 +16,12 @@ class EntityManagerFactory {
   /** @var Configuration */
   private $configuration;
 
-  function __construct(Connection $connection, Configuration $configuration) {
+  private $timestamp_listener;
+
+  function __construct(Connection $connection, Configuration $configuration, TimestampListener $timestamp_listener) {
     $this->connection = $connection;
     $this->configuration = $configuration;
+    $this->timestamp_listener = $timestamp_listener;
   }
 
   function createEntityManager() {
@@ -30,7 +33,7 @@ class EntityManagerFactory {
   private function setupTimestampListener(EntityManager $entity_manager) {
     $entity_manager->getEventManager()->addEventListener(
       [Events::prePersist, Events::preUpdate],
-      new TimestampListener()
+      $this->timestamp_listener
     );
   }
 }
