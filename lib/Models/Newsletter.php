@@ -373,6 +373,7 @@ class Newsletter extends Model {
     unset($newsletter_data['id']);
 
     // merge data with newsletter data (allows override)
+    $data['unsubscribe_token'] = Security::generateUnsubscribeToken(self::class);
     $data = array_merge($newsletter_data, $data);
 
     $duplicate = self::create();
@@ -446,6 +447,7 @@ class Newsletter extends Model {
         'parent_id' => $this->id,
         'type' => self::TYPE_NOTIFICATION_HISTORY,
         'status' => self::STATUS_SENDING,
+        'unsubscribe_token' => Security::generateUnsubscribeToken(self::class),
       ]
     );
 
@@ -1013,6 +1015,7 @@ class Newsletter extends Model {
   }
 
   static function createOrUpdate($data = []) {
+    $data['unsubscribe_token'] = Security::generateUnsubscribeToken(self::class);
     return parent::_createOrUpdate($data, false, function($data) {
       $settings = new SettingsController();
       // set default sender based on settings
