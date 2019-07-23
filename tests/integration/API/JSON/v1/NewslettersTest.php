@@ -176,6 +176,7 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->data)->equals($saved_newsletter->asArray());
     // newsletter option should be saved
     expect($saved_newsletter->some_option)->equals('some_option_value');
+    expect(strlen($saved_newsletter->unsubscribe_token))->equals(15);
 
     $hook_name = 'mailpoet_api_newsletters_save_before';
     expect(WPHooksHelper::isFilterApplied($hook_name))->true();

@@ -820,45 +820,31 @@ class SubscriberTest extends \MailPoetTest {
 
   function testItSetsDefaultValuesForRequiredFields() {
     // MySQL running in strict mode requires a value to be set for certain fields
-    expect(Subscriber::setRequiredFieldsDefaultValues([]))->equals(
-      [
-        'first_name' => '',
-        'last_name' => '',
-        'status' => Subscriber::STATUS_UNCONFIRMED,
-      ]
-    );
+    $values = Subscriber::setRequiredFieldsDefaultValues([]);
+    expect($values['first_name'])->equals('');
+    expect($values['last_name'])->equals('');
+    expect($values['status'])->equals(Subscriber::STATUS_UNCONFIRMED);
+    expect(strlen($values['unsubscribe_token']))->equals(15);
   }
 
   function testItSetsDefaultStatusDependingOnSingupConfirmationOption() {
     // when signup confirmation is disabled, status should be 'subscribed'
     $this->settings->set('signup_confirmation.enabled', false);
-    expect(Subscriber::setRequiredFieldsDefaultValues([]))->equals(
-      [
-        'first_name' => '',
-        'last_name' => '',
-        'status' => Subscriber::STATUS_SUBSCRIBED,
-      ]
-    );
+    $values = Subscriber::setRequiredFieldsDefaultValues([]);
+    expect($values['first_name'])->equals('');
+    expect($values['last_name'])->equals('');
+    expect($values['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect(strlen($values['unsubscribe_token']))->equals(15);
 
     $this->settings->set('signup_confirmation.enabled', true);
     // when signup confirmation is enabled, status should be 'unconfirmed'
-    expect(Subscriber::setRequiredFieldsDefaultValues([]))->equals(
-      [
-        'first_name' => '',
-        'last_name' => '',
-        'status' => Subscriber::STATUS_UNCONFIRMED,
-      ]
-    );
+    $values = Subscriber::setRequiredFieldsDefaultValues([]);
+    expect($values['status'])->equals(Subscriber::STATUS_UNCONFIRMED);
 
     // when status is specified, it should not change regardless of signup confirmation option
     $this->settings->set('signup_confirmation.enabled', true);
-    expect(Subscriber::setRequiredFieldsDefaultValues(['status' => Subscriber::STATUS_SUBSCRIBED]))->equals(
-      [
-        'first_name' => '',
-        'last_name' => '',
-        'status' => Subscriber::STATUS_SUBSCRIBED,
-      ]
-    );
+    $values = Subscriber::setRequiredFieldsDefaultValues(['status' => Subscriber::STATUS_SUBSCRIBED]);
+    expect($values['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   function testItSetsDefaultValuesForNewSubscribers() {

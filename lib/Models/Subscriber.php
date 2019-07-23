@@ -6,6 +6,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Util\Security;
 
 if (!defined('ABSPATH')) exit;
 
@@ -781,6 +782,7 @@ class Subscriber extends Model {
     $required_field_default_values = [
       'first_name' => '',
       'last_name' => '',
+      'unsubscribe_token' => Security::generateUnsubscribeToken(self::class),
       'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED,
     ];
     foreach ($required_field_default_values as $field => $value) {

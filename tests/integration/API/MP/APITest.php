@@ -472,6 +472,7 @@ class APITest extends \MailPoetTest {
     expect($result['email'])->equals($subscriber['email']);
     expect($result['cf_' . $custom_field->id])->equals('test');
     expect($result['source'])->equals('api');
+    expect(strlen($result['unsubscribe_token']))->equals(15);
   }
 
   function testItChecksForMandatoryCustomFields() {

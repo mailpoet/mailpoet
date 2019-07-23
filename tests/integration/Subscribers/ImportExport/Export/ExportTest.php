@@ -125,7 +125,7 @@ class ExportTest extends \MailPoetTest {
     expect(
       preg_match(
         '|' .
-        preg_quote(Env::$temp_path, '|') . '/MailPoet_export_[a-f0-9]{15}.' .
+        preg_quote(Env::$temp_path, '|') . '/MailPoet_export_[a-z0-9]{15}.' .
         $this->export->export_format_option .
         '|', $this->export->export_file)
     )->equals(1);
