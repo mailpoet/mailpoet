@@ -3,6 +3,42 @@
 namespace MailPoet\Test\Acceptance;
 
 class SubscriberManageImportExportCest {
+
+  function importBigUsersListCSV(\AcceptanceTester $I) {
+    $I->wantTo('Import a big list');
+    $I->login();
+    $I->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
+    $this->uploadCsvFile($I, 'MailPoetImportBigList.csv');
+
+    // I see validation step, select a wrong source and should be blocked
+    $I->waitForElement('[data-automation-id="mailpoet_import_validation_step"]');
+    $I->checkOption('[data-automation-id="mailpoet_import_validation_step_option2"]');
+    $I->click('[data-automation-id="import-next-step"]');
+    $I->waitForElement('[data-automation-id="import_wrong_source_block"]');
+
+    // Repeat the test, this time choose the right source, but say you sent to the list long time ago
+    $I->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
+    $this->uploadCsvFile($I, 'MailPoetImportBigList.csv');
+    $I->waitForElement('[data-automation-id="mailpoet_import_validation_step"]');
+    $I->checkOption('[data-automation-id="mailpoet_import_validation_step_option1"]');
+    $I->click('[data-automation-id="import-next-step"]');
+    $I->waitForElement('[data-automation-id="last_sent_to_list"]');
+    $I->selectOption('[data-automation-id="last_sent_to_list"]', 'over2years');
+    $I->click('[data-automation-id="last_sent_to_list_next"]');
+    $I->waitForElement('[data-automation-id="import_old_list_block"]');
+
+    // Repeat the test, happy path
+    $I->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
+    $this->uploadCsvFile($I, 'MailPoetImportBigList.csv');
+    $I->waitForElement('[data-automation-id="mailpoet_import_validation_step"]');
+    $I->checkOption('[data-automation-id="mailpoet_import_validation_step_option1"]');
+    $I->click('[data-automation-id="import-next-step"]');
+    $I->waitForElement('[data-automation-id="last_sent_to_list"]');
+    $I->selectOption('[data-automation-id="last_sent_to_list"]', 'less3months');
+    $I->click('[data-automation-id="last_sent_to_list_next"]');
+    $I->waitForElement('[data-automation-id="import_data_manipulation_step"]');
+  }
+
   function importUsersToSubscribersViaCSV(\AcceptanceTester $I) {
     $I->wantTo('Import a subscriber list from CSV');
     $I->login();
@@ -44,10 +80,10 @@ class SubscriberManageImportExportCest {
     $I->seeNoJSErrors();
   }
 
-  private function uploadCsvFile(\AcceptanceTester $I) {
+  private function uploadCsvFile(\AcceptanceTester $I, $file_name = 'MailPoetImportList.csv') {
     $I->waitForText('Upload a file');
     $I->click('[data-automation-id="import-csv-method"]');
-    $I->attachFile('[data-automation-id="import-file-upload-input"]', 'MailPoetImportList.csv');
+    $I->attachFile('[data-automation-id="import-file-upload-input"]', $file_name);
     $I->click('[data-automation-id="import-next-step"]');
   }
 
@@ -60,4 +96,5 @@ class SubscriberManageImportExportCest {
     $I->click('.mailpoet_data_manipulation_step [data-automation-id="import-next-step"]');
     $I->waitForText('Import again');
   }
+
 }

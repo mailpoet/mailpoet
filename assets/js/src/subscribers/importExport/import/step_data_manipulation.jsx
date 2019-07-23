@@ -54,7 +54,10 @@ function StepDataManipulation({
     return null;
   }
   return (
-    <div className="mailpoet_data_manipulation_step">
+    <div
+      className="mailpoet_data_manipulation_step"
+      data-automation-id="import_data_manipulation_step"
+    >
       <Warnings
         stepMethodSelectionData={stepMethodSelectionData}
       />

@@ -3,7 +3,10 @@ import MailPoet from 'mailpoet';
 
 function WrongSourceBlock() {
   return (
-    <div className="mailpoet_import_block">
+    <div
+      className="mailpoet_import_block"
+      data-automation-id="import_wrong_source_block"
+    >
       <p>{MailPoet.I18n.t('validationStepBlock1')}</p>
       <p>{MailPoet.I18n.t('validationStepBlock2')}</p>
       <a

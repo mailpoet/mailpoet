@@ -3,7 +3,10 @@ import MailPoet from 'mailpoet';
 
 function OldListBlock() {
   return (
-    <div className="mailpoet_import_block">
+    <div
+      className="mailpoet_import_block"
+      data-automation-id="import_old_list_block"
+    >
       <p>{MailPoet.I18n.t('validationStepBlock1')}</p>
       <p>{MailPoet.I18n.t('validationStepBlock3')}</p>
       <p>{MailPoet.I18n.t('validationStepBlock4')}</p>

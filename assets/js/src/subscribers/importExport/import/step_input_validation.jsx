@@ -28,7 +28,10 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
   }
 
   return (
-    <div className="mailpoet_import_validation_step">
+    <div
+      className="mailpoet_import_validation_step"
+      data-automation-id="mailpoet_import_validation_step"
+    >
       {importSource === undefined && (
         <InitialQuestion
           onSubmit={setImportSource}
