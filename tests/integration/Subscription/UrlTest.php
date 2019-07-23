@@ -13,8 +13,23 @@ use MailPoet\WP\Functions as WPFunctions;
 class UrlTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $populator = new Populator(new SettingsController, WPFunctions::get(), new Captcha);
+    $this->settings = new SettingsController;
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha);
     $populator->up();
+  }
+
+  function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
+    $this->settings->delete('subscription');
+
+    $url = Url::getCaptchaUrl();
+    expect($url)->notNull();
+    expect($url)->contains('action=captcha');
+    expect($url)->contains('endpoint=subscription');
+
+    $url = Url::getUnsubscribeUrl(null);
+    expect($url)->notNull();
+    expect($url)->contains('action=unsubscribe');
+    expect($url)->contains('endpoint=subscription');
   }
 
   function testItReturnsTheCaptchaUrl() {
