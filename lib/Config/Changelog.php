@@ -20,16 +20,21 @@ class Changelog {
   /** @var Url */
   private $url_helper;
 
+  /** @var MP2Migrator */
+  private $mp2_migrator;
+
   function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Helper $wooCommerceHelper,
-    Url $url_helper
+    Url $url_helper,
+    MP2Migrator $mp2_migrator
   ) {
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->settings = $settings;
     $this->wp = $wp;
     $this->url_helper = $url_helper;
+    $this->mp2_migrator = $mp2_migrator;
   }
 
   function init() {
@@ -67,13 +72,12 @@ class Changelog {
   }
 
   private function checkMp2Migration($version) {
-    $mp2_migrator = new MP2Migrator();
-    if (!in_array($_GET['page'], ['mailpoet-migration', 'mailpoet-settings']) && $mp2_migrator->isMigrationStartedAndNotCompleted()) {
+    if (!in_array($_GET['page'], ['mailpoet-migration', 'mailpoet-settings']) && $this->mp2_migrator->isMigrationStartedAndNotCompleted()) {
       // Force the redirection if the migration has started but is not completed
       return $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
     }
 
-    if ($version === null && $mp2_migrator->isMigrationNeeded()) {
+    if ($version === null && $this->mp2_migrator->isMigrationNeeded()) {
        $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
     }
   }
