@@ -9,6 +9,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Notices\AfterMigrationNotice;
@@ -27,6 +28,9 @@ class MP2Migrator {
   /** @var SettingsController */
   private $settings;
 
+  /** @var Activator */
+  private $activator;
+
   private $log_file;
   public $log_file_url;
   public $progressbar;
@@ -42,13 +46,14 @@ class MP2Migrator {
   private $mp2_user_list_table;
 
 
-  public function __construct() {
+  public function __construct(SettingsController $settings, Activator $activator) {
     $this->defineMP2Tables();
     $log_filename = 'mp2migration.log';
     $this->log_file = Env::$temp_path . '/' . $log_filename;
     $this->log_file_url = Env::$temp_url . '/' . $log_filename;
     $this->progressbar = new ProgressBar('mp2migration');
-    $this->settings = new SettingsController();
+    $this->settings = $settings;
+    $this->activator = $activator;
   }
 
   private function defineMP2Tables() {
@@ -217,11 +222,8 @@ class MP2Migrator {
    *
    */
   private function eraseMP3Data() {
-    $settings = new SettingsController();
-    $captcha = new Captcha();
-    $activator = new Activator($settings, new Populator($settings, WPFunctions::get(), $captcha));
-    $activator->deactivate();
-    $activator->activate();
+    $this->activator->deactivate();
+    $this->activator->activate();
 
     $this->deleteSegments();
     $this->resetMigrationCounters();
