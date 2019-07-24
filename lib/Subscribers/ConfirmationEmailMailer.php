@@ -110,10 +110,9 @@ class ConfirmationEmailMailer {
     // send email
     try {
       if (!$this->mailer) {
-        $this->mailer = new Mailer(false, $from, $reply_to);
+        $this->mailer = new Mailer();
       }
-      $this->mailer->getSenderNameAndAddress($from);
-      $this->mailer->getReplyToNameAndAddress($reply_to);
+      $this->mailer->init(false, $from, $reply_to);
       $result = $this->mailer->send($email, $subscriber);
       if ($result['response'] === false) {
         $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));

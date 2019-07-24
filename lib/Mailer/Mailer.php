@@ -26,8 +26,14 @@ class Mailer {
   const METHOD_PHPMAIL = 'PHPMail';
   const METHOD_SMTP = 'SMTP';
 
-  function __construct($mailer = false, $sender = false, $reply_to = false, $return_path = false) {
-    $this->settings = new SettingsController();
+  function __construct(SettingsController $settings = null) {
+    if (!$settings) {
+      $settings = new SettingsController();
+    }
+    $this->settings = $settings;
+  }
+
+  function init($mailer = false, $sender = false, $reply_to = false, $return_path = false) {
     $this->mailer_config = self::getMailerConfig($mailer);
     $this->sender = $this->getSenderNameAndAddress($sender);
     $this->reply_to = $this->getReplyToNameAndAddress($reply_to);
@@ -36,6 +42,9 @@ class Mailer {
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
+    if (!$this->mailer_instance) {
+      $this->init();
+    }
     $subscriber = $this->formatSubscriberNameAndEmailAddress($subscriber);
     return $this->mailer_instance->send($newsletter, $subscriber, $extra_params);
   }
@@ -116,7 +125,7 @@ class Mailer {
     return $mailer;
   }
 
-  function getSenderNameAndAddress($sender = false) {
+  private function getSenderNameAndAddress($sender = false) {
     if (empty($sender)) {
       $sender = $this->settings->get('sender', []);
       if (empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured.', 'mailpoet'));

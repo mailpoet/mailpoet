@@ -36,7 +36,8 @@ class Mailer extends APIEndpoint {
 
   function send($data = []) {
     try {
-      $mailer = new \MailPoet\Mailer\Mailer(
+      $mailer = new \MailPoet\Mailer\Mailer();
+      $mailer->init(
         (isset($data['mailer'])) ? $data['mailer'] : false,
         (isset($data['sender'])) ? $data['sender'] : false,
         (isset($data['reply_to'])) ? $data['reply_to'] : false

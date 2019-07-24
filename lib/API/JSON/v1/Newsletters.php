@@ -442,11 +442,7 @@ class Newsletters extends APIEndpoint {
       try {
         $mailer = (!empty($data['mailer'])) ?
           $data['mailer'] :
-          new \MailPoet\Mailer\Mailer(
-            $mailer = false,
-            $sender = false,
-            $reply_to = false
-          );
+          new \MailPoet\Mailer\Mailer();
         $extra_params = ['unsubscribe_url' => WPFunctions::get()->homeUrl()];
         $result = $mailer->send($rendered_newsletter, $data['subscriber'], $extra_params);
 
