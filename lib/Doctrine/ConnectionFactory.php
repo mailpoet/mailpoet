@@ -19,15 +19,20 @@ class ConnectionFactory {
       'wrapperClass' => SerializableConnection::class,
       'driver' => self::DRIVER,
       'platform' => new $platform_class,
-      'host' => Env::$db_host,
-      'port' => Env::$db_port,
-      'socket' => Env::$db_socket,
       'user' => Env::$db_username,
       'password' => Env::$db_password,
       'charset' => Env::$db_charset,
       'dbname' => Env::$db_name,
       'driverOptions' => $this->getDriverOptions(Env::$db_timezone_offset, Env::$db_charset, Env::$db_collation),
     ];
+
+    if (!empty(Env::$db_socket)) {
+      $connection_params['unix_socket'] = Env::$db_socket;
+    } else {
+      $connection_params['host'] = Env::$db_is_ipv6 ? ('[' . Env::$db_host . ']') : Env::$db_host;
+      $connection_params['port'] = Env::$db_port;
+    }
+
     return DriverManager::getConnection($connection_params);
   }
 
