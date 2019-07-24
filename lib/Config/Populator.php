@@ -20,6 +20,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
+use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\WP;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Pages;
@@ -43,16 +44,20 @@ class Populator {
   private $wp;
   /** @var Captcha */
   private $captcha;
+  /** @var ReferralDetector  */
+  private $referralDetector;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
 
   function __construct(
     SettingsController $settings,
     WPFunctions $wp,
-    Captcha $captcha
+    Captcha $captcha,
+    ReferralDetector $referralDetector
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->captcha = $captcha;
+    $this->referralDetector = $referralDetector;
     $this->prefix = Env::$db_prefix;
     $this->models = [
       'newsletter_option_fields',
@@ -156,6 +161,7 @@ class Populator {
     $this->updateLastSubscribedAt();
     $this->enableStatsNotificationsForAutomatedEmails();
     $this->scheduleUnsubscribeTokens();
+    $this->detectReferral();
     // Will be uncommented on task [MAILPOET-1998]
     // $this->updateFormsSuccessMessages();
   }
@@ -650,6 +656,9 @@ class Populator {
     $settings = $this->settings->get(Worker::SETTINGS_KEY);
     $settings['automated'] = true;
     $this->settings->set(Worker::SETTINGS_KEY, $settings);
+  }
 
+  private function detectReferral() {
+    $this->referralDetector->detect();
   }
 }
