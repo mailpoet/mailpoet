@@ -40,7 +40,7 @@ class Mailer {
     return $this->mailer_instance->send($newsletter, $subscriber, $extra_params);
   }
 
-  function buildMailer() {
+  private function buildMailer() {
     switch ($this->mailer_config['method']) {
       case self::METHOD_AMAZONSES:
         $mailer_instance = new $this->mailer_config['class'](
