@@ -7,7 +7,7 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\InactiveSubscribers;
-use MailPoet\Doctrine\Entities\UserFlag;
+use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\NewsletterTemplate;
@@ -307,7 +307,7 @@ class Populator {
     ]);
 
     if (!$flag) {
-      $flag = new UserFlag();
+      $flag = new UserFlagEntity();
       $flag->setUserId($user_id);
       $flag->setName($name);
       $user_flags_repository->persist($flag);

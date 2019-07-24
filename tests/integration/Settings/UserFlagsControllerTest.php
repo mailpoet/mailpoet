@@ -2,7 +2,7 @@
 namespace MailPoet\Test\Settings;
 
 use Codeception\Stub;
-use MailPoet\Doctrine\Entities\UserFlag;
+use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -90,7 +90,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
   }
 
   private function createUserFlag($user_id, $name, $value) {
-    $flag = new UserFlag();
+    $flag = new UserFlagEntity();
     $flag->setUserId($user_id);
     $flag->setName($name);
     $flag->setValue($value);
@@ -114,7 +114,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    $table_name = $this->entity_manager->getClassMetadata(UserFlag::class)->getTableName();
+    $table_name = $this->entity_manager->getClassMetadata(UserFlagEntity::class)->getTableName();
     $this->connection->executeUpdate("TRUNCATE $table_name");
   }
 }
