@@ -6,6 +6,7 @@ use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Models\Setting;
 use MailPoet\API\JSON\v1\Setup;
+use MailPoet\Referrals\ReferralDetector;
 use MailPoet\WP\Functions as WPFunctions;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
@@ -25,7 +26,8 @@ class SetupTest extends \MailPoetTest {
     ]);
 
     $settings = new SettingsController();
-    $populator = new Populator($settings, $wp, new Captcha());
+    $referral_detector = new ReferralDetector($wp, $settings);
+    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector);
     $router = new Setup($wp, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
