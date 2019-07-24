@@ -2,10 +2,8 @@
 
 namespace MailPoet\Doctrine;
 
-use MailPoet\Config\Env;
 use MailPoetVendor\Doctrine\Common\Annotations\SimpleAnnotationReader;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
-use MailPoetVendor\Doctrine\Common\Cache\FilesystemCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
 use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -30,10 +28,6 @@ class ConfigurationFactory {
     $this->configureMetadata($configuration);
     $this->configureProxies($configuration);
     $this->configureCache($configuration);
-
-    if (!$this->is_dev_mode) {
-      $configuration->ensureProductionSettings();
-    }
     return $configuration;
   }
 
@@ -62,14 +56,7 @@ class ConfigurationFactory {
   }
 
   private function configureCache(Configuration $configuration) {
-    if ($this->is_dev_mode) {
-      $cache = new ArrayCache();
-    } else {
-      $cache_dir = Env::$cache_path . '/doctrine';
-      $cache = new FilesystemCache($cache_dir);
-      $cache->setNamespace('mp3-' . md5($cache_dir) . '-');
-    }
-
+    $cache = new ArrayCache();
     $configuration->setQueryCacheImpl($cache);
     $configuration->setResultCacheImpl($cache);
   }

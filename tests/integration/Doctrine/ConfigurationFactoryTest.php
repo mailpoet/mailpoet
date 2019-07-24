@@ -6,7 +6,6 @@ use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\MetadataCache;
 use MailPoet\Doctrine\TablePrefixMetadataFactory;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
-use MailPoetVendor\Doctrine\Common\Cache\FilesystemCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
 use MailPoetVendor\Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -25,6 +24,10 @@ class ConfigurationFactoryTest extends \MailPoetTest {
     expect($configuration->getMetadataCacheImpl())->isInstanceOf(MetadataCache::class);
     expect($configuration->getMetadataDriverImpl())->isInstanceOf(AnnotationDriver::class);
 
+    // cache
+    expect($configuration->getQueryCacheImpl())->isInstanceOf(ArrayCache::class);
+    expect($configuration->getResultCacheImpl())->isInstanceOf(ArrayCache::class);
+
     // proxies
     expect(realpath($configuration->getProxyDir()))->equals(realpath(__DIR__ . '/../../../generated/doctrine-proxies'));
     expect($configuration->getProxyNamespace())->equals('MailPoetDoctrineProxies');
@@ -34,15 +37,11 @@ class ConfigurationFactoryTest extends \MailPoetTest {
     // dev mode
     $configuration_factory = new ConfigurationFactory(true);
     $configuration = $configuration_factory->createConfiguration();
-    expect($configuration->getQueryCacheImpl())->isInstanceOf(ArrayCache::class);
-    expect($configuration->getResultCacheImpl())->isInstanceOf(ArrayCache::class);
     expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
     // production mode
     $configuration_factory = new ConfigurationFactory(false);
     $configuration = $configuration_factory->createConfiguration();
-    expect($configuration->getQueryCacheImpl())->isInstanceOf(FilesystemCache::class);
-    expect($configuration->getResultCacheImpl())->isInstanceOf(FilesystemCache::class);
     expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_NEVER);
   }
 }
