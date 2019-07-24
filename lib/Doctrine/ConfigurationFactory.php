@@ -9,7 +9,7 @@ use MailPoetVendor\Doctrine\ORM\Configuration;
 use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactory {
-  const ENTITY_DIR = __DIR__ . '/../Doctrine/Entities';
+  const ENTITY_DIR = __DIR__ . '/../Entities';
   const METADATA_DIR = __DIR__ . '/../../generated/doctrine-metadata';
   const PROXY_DIR = __DIR__ . '/../../generated/doctrine-proxies';
   const PROXY_NAMESPACE = 'MailPoetDoctrineProxies';

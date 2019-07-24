@@ -6,7 +6,7 @@ use Codeception\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\v1\UserFlags;
-use MailPoet\Doctrine\Entities\UserFlag;
+use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Settings\UserFlagsController;
 
@@ -61,7 +61,7 @@ class UserFlagsTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    $table_name = $this->entity_manager->getClassMetadata(UserFlag::class)->getTableName();
+    $table_name = $this->entity_manager->getClassMetadata(UserFlagEntity::class)->getTableName();
     $this->entity_manager->getConnection()->executeUpdate("TRUNCATE $table_name");
   }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Doctrine\Entities;
+namespace MailPoet\Entities;
 
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
@@ -10,7 +10,7 @@ use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
  * @Entity()
  * @Table(name="user_flags")
  */
-class UserFlag {
+class UserFlagEntity {
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;

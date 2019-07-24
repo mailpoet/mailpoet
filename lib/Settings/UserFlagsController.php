@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Settings;
 
-use MailPoet\Doctrine\Entities\UserFlag;
+use MailPoet\Entities\UserFlagEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class UserFlagsController {
@@ -44,7 +44,7 @@ class UserFlagsController {
     ]);
 
     if (!$flag) {
-      $flag = new UserFlag();
+      $flag = new UserFlagEntity();
       $flag->setUserId($current_user_id);
       $flag->setName($name);
       $this->user_flags_repository->persist($flag);
