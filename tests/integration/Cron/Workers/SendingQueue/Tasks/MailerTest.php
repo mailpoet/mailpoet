@@ -8,6 +8,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
@@ -26,7 +27,8 @@ class MailerTest extends \MailPoetTest {
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
     $this->settings = new SettingsController();
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha);
+    $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector);
     $populator->up();
     $this->mailer_task = new MailerTask();
     $this->sender = $this->settings->get('sender');

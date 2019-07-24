@@ -27,6 +27,7 @@ use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Links\Links;
+use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
@@ -48,7 +49,8 @@ class SendingQueueTest extends \MailPoetTest {
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
     $this->settings = new SettingsController();
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha);
+    $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector);
     $populator->up();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';

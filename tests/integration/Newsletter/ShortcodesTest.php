@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\Url as SubscriptionUrl;
@@ -26,7 +27,8 @@ class ShortcodesTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->settings = new SettingsController();
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha);
+    $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector);
     $populator->up();
     $this->WP_user = $this->_createWPUser();
     $this->WP_post = $this->_createWPPost();
