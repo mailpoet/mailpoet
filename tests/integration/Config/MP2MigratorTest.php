@@ -1,7 +1,9 @@
 <?php
 namespace MailPoet\Test\Config;
 
+use MailPoet\Config\Activator;
 use MailPoet\Config\MP2Migrator;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\MappingToExternalEntities;
 use MailPoet\Models\Segment;
@@ -19,7 +21,7 @@ class MP2MigratorTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = new SettingsController();
-    $this->MP2Migrator = new MP2Migrator();
+    $this->MP2Migrator = new MP2Migrator($this->settings, ContainerWrapper::getInstance()->get(Activator::class));
   }
 
   public function _after() {
