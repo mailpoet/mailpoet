@@ -95,15 +95,6 @@ class MailerTest extends \MailPoetTest {
     expect($mailer->return_path)->equals($this->return_path);
   }
 
-  function testItCanBuildKnownMailerInstances() {
-    foreach ($this->available_mailer_methods as $method) {
-      $mailer = new Mailer($method, $this->sender);
-      $mailer->buildMailer();
-      expect(get_class($mailer->mailer_instance))
-        ->equals('MailPoet\Mailer\Methods\\' . $method['method']);
-    }
-  }
-
   function testItThrowsUnknownMailerException() {
     try {
       $mailer = new Mailer(['method' => 'Unknown'], $this->sender);
