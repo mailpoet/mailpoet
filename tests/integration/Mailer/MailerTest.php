@@ -71,6 +71,7 @@ class MailerTest extends \MailPoetTest {
     $this->settings->set('mta', null);
     try {
       $mailer = new Mailer();
+      $mailer->init();
       $this->fail('Mailer did not throw an exception');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Mailer is not configured.');
@@ -79,7 +80,8 @@ class MailerTest extends \MailPoetTest {
 
   function testItRequiresSender() {
     try {
-      $mailer = new Mailer($mailer = $this->mailer);
+      $mailer = new Mailer();
+      $mailer->init($mailer = $this->mailer);
       $this->fail('Mailer did not throw an exception');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sender name and email are not configured.');
@@ -87,7 +89,8 @@ class MailerTest extends \MailPoetTest {
   }
 
   function testItCanConstruct() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to, $this->return_path);
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $this->sender, $this->reply_to, $this->return_path);
     expect($mailer->sender['from_name'])->equals($this->sender['name']);
     expect($mailer->sender['from_email'])->equals($this->sender['address']);
     expect($mailer->reply_to['reply_to_name'])->equals($this->reply_to['name']);
@@ -97,7 +100,8 @@ class MailerTest extends \MailPoetTest {
 
   function testItThrowsUnknownMailerException() {
     try {
-      $mailer = new Mailer(['method' => 'Unknown'], $this->sender);
+      $mailer = new Mailer();
+      $mailer->init(['method' => 'Unknown'], $this->sender);
       $this->fail('Mailer did not throw an exception');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Mailing method does not exist.');
@@ -106,13 +110,15 @@ class MailerTest extends \MailPoetTest {
 
   function testItSetsReplyToAddressWhenOnlyNameIsAvailable() {
     $reply_to = ['name' => 'test'];
-    $mailer = new Mailer($this->mailer, $this->sender, $reply_to);
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $this->sender, $reply_to);
     $reply_to = $mailer->getReplyToNameAndAddress();
     expect($reply_to['reply_to_email'])->equals($this->sender['address']);
   }
 
   function testItGetsReturnPathAddress() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $this->sender, $this->reply_to);
     $return_path = $mailer->getReturnPathAddress('bounce@test.com');
     expect($return_path)->equals('bounce@test.com');
     $this->settings->set('bounce', ['address' => 'settngs_bounce@test.com']);
@@ -121,7 +127,8 @@ class MailerTest extends \MailPoetTest {
   }
 
   function testItCanTransformSubscriber() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $this->sender, $this->reply_to);
     expect($mailer->formatSubscriberNameAndEmailAddress('test@email.com'))
       ->equals('test@email.com');
     expect($mailer->formatSubscriberNameAndEmailAddress(
@@ -151,7 +158,8 @@ class MailerTest extends \MailPoetTest {
   }
 
   function testItCanConvertNonASCIIEmailAddressString() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $this->sender, $this->reply_to);
     expect($mailer->sender['from_name'])->equals($this->sender['name']);
     expect($mailer->reply_to['reply_to_name'])->equals($this->reply_to['name']);
     $sender = [
@@ -162,7 +170,8 @@ class MailerTest extends \MailPoetTest {
       'name' => 'Reply-To Außergewöhnlichen тест системы',
       'address' => 'staff@mailinator.com',
     ];
-    $mailer = new Mailer($this->mailer, $sender, $reply_to);
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $sender, $reply_to);
     expect($mailer->sender['from_name'])
       ->equals(sprintf('=?utf-8?B?%s?=', base64_encode($sender['name'])));
     expect($mailer->reply_to['reply_to_name'])
@@ -172,7 +181,8 @@ class MailerTest extends \MailPoetTest {
   function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->sender['address'] = 'staff@mailpoet.com';
-    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $this->sender, $this->reply_to);
     $result = $mailer->send($this->newsletter, $this->subscriber);
     expect($result['response'])->true();
   }

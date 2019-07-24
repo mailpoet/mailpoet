@@ -32,7 +32,8 @@ class Mailer {
     if (!$reply_to['address']) {
       $reply_to = false;
     }
-    $this->mailer = new MailerFactory($method = false, $sender, $reply_to);
+    $this->mailer = new MailerFactory();
+    $this->mailer->init($method = false, $sender, $reply_to);
     return $this->mailer;
   }
 

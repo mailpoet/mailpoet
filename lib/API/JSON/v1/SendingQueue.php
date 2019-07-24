@@ -36,7 +36,8 @@ class SendingQueue extends APIEndpoint {
 
     // check that the sending method has been configured properly
     try {
-      new \MailPoet\Mailer\Mailer(false);
+      $mailer = new \MailPoet\Mailer\Mailer();
+      $mailer->init();
     } catch (\Exception $e) {
       return $this->errorResponse([
         $e->getCode() => $e->getMessage(),
