@@ -26,6 +26,7 @@ class Env {
   static $plugin_prefix;
   static $db_prefix;
   static $db_host;
+  static $db_is_ipv6;
   static $db_socket;
   static $db_port;
   static $db_name;
@@ -70,6 +71,7 @@ class Env {
     global $wpdb;
     self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
     self::$db_host = $host;
+    self::$db_is_ipv6 = $is_ipv6;
     self::$db_port = $port ?: 3306;
     self::$db_socket = $socket;
     self::$db_name = $db_name;
