@@ -131,13 +131,15 @@ CREATE TABLE `mp_mailpoet_newsletters` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
+  `unsubscribe_token` varchar(15) NULL,
+  UNIQUE KEY unsubscribe_token (unsubscribe_token),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 INSERT INTO `mp_mailpoet_newsletters` VALUES
-(1,NULL,NULL,'Standard newsletter','standard','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL),
-(2,NULL,NULL,'Welcome email','welcome','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL),
-(3,NULL,NULL,'Post notification','notification','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL);
+(1,NULL,NULL,'Standard newsletter','standard','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL,'randomtokennum1'),
+(2,NULL,NULL,'Welcome email','welcome','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL,'randomtokennum2'),
+(3,NULL,NULL,'Post notification','notification','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL,'randomtokennum3');
 
 DROP TABLE IF EXISTS `mp_mailpoet_newsletter_links`;
 CREATE TABLE `mp_mailpoet_newsletter_links` (
@@ -475,16 +477,18 @@ CREATE TABLE `mp_mailpoet_subscribers` (
   `is_woocommerce_user` int(1) NOT NULL DEFAULT 0,
   `source` ENUM("form", "imported", "administrator", "api", "wordpress_user", "unknown") DEFAULT "unknown",
   `count_confirmations` int(11) unsigned NOT NULL DEFAULT 0,
+  `unsubscribe_token` varchar(15) NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
+  UNIQUE KEY unsubscribe_token (unsubscribe_token),
   KEY `wp_user_id` (`wp_user_id`),
   KEY `status_deleted_at` (`status`, `deleted_at`),
   KEY updated_at (updated_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
-INSERT INTO `mp_mailpoet_subscribers` (`id`, `wp_user_id`, `first_name`, `last_name`, `email`, `status`, `subscribed_ip`, `confirmed_ip`, `confirmed_at`, `created_at`, `updated_at`, `deleted_at`, `unconfirmed_data`) VALUES
-(1,	1,	'admin',	'',	'wp@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL,	NULL),
-(2,	NULL,	'first',	'last',	'subscriber@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-11-16 10:39:00',	'2017-11-16 10:39:00',	NULL,	NULL);
+INSERT INTO `mp_mailpoet_subscribers` (`id`, `wp_user_id`, `first_name`, `last_name`, `email`, `status`, `subscribed_ip`, `confirmed_ip`, `confirmed_at`, `created_at`, `updated_at`, `deleted_at`, `unconfirmed_data`, `unsubscribe_token`) VALUES
+(1,	1,	'admin',	'',	'wp@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL,	NULL, 'randomtokennum4'),
+(2,	NULL,	'first',	'last',	'subscriber@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-11-16 10:39:00',	'2017-11-16 10:39:00',	NULL,	NULL, 'randomtokennum5');
 
 DROP TABLE IF EXISTS `mp_mailpoet_subscriber_custom_field`;
 CREATE TABLE `mp_mailpoet_subscriber_custom_field` (
