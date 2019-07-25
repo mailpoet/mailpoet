@@ -20,6 +20,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Cron\Workers\Beamer as BeamerWorker;
+use MailPoet\Cron\Workers\UnsubscribeTokens;
 
 if (!defined('ABSPATH')) exit;
 
@@ -114,6 +115,12 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
+    // unsubscribe tokens check
+    $unsubscribe_tokens_tasks = self::getTasksCount([
+      'type' => UnsubscribeTokens::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
+    ]);
     // WooCommerce sync
     $woo_commerce_sync_tasks = self::getTasksCount([
       'type' => WooCommerceSyncWorker::TASK_TYPE,
@@ -167,6 +174,7 @@ class WordPress {
       || $authorized_email_addresses_tasks
       || $beamer_active
       || $woo_commerce_orders_tasks
+      || $unsubscribe_tokens_tasks
     );
   }
 

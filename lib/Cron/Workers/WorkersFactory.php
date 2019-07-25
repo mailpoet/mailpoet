@@ -147,6 +147,11 @@ class WorkersFactory {
     return new InactiveSubscribers($this->inactive_subscribers_controller, $this->settings, $timer);
   }
 
+    /** @return UnsubscribeTokens */
+  function createUnsubscribeTokensWorker($timer) {
+    return new UnsubscribeTokens($timer);
+  }
+
   /** @return AuthorizedSendingEmailsCheck */
   function createAuthorizedSendingEmailsCheckWorker($timer) {
     return new AuthorizedSendingEmailsCheck($this->authorized_emails_controller, $timer);
