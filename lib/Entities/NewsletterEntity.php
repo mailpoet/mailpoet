@@ -127,6 +127,12 @@ class NewsletterEntity {
    */
   private $options;
 
+  /**
+   * @OneToOne(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="newsletter")
+   * @var SendingQueueEntity|null
+   */
+  private $queue;
+
   function __construct() {
     $this->newsletter_segments = new ArrayCollection();
     $this->options = new ArrayCollection();
@@ -326,5 +332,19 @@ class NewsletterEntity {
    */
   function getOptions() {
     return $this->options;
+  }
+
+  /**
+   * @return SendingQueueEntity|null
+   */
+  function getQueue() {
+    return $this->queue;
+  }
+
+  /**
+   * @param SendingQueueEntity|null $queue
+   */
+  function setQueue($queue) {
+    $this->queue = $queue;
   }
 }

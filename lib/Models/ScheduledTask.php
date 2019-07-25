@@ -3,6 +3,7 @@
 namespace MailPoet\Models;
 
 use Carbon\Carbon;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -20,13 +21,13 @@ if (!defined('ABSPATH')) exit;
  */
 class ScheduledTask extends Model {
   public static $_table = MP_SCHEDULED_TASKS_TABLE;
-  const STATUS_COMPLETED = 'completed';
-  const STATUS_SCHEDULED = 'scheduled';
-  const STATUS_PAUSED = 'paused';
-  const VIRTUAL_STATUS_RUNNING = 'running'; // For historical reasons this is stored as null in DB
-  const PRIORITY_HIGH = 1;
-  const PRIORITY_MEDIUM = 5;
-  const PRIORITY_LOW = 10;
+  const STATUS_COMPLETED = ScheduledTaskEntity::STATUS_COMPLETED;
+  const STATUS_SCHEDULED = ScheduledTaskEntity::STATUS_SCHEDULED;
+  const STATUS_PAUSED = ScheduledTaskEntity::STATUS_PAUSED;
+  const VIRTUAL_STATUS_RUNNING = ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING; // For historical reasons this is stored as null in DB
+  const PRIORITY_HIGH = ScheduledTaskEntity::PRIORITY_HIGH;
+  const PRIORITY_MEDIUM = ScheduledTaskEntity::PRIORITY_MEDIUM;
+  const PRIORITY_LOW = ScheduledTaskEntity::PRIORITY_LOW;
 
   const BASIC_RESCHEDULE_TIMEOUT = 5; //minutes
   const MAX_RESCHEDULE_TIMEOUT = 1440; //minutes
