@@ -75,6 +75,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\v1\SendingTaskSubscribers::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Setup::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Subscribers::class)->setPublic(true);
+    // API response builders
+    $container->autowire(\MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder::class);
     // Config
     $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Activator::class)->setPublic(true);
@@ -174,6 +176,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscription\Registration::class)->setPublic(true);
     // Newsletter
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\NewslettersRepository::class);
     // Util
     $container->autowire(\MailPoet\Util\Cookies::class);
     $container->autowire(\MailPoet\Util\Url::class)->setPublic(true);
