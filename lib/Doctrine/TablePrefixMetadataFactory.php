@@ -14,6 +14,9 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
   /** @var string */
   private $prefix;
 
+  /** @var array */
+  private $prefixed_map = [];
+
   function __construct() {
     if (Env::$db_prefix === null) {
       throw new \RuntimeException('DB table prefix not initialized');
@@ -22,10 +25,10 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
   }
 
   function getMetadataFor($className) {
-    $isPrefixed = $this->hasMetadataFor($className);
     $classMetadata = parent::getMetadataFor($className);
-    if (!$isPrefixed && $classMetadata instanceof ClassMetadata) {
+    if ($classMetadata instanceof ClassMetadata && !isset($this->prefixed_map[$classMetadata->getName()])) {
       $this->addPrefix($classMetadata);
+      $this->prefixed_map[$classMetadata->getName()] = true;
     }
     return $classMetadata;
   }
