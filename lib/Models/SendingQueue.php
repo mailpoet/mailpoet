@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
@@ -23,12 +24,12 @@ if (!defined('ABSPATH')) exit;
 
 class SendingQueue extends Model {
   public static $_table = MP_SENDING_QUEUES_TABLE;
-  const STATUS_COMPLETED = 'completed';
-  const STATUS_SCHEDULED = 'scheduled';
-  const STATUS_PAUSED = 'paused';
-  const PRIORITY_HIGH = 1;
-  const PRIORITY_MEDIUM = 5;
-  const PRIORITY_LOW = 10;
+  const STATUS_COMPLETED = SendingQueueEntity::STATUS_COMPLETED;
+  const STATUS_SCHEDULED = SendingQueueEntity::STATUS_SCHEDULED;
+  const STATUS_PAUSED = SendingQueueEntity::STATUS_PAUSED;
+  const PRIORITY_HIGH = SendingQueueEntity::PRIORITY_HIGH;
+  const PRIORITY_MEDIUM = SendingQueueEntity::PRIORITY_MEDIUM;
+  const PRIORITY_LOW = SendingQueueEntity::PRIORITY_LOW;
 
   private $emoji;
 
