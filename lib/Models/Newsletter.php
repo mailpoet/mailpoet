@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Models;
 use Carbon\Carbon;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -37,18 +38,18 @@ if (!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
-  const TYPE_AUTOMATIC = 'automatic';
-  const TYPE_STANDARD = 'standard';
-  const TYPE_WELCOME = 'welcome';
-  const TYPE_NOTIFICATION = 'notification';
-  const TYPE_NOTIFICATION_HISTORY = 'notification_history';
+  const TYPE_AUTOMATIC = NewsletterEntity::TYPE_AUTOMATIC;
+  const TYPE_STANDARD = NewsletterEntity::TYPE_STANDARD;
+  const TYPE_WELCOME = NewsletterEntity::TYPE_WELCOME;
+  const TYPE_NOTIFICATION = NewsletterEntity::TYPE_NOTIFICATION;
+  const TYPE_NOTIFICATION_HISTORY = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
   // standard newsletters
-  const STATUS_DRAFT = 'draft';
-  const STATUS_SCHEDULED = 'scheduled';
-  const STATUS_SENDING = 'sending';
-  const STATUS_SENT = 'sent';
+  const STATUS_DRAFT = NewsletterEntity::STATUS_DRAFT;
+  const STATUS_SCHEDULED = NewsletterEntity::STATUS_SCHEDULED;
+  const STATUS_SENDING = NewsletterEntity::STATUS_SENDING;
+  const STATUS_SENT = NewsletterEntity::STATUS_SENT;
   // automatic newsletters status
-  const STATUS_ACTIVE = 'active';
+  const STATUS_ACTIVE = NewsletterEntity::STATUS_ACTIVE;
 
   private $emoji;
 
