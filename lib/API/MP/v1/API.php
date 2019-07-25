@@ -291,6 +291,8 @@ class API {
     if (!empty($list_ids)) {
       $this->subscribeToLists($new_subscriber->id, $list_ids, [
         'send_confirmation_email' => $send_confirmation_email,
+        'schedule_welcome_email' => $schedule_welcome_email,
+        'skip_subscriber_notification' => $skip_subscriber_notification,
       ]);
 
       // schedule welcome email(s)
