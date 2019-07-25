@@ -8,6 +8,7 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\API\JSON\v1\Newsletters;
@@ -20,6 +21,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
@@ -126,7 +128,9 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()])
+      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class)
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -166,7 +170,9 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()])
+      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()]),
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class)
     );
 
     $response = $this->endpoint->save($valid_data);
@@ -534,7 +540,9 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
-      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()])
+      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class)
     );
 
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);
