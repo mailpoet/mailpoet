@@ -27,12 +27,36 @@ if (!defined('ABSPATH')) exit;
 class WordPress {
   const SCHEDULED_IN_THE_PAST = 'past';
   const SCHEDULED_IN_THE_FUTURE = 'future';
+
+  const RUN_INTERVAL = 10; // seconds
+  const LAST_RUN_AT_SETTING = 'cron_trigger_wordpress.last_run_at';
+
   static private $tasks_counts;
 
   static function run() {
+    if (!self::checkRunInterval()) {
+      return false;
+    }
     return (self::checkExecutionRequirements()) ?
       MailPoet::run() :
       self::stop();
+  }
+
+  private static function checkRunInterval() {
+    $settings = new SettingsController();
+    $last_run_at = (int)$settings->get(self::LAST_RUN_AT_SETTING, 0);
+    $run_interval = WPFunctions::get()->applyFilters('mailpoet_cron_trigger_wordpress_run_interval', self::RUN_INTERVAL);
+    $run_interval_elapsed = (time() - $last_run_at) >= $run_interval;
+    if ($run_interval_elapsed) {
+      $settings->set(self::LAST_RUN_AT_SETTING, time());
+      return true;
+    }
+    return false;
+  }
+
+  static function resetRunInterval() {
+    $settings = new SettingsController();
+    $settings->set(self::LAST_RUN_AT_SETTING, 0);
   }
 
   static function checkExecutionRequirements(WPFunctions $wp = null) {
