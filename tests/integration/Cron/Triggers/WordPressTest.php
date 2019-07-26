@@ -35,6 +35,31 @@ class WordPressTest extends \MailPoetTest {
     $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, Carbon::createFromTimestamp(current_time('timestamp') + 600));
   }
 
+  function testItDoesNotRunIfRunIntervalIsNotElapsed() {
+    $current_time = time();
+    $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $current_time);
+    $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
+    expect(WordPress::run())->equals(false);
+    expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->equals($current_time);
+  }
+
+  function testItRunsIfRunIntervalIsElapsed() {
+    $time_in_the_past = (time() - WordPress::RUN_INTERVAL) - 1;
+    $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $time_in_the_past);
+    $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
+    expect(WordPress::run())->notEmpty();
+    expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->greaterThan($time_in_the_past);
+  }
+
+  function testItCanResetRunInterval() {
+    $current_time = time();
+    $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $current_time);
+    $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
+    WordPress::resetRunInterval();
+    expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->isEmpty();
+    expect(WordPress::run())->notEmpty();
+  }
+
   function testItRequiresScheduledQueuesToExecute() {
     expect(WordPress::checkExecutionRequirements())->false();
     $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);

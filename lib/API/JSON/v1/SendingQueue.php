@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
+use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\Scheduler\Scheduler;
@@ -66,6 +67,8 @@ class SendingQueue extends APIEndpoint {
       $queue = SendingTask::create();
       $queue->newsletter_id = $newsletter->id;
     }
+
+    WordPress::resetRunInterval();
 
     if ((bool)$newsletter->isScheduled) {
       // set newsletter status
