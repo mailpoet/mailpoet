@@ -180,6 +180,31 @@ class SimpleWorkerTest extends \MailPoetTest {
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
   }
 
+  function testWillRescheduleATaskIfItFails() {
+    $task = $this->createRunningTask();
+    $worker = Stub::construct(
+      $this->worker,
+      [],
+      [
+        'processTaskStrategy' => function () {
+          throw new \Exception('test error');
+        },
+      ],
+      $this
+    );
+    $scheduled_at = $task->scheduled_at;
+    try {
+      $worker->process();
+      $this->fail('An exception should be thrown');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('test error');
+      $task = ScheduledTask::findOne($task->id);
+      expect($scheduled_at < $task->scheduled_at)->true();
+      expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+      expect($task->reschedule_count)->equals(1);
+    }
+  }
+
   function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
     $current_date = Carbon::createFromTimestamp(current_time('timestamp'));
     $next_run_date = MockSimpleWorker::getNextRunDate();

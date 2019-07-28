@@ -8,8 +8,6 @@ use MailPoet\Services\Bridge;
 if (!defined('ABSPATH')) exit;
 
 abstract class KeyCheckWorker extends SimpleWorker {
-  const UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT = 60;
-
   public $bridge;
 
   function init() {
@@ -26,7 +24,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
     }
 
     if (empty($result['code']) || $result['code'] == Bridge::CHECK_ERROR_UNAVAILABLE) {
-      $this->reschedule($task, self::UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT);
+      $task->rescheduleProgressively();
       return false;
     }
 

@@ -21,10 +21,6 @@ use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class SchedulerTest extends \MailPoetTest {
-  function testItDefinesConstants() {
-    expect(Scheduler::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT)->equals(5);
-  }
-
   function testItConstructs() {
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class));
     expect($scheduler->timer)->greaterOrEquals(5);
@@ -329,7 +325,7 @@ class SchedulerTest extends \MailPoetTest {
     $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     expect(Carbon::parse($updated_queue->scheduled_at))->equals(
       Carbon::createFromTimestamp(current_time('timestamp'))
-        ->addMinutes(Scheduler::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT)
+        ->addMinutes(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT)
     );
   }
 
