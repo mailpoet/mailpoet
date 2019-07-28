@@ -50,11 +50,19 @@ abstract class SimpleWorker {
       return false;
     }
 
-    foreach ($scheduled_tasks as $i => $task) {
-      $this->prepareTask($task);
-    }
-    foreach ($running_tasks as $i => $task) {
-      $this->processTask($task);
+    $task = null;
+    try {
+      foreach ($scheduled_tasks as $i => $task) {
+        $this->prepareTask($task);
+      }
+      foreach ($running_tasks as $i => $task) {
+        $this->processTask($task);
+      }
+    } catch (\Exception $e) {
+      if ($task) {
+        $task->rescheduleProgressively();
+      }
+      throw $e;
     }
 
     return true;

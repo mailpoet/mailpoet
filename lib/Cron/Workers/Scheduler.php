@@ -13,16 +13,13 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
-use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class Scheduler {
-  const UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT = 5;
   const TASK_BATCH_SIZE = 5;
 
   public $timer;
-  private $wp;
 
   /** @var SubscribersFinder */
   private $subscribers_finder;
@@ -31,7 +28,6 @@ class Scheduler {
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
-    $this->wp = new WPFunctions();
     $this->subscribers_finder = $subscribers_finder;
   }
 
@@ -177,12 +173,8 @@ class Scheduler {
     }
     // check if subscriber is confirmed (subscribed)
     if ($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
-      // reschedule delivery in 5 minutes
-      $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-      $queue->scheduled_at = $scheduled_at->addMinutes(
-        self::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT
-      );
-      $queue->save();
+      // reschedule delivery
+      $queue->rescheduleProgressively();
       return false;
     }
     return true;

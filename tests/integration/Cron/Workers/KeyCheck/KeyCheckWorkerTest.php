@@ -35,11 +35,14 @@ class KeyCheckWorkerTest extends \MailPoetTest {
         'checkKey' => function () {
           throw new \Exception;
         },
-        'reschedule' => Expected::once(),
       ],
       $this
     );
-    $task = $this->createRunningTask();
+    $task = Stub::make(
+      ScheduledTask::class,
+      ['rescheduleProgressively' => Expected::once()],
+      $this
+    );
     $result = $worker->processTaskStrategy($task);
     expect($result)->false();
   }
@@ -49,11 +52,14 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       $this->worker,
       [
         'checkKey' => ['code' => Bridge::CHECK_ERROR_UNAVAILABLE],
-        'reschedule' => Expected::once(),
       ],
       $this
     );
-    $task = $this->createRunningTask();
+    $task = Stub::make(
+      ScheduledTask::class,
+      ['rescheduleProgressively' => Expected::once()],
+      $this
+    );
     $result = $worker->processTaskStrategy($task);
     expect($result)->false();
   }

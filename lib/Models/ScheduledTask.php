@@ -2,6 +2,7 @@
 
 namespace MailPoet\Models;
 
+use Carbon\Carbon;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -14,6 +15,7 @@ if (!defined('ABSPATH')) exit;
  * @property string|null $type
  * @property int $priority
  * @property string|null $scheduled_at
+ * @property int $reschedule_count
  * @property string|array|null $meta
  */
 class ScheduledTask extends Model {
@@ -25,6 +27,9 @@ class ScheduledTask extends Model {
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
+
+  const BASIC_RESCHEDULE_TIMEOUT = 5; //minutes
+  const MAX_RESCHEDULE_TIMEOUT = 1440; //minutes
 
   private $wp;
 
@@ -129,6 +134,16 @@ class ScheduledTask extends Model {
       \ORM::get_db()->rollBack();
       throw $error;
     }
+  }
+
+  function rescheduleProgressively() {
+    $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $timeout = min(self::BASIC_RESCHEDULE_TIMEOUT * pow(2, $this->reschedule_count), self::MAX_RESCHEDULE_TIMEOUT);
+    $this->scheduled_at = $scheduled_at->addMinutes($timeout);
+    $this->reschedule_count++;
+    $this->status = ScheduledTask::STATUS_SCHEDULED;
+    $this->save();
+    return $timeout;
   }
 
   static function touchAllByIds(array $ids) {
