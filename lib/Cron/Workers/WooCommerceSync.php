@@ -49,7 +49,13 @@ class WooCommerceSync extends SimpleWorker {
     $task->meta = ['in_progress' => true];
     $task->save();
 
-    $this->woocommerce_segment->synchronizeCustomers();
+    try {
+      $this->woocommerce_segment->synchronizeCustomers();
+    } catch (\Exception $e) {
+      $task->meta = null;
+      $task->save();
+      throw $e;
+    }
 
     return true;
   }
