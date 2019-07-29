@@ -6,14 +6,14 @@
   <div>
     <p class="mailpoet_sending_methods_help help">
       <%= __('<strong>Tip:</strong> we have a [link]list of plugins[/link] that work with MailPoet if you need fancier forms.')
-      |replaceLinkTags('http://beta.docs.mailpoet.com/article/198-list-of-forms-plugins-that-work-with-mailpoet?utm_source=plugin&utm_medium=settings&utm_campaign=helpdocs', {'target' : '_blank', id: 'mailpoet_helper_link'})
+      |replaceLinkTags('https://kb.mailpoet.com/article/198-list-of-forms-plugins-that-work-with-mailpoet?utm_source=plugin&utm_medium=settings&utm_campaign=helpdocs', {'target' : '_blank', id: 'mailpoet_helper_link'})
       |raw
       %>
     </p>
   </div>
 
   <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
-  <a class="<%= badgeClassName %>" href="https://beta.docs.mailpoet.com/article/236-video-guide-setting-up-forms" target="_blank">
+  <a class="<%= badgeClassName %>" href="https://kb.mailpoet.com/article/236-video-guide-setting-up-forms" target="_blank">
       <span class="dashicons dashicons-format-video"></span><%= __('See video guide') %>
   </a>
 

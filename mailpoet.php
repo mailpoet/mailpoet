@@ -52,7 +52,7 @@ if (version_compare(phpversion(), '5.6.0', '<')) {
 function mailpoet_wp_version_notice() {
   $notice = str_replace(
     '[link]',
-    '<a href="//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#wp_version" target="_blank">',
+    '<a href="https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#wp_version" target="_blank">',
     __('MailPoet plugin requires WordPress version 4.6 or newer. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet')
   );
   $notice = str_replace('[/link]', '</a>', $notice);
@@ -63,7 +63,7 @@ function mailpoet_wp_version_notice() {
 function mailpoet_php_version_notice() {
   $notice = str_replace(
     '[link]',
-    '<a href="//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_version" target="_blank">',
+    '<a href="https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_version" target="_blank">',
     __('MailPoet requires PHP version 5.6 or newer (version 7.2 recommended). Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet')
   );
   $notice = str_replace('[/link]', '</a>', $notice);

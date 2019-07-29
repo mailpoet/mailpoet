@@ -93,7 +93,7 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
     showKbLink = false;
   }
 
-  const improveStatsKBLink = 'http://beta.docs.mailpoet.com/article/191-how-to-improve-my-open-and-click-rates';
+  const improveStatsKBLink = 'https://kb.mailpoet.com/article/191-how-to-improve-my-open-and-click-rates';
 
   // thresholds to display badges
   const minNewslettersSent = 20;

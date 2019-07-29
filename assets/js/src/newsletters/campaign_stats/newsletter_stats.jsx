@@ -21,7 +21,7 @@ const NewsletterGeneralStats = ({ newsletter }) => {
   const headlineOpened = `${percentageOpenedDisplay}% ${MailPoet.I18n.t('percentageOpened')}`;
   const headlineClicked = `${percentageClickedDisplay}% ${MailPoet.I18n.t('percentageClicked')}`;
   const headlineUnsubscribed = `${percentageUnsubscribedDisplay}% ${MailPoet.I18n.t('percentageUnsubscribed')}`;
-  const statsKBLink = 'http://beta.docs.mailpoet.com/article/190-whats-a-good-email-open-rate';
+  const statsKBLink = 'https://kb.mailpoet.com/article/190-whats-a-good-email-open-rate';
   // thresholds to display badges
   const minNewslettersSent = 20;
   const minNewslettersOpened = 5;

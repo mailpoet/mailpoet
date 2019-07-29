@@ -109,7 +109,7 @@ class Initializer {
     } catch (\Exception $e) {
       return WPNotice::displayError(Helpers::replaceLinkTags(
         WPFunctions::get()->__('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
-        '//beta.docs.mailpoet.com/article/200-solving-database-connection-issues',
+        'https://kb.mailpoet.com/article/200-solving-database-connection-issues',
         ['target' => '_blank']
       ));
     }

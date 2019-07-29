@@ -59,7 +59,7 @@ export const checkCronStatus = (state) => {
     /\[link\](.*?)\[\/link\]/g,
     match => (
       <a
-        href="https://beta.docs.mailpoet.com/article/231-sending-does-not-work"
+        href="https://kb.mailpoet.com/article/231-sending-does-not-work"
         target="_blank"
         rel="noopener noreferrer"
         key="check-cron"
