@@ -21,7 +21,7 @@ class ReferralDetectorTest extends \MailPoetUnitTest {
     }
   }
 
-  function testItPrefersSettingsValueOverAll() {
+  function testItPrefersSettingsValue() {
     $this->settings_mock
       ->expects($this->once())
       ->method('get')
@@ -33,7 +33,7 @@ class ReferralDetectorTest extends \MailPoetUnitTest {
     expect($referral_detector->detect())->equals('settings_referral_id');
   }
 
-  function testItPrefersOptionValueOverConstantAndStoreValueToSettings() {
+  function testItPrefersOptionValueToConstantAndStoresValueToSettings() {
     $this->settings_mock
       ->expects($this->once())
       ->method('get')
