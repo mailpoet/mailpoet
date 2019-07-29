@@ -113,7 +113,6 @@ class Newsletters {
     $data['automatic_emails'] = [
       [
         'slug' => 'woocommerce',
-        'beta' => true,
         'premium' => true,
         'title' => $this->wp->__('WooCommerce', 'mailpoet'),
         'description' => $this->wp->__('Automatically send an email when there is a new WooCommerce product, order and some other action takes place.', 'mailpoet'),
