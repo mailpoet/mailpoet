@@ -115,7 +115,7 @@ class NewsletterTypes extends React.Component {
         slug: 'welcome',
         title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
         description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
-        videoGuide: 'https://beta.docs.mailpoet.com/article/254-video-guide-to-welcome-emails',
+        videoGuide: 'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
         action: (function action() {
           return (
             <a
@@ -141,7 +141,7 @@ class NewsletterTypes extends React.Component {
         slug: 'notification',
         title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
         description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
-        videoGuide: 'https://beta.docs.mailpoet.com/article/210-video-guide-to-post-notifications',
+        videoGuide: 'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
         action: (function action() {
           return (
             <a

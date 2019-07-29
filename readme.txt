@@ -52,7 +52,7 @@ Please note:
 
 * Not optimized for right-to-left (RTL) languages yet
 * Multisite is not supported
-* Review [our minimum requirements](http://beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3)
+* Review [our minimum requirements](https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3)
 
 = WooCommerce emails (Premium) =
 
@@ -79,7 +79,7 @@ The Premium version adds the following features:
 * Same day support (Monday to Friday)
 * Send to over 2,000 subscribers with your own sending method (host, SendGrid, Amazon SES)
 
-See the [short video summary on the Premium](http://beta.docs.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
+See the [short video summary on the Premium](https://kb.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
 
 = MailPoet Sending Service =
 **MailPoet Sending Service is free for your first 1,000 subscribers (pay as you go afterwards). [Read More](https://www.mailpoet.com/free-plan/)**

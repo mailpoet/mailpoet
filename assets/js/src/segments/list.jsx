@@ -145,7 +145,7 @@ const itemActions = [
     link: function link() {
       return (
         <a
-          href="http://docs.mailpoet.com/article/133-the-wordpress-users-list"
+          href="https://kb.mailpoet.com/article/133-the-wordpress-users-list"
           target="_blank"
           rel="noopener noreferrer"
         >
