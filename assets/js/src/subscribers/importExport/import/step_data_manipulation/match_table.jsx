@@ -30,7 +30,6 @@ function ColumnDataMatch({ header, subscribers }) {
   );
 }
 ColumnDataMatch.propTypes = {
-  header: PropTypes.arrayOf(PropTypes.string).isRequired,
   subscribers: PropTypes.arrayOf( // all subscribers
     PropTypes.arrayOf( // single subscribers
       PropTypes.oneOfType( // properties of a subscriber
@@ -38,6 +37,11 @@ ColumnDataMatch.propTypes = {
       )
     )
   ).isRequired,
+  header: PropTypes.arrayOf(PropTypes.string),
+};
+
+ColumnDataMatch.defaultProps = {
+  header: [],
 };
 
 function Header({ header }) {
@@ -132,7 +136,7 @@ function MatchTable({
           <ColumnDataMatch header={header} subscribers={subscribers} />
         </thead>
         <tbody>
-          <Header header={header} />
+          {header ? <Header header={header} /> : null}
           <Subscribers subscribers={subscribers} subscribersCount={subscribersCount} />
         </tbody>
       </table>
