@@ -19,6 +19,11 @@ class Scheduler {
   /** @var SettingsController */
   private $settings;
 
+  private $supported_types = [
+    Newsletter::TYPE_NOTIFICATION_HISTORY,
+    Newsletter::TYPE_STANDARD,
+  ];
+
   function __construct(SettingsController $settings) {
     $this->settings = $settings;
   }
@@ -47,7 +52,7 @@ class Scheduler {
     if ($this->isTaskScheduled($newsletter->id)) {
       return false;
     }
-    if (($newsletter->type !== Newsletter::TYPE_NOTIFICATION) && ($newsletter->type !== Newsletter::TYPE_STANDARD)) {
+    if (!in_array($newsletter->type, $this->supported_types)) {
       return false;
     }
     return true;

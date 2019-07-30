@@ -36,6 +36,16 @@ class SchedulerTest extends \MailPoetTest {
     expect($task)->isInstanceOf(ScheduledTask::class);
   }
 
+  function testShouldScheduleForNotificationHistory() {
+    $newsletter_id = 4;
+    $newsletter = Newsletter::createOrUpdate(['id' => $newsletter_id, 'type' => Newsletter::TYPE_NOTIFICATION_HISTORY]);
+    $this->stats_notifications->schedule($newsletter);
+    $notification = StatsNotification::where('newsletter_id', $newsletter_id)->findOne();
+    expect($notification)->isInstanceOf(StatsNotification::class);
+    $task = ScheduledTask::where('id', $notification->task_id)->findOne();
+    expect($task)->isInstanceOf(ScheduledTask::class);
+  }
+
   function testShouldNotScheduleIfTrackingIsDisabled() {
     $this->settings->set('tracking.enabled', false);
     $newsletter_id = 13;
