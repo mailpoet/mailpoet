@@ -24,33 +24,33 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
     $this->prefix = Env::$db_prefix;
   }
 
-  function getMetadataFor($className) {
-    $classMetadata = parent::getMetadataFor($className);
-    if (isset($this->prefixed_map[$classMetadata->getName()])) {
-      return $classMetadata;
+  function getMetadataFor($class_name) {
+    $class_metadata = parent::getMetadataFor($class_name);
+    if (isset($this->prefixed_map[$class_metadata->getName()])) {
+      return $class_metadata;
     }
 
     // prefix tables only after they are saved to cache so the prefix does not get included in cache
     // (getMetadataFor can call itself recursively but it saves to cache only after the recursive calls)
-    $is_cached = $this->getCacheDriver()->contains($classMetadata->getName() . $this->cacheSalt);
-    if ($classMetadata instanceof ClassMetadata && $is_cached) {
-      $this->addPrefix($classMetadata);
-      $this->prefixed_map[$classMetadata->getName()] = true;
+    $is_cached = $this->getCacheDriver()->contains($class_metadata->getName() . $this->cacheSalt);
+    if ($class_metadata instanceof ClassMetadata && $is_cached) {
+      $this->addPrefix($class_metadata);
+      $this->prefixed_map[$class_metadata->getName()] = true;
     }
-    return $classMetadata;
+    return $class_metadata;
   }
 
-  function addPrefix(ClassMetadata $classMetadata) {
-    if (!$classMetadata->isInheritanceTypeSingleTable() || $classMetadata->getName() === $classMetadata->rootEntityName) {
-      $classMetadata->setPrimaryTable([
-        'name' => $this->prefix . $classMetadata->getTableName(),
+  function addPrefix(ClassMetadata $class_metadata) {
+    if (!$class_metadata->isInheritanceTypeSingleTable() || $class_metadata->getName() === $class_metadata->rootEntityName) {
+      $class_metadata->setPrimaryTable([
+        'name' => $this->prefix . $class_metadata->getTableName(),
       ]);
     }
 
-    foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
-      if ($mapping['type'] == ClassMetadataInfo::MANY_TO_MANY && $mapping['isOwningSide']) {
-        $mappedTableName = $mapping['joinTable']['name'];
-        $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
+    foreach ($class_metadata->getAssociationMappings() as $field_name => $mapping) {
+      if ($mapping['type'] === ClassMetadataInfo::MANY_TO_MANY && $mapping['isOwningSide']) {
+        $mapped_table_name = $mapping['joinTable']['name'];
+        $class_metadata->associationMappings[$field_name]['joinTable']['name'] = $this->prefix . $mapped_table_name;
       }
     }
   }
