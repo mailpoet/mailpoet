@@ -26,7 +26,14 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
 
   function getMetadataFor($className) {
     $classMetadata = parent::getMetadataFor($className);
-    if ($classMetadata instanceof ClassMetadata && !isset($this->prefixed_map[$classMetadata->getName()])) {
+    if (isset($this->prefixed_map[$classMetadata->getName()])) {
+      return $classMetadata;
+    }
+
+    // prefix tables only after they are saved to cache so the prefix does not get included in cache
+    // (getMetadataFor can call itself recursively but it saves to cache only after the recursive calls)
+    $is_cached = $this->getCacheDriver()->contains($classMetadata->getName() . $this->cacheSalt);
+    if ($classMetadata instanceof ClassMetadata && $is_cached) {
       $this->addPrefix($classMetadata);
       $this->prefixed_map[$classMetadata->getName()] = true;
     }
