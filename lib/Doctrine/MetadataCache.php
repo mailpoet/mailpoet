@@ -18,11 +18,10 @@ class MetadataCache extends CacheProvider {
   }
 
   protected function doFetch($id) {
-    $filename = $this->getFilename($id);
-    if (!$this->doContains($filename)) {
+    if (!$this->doContains($id)) {
       return null;
     }
-    return unserialize(file_get_contents($filename));
+    return unserialize(file_get_contents($this->getFilename($id)));
   }
 
   protected function doContains($id) {
