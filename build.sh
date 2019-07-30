@@ -142,6 +142,8 @@ cp uninstall.php $plugin_name
 # Add index files if they don't exist to all folders
 echo '[BUILD] Adding index files to all project folders'
 find $plugin_name -type d -exec touch {}/index.php \;
+# Remove second index.php from Doctrine directory
+rm -f $plugin_name/vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/index.php
 
 # Zip final release.
 echo '[BUILD] Creating final release zip'
