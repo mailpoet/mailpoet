@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Cron;
 
+use MailPoet\Cron\Triggers\WordPress;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -14,13 +16,17 @@ class DaemonHttpRunner {
   /** @var Daemon */
   private $daemon;
 
+  /** @var SettingsController */
+  private $settings;
+
   const PING_SUCCESS_RESPONSE = 'pong';
 
-  function __construct(Daemon $daemon = null) {
+  function __construct(Daemon $daemon = null, SettingsController $settings) {
     $this->settings_daemon_data = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
     $this->timer = microtime(true);
     $this->daemon = $daemon;
+    $this->settings = $settings;
   }
 
   function ping() {
@@ -52,11 +58,20 @@ class DaemonHttpRunner {
     }
     $this->settings_daemon_data['token'] = $this->token;
     $this->daemon->run($this->settings_daemon_data);
-    // if workers took less time to execute than the daemon execution limit,
-    // pause daemon execution to ensure that daemon runs only once every X seconds
-    $elapsed_time = microtime(true) - $this->timer;
-    if ($elapsed_time < CronHelper::DAEMON_EXECUTION_LIMIT) {
-      $this->pauseExecution(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
+    // If we're using the WordPress trigger, check the conditions to stop cron if necessary
+    $enable_cron_self_deactivation = WPFunctions::get()->applyFilters('mailpoet_cron_enable_self_deactivation', false);
+    if ($enable_cron_self_deactivation
+      && $this->isCronTriggerMethodWordPress()
+      && !$this->checkWPTriggerExecutionRequirements()
+    ) {
+      $this->stopCron();
+    } else {
+      // if workers took less time to execute than the daemon execution limit,
+      // pause daemon execution to ensure that daemon runs only once every X seconds
+      $elapsed_time = microtime(true) - $this->timer;
+      if ($elapsed_time < CronHelper::DAEMON_EXECUTION_LIMIT) {
+        $this->pauseExecution(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
+      }
     }
     // after each execution, re-read daemon data in case it changed
     $settings_daemon_data = CronHelper::getDaemon();
@@ -82,6 +97,19 @@ class DaemonHttpRunner {
 
   function terminateRequest($message = false) {
     die($message);
+  }
+
+  function isCronTriggerMethodWordPress() {
+    $available_methods = CronTrigger::getAvailableMethods();
+    return $this->settings->get(CronTrigger::SETTING_NAME . '.method') === $available_methods['wordpress'];
+  }
+
+  function checkWPTriggerExecutionRequirements() {
+    return WordPress::checkExecutionRequirements();
+  }
+
+  function stopCron() {
+    return WordPress::stop();
   }
 
   /**
