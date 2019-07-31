@@ -45,6 +45,37 @@ class DoctrinePanel implements IBarPanel {
   }
 
   protected function formatSql($sql) {
+    // format SELECT queries a bit (wrap long select clauses, wrap lines on some keywords)
+    preg_match('/^(SELECT\s+)(.*?)(\s+FROM\s+)(.*?)$/iu', trim($sql), $matches);
+    if (count($matches) >= 5) {
+      // if SELECT clause over 50 chars, make it wrappable
+      $select_html = mb_strlen($matches[2]) > 50 ? ($matches[1] . '
+        <span class="tracy-toggle">...</span>
+        <div style="padding-left: 10px">' . $matches[2] . '</div>
+      ') : ($matches[1] . $matches[2]);
+      $from_keyword = $matches[3];
+      $rest = $matches[4];
+
+      // try to match & indent WHERE clause
+      $where_html = '';
+      preg_match('/^(.*)(\s+WHERE\s+)(.*?)$/iu', $rest, $matches);
+      if (count($matches) >= 4) {
+        $where_html = $matches[1] . '<br/>' . $matches[2];
+        $rest = $matches[3];
+      }
+
+      // try to match & indent ORDER BY/GROUP BY/LIMIT/OFFSET
+      $end_html = '';
+      preg_match('/^(.*?)(\s+(?:ORDER\s+BY|GROUP\s+BY|LIMIT|OFFSET)\s+)(.*)$/iu', $rest, $matches);
+      if (count($matches) >= 4) {
+        $end_html = $matches[1] . '<br/>' . $matches[2];
+        $rest = $matches[3];
+      }
+
+      $sql = $select_html . '<div></div>' . $from_keyword . $where_html . $end_html . $rest;
+    }
+
+    // highlight keywords
     $keywords = new MySQLKeywords();
     $tokens = preg_split('/(\s+)/', $sql, -1, PREG_SPLIT_DELIM_CAPTURE);
     $output = '';
