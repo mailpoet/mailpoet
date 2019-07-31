@@ -160,10 +160,10 @@ class Populator {
     $this->scheduleBeamer();
     $this->updateLastSubscribedAt();
     $this->enableStatsNotificationsForAutomatedEmails();
+
     $this->scheduleUnsubscribeTokens();
     $this->detectReferral();
-    // Will be uncommented on task [MAILPOET-1998]
-    // $this->updateFormsSuccessMessages();
+    $this->updateFormsSuccessMessages();
   }
 
   private function createMailPoetPage() {
