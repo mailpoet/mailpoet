@@ -4,6 +4,7 @@ namespace MailPoet\Tracy\DoctrinePanel;
 
 use MailPoetVendor\Doctrine\DBAL\Logging\DebugStack;
 use MailPoetVendor\Doctrine\DBAL\Configuration;
+use MailPoetVendor\Doctrine\DBAL\Platforms\Keywords\MySQLKeywords;
 use MailPoetVendor\Doctrine\ORM\EntityManagerInterface;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
@@ -41,6 +42,16 @@ class DoctrinePanel implements IBarPanel {
 
   static function init(EntityManagerInterface $entity_manager) {
     Debugger::getBar()->addPanel(new static($entity_manager->getConnection()->getConfiguration()));
+  }
+
+  protected function formatSql($sql) {
+    $keywords = new MySQLKeywords();
+    $tokens = preg_split('/(\s+)/', $sql, -1, PREG_SPLIT_DELIM_CAPTURE);
+    $output = '';
+    foreach ($tokens as $token) {
+      $output .= $keywords->isKeyword($token) ? ('<strong style="color:blue">' . $token . '</strong>') : $token;
+    }
+    return $output;
   }
 
   protected function formatArrayData($data) {
