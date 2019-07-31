@@ -81,7 +81,7 @@ class Settings {
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => $this->wp->wpGetCurrentUser(),
-      'linux_cron_path' => dirname(dirname(__DIR__)),
+      'linux_cron_path' => dirname(dirname(dirname(__DIR__))),
       'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
       'ABSPATH' => ABSPATH,
       'hosts' => [
