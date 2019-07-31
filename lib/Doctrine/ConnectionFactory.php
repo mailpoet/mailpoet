@@ -21,10 +21,13 @@ class ConnectionFactory {
       'platform' => new $platform_class,
       'user' => Env::$db_username,
       'password' => Env::$db_password,
-      'charset' => Env::$db_charset,
       'dbname' => Env::$db_name,
       'driverOptions' => $this->getDriverOptions(Env::$db_timezone_offset, Env::$db_charset, Env::$db_collation),
     ];
+
+    if (!empty(Env::$db_charset)) {
+      $connection_params['charset'] = Env::$db_charset;
+    }
 
     if (!empty(Env::$db_socket)) {
       $connection_params['unix_socket'] = Env::$db_socket;

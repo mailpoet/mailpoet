@@ -18,6 +18,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $this->env_backup['db_is_ipv6'] = Env::$db_is_ipv6;
     $this->env_backup['db_port'] = Env::$db_port;
     $this->env_backup['db_socket'] = Env::$db_socket;
+    $this->env_backup['db_charset'] = Env::$db_charset;
   }
 
   function testItSetsUpConnection() {
@@ -35,6 +36,13 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($connection->getPassword())->equals(Env::$db_password);
     expect($connection->getParams()['charset'])->equals(Env::$db_charset);
     expect($connection->getDatabase())->equals(Env::$db_name);
+  }
+
+  function testItIgnoresEmptyCharset() {
+    Env::$db_charset = '';
+    $connection_factory = new ConnectionFactory();
+    $connection = $connection_factory->createConnection();
+    expect($connection->getParams())->hasntKey('charset');
   }
 
   function testItSetsUpSocket() {
@@ -121,5 +129,6 @@ class ConnectionFactoryTest extends \MailPoetTest {
     Env::$db_port = $this->env_backup['db_port'];
     Env::$db_is_ipv6 = $this->env_backup['db_is_ipv6'];
     Env::$db_socket = $this->env_backup['db_socket'];
+    Env::$db_charset = $this->env_backup['db_charset'];
   }
 }
