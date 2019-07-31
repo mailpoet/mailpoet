@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 
 class EditSignUpConfirmationEmailCest {
@@ -12,8 +13,9 @@ class EditSignUpConfirmationEmailCest {
 
     // make sure sign up confirmation is enabled
     $settings = new Settings();
-    $settings
-      ->withConfirmationEmailEnabled();
+    $settings->withConfirmationEmailEnabled();
+    $forms = new Form();
+    $forms->withDefaultSuccessMessage();
 
     $I->login();
     $I->amOnMailPoetPage('Settings');

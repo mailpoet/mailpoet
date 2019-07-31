@@ -85,6 +85,24 @@ class SubscriptionFormCest {
     $I->see('Subscribed', Locator::contains('tr', $this->subscriber_email));
   }
 
+  function subscriptionAfterDisablingConfirmation(\AcceptanceTester $I) {
+    $I->wantTo('Disable sign-up confirmation then subscribe and see a different message');
+    $I->login();
+    $I->amOnMailPoetPage('Settings');
+    $I->click('[data-automation-id="signup_settings_tab"]');
+    $I->waitForText('Enable sign-up confirmation');
+    $I->click('[data-automation-id="disable_signup_confirmation"]');
+    $I->acceptPopup();
+    $I->click('[data-automation-id="settings-submit-button"]');
+    $I->waitForText('Settings saved');
+    $I->amOnPage('/form-test');
+    $I->switchToIframe('mailpoet_form_iframe');
+    $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
+    $I->click('.mailpoet_submit');
+    $I->waitForText("You’ve been successfully subscribed to our newsletter!", self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+    $I->seeNoJSErrors();
+  }
+
   function _after(\AcceptanceTester $I) {
     $I->cli('db query "TRUNCATE TABLE mp_mailpoet_subscriber_ips" --allow-root');
   }

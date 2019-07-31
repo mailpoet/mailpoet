@@ -48,5 +48,6 @@ class EnableAndDisableSignupConfirmationCest {
     $I->click($choice_selector);
     $I->acceptPopup();
     $I->click('[data-automation-id="settings-submit-button"]');
+    $I->waitForText('Settings saved');
   }
 }
