@@ -56,8 +56,7 @@ class Settings extends APIEndpoint {
         ]);
     } else {
       $old_settings = $this->settings->getAll();
-      // Will be uncommented on task [MAILPOET-1998]
-      // $signup_confirmation = $this->settings->get('signup_confirmation.enabled');
+      $signup_confirmation = $this->settings->get('signup_confirmation.enabled');
       foreach ($settings as $name => $value) {
         $this->settings->set($name, $value);
       }
@@ -66,10 +65,9 @@ class Settings extends APIEndpoint {
 
       $this->bridge->onSettingsSave($settings);
       $this->authorized_emails_controller->onSettingsSave($settings);
-      // Will be uncommented on task [MAILPOET-1998]
-      // if ($signup_confirmation !== $this->settings->get('signup_confirmation.enabled')) {
-      //   Form::updateSuccessMessages();
-      // }
+      if ($signup_confirmation !== $this->settings->get('signup_confirmation.enabled')) {
+        Form::updateSuccessMessages();
+      }
       return $this->successResponse($this->settings->getAll());
     }
   }
