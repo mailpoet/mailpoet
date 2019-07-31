@@ -51,7 +51,7 @@ class CampaignStatsPage extends React.Component {
       });
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(error => error.message),
+        response.errors.map((error) => error.message),
         { scroll: true }
       );
       this.setState({

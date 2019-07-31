@@ -23,7 +23,7 @@ class FeatureAnnouncement extends React.Component {
     const updateMailPoetNotice = ReactStringReplace(
       MailPoet.I18n.t('updateMailPoetNotice'),
       /\[link\](.*?)\[\/link\]/,
-      match => `<a href="update-core.php">${match}</a>`
+      (match) => `<a href="update-core.php">${match}</a>`
     ).join('');
     jQuery('#beamerOverlay').append(
       `<p id="mailpoet_update_notice" class="mailpoet_in_beamer_update_notice">${updateMailPoetNotice}</p>`

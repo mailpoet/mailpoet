@@ -6,9 +6,9 @@ import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 
-const isWPUsersSegment = segment => segment.type === 'wp_users';
-const isWooCommerceCustomersSegment = segment => segment.type === 'woocommerce_users';
-const isSpecialSegment = segmt => isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
+const isWPUsersSegment = (segment) => segment.type === 'wp_users';
+const isWooCommerceCustomersSegment = (segment) => segment.type === 'woocommerce_users';
+const isSpecialSegment = (segmt) => isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
 
 const columns = [
   {
@@ -132,7 +132,7 @@ const itemActions = [
       refresh();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(error => error.message),
+        response.errors.map((error) => error.message),
         { scroll: true }
       );
     }),
@@ -179,7 +179,7 @@ const itemActions = [
         MailPoet.Modal.loading(false);
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(error => error.message),
+            response.errors.map((error) => error.message),
             { scroll: true }
           );
         }

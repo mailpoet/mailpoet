@@ -65,7 +65,7 @@ const useNpsPoll = () => {
   return null;
 };
 
-const withNpsPoll = Component => (props) => {
+const withNpsPoll = (Component) => (props) => {
   useNpsPoll();
   return <Component {...props} />;
 };

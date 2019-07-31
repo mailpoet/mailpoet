@@ -21,7 +21,7 @@ export const fromDom = async (element) => {
  * @param  {String}        url
  * @return {Promise<String>} DataURL of the generated image.
  */
-export const fromUrl = url => new Promise((resolve, reject) => {
+export const fromUrl = (url) => new Promise((resolve, reject) => {
   const iframe = document.createElement('iframe');
   const protocol = document.location.href.startsWith('https://') ? 'https:' : 'http:';
   iframe.src = protocol + url.replace(/^https?:/, '');
@@ -59,7 +59,7 @@ export const fromUrl = url => new Promise((resolve, reject) => {
  * @param  {Object}        data
  * @return {Promise<String>} DataURL of the generated image.
  */
-export const fromNewsletter = data => new Promise((resolve, reject) => {
+export const fromNewsletter = (data) => new Promise((resolve, reject) => {
   const json = data;
   if (!_.isUndefined(json.body)) {
     json.body = JSON.stringify(json.body);
@@ -69,7 +69,7 @@ export const fromNewsletter = data => new Promise((resolve, reject) => {
     endpoint: 'newsletters',
     action: 'showPreview',
     data: json,
-  }).done(response => fromUrl(response.meta.preview_url)
+  }).done((response) => fromUrl(response.meta.preview_url)
     .then(resolve)
-    .catch(reject)).fail(response => reject(response.errors));
+    .catch(reject)).fail((response) => reject(response.errors));
 });

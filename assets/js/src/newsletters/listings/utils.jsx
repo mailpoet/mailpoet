@@ -57,7 +57,7 @@ export const checkCronStatus = (state) => {
   const cronPingCheckNotice = ReactStringReplace(
     MailPoet.I18n.t('cronNotAccessibleNotice'),
     /\[link\](.*?)\[\/link\]/g,
-    match => (
+    (match) => (
       <a
         href="https://kb.mailpoet.com/article/231-sending-does-not-work"
         target="_blank"

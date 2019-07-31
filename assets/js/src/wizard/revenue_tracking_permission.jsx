@@ -10,7 +10,7 @@ function RevenueTrackingPermission() {
     MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
   };
 
-  const updateSettings = data => MailPoet.Ajax.post({
+  const updateSettings = (data) => MailPoet.Ajax.post({
     api_version: window.mailpoet_api_version,
     endpoint: 'settings',
     action: 'set',

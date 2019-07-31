@@ -66,7 +66,7 @@ export default (subscribersToImport, segments, updateExistingSubscribers, onImpo
         MailPoet.Modal.loading(false);
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(error => error.message),
+            response.errors.map((error) => error.message),
             { scroll: true }
           );
         }
@@ -89,9 +89,9 @@ export default (subscribersToImport, segments, updateExistingSubscribers, onImpo
       importResult.segments = _.map(
         _.filter(
           importResult.segments,
-          segment => segments.includes(segment.id)
+          (segment) => segments.includes(segment.id)
         ),
-        data => data.name
+        (data) => data.name
       );
       onImportComplete(importResult);
     }

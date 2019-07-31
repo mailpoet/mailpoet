@@ -47,13 +47,13 @@ const QueueStatus = (props) => {
         ]}
       />
       <h4>{MailPoet.I18n.t('scheduledTasks')}</h4>
-      <TasksList show_scheduled_at tasks={status.latestTasks.filter(task => (task.status === 'scheduled'))} />
+      <TasksList show_scheduled_at tasks={status.latestTasks.filter((task) => (task.status === 'scheduled'))} />
 
       <h4>{MailPoet.I18n.t('runningTasks')}</h4>
-      <TasksList tasks={status.latestTasks.filter(task => (task.status === null))} />
+      <TasksList tasks={status.latestTasks.filter((task) => (task.status === null))} />
 
       <h4>{MailPoet.I18n.t('completedTasks')}</h4>
-      <TasksList tasks={status.latestTasks.filter(task => (task.status === 'completed'))} />
+      <TasksList tasks={status.latestTasks.filter((task) => (task.status === 'completed'))} />
     </div>
   );
 };

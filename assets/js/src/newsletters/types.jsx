@@ -74,7 +74,7 @@ class NewsletterTypes extends React.Component {
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }
@@ -175,7 +175,7 @@ class NewsletterTypes extends React.Component {
         <Breadcrumb step="type" />
 
         <ul className="mailpoet_boxes mailpoet_boxes_types">
-          {types.map(type => (
+          {types.map((type) => (
             <li key={type.slug} data-type={type.slug} className="mailpoet_newsletter_types">
               <div className="mailpoet_thumbnail">
                 {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}

@@ -29,7 +29,7 @@ function RevenueTrackingPermissionStep({ submitForm, loading }) {
             type="radio"
             name="import_type"
             checked={allowed === 'true'}
-            onChange={e => setAllowed(e.target.value)}
+            onChange={(e) => setAllowed(e.target.value)}
             value="true"
           />
           {MailPoet.I18n.t('revenueTrackingAllow')}
@@ -40,7 +40,7 @@ function RevenueTrackingPermissionStep({ submitForm, loading }) {
             type="radio"
             name="import_type"
             checked={allowed === 'false'}
-            onChange={e => setAllowed(e.target.value)}
+            onChange={(e) => setAllowed(e.target.value)}
             value="false"
           />
           {MailPoet.I18n.t('revenueTrackingDontAllow')}

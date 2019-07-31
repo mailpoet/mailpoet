@@ -14,7 +14,7 @@ const resumeMailerSending = () => {
   }).fail((response) => {
     if (response.errors.length > 0) {
       MailPoet.Notice.error(
-        response.errors.map(error => error.message),
+        response.errors.map((error) => error.message),
         { scroll: true }
       );
     }
@@ -132,7 +132,7 @@ const MailerCheckSettingsNotice = () => (
       ReactStringReplace(
         MailPoet.I18n.t('mailerCheckSettingsNotice'),
         /\[link\](.*?)\[\/link\]/g,
-        match => <a href="?page=mailpoet-settings#mta" key="check-sending">{ match }</a>
+        (match) => <a href="?page=mailpoet-settings#mta" key="check-sending">{ match }</a>
       )
     }
   </p>

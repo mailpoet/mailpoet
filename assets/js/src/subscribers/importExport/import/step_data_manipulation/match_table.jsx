@@ -48,7 +48,7 @@ function Header({ header }) {
   return (
     <tr className="mailpoet_header">
       <td />
-      {header.map(headerName => <td key={headerName}>{headerName}</td>)}
+      {header.map((headerName) => <td key={headerName}>{headerName}</td>)}
     </tr>
   );
 }

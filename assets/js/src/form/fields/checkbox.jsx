@@ -22,7 +22,7 @@ class FormFieldCheckbox extends React.Component {
     // it will be false in case value is "0" or empty
     const isChecked = !!(Number(this.props.item[this.props.field.name]));
     const options = Object.keys(this.props.field.values).map(
-      value => (
+      (value) => (
         <p key={`checkbox-${value}`}>
           <label htmlFor={this.props.field.name}>
             <input

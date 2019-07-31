@@ -30,7 +30,7 @@ const messages = {
   },
 };
 
-const SegmentForm = props => (
+const SegmentForm = (props) => (
   <div>
     <h1 className="title">
       {MailPoet.I18n.t('segment')}

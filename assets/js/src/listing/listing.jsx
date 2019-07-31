@@ -123,7 +123,7 @@ class Listing extends React.Component {
   setParams = () => {
     if (this.props.location) {
       const params = Object.keys(this.state)
-        .filter(key => (
+        .filter((key) => (
           [
             'group',
             'filter',
@@ -248,7 +248,7 @@ class Listing extends React.Component {
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }
@@ -324,7 +324,7 @@ class Listing extends React.Component {
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(error => error.message),
+        response.errors.map((error) => error.message),
         { scroll: true }
       );
     });
@@ -353,7 +353,7 @@ class Listing extends React.Component {
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(error => error.message),
+        response.errors.map((error) => error.message),
         { scroll: true }
       );
     });
@@ -382,7 +382,7 @@ class Listing extends React.Component {
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(error => error.message),
+        response.errors.map((error) => error.message),
         { scroll: true }
       );
     });
@@ -402,7 +402,7 @@ class Listing extends React.Component {
     this.handleGroup('all');
   }).fail((response) => {
     MailPoet.Notice.error(
-      response.errors.map(error => error.message),
+      response.errors.map((error) => error.message),
       { scroll: true }
     );
   });
@@ -441,7 +441,7 @@ class Listing extends React.Component {
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }
@@ -497,7 +497,7 @@ class Listing extends React.Component {
       this.clearSelection();
     } else {
       this.setState((prevState) => {
-        const selectedIds = prevState.items.map(item => Number(item.id));
+        const selectedIds = prevState.items.map((item) => Number(item.id));
 
         return {
           selected_ids: selectedIds,
@@ -575,7 +575,7 @@ class Listing extends React.Component {
     // columns
     let columns = this.props.columns || [];
     columns = columns.filter(
-      column => (column.display === undefined || !!(column.display) === true)
+      (column) => (column.display === undefined || !!(column.display) === true)
     );
 
     // bulk actions

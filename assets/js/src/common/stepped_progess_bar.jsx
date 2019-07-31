@@ -8,7 +8,7 @@ const SteppedProgressBar = (props) => {
   return (
     <div className="mailpoet_stepped_progress_bar">
       {
-        [...Array(props.steps_count).keys()].map(step => (
+        [...Array(props.steps_count).keys()].map((step) => (
           <div
             className={`
               mailpoet_stepped_progress_bar_step ${(step < props.step ? 'active' : '')} ${(step === (props.step - 1) ? 'current' : '')}

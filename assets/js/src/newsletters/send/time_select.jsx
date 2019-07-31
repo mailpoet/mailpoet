@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 class TimeSelect extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
     const options = Object.keys(this.props.timeOfDayItems).map(
-      value => (
+      (value) => (
         <option
           key={`option-${this.props.timeOfDayItems[value]}`}
           value={value}

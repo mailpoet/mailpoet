@@ -19,7 +19,7 @@ class ListingFilters extends React.Component {
 
   getAvailableFilters = () => {
     const filters = this.props.filters;
-    return Object.keys(filters).filter(filter => !(
+    return Object.keys(filters).filter((filter) => !(
       filters[filter].length === 0
         || (
           filters[filter].length === 1
@@ -50,7 +50,7 @@ class ListingFilters extends React.Component {
           key={`filter-${filter}`}
           name={filter}
         >
-          { filters[filter].map(option => (
+          { filters[filter].map((option) => (
             <option
               value={option.value}
               key={`filter-option-${option.value}`}

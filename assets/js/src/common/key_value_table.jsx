@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const KeyValueTable = props => (
+const KeyValueTable = (props) => (
   <table className="widefat fixed" style={{ maxWidth: props.max_width }}>
     <tbody>
-      {props.rows.map(row => (
+      {props.rows.map((row) => (
         <tr key={`row_${row.key}`}>
           <td className="row-title">{ row.key }</td>
           <td>{ row.value }</td>

@@ -175,7 +175,7 @@ class Form extends React.Component {
   render() {
     let errors;
     if (this.getErrors() !== undefined) {
-      errors = this.getErrors().map(error => (
+      errors = this.getErrors().map((error) => (
         <div className="mailpoet_notice notice inline error is-dismissible" key={`error-${error.message}`}>
           <p>{ error.message }</p>
         </div>

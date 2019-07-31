@@ -58,8 +58,8 @@ const fields = [
       }
 
       return subscriber.subscriptions
-        .filter(subscription => subscription.status === 'subscribed')
-        .map(subscription => subscription.segment_id);
+        .filter((subscription) => subscription.status === 'subscribed')
+        .map((subscription) => subscription.segment_id);
     },
     filter: function filter(segment) {
       return (!segment.deleted_at && segment.type === 'default');

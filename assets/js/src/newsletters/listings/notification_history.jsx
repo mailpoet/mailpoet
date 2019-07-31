@@ -74,7 +74,7 @@ class NewsletterListNotificationHistory extends React.Component {
       'has-row-actions'
     );
 
-    const segments = newsletter.segments.map(segment => segment.name).join(', ');
+    const segments = newsletter.segments.map((segment) => segment.name).join(', ');
 
     return (
       <div>

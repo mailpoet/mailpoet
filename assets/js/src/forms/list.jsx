@@ -111,7 +111,7 @@ const itemActions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(error => error.message),
+            response.errors.map((error) => error.message),
             { scroll: true }
           );
         }
@@ -134,7 +134,7 @@ class FormList extends React.Component {
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }
@@ -149,8 +149,8 @@ class FormList extends React.Component {
     );
 
     let segments = window.mailpoet_segments
-      .filter(segment => (jQuery.inArray(segment.id, form.segments) !== -1))
-      .map(segment => segment.name)
+      .filter((segment) => (jQuery.inArray(segment.id, form.segments) !== -1))
+      .map((segment) => segment.name)
       .join(', ');
 
     if (form.settings.segments_selected_by === 'user') {

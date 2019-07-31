@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import SteppedProgressBar from '../../common/stepped_progess_bar.jsx';
 
-const WelcomeWizardStepLayout = props => (
+const WelcomeWizardStepLayout = (props) => (
   <>
     <div className="mailpoet_welcome_wizard_header">
       <img src={window.mailpoet_logo_url} width="200" height="87" alt="MailPoet logo" />

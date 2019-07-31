@@ -15,7 +15,7 @@ function renderStatusMessage(status, error, link) {
     noticeMessage = ReactStringReplace(
       noticeMessage,
       /\[link\](.*?)\[\/link\]/g,
-      match => (
+      (match) => (
         <a href={`${link}`} key="kb-link">{ match }</a>
       )
     );

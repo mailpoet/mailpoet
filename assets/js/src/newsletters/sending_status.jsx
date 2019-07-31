@@ -39,8 +39,8 @@ const SendingStatus = (props) => {
         id: newsletterId,
       },
     })
-      .done(res => setNewsletterSubject(res.data.subject))
-      .fail(res => MailPoet.Notice.showApiErrorNotice(res));
+      .done((res) => setNewsletterSubject(res.data.subject))
+      .fail((res) => MailPoet.Notice.showApiErrorNotice(res));
   }, [newsletterId]);
 
   return (
@@ -77,8 +77,8 @@ const SendingStatusListing = React.memo(({ location, params }) => (
     params={params}
     endpoint="sending_task_subscribers"
     base_url="sending-status/:id"
-    onRenderItem={item => <div><ListingItem {...item} /></div>}
-    getListingItemKey={item => `${item.taskId}-${item.subscriberId}`}
+    onRenderItem={(item) => <div><ListingItem {...item} /></div>}
+    getListingItemKey={(item) => `${item.taskId}-${item.subscriberId}`}
     columns={columns}
     messages={messages}
     auto_refresh
@@ -123,7 +123,7 @@ const ListingItem = ({
       data: { taskId, subscriberId },
     })
       .done(() => window.mailpoet_listing.forceUpdate())
-      .fail(res => MailPoet.Notice.showApiErrorNotice(res));
+      .fail((res) => MailPoet.Notice.showApiErrorNotice(res));
   };
 
   const rowClasses = classNames(

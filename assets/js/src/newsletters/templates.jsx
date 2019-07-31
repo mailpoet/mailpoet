@@ -9,7 +9,7 @@ import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 
-const getEditorUrl = id => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
+const getEditorUrl = (id) => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
 
 const templatesCategories = [
   {
@@ -88,7 +88,7 @@ class NewsletterTemplates extends React.Component {
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }
@@ -98,12 +98,12 @@ class NewsletterTemplates extends React.Component {
   }
 
   addTemplate(template) {
-    const categoriesNames = templatesCategories.map(category => category.name);
+    const categoriesNames = templatesCategories.map((category) => category.name);
     let categories;
 
     try {
       categories = JSON.parse(template.categories)
-        .filter(name => categoriesNames.indexOf(name) !== -1);
+        .filter((name) => categoriesNames.indexOf(name) !== -1);
     } catch (err) {
       categories = [];
     }
@@ -156,7 +156,7 @@ class NewsletterTemplates extends React.Component {
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }
@@ -173,7 +173,9 @@ class NewsletterTemplates extends React.Component {
   afterTemplateDelete(success, id) {
     if (success) {
       Object.keys(this.templates).forEach((category) => {
-        this.templates[category] = this.templates[category].filter(template => template.id !== id);
+        this.templates[category] = this.templates[category].filter(
+          (template) => template.id !== id
+        );
       });
     }
     this.setState({
@@ -259,7 +261,7 @@ class NewsletterTemplates extends React.Component {
         <Tabs
           tabs={tabs}
           selected={this.state.selectedTab}
-          select={name => this.setState({ selectedTab: name })}
+          select={(name) => this.setState({ selectedTab: name })}
         />
 
         {content}

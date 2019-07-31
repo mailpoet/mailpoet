@@ -3,7 +3,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 
-const WelcomeWizardSenderStep = props => (
+const WelcomeWizardSenderStep = (props) => (
   <div className="mailpoet_welcome_wizard_step_content">
     <h1>{MailPoet.I18n.t('welcomeWizardLetsStartTitle')}</h1>
     <p>{MailPoet.I18n.t('welcomeWizardSenderText')}</p>
@@ -25,7 +25,7 @@ const WelcomeWizardSenderStep = props => (
           placeholder="John Doe"
           value={props.sender ? props.sender.name : ''}
           data-parsley-required
-          onChange={e => props.update_sender({ name: e.target.value })}
+          onChange={(e) => props.update_sender({ name: e.target.value })}
         />
       </label>
       <label htmlFor="senderAddress">
@@ -38,7 +38,7 @@ const WelcomeWizardSenderStep = props => (
           value={props.sender ? props.sender.address : ''}
           data-parsley-required
           data-parsley-type="email"
-          onChange={e => props.update_sender({ address: e.target.value })}
+          onChange={(e) => props.update_sender({ address: e.target.value })}
         />
       </label>
       <div className="mailpoet_welcome_wizard_step_controls">
