@@ -190,7 +190,7 @@ class Populator {
         'confirmation' => $mailpoet_page_id,
         'captcha' => $mailpoet_page_id,
       ]);
-    } elseif (empty($subscription['captcha'])) {
+    } elseif (empty($subscription['captcha']) || $subscription['captcha'] !== $mailpoet_page_id) {
       // For existing installations
       $this->settings->set('subscription.pages', array_merge($subscription, ['captcha' => $mailpoet_page_id]));
     }
