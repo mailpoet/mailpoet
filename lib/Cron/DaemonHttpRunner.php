@@ -4,6 +4,7 @@ namespace MailPoet\Cron;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use Tracy\Debugger;
 
 if (!defined('ABSPATH')) exit;
 
@@ -30,6 +31,12 @@ class DaemonHttpRunner {
   }
 
   function ping() {
+    // if Tracy enabled & called by 'MailPoet Cron' user agent, disable Tracy Bar
+    // (happens in CronHelperTest because it's not a real integration test - calls other WP instance)
+    $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
+    if (class_exists(Debugger::class) && $user_agent === 'MailPoet Cron') {
+      Debugger::$showBar = false;
+    }
     $this->addCacheHeaders();
     $this->terminateRequest(self::PING_SUCCESS_RESPONSE);
   }

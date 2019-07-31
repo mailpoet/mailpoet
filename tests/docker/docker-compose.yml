@@ -42,6 +42,8 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
+      MAILPOET_DISABLE_TRACY_BAR: 1
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 1m30s
