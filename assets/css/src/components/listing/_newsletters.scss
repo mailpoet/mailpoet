@@ -15,27 +15,25 @@ $video-guide-badge-color: #46b450;
   font-weight: 600;
 }
 
-.mailpoet_stat {
-  &_excellent {
-    color: $excellent-badge-color;
-  }
+.mailpoet_stat_excellent {
+  color: $excellent-badge-color;
+}
 
-  &_good {
-    color: $good-badge-color;
-  }
+.mailpoet_stat_good {
+  color: $good-badge-color;
+}
 
-  &_bad {
-    color: $bad-badge-color;
-  }
+.mailpoet_stat_bad {
+  color: $bad-badge-color;
+}
 
-  &_hidden {
-    display: none;
-  }
+.mailpoet_stat_hidden {
+  display: none;
+}
 
-  &_link_small {
-    font-size: .75rem;
-    text-decoration: underline !important;
-  }
+.mailpoet_stat_link_small {
+  font-size: .75rem;
+  text-decoration: underline !important;
 }
 
 .mailpoet_badge {
@@ -49,48 +47,48 @@ $video-guide-badge-color: #46b450;
   padding: 4px 6px 3px;
   text-transform: uppercase;
   vertical-align: middle;
+}
 
-  &_excellent,
-  &_teal {
-    background: $excellent-badge-color;
-  }
+.mailpoet_badge_excellent,
+.mailpoet_badge_teal {
+  background: $excellent-badge-color;
+}
 
-  &_good,
-  &_yellow {
-    background: $good-badge-color;
-  }
+.mailpoet_badge_good,
+.mailpoet_badge_yellow {
+  background: $good-badge-color;
+}
 
-  &_bad,
-  &_red {
-    background: $bad-badge-color;
-  }
+.mailpoet_badge_bad,
+.mailpoet_badge_red {
+  background: $bad-badge-color;
+}
 
-  &_green {
+.mailpoet_badge_green {
+  background: $green-badge-color;
+}
+
+.mailpoet_badge_video {
+  background: $video-guide-badge-color;
+  display: inline-block;
+  line-height: 20px;
+  padding: 3px 6px;
+  text-decoration: none;
+  vertical-align: top;
+
+  &:hover,
+  &:active,
+  &:focus {
     background: $green-badge-color;
+    color: #fff;
   }
 
-  &_video {
-    background: $video-guide-badge-color;
-    display: inline-block;
+  .dashicons {
+    font-size: 14px;
     line-height: 20px;
-    padding: 3px 6px;
-    text-decoration: none;
-    vertical-align: top;
-
-    &:hover,
-    &:active,
-    &:focus {
-      background: $green-badge-color;
-      color: #fff;
-    }
-
-    &_grey {
-      background: #c3c3c3;
-    }
-
-    .dashicons {
-      font-size: 14px;
-      line-height: 20px;
-    }
   }
+}
+
+.mailpoet_badge_video_grey {
+  background: #c3c3c3;
 }
