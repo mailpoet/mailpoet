@@ -149,6 +149,7 @@ $column-icon-size-with-padding: 27px;
   line-height: 24px;
   vertical-align: top;
   white-space: nowrap;
+
   @include animation-background-color();
 
   .mailpoet_tool {
@@ -159,6 +160,7 @@ $column-icon-size-with-padding: 27px;
     display: inline-block;
     max-width: $content-icon-size-with-padding;
     opacity: 1;
+
     @include animation-fade-in-and-scale-horizontally();
   }
 
@@ -169,6 +171,7 @@ $column-icon-size-with-padding: 27px;
     max-width: 0;
     opacity: 0;
     overflow: hidden;
+
     @include animation-fade-in-and-scale-horizontally();
   }
 }
