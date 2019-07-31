@@ -132,7 +132,7 @@ let newsletterActions = [
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }
@@ -246,7 +246,7 @@ class NewsletterListWelcome extends React.Component {
         // get segment
         segment = _.find(
           mailpoetSegments,
-          seg => (Number(seg.id) === Number(newsletter.options.segment))
+          (seg) => (Number(seg.id) === Number(newsletter.options.segment))
         );
 
         if (segment === undefined) {

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-const WelcomeWizardMigratedUserStep = props => (
+const WelcomeWizardMigratedUserStep = (props) => (
   <div className="mailpoet_welcome_wizard_step_content">
     <h1>{MailPoet.I18n.t('welcomeWizardLetsStartTitle')}</h1>
     <p>{MailPoet.I18n.t('welcomeWizardSenderMigratedUserText')}</p>

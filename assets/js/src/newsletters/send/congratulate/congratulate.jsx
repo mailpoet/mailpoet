@@ -107,7 +107,7 @@ class Congratulate extends React.Component {
         id,
       },
     })
-      .done(response => this.newsletterLoaded(response.data));
+      .done((response) => this.newsletterLoaded(response.data));
   }
 
   newsletterLoaded(newsletter) {

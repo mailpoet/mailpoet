@@ -19,7 +19,7 @@ const renderBreadcrumb = (newsletterType) => {
 
 const initializeEditor = (config) => {
   const editorContainer = document.getElementById('mailpoet_editor');
-  const getUrlParam = param => (document.location.search.split(`${param}=`)[1] || '').split('&')[0];
+  const getUrlParam = (param) => (document.location.search.split(`${param}=`)[1] || '').split('&')[0];
 
   if (!editorContainer || !window.EditorApplication) return;
 
@@ -65,7 +65,7 @@ const initializeEditor = (config) => {
           .fail((pauseFailResponse) => {
             if (pauseFailResponse.errors.length > 0) {
               MailPoet.Notice.error(
-                pauseFailResponse.errors.map(error => error.message),
+                pauseFailResponse.errors.map((error) => error.message),
                 { scroll: true, static: true }
               );
             }
@@ -75,7 +75,7 @@ const initializeEditor = (config) => {
     .fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true, static: true }
         );
       }

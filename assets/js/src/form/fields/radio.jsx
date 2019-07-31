@@ -9,7 +9,7 @@ class FormFieldRadio extends React.Component { // eslint-disable-line react/pref
 
     const selectedValue = this.props.item[this.props.field.name];
     const options = Object.keys(this.props.field.values).map(
-      value => (
+      (value) => (
         <p key={`radio-${value}`}>
           <label htmlFor={this.props.field.name}>
             <input

@@ -23,7 +23,7 @@ const ImportSubscribers = () => {
         <Switch>
           <Route
             path="/step_method_selection"
-            render={props => (
+            render={(props) => (
               <StepMethodSelection
                 {...props}
                 setStepMethodSelectionData={setStepMethodSelectionData}
@@ -33,7 +33,7 @@ const ImportSubscribers = () => {
           />
           <Route
             path="/step_input_validation"
-            render={props => (
+            render={(props) => (
               <StepInputValidation
                 {...props}
                 stepMethodSelectionData={stepMethodSelectionData}
@@ -42,7 +42,7 @@ const ImportSubscribers = () => {
           />
           <Route
             path="/step_data_manipulation"
-            render={props => (
+            render={(props) => (
               <StepDataManipulation
                 {...props}
                 stepMethodSelectionData={stepMethodSelectionData}
@@ -53,7 +53,7 @@ const ImportSubscribers = () => {
           />
           <Route
             path="/step_results"
-            render={props => (
+            render={(props) => (
               <StepResults
                 {...props}
                 errors={stepDataManipulationData.errors}

@@ -17,7 +17,7 @@ export default (subscribers, header) => {
         columnId = 'email';
       } else if (header) {
         headerName = header[i];
-        headerNameMatch = window.mailpoetColumns.map(el => el.name).indexOf(headerName);
+        headerNameMatch = window.mailpoetColumns.map((el) => el.name).indexOf(headerName);
         // set column type using header
         if (headerNameMatch !== -1) {
           columnId = window.mailpoetColumns[headerNameMatch].id;

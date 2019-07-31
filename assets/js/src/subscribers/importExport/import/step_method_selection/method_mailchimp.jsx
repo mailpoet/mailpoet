@@ -30,11 +30,11 @@ const MethodMailChimp = ({ onFinish }) => {
       .always(() => {
         MailPoet.Modal.loading(false);
       })
-      .done(response => setMailChimpLoadedLists(response.data))
+      .done((response) => setMailChimpLoadedLists(response.data))
       .fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(error => error.message),
+            response.errors.map((error) => error.message),
             { scroll: true }
           );
         }
@@ -55,11 +55,11 @@ const MethodMailChimp = ({ onFinish }) => {
       .always(() => {
         MailPoet.Modal.loading(false);
       })
-      .done(response => onFinish(response.data))
+      .done((response) => onFinish(response.data))
       .fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(error => error.message),
+            response.errors.map((error) => error.message),
             { scroll: true }
           );
         }
@@ -80,7 +80,7 @@ const MethodMailChimp = ({ onFinish }) => {
             forceSelect2: true,
             values: mailChimpLoadedLists,
           }}
-          onValueChange={e => setSelectedLists(e.target.value)}
+          onValueChange={(e) => setSelectedLists(e.target.value)}
         />
       </div>
     );

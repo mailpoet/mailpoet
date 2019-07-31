@@ -28,7 +28,7 @@ const MethodUpload = ({ onValueChange, canFinish, onFinish }) => {
               {ReactStringReplace(
                 MailPoet.I18n.t('pasteDescription'),
                 /\[link\](.*?)\[\/link\]/,
-                match => (
+                (match) => (
                   <a
                     href={`${kbLink}`}
                     key="kb-link"

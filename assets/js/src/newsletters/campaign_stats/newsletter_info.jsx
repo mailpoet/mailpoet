@@ -24,7 +24,7 @@ function NewsletterStatsInfo(props) {
     newsletter.reply_to_name || ''
   );
 
-  const segments = (newsletter.segments || []).map(segment => segment.name).join(', ');
+  const segments = (newsletter.segments || []).map((segment) => segment.name).join(', ');
 
   return (
     <div>

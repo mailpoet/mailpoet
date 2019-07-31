@@ -31,7 +31,7 @@ class ListingItem extends React.Component {
   };
 
   handleToggleItem = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       expanded: !prevState.expanded,
     }));
   };
@@ -67,7 +67,7 @@ class ListingItem extends React.Component {
     if (customActions.length > 0) {
       let isFirst = true;
       itemActions = customActions
-        .filter(action => action.display === undefined || action.display(this.props.item))
+        .filter((action) => action.display === undefined || action.display(this.props.item))
         .map((action, index) => {
           let customAction = null;
 

@@ -14,7 +14,7 @@ const CronStatus = (props) => {
     ? (
       <>
         {
-          status.last_error.map(error => (
+          status.last_error.map((error) => (
             <div key={error.worker}>
               {error.worker}
               :

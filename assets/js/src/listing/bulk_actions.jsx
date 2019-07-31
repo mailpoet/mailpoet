@@ -17,7 +17,7 @@ class ListingBulkActions extends React.Component {
   getSelectedAction() {
     const selectedAction = this.myRef.current.value;
     if (selectedAction.length > 0) {
-      const action = this.props.bulk_actions.filter(act => (act.name === selectedAction));
+      const action = this.props.bulk_actions.filter((act) => (act.name === selectedAction));
 
       if (action.length > 0) {
         return action[0];
@@ -100,7 +100,7 @@ class ListingBulkActions extends React.Component {
           onChange={this.handleChangeAction}
         >
           <option value="">{MailPoet.I18n.t('bulkActions')}</option>
-          { this.props.bulk_actions.map(action => (
+          { this.props.bulk_actions.map((action) => (
             <option
               value={action.name}
               key={`action-${action.name}`}

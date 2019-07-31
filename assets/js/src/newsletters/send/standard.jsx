@@ -137,7 +137,7 @@ let fields = [
     },
     transformChangedValue: function transformChangedValue(segmentIds) {
       const allSegments = this.getItems();
-      return _.map(segmentIds, id => _.find(allSegments, segment => segment.id === id));
+      return _.map(segmentIds, (id) => _.find(allSegments, (segment) => segment.id === id));
     },
     validation: {
       'data-parsley-required': true,

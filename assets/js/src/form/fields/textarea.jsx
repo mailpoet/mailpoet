@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const FormFieldTextarea = props => (
+const FormFieldTextarea = (props) => (
   <textarea
     type="text"
     className="regular-text"

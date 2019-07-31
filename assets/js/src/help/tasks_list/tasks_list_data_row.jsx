@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-const TasksListDataRow = props => (
+const TasksListDataRow = (props) => (
   <tr>
     <td className="column column-primary">
       { props.task.id }

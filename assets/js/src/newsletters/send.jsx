@@ -75,7 +75,7 @@ class NewsletterSend extends React.Component {
     }
   };
 
-  getThumbnailPromise = url => (
+  getThumbnailPromise = (url) => (
     this.state.thumbnailPromise ? this.state.thumbnailPromise : fromUrl(url)
   );
 
@@ -98,7 +98,7 @@ class NewsletterSend extends React.Component {
     errorMessage = ReactStringReplace(
       errorMessage,
       /\[link\](.*?)\[\/link\]/g,
-      match => `<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">${match}</a>`
+      (match) => `<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">${match}</a>`
     );
     jQuery('#field_sender_address')
       .parsley()
@@ -216,7 +216,7 @@ class NewsletterSend extends React.Component {
       });
   };
 
-  sendNewsletter = newsletter => MailPoet.Ajax.post(
+  sendNewsletter = (newsletter) => MailPoet.Ajax.post(
     Hooks.applyFilters(
       'mailpoet_newsletters_send_server_request_parameters',
       {
@@ -268,7 +268,7 @@ class NewsletterSend extends React.Component {
     MailPoet.Modal.loading(false);
   });
 
-  activateNewsletter = newsletter => MailPoet.Ajax.post({
+  activateNewsletter = (newsletter) => MailPoet.Ajax.post({
     api_version: window.mailpoet_api_version,
     endpoint: 'newsletters',
     action: 'setStatus',
@@ -337,7 +337,7 @@ class NewsletterSend extends React.Component {
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(error => error.message),
+              response.errors.map((error) => error.message),
               { scroll: true }
             );
           }
@@ -409,7 +409,7 @@ class NewsletterSend extends React.Component {
   showError = (response) => {
     if (response.errors.length > 0) {
       MailPoet.Notice.error(
-        response.errors.map(error => error.message),
+        response.errors.map((error) => error.message),
         { scroll: true }
       );
     }

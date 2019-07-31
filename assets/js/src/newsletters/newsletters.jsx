@@ -37,7 +37,7 @@ const container = document.getElementById('newsletters_container');
 const getAutomaticEmailsRoutes = () => {
   if (!window.mailpoet_automatic_emails) return null;
 
-  return _.map(window.mailpoet_automatic_emails, automaticEmail => ({
+  return _.map(window.mailpoet_automatic_emails, (automaticEmail) => ({
     path: `new/${automaticEmail.slug}`,
     name: automaticEmail.slug,
     component: AutomaticEmailEventsList,
@@ -116,7 +116,7 @@ if (container) {
     <HashRouter>
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/standard" />} />
-        {routes.map(route => (
+        {routes.map((route) => (
           <Route
             key={route.path}
             path={route.path}

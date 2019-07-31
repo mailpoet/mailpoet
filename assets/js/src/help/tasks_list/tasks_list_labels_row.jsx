@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-const TasksListLabelsRow = props => (
+const TasksListLabelsRow = (props) => (
   <tr>
     <th className="row-title">Id</th>
     <th className="row-title">{MailPoet.I18n.t('type')}</th>

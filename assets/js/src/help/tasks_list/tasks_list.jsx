@@ -12,7 +12,7 @@ const TasksList = (props) => {
       <thead><TaskListLabelsRow show_scheduled_at={props.show_scheduled_at} /></thead>
       <tbody>
         {
-          props.tasks.length ? props.tasks.map(task => (
+          props.tasks.length ? props.tasks.map((task) => (
             <TaskListDataRow
               key={task.id}
               task={task}

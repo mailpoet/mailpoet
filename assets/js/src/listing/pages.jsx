@@ -54,7 +54,7 @@ class ListingPages extends React.Component {
     this.setPage(e.target.value);
   };
 
-  constrainPage = page => Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
+  constrainPage = (page) => Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
 
   render() {
     if (this.props.count === 0) {

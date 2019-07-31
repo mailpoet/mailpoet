@@ -102,7 +102,7 @@ const QueueSending = ({ newsletter }) => {
       },
     })
       .done(() => setPaused(true))
-      .fail(response => setErrors(response.errors));
+      .fail((response) => setErrors(response.errors));
   };
 
   const resumeSending = () => {
@@ -116,7 +116,7 @@ const QueueSending = ({ newsletter }) => {
       },
     })
       .done(() => setPaused(false))
-      .fail(response => setErrors(response.errors));
+      .fail((response) => setErrors(response.errors));
   };
 
   return (

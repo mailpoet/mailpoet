@@ -10,7 +10,7 @@ import { withRouter } from 'react-router-dom';
 const availableRoles = window.mailpoet_roles || {};
 const availableSegments = _.filter(
   window.mailpoet_segments || [],
-  segment => segment.type === 'default'
+  (segment) => segment.type === 'default'
 );
 
 const events = {
@@ -66,15 +66,15 @@ class WelcomeScheduling extends React.Component {
     });
   };
 
-  handleEventChange = event => this.handleValueChange('event', event.target.value);
+  handleEventChange = (event) => this.handleValueChange('event', event.target.value);
 
-  handleSegmentChange = event => this.handleValueChange('segment', event.target.value);
+  handleSegmentChange = (event) => this.handleValueChange('segment', event.target.value);
 
-  handleRoleChange = event => this.handleValueChange('role', event.target.value);
+  handleRoleChange = (event) => this.handleValueChange('role', event.target.value);
 
-  handleAfterTimeNumberChange = event => this.handleValueChange('afterTimeNumber', event.target.value);
+  handleAfterTimeNumberChange = (event) => this.handleValueChange('afterTimeNumber', event.target.value);
 
-  handleAfterTimeTypeChange = event => this.handleValueChange('afterTimeType', event.target.value);
+  handleAfterTimeTypeChange = (event) => this.handleValueChange('afterTimeType', event.target.value);
 
   handleNext = () => {
     MailPoet.Ajax.post({
@@ -90,7 +90,7 @@ class WelcomeScheduling extends React.Component {
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }

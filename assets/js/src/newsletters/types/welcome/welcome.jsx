@@ -17,7 +17,7 @@ class NewsletterWelcome extends React.Component {
     super(props);
     let availableSegments = window.mailpoet_segments || [];
     let defaultSegment = 1;
-    availableSegments = availableSegments.filter(segment => segment.type === 'default');
+    availableSegments = availableSegments.filter((segment) => segment.type === 'default');
 
     if (_.size(availableSegments) > 0) {
       defaultSegment = _.first(availableSegments).id;
@@ -57,7 +57,7 @@ class NewsletterWelcome extends React.Component {
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(error => error.message),
+          response.errors.map((error) => error.message),
           { scroll: true }
         );
       }

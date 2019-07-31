@@ -1,6 +1,6 @@
 import MailPoet from 'mailpoet';
 
-const getSettingsKey = pollType => `show_poll_success_delivery_${pollType}`;
+const getSettingsKey = (pollType) => `show_poll_success_delivery_${pollType}`;
 
 const initTypeformScript = () => {
   if (!document.getElementById('typef_orm')) {
