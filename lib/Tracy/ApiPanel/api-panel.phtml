@@ -1,0 +1,40 @@
+<?php
+
+namespace MailPoet\Tracy\ApiPanel;
+
+use Tracy\Dumper;
+
+/**
+ * @var ApiPanel $this
+ */
+?>
+<h1>API call</h1>
+<table>
+  <tr>
+    <th>Endpoint</th>
+    <td><pre><?php echo $this->endpoint_reflection->getName() ?></pre></td>
+  </tr>
+  <tr>
+    <th>Method</th>
+    <td><pre><?php echo $this->request_method . '()' ?></pre></td>
+  </tr>
+</table>
+
+<?php if(!empty($this->request_data)): ?>
+<br/>
+<h2 style="font-size: 140%; color: #575753;">Data</h2>
+<div class="tracy-inner tracy-mailpoet-api">
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Value</th>
+    </tr>
+    <?php foreach ($this->request_data as $name => $value): ?>
+    <tr>
+      <td><?php echo $name ?></td>
+      <td><?php echo Dumper::toHtml($value) ?></td>
+    </tr>
+    <?php endforeach ?>
+  </table>
+</div>
+<?php endif; ?>

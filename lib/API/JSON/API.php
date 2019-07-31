@@ -4,10 +4,12 @@ namespace MailPoet\API\JSON;
 use MailPoet\Config\AccessControl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
+use MailPoet\Tracy\ApiPanel\ApiPanel;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
+use Tracy\Debugger;
 
 if (!defined('ABSPATH')) exit;
 
@@ -162,6 +164,10 @@ class API {
       $endpoint = $this->container->get($this->_request_endpoint_class);
       if (!method_exists($endpoint, $this->_request_method)) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
+      }
+
+      if (class_exists(Debugger::class)) {
+        ApiPanel::init($endpoint, $this->_request_method, $this->_request_data);
       }
 
       // check the accessibility of the requested endpoint's action
