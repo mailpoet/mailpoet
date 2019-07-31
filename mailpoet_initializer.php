@@ -22,7 +22,12 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracy_path)) {
 
       // strip 'async' to ensure all AJAX request are caught
       // (even when fired immediately after page starts loading)
-      return str_replace('async', '', $tracy_script_html);
+      $tracy_script_html = str_replace('async', '', $tracy_script_html);
+
+      // set higher number of displayed AJAX rows
+      $max_ajax_rows = 4;
+      $tracy_script_html .= "<script>window.TracyMaxAjaxRows = $max_ajax_rows;</script>\n";
+      echo $tracy_script_html;
     }
     add_action('admin_enqueue_scripts', 'render_tracy', PHP_INT_MAX, 0);
     session_start();
