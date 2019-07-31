@@ -141,7 +141,12 @@ cp uninstall.php $plugin_name
 
 # Add index files if they don't exist to all folders
 echo '[BUILD] Adding index files to all project folders'
-find $plugin_name -type d -exec touch {}/index.php \;
+find $plugin_name -type d -print0 | while read -d $'\0' dir
+do
+  if [ ! -f "$dir/Index.php" ]; then
+    touch "$dir/index.php"
+  fi
+done
 # Remove second index.php from Doctrine directory
 rm -f $plugin_name/vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/index.php
 
