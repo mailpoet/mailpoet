@@ -1,0 +1,29 @@
+<?php
+
+namespace MailPoet\Tracy\DoctrinePanel;
+
+/**
+ * Inspired by: https://componette.com/macfja/tracy-doctrine-sql/
+ * @var array $data
+ * @var DoctrinePanel $this
+ */
+?>
+<h1>Doctrine SQL Queries</h1>
+<div class="tracy-inner tracy-doctrine">
+  <table>
+    <tr>
+      <th>SQL</th>
+      <th>Params</th>
+      <th>Types</th>
+      <th>Time&nbsp;(ms)</th>
+    </tr>
+    <?php foreach ($this->sql_logger->queries as $item): ?>
+    <tr>
+      <td><?php echo $item['sql'] ?></td>
+      <td><pre><?php echo $this->formatArrayData($item['params']) ?></pre></td>
+      <td><pre><?php echo $this->transformNumericType($this->formatArrayData($item['types'])) ?></pre></td>
+      <td><?php echo $this->formatTime($item['executionMS']) ?></td>
+    </tr>
+    <?php endforeach ?>
+  </table>
+</div>
