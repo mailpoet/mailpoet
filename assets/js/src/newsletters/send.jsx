@@ -35,17 +35,14 @@ class NewsletterSend extends React.Component {
       item: {},
       loading: true,
       thumbnailPromise: null,
-      authorizedEmailAddresses: [],
     };
   }
 
   componentDidMount() {
-    jQuery.when(
-      this.loadItem(this.props.match.params.id),
-      this.loadAuthorizedEmailAddresses()
-    ).always(() => {
-      this.setState({ loading: false });
-    });
+    this.loadItem(this.props.match.params.id)
+      .always(() => {
+        this.setState({ loading: false });
+      });
     jQuery('#mailpoet_newsletter').parsley();
   }
 
@@ -81,13 +78,14 @@ class NewsletterSend extends React.Component {
 
   isValid = () => jQuery('#mailpoet_newsletter').parsley().isValid();
 
-  isValidFromAddress = () => {
-    const fromAddress = this.state.item.sender_address;
+  isValidFromAddress = async () => {
     if (window.mailpoet_mta_method !== 'MailPoet') {
       return true;
     }
-    return this.state.authorizedEmailAddresses.indexOf(fromAddress) !== -1;
-  };
+    const addresses = await this.loadAuthorizedEmailAddresses();
+    const fromAddress = this.state.item.sender_address;
+    return addresses.indexOf(fromAddress) !== -1;
+  }
 
   showInvalidFromAddressError = () => {
     let errorMessage = ReactStringReplace(
@@ -170,17 +168,16 @@ class NewsletterSend extends React.Component {
       });
   };
 
-  loadAuthorizedEmailAddresses = () => {
+  loadAuthorizedEmailAddresses = async () => {
     if (window.mailpoet_mta_method !== 'MailPoet') {
-      return jQuery.Deferred().resolve();
+      return [];
     }
-    return MailPoet.Ajax.post({
+    const response = await MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'mailer',
       action: 'getAuthorizedEmailAddresses',
-    }).done((response) => {
-      this.setState({ authorizedEmailAddresses: response.data || [] });
     });
+    return response.data || [];
   };
 
   handleSend = (e) => {
@@ -191,29 +188,31 @@ class NewsletterSend extends React.Component {
       return jQuery('#mailpoet_newsletter').parsley().validate();
     }
 
-    if (!this.isValidFromAddress()) {
-      return this.showInvalidFromAddressError();
-    }
-
     MailPoet.Modal.loading(true);
 
-    return this.saveNewsletter(e).done(() => {
-      this.setState({ loading: true });
-    })
-      .done((response) => {
-        switch (response.data.type) {
-          case 'notification':
-          case 'welcome':
-            return this.activateNewsletter(response);
-          default:
-            return this.sendNewsletter(response);
-        }
+    return this.isValidFromAddress().then((valid) => {
+      if (!valid) {
+        this.showInvalidFromAddressError();
+        return MailPoet.Modal.loading(false);
+      }
+      return this.saveNewsletter(e).done(() => {
+        this.setState({ loading: true });
       })
-      .fail((err) => {
-        this.showError(err);
-        this.setState({ loading: false });
-        MailPoet.Modal.loading(false);
-      });
+        .done((response) => {
+          switch (response.data.type) {
+            case 'notification':
+            case 'welcome':
+              return this.activateNewsletter(response);
+            default:
+              return this.sendNewsletter(response);
+          }
+        })
+        .fail((err) => {
+          this.showError(err);
+          this.setState({ loading: false });
+          MailPoet.Modal.loading(false);
+        });
+    });
   };
 
   sendNewsletter = newsletter => MailPoet.Ajax.post(
