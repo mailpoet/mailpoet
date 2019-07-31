@@ -358,6 +358,11 @@ workflows:
           name: acceptance_tests_4
           requires:
             - php5_unit
+      - acceptance_tests:
+          index: 5
+          name: acceptance_tests_5
+          requires:
+            - php5_unit
       - php5_integration_and_js:
           requires:
             - php5_unit
@@ -392,6 +397,13 @@ workflows:
           filters:
             branches:
               only: master
+      - acceptance_tests_multisite:
+          index: 5
+          requires:
+            - php5_unit
+          filters:
+            branches:
+              only: master
       - php7_integration_multisite:
           requires:
             - php7_unit
@@ -405,6 +417,7 @@ workflows:
             - acceptance_tests_2
             - acceptance_tests_3
             - acceptance_tests_4
+            - acceptance_tests_5
             - php5_integration_and_js
             - php7_integration
       - test_deployment:
