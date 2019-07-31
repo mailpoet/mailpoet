@@ -86,5 +86,6 @@ $two-column-wider-column-width: (($newsletter-width / 3) - $column-margin) * 2;
   margin: 20px;
   padding: 15px;
   text-align: center;
+
   @include animation-background-color();
 }

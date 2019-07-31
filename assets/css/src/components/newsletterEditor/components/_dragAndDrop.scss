@@ -59,6 +59,7 @@ $draggable-widget-z-index: 2;
   margin: 0;
   padding: 0;
   z-index: $draggable-widget-z-index;
+
   @include animation-fade-in();
 
   .mailpoet_widget_icon {

@@ -4,6 +4,9 @@
     "stylelint-scss"
   ],
   "rules": {
+    "at-rule-empty-line-before": ["always", {
+      except: ["first-nested", "blockless-after-blockless"],
+    }],
     "at-rule-name-case": "lower",
     "at-rule-semicolon-newline-after": "always",
     "block-closing-brace-empty-line-before": "never",
