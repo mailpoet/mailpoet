@@ -147,8 +147,6 @@ do
     touch "$dir/index.php"
   fi
 done
-# Remove second index.php from Doctrine directory
-rm -f $plugin_name/vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/index.php
 
 # Zip final release.
 echo '[BUILD] Creating final release zip'
