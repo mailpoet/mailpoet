@@ -244,7 +244,7 @@ class NewsletterTest extends \MailPoetTest {
     $queue = SendingTask::getByNewsletterId($newsletter->id);
     $wp = new WPFunctions();
     expect($queue->newsletter_rendered_subject)
-      ->contains(date_i18n('dS', $wp->currentTime('timestamp')));
+      ->contains(date_i18n('jS', $wp->currentTime('timestamp')));
   }
 
   function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {
