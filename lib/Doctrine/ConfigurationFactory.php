@@ -7,6 +7,7 @@ use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
 use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use MailPoetVendor\Doctrine\ORM\Mapping\Driver\PHPDriver;
 
 class ConfigurationFactory {
   const ENTITY_DIR = __DIR__ . '/../Entities';
@@ -42,6 +43,9 @@ class ConfigurationFactory {
     // (i.e. in dev environment, on production metadata is dumped in the build)
     if (class_exists(SimpleAnnotationReader::class)) {
       $configuration->setMetadataDriverImpl($configuration->newDefaultAnnotationDriver([self::ENTITY_DIR]));
+    } else {
+      // Should never be called but Doctrine requires having driver set
+      $configuration->setMetadataDriverImpl(new PHPDriver([]));
     }
   }
 
