@@ -47,9 +47,7 @@ class ConfirmationEmailMailer {
       return false;
     }
 
-    $subscriber->count_confirmations++;
-    $subscriber->save();
-    if (!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations > self::MAX_CONFIRMATION_EMAILS) {
+    if (!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations >= self::MAX_CONFIRMATION_EMAILS) {
       return false;
     }
 
@@ -118,6 +116,10 @@ class ConfirmationEmailMailer {
         $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
         return false;
       };
+      if (!$this->wp->isUserLoggedIn()) {
+        $subscriber->count_confirmations++;
+        $subscriber->save();
+      }
       return true;
     } catch (\Exception $e) {
       $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
