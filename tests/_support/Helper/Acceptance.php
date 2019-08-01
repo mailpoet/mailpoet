@@ -3,6 +3,8 @@ namespace Helper;
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
+use Codeception\TestInterface;
+
 class Acceptance extends \Codeception\Module
 {
   protected $js_errors = array();
@@ -52,7 +54,7 @@ class Acceptance extends \Codeception\Module
       );
   }
 
-  function _after() {
+  function _after(TestInterface $test) {
     $this->js_errors = array();
   }
 }

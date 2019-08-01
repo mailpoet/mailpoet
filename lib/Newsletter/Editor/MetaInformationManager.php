@@ -12,14 +12,14 @@ class MetaInformationManager {
       $position_field = $position . 'Text';
       $text = [];
 
-      if ($args['showAuthor'] === $position_field) {
+      if (isset($args['showAuthor']) && $args['showAuthor'] === $position_field) {
         $text[] = self::getPostAuthor(
           $post->post_author,
           $args['authorPrecededBy']
         );
       }
 
-      if ($args['showCategories'] === $position_field) {
+      if (isset($args['showCategories']) && $args['showCategories'] === $position_field) {
         $text[] = self::getPostCategories(
           $post->ID,
           $post->post_type,
