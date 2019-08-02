@@ -209,8 +209,10 @@ class Initializer {
   }
 
   function setupSession() {
-    $session = new Session;
-    $session->init();
+    if (Menu::isOnMailPoetAdminPage()) {
+      $session = new Session;
+      $session->init();
+    }
   }
 
   function maybeDbUpdate() {
