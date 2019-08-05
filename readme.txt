@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.34.4
+Stable tag: 3.34.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -146,6 +146,12 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.34.5 - 2019-08-07 =
+* Improved: background task execution process now uses less CPU to help with CPU-limited hosts. E.g Siteground;
+* Fixed: stats emails for post notifications now work;
+* Fixed: issue where import loader would get stuck while importing a .csv and copying and pasting emails;
+* Fixed: WooCommerce customer synchronization task to avoid getting stuck on some sites and use excessive CPU.
 
 = 3.34.4 - 2019-08-01 =
 * Fixed: database connection error with MariaDB and MySQL 8 users.
