@@ -48,9 +48,10 @@ class CaptchaSession {
   }
 
   private function getKey($type) {
-    if ($this->session->getId() === null) {
+    $session_id = $this->session->getId();
+    if ($session_id === null) {
       throw new \Exception("MailPoet session not initialized.");
     }
-    return implode('_', ['MAILPOET', $this->session->getId(), $type]);
+    return implode('_', ['MAILPOET', $session_id, $type]);
   }
 }
