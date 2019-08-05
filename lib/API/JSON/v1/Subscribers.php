@@ -20,6 +20,7 @@ use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 use MailPoet\WP\Functions as WPFunctions;
@@ -58,6 +59,9 @@ class Subscribers extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
+  /** @var CaptchaSession */
+  private $captcha_session;
+
   public function __construct(
     Listing\BulkActionController $bulk_action_controller,
     SubscribersListings $subscribers_listings,
@@ -66,7 +70,8 @@ class Subscribers extends APIEndpoint {
     Listing\Handler $listing_handler,
     Captcha $subscription_captcha,
     WPFunctions $wp,
-    SettingsController $settings
+    SettingsController $settings,
+    CaptchaSession $captcha_session
   ) {
     $this->bulk_action_controller = $bulk_action_controller;
     $this->subscribers_listings = $subscribers_listings;
@@ -76,6 +81,7 @@ class Subscribers extends APIEndpoint {
     $this->subscription_captcha = $subscription_captcha;
     $this->wp = $wp;
     $this->settings = $settings;
+    $this->captcha_session = $captcha_session;
   }
 
   function get($data = []) {
@@ -164,10 +170,10 @@ class Subscribers extends APIEndpoint {
     if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
       if (!isset($data['captcha'])) {
         // Save form data to session
-        $_SESSION[Captcha::SESSION_FORM_KEY] = array_merge($data, ['form_id' => $form_id]);
-      } elseif (!empty($_SESSION[Captcha::SESSION_FORM_KEY])) {
+        $this->captcha_session->setFormData(array_merge($data, ['form_id' => $form_id]));
+      } elseif ($this->captcha_session->getFormData()) {
         // Restore form data from session
-        $data = array_merge($_SESSION[Captcha::SESSION_FORM_KEY], ['captcha' => $data['captcha']]);
+        $data = array_merge($this->captcha_session->getFormData(), ['captcha' => $data['captcha']]);
       }
       // Otherwise use the post data
     }
@@ -222,8 +228,7 @@ class Subscribers extends APIEndpoint {
     } else {
       if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
         // Captcha has been verified, invalidate the session vars
-        $_SESSION[Captcha::SESSION_KEY] = null;
-        $_SESSION[Captcha::SESSION_FORM_KEY] = null;
+        $this->captcha_session->reset();
       }
 
       $meta = [];
@@ -299,12 +304,13 @@ class Subscribers extends APIEndpoint {
         ]);
       }
     } elseif ($captcha_settings['type'] === Captcha::TYPE_BUILTIN && $is_builtin_captcha_required) {
-      if (empty($_SESSION[Captcha::SESSION_KEY])) {
+      $captcha_hash = $this->captcha_session->getCaptchaHash();
+      if (empty($captcha_hash)) {
         return $this->badRequest([
           APIError::BAD_REQUEST => WPFunctions::get()->__('Please regenerate the CAPTCHA.', 'mailpoet'),
         ]);
-      } elseif (!hash_equals(strtolower($data['captcha']), $_SESSION[Captcha::SESSION_KEY])) {
-        $_SESSION[Captcha::SESSION_KEY] = null;
+      } elseif (!hash_equals(strtolower($data['captcha']), $captcha_hash)) {
+        $this->captcha_session->setCaptchaHash(null);
         $meta = [];
         $meta['refresh_captcha'] = true;
         return $this->badRequest([

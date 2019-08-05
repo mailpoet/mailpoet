@@ -14,9 +14,13 @@ class CaptchaRenderer {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(UrlHelper $url_helper, WPFunctions $wp) {
+  /** @var CaptchaSession */
+  private $captcha_session;
+
+  function __construct(UrlHelper $url_helper, WPFunctions $wp, CaptchaSession $captcha_session) {
     $this->url_helper = $url_helper;
     $this->wp = $wp;
+    $this->captcha_session = $captcha_session;
   }
 
   public function getCaptchaPageTitle() {
@@ -49,7 +53,8 @@ class CaptchaRenderer {
       ]
     );
 
-    $form_id = isset($_SESSION[Captcha::SESSION_FORM_KEY]['form_id']) ? (int)$_SESSION[Captcha::SESSION_FORM_KEY]['form_id'] : 0;
+    $captcha_session_form = $this->captcha_session->getFormData();
+    $form_id = isset($captcha_session_form['form_id']) ? (int)$captcha_session_form['form_id'] : 0;
     $form_model = FormModel::findOne($form_id);
     if (!$form_model instanceof FormModel) {
       return false;

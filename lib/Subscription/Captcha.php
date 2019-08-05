@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Config\Session;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Util\Helpers;
@@ -13,17 +14,21 @@ class Captcha {
   const TYPE_RECAPTCHA = 'recaptcha';
   const TYPE_DISABLED = null;
 
-  const SESSION_KEY = 'mailpoet_captcha';
-  const SESSION_FORM_KEY = 'mailpoet_captcha_form';
-
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp = null) {
+  /** @var CaptchaSession  */
+  private $captcha_session;
+
+  function __construct(WPFunctions $wp = null, CaptchaSession $captcha_session = null) {
     if ($wp === null) {
       $wp = new WPFunctions;
     }
+    if ($captcha_session === null) {
+      $captcha_session = new CaptchaSession($wp, new Session());
+    }
     $this->wp = $wp;
+    $this->captcha_session = $captcha_session;
   }
 
   function isSupported() {
@@ -95,7 +100,7 @@ class Captcha {
       ->setMaxBehindLines(0)
       ->build($width ?: 220, $height ?: 60, $font);
 
-    $_SESSION[self::SESSION_KEY] = $builder->getPhrase();
+    $this->captcha_session->setCaptchaHash($builder->getPhrase());
 
     if ($return) {
       return $builder->get();
