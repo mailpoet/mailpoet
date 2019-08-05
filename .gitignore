@@ -17,6 +17,7 @@ npm-debug.log
 /views/cache/**
 temp
 .idea
+.vscode
 mailpoet.zip
 tests/javascript/testBundles
 assets/dist
