@@ -167,7 +167,10 @@ class Subscribers extends APIEndpoint {
 
     $captcha_settings = $this->settings->get('captcha');
 
-    if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
+    if (!empty($captcha_settings['type'])
+      && $captcha_settings['type'] === Captcha::TYPE_BUILTIN
+      && $this->captcha_session->isAvailable()
+    ) {
       if (!isset($data['captcha'])) {
         // Save form data to session
         $this->captcha_session->setFormData(array_merge($data, ['form_id' => $form_id]));
@@ -226,7 +229,7 @@ class Subscribers extends APIEndpoint {
     if ($errors !== false) {
       return $this->badRequest($errors);
     } else {
-      if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
+      if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN && $this->captcha_session->isAvailable()) {
         // Captcha has been verified, invalidate the session vars
         $this->captcha_session->reset();
       }
@@ -267,7 +270,7 @@ class Subscribers extends APIEndpoint {
     }
 
     $is_builtin_captcha_required = false;
-    if ($captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
+    if ($captcha_settings['type'] === Captcha::TYPE_BUILTIN && $this->captcha_session->isAvailable()) {
       $is_builtin_captcha_required = $this->subscription_captcha->isRequired(isset($data['email']) ? $data['email'] : '');
       if ($is_builtin_captcha_required && empty($data['captcha'])) {
         $meta = [];
