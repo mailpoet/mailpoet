@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\Config\Session;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\CustomField;
@@ -21,6 +22,8 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\CaptchaSession;
+use MailPoet\WP\Functions;
 
 class SubscribersTest extends \MailPoetTest {
 
@@ -77,6 +80,9 @@ class SubscribersTest extends \MailPoetTest {
       'address' => 'sender@mailpoet.com',
       'name' => 'Sender',
     ]);
+
+    // MAILPOET SESSION
+    $_COOKIE[Session::COOKIE_NAME] = 'abcd';
   }
 
   function testItCanGetASubscriber() {
@@ -517,7 +523,8 @@ class SubscribersTest extends \MailPoetTest {
     $subscriber->count_confirmations = 1;
     $subscriber->save();
     $captcha_value = 'ihg5w';
-    $_SESSION[Captcha::SESSION_KEY] = $captcha_value;
+    $captcha_session = new CaptchaSession(new Functions(), new Session());
+    $captcha_session->setCaptchaHash($captcha_value);
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => $email,
       'form_id' => $this->form->id,

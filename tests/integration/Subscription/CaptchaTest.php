@@ -3,10 +3,13 @@ namespace MailPoet\Test\Subscription;
 
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
+use MailPoet\Config\Session;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\CaptchaSession;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Functions;
 
 class CaptchaTest extends \MailPoetTest {
   function _before() {
@@ -40,10 +43,12 @@ class CaptchaTest extends \MailPoetTest {
   }
 
   function testItRendersImage() {
-    expect_that(empty($_SESSION[Captcha::SESSION_KEY]));
+    $_COOKIE[Session::COOKIE_NAME] = 'abcd';
+    $captcha_session = new CaptchaSession(new Functions(), new Session());
+    expect($captcha_session->getCaptchaHash())->false();
     $image = $this->captcha->renderImage(null, null, true);
     expect($image)->notEmpty();
-    expect_that(!empty($_SESSION[Captcha::SESSION_KEY]));
+    expect($captcha_session->getCaptchaHash())->notEmpty();
   }
 
   function _after() {
