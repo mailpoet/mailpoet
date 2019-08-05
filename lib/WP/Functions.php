@@ -384,6 +384,14 @@ class Functions {
     return set_transient($transient, $value, $expiration);
   }
 
+  function getTransient($transient) {
+    return get_transient($transient);
+  }
+
+  function deleteTransient($transient) {
+    return delete_transient($transient);
+  }
+
   function singlePostTitle($prefix = '', $display = true) {
     return single_post_title($prefix, $display);
   }
