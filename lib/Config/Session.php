@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Util\Cookies;
 use MailPoet\Util\Security;
 
 class Session
@@ -10,30 +11,41 @@ class Session
   const KEY_LENGTH = 32;
   const COOKIE_EXPIRATION = 84600; // day
 
+  /** @var Cookies */
+  private $cookies;
+
+  function __construct(Cookies $cookies) {
+    $this->cookies = $cookies;
+  }
+
   function getId() {
-    return isset($_COOKIE[self::COOKIE_NAME]) ? $_COOKIE[self::COOKIE_NAME] : null;
+    return $this->cookies->get(self::COOKIE_NAME) ?: null;
   }
 
   function init() {
-    $id = $this->getId() ?: Security::generateRandomString(self::KEY_LENGTH);
-    if (!headers_sent()) {
-      $this->setCookie($id);
+    if (headers_sent()) {
+      return false;
     }
+    $id = $this->getId() ?: Security::generateRandomString(self::KEY_LENGTH);
+    $this->setCookie($id);
+    return true;
   }
 
   function destroy() {
     if ($this->getId() === null) {
       return;
     }
-    unset($_COOKIE[self::COOKIE_NAME]);
+    $this->cookies->delete(self::COOKIE_NAME);
   }
 
   private function setCookie($id) {
-    setcookie(
+    $this->cookies->set(
       self::COOKIE_NAME,
       $id,
-      time() + self::COOKIE_EXPIRATION,
-      "/"
+      [
+        'expires' => time() + self::COOKIE_EXPIRATION,
+        'path' => '/',
+      ]
     );
   }
 }

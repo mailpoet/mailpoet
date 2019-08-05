@@ -44,4 +44,8 @@ class Cookies {
     }
     return $value;
   }
+
+  function delete($name) {
+    unset($_COOKIE[$name]);
+  }
 }
