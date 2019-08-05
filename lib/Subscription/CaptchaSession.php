@@ -6,7 +6,7 @@ use MailPoet\Config\Session;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaSession {
-  const EXPIRATION = 300; // 5 minutes
+  const EXPIRATION = 1800; // 30 minutes
 
   const SESSION_HASH_KEY = 'hash';
   const SESSION_FORM_KEY = 'form';

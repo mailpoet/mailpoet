@@ -545,7 +545,7 @@ class SubscribersTest extends \MailPoetTest {
     $subscriber->count_confirmations = 1;
     $subscriber->save();
     $captcha_value = 'ihg5w';
-    $this->captcha_session->setCaptchaHash('ihg5w');
+    $this->captcha_session->setCaptchaHash($captcha_value);
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => $email,
       'form_id' => $this->form->id,
