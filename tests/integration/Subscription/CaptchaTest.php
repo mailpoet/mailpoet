@@ -8,13 +8,25 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
+use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Functions;
 
 class CaptchaTest extends \MailPoetTest {
+
+  /** @var Captcha */
+  private $captcha;
+
+  /** @var CaptchaSession */
+  private $captcha_session;
+
   function _before() {
-    $this->captcha = new Captcha(new WPFunctions);
+    $cookies_mock = $this->createMock(Cookies::class);
+    $cookies_mock->method('get')->willReturn('abcd');
+    $this->captcha_session = new CaptchaSession(new Functions(), new Session($cookies_mock));
+    $this->captcha = new Captcha(new WPFunctions, $this->captcha_session);
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    $this->captcha_session->reset();
   }
 
   function testItDoesNotRequireCaptchaForTheFirstSubscription() {
@@ -42,13 +54,11 @@ class CaptchaTest extends \MailPoetTest {
     expect($result)->equals(true);
   }
 
-  function testItRendersImage() {
-    $_COOKIE[Session::COOKIE_NAME] = 'abcd';
-    $captcha_session = new CaptchaSession(new Functions(), new Session());
-    expect($captcha_session->getCaptchaHash())->false();
+  function testItRendersImageAndStoresHashToSession() {
+    expect($this->captcha_session->getCaptchaHash())->false();
     $image = $this->captcha->renderImage(null, null, true);
     expect($image)->notEmpty();
-    expect($captcha_session->getCaptchaHash())->notEmpty();
+    expect($this->captcha_session->getCaptchaHash())->notEmpty();
   }
 
   function _after() {

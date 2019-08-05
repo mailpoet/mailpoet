@@ -5,6 +5,7 @@ namespace MailPoet\Subscription;
 use MailPoet\Config\Session;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
+use MailPoet\Util\Cookies;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Gregwar\Captcha\CaptchaBuilder;
@@ -25,7 +26,7 @@ class Captcha {
       $wp = new WPFunctions;
     }
     if ($captcha_session === null) {
-      $captcha_session = new CaptchaSession($wp, new Session());
+      $captcha_session = new CaptchaSession($wp, new Session(new Cookies()));
     }
     $this->wp = $wp;
     $this->captcha_session = $captcha_session;

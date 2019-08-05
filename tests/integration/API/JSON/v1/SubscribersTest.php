@@ -8,6 +8,8 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\Session;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Listing\BulkActionController;
+use MailPoet\Listing\Handler;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Newsletter;
@@ -19,10 +21,14 @@ use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
+use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions;
 
 class SubscribersTest extends \MailPoetTest {
@@ -33,10 +39,29 @@ class SubscribersTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var CaptchaSession */
+  private $captcha_session;
+
   function _before() {
     parent::_before();
     $this->cleanup();
-    $this->endpoint = ContainerWrapper::getInstance()->get(Subscribers::class);
+    $cookies_mock = $this->createMock(Cookies::class);
+    $cookies_mock->method('get')
+      ->willReturn('abcd');
+    $session = new Session($cookies_mock);
+    $container = ContainerWrapper::getInstance();
+    $this->captcha_session = new CaptchaSession($container->get(Functions::class), $session);
+    $this->endpoint = new Subscribers(
+      $container->get(BulkActionController::class),
+      $container->get(SubscribersListings::class),
+      $container->get(SubscriberActions::class),
+      $container->get(RequiredCustomFieldValidator::class),
+      $container->get(Handler::class),
+      $container->get(Captcha::class),
+      $container->get(Functions::class),
+      $container->get(SettingsController::class),
+      $this->captcha_session
+    );
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -80,9 +105,6 @@ class SubscribersTest extends \MailPoetTest {
       'address' => 'sender@mailpoet.com',
       'name' => 'Sender',
     ]);
-
-    // MAILPOET SESSION
-    $_COOKIE[Session::COOKIE_NAME] = 'abcd';
   }
 
   function testItCanGetASubscriber() {
@@ -523,8 +545,7 @@ class SubscribersTest extends \MailPoetTest {
     $subscriber->count_confirmations = 1;
     $subscriber->save();
     $captcha_value = 'ihg5w';
-    $captcha_session = new CaptchaSession(new Functions(), new Session());
-    $captcha_session->setCaptchaHash($captcha_value);
+    $this->captcha_session->setCaptchaHash('ihg5w');
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => $email,
       'form_id' => $this->form->id,
