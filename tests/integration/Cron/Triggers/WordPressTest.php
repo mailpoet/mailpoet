@@ -15,6 +15,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\Beamer;
+use MailPoet\WP\Functions as WPFunctions;
 
 class WordPressTest extends \MailPoetTest {
 
@@ -36,19 +37,29 @@ class WordPressTest extends \MailPoetTest {
   }
 
   function testItDoesNotRunIfRunIntervalIsNotElapsed() {
+    $run_interval = 10;
+    WPFunctions::get()->addFilter('mailpoet_cron_trigger_wordpress_run_interval', function () use ($run_interval) {
+      return $run_interval;
+    });
     $current_time = time();
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $current_time);
     $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
     expect(WordPress::run())->equals(false);
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->equals($current_time);
+    WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
   }
 
   function testItRunsIfRunIntervalIsElapsed() {
-    $time_in_the_past = (time() - WordPress::RUN_INTERVAL) - 1;
+    $run_interval = 10;
+    WPFunctions::get()->addFilter('mailpoet_cron_trigger_wordpress_run_interval', function () use ($run_interval) {
+      return $run_interval;
+    });
+    $time_in_the_past = (time() - $run_interval) - 1;
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $time_in_the_past);
     $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
     expect(WordPress::run())->notEmpty();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->greaterThan($time_in_the_past);
+    WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
   }
 
   function testItCanResetRunInterval() {
