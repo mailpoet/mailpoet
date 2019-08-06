@@ -42,12 +42,6 @@ const fields = [
       inactive: MailPoet.I18n.t('inactive'),
       bounced: MailPoet.I18n.t('bounced'),
     },
-    filter: function filter(subscriber, value) {
-      if ((Number(subscriber.wp_user_id) > 0 || Number(subscriber.is_woocommerce_user) === 1) && value === 'unconfirmed') {
-        return false;
-      }
-      return true;
-    },
   },
   {
     name: 'segments',
