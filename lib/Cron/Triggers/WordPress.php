@@ -28,7 +28,7 @@ class WordPress {
   const SCHEDULED_IN_THE_PAST = 'past';
   const SCHEDULED_IN_THE_FUTURE = 'future';
 
-  const RUN_INTERVAL = 10; // seconds
+  const RUN_INTERVAL = -1; // seconds
   const LAST_RUN_AT_SETTING = 'cron_trigger_wordpress.last_run_at';
 
   static private $tasks_counts;
