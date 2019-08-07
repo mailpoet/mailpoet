@@ -2,6 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
+import addReferralId from 'referral_url_decorator.jsx';
 
 const resumeMailerSending = () => {
   MailPoet.Ajax.post({
@@ -115,7 +116,7 @@ const PHPMailerCheckSettingsNotice = () => (
     </p>
     <p>
       <a
-        href="https://www.mailpoet.com/free-plan/?utm_source=plugin&utm_campaign=sending-error"
+        href={addReferralId('https://www.mailpoet.com/free-plan/?utm_source=plugin&utm_campaign=sending-error')}
         target="_blank"
         rel="noopener noreferrer"
       >
