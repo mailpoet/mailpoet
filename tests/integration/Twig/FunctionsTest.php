@@ -10,19 +10,15 @@ class FunctionsTest extends \MailPoetTest {
   function testItExecutesIsRtlFunction() {
     $template = ['template' => '{% if is_rtl() %}rtl{% endif %}'];
     $twig = new \MailPoetVendor\Twig_Environment(new \MailPoetVendor\Twig_Loader_Array($template));
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      'isRtl' => Stub::consecutive(true, false),
+    ]));
+
     $twig->addExtension(new Functions());
-
-    WPFunctions::set(Stub::make(new WPFunctions, [
-      'isRtl' => true,
-    ]));
-    $result = $twig->render('template');
-    expect($result)->equals('rtl');
-
-    WPFunctions::set(Stub::make(new WPFunctions, [
-      'isRtl' => false,
-    ]));
-    $result = $twig->render('template');
-    expect($result)->isEmpty();
+    $result_rtl = $twig->render('template');
+    expect($result_rtl)->equals('rtl');
+    $result_no_rtl = $twig->render('template');
+    expect($result_no_rtl)->isEmpty();
   }
 
   function _after() {
