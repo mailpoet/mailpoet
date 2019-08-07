@@ -21,9 +21,13 @@ class Functions extends AbstractExtension {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct() {
     $this->settings = new SettingsController();
     $this->woocommerce_helper = new WooCommerceHelper();
+    $this->wp = WPFunctions::get();
   }
 
   function getFunctions() {
@@ -157,10 +161,10 @@ class Functions extends AbstractExtension {
 
     $label = null;
     $labels = [
-      'minute' => WPFunctions::get()->__('every minute', 'mailpoet'),
-      'minutes' => WPFunctions::get()->__('every %1$d minutes', 'mailpoet'),
-      'hour' => WPFunctions::get()->__('every hour', 'mailpoet'),
-      'hours' => WPFunctions::get()->__('every %1$d hours', 'mailpoet'),
+      'minute' => $this->wp->__('every minute', 'mailpoet'),
+      'minutes' => $this->wp->__('every %1$d minutes', 'mailpoet'),
+      'hour' => $this->wp->__('every hour', 'mailpoet'),
+      'hours' => $this->wp->__('every %1$d hours', 'mailpoet'),
     ];
 
     if ($value >= 60) {
@@ -188,11 +192,11 @@ class Functions extends AbstractExtension {
   }
 
   function getWPDateFormat() {
-    return WPFunctions::get()->getOption('date_format') ?: 'F j, Y';
+    return $this->wp->getOption('date_format') ?: 'F j, Y';
   }
 
   function getWPStartOfWeek() {
-    return WPFunctions::get()->getOption('start_of_week') ?: 0;
+    return $this->wp->getOption('start_of_week') ?: 0;
   }
 
   function getMailPoetVersion() {
@@ -204,7 +208,7 @@ class Functions extends AbstractExtension {
   }
 
   function getWPTimeFormat() {
-    return WPFunctions::get()->getOption('time_format') ?: 'g:i a';
+    return $this->wp->getOption('time_format') ?: 'g:i a';
   }
 
   function getWPDateTimeFormat() {
@@ -212,7 +216,7 @@ class Functions extends AbstractExtension {
   }
 
   function params($key = null) {
-    $args = WPFunctions::get()->stripslashesDeep($_GET);
+    $args = $this->wp->stripslashesDeep($_GET);
     if (array_key_exists($key, $args)) {
       return $args[$key];
     }
@@ -231,11 +235,11 @@ class Functions extends AbstractExtension {
   }
 
   function isRtl() {
-    return WPFunctions::get()->isRtl();
+    return $this->wp->isRtl();
   }
 
   function getTwoLettersLocale() {
-    return explode('_', WPFunctions::get()->getLocale())[0];
+    return explode('_', $this->wp->getLocale())[0];
   }
 
   function getFreeDomains() {
