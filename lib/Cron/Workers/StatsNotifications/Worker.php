@@ -82,8 +82,9 @@ class Worker {
     $newsletter = $this->getNewsletter($task);
     $link = NewsletterLink::findTopLinkForNewsletter($newsletter);
     $context = $this->prepareContext($newsletter, $link);
+    $subject = $newsletter->queue['newsletter_rendered_subject'];
     return [
-      'subject' => sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $newsletter->subject),
+      'subject' => sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $subject),
       'body' => [
         'html' => $this->renderer->render('emails/statsNotification.html', $context),
         'text' => $this->renderer->render('emails/statsNotification.txt', $context),
@@ -101,9 +102,9 @@ class Worker {
       throw new \Exception('Newsletter not found');
     }
     return $newsletter
-      ->withSendingQueue()
-      ->withTotalSent()
-      ->withStatistics($this->woocommerce_helper);
+    ->withSendingQueue()
+    ->withTotalSent()
+    ->withStatistics($this->woocommerce_helper);
   }
 
   /**
@@ -115,8 +116,9 @@ class Worker {
     $clicked = ($newsletter->statistics['clicked'] * 100) / $newsletter->total_sent;
     $opened = ($newsletter->statistics['opened'] * 100) / $newsletter->total_sent;
     $unsubscribed = ($newsletter->statistics['unsubscribed'] * 100) / $newsletter->total_sent;
+    $subject = $newsletter->queue['newsletter_rendered_subject'];
     $context = [
-      'subject' => $newsletter->subject,
+      'subject' => $subject,
       'preheader' => sprintf(_x(
         '%1$s%% opens, %2$s%% clicks, %3$s%% unsubscribes in a nutshell.', 'newsletter open rate, click rate and unsubscribe rate', 'mailpoet'),
         number_format($opened, 2),
