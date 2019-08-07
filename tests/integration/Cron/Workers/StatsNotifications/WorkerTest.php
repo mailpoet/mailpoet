@@ -69,7 +69,7 @@ class WorkerTest extends \MailPoetTest {
       'task_id' => $stats_notifications_task->id(),
     ]);
     $this->queue = SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Email Subject',
+      'newsletter_rendered_subject' => 'Rendered Email Subject',
       'task_id' => $sending_task->id(),
       'newsletter_id' => $this->newsletter->id(),
       'count_processed' => 5,
@@ -150,7 +150,7 @@ class WorkerTest extends \MailPoetTest {
      ->with(
        $this->anything(),
        $this->callback(function($context){
-         return $context['subject'] === 'Email Subject1';
+         return $context['subject'] === 'Rendered Email Subject';
        }));
 
     $this->stats_notifications->process();
@@ -263,7 +263,7 @@ class WorkerTest extends \MailPoetTest {
       'task_id' => $stats_notifications_task->id(),
     ]);
     SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Email Subject2',
+      'newsletter_rendered_subject' => 'Rendered Email Subject2',
       'task_id' => $sending_task->id(),
       'newsletter_id' => $newsletter->id(),
       'count_processed' => 15,
