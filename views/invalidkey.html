@@ -10,7 +10,7 @@
   </p>
 
   <p>
-      <a class="button button-primary" target="_blank" href="https://account.mailpoet.com?s=<%= subscriber_count %>"><%= __('Visit MailPoet.com to purchase a key') %></a>
+      <a class="button button-primary" target="_blank" href="<%= add_referral_id('https://account.mailpoet.com?s=' ~ subscriber_count) %>"><%= __('Visit MailPoet.com to purchase a key') %></a>
     </p>
 </div>
 <% endblock %>
