@@ -4,6 +4,7 @@ namespace MailPoet\Twig;
 
 use Carbon\Carbon;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Referrals\UrlDecorator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\FreeDomains;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -24,10 +25,14 @@ class Functions extends AbstractExtension {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var UrlDecorator */
+  private $referral_url_decorator;
+
   public function __construct() {
     $this->settings = new SettingsController();
     $this->woocommerce_helper = new WooCommerceHelper();
     $this->wp = WPFunctions::get();
+    $this->referral_url_decorator = new UrlDecorator($this->wp, $this->settings);
   }
 
   function getFunctions() {
@@ -150,6 +155,11 @@ class Functions extends AbstractExtension {
       new TwigFunction(
         'clicked_stats_text',
         [$this, 'clickedStatsText'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'add_referral_id',
+        [$this, 'addReferralId'],
         ['is_safe' => ['all']]
       ),
     ];
@@ -288,5 +298,9 @@ class Functions extends AbstractExtension {
     } else {
       return __('BAD', 'mailpoet');
     }
+  }
+
+  function addReferralId($url) {
+    return $this->referral_url_decorator->decorate($url);
   }
 }
