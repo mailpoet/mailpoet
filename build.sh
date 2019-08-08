@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 # Translations (npm ci & composer install need to be run before)
 echo '[BUILD] Generating translations'
