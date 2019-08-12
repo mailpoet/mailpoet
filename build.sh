@@ -86,6 +86,9 @@ find $findPreArgs $findDestinations -type f $findMidArgs -iregex ".*\/(readme|li
 find $findPreArgs $findDestinations -type f $findMidArgs -iregex ".*\/(\.editorconfig|\.git.*|\.travis.yml|\.php_cs.*)" -print0 | xargs -0 rm -f
 find $findPreArgs $findDestinations -type d $findMidArgs -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
 
+# Remove Tracy panels
+rm -rf $plugin_name/lib/Tracy
+
 # Remove unit tests from 3rd party extensions
 echo '[BUILD] Removing unit tests from vendor libraries'
 rm -rf $plugin_name/vendor/cerdic/css-tidy/COPYING
