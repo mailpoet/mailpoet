@@ -59,7 +59,7 @@ class SubscriberManageImportExportCest {
 
     //confirm subscribers from import list were added
     $I->amOnMailPoetPage ('Subscribers');
-    $I->searchFor('aaa@example.com', 2);
+    $I->searchFor('aaa@example.com');
     $I->waitForText('aaa@example.com');
     $I->searchFor('bbb@example.com');
     $I->waitForText('bbb@example.com');
