@@ -29,7 +29,7 @@ class WooCommerceCheckoutOptinCest {
 
     $I->login();
     $I->amOnMailpoetPage('Subscribers');
-    $I->searchFor($customer_email, 2);
+    $I->searchFor($customer_email);
     $I->waitForListingItemsToLoad();
     $I->waitForText($customer_email);
     // Customer is subscribed to the WC customers list
@@ -43,7 +43,7 @@ class WooCommerceCheckoutOptinCest {
 
     $I->login();
     $I->amOnMailpoetPage('Subscribers');
-    $I->searchFor($customer_email, 2);
+    $I->searchFor($customer_email);
     $I->waitForListingItemsToLoad();
     $I->waitForText($customer_email);
     // Customer is unsubscribed from the WC customers list

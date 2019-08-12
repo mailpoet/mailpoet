@@ -24,7 +24,7 @@ class CreateWelcomeEmailCest {
     $I->click('Activate');
     $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $I->click('Welcome Emails');
-    $I->searchFor($newsletter_title, 2);
+    $I->searchFor($newsletter_title);
     $I->waitForText($newsletter_title);
     $I->seeNoJSErrors();
   }

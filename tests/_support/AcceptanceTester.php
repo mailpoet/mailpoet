@@ -36,6 +36,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const WP_URL = 'http://' . self::WP_DOMAIN;
   const MAIL_URL = 'http://mailhog:8025';
   const AUTHORIZED_SENDING_EMAIL = 'staff@mailpoet.com';
+  const LISTING_LOADING_SELECTOR = '.mailpoet_listing_loading';
 
   /**
    * Define custom actions here
@@ -165,14 +166,13 @@ class AcceptanceTester extends \Codeception\Actor {
     expect($attributeValue)->notContains($notContains);
   }
 
-  public function searchFor($query, $delay = 0, $element = '#search_input', $button = 'Search') {
+  public function searchFor($query, $element = '#search_input', $button = 'Search') {
     $I = $this;
     $I->waitForElement($element);
-    if ($delay) {
-      $I->wait($delay);
-    }
+    $I->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
     $I->fillField($element, $query);
     $I->click($button);
+    $I->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
   }
 
   public function createListWithSubscriber() {

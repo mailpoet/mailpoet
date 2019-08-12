@@ -15,7 +15,7 @@ class SubscribersListingCest {
 
     $I->login();
     $I->amOnMailpoetPage('Subscribers');
-    $I->searchFor('wp@example.com', 2);
+    $I->searchFor('wp@example.com');
     $I->waitForText('wp@example.com');
 
     $subscriber->delete();
