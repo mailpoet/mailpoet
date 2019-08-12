@@ -22,6 +22,7 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracy_path)) {
 
       // strip 'async' to ensure all AJAX request are caught
       // (even when fired immediately after page starts loading)
+      // see: https://github.com/nette/tracy/issues/246
       $tracy_script_html = str_replace('async', '', $tracy_script_html);
 
       // set higher number of displayed AJAX rows
