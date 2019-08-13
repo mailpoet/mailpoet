@@ -50,8 +50,8 @@ class DoctrinePanel implements IBarPanel {
     if (count($matches) >= 5) {
       // if SELECT clause over 50 chars, make it wrappable
       $select_html = mb_strlen($matches[2]) > 50 ? ($matches[1] . '
-        <span class="tracy-toggle">...</span>
-        <div style="padding-left: 10px">' . $matches[2] . '</div>
+        <span class="tracy-toggle tracy-collapsed">...</span>
+        <div class="tracy-collapsed" style="padding-left: 10px">' . $matches[2] . '</div>
       ') : ($matches[1] . $matches[2]);
       $from_keyword = $matches[3];
       $rest = $matches[4];
