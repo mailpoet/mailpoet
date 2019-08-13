@@ -5,8 +5,11 @@ namespace MailPoet\Test\Config;
 use MailPoet\Config\Env;
 use MailPoet\Doctrine\ConnectionFactory;
 use MailPoet\Doctrine\SerializableConnection;
+use MailPoet\Doctrine\Types\JsonOrSerializedType;
+use MailPoet\Doctrine\Types\JsonType;
 use MailPoetVendor\Doctrine\DBAL\Driver\PDOMySql;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySqlPlatform;
+use MailPoetVendor\Doctrine\DBAL\Types\Type;
 use PDO;
 
 class ConnectionFactoryTest extends \MailPoetTest {
@@ -36,6 +39,9 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($connection->getPassword())->equals(Env::$db_password);
     expect($connection->getParams()['charset'])->equals(Env::$db_charset);
     expect($connection->getDatabase())->equals(Env::$db_name);
+
+    expect(Type::getType(JsonType::NAME))->isInstanceOf(JsonType::class);
+    expect(Type::getType(JsonOrSerializedType::NAME))->isInstanceOf(JsonOrSerializedType::class);
   }
 
   function testItIgnoresEmptyCharset() {

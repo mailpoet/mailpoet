@@ -3,8 +3,11 @@
 namespace MailPoet\Doctrine;
 
 use MailPoet\Config\Env;
+use MailPoet\Doctrine\Types\JsonOrSerializedType;
+use MailPoet\Doctrine\Types\JsonType;
 use MailPoetVendor\Doctrine\DBAL\DriverManager;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySqlPlatform;
+use MailPoetVendor\Doctrine\DBAL\Types\Type;
 use PDO;
 
 class ConnectionFactory {
@@ -12,6 +15,11 @@ class ConnectionFactory {
   const PLATFORM_CLASS = MySqlPlatform::class;
 
   private $min_wait_timeout = 60;
+
+  private $types = [
+    JsonType::NAME => JsonType::class,
+    JsonOrSerializedType::NAME => JsonOrSerializedType::class,
+  ];
 
   function createConnection() {
     $platform_class = self::PLATFORM_CLASS;
@@ -36,6 +44,7 @@ class ConnectionFactory {
       $connection_params['port'] = Env::$db_port;
     }
 
+    $this->setupTypes();
     return DriverManager::getConnection($connection_params);
   }
 
@@ -55,5 +64,15 @@ class ConnectionFactory {
     return [
       PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driver_options),
     ];
+  }
+
+  private function setupTypes() {
+    foreach ($this->types as $name => $class) {
+      if (Type::hasType($name)) {
+        Type::overrideType($name, $class);
+      } else {
+        Type::addType($name, $class);
+      }
+    }
   }
 }
