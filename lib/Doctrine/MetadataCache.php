@@ -29,7 +29,11 @@ class MetadataCache extends CacheProvider {
   }
 
   protected function doSave($id, $data, $lifeTime = 0) {
-    file_put_contents($this->getFilename($id), serialize($data));
+    $filename = $this->getFilename($id);
+    $result = @file_put_contents($filename, serialize($data));
+    if ($result === false) {
+      throw new \RuntimeException("Error while writing to '$filename'");
+    }
   }
 
   protected function doDelete($id) {
