@@ -7,6 +7,7 @@ use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 
 require_once __DIR__ . '/TimestampEntity.php';
 
@@ -27,6 +28,7 @@ class TimestampListenerTest extends \MailPoetTest {
       'currentTime' => $timestamp,
     ]);
 
+    $this->entity_manager = $this->createEntityManager();
     $this->table_name = $this->entity_manager->getClassMetadata(TimestampEntity::class)->getTableName();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
     $this->connection->executeUpdate("
@@ -43,9 +45,8 @@ class TimestampListenerTest extends \MailPoetTest {
     $entity = new TimestampEntity();
     $entity->setName('Created');
 
-    $entity_manager = $this->createEntityManager();
-    $entity_manager->persist($entity);
-    $entity_manager->flush();
+    $this->entity_manager->persist($entity);
+    $this->entity_manager->flush();
 
     expect($entity->getCreatedAt())->equals($this->now);
     expect($entity->getUpdatedAt())->equals($this->now);
@@ -61,10 +62,9 @@ class TimestampListenerTest extends \MailPoetTest {
       )
     ");
 
-    $entity_manager = $this->createEntityManager();
-    $entity = $entity_manager->find(TimestampEntity::class, 123);
+    $entity = $this->entity_manager->find(TimestampEntity::class, 123);
     $entity->setName('Updated');
-    $entity_manager->flush();
+    $this->entity_manager->flush();
 
     expect($entity->getCreatedAt()->format('Y-m-d H:i:s'))->equals('2000-01-01 12:00:00');
     expect($entity->getUpdatedAt())->equals($this->now);
@@ -81,6 +81,7 @@ class TimestampListenerTest extends \MailPoetTest {
 
     $metadata_driver = $configuration->newDefaultAnnotationDriver([__DIR__]);
     $configuration->setMetadataDriverImpl($metadata_driver);
+    $configuration->setMetadataCacheImpl(new ArrayCache());
 
     $timestamp_listener = new TimestampListener($this->wp);
     $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration, $timestamp_listener);
