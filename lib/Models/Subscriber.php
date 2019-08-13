@@ -168,7 +168,7 @@ class Subscriber extends Model {
 
     $segments = Segment::orderByAsc('name')
       ->whereNull('deleted_at')
-      ->whereIn('type', [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS])
+      ->whereIn('type', Segment::getSegmentTypes())
       ->findMany();
     $segment_list = [];
     $segment_list[] = [

@@ -155,6 +155,24 @@ class Segment extends Model {
     return $wc_segment;
   }
 
+  static function shouldShowWooCommerceSegment() {
+    $is_woocommerce_active = class_exists('WooCommerce');
+    $woocommerce_users_count = Subscriber::where('is_woocommerce_user', 1)->count();
+
+    if (!$is_woocommerce_active && $woocommerce_users_count === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  static function getSegmentTypes() {
+    $types = [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS];
+    if (Segment::shouldShowWooCommerceSegment()) {
+      $types[] = Segment::TYPE_WC_USERS;
+    }
+    return $types;
+  }
+
   static function search($orm, $search = '') {
     return $orm->whereLike('name', '%' . $search . '%');
   }
@@ -185,7 +203,7 @@ class Segment extends Model {
 
   static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
     $query = self::selectMany([self::$_table . '.id', self::$_table . '.name'])
-      ->whereIn('type', [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS])
+      ->whereIn('type', Segment::getSegmentTypes())
       ->selectExpr(
         self::$_table . '.*, ' .
         'COUNT(IF(' .
@@ -243,7 +261,7 @@ class Segment extends Model {
 
   static function listingQuery(array $data = []) {
     $query = self::select('*');
-    $query->whereIn('type', [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS]);
+    $query->whereIn('type', Segment::getSegmentTypes());
     if (isset($data['group'])) {
       $query->filter('groupBy', $data['group']);
     }
