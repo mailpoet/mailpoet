@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 class PrivacyPolicy {
 
@@ -14,7 +15,7 @@ class PrivacyPolicy {
   }
 
   function getPrivacyPolicyContent() {
-    return
+    $content = (
       '<h2>' .
         WPFunctions::get()->__('MailPoet newsletter & emails', 'mailpoet') .
       '</h2>' .
@@ -36,7 +37,33 @@ class PrivacyPolicy {
       '</p>' .
       '<p>' .
         WPFunctions::get()->__('No identifiable information is otherwise tracked outside this website except for the email address.', 'mailpoet') .
-      '</p>';
+      '</p>'
+    );
+    $helper = new WooCommerceHelper(new WPFunctions);
+    if ($helper->isWooCommerceActive()) {
+      $content .= (
+        '<p> ' .
+        WPFunctions::get()->__('MailPoet creates and stores two cookies if you are using WooCommerce and MailPoet together. Those cookies are:', 'mailpoet') .
+        '</p>' .
+        '<p>' .
+        WPFunctions::get()->__('Cookie name: mailpoet_revenue_tracking', 'mailpoet') .
+        '<br>' .
+        WPFunctions::get()->__('Cookie expiry: 14 days.', 'mailpoet') .
+        '<br>' .
+        WPFunctions::get()->__('Cookie description: The purpose of this cookie is to track which newsletter sent from your website has acquired a click-through and a subsequent purchase in your WooCommerce store.', 'mailpoet') .
+        '</p> ' .
+        '<p>' .
+        WPFunctions::get()->__('Cookie name: mailpoet_abandoned_cart_tracking', 'mailpoet') .
+        '<br>' .
+        WPFunctions::get()->__('Cookie expiry: 3,650 days.', 'mailpoet') .
+        '<br>' .
+        WPFunctions::get()->__('Cookie description: The purpose of this cookie is to track a user that has abandoned their cart in your WooCommerce store to then be able to send them an abandoned cart newsletter from MailPoet. <br>', 'mailpoet') .
+        '<br>' .
+        WPFunctions::get()->__('Note: User must be opted-in and a confirmed subscriber.', 'mailpoet') .
+        '</p>'
+      );
+    }
+    return $content;
   }
 
 }
