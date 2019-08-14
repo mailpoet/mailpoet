@@ -11,7 +11,7 @@ const PremiumBanner = () => {
     ctaButton = (
       <a
         className="button"
-        href={MailPoet.MailPoetUrlFactory.getFreePlanUrl()}
+        href={MailPoet.MailPoetUrlFactory.getFreePlanUrl('signup', 'stats')}
         target="_blank"
         rel="noopener noreferrer"
       >
