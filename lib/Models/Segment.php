@@ -159,9 +159,17 @@ class Segment extends Model {
   static function shouldShowWooCommerceSegment() {
     $woocommerce_helper = new WCHelper();
     $is_woocommerce_active = $woocommerce_helper->isWooCommerceActive();
-    $woocommerce_users_count = Subscriber::where('is_woocommerce_user', 1)->count();
+    $woocommerce_user_exists = Segment::tableAlias('segment')
+      ->where('segment.type', Segment::TYPE_WC_USERS)
+      ->join(
+        MP_SUBSCRIBER_SEGMENT_TABLE,
+        'segment_subscribers.segment_id = segment.id',
+        'segment_subscribers'
+      )
+      ->limit(1)
+      ->findOne();
 
-    if (!$is_woocommerce_active && $woocommerce_users_count === 0) {
+    if (!$is_woocommerce_active && !$woocommerce_user_exists) {
       return false;
     }
     return true;
