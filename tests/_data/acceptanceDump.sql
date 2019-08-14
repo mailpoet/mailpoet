@@ -470,6 +470,7 @@ CREATE TABLE `mp_mailpoet_subscribers` (
   `subscribed_ip` varchar(45) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
   `confirmed_ip` varchar(45) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
   `confirmed_at` timestamp NULL DEFAULT NULL,
+  `last_subscribed_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -483,7 +484,8 @@ CREATE TABLE `mp_mailpoet_subscribers` (
   UNIQUE KEY unsubscribe_token (unsubscribe_token),
   KEY `wp_user_id` (`wp_user_id`),
   KEY `status_deleted_at` (`status`, `deleted_at`),
-  KEY updated_at (updated_at)
+  KEY updated_at (updated_at),
+  KEY `last_subscribed_at` (`last_subscribed_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 INSERT INTO `mp_mailpoet_subscribers` (`id`, `wp_user_id`, `first_name`, `last_name`, `email`, `status`, `subscribed_ip`, `confirmed_ip`, `confirmed_at`, `created_at`, `updated_at`, `deleted_at`, `unconfirmed_data`, `unsubscribe_token`) VALUES
