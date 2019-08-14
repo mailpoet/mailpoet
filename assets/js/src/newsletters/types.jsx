@@ -31,6 +31,7 @@ class NewsletterTypes extends React.Component {
       const onClick = window.mailpoet_premium_active
         ? _.partial(this.setupNewsletter, automaticEmail.slug)
         : undefined;
+      email.disabled = !window.mailpoet_premium_active;
       email.action = (() => (
         <div>
           <a
@@ -190,6 +191,13 @@ class NewsletterTypes extends React.Component {
                     {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
                   </h3>
                   <p>{type.description}</p>
+                  {type.disabled && (
+                  <p>
+                    <span style={{ color: 'red' }}>{MailPoet.I18n.t('premiumFeature')}</span>
+                    {' '}
+                    <a href="?page=mailpoet-premium">{MailPoet.I18n.t('learnMore')}</a>
+                  </p>
+                  )}
                   { type.videoGuide && (
                     <a className={badgeClassName} href={type.videoGuide} data-beacon-article={type.videoGuideBeacon} target="_blank" rel="noopener noreferrer">
                       <span className="dashicons dashicons-format-video" />
