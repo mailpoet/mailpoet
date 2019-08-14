@@ -1,6 +1,5 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import addReferralId from 'referral_url_decorator.jsx';
 
 class FreePlanAnnouncement extends React.Component {
   constructor(props) {
@@ -33,7 +32,7 @@ class FreePlanAnnouncement extends React.Component {
           <p>{MailPoet.I18n.t('freePlanDescription')}</p>
           <a
             className="button-primary"
-            href={addReferralId('https://www.mailpoet.com/free-plan/')}
+            href={MailPoet.MailPoetUrlFactory.getFreePlanUrl()}
             target="_blank"
             rel="noopener noreferrer"
           >

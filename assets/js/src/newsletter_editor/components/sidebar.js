@@ -7,7 +7,6 @@ import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import jQuery from 'jquery';
-import addReferralId from 'referral_url_decorator.jsx';
 
 var Module = {};
 var SidebarView;
@@ -354,7 +353,7 @@ Module.SidebarPreviewView = Marionette.View.extend({
                   <p>${MailPoet.I18n.t('newsletterPreviewErrorUseSendingService')}</p>
                   <p>
                     <a
-                      href=${addReferralId('https://www.mailpoet.com/free-plan/?utm_source=plugin&utm_campaign=sending-error')}
+                      href=${MailPoet.MailPoetUrlFactory.getFreePlanUrl('plugin', 'sending-error')}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
