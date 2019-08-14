@@ -171,4 +171,29 @@ class PostContentManagerTest extends \MailPoetTest {
 
   function _after() {
   }
+
+  function testItRemovesImageCaptionsFromGutenbergPosts() {
+    $content = <<<EOT
+      <!-- wp:paragraph -->
+      <p>Text</p>
+      <!-- /wp:paragraph -->
+      <!-- wp:image {"id":25,"align":"center"} -->
+      <div class="wp-block-image"><figure class="aligncenter"><img src="i.png" alt="Alt" class="wp-image-25"/><figcaption>Caption</figcaption></figure></div>
+      <!-- /wp:image -->
+      <!-- wp:paragraph -->
+      <p>Text</p>
+      <!-- /wp:paragraph -->
+      <!-- wp:image {"id":25,"align":"center"} -->
+      <div class="wp-block-image"><figure class="aligncenter"><img src="i.png" alt="Alt" class="wp-image-25"/><figcaption>Caption</figcaption></figure></div>
+      <!-- /wp:image -->
+      <!-- wp:paragraph -->
+      <p>Text</p>
+      <!-- /wp:paragraph -->
+EOT;
+
+    $post = (object)[
+      'post_content' => $content,
+    ];
+    expect($this->post_content->getContent($post, 'excerpt'))->equals('Text Text Text');
+  }
 }
