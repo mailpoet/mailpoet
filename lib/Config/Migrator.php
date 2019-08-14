@@ -413,7 +413,7 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'KEY newsletter_id (newsletter_id),',
+      'KEY newsletter_id_subscriber_id (newsletter_id, subscriber_id),',
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id)',
     ];
@@ -428,7 +428,7 @@ class Migrator {
       'queue_id int(11) unsigned NOT NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'KEY newsletter_id (newsletter_id),',
+      'KEY newsletter_id_subscriber_id (newsletter_id, subscriber_id),',
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id),',
       'KEY created_at (created_at)',
@@ -444,7 +444,7 @@ class Migrator {
       'queue_id int(11) unsigned NOT NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'KEY newsletter_id (newsletter_id),',
+      'KEY newsletter_id_subscriber_id (newsletter_id, subscriber_id),',
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id)',
     ];
