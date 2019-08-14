@@ -34,7 +34,7 @@ class SendingStatusCest {
     $I->login();
     $I->amOnMailPoetPage('Emails');
     $I->waitForText($newsletter->subject);
-    // I click on the "Sent to 3 of 3" link
+    // I click on the "Sent to 2 of 2" link
     $I->click('[data-automation-id="sending_status_' . $newsletter->id . '"]');
     $I->waitForText('Sending status');
     // I see the subscribers with related statuses
