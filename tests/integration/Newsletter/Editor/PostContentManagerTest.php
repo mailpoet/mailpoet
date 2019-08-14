@@ -169,7 +169,11 @@ class PostContentManagerTest extends \MailPoetTest {
     expect($this->post_content->getContent($post, ''))->equals('some text in content');
   }
 
-  function _after() {
+  function testItRemovesImageCaptionsFromClassicEditorPosts() {
+    $post = (object)[
+      'post_content' => 'Text [caption id="attachment_23" align="alignnone" width="300"]<img class="size-medium wp-image-23" src="i.png" alt="Alt" width="300" height="300" />Caption[/caption] Text [caption id="attachment_23" align="alignnone" width="300"]<img class="size-medium wp-image-23" src="i.png" alt="Alt" width="300" height="300" />Caption[/caption] Text',
+    ];
+    expect($this->post_content->getContent($post, 'excerpt'))->equals('Text Text Text');
   }
 
   function testItRemovesImageCaptionsFromGutenbergPosts() {

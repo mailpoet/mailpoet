@@ -32,7 +32,7 @@ class PostContentManager {
       if (!empty($post->post_excerpt)) {
         return self::stripShortCodes($post->post_excerpt);
       }
-      return $this->generateExcerpt(self::stripShortCodes($post->post_content));
+      return $this->generateExcerpt($post->post_content);
     }
     return self::stripShortCodes($post->post_content);
   }
@@ -78,12 +78,21 @@ class PostContentManager {
   }
 
   private function generateExcerpt($content) {
-    // remove image captions
+    // remove image captions in gutenberg
     $content = preg_replace(
       "/<figcaption.*?>.*?<\/figcaption>/",
       '',
       $content
     );
+    // remove image captions in classic posts
+    $content = preg_replace(
+      "/\[caption.*?\](.*?)\[\/caption\]/",
+      '',
+      $content
+    );
+
+    $content = self::stripShortCodes($content);
+
     // if excerpt is empty then try to find the "more" tag
     $excerpts = explode('<!--more-->', $content);
     if (count($excerpts) > 1) {
