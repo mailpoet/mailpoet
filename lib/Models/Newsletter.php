@@ -585,18 +585,7 @@ class Newsletter extends Model {
     $result = [];
 
     foreach ($statisticsExprs as $name => $statisticsExpr) {
-      if (!in_array($this->type, [self::TYPE_WELCOME, self::TYPE_AUTOMATIC])) {
-        $row = $statisticsExpr->whereRaw('`queue_id` = ?', [$this->queue['id']])->findOne();
-      } else {
-        $row = $statisticsExpr
-          ->join(MP_SENDING_QUEUES_TABLE, ["queue_id", "=", "qt.id"], "qt")
-          ->join(MP_SCHEDULED_TASKS_TABLE, ["qt.task_id", "=", "tasks.id"], "tasks")
-          ->where([
-            "tasks.status" => SendingQueue::STATUS_COMPLETED,
-            "stat.newsletter_id" => $this->id,
-          ])->findOne();
-      }
-
+      $row = $statisticsExpr->where('newsletter_id', $this->id)->findOne();
       $result[$name] = !empty($row->cnt) ? (int)$row->cnt : 0;
     }
 
