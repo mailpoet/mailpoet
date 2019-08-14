@@ -1,6 +1,5 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import addReferralId from 'referral_url_decorator.jsx';
 
 const PremiumBanner = () => {
   if (window.mailpoet_premium_active) {
@@ -12,7 +11,7 @@ const PremiumBanner = () => {
     ctaButton = (
       <a
         className="button"
-        href={addReferralId('https://www.mailpoet.com/free-plan/')}
+        href={MailPoet.MailPoetUrlFactory.getFreePlanUrl()}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -23,7 +22,7 @@ const PremiumBanner = () => {
     ctaButton = (
       <a
         className="button"
-        href={addReferralId(`https://www.mailpoet.com/pricing/?subscribers=${window.mailpoet_subscribers_count}`)}
+        href={MailPoet.MailPoetUrlFactory.getPricingPageUrl(window.mailpoet_subscribers_count)}
         target="_blank"
         rel="noopener noreferrer"
       >

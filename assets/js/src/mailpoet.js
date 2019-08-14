@@ -1,8 +1,10 @@
 import FeaturesController from 'features_controller';
+import MailPoetUrlFactory from 'mailpoet_url_factory';
 
 // A placeholder for MailPoet object
 var MailPoet = {
   FeaturesController: FeaturesController(window.mailpoet_feature_flags),
+  MailPoetUrlFactory: MailPoetUrlFactory(window.mailpoet_referral_id),
 };
 
 // Expose MailPoet globally
