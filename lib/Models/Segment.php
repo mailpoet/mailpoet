@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WooCommerce\Helper as WCHelper;
 
 if (!defined('ABSPATH')) exit;
 
@@ -156,7 +157,8 @@ class Segment extends Model {
   }
 
   static function shouldShowWooCommerceSegment() {
-    $is_woocommerce_active = class_exists('WooCommerce');
+    $woocommerce_helper = new WCHelper();
+    $is_woocommerce_active = $woocommerce_helper->isWooCommerceActive();
     $woocommerce_users_count = Subscriber::where('is_woocommerce_user', 1)->count();
 
     if (!$is_woocommerce_active && $woocommerce_users_count === 0) {
