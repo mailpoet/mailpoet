@@ -78,6 +78,12 @@ class PostContentManager {
   }
 
   private function generateExcerpt($content) {
+    // remove image captions
+    $content = preg_replace(
+      "/<figcaption.*?>.*?<\/figcaption>/",
+      '',
+      $content
+    );
     // if excerpt is empty then try to find the "more" tag
     $excerpts = explode('<!--more-->', $content);
     if (count($excerpts) > 1) {
