@@ -306,7 +306,7 @@ class Scheduler {
   }
 
   static function getPreviousRunDate($schedule, $from_timestamp = false) {
-    $wp = new WPFunctions();
+    $wp = WPFunctions::get();
     $from_timestamp = ($from_timestamp) ? $from_timestamp : $wp->currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
@@ -319,7 +319,7 @@ class Scheduler {
   }
 
   static function getScheduledTimeWithDelay($after_time_type, $after_time_number) {
-    $wp = new WPFunctions();
+    $wp = WPFunctions::get();
     $current_time = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     switch ($after_time_type) {
       case 'minutes':
