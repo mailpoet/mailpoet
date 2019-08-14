@@ -120,7 +120,7 @@ class Newsletters {
           [
             'slug' => 'woocommerce_abandoned_shopping_cart',
             'title' => $this->wp->__('Abandoned Shopping Cart', 'mailpoet'),
-            'description' => $this->wp->__('Send an email to logged-in visitors who have items in their shopping carts but left your website without checking out. Can convert up to 5% of abandoned carts.', 'mailpoet'),
+            'description' => $this->wp->__('Send an email to identified visitors who have items in their shopping carts but left your website without checking out. Can convert up to 20% of abandoned carts.', 'mailpoet'),
             'soon' => true,
             'badge' => [
               'text' => $this->wp->__('Must-have', 'mailpoet'),
