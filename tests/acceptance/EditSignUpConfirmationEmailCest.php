@@ -42,8 +42,4 @@ class EditSignUpConfirmationEmailCest {
     $I->switchToIframe('preview-html');
     $I->waitForText('Confirmation email body link');
   }
-
-  function _after(\AcceptanceTester $I) {
-    $I->cli('widget reset sidebar-1 --allow-root');
-  }
 }

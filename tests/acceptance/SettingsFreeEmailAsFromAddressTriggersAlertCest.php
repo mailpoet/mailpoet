@@ -39,9 +39,4 @@ class SettingsFreeEmailAsFromAddressTriggersAlertCest {
     $I->fillField($from_email_field, 'alertuser@hotmail.com');
     $I->waitForElement('.sender_email_address_warning');
   }
-
-  function _after() {
-    $settings = new Settings();
-    $settings->withSendingMethodSmtpMailhog();
-  }
 }

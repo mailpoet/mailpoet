@@ -39,8 +39,6 @@ class SubscriptionFormCest {
     $I->click('.mailpoet_submit');
     $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
-
-    $I->cli('widget reset sidebar-1 --allow-root');
   }
 
   function subscriptionFormShortcode(\AcceptanceTester $I) {
@@ -101,9 +99,5 @@ class SubscriptionFormCest {
     $I->click('.mailpoet_submit');
     $I->waitForText("You’ve been successfully subscribed to our newsletter!", self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
-  }
-
-  function _after(\AcceptanceTester $I) {
-    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_subscriber_ips" --allow-root');
   }
 }

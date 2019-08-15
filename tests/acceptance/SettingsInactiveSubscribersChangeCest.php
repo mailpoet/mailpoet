@@ -19,8 +19,6 @@ class SettingsInactiveSubscribersChangeCest {
       (new Subscriber())->withStatus('inactive')->withSegments([$segment])->create();
     }
     (new Settings)->withDeactivateSubscriberAfter6Months()->withTrackingEnabled();
-    $scheduled_tasks_factory = new ScheduledTask();
-    $scheduled_tasks_factory->deleteAll();
   }
 
   function inactiveSubscribersSettingsChange(\AcceptanceTester $I) {

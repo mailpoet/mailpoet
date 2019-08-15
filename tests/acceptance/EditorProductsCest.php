@@ -241,7 +241,6 @@ class EditorProductsCest {
     $this->initializeWooCommerce($I);
     $this->filterProducts($I);
     $this->changeDisplaySettings($I);
-    $I->deactivateWooCommerce();
   }
 
 }

@@ -29,8 +29,4 @@ class WooCommerceSettingsTabCest {
     $I->dontSeeElement('[data-automation-id="woocommerce_settings_tab"]');
     $I->seeNoJSErrors();
   }
-
-  function _after(\AcceptanceTester $I) {
-    $I->deactivateWooCommerce();
-  }
 }
