@@ -91,26 +91,23 @@ MailPoet.Notice = {
       });
     }.bind(this.element));
 
-    // listen to message event
-    jQuery(this.element).on('setMessage', function (e, message) { // eslint-disable-line func-names
-      MailPoet.Notice.setMessage(message);
-    });
-
     return this;
   },
   updateNotice: function updateNotice() {
     // update notice's message
-    jQuery('[data-id="' + this.options.id + '"').first().trigger(
-      'setMessage', this.options.message
+    this.setMessage(
+      this.options.message,
+      jQuery('[data-id="' + this.options.id + '"').first()
     );
   },
-  setMessage: function setMessage(message) {
+  setMessage: function setMessage(message, element) {
     var formattedMessage = this.formatMessage(message);
+    var el = element || this.element;
 
     // let's sugar coat the message with a fancy <p>
     formattedMessage = '<p>' + formattedMessage + '</p>';
     // set message
-    return this.element.html(formattedMessage);
+    return el.html(formattedMessage);
   },
   formatMessage: function formatMessage(message) {
     if (Array.isArray(message)) {
@@ -129,8 +126,8 @@ MailPoet.Notice = {
       this.updateNotice();
     } else {
       this.createNotice();
+      this.showNotice();
     }
-    this.showNotice();
   },
   showNotice: function showNotice() {
     // set message
