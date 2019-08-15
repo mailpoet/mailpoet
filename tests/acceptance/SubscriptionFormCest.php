@@ -78,7 +78,7 @@ class SubscriptionFormCest {
     $I->waitForElement(Locator::contains('span.subject', 'Confirm your subscription'));
     $I->click(Locator::contains('span.subject', 'Confirm your subscription'));
     $I->switchToIframe('preview-html');
-    $I->click('Click here to confirm your subscription');
+    $I->click('I confirm my subscription!');
     $I->switchToNextTab();
     $I->see('You have subscribed');
     $I->seeNoJSErrors();

@@ -29,7 +29,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'send' =>
         Stub\Expected::once(function($email) {
           expect($email['body']['html'])->contains('<strong>Test segment</strong>');
-          expect($email['body']['html'])->contains('<a target="_blank" href="http://example.com">Click here to confirm your subscription.</a>');
+          expect($email['body']['html'])->contains('<a target="_blank" href="http://example.com">I confirm my subscription!</a>');
         }),
     ], $this);
 
