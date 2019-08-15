@@ -25,6 +25,7 @@ lang
 .mp_svn
 /nbproject/
 tests/_data/acceptanceGenerated.sql
+tests/_data/acceptanceBackup.sql
 lib/DI/CachedContainer.php
 prefixer/vendor
 prefixer/build
