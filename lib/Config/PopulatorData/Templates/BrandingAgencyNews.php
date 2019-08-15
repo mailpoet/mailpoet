@@ -101,7 +101,7 @@ class BrandingAgencyNews {
                   1 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #808080;"><a href="[link:newsletter_view_in_browser_url]" style="color: #808080;">Open this email in your web browser.</a></span></p>',
+                    'text' => '<p><span style="color: #808080;"><a href="[link:newsletter_view_in_browser_url]" style="color: #808080;">View this in your browser.</a></span></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -2067,7 +2067,7 @@ class BrandingAgencyNews {
          ],
         'header' =>
          [
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
           'styles' =>
            [
             'block' =>

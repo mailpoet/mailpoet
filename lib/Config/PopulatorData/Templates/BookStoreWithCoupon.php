@@ -824,7 +824,7 @@ class BookStoreWithCoupon {
                   2 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #ffffff;"><a href="[link:newsletter_view_in_browser_url]" style="color: #ffffff;">Open this email in your web browser.</a></span></p>',
+                    'text' => '<p><span style="color: #ffffff;"><a href="[link:newsletter_view_in_browser_url]" style="color: #ffffff;">View this in your browser.</a></span></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1175,7 +1175,7 @@ class BookStoreWithCoupon {
          ],
         'header' =>
          [
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
           'styles' =>
            [
             'block' =>

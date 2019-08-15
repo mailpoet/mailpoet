@@ -104,7 +104,7 @@ class ClearNews {
                   1 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a></p>',
+                    'text' => '<p><a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1862,7 +1862,7 @@ class ClearNews {
          ],
         'header' =>
          [
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
           'styles' =>
            [
             'block' =>

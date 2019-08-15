@@ -1259,7 +1259,7 @@ class LifestyleBlogA {
          ],
         'header' =>
          [
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
           'styles' =>
            [
             'block' =>

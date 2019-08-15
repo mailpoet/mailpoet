@@ -61,7 +61,7 @@ class WelcomeBlank12Column {
                 "blocks" => [
                   [
                     "type" => "header",
-                    "text" => WPFunctions::get()->__("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser.</a>", 'mailpoet'),
+                    "text" => WPFunctions::get()->__("<a href=\"[link:newsletter_view_in_browser_url]\">View this in your browser.</a>", 'mailpoet'),
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",
