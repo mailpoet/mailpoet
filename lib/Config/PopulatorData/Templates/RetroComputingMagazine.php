@@ -160,7 +160,7 @@ class RetroComputingMagazine {
                               0 =>
                                  [
                                   'type' => 'header',
-                                  'text' => '<p><span style="color: #ffffff;">Display problems? <a href="[link:newsletter_view_in_browser_url]" style="color: #ffffff;">Open this email in your web browser.</a></span></p>',
+                                  'text' => '<p><span style="color: #ffffff;"><a href="[link:newsletter_view_in_browser_url]" style="color: #ffffff;">View this in your browser.</a></span></p>',
                                   'styles' =>
                                      [
                                       'block' =>

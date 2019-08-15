@@ -101,7 +101,7 @@ class FarmersMarket {
                   1 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #689f2c;"><a href="[link:newsletter_view_in_browser_url]" style="color: #689f2c;">Open this email in your web browser.</a></span></p>',
+                    'text' => '<p><span style="color: #689f2c;"><a href="[link:newsletter_view_in_browser_url]" style="color: #689f2c;">View this in your browser.</a></span></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1530,7 +1530,7 @@ class FarmersMarket {
          ],
         'header' =>
          [
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
           'styles' =>
            [
             'block' =>

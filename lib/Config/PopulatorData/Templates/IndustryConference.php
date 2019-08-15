@@ -1041,7 +1041,7 @@ class IndustryConference {
                   3 =>
                    [
                     'type' => 'header',
-                    'text' => '<p>&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a></p>',
+                    'text' => '<p>&nbsp;<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1452,7 +1452,7 @@ class IndustryConference {
          ],
         'header' =>
          [
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
           'styles' =>
            [
             'block' =>

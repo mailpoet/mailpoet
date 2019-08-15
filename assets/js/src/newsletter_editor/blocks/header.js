@@ -13,7 +13,7 @@ Module.HeaderBlockModel = base.BlockModel.extend({
   defaults: function defaults() {
     return this._getDefaults({
       type: 'header',
-      text: 'Display problems? <a href="[link:newsletter_view_in_browser_url]">View it in your browser</a>',
+      text: '<a href="[link:newsletter_view_in_browser_url]">View it in your browser</a>',
       styles: {
         block: {
           backgroundColor: 'transparent',

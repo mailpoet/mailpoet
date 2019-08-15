@@ -5,7 +5,7 @@ class HeaderTest extends \MailPoetUnitTest {
 
   private $block = [
     'type' => 'header',
-    'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open in browser</a>',
+    'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
     'styles' => [
       'block' => [
         'backgroundColor' => 'transparent',
@@ -28,7 +28,7 @@ class HeaderTest extends \MailPoetUnitTest {
     $expected_result = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_header"  style="line-height: 19.2px;color: #222222;font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;font-size: 12px;text-align: left;">
-          Display problems? <a href="[link:newsletter_view_in_browser_url]" style="color:#6cb7d4;text-decoration:underline">Open in browser</a>
+          <a href="[link:newsletter_view_in_browser_url]" style="color:#6cb7d4;text-decoration:underline">View this in your browser.</a>
         </td>
       </tr>';
     expect($output)->equals($expected_result);
@@ -40,7 +40,7 @@ class HeaderTest extends \MailPoetUnitTest {
     $expected_result = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_header" bgcolor="#f0f0f0" style="line-height: 19.2px;background-color: #f0f0f0;color: #222222;font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;font-size: 12px;text-align: left;">
-          Display problems? <a href="[link:newsletter_view_in_browser_url]" style="color:#6cb7d4;text-decoration:underline">Open in browser</a>
+          <a href="[link:newsletter_view_in_browser_url]" style="color:#6cb7d4;text-decoration:underline">View this in your browser.</a>
         </td>
       </tr>';
     expect($output)->equals($expected_result);

@@ -22,7 +22,7 @@
             "blocks": [
               {
                 "type": "header",
-                "text": "Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">View it in your browser</a>",
+                "text": "<a href=\"[link:newsletter_view_in_browser_url]\">View it in your browser</a>",
                 "styles": {
                   "block": {
                     "backgroundColor": "#ffffff"
