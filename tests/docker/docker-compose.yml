@@ -42,7 +42,7 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
-      MAILPOET_DISABLE_TRACY_BAR: 1
+      MAILPOET_TEST_TRACY_MODE: 1
 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]

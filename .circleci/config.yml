@@ -159,6 +159,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              mkdir -m 777 -p tests/_output/exceptions
               cd tests/docker
               docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_<< parameters.index >> --steps --debug -vvv --html --xml
       - store_artifacts:
@@ -180,6 +181,7 @@ jobs:
       - run:
           name: Run acceptance tests
           command: |
+              mkdir -m 777 -p tests/_output/exceptions
               cd tests/docker
               docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_<< parameters.index >> --steps --debug -vvv --html --xml
       - store_artifacts:

@@ -10,6 +10,7 @@ use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use Tracy\Debugger;
+use Tracy\ILogger;
 
 if (!defined('ABSPATH')) exit;
 
@@ -180,6 +181,9 @@ class API {
       $response = $endpoint->{$this->_request_method}($this->_request_data);
       return $response;
     } catch (\Exception $e) {
+      if (class_exists(Debugger::class) && Debugger::$logDirectory) {
+        Debugger::log($e, ILogger::EXCEPTION);
+      }
       $error_message = $e->getMessage();
       $error_response = $this->createErrorResponse(Error::BAD_REQUEST, $error_message, Response::STATUS_BAD_REQUEST);
       return $error_response;
