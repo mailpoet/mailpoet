@@ -10,7 +10,7 @@ const ReviewRequest = (props) => {
 
   return (
     <div className="mailpoet_review_request">
-      <img src={props.reviewRequestIllustrationUrl} height="200" width="200" alt="" />
+      <img src={props.reviewRequestIllustrationUrl} height="280" width="280" alt="" />
       <h2>{MailPoet.I18n.t('reviewRequestHeading')}</h2>
       <p>{MailPoet.I18n.t('reviewRequestDidYouKnow').replace('[username]', props.username)}</p>
       <p>{usingForPhrase}</p>
