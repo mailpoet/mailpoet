@@ -13,7 +13,6 @@ class ReinstallFromScratchCest {
 
   function reinstallFromScratch(\AcceptanceTester $I) {
     $I->wantTo('Reinstall from scratch');
-    $I->deactivateWooCommerce();
     $I->login();
 
     // Step 1 - create email, form, list and subscribers
@@ -54,7 +53,6 @@ class ReinstallFromScratchCest {
     // Check lists
     $I->amOnMailpoetPage('Lists');
     $I->waitForText('WordPress Users', 30, '[data-automation-id="listing_item_1"]');
-    $I->dontSee('WooCommerce Customers', '[data-automation-id="listing_item_2"]');
     $I->see('My First List', '[data-automation-id="listing_item_3"]');
     $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 2);
     // Check subscribers
