@@ -29,7 +29,7 @@ class Settings {
 
   function withConfirmationEmailBody($body = null) {
     if ($body === null) {
-      $body = "Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team";
+      $body = "Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to our list by clicking the link below: \n\n[activation_link]I confirm my subscription![/activation_link]\n\nThank you,\n\nThe Team";
     }
     $this->settings->set('signup_confirmation.body', $body);
     return $this;
