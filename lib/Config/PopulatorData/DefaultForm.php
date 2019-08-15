@@ -40,7 +40,7 @@ class DefaultForm {
         'unique' => '0',
         'static' => '0',
         'params' => [
-          'text' => WPFunctions::get()->__('We keep your data private and share your data only with third parties that make this service possible. <a href="">Read our Privacy Policy.</a>', 'mailpoet'),
+          'text' => WPFunctions::get()->__('We keep your data private and share your data only with third parties that make this service possible. See our Privacy Policy for more information.', 'mailpoet'),
           'nl2br' => '0',
         ],
         'position' => '3',
