@@ -18,8 +18,6 @@ class WooCommerceCustomerListCest {
     $settings_factory->withWooCommerceListImportPageDisplayed(true);
     $settings_factory->withWooCommerceCheckoutOptinEnabled();
     $settings_factory->withCookieRevenueTrackingDisabled();
-    $customer_factory = new WooCommerceCustomer($I);
-    $customer_factory->deleteAll();
   }
 
   function newCustomerIsAddedToListTest(\AcceptanceTester $I) {
@@ -33,9 +31,5 @@ class WooCommerceCustomerListCest {
     $I->click('[data-automation-id="view_subscribers_WooCommerce Customers"]');
     $I->waitForListingItemsToLoad();
     $I->waitForText($customer_email);
-  }
-
-  function _after(\AcceptanceTester $I) {
-    $I->deactivateWooCommerce();
   }
 }

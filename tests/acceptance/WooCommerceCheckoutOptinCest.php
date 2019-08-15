@@ -49,8 +49,4 @@ class WooCommerceCheckoutOptinCest {
     // Customer is unsubscribed from the WC customers list
     $I->dontSee('WooCommerce Customers', 'td[data-colname="Lists"]');
   }
-
-  function _after(\AcceptanceTester $I) {
-    $I->deactivateWooCommerce();
-  }
 }

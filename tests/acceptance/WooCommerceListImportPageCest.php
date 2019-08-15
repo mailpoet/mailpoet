@@ -19,11 +19,6 @@ class WooCommerceListImportPageCest {
     $I->activateWooCommerce();
     $this->customer_factory = new WooCommerceCustomer($I);
     $this->order_factory = new WooCommerceOrder($I);
-    // Cleanup
-    $this->customer_factory->deleteAll();
-    $this->order_factory->deleteAll();
-    $scheduled_tasks_factory = new ScheduledTask();
-    $scheduled_tasks_factory->deleteAll();
   }
 
   function importListPageImportTest(\AcceptanceTester $I) {
@@ -96,9 +91,5 @@ class WooCommerceListImportPageCest {
     $I->amOnMailpoetPage('Emails');
     $I->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
     $this->order_factory->delete($order['id']);
-  }
-
-  function _after(\AcceptanceTester $I) {
-    $I->deactivateWooCommerce();
   }
 }

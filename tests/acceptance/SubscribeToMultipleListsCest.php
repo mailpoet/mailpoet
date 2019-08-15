@@ -9,11 +9,6 @@ use MailPoet\Test\DataFactories\Settings;
 
 class SubscribeToMultipleListsCest {
 
-  function _before(\AcceptanceTester $I) {
-    // Clean table with subscriber IPs, so test which run before this won't trigger subscription limits
-    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_subscriber_ips" --allow-root');
-  }
-
   function subscribeToMultipleLists(\AcceptanceTester $I) {
     //Step one - create form with three lists
     $segment_factory = new Segment();
@@ -48,7 +43,5 @@ class SubscribeToMultipleListsCest {
     $I->waitForText($seg2);
     $I->waitForText($seg3);
     $I->seeNoJSErrors();
-    //reset widget for other tests
-    $I->cli('widget reset sidebar-1 --allow-root');
   }
 }

@@ -34,10 +34,6 @@ class EnableAndDisableSignupConfirmationCest {
     $I->see('Enable signup confirmation subject');
   }
 
-  function _after(AcceptanceTester $I) {
-    $I->cli('widget reset sidebar-1 --allow-root');
-  }
-
   private function setSignupConfirmationSetting(AcceptanceTester $I, $enabled) {
     $choice_selector = $enabled ?
       '[data-automation-id="enable_signup_confirmation"]' :

@@ -71,17 +71,6 @@ class NewsletterStatisticsCest {
     $I->dontSee('€', '.mailpoet_stats_text');
   }
 
-  function _after(\AcceptanceTester $I) {
-    (new WooCommerceOrder($I))->deleteAll();
-    $I->deactivateWooCommerce();
-    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_newsletters" --allow-root');
-    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_sending_queue" --allow-root');
-    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_subscribers" --allow-root');
-    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_newsletter_links" --allow-root');
-    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_statistics_clicks" --allow-root');
-    $I->cli('db query "TRUNCATE TABLE mp_mailpoet_statistics_woocommerce_purchases" --allow-root');
-  }
-
   private function createNewsletter($newsletter_title) {
     return (new Newsletter())
       ->withSubject($newsletter_title)

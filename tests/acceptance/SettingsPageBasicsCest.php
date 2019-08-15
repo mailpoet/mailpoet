@@ -95,9 +95,4 @@ class SettingsPageBasicsCest {
     $I->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
     $I->dontSeeElement('[data-acceptance-id="freemail-sender-warning-new-installation"]');
   }
-
-  function _after() {
-    $settings = new Settings();
-    $settings->withSendingMethodSmtpMailhog();
-  }
 }

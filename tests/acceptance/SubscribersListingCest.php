@@ -9,7 +9,7 @@ class SubscribersListingCest {
   function subscribersListing(\AcceptanceTester $I) {
     $I->wantTo('Open subscribers listings page');
 
-    $subscriber = (new Subscriber())
+    (new Subscriber())
       ->withEmail('wp@example.com')
       ->create();
 
@@ -17,8 +17,6 @@ class SubscribersListingCest {
     $I->amOnMailpoetPage('Subscribers');
     $I->searchFor('wp@example.com');
     $I->waitForText('wp@example.com');
-
-    $subscriber->delete();
   }
 
 }

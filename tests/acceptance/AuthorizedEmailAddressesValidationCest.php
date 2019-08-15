@@ -50,7 +50,6 @@ class AuthorizedEmailAddressesValidationCest {
     $I->waitForText('Settings saved');
     $I->reloadPage();
     $I->cantSee($error_message_prefix);
-    $settings->withSendingMethodSmtpMailhog();
   }
 
   function authorizedEmailsInNewslettersValidation(\AcceptanceTester $I) {
@@ -86,7 +85,6 @@ class AuthorizedEmailAddressesValidationCest {
     $I->waitForListingItemsToLoad();
     $I->cantSee('Your automatic emails have been paused, because some email addresses haven’t been authorized yet.');
     $I->cantSee('Update the from address of Subject 1');
-    $settings->withSendingMethodSmtpMailhog();
   }
 
   function validationBeforeSendingNewsletter(\AcceptanceTester $I) {
@@ -107,7 +105,5 @@ class AuthorizedEmailAddressesValidationCest {
     $I->selectOptionInSelect2('WordPress Users');
     $I->click('Send');
     $I->waitForElement('.parsley-invalidFromAddress');
-
-    $settings->withSendingMethodSmtpMailhog();
   }
 }

@@ -19,10 +19,6 @@ class RevenueTrackingCookieCest {
     $I->activateWooCommerce();
   }
 
-  function _after(\AcceptanceTester $I) {
-    $I->deactivateWooCommerce();
-  }
-
   function cookieIsStoredOnClick(\AcceptanceTester $I) {
     $I->wantTo('Test Revenue cookie is saved');
     $newsletter_subject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
