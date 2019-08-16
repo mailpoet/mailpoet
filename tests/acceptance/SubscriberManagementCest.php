@@ -113,6 +113,7 @@ class SubscriberManagementCest {
   function deleteSubscriberFromList(\AcceptanceTester $I) {
     $I->wantTo('Delete a subscriber from a list');
     $new_subscriber_email = 'deletefromlistuser99@fakemail.fake';
+    $this->generateMultipleLists();
     $this->generateSingleSubscriber('deletefromlistuser99@fakemail.fake', 'Delete', 'FromAList');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
