@@ -15,6 +15,7 @@ class DeleteNewsletterCest {
     $I->amOnMailpoetPage('Emails');
     $I->waitForText($newsletter_name);
     $I->clickItemRowActionByItemName($newsletter_name, 'Move to trash');
+    $I->waitForText('1 email was moved to the trash.');
     $I->waitForElement('[data-automation-id="filters_trash"]');
     $I->click('[data-automation-id="filters_trash"]');
     $I->waitForText($newsletter_name);
@@ -31,6 +32,8 @@ class DeleteNewsletterCest {
     $I->click('[data-automation-id="filters_trash"]');
     $I->waitForText($newsletter_name);
     $I->clickItemRowActionByItemName($newsletter_name, 'Restore');
+    $I->waitForText('1 email has been restored from the Trash.');
+    $I->waitForElement('[data-automation-id="filters_all"]');
     $I->click('[data-automation-id="filters_all"]');
     $I->waitForText($newsletter_name);
   }
@@ -46,7 +49,7 @@ class DeleteNewsletterCest {
     $I->click('[data-automation-id="filters_trash"]');
     $I->waitForText($newsletter_name);
     $I->clickItemRowActionByItemName($newsletter_name, 'Delete Permanently');
-    $I->waitForText('permanently deleted.');
+    $I->waitForText('1 email was permanently deleted.');
     $I->waitForElementNotVisible($newsletter_name);
   }
 }
