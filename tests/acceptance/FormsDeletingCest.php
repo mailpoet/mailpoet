@@ -40,6 +40,8 @@ class FormsDeletingCest {
     $I->waitForText($form_name);
 
     $I->clickItemRowActionByItemName($form_name, 'Restore');
+    $I->waitForText('1 form has been restored from the trash.');
+    $I->waitForElement('[data-automation-id="filters_all"]');
     $I->click('[data-automation-id="filters_all"]');
     $I->waitForText($form_name);
   }
