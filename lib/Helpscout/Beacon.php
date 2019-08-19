@@ -21,10 +21,11 @@ class Beacon {
     $mta = $settings->get('mta');
     $current_theme = WPFunctions::get()->wpGetTheme();
     $current_user = WPFunctions::get()->wpGetCurrentUser();
+    $sender = $settings->get('sender');
     $premium_key = $settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $settings->get(Bridge::API_KEY_SETTING_NAME);
     return [
       'name' => $current_user->display_name,
-      'email' => $current_user->user_email,
+      'email' => $sender['address'],
       'PHP version' => PHP_VERSION,
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
