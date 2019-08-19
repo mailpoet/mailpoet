@@ -4,6 +4,7 @@ namespace MailPoet\Test\API\JSON\v1;
 use Codeception\Stub;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Models\Setting;
 use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Referrals\ReferralDetector;
@@ -27,7 +28,7 @@ class SetupTest extends \MailPoetTest {
 
     $settings = new SettingsController();
     $referral_detector = new ReferralDetector($wp, $settings);
-    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector);
+    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, new FeaturesController());
     $router = new Setup($wp, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
