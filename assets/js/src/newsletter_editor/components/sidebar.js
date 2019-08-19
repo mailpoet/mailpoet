@@ -353,7 +353,7 @@ Module.SidebarPreviewView = Marionette.View.extend({
                   <p>${MailPoet.I18n.t('newsletterPreviewErrorUseSendingService')}</p>
                   <p>
                     <a
-                      href=${MailPoet.MailPoetUrlFactory.getFreePlanUrl('plugin', 'sending-error')}
+                      href=${MailPoet.MailPoetComUrlFactory.getFreePlanUrl({ utm_campaign: 'sending-error' })}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

@@ -47,7 +47,7 @@ class NewsletterSendingErrorCest {
 
     $I->seeElement('a', [
       'text' => 'Sign up for free in minutes',
-      'href' => 'https://www.mailpoet.com/free-plan/?utm_source=plugin&utm_campaign=sending-error',
+      'href' => 'https://www.mailpoet.com/free-plan?utm_campaign=sending-error&utm_source=plugin',
       'target' => '_blank',
     ]);
 
