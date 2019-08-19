@@ -115,7 +115,7 @@ const PHPMailerCheckSettingsNotice = () => (
     </p>
     <p>
       <a
-        href={MailPoet.MailPoetUrlFactory.getFreePlanUrl('sending-error')}
+        href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({ utm_campaign: 'sending-error' })}
         target="_blank"
         rel="noopener noreferrer"
       >

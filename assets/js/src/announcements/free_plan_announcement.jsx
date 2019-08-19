@@ -32,7 +32,7 @@ class FreePlanAnnouncement extends React.Component {
           <p>{MailPoet.I18n.t('freePlanDescription')}</p>
           <a
             className="button-primary"
-            href={MailPoet.MailPoetUrlFactory.getFreePlanUrl('new-free-plan-notice')}
+            href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({ utm_campaign: 'new-free-plan-notice' })}
             target="_blank"
             rel="noopener noreferrer"
           >

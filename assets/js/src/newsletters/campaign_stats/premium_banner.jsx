@@ -11,7 +11,7 @@ const PremiumBanner = () => {
     ctaButton = (
       <a
         className="button"
-        href={MailPoet.MailPoetUrlFactory.getFreePlanUrl('signup', 'stats')}
+        href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({ utm_medium: 'stats', utm_campaign: 'signup' })}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -22,7 +22,7 @@ const PremiumBanner = () => {
     ctaButton = (
       <a
         className="button"
-        href={MailPoet.MailPoetUrlFactory.getPricingPageUrl(window.mailpoet_subscribers_count)}
+        href={MailPoet.MailPoetComUrlFactory.getPricingPageUrl(window.mailpoet_subscribers_count)}
         target="_blank"
         rel="noopener noreferrer"
       >
