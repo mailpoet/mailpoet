@@ -14,7 +14,7 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracy_path)) {
 
   if (getenv('MAILPOET_TEST_TRACY_MODE')) {
     Debugger::enable(Debugger::PRODUCTION, __DIR__ . '/tests/_output/exceptions');
-    Debugger::$logSeverity = E_ALL;
+    Debugger::$logSeverity = E_ALL & ~E_USER_NOTICE;
   } else {
     function render_tracy() {
       ob_start();
