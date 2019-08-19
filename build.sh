@@ -51,6 +51,11 @@ mkdir vendor-prefixed
 
 echo '[BUILD] Fetching prefixed production libraries'
 ./composer.phar install --prefer-dist --working-dir=./prefixer/
+
+# Remove Doctrinne Annotations (no need since generated metadata are packed)
+# Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
+rm -rf vendor-prefixed/doctrine/annotations
+
 ./composer.phar dump-autoload
 
 # Copy release folders.
@@ -100,9 +105,6 @@ rm -rf $plugin_name/vendor/soundasleep/html2text/tests
 rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
 rm -rf $plugin_name/vendor/symfony/translation/Tests
 rm -rf $plugin_name/vendor/twig/twig/test
-
-# Remove Doctrinne Annotations (no need since generated metadata are packed)
-rm -rf $plugin_name/vendor-prefixed/doctrine/annotations
 
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'
