@@ -17,6 +17,10 @@ class SegmentEntity {
   use UpdatedAtTrait;
   use DeletedAtTrait;
 
+  const TYPE_WP_USERS = 'wp_users';
+  const TYPE_WC_USERS = 'woocommerce_users';
+  const TYPE_DEFAULT = 'default';
+
   /**
    * @Column(type="string")
    * @var string
