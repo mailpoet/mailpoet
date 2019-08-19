@@ -43,13 +43,15 @@ class Links {
     if ((boolean)$settings->get('tracking.enabled')) {
       $link_hash = NewsletterLinkModel::where('queue_id', $queue->id)
         ->where('url', '[link:subscription_unsubscribe_url]')
-        ->findOne()
-        ->hash;
+        ->findOne();
+      if (!$link_hash instanceof NewsletterLinkModel) {
+        return '';
+      }
       $data = NewsletterLinks::createUrlDataObject(
         $subscriber->id,
         $subscriber->email,
         $queue->id,
-        $link_hash,
+        $link_hash->hash,
         false
       );
       $url = Router::buildRequest(
