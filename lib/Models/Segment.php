@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
 
@@ -15,9 +16,9 @@ if (!defined('ABSPATH')) exit;
 
 class Segment extends Model {
   static $_table = MP_SEGMENTS_TABLE;
-  const TYPE_WP_USERS = 'wp_users';
-  const TYPE_WC_USERS = 'woocommerce_users';
-  const TYPE_DEFAULT = 'default';
+  const TYPE_WP_USERS = SegmentEntity::TYPE_WP_USERS;
+  const TYPE_WC_USERS = SegmentEntity::TYPE_WC_USERS;
+  const TYPE_DEFAULT = SegmentEntity::TYPE_DEFAULT;
 
   function __construct() {
     parent::__construct();
