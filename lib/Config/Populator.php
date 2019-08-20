@@ -283,6 +283,8 @@ class Populator {
         'enabled' => empty($settings_db_version), // enable on new installs only
         'message' => $this->wp->_x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites"),
       ]);
+      // this is here only for translators to pick it up, after it is translated we will replace the other message with this one
+      $this->wp->_x('I would like to receive exclusive emails with discounts and product information', "default email opt-in message displayed on checkout page for ecommerce websites");
     }
 
     // reset mailer log
