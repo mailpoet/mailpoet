@@ -109,7 +109,8 @@ class Newsletters extends APIEndpoint {
       );
 
       $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter->asArray());
-      return $this->successResponse($newsletter, ['preview_url' => $preview_url]);
+      $newsletter['preview_url'] = $preview_url;
+      return $this->successResponse($newsletter);
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
