@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, email automation
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.35.0
+Stable tag: 3.35.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -146,6 +146,9 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.35.1 - 2019-08-20 =
+* Improved: remove WooCommerce customers list on non-WooCommerce websites.
 
 = 3.35.0 - 2019-08-13 =
 * Improved: background task execution process now uses less CPU to help with CPU-limited hosts. E.g Siteground;
