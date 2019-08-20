@@ -473,7 +473,7 @@ class RoboFile extends \Robo\Tasks {
       ->stopOnFail()
       ->dir('.mp_svn')
       ->exec('cp -R ../plugin_repository/assets/newsletter-templates/* assets/newsletter-templates')
-      ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm")
+      ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm --keep-local")
       ->exec('svn add --force * --auto-props --parents --depth infinity -q')
       ->exec('svn commit -m "Push Templates for test"')
       ->run();
@@ -554,7 +554,7 @@ class RoboFile extends \Robo\Tasks {
       // Set SVN repo as working directory
       ->dir($svn_dir)
       // Remove files from SVN repo that have already been removed locally
-      ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm")
+      ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm --keep-local")
       // Recursively add files to SVN that haven't been added yet
       ->exec("svn add --force * --auto-props --parents --depth infinity -q");
 
