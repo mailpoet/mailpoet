@@ -163,9 +163,6 @@ Module.SidebarStylesView = Marionette.View.extend({
   behaviors: {
     ColorPickerBehavior: {},
   },
-  modelEvents: {
-    change: 'render',
-  },
   events: function () {
     return {
       'change #mailpoet_text_font_color': _.partial(this.changeColorField, 'text.fontColor'),
@@ -220,6 +217,7 @@ Module.SidebarStylesView = Marionette.View.extend({
   },
   initialize: function (options) {
     this.availableStyles = options.availableStyles;
+    App.getChannel().on('historyUpdate', this.render);
   },
   changeField: function (field, event) {
     this.model.set(field, jQuery(event.target).val());
