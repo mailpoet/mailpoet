@@ -51,6 +51,13 @@ abstract class Repository {
   }
 
   /**
+   * @return array
+   */
+  function findAll() {
+    return $this->doctrine_repository->findAll();
+  }
+
+  /**
    * @param object $entity
    */
   function persist($entity) {
