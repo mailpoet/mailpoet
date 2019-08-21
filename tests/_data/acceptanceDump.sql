@@ -351,45 +351,6 @@ CREATE TABLE `mp_mailpoet_sending_queues` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 
-DROP TABLE IF EXISTS `mp_mailpoet_settings`;
-CREATE TABLE `mp_mailpoet_settings` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `value` longtext COLLATE utf8mb4_unicode_520_ci,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-INSERT INTO `mp_mailpoet_settings` (`id`, `name`, `value`, `created_at`, `updated_at`) VALUES
-(1,	'sender',	'a:2:{s:4:\"name\";s:5:\"admin\";s:7:\"address\";s:14:\"wp@example.com\";}',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39'),
-(2,	'installed_at',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39'),
-(3,	'mta_log',	'a:6:{s:4:\"sent\";N;s:7:\"started\";i:1509325059;s:6:\"status\";N;s:13:\"retry_attempt\";N;s:8:\"retry_at\";N;s:5:\"error\";N;}',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39'),
-(4,	'subscription',	'a:1:{s:5:\"pages\";a:3:{s:6:\"manage\";s:1:\"4\";s:11:\"unsubscribe\";s:1:\"4\";s:12:\"confirmation\";s:1:\"4\";}}',	'2017-10-30 00:57:39',	'2017-10-30 00:58:13'),
-(5,	'db_version',	'3.0.7',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39'),
-(6,	'premium_db_version',	'3.0.0',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39'),
-(7,	'version',	'3.0.8',	'2017-10-30 00:57:40',	'2017-10-30 00:57:40'),
-(8,	'mailpoet_migration_complete',	'1',	'2017-10-30 00:57:45',	'2017-10-30 00:57:45'),
-(9,	'mta_group',	'smtp',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(10,	'mailpoet_smtp_provider',	'manual',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(11,	'mta',	'a:13:{s:6:\"method\";s:4:\"SMTP\";s:9:\"frequency\";a:2:{s:6:\"emails\";s:2:\"25\";s:8:\"interval\";s:1:\"5\";}s:16:\"mailpoet_api_key\";s:0:\"\";s:4:\"host\";s:7:\"mailhog\";s:4:\"port\";s:4:\"1025\";s:6:\"region\";s:9:\"us-east-1\";s:10:\"access_key\";s:0:\"\";s:10:\"secret_key\";s:0:\"\";s:7:\"api_key\";s:0:\"\";s:5:\"login\";s:0:\"\";s:8:\"password\";s:0:\"\";s:10:\"encryption\";s:0:\"\";s:14:\"authentication\";s:1:\"1\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(12,	'smtp_provider',	'manual',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(13,	'web_host',	'manual',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(14,	'mailpoet_sending_frequency',	'manual',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(15,	'reply_to',	'a:2:{s:4:\"name\";s:0:\"\";s:7:\"address\";s:0:\"\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(16,	'notification',	'a:1:{s:7:\"address\";s:0:\"\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(17,	'subscribe',	'a:1:{s:10:\"on_comment\";a:1:{s:5:\"label\";s:32:\"Yes, add me to your mailing list\";}}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(18,	'signup_confirmation',	'a:5:{s:7:\"enabled\";s:1:\"1\";s:4:\"from\";a:2:{s:4:\"name\";s:0:\"\";s:7:\"address\";s:0:\"\";}s:8:\"reply_to\";a:2:{s:4:\"name\";s:0:\"\";s:7:\"address\";s:0:\"\";}s:7:\"subject\";s:29:\"Confirm your subscription to \";s:4:\"body\";s:216:\"Hello!\r\n\r\nHurray! You\'ve subscribed to our site.\r\n\r\nPlease confirm your subscription to our list by clicking the link below: \r\n\r\n[activation_link]I confirm my subscription![/activation_link]\r\n\r\nThank you,\r\n\r\nThe Team\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(19,	'bounce',	'a:1:{s:7:\"address\";s:0:\"\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(20,	'cron_trigger',	'a:1:{s:6:\"method\";s:9:\"WordPress\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(21,	'tracking',	'a:1:{s:7:\"enabled\";s:1:\"1\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(22,	'analytics',	'a:1:{s:7:\"enabled\";s:0:\"\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(23,	'premium',	'a:1:{s:11:\"premium_key\";s:0:\"\";}',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(24,	'user_seen_editor_tutorial1',	'1',	'2017-10-30 00:58:13',	'2017-10-30 00:58:13'),
-(25,	'display_nps_poll',	'0',	'2018-12-13 14:20:00',	'2018-12-13 14:20:00'),
-(26,	'captcha',	'a:3:{s:20:"recaptcha_site_token";s:0:"";s:22:"recaptcha_secret_token";s:0:"";s:4:"type";s:0:"";}',	'2019-07-11 15:35:00',	'2019-07-11 15:35:00');
-
 DROP TABLE IF EXISTS `mp_mailpoet_statistics_clicks`;
 CREATE TABLE `mp_mailpoet_statistics_clicks` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
