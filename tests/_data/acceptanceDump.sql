@@ -5,18 +5,6 @@ SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
-DROP TABLE IF EXISTS `mp_commentmeta`;
-CREATE TABLE `mp_commentmeta` (
-  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `comment_id` bigint(20) unsigned NOT NULL DEFAULT '0',
-  `meta_key` varchar(255) DEFAULT NULL,
-  `meta_value` longtext,
-  PRIMARY KEY (`meta_id`),
-  KEY `comment_id` (`comment_id`),
-  KEY `meta_key` (`meta_key`(191))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-
 DROP TABLE IF EXISTS `mp_comments`;
 CREATE TABLE `mp_comments` (
   `comment_ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -45,45 +33,7 @@ CREATE TABLE `mp_comments` (
 INSERT INTO `mp_comments` (`comment_ID`, `comment_post_ID`, `comment_author`, `comment_author_email`, `comment_author_url`, `comment_author_IP`, `comment_date`, `comment_date_gmt`, `comment_content`, `comment_karma`, `comment_approved`, `comment_agent`, `comment_type`, `comment_parent`, `user_id`) VALUES
 (1,	1,	'A WordPress Commenter',	'wapuu@wordpress.example',	'https://wordpress.org/',	'',	'2016-11-23 14:16:53',	'2016-11-23 14:16:53',	'Hi, this is a comment.\nTo get started with moderating, editing, and deleting comments, please visit the Comments screen in the dashboard.\nCommenter avatars come from <a href=\"https://gravatar.com\">Gravatar</a>.',	0,	'1',	'',	'',	0,	0);
 
-DROP TABLE IF EXISTS `mp_links`;
-CREATE TABLE `mp_links` (
-  `link_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `link_url` varchar(255) NOT NULL DEFAULT '',
-  `link_name` varchar(255) NOT NULL DEFAULT '',
-  `link_image` varchar(255) NOT NULL DEFAULT '',
-  `link_target` varchar(25) NOT NULL DEFAULT '',
-  `link_description` varchar(255) NOT NULL DEFAULT '',
-  `link_visible` varchar(20) NOT NULL DEFAULT 'Y',
-  `link_owner` bigint(20) unsigned NOT NULL DEFAULT '1',
-  `link_rating` int(11) NOT NULL DEFAULT '0',
-  `link_updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `link_rel` varchar(255) NOT NULL DEFAULT '',
-  `link_notes` mediumtext NOT NULL,
-  `link_rss` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`link_id`),
-  KEY `link_visible` (`link_visible`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-
 SET NAMES utf8mb4;
-
-DROP TABLE IF EXISTS `mp_mailpoet_custom_fields`;
-CREATE TABLE `mp_mailpoet_custom_fields` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(90) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `type` varchar(90) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `params` longtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_dummytable`;
-CREATE TABLE `mp_mailpoet_dummytable` (
-  `dummycol` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `mp_mailpoet_forms`;
@@ -101,16 +51,6 @@ CREATE TABLE `mp_mailpoet_forms` (
 
 INSERT INTO `mp_mailpoet_forms` (`id`, `name`, `body`, `settings`, `styles`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'Test Form',	'a:2:{i:0;a:7:{s:4:\"type\";s:4:\"text\";s:4:\"name\";s:5:\"Email\";s:2:\"id\";s:5:\"email\";s:6:\"unique\";s:1:\"0\";s:6:\"static\";s:1:\"1\";s:6:\"params\";a:2:{s:5:\"label\";s:5:\"Email\";s:8:\"required\";s:4:\"true\";}s:8:\"position\";s:1:\"1\";}i:1;a:7:{s:4:\"type\";s:6:\"submit\";s:4:\"name\";s:6:\"Submit\";s:2:\"id\";s:6:\"submit\";s:6:\"unique\";s:1:\"0\";s:6:\"static\";s:1:\"1\";s:6:\"params\";a:1:{s:5:\"label\";s:10:\"Subscribe!\";}s:8:\"position\";s:1:\"2\";}}',	'a:5:{s:8:\"segments\";a:1:{i:0;s:1:\"2\";}s:10:\"on_success\";s:7:\"message\";s:15:\"success_message\";s:61:\"Check your inbox or spam folder to confirm your subscription.\";s:12:\"success_page\";s:1:\"4\";s:20:\"segments_selected_by\";s:5:\"admin\";}',	'/* form */\n.mailpoet_form {\n\n}\n\n/* paragraphs (label + input) */\n.mailpoet_paragraph {\n  line-height:20px;\n}\n\n/* labels */\n.mailpoet_segment_label,\n.mailpoet_text_label,\n.mailpoet_textarea_label,\n.mailpoet_select_label,\n.mailpoet_radio_label,\n.mailpoet_checkbox_label,\n.mailpoet_list_label,\n.mailpoet_date_label {\n  display:block;\n  font-weight:bold;\n}\n\n/* inputs */\n.mailpoet_text,\n.mailpoet_textarea,\n.mailpoet_select,\n.mailpoet_date_month,\n.mailpoet_date_day,\n.mailpoet_date_year,\n.mailpoet_date {\n  display:block;\n}\n\n.mailpoet_text,\n.mailpoet_textarea {\n  width:200px;\n}\n\n.mailpoet_checkbox {\n}\n\n.mailpoet_submit input {\n}\n\n.mailpoet_divider {\n}\n\n.mailpoet_message {\n}\n\n.mailpoet_validate_success {\n  color:#468847;\n}\n\n.mailpoet_validate_error {\n  color:#B94A48;\n}',	'2017-10-30 00:58:40',	'2017-10-30 00:58:50',	NULL);
-
-DROP TABLE IF EXISTS `mp_mailpoet_mapping_to_external_entities`;
-CREATE TABLE `mp_mailpoet_mapping_to_external_entities` (
-  `old_id` int(11) unsigned NOT NULL,
-  `type` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `new_id` int(11) unsigned NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`old_id`,`type`),
-  KEY `new_id` (`new_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 
 DROP TABLE IF EXISTS `mp_mailpoet_newsletters`;
@@ -141,33 +81,6 @@ INSERT INTO `mp_mailpoet_newsletters` VALUES
 (2,NULL,NULL,'Welcome email','welcome','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL,'randomtokennum2'),
 (3,NULL,NULL,'Post notification','notification','wp@example.com','test','draft','','','','','','2017-11-16 11:02:35',NULL,NULL,'randomtokennum3');
 
-DROP TABLE IF EXISTS `mp_mailpoet_newsletter_links`;
-CREATE TABLE `mp_mailpoet_newsletter_links` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `queue_id` int(11) unsigned NOT NULL,
-  `url` varchar(255) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `hash` varchar(20) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY queue_id (queue_id),
-  KEY newsletter_id (newsletter_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_newsletter_option`;
-CREATE TABLE `mp_mailpoet_newsletter_option` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `option_field_id` int(11) unsigned NOT NULL,
-  `value` varchar(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `newsletter_id_option_field_id` (`newsletter_id`,`option_field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
 
 DROP TABLE IF EXISTS `mp_mailpoet_newsletter_option_fields`;
 CREATE TABLE `mp_mailpoet_newsletter_option_fields` (
@@ -194,70 +107,6 @@ INSERT INTO `mp_mailpoet_newsletter_option_fields` (`id`, `name`, `newsletter_ty
 (11,	'monthDay',	'notification',	NULL,	'2017-10-30 00:57:38'),
 (12,	'nthWeekDay',	'notification',	NULL,	'2017-10-30 00:57:38'),
 (13,	'schedule',	'notification',	NULL,	'2017-10-30 00:57:38');
-
-DROP TABLE IF EXISTS `mp_mailpoet_newsletter_posts`;
-CREATE TABLE `mp_mailpoet_newsletter_posts` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `post_id` int(11) unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY newsletter_id (newsletter_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_newsletter_segment`;
-CREATE TABLE `mp_mailpoet_newsletter_segment` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `segment_id` int(11) unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `newsletter_segment` (`newsletter_id`,`segment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_newsletter_templates`;
-CREATE TABLE `mp_mailpoet_newsletter_templates` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(250) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `categories` varchar(250) NOT NULL DEFAULT "[]",
-  `newsletter_id` int NULL DEFAULT 0,
-  `description` varchar(250) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `body` longtext COLLATE utf8mb4_unicode_520_ci,
-  `thumbnail` longtext COLLATE utf8mb4_unicode_520_ci,
-  `readonly` tinyint(1) DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-DROP TABLE IF EXISTS `mp_mailpoet_premium_custom_table`;
-CREATE TABLE `mp_mailpoet_premium_custom_table` (
-  `id` mediumint(9) NOT NULL AUTO_INCREMENT,
-  `name` varchar(90) NOT NULL,
-  `type` varchar(90) NOT NULL DEFAULT 'default',
-  `description` varchar(250) NOT NULL DEFAULT '',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_premium_newsletter_extra_data`;
-CREATE TABLE `mp_mailpoet_premium_newsletter_extra_data` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `ga_campaign` varchar(250) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `newsletter_id` (`newsletter_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 
 DROP TABLE IF EXISTS `mp_mailpoet_premium_newsletter_extra_data1`;
@@ -299,19 +148,6 @@ INSERT INTO `mp_mailpoet_scheduled_tasks` (`id`, `type`, `status`, `created_at`,
 (1,	'migration',	'completed',	'2017-03-02 11:20:00',	'2017-03-02 16:21:00');
 
 
-DROP TABLE IF EXISTS `mp_mailpoet_scheduled_task_subscribers`;
-CREATE TABLE `mp_mailpoet_scheduled_task_subscribers` (
-  `task_id` int(11) unsigned NOT NULL,
-  `subscriber_id` int(11) unsigned NOT NULL,
-  `processed` int(1) NOT NULL,
-  `failed` smallint(1) NOT NULL DEFAULT 0,
-  `error` text NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`task_id`,`subscriber_id`),
-  KEY subscriber_id (subscriber_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
 DROP TABLE IF EXISTS `mp_mailpoet_segments`;
 CREATE TABLE `mp_mailpoet_segments` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -329,96 +165,6 @@ INSERT INTO `mp_mailpoet_segments` (`id`, `name`, `type`, `description`, `create
 (1,	'WordPress Users',	'wp_users',	'This list contains all of your WordPress users.',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL),
 (2,	'WooCommerce Customers',	'woocommerce_users',	'This list contains all of your WooCommerce customers.',	'2019-01-17 00:57:39',	'2019-01-17 00:57:39',	NULL),
 (3,	'My First List',	'default',	'This list is automatically created when you install MailPoet.',	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL);
-
-DROP TABLE IF EXISTS `mp_mailpoet_sending_queues`;
-CREATE TABLE `mp_mailpoet_sending_queues` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `task_id` int(11) unsigned NOT NULL,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `newsletter_rendered_body` longtext COLLATE utf8mb4_unicode_520_ci,
-  `newsletter_rendered_subject` varchar(250) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `subscribers` longtext COLLATE utf8mb4_unicode_520_ci,
-  `count_total` int(11) unsigned NOT NULL DEFAULT '0',
-  `count_processed` int(11) unsigned NOT NULL DEFAULT '0',
-  `count_to_process` int(11) unsigned NOT NULL DEFAULT '0',
-  `meta` longtext,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY task_id (task_id),
-  KEY newsletter_id (newsletter_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_statistics_clicks`;
-CREATE TABLE `mp_mailpoet_statistics_clicks` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `subscriber_id` int(11) unsigned NOT NULL,
-  `queue_id` int(11) unsigned NOT NULL,
-  `link_id` int(11) unsigned NOT NULL,
-  `count` int(11) unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `newsletter_id` (`newsletter_id`),
-  KEY `queue_id` (`queue_id`),
-  KEY `subscriber_id` (`subscriber_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_statistics_forms`;
-CREATE TABLE `mp_mailpoet_statistics_forms` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `form_id` int(11) unsigned NOT NULL,
-  `subscriber_id` int(11) unsigned NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `form_subscriber` (`form_id`,`subscriber_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_statistics_newsletters`;
-CREATE TABLE `mp_mailpoet_statistics_newsletters` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `subscriber_id` int(11) unsigned NOT NULL,
-  `queue_id` int(11) unsigned NOT NULL,
-  `sent_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY subscriber_id (subscriber_id),
-  KEY `newsletter_id` (`newsletter_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_statistics_opens`;
-CREATE TABLE `mp_mailpoet_statistics_opens` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `subscriber_id` int(11) unsigned NOT NULL,
-  `queue_id` int(11) unsigned NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `newsletter_id` (`newsletter_id`),
-  KEY `queue_id` (`queue_id`),
-  KEY `subscriber_id` (`subscriber_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_statistics_unsubscribes`;
-CREATE TABLE `mp_mailpoet_statistics_unsubscribes` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `newsletter_id` int(11) unsigned NOT NULL,
-  `subscriber_id` int(11) unsigned NOT NULL,
-  `queue_id` int(11) unsigned NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `newsletter_id` (`newsletter_id`),
-  KEY `queue_id` (`queue_id`),
-  KEY `subscriber_id` (`subscriber_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
 
 DROP TABLE IF EXISTS `mp_mailpoet_subscribers`;
 CREATE TABLE `mp_mailpoet_subscribers` (
@@ -452,27 +198,6 @@ CREATE TABLE `mp_mailpoet_subscribers` (
 INSERT INTO `mp_mailpoet_subscribers` (`id`, `wp_user_id`, `first_name`, `last_name`, `email`, `status`, `subscribed_ip`, `confirmed_ip`, `confirmed_at`, `created_at`, `updated_at`, `deleted_at`, `unconfirmed_data`, `unsubscribe_token`) VALUES
 (1,	1,	'admin',	'',	'wp@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-10-30 00:57:39',	'2017-10-30 00:57:39',	NULL,	NULL, 'randomtokennum4'),
 (2,	NULL,	'first',	'last',	'subscriber@example.com',	'subscribed',	NULL,	NULL,	NULL,	'2017-11-16 10:39:00',	'2017-11-16 10:39:00',	NULL,	NULL, 'randomtokennum5');
-
-DROP TABLE IF EXISTS `mp_mailpoet_subscriber_custom_field`;
-CREATE TABLE `mp_mailpoet_subscriber_custom_field` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `subscriber_id` int(11) unsigned NOT NULL,
-  `custom_field_id` int(11) unsigned NOT NULL,
-  `value` varchar(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `subscriber_id_custom_field_id` (`subscriber_id`,`custom_field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_mailpoet_subscriber_ips`;
-CREATE TABLE `mp_mailpoet_subscriber_ips` (
-  `ip` varchar(45) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`created_at`,`ip`),
-  KEY `ip` (`ip`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 
 DROP TABLE IF EXISTS `mp_mailpoet_subscriber_segment`;
@@ -920,48 +645,6 @@ INSERT INTO `mp_posts` (`ID`, `post_author`, `post_date`, `post_date_gmt`, `post
 (474,	1,	'2019-03-19 14:53:02',	'2019-03-19 14:53:02',	'[woocommerce_checkout]',	'Checkout',	'',	'publish',	'closed',	'closed',	'',	'checkout',	'',	'',	'2019-03-19 14:53:02',	'2019-03-19 14:53:02',	'',	0,	'http://test.local/checkout/',	0,	'page',	'',	0),
 (475,	1,	'2019-03-19 14:53:02',	'2019-03-19 14:53:02',	'[woocommerce_my_account]',	'My account',	'',	'publish',	'closed',	'closed',	'',	'my-account',	'',	'',	'2019-03-19 14:53:02',	'2019-03-19 14:53:02',	'',	0,	'http://test.local/my-account/',	0,	'page',	'',	0);
 
-DROP TABLE IF EXISTS `mp_signups`;
-CREATE TABLE `mp_signups` (
-  `signup_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `domain` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `path` varchar(100) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `title` longtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `user_login` varchar(60) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `user_email` varchar(100) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `registered` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `activated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `active` tinyint(1) NOT NULL DEFAULT '0',
-  `activation_key` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `meta` longtext COLLATE utf8mb4_unicode_520_ci,
-  PRIMARY KEY (`signup_id`),
-  KEY `activation_key` (`activation_key`),
-  KEY `user_email` (`user_email`),
-  KEY `user_login_email` (`user_login`,`user_email`),
-  KEY `domain_path` (`domain`(140),`path`(51))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_social_users`;
-CREATE TABLE `mp_social_users` (
-  `ID` int(11) NOT NULL,
-  `type` varchar(20) NOT NULL,
-  `identifier` varchar(100) NOT NULL,
-  KEY `ID` (`ID`,`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-DROP TABLE IF EXISTS `mp_termmeta`;
-CREATE TABLE `mp_termmeta` (
-  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `term_id` bigint(20) unsigned NOT NULL DEFAULT '0',
-  `meta_key` varchar(255) DEFAULT NULL,
-  `meta_value` longtext,
-  PRIMARY KEY (`meta_id`),
-  KEY `term_id` (`term_id`),
-  KEY `meta_key` (`meta_key`(191))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-
 DROP TABLE IF EXISTS `mp_terms`;
 CREATE TABLE `mp_terms` (
   `term_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -1109,162 +792,6 @@ CREATE TABLE `mp_users` (
 INSERT INTO `mp_users` (`ID`, `user_login`, `user_pass`, `user_nicename`, `user_email`, `user_url`, `user_registered`, `user_activation_key`, `user_status`, `display_name`) VALUES
 (1,	'admin',	'$P$B4Y5RtifyzLVhJoU2vk82fIHsp53tL1',	'admin',	'wp@example.com',	'',	'2016-11-23 14:16:52',	'',	0,	'admin');
 
-DROP TABLE IF EXISTS `mp_wc_download_log`;
-CREATE TABLE `mp_wc_download_log` (
-  `download_log_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `timestamp` datetime NOT NULL,
-  `permission_id` bigint(20) unsigned NOT NULL,
-  `user_id` bigint(20) unsigned DEFAULT NULL,
-  `user_ip_address` varchar(100) COLLATE utf8mb4_unicode_520_ci DEFAULT '',
-  PRIMARY KEY (`download_log_id`),
-  KEY `permission_id` (`permission_id`),
-  KEY `timestamp` (`timestamp`),
-  CONSTRAINT `fk_mp_wc_download_log_permission_id` FOREIGN KEY (`permission_id`) REFERENCES `mp_woocommerce_downloadable_product_permissions` (`permission_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_wc_webhooks`;
-CREATE TABLE `mp_wc_webhooks` (
-  `webhook_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `status` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `name` text COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `user_id` bigint(20) unsigned NOT NULL,
-  `delivery_url` text COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `secret` text COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `topic` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `date_created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `date_created_gmt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `date_modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `date_modified_gmt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `api_version` smallint(4) NOT NULL,
-  `failure_count` smallint(10) NOT NULL DEFAULT '0',
-  `pending_delivery` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`webhook_id`),
-  KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_api_keys`;
-CREATE TABLE `mp_woocommerce_api_keys` (
-  `key_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
-  `description` varchar(200) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `permissions` varchar(10) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `consumer_key` char(64) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `consumer_secret` char(43) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `nonces` longtext COLLATE utf8mb4_unicode_520_ci,
-  `truncated_key` char(7) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `last_access` datetime DEFAULT NULL,
-  PRIMARY KEY (`key_id`),
-  KEY `consumer_key` (`consumer_key`),
-  KEY `consumer_secret` (`consumer_secret`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_attribute_taxonomies`;
-CREATE TABLE `mp_woocommerce_attribute_taxonomies` (
-  `attribute_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `attribute_name` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `attribute_label` varchar(200) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `attribute_type` varchar(20) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `attribute_orderby` varchar(20) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `attribute_public` int(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`attribute_id`),
-  KEY `attribute_name` (`attribute_name`(20))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_downloadable_product_permissions`;
-CREATE TABLE `mp_woocommerce_downloadable_product_permissions` (
-  `permission_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `download_id` varchar(36) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `product_id` bigint(20) unsigned NOT NULL,
-  `order_id` bigint(20) unsigned NOT NULL DEFAULT '0',
-  `order_key` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `user_email` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `user_id` bigint(20) unsigned DEFAULT NULL,
-  `downloads_remaining` varchar(9) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `access_granted` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `access_expires` datetime DEFAULT NULL,
-  `download_count` bigint(20) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`permission_id`),
-  KEY `download_order_key_product` (`product_id`,`order_id`,`order_key`(16),`download_id`),
-  KEY `download_order_product` (`download_id`,`order_id`,`product_id`),
-  KEY `order_id` (`order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_log`;
-CREATE TABLE `mp_woocommerce_log` (
-  `log_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `timestamp` datetime NOT NULL,
-  `level` smallint(4) NOT NULL,
-  `source` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `message` longtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `context` longtext COLLATE utf8mb4_unicode_520_ci,
-  PRIMARY KEY (`log_id`),
-  KEY `level` (`level`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_order_itemmeta`;
-CREATE TABLE `mp_woocommerce_order_itemmeta` (
-  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `order_item_id` bigint(20) unsigned NOT NULL,
-  `meta_key` varchar(255) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `meta_value` longtext COLLATE utf8mb4_unicode_520_ci,
-  PRIMARY KEY (`meta_id`),
-  KEY `order_item_id` (`order_item_id`),
-  KEY `meta_key` (`meta_key`(32))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_order_items`;
-CREATE TABLE `mp_woocommerce_order_items` (
-  `order_item_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `order_item_name` text COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `order_item_type` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `order_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`order_item_id`),
-  KEY `order_id` (`order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_payment_tokenmeta`;
-CREATE TABLE `mp_woocommerce_payment_tokenmeta` (
-  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `payment_token_id` bigint(20) unsigned NOT NULL,
-  `meta_key` varchar(255) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `meta_value` longtext COLLATE utf8mb4_unicode_520_ci,
-  PRIMARY KEY (`meta_id`),
-  KEY `payment_token_id` (`payment_token_id`),
-  KEY `meta_key` (`meta_key`(32))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_payment_tokens`;
-CREATE TABLE `mp_woocommerce_payment_tokens` (
-  `token_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `gateway_id` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `token` text COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `user_id` bigint(20) unsigned NOT NULL DEFAULT '0',
-  `type` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `is_default` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`token_id`),
-  KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_sessions`;
-CREATE TABLE `mp_woocommerce_sessions` (
-  `session_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `session_key` char(32) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `session_value` longtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `session_expiry` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`session_id`),
-  UNIQUE KEY `session_key` (`session_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
 DROP TABLE IF EXISTS `mp_woocommerce_shipping_zones`;
 CREATE TABLE `mp_woocommerce_shipping_zones` (
   `zone_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -1303,36 +830,5 @@ CREATE TABLE `mp_woocommerce_shipping_zone_methods` (
 INSERT INTO `mp_woocommerce_shipping_zone_methods` (`zone_id`, `instance_id`, `method_id`, `method_order`, `is_enabled`) VALUES
 (1,	1,	'flat_rate',	1,	1),
 (0,	2,	'flat_rate',	1,	1);
-
-DROP TABLE IF EXISTS `mp_woocommerce_tax_rates`;
-CREATE TABLE `mp_woocommerce_tax_rates` (
-  `tax_rate_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `tax_rate_country` varchar(2) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `tax_rate_state` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `tax_rate` varchar(8) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `tax_rate_name` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `tax_rate_priority` bigint(20) unsigned NOT NULL,
-  `tax_rate_compound` int(1) NOT NULL DEFAULT '0',
-  `tax_rate_shipping` int(1) NOT NULL DEFAULT '1',
-  `tax_rate_order` bigint(20) unsigned NOT NULL,
-  `tax_rate_class` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  PRIMARY KEY (`tax_rate_id`),
-  KEY `tax_rate_country` (`tax_rate_country`),
-  KEY `tax_rate_state` (`tax_rate_state`(2)),
-  KEY `tax_rate_class` (`tax_rate_class`(10)),
-  KEY `tax_rate_priority` (`tax_rate_priority`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
-DROP TABLE IF EXISTS `mp_woocommerce_tax_rate_locations`;
-CREATE TABLE `mp_woocommerce_tax_rate_locations` (
-  `location_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `location_code` varchar(200) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `tax_rate_id` bigint(20) unsigned NOT NULL,
-  `location_type` varchar(40) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  PRIMARY KEY (`location_id`),
-  KEY `tax_rate_id` (`tax_rate_id`),
-  KEY `location_type_code` (`location_type`(10),`location_code`(20))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- 2017-11-05 23:53:17
