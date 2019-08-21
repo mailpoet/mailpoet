@@ -15,6 +15,8 @@ class Security {
    * Generate random lowercase alphanumeric string.
    * 1 lowercase alphanumeric character = 6 bits (because log2(36) = 5.17)
    * So 3 bytes = 4 characters
+   * @param int $length Minimal lenght is 5
+   * @return string
    */
   static function generateRandomString($length = 5) {
     $length = max(5, (int)$length);
@@ -22,7 +24,11 @@ class Security {
     return substr($string, 0, $length);
   }
 
-  static function generateHash($length = false) {
+  /**
+   * @param int $length Maximal length is 32
+   * @return string
+   */
+  static function generateHash($length = null) {
     $length = ($length) ? $length : self::HASH_LENGTH;
     $auth_key = '';
     if (defined('AUTH_KEY')) {
