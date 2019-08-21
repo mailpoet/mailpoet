@@ -311,8 +311,11 @@ class CronHelperTest extends \MailPoetTest {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     // raw response is returned
     expect(CronHelper::pingDaemon())->equals(DaemonHttpRunner::PING_SUCCESS_RESPONSE);
-    // response is validated
-    expect(CronHelper::pingDaemon(true))->true();
+  }
+
+  function testItValidatesPingResponse() {
+    expect(CronHelper::validatePingResponse('pong'))->true();
+    expect(CronHelper::validatePingResponse('something else'))->false();
   }
 
   function _after() {

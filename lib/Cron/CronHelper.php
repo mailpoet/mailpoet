@@ -80,7 +80,7 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function pingDaemon($validate_response = false) {
+  static function pingDaemon() {
     $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
@@ -91,9 +91,7 @@ class CronHelper {
     $response = substr(trim($response), -strlen(DaemonHttpRunner::PING_SUCCESS_RESPONSE)) === DaemonHttpRunner::PING_SUCCESS_RESPONSE ?
       DaemonHttpRunner::PING_SUCCESS_RESPONSE :
       $response;
-    return (!$validate_response) ?
-      $response :
-      self::validatePingResponse($response);
+    return $response;
   }
 
   static function validatePingResponse($response) {
