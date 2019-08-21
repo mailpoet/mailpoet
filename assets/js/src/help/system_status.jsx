@@ -5,7 +5,7 @@ import CronStatus from './cron_status.jsx';
 import QueueStatus from './queue_status.jsx';
 import Tabs from './tabs.jsx';
 
-function renderStatusMessage(status, error, link) {
+function renderStatusMessage(status, error, link, additionalInfo) {
   const noticeType = (status) ? 'success' : 'error';
   let noticeMessage = (status)
     ? MailPoet.I18n.t('systemStatusConnectionSuccessful')
@@ -16,7 +16,7 @@ function renderStatusMessage(status, error, link) {
       noticeMessage,
       /\[link\](.*?)\[\/link\]/g,
       (match) => (
-        <a href={`${link}`} key="kb-link">{ match }</a>
+        <a href={`${link}`} key="kb-link">{match}</a>
       )
     );
   }
@@ -24,6 +24,7 @@ function renderStatusMessage(status, error, link) {
   return (
     <div className={`mailpoet_notice notice inline notice-${noticeType}`} style={{ marginTop: '1em' }}>
       <p>{noticeMessage}</p>
+      {additionalInfo ? (<p><i>{additionalInfo}</i></p>) : null}
     </div>
   );
 }
@@ -31,6 +32,8 @@ function renderStatusMessage(status, error, link) {
 function renderCronSection(data) {
   const status = data.cron.isReachable;
   const url = data.cron.url;
+  const error = MailPoet.I18n.t('systemStatusCronConnectionUnsuccessfulInfo');
+  const additionalInfo = !status ? data.cron.pingResponse : null;
 
   return (
     <div>
@@ -38,7 +41,7 @@ function renderCronSection(data) {
       <p>
         <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
       </p>
-      {renderStatusMessage(status, MailPoet.I18n.t('systemStatusCronConnectionUnsuccessfulInfo'), 'https://kb.mailpoet.com/article/231-sending-does-not-work')}
+      {renderStatusMessage(status, error, 'https://kb.mailpoet.com/article/231-sending-does-not-work', additionalInfo)}
     </div>
   );
 }
