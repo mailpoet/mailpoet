@@ -192,7 +192,7 @@ class NewsletterTypes extends React.Component {
                   </h3>
                   <p>{type.description}</p>
                   {type.disabled && (
-                  <p>
+                  <p data-automation-id={`${type.slug}_premium_feature_notice`}>
                     <span style={{ color: 'red' }}>{MailPoet.I18n.t('premiumFeature')}</span>
                     {' '}
                     <a href="?page=mailpoet-premium">{MailPoet.I18n.t('learnMore')}</a>
