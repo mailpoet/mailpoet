@@ -16,8 +16,14 @@ class Settings {
 
   // TODO: not yet complete, more settings will be moved from acceptanceDump.sql
   function withDefaultSettings() {
+    $this->withCronTriggerMethod('WordPress');
     $this->withSendingMethodSmtpMailhog();
     $this->withCookieRevenueTracking();
+  }
+
+  function withCronTriggerMethod($method) {
+    $this->settings->set('cron_trigger.method', $method);
+    return $this;
   }
 
   function withConfirmationEmailSubject($subject = null) {
