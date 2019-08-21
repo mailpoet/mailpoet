@@ -32,6 +32,7 @@ class Help {
       'cron' => [
         'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
         'isReachable' => CronHelper::validatePingResponse($cron_ping_response),
+        'pingResponse' => $cron_ping_response,
       ],
       'mss' => [
         'enabled' => (Bridge::isMPSendingServiceEnabled()) ?
