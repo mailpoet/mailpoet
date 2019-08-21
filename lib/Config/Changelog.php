@@ -106,7 +106,7 @@ class Changelog {
       !in_array($_GET['page'], ['mailpoet-revenue-tracking-permission', 'mailpoet-woocommerce-list-import', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
       && !$this->settings->get('woocommerce_import_screen_displayed')
       && $this->wooCommerceHelper->isWooCommerceActive()
-      && $this->wooCommerceHelper->getOrdersCount() >= 1
+      && $this->wooCommerceHelper->getOrdersCountCreatedBefore($this->settings->get('installed_at')) > 0
       && $this->wp->currentUserCan('administrator')
     ) {
       $this->url_helper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-list-import'));

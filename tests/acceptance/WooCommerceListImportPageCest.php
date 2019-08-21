@@ -84,7 +84,9 @@ class WooCommerceListImportPageCest {
   function importListPageRedirectionTest(\AcceptanceTester $I) {
     $settings_factory = new Settings();
     $settings_factory->withWooCommerceListImportPageDisplayed(false);
-    $order = $this->order_factory->create();
+    $order = $this->order_factory
+      ->withDateCreated('2001-08-22T11:11:56') // any time in the past. Must be before the plugin activation
+      ->create();
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');

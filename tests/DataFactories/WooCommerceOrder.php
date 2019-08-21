@@ -42,6 +42,10 @@ class WooCommerceOrder {
     return $this->update(['status' => $status]);
   }
 
+  function withDateCreated($date) {
+    return $this->update(['date_created' => $date]);
+  }
+
   /**
    * @param array $customer_data Customer created via WooCommerceCustomer factory
    * @return $this
@@ -88,7 +92,15 @@ class WooCommerceOrder {
     }
     $create_output = $this->tester->cliToArray($cmd);
     $order_out = $this->tester->cliToArray("wc shop_order get $create_output[0] --format=json --allow-root --user=admin");
-    return json_decode($order_out[0], true);
+    $order = json_decode($order_out[0], true);
+    if (isset($this->data['date_created'])) {
+      wp_update_post([
+        'ID' => $order['id'],
+        'post_date' => $this->data['date_created'],
+        'post_date_gmt' => get_gmt_from_date( $this->data['date_created'] ),
+      ]);
+    }
+    return $order;
   }
 
   /**

@@ -23,7 +23,7 @@ class AnalyticsTest extends \MailPoetTest {
     parent::_before();
     $this->settings = new SettingsController();
     $this->analytics = new Analytics(
-      new Reporter($this->settings, new WooCommerceHelper(new WPFunctions)),
+      new Reporter($this->settings, new WooCommerceHelper()),
       $this->settings
     );
     // Remove premium plugin hooks so that tests pass also with premium active
