@@ -2,7 +2,7 @@
 
 namespace MailPoet\Features;
 
-use function MailPoet\Util\array_column;
+use MailPoet\Entities\FeatureFlagEntity;
 
 class FeatureFlagsController {
 
@@ -26,14 +26,22 @@ class FeatureFlagsController {
   }
 
   function getAll() {
-    $flags = FeatureFlag::findArray();
-    $flagsMap = array_combine(array_column($flags, 'name'), $flags);
+    $flags = $this->feature_flags_repository->findAll();
+    $flagsMap = array_combine(
+      array_map(
+        function (FeatureFlagEntity $flag) {
+          return $flag->getName();
+        },
+        $flags
+      ),
+      $flags
+    );
 
     $output = [];
     foreach ($this->features_controller->getDefaults() as $name => $default) {
       $output[] = [
         'name' => $name,
-        'value' => isset($flagsMap[$name]) ? (bool)$flagsMap[$name]['value'] : $default,
+        'value' => isset($flagsMap[$name]) ? (bool)$flagsMap[$name]->getValue() : $default,
         'default' => $default,
       ];
     }
