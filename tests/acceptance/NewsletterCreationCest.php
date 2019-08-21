@@ -78,4 +78,15 @@ class NewsletterCreationCest {
     $I->click('Send');
   }
 
+  function seePremiumFeatureNotice(\AcceptanceTester $I) {
+    $I->wantTo('See the premium feature notice in the WooCommerce type');
+
+    $I->login();
+    $I->amOnMailpoetPage('Emails');
+    $I->click('[data-automation-id="new_email"]');
+
+    $premium_notice = '[data-automation-id="woocommerce_premium_feature_notice"]';
+    $I->waitForElement($premium_notice);
+    $I->see("This is a Premium feature.", $premium_notice);
+  }
 }
