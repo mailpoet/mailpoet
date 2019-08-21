@@ -18,6 +18,7 @@ class Settings {
   function withDefaultSettings() {
     $this->withCronTriggerMethod('WordPress');
     $this->withSendingMethodSmtpMailhog();
+    $this->withSkippedTutorials();
     $this->withCookieRevenueTracking();
   }
 
