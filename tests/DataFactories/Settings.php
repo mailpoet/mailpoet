@@ -67,7 +67,6 @@ class Settings {
   function withSkippedTutorials() {
     $this->settings->set('show_intro', 0);
     $this->settings->set('display_nps_poll', 0);
-    $this->settings->set('user_seen_editor_tutorial1', 1);
     $this->settings->set('show_congratulate_after_first_newsletter', 0);
     return $this;
   }

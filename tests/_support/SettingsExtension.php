@@ -2,6 +2,7 @@
 
 use \Codeception\Events;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\Test\DataFactories\UserFlags;
 
 class SettingsExtension extends \Codeception\Extension {
 
@@ -12,6 +13,9 @@ class SettingsExtension extends \Codeception\Extension {
   public function beforeSuite(\Codeception\Event\SuiteEvent $e) {
     $settings = new Settings();
     $settings->withDefaultSettings();
+
+    $user_flags = new UserFlags(1);
+    $user_flags->withDefaultFlags();
   }
 
 }
