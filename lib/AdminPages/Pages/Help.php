@@ -27,10 +27,11 @@ class Help {
 
   function render() {
     $system_info_data = Beacon::getData();
+    $cron_ping_response = CronHelper::pingDaemon();
     $system_status_data = [
       'cron' => [
         'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
-        'isReachable' => CronHelper::pingDaemon(true),
+        'isReachable' => CronHelper::validatePingResponse($cron_ping_response),
       ],
       'mss' => [
         'enabled' => (Bridge::isMPSendingServiceEnabled()) ?

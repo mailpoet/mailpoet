@@ -93,7 +93,11 @@ class CronHelper {
       $response;
     return (!$validate_response) ?
       $response :
-      $response === DaemonHttpRunner::PING_SUCCESS_RESPONSE;
+      self::validatePingResponse($response);
+  }
+
+  static function validatePingResponse($response) {
+    return $response === DaemonHttpRunner::PING_SUCCESS_RESPONSE;
   }
 
   static function accessDaemon($token) {
