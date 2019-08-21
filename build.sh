@@ -91,6 +91,9 @@ find $findPreArgs $findDestinations -type f $findMidArgs -iregex ".*\/(readme|li
 find $findPreArgs $findDestinations -type f $findMidArgs -iregex ".*\/(\.editorconfig|\.git.*|\.travis.yml|\.php_cs.*)" -print0 | xargs -0 rm -f
 find $findPreArgs $findDestinations -type d $findMidArgs -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
 
+# Remove all .gitignore files
+find $findPreArgs $plugin_name -type f $findMidArgs -iregex ".*\/\.gitignore" -print0 | xargs -0 rm -f
+
 # Remove Tracy panels
 rm -rf $plugin_name/lib/Tracy
 
