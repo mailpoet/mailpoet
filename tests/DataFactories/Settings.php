@@ -21,6 +21,7 @@ class Settings {
     $this->withSender('admin', 'wp@example.com');
     $this->withSkippedTutorials();
     $this->withCookieRevenueTracking();
+    $this->withEmailNotificationsDisabled();
   }
 
   function withCronTriggerMethod($method) {
@@ -31,6 +32,12 @@ class Settings {
   function withSender($name, $address) {
     $this->settings->set('sender.name', $name);
     $this->settings->set('sender.address', $address);
+  }
+
+  function withEmailNotificationsDisabled() {
+    $this->settings->set('stats_notifications.enabled', 0);
+    $this->settings->set('subscriber_email_notification.enabled', 0);
+    return $this;
   }
 
   function withConfirmationEmailSubject($subject = null) {
