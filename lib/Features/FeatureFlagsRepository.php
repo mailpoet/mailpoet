@@ -33,6 +33,7 @@ class FeatureFlagsRepository extends Repository {
       $feature_flag = new FeatureFlagEntity($data['name']);
       $this->persist($feature_flag);
     }
+
     if (array_key_exists('value', $data)) {
       $feature_flag->setValue($data['value']);
     }

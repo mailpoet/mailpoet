@@ -110,7 +110,7 @@ class AutomatedEmails extends SimpleWorker {
       $newsletter
         ->withSendingQueue()
         ->withTotalSent()
-        ->withStatistics($this->woocommerce_helper, new FeaturesController()); // TODO this is here temporarily until https://github.com/mailpoet/mailpoet/pull/2157 is merged after that we can remove the second argument
+        ->withStatistics($this->woocommerce_helper);
     }
     $result = [];
     foreach ($newsletters as $newsletter) {
