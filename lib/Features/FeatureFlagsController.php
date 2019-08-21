@@ -2,8 +2,6 @@
 
 namespace MailPoet\Features;
 
-use MailPoet\Entities\FeatureFlagEntity;
-use MailPoet\Settings\FeatureFlagsRepository;
 use function MailPoet\Util\array_column;
 
 class FeatureFlagsController {
@@ -24,20 +22,7 @@ class FeatureFlagsController {
       throw new \RuntimeException("Feature '$name' does not exist'");
     }
 
-    $feature_flag = $this->feature_flags_repository->findOneBy([
-      'name' => $name,
-    ]);
-    if (!$feature_flag) {
-      $feature_flag = new FeatureFlagEntity($name);
-      $this->feature_flags_repository->persist($feature_flag);
-    }
-    $feature_flag->setValue($value);
-
-    try {
-      $this->feature_flags_repository->flush();
-    } catch (\Exception $e) {
-      throw new \RuntimeException("Error when saving feature '$name''");
-    }
+    $this->feature_flags_repository->createOrUpdate(['name' => $name, 'value' => $value]);
   }
 
   function getAll() {
