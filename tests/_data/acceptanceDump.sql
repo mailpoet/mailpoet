@@ -8,23 +8,6 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 SET NAMES utf8mb4;
 
 
-DROP TABLE IF EXISTS `mp_mailpoet_forms`;
-CREATE TABLE `mp_mailpoet_forms` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(90) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `body` longtext COLLATE utf8mb4_unicode_520_ci,
-  `settings` longtext COLLATE utf8mb4_unicode_520_ci,
-  `styles` longtext COLLATE utf8mb4_unicode_520_ci,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-INSERT INTO `mp_mailpoet_forms` (`id`, `name`, `body`, `settings`, `styles`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'Test Form',	'a:2:{i:0;a:7:{s:4:\"type\";s:4:\"text\";s:4:\"name\";s:5:\"Email\";s:2:\"id\";s:5:\"email\";s:6:\"unique\";s:1:\"0\";s:6:\"static\";s:1:\"1\";s:6:\"params\";a:2:{s:5:\"label\";s:5:\"Email\";s:8:\"required\";s:4:\"true\";}s:8:\"position\";s:1:\"1\";}i:1;a:7:{s:4:\"type\";s:6:\"submit\";s:4:\"name\";s:6:\"Submit\";s:2:\"id\";s:6:\"submit\";s:6:\"unique\";s:1:\"0\";s:6:\"static\";s:1:\"1\";s:6:\"params\";a:1:{s:5:\"label\";s:10:\"Subscribe!\";}s:8:\"position\";s:1:\"2\";}}',	'a:5:{s:8:\"segments\";a:1:{i:0;s:1:\"2\";}s:10:\"on_success\";s:7:\"message\";s:15:\"success_message\";s:61:\"Check your inbox or spam folder to confirm your subscription.\";s:12:\"success_page\";s:1:\"4\";s:20:\"segments_selected_by\";s:5:\"admin\";}',	'/* form */\n.mailpoet_form {\n\n}\n\n/* paragraphs (label + input) */\n.mailpoet_paragraph {\n  line-height:20px;\n}\n\n/* labels */\n.mailpoet_segment_label,\n.mailpoet_text_label,\n.mailpoet_textarea_label,\n.mailpoet_select_label,\n.mailpoet_radio_label,\n.mailpoet_checkbox_label,\n.mailpoet_list_label,\n.mailpoet_date_label {\n  display:block;\n  font-weight:bold;\n}\n\n/* inputs */\n.mailpoet_text,\n.mailpoet_textarea,\n.mailpoet_select,\n.mailpoet_date_month,\n.mailpoet_date_day,\n.mailpoet_date_year,\n.mailpoet_date {\n  display:block;\n}\n\n.mailpoet_text,\n.mailpoet_textarea {\n  width:200px;\n}\n\n.mailpoet_checkbox {\n}\n\n.mailpoet_submit input {\n}\n\n.mailpoet_divider {\n}\n\n.mailpoet_message {\n}\n\n.mailpoet_validate_success {\n  color:#468847;\n}\n\n.mailpoet_validate_error {\n  color:#B94A48;\n}',	'2017-10-30 00:58:40',	'2017-10-30 00:58:50',	NULL);
-
-
 DROP TABLE IF EXISTS `mp_options`;
 CREATE TABLE `mp_options` (
   `option_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
