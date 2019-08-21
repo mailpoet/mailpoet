@@ -60,6 +60,12 @@ $resize-handle-z-index: 2;
   width: 24px;
 }
 
+.mailpoet_image_resize_handle_container_left {
+  left: 0;
+  right: auto;
+  transform: rotate(90deg);
+}
+
 .mailpoet_image_resize_handle {
   background: $editor-content-color;
   border-radius: 6px 0 0;
@@ -77,6 +83,10 @@ $resize-handle-z-index: 2;
   .mailpoet_image_resize_handle_text,
   .mailpoet_image_resize_handle_icon {
     pointer-events: none;
+  }
+
+  .mailpoet_image_resize_handle_container_left & {
+    cursor: nesw-resize;
   }
 }
 
