@@ -2,8 +2,6 @@
 
 namespace MailPoet\Features;
 
-use MailPoet\Models\FeatureFlag;
-
 class FeaturesController {
 
   // Define features below in the following form:
@@ -18,6 +16,13 @@ class FeaturesController {
 
   /** @var array */
   private $flags;
+
+  /** @var FeatureFlagsRepository */
+  private $feature_flags_repository;
+
+  public function __construct(FeatureFlagsRepository $feature_flags_repository) {
+    $this->feature_flags_repository = $feature_flags_repository;
+  }
 
   /** @return bool */
   function isSupported($feature) {
@@ -57,10 +62,10 @@ class FeaturesController {
   }
 
   private function getValueMap() {
-    $features = FeatureFlag::selectMany(['name', 'value'])->findMany();
+    $features = $this->feature_flags_repository->findAll();
     $featuresMap = [];
     foreach ($features as $feature) {
-      $featuresMap[$feature->name] = (bool)$feature->value;
+      $featuresMap[$feature->getName()] = (bool)$feature->getValue();
     }
     return $featuresMap;
   }
