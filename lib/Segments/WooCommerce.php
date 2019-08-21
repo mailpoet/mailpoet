@@ -112,6 +112,7 @@ class WooCommerce {
     $this->unsubscribeUsersFromSegment();
     $this->removeOrphanedSubscribers();
     $this->updateStatus();
+    $this->updateGlobalStatus();
 
     return true;
   }
@@ -252,6 +253,37 @@ class WooCommerce {
       LEFT JOIN %s mps ON mpss.subscriber_id = mps.id
         WHERE mpss.segment_id = %s AND (mps.is_woocommerce_user = 0 OR mps.email = "" OR mps.email IS NULL)
     ', $wp_mailpoet_subscriber_segment_table, $subscribers_table, $wc_segment->id));
+  }
+
+  private function updateGlobalStatus() {
+    $subscribers_table = Subscriber::$_table;
+    $subscriber_segment_table = SubscriberSegment::$_table;
+    $wc_segment = Segment::getWooCommerceSegment();
+    // Set global status unsubscribed to all woocommerce users without any segment
+    $sql = sprintf('
+      UPDATE %1$s mps
+        LEFT JOIN %2$s mpss ON mpss.subscriber_id = mps.id
+      SET mps.status = "unsubscribed"
+        WHERE
+          mpss.id IS NULL
+          AND mps.is_woocommerce_user = 1
+    ', $subscribers_table, $subscriber_segment_table);
+    Subscriber::rawExecute($sql);
+    // SET global status unsubscribed to all woocommerce users who have only 1 segment and it is woocommerce segment and they are not subscribed
+    // You can't specify target table 'mps' for update in FROM clause
+    $sql = sprintf('
+      UPDATE %1$s as mps
+        JOIN %2$s as mpss on mps.id = mpss.subscriber_id AND mpss.segment_id = "%3$s" AND mpss.status = "unsubscribed"
+      SET mps.status = "unsubscribed"
+        WHERE mps.id IN (
+          SELECT s.id -- get all subscribers with exactly 1 list
+            FROM ( SELECT id FROM %1$s WHERE is_woocommerce_user = 1) as s
+            JOIN %2$s as l on s.id=l.subscriber_id
+            GROUP BY s.id
+            HAVING COUNT(l.id) = 1
+        )
+    ', $subscribers_table, $subscriber_segment_table, $wc_segment->id);
+    Subscriber::rawExecute($sql);
   }
 
   private function removeFromTrash() {

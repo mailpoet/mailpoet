@@ -375,6 +375,53 @@ class WooCommerceTest extends \MailPoetTest  {
     expect(SubscriberSegment::findOne($association->id))->isEmpty();
   }
 
+  function testItSetGlobalStatusUnsubscribedForUsersUnsyncedFromWooCommerceSegment() {
+    $guest = $this->insertGuestCustomer();
+    $subscriber = Subscriber::createOrUpdate([
+      'first_name' => 'Mike',
+      'last_name' => 'Mike',
+      'email' => $guest['email'],
+      'is_woocommerce_user' => 1,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'confirmed_ip' => '123',
+    ]);
+    $wc_segment = Segment::getWooCommerceSegment();
+    SubscriberSegment::createOrUpdate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => $wc_segment->id,
+      'status' => Subscriber::STATUS_UNSUBSCRIBED,
+    ]);
+    $this->woocommerce_segment->synchronizeCustomers();
+    $subscriber_after_update = Subscriber::where('email', $subscriber->email)->findOne();
+    expect($subscriber_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+  }
+
+  function testItDoesntSetGlobalStatusUnsubscribedIfUserHasMoreLists() {
+    $guest = $this->insertGuestCustomer();
+    $subscriber = Subscriber::createOrUpdate([
+      'first_name' => 'Mike',
+      'last_name' => 'Mike',
+      'email' => $guest['email'],
+      'is_woocommerce_user' => 1,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'confirmed_ip' => '123',
+    ]);
+    $wc_segment = Segment::getWooCommerceSegment();
+    SubscriberSegment::createOrUpdate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => $wc_segment->id,
+      'status' => Subscriber::STATUS_UNSUBSCRIBED,
+    ]);
+    SubscriberSegment::createOrUpdate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => 5,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
+    $this->woocommerce_segment->synchronizeCustomers();
+    $subscriber_after_update = Subscriber::where('email', $subscriber->email)->findOne();
+    expect($subscriber_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
   function testItSubscribesSubscribersToWCListWhenSettingIsEnabled() {
     $wc_segment = Segment::getWooCommerceSegment();
     $user1 = $this->insertRegisteredCustomer();
