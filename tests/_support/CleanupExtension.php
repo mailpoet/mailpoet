@@ -5,7 +5,6 @@ use Codeception\Event\TestEvent;
 use Codeception\Events;
 use Codeception\Extension;
 use MailPoet\Config\Env;
-use MailPoet\Premium\Config\Env as PremiumEnv;
 
 class CleanupExtension extends Extension {
   const DB_BACKUP_PATH = __DIR__ . '/../_data/acceptanceBackup.sql';
@@ -56,19 +55,9 @@ class CleanupExtension extends Extension {
     $version = Env::$version;
     $sql .= "
       \n\n
-      INSERT INTO mp_mailpoet_settings (name, value) VALUES ('db_version', '$version')
-      ON DUPLICATE KEY UPDATE SET value = '$version'; 
+      INSERT INTO mp_mailpoet_settings (name, value) VALUES ('version', '$version')
+      ON DUPLICATE KEY UPDATE value = '$version';  
     ";
-
-    // set current plugin version for Premium
-    if (class_exists(PremiumEnv::class)) {
-      $premium_version = PremiumEnv::$version;
-      $sql .= "
-        \n\n
-        INSERT INTO mp_mailpoet_settings (name, value) VALUES ('premium_db_version', '$premium_version')
-        ON DUPLICATE KEY UPDATE SET value = '$premium_version' ;
-    ";
-    }
 
     // wrap SQL with serializable transaction (to avoid other connections like WP-CLI seeing wrong state)
     $sql = "
