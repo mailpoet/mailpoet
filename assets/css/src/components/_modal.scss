@@ -270,3 +270,43 @@ body.mailpoet_modal_opened {
   0%,
   50% { background-color: #064e6d; }
 }
+
+.mailpoet_loading_bird_container {
+  align-items: center;
+  display: flex;
+  height: 350px;
+  justify-content: center;
+  max-height: 100%;
+  max-width: 100%;
+  width: 350px;
+}
+
+.mailpoet_loading_bird {
+  animation: mailpoet_loading_bird 4.2s ease-in-out infinite;
+  height: 100%;
+  width: 100%;
+}
+
+@keyframes mailpoet_loading_bird {
+  0% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(5px, 20px, 0); }
+  50% { transform: translate3d(10px, 0, 0); }
+  75% { transform: translate3d(5px, 20px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.mailpoet_loading_bird_back {
+  animation: mailpoet_loading_bird_wing .12s linear infinite;
+  transform-origin: center;
+}
+
+.mailpoet_loading_bird_front {
+  animation: mailpoet_loading_bird_wing .12s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes mailpoet_loading_bird_wing {
+  0% { transform: scale3d(1, 1, 1); }
+  50% { transform: scale3d(.5, -.4, 1); }
+  100% { transform: scale3d(1, 1, 1); }
+}
