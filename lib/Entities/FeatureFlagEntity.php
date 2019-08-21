@@ -22,14 +22,14 @@ class FeatureFlagEntity {
   private $name;
 
   /**
-   * @Column(type="smallint", options={"unsigned":true}, nullable=true)
-   * @var integer|null
+   * @Column(type="boolean", nullable=true)
+   * @var bool|null
    */
   private $value;
 
   /**
    * @param string $name
-   * @param integer|null $value
+   * @param bool|null $value
    */
   public function __construct($name, $value = null) {
     $this->name = $name;
@@ -46,12 +46,12 @@ class FeatureFlagEntity {
     $this->name = $name;
   }
 
-  /** @return integer|null */
+  /** @return bool|null */
   public function getValue() {
     return $this->value;
   }
 
-  /** @param integer|null $value */
+  /** @param bool|null $value */
   public function setValue($value) {
     $this->value = $value;
   }
