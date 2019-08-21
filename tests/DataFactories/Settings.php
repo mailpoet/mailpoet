@@ -18,6 +18,7 @@ class Settings {
   function withDefaultSettings() {
     $this->withCronTriggerMethod('WordPress');
     $this->withSendingMethodSmtpMailhog();
+    $this->withSender('admin', 'wp@example.com');
     $this->withSkippedTutorials();
     $this->withCookieRevenueTracking();
   }
@@ -25,6 +26,11 @@ class Settings {
   function withCronTriggerMethod($method) {
     $this->settings->set('cron_trigger.method', $method);
     return $this;
+  }
+
+  function withSender($name, $address) {
+    $this->settings->set('sender.name', $name);
+    $this->settings->set('sender.address', $address);
   }
 
   function withConfirmationEmailSubject($subject = null) {
