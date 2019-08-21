@@ -12,10 +12,11 @@ class CleanupExtension extends Extension {
   const DB_USERNAME = 'root';
   const DB_PASSWORD = 'wordpress';
   const DB_NAME = 'wordpress';
+  const MAILHOG_DATA_PATH = '/mailhog-data';
 
   static $events = [
     Events::SUITE_BEFORE => 'backupDatabase',
-    Events::TEST_BEFORE => 'cleanupDatabase',
+    Events::TEST_BEFORE => 'cleanupEnvironment',
   ];
 
   /** @var PDO */
@@ -70,8 +71,9 @@ class CleanupExtension extends Extension {
     file_put_contents(self::DB_BACKUP_PATH, $sql);
   }
 
-  function cleanupDatabase(TestEvent $event) {
+  function cleanupEnvironment(TestEvent $event) {
     $this->root_connection->exec(file_get_contents(self::DB_BACKUP_PATH));
+    exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
   }
 
   private function createDsnConnectionString() {

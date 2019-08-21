@@ -13,6 +13,7 @@ services:
     volumes:
       - ../..:/project
       - wp-core:/wp-core
+      - mailhog-data:/mailhog-data
       - ../..:/wp-core/wp-content/plugins/mailpoet
     entrypoint: /docker-entrypoint.sh
 
@@ -21,6 +22,12 @@ services:
     ports:
       - 1025:1025
       - 8025:8025
+    user: root
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /mailhog-data
+    volumes:
+      - mailhog-data:/mailhog-data
 
   wordpress:
     build:
@@ -79,6 +86,7 @@ services:
       - 5900:5900
 volumes:
   wp-core:
+  mailhog-data:
 
 networks:
   default:
