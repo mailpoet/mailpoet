@@ -16,6 +16,7 @@ class Settings {
 
   // TODO: not yet complete, more settings will be moved from acceptanceDump.sql
   function withDefaultSettings() {
+    $this->withSendingMethodSmtpMailhog();
     $this->withCookieRevenueTracking();
   }
 
@@ -92,6 +93,13 @@ class Settings {
     $this->settings->set('mta.method', Mailer::METHOD_SMTP);
     $this->settings->set('mta.port', 1025);
     $this->settings->set('mta.host', 'mailhog');
+    $this->settings->set('mta.authentication', 0);
+    $this->settings->set('mta.login', '');
+    $this->settings->set('mta.password', '');
+    $this->settings->set('mta.encryption', '');
+    $this->settings->set('mailpoet_sending_frequency', 'auto');
+    $this->settings->set('mailpoet_smtp_provider', 'manual');
+    $this->settings->set('smtp_provider', 'manual');
   }
 
   function withSendingError($error_message, $operation = 'send') {
