@@ -16,7 +16,7 @@ class Analytics extends AbstractExtension {
   public function getFunctions() {
     $settings = new SettingsController();
     $analytics = new AnalyticsGenerator(
-      new Reporter($settings, new WooCommerceHelper(new WPFunctions())),
+      new Reporter($settings, new WooCommerceHelper()),
       $settings
     );
     return [
