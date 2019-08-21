@@ -568,12 +568,4 @@ class Functions {
     }
   }
 
-  /**
-   * @param string|null $type
-   * @param string|null $permission
-   * @return object
-   */
-  function wpCountPosts($type = null, $permission = null) {
-    return wp_count_posts($type, $permission);
-  }
 }

@@ -1,19 +1,7 @@
 <?php
 namespace MailPoet\WooCommerce;
 
-use MailPoet\WP\Functions;
-
 class Helper {
-
-  /** @var Functions */
-  private $wp;
-
-  function __construct(Functions $wp = null) {
-    if (!$wp) {
-      $wp = Functions::get();
-    }
-    $this->wp = $wp;
-  }
 
   function isWooCommerceActive() {
     return class_exists('WooCommerce');
@@ -47,11 +35,13 @@ class Helper {
     return get_woocommerce_currency();
   }
 
-  function getOrdersCount() {
-    $counts = $this->wp->wpCountPosts('shop_order');
-    return array_reduce((array)$counts, function($sum, $count_for_state) {
-      return $sum + (int)$count_for_state;
-    });
+  function getOrdersCountCreatedBefore($date_time) {
+    global $wpdb;
+    $result = $wpdb->get_var( "
+        SELECT DISTINCT count(p.ID) FROM {$wpdb->prefix}posts as p
+        WHERE p.post_type = 'shop_order' AND p.post_date < '{$date_time}'
+    " );
+    return (int)$result;
   }
 
   function getRawPrice($price, array $args = []) {
