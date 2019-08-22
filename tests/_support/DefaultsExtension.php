@@ -4,13 +4,13 @@ use \Codeception\Events;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\UserFlags;
 
-class SettingsExtension extends \Codeception\Extension {
+class DefaultsExtension extends \Codeception\Extension {
 
   public static $events = [
-    Events::SUITE_BEFORE => 'beforeSuite',
+    Events::SUITE_BEFORE => 'setupDefaults',
   ];
 
-  public function beforeSuite(\Codeception\Event\SuiteEvent $e) {
+  public function setupDefaults(\Codeception\Event\SuiteEvent $e) {
     $settings = new Settings();
     $settings->withDefaultSettings();
 
