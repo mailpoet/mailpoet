@@ -82,10 +82,10 @@
         </ul>
 
         <p class="mailpoet_sending_methods_help">
-          <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
+          <% set badgeClassName = (is_new_user == true) ? 'mailpoet_badge mailpoet_badge_video': 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey' %>
           <%= __('[link]%s See video guide[/link]')
           |format('<span class="dashicons dashicons-format-video"></span>')
-          |replaceLinkTags('https://kb.mailpoet.com/article/235-video-guide-sending-options', {'class' : badgeClassName, 'target' : '_blank'}, 'link')
+          |replaceLinkTags('https://kb.mailpoet.com/article/235-video-guide-sending-options', {'class': badgeClassName, 'target': '_blank', 'data-beacon-article': '5a3d4c260428631938003802'}, 'link')
           |raw
           %>
         </p>
@@ -124,7 +124,7 @@
           <li class="mailpoet_error_item"><%= __("Manual configuration of SPF and DKIM required.") %></li>
           <li class="mailpoet_error_item"><%=
             __("Bounce handling is available, but only with an extra [link]add-on[/link].")
-            |replaceLinkTags('https://wordpress.org/plugins/bounce-handler-mailpoet/', {'target' : '_blank'})
+            |replaceLinkTags('https://wordpress.org/plugins/bounce-handler-mailpoet/', {'target': '_blank'})
             |raw
           %>
           </li>
@@ -663,7 +663,7 @@
 <script type="text/javascript">
   jQuery(function($) {
     var tooltip = '<%= __("Didn't receive the test email? Read our [link]quick guide[/link] to sending issues.")
-      |replaceLinkTags('https://kb.mailpoet.com/article/146-my-newsletters-are-not-being-received', {'target' : '_blank'})
+      |replaceLinkTags('https://kb.mailpoet.com/article/146-my-newsletters-are-not-being-received', {'target': '_blank', 'data-beacon-article': '580846f09033604df5166ed1'})
       |escape('js') %>'
 
     MailPoet.helpTooltip.show(document.getElementById("tooltip-test"), {

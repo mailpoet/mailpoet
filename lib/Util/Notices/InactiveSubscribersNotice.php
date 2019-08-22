@@ -50,7 +50,10 @@ class InactiveSubscribersNotice {
     $go_to_settings_string = __('Go to the Advanced Settings', 'mailpoet');
 
     $notice = str_replace('[number]', $this->wp->numberFormatI18n($inactive_subscribers_count), $error_string);
-    $notice = Helpers::replaceLinkTags($notice, 'https://kb.mailpoet.com/article/264-inactive-subscribers', ['target' => '_blank']);
+    $notice = Helpers::replaceLinkTags($notice, 'https://kb.mailpoet.com/article/264-inactive-subscribers', [
+      'target' => '_blank',
+      'data-beacon-article' => '5cbf19622c7d3a026fd3efe1',
+    ]);
     $notice = "<p>$notice</p>";
     $notice .= '<p><a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">' . $go_to_settings_string . '</a></p>';
 

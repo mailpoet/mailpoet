@@ -39,7 +39,7 @@
           <%= __('List of fields to export') %>
           <p class="description">
             <%= __('[link]Read about the Global status.[/link]')
-            |replaceLinkTags('https://kb.mailpoet.com/article/245-what-is-global-status', {'target' : '_blank'})
+            |replaceLinkTags('https://kb.mailpoet.com/article/245-what-is-global-status', {'target': '_blank', 'data-beacon-article': '5a9548782c7d3a75495122f9'})
             |raw
             %>
           </p>
@@ -108,6 +108,6 @@
 <% block translations %>
 <%= localize({
   'serverError': __('Server error:'),
-  'exportMessage' : __('%1$s subscribers were exported. Get the exported file [link]here[/link].')
+  'exportMessage': __('%1$s subscribers were exported. Get the exported file [link]here[/link].')
 }) %>
 <% endblock %>

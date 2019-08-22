@@ -115,7 +115,10 @@ class Initializer {
       return WPNotice::displayError(Helpers::replaceLinkTags(
         WPFunctions::get()->__('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
         'https://kb.mailpoet.com/article/200-solving-database-connection-issues',
-        ['target' => '_blank']
+        [
+          'target' => '_blank',
+          'data-beacon-article' => '596de7db2c7d3a73488b2f8d',
+        ]
       ));
     }
 
