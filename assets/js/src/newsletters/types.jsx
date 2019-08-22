@@ -116,6 +116,7 @@ class NewsletterTypes extends React.Component {
         title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
         description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
         videoGuide: 'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
+        videoGuideBeacon: '5b05ebf20428635ba8b2aa53',
         action: (function action() {
           return (
             <a
@@ -142,6 +143,7 @@ class NewsletterTypes extends React.Component {
         title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
         description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
         videoGuide: 'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
+        videoGuideBeacon: '59ba6fb3042863033a1cd5a5',
         action: (function action() {
           return (
             <a
@@ -189,7 +191,7 @@ class NewsletterTypes extends React.Component {
                   </h3>
                   <p>{type.description}</p>
                   { type.videoGuide && (
-                    <a className={badgeClassName} href={type.videoGuide} target="_blank" rel="noopener noreferrer">
+                    <a className={badgeClassName} href={type.videoGuide} data-beacon-article={type.videoGuideBeacon} target="_blank" rel="noopener noreferrer">
                       <span className="dashicons dashicons-format-video" />
                       {MailPoet.I18n.t('seeVideoGuide')}
                     </a>
