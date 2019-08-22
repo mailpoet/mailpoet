@@ -1,6 +1,7 @@
 version: 2.1
 jobs:
   build_and_code_qa:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
       - image: mailpoet/wordpress:7.3_20190705.2
@@ -58,6 +59,7 @@ jobs:
           paths:
             - .
   static_analysis:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
     - image: mailpoet/wordpress:7.3_20190705.2
@@ -76,6 +78,7 @@ jobs:
         name: "Static analysis"
         command: ./do qa:phpstan
   php5_unit:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
     - image: mailpoet/wordpress:5.6_20190709.3
@@ -104,6 +107,7 @@ jobs:
         path: /tmp/fake-mailer/
         destination: fake-mailer
   php5_integration_and_js:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
     - image: mailpoet/wordpress:5.6_20190709.3
@@ -145,6 +149,7 @@ jobs:
         path: /tmp/fake-mailer/
         destination: fake-mailer
   acceptance_tests:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     machine: true
     parameters:
@@ -166,6 +171,7 @@ jobs:
       - store_test_results:
           path: tests/_output
   acceptance_tests_multisite:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     machine: true
     parameters:
@@ -187,6 +193,7 @@ jobs:
       - store_test_results:
           path: tests/_output
   php7_unit:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
       - image: mailpoet/wordpress:7.3_20190705.2
@@ -218,6 +225,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   php7_integration:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
       - image: mailpoet/wordpress:7.3_20190705.2
@@ -249,6 +257,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   php7_integration_multisite:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
       - image: mailpoet/wordpress:7.3_20190705.2
@@ -280,6 +289,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   build_release_zip:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
       - image: mailpoet/wordpress:7.3_20190705.2
@@ -309,6 +319,7 @@ jobs:
           paths:
           - release_zip_build_number.txt
   test_deployment:
+    resource_class: small
     working_directory: /home/circleci/mailpoet
     docker:
       - image: mailpoet/wordpress:7.1_20181009.1
