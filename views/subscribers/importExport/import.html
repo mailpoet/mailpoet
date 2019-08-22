@@ -1,5 +1,4 @@
 <% set csvDescription = __('This file needs to be formatted in a CSV style (comma-separated-values.) Look at some [link]examples on our support site[/link].') %>
-<% set csvKBLink = 'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files' %>
 <% extends 'layout.html' %>
 <% block content %>
 <div id="mailpoet_subscribers_import" class="wrap">
@@ -34,7 +33,6 @@
 'noMailChimpLists': __('No active lists found'),
 'serverError': __('Server error:'),
 'select': __('Select', 'Form input type'),
-'csvKBLink':  csvKBLink,
 'wrongFileFormat': __('Only comma-separated (CSV) file formats are supported.'),
 'maxPostSizeNotice': __('Your CSV is over %s and is too big to process. Please split the file into two or more sections.')|replace({'%s': maxPostSize}),
 'dataProcessingError': __("Your data could not be processed. Please make sure it is in the correct format."),
