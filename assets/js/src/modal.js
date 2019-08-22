@@ -547,7 +547,8 @@ MailPoet.Modal = {
 
     // add loading class to overlay
     jQuery('#mailpoet_modal_overlay')
-      .addClass('mailpoet_overlay_loading');
+      .addClass('mailpoet_overlay_loading')
+      .fadeIn(200);
 
     return this;
   },
@@ -556,7 +557,8 @@ MailPoet.Modal = {
 
     // remove loading class from overlay
     jQuery('#mailpoet_modal_overlay')
-      .removeClass('mailpoet_overlay_loading');
+      .removeClass('mailpoet_overlay_loading')
+      .hide();
 
     return this;
   },
