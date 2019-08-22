@@ -52,12 +52,12 @@ class CleanupExtension extends Extension {
       INSERT INTO mp_usermeta (user_id, meta_key, meta_value) VALUES (1, 'session_tokens', @mp_meta_value);
     ";
 
-    // set current plugin version to prevent executing migrations
+    // set current plugin version to prevent executing Changelog.php setup for every test
     $version = Env::$version;
     $sql .= "
       \n\n
       INSERT INTO mp_mailpoet_settings (name, value) VALUES ('version', '$version')
-      ON DUPLICATE KEY UPDATE value = '$version';  
+      ON DUPLICATE KEY UPDATE value = '$version';
     ";
 
     // wrap SQL with serializable transaction (to avoid other connections like WP-CLI seeing wrong state)
