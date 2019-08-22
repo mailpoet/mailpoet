@@ -14,7 +14,6 @@ class Settings {
     $this->settings = new SettingsController();
   }
 
-  // TODO: not yet complete, more settings will be moved from acceptanceDump.sql
   function withDefaultSettings() {
     $this->withCronTriggerMethod('WordPress');
     $this->withSendingMethodSmtpMailhog();
