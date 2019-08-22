@@ -40,5 +40,6 @@ modules:
             throw: true
 extensions:
     enabled:
+        - ErrorsExtension
         - DefaultsExtension
         - CleanupExtension # register last to backup also effects of other extensions
