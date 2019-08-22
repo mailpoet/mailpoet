@@ -30,6 +30,7 @@ const MethodPaste = ({
               (match) => (
                 <a
                   href={`${kbLink}`}
+                  data-beacon-article="57ce079f903360649f6e56fc"
                   key="kb-link"
                   target="_blank"
                   rel="noopener noreferrer"

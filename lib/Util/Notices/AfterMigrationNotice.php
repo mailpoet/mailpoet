@@ -35,7 +35,10 @@ class AfterMigrationNotice {
     $message = Helpers::replaceLinkTags(
       WPFunctions::get()->__('Congrats! You’re progressing well so far. Complete your upgrade thanks to this [link]checklist[/link].', 'mailpoet'),
       'https://kb.mailpoet.com/article/199-checklist-after-migrating-to-mailpoet3',
-      ['target' => '_blank']
+      [
+        'target' => '_blank',
+        'data-beacon-article' => '596352492c7d3a707d7b8994',
+      ]
     );
 
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';

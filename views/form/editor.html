@@ -135,13 +135,13 @@
           <!-- Form export links -->
           <p>
             <%= __('Add this form to your sidebar or footer on the [link]Widgets page[/link].')
-              |replaceLinkTags('widgets.php', {'target' : '_blank'})
+              |replaceLinkTags('widgets.php', {'target': '_blank'})
               |raw
             %>
           </p>
           <p>
             <%= __('Copy and paste this [link]shortcode[/link] on to a post or page.')
-              |replaceLinkTags('javascript:;', {'class' : 'mailpoet_form_export_toggle', 'data-type' : 'shortcode'})
+              |replaceLinkTags('javascript:;', {'class': 'mailpoet_form_export_toggle', 'data-type': 'shortcode'})
               |raw
             %>
           </p>
@@ -197,7 +197,7 @@
 
       <p class="help">
         <%= __('<strong>Tip:</strong> read our [link]GDPR guide[/link] to make sure your form follows the privacy directive of the European Union.')
-        |replaceLinkTags('https://kb.mailpoet.com/article/246-guide-to-conform-to-gdpr?utm_source=plugin&utm_medium=formeditor&utm_campaign=helpdocs', {'target' : '_blank', id: 'mailpoet_helper_link'})
+        |replaceLinkTags('https://kb.mailpoet.com/article/246-guide-to-conform-to-gdpr?utm_source=plugin&utm_medium=formeditor&utm_campaign=helpdocs', {'target': '_blank', id: 'mailpoet_helper_link', 'data-beacon-article': '5a9e8cdd04286374f7089a8c'})
         |raw
         %>
       </p>

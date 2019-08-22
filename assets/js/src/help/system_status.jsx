@@ -5,7 +5,7 @@ import CronStatus from './cron_status.jsx';
 import QueueStatus from './queue_status.jsx';
 import Tabs from './tabs.jsx';
 
-function renderStatusMessage(status, error, link, additionalInfo) {
+function renderStatusMessage(status, error, link, linkBeacon, additionalInfo) {
   const noticeType = (status) ? 'success' : 'error';
   let noticeMessage = (status)
     ? MailPoet.I18n.t('systemStatusConnectionSuccessful')
@@ -16,7 +16,7 @@ function renderStatusMessage(status, error, link, additionalInfo) {
       noticeMessage,
       /\[link\](.*?)\[\/link\]/g,
       (match) => (
-        <a href={`${link}`} key="kb-link">{match}</a>
+        <a href={link} data-beacon-article={linkBeacon} key="kb-link">{match}</a>
       )
     );
   }
@@ -41,7 +41,7 @@ function renderCronSection(data) {
       <p>
         <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
       </p>
-      {renderStatusMessage(status, error, 'https://kb.mailpoet.com/article/231-sending-does-not-work', additionalInfo)}
+      {renderStatusMessage(status, error, 'https://kb.mailpoet.com/article/231-sending-does-not-work', '5a0257ac2c7d3a272c0d7ad6', additionalInfo)}
     </div>
   );
 }

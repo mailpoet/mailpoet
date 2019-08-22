@@ -29,6 +29,7 @@ class PHPVersionWarnings {
     $error .= '<br><br>' . Helpers::replaceLinkTags($get_in_touch_string, 'https://www.mailpoet.com/let-us-handle-your-php-upgrade/', [
       'target' => '_blank',
       'class' => 'button',
+      'data-beacon-article' => '5ad5f8982c7d3a0e93676666',
     ]);
 
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
