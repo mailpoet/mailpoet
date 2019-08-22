@@ -2,17 +2,25 @@
 
 namespace MailPoet\Doctrine;
 
+use MailPoetVendor\Doctrine\Common\Annotations\SimpleAnnotationReader;
 use MailPoetVendor\Doctrine\Common\Cache\CacheProvider;
+use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata;
+use ReflectionClass;
+use ReflectionException;
 
 // Simple filesystem-based cache storage for Doctrine Metadata.
 //
 // Needed because Doctrine's FilesystemCache doesn't work read-only (when metadata dumped)
 // and it calls realpath() that could fail on some hostings due to filesystem permissions.
 class MetadataCache extends CacheProvider {
+  /** @var bool */
+  private $is_dev_mode;
+
   /** @var string */
   private $directory;
 
   function __construct($dir) {
+    $this->is_dev_mode = defined('WP_DEBUG') && WP_DEBUG && class_exists(SimpleAnnotationReader::class);
     $this->directory = rtrim($dir, '/\\');
     @mkdir($this->directory);
   }
@@ -25,7 +33,23 @@ class MetadataCache extends CacheProvider {
   }
 
   protected function doContains($id) {
-    return file_exists($this->getFilename($id));
+    $filename = $this->getFilename($id);
+    $file_exists = file_exists($filename);
+
+    // in dev mode invalidate cache if source file has changed
+    if ($file_exists && $this->is_dev_mode) {
+      $class_metadata = unserialize(file_get_contents($filename));
+      assert($class_metadata instanceof ClassMetadata);
+      try {
+        $reflection = new ReflectionClass($class_metadata->getName());
+      } catch (ReflectionException $e) {
+        return false;
+      }
+      clearstatcache();
+      return filemtime($filename) >= filemtime($reflection->getFileName());
+    }
+
+    return $file_exists;
   }
 
   protected function doSave($id, $data, $lifeTime = 0) {
