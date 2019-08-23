@@ -64,7 +64,7 @@
                 checked="checked"
                 <% endif %>
               /><%= __("MailPoet's own script. Doesn't work with [link]these hosts[/link].")
-                    |replaceLinkTags('https://kb.mailpoet.com/article/131-hosts-which-mailpoet-task-scheduler-wont-work', {'target' : '_blank'})
+                    |replaceLinkTags('https://kb.mailpoet.com/article/131-hosts-which-mailpoet-task-scheduler-wont-work', {'target': '_blank', 'data-beacon-article': '57ce0b05c6979108399a0456'})
                     |raw
                  %>
           </label>
@@ -116,7 +116,7 @@
         </p>
         <% else %>
           <%= __('Install the plugin [link]Members[/link] (free) to manage permissions.')
-            |replaceLinkTags('https://wordpress.org/plugins/members/', {'target' : '_blank'})
+            |replaceLinkTags('https://wordpress.org/plugins/members/', {'target': '_blank'})
             |raw
           %>
         <% endif %>
