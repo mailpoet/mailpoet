@@ -51,7 +51,8 @@ class SendingQueueTest extends \MailPoetTest {
     wp_set_current_user($wp_users[0]->ID);
     $this->settings = new SettingsController();
     $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, new FeaturesController());
+    $features_controller = Stub::makeEmpty(FeaturesController::class);
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller);
     $populator->up();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';
