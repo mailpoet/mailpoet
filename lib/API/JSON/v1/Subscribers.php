@@ -317,7 +317,7 @@ class Subscribers extends APIEndpoint {
         $meta = [];
         $meta['refresh_captcha'] = true;
         return $this->badRequest([
-          APIError::BAD_REQUEST => WPFunctions::get()->__('The characters entered do not match with the previous captcha.', 'mailpoet'),
+          APIError::BAD_REQUEST => WPFunctions::get()->__('The characters entered do not match with the previous CAPTCHA.', 'mailpoet'),
         ], $meta);
       }
     }
