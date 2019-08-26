@@ -344,7 +344,7 @@ class Functions {
     return plugins_url($path, $plugin);
   }
 
-  function registerActivationHook($file, callable $function) {
+  function registerActivationHook($file, $function) {
     return register_activation_hook($file, $function);
   }
 
