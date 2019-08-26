@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Subscription;
 
+use Codeception\Util\Stub;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Router;
@@ -17,7 +18,8 @@ class UrlTest extends \MailPoetTest {
     parent::_before();
     $this->settings = new SettingsController;
     $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, new FeaturesController());
+    $features_controller = Stub::makeEmpty(FeaturesController::class);
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller);
     $populator->up();
   }
 
