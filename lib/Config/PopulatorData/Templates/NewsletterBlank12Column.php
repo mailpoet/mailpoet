@@ -113,7 +113,7 @@ class NewsletterBlank12Column {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => WPFunctions::get()->__("Fake Logo", 'mailpoet'),
+                    "alt" => WPFunctions::get()->__("Fake logo", 'mailpoet'),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
