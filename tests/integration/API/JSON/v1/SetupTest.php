@@ -26,9 +26,11 @@ class SetupTest extends \MailPoetTest {
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
 
+    $features_controller = Stub::makeEmpty(FeaturesController::class);
+
     $settings = new SettingsController();
     $referral_detector = new ReferralDetector($wp, $settings);
-    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, new FeaturesController());
+    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, $features_controller);
     $router = new Setup($wp, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
