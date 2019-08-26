@@ -163,7 +163,7 @@ class NewsletterBlank12Column {
                 "blocks" => [
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->__("<h2>This template has...</h2>", 'mailpoet'),
+                    "text" => WPFunctions::get()->'<h2>'.__('This template has...', 'mailpoet').'</h2>',
                   ],
                   [
                     "type" => "text",
@@ -182,7 +182,7 @@ class NewsletterBlank12Column {
                 "blocks" => [
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->__("<h2>... a 2-column layout.</h2>", 'mailpoet'),
+                    "text" => WPFunctions::get()->'<h2>'.__('... a 2-column layout.', 'mailpoet').'</h2>',
                   ],
                   [
                     "type" => "text",
