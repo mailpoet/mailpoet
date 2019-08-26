@@ -149,7 +149,6 @@ jobs:
         path: /tmp/fake-mailer/
         destination: fake-mailer
   acceptance_tests:
-    resource_class: small
     working_directory: /home/circleci/mailpoet
     machine: true
     parameters:
@@ -179,7 +178,6 @@ jobs:
       - store_test_results:
           path: tests/_output
   acceptance_tests_multisite:
-    resource_class: small
     working_directory: /home/circleci/mailpoet
     machine: true
     parameters:
