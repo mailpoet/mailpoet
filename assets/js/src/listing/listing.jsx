@@ -56,7 +56,7 @@ class Listing extends React.Component {
     limit: 10,
     sort_by: null,
     sort_order: undefined,
-    auto_refresh: true,
+    auto_refresh: false,
     location: undefined,
     base_url: '',
     type: undefined,
