@@ -23,34 +23,39 @@
   width: 100% !important;
 }
 
-/* Fix inline TinyMCE toolbar to have minimal width instead of being close to 100% of the screen */
-div.mce-toolbar-grp.mce-container {
-  position: absolute;
-}
-
-.mce-tinymce.mce-tinymce-inline {
-  background-color: $primary-background-color;
-  border: 1px solid $content-border-color;
-  border-radius: 3px;
-  box-shadow: 0 0 3px 1px rgba(0, 0, 0, .05);
-}
-
-.mce-window {
-  /* Fix TinyMCE mailpoet_shortcodes window lack of hiding overflow */
-  div.mce-container-body.mce-abs-layout {
-    overflow: hidden;
+.tox {
+  /* Small style changes to better fit TinyMCE to our editor */
+  &.tox-tinymce-inline {
+    border: 1px solid $content-border-color;
+    border-radius: 3px;
+    box-shadow: 0 0 3px 1px rgba(0, 0, 0, .05);
+    z-index: 1;
   }
 
-  /* Fix TinyMCE popup window's close button to not be covered by draggable section */
-  .mce-window-head div.mce-dragh {
-    width: calc(100% - 36px);
+  /* Fix for TinyMCE modals are above WP menu */
+  &.tox-tinymce-aux {
+    z-index: 99999;
   }
-}
 
-/* TinyMCE mailpoet_shortcodes toolbar icon */
-.mce-i-mailpoet_shortcodes:before {
-  content: '\f307';
-  font: 400 20px / 1 dashicons !important;
+  .tox-toolbar {
+    background-color: $primary-background-color;
+
+    /* Fix double border on top of TineMCE popup */
+    &:first-child {
+      border-top: 0;
+    }
+  }
+
+  /* Slightly smaller TinyMCE button */
+  .tox-tbtn:not(.tox-tbtn--select) {
+    height: 28px;
+    width: 30px;
+  }
+
+  /* Fix for text type select */
+  .tox-collection__item-label {
+    line-height: normal;
+  }
 }
 
 /* TinyMCE remove active border from the editor */
