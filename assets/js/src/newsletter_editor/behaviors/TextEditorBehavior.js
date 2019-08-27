@@ -12,11 +12,9 @@ import tinymceMailpoetShortcodes from 'newsletter_editor/tinymce/mailpoet_shortc
 // TinyMCE theme and plugins
 import 'tinymce/themes/modern';
 import 'tinymce/plugins/code';
-import 'tinymce/plugins/colorpicker';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
 import 'tinymce/plugins/paste';
-import 'tinymce/plugins/textcolor';
 
 var BL = BehaviorsLookup;
 
@@ -28,7 +26,7 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
     validElements: 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br,del',
     invalidElements: 'script',
     blockFormats: 'Paragraph=p',
-    plugins: 'link textcolor colorpicker mailpoet_shortcodes',
+    plugins: 'link mailpoet_shortcodes',
     configurationFilter: function configurationFilter(originalConfig) { return originalConfig; },
   },
   initialize: function initialize() {
