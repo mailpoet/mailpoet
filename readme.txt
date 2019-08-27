@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, email automation
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.35.1
+Stable tag: 3.35.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -146,6 +146,22 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.35.2 - 2019-08-27 =
+* Added: referral tracking capabilities;
+* Improved: listing page loading speed, now wicked fast;
+* Improved: preview in browser link text in newsletter templates;
+* Improved: timing of  when new customer polls are shown for the first time;
+* Improved: easier mouse drag to resize right aligned images;
+* Improved: unsyncing WooCommerce customers without an additional list sets global status to unsubscribed;
+* Improved: removed link to non-existent privacy policy in default forms on new installs;
+* Improved: content of default confirmation email;
+* Improved: updated privacy policy in API for 3rd party developers;
+* Improved: replaced images that looked blurry on high-res displays;
+* Fixed: issue with color-picker for global and content background colors;
+* Fixed: false positive on system status page for cron;
+* Fixed: post excerpts now exclude image captions. Thx Dieter;
+* Fixed: preview in browser button on statistics page for non-Premium users.
 
 = 3.35.1 - 2019-08-20 =
 * Improved: remove WooCommerce customers list on non-WooCommerce websites.
