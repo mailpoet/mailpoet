@@ -125,6 +125,24 @@ class PostContentManager {
       '<a href="$1">' . __('Click here to view media.', 'mailpoet') . '</a>',
       $content
     );
+    
+    $content = preg_replace(
+      '#<figure class=\"wp-block-video\"><video.*?poster=\"(.+?)\".*?src=\"(.+?)\".*><\/video><\/figure>#',
+      '<a href="$2"><img src="$1" style="height:auto;max-width:100%;-ms-interpolation-mode:bicubic;border:0;display:block;outline:none;text-align:center"></a><p><i>' . __('Click image to view media.', 'mailpoet') . '</i></p>',
+      $content
+    );
+
+    $content = preg_replace(
+      '#<figure class=\"wp-block-video\"><video.*?src=\"(.+?)\".*><\/video><\/figure>#',
+      '<a href="$1">' . __('Click here to view media.', 'mailpoet') . '</a>',
+      $content
+    );
+    
+    $content = preg_replace(
+      '#<figure class=\"wp-block-audio\"><audio.*?src=\"(.+?)\".*><\/audio><\/figure>#',
+      '<a href="$1">' . __('Click here to listen to media.', 'mailpoet') . '</a>',
+      $content
+    );
 
     // replace youtube links
     $content = preg_replace(
