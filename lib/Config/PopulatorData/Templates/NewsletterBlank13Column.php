@@ -163,11 +163,11 @@ class NewsletterBlank13Column {
                 "blocks" => [
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->'<h3>'.__('This template...', 'mailpoet').'</h3>',
+                    "text" => '<h3>' . WPFunctions::get()->__('This template...', 'mailpoet') . '</h3>',
                   ],
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->'<p>'.__('In the right sidebar, you can add layout blocks to your newsletter.', 'mailpoet').'</p>',
+                    "text" => '<p>' . WPFunctions::get()->__('In the right sidebar, you can add layout blocks to your newsletter.', 'mailpoet') . '</p>',
                   ],
                 ],
               ],
@@ -182,7 +182,7 @@ class NewsletterBlank13Column {
                 "blocks" => [
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->'<h3>'.__('... has a...', 'mailpoet').'</h3>',
+                    "text" => '<h3>' . WPFunctions::get()->__('... has a...', 'mailpoet') . '</h3>',
                   ],
                   [
                     "type" => "text",
@@ -201,11 +201,11 @@ class NewsletterBlank13Column {
                 "blocks" => [
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->'<h3>'.__('3-column layout.', 'mailpoet').'</h3>',
+                    "text" => '<h3>' . WPFunctions::get()->__('3-column layout.', 'mailpoet') . '</h3>',
                   ],
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->'<p>'.__('You can add as many layout blocks as you want!', 'mailpoet').'</p>',
+                    "text" => '<p>' . WPFunctions::get()->__('You can add as many layout blocks as you want!', 'mailpoet') . '</p>',
                   ],
                   [
                     "type" => "text",
