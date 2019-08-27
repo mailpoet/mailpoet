@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorTextBlockCest {
-  const TINYMCE_SELECTOR = '.mce-tinymce';
+  const TINYMCE_SELECTOR = '.tox-tinymce';
   const TEXT_BLOCK_SELECTOR = '.mailpoet_text_block';
   const CONTAINER_SELECTOR = '.mailpoet_container_horizontal';
 
