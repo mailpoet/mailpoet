@@ -50,7 +50,7 @@
     "select2": "^4.0.5",
     "setimmediate": "^1.0.5",
     "spectrum-colorpicker": "^1.6.2",
-    "tinymce": "4.6.5",
+    "tinymce": "5.0.14",
     "underscore": "1.8.3",
     "velocity-animate": "1.2.3"
   },
