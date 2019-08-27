@@ -307,8 +307,8 @@ const adminConfig = {
 
     new webpackCopyPlugin([
       {
-        from: 'node_modules/tinymce/skins/lightgray',
-        to: 'skins/lightgray'
+        from: 'node_modules/tinymce/skins/ui/oxide',
+        to: 'skins/ui/oxide'
       },
     ])
   ],
