@@ -204,12 +204,17 @@ select.mailpoet_font-size {
 
 #mailpoet_editor_content ol,
 #mailpoet_editor_content ul {
-  list-style-position: inside;
-  margin-left: 0;
+  padding-left: 40px;
 }
 
 #mailpoet_editor_content ul {
   list-style-type: disc;
+
+  ul {
+    list-style-type: circle;
+
+    ul { list-style-type: square; }
+  }
 }
 
 .mailpoet_button {
