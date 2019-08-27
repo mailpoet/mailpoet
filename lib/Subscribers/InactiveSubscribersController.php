@@ -67,19 +67,22 @@ class InactiveSubscribersController {
     $statistics_opens_table = StatisticsOpens::$_table;
     $sending_queues_table = SendingQueue::$_table;
 
-    $threshold_date_iso = $threshold_date->toIso8601String();
+    $threshold_date_iso = $threshold_date->toDateTimeString();
     $day_ago = new Carbon();
-    $day_ago_iso = $day_ago->subDay()->toIso8601String();
+    $day_ago_iso = $day_ago->subDay()->toDateTimeString();
 
     // We take into account only emails which have at least one opening tracked
     // to ensure that tracking was enabled for the particular email
-    $scheduled_task_ids_query = sprintf("
+    $inactives_task_ids_table = sprintf("
+      CREATE TEMPORARY TABLE IF NOT EXISTS inactives_task_ids
+      (INDEX task_id_ids (id))
       SELECT task_id as id FROM $sending_queues_table as sq
         JOIN (SELECT newsletter_id as id FROM $statistics_opens_table as so WHERE so.created_at > '%s' GROUP BY newsletter_id) newsletters_ids ON newsletters_ids.id = sq.newsletter_id
         JOIN $scheduled_tasks_table as st ON sq.task_id = st.id AND st.processed_at > '%s' AND st.processed_at < '%s'
-      GROUP BY task_id",
-      $threshold_date_iso, $threshold_date_iso, $day_ago_iso
-    );
+        GROUP BY task_id",
+        $threshold_date_iso, $threshold_date_iso, $day_ago_iso
+      );
+      \ORM::rawExecute($inactives_task_ids_table);
 
     // If MP2 migration occurred during detection interval we can't deactivate subscribers
     // because they are imported with original subscription date but they were not present in a list for whole period
@@ -92,7 +95,7 @@ class InactiveSubscribersController {
     $ids_to_deactivate = \ORM::forTable($subscribers_table)->rawQuery("
       SELECT s.id FROM $subscribers_table as s
         JOIN $scheduled_task_subcribres_table as sts ON s.id = sts.subscriber_id
-        JOIN ($scheduled_task_ids_query) task_ids ON task_ids.id = sts.task_id
+        JOIN inactives_task_ids task_ids ON task_ids.id = sts.task_id
         LEFT OUTER JOIN $statistics_opens_table as so ON s.id = so.subscriber_id AND so.created_at > ?
       WHERE s.last_subscribed_at < ? AND s.status = ? AND so.id IS NULL
       GROUP BY s.id LIMIT ?",
