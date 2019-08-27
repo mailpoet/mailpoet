@@ -32,6 +32,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('DROP TABLE IF EXISTS inactives_task_ids');
     $this->newsletter = Newsletter::createOrUpdate([
       'subject' => "Subject ",
       "type" => Newsletter::TYPE_STANDARD,
