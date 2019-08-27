@@ -46,14 +46,14 @@ class PrivacyPolicy {
         WPFunctions::get()->__('MailPoet creates and stores two cookies if you are using WooCommerce and MailPoet together. Those cookies are:', 'mailpoet') .
         '</p>' .
         '<p>' .
-        WPFunctions::get()->__('Cookie name: mailpoet_revenue_tracking', 'mailpoet') .
+        WPFunctions::get()->sprintf( __('Cookie name: %s', 'mailpoet'), 'mailpoet_revenue_tracking' ) .
         '<br>' .
         WPFunctions::get()->__('Cookie expiry: 14 days.', 'mailpoet') .
         '<br>' .
         WPFunctions::get()->__('Cookie description: The purpose of this cookie is to track which newsletter sent from your website has acquired a click-through and a subsequent purchase in your WooCommerce store.', 'mailpoet') .
         '</p> ' .
         '<p>' .
-        WPFunctions::get()->__('Cookie name: mailpoet_abandoned_cart_tracking', 'mailpoet') .
+        WPFunctions::get()->sprintf( __('Cookie name: %s', 'mailpoet'), 'mailpoet_abandoned_cart_tracking' ) .
         '<br>' .
         WPFunctions::get()->__('Cookie expiry: 3,650 days.', 'mailpoet') .
         '<br>' .
