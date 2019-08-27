@@ -163,7 +163,7 @@ class NewsletterBlank121Column {
                 "blocks" => [
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->'<h2>'.__('This template has...', 'mailpoet').'</h2>',
+                    "text" => '<h2>' . WPFunctions::get()->__('This template has...', 'mailpoet') . '</h2>',
                   ],
                   [
                     "type" => "text",
@@ -182,11 +182,11 @@ class NewsletterBlank121Column {
                 "blocks" => [
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->'<h2>'.__('... a 2-column layout.', 'mailpoet').'</h2>',
+                    "text" => '<h2>' . WPFunctions::get()->__('... a 2-column layout.', 'mailpoet') . '</h2>',
                   ],
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->'<p>'.__("You can change a layout's background color by clicking on the settings icon on the right edge of the Designer. Simply hover over this area to see the Settings (gear) icon.", 'mailpoet').'</p>',
+                    "text" => '<p>' . WPFunctions::get()->__("You can change a layout's background color by clicking on the settings icon on the right edge of the Designer. Simply hover over this area to see the Settings (gear) icon.", 'mailpoet') . '</p>',
                   ],
                 ],
               ],
