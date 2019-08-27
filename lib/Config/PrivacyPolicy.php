@@ -48,7 +48,7 @@ class PrivacyPolicy {
         '<p>' .
         sprintf(WPFunctions::get()->__('Cookie name: %s', 'mailpoet'), 'mailpoet_revenue_tracking' ) .
         '<br>' .
-        sprintf(WPFunctions::get()->__('Cookie expiry: % days.', 'mailpoet'), '14' ) .
+        sprintf(WPFunctions::get()->__('Cookie expiry: %s days.', 'mailpoet'), '14' ) .
         '<br>' .
         WPFunctions::get()->__('Cookie description: The purpose of this cookie is to track which newsletter sent from your website has acquired a click-through and a subsequent purchase in your WooCommerce store.', 'mailpoet') .
         '</p> ' .
