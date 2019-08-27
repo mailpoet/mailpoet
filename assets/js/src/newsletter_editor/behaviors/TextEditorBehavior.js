@@ -10,7 +10,7 @@ import tinymce from 'tinymce/tinymce';
 import tinymceMailpoetShortcodes from 'newsletter_editor/tinymce/mailpoet_shortcodes.js';
 
 // TinyMCE theme and plugins
-import 'tinymce/themes/modern';
+import 'tinymce/themes/silver';
 import 'tinymce/plugins/code';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
