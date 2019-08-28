@@ -180,6 +180,7 @@ const NewsletterListNotificationHistory = (props) => (
       base_url="notification/history/:parent_id"
       onRenderItem={renderItem}
       columns={columns}
+      messages={messages}
       item_actions={newsletterActions}
       bulk_actions={bulkActions}
       auto_refresh
