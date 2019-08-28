@@ -43,6 +43,62 @@ const columns = [
   },
 ];
 
+const messages = {
+  onTrash: (response) => {
+    const count = Number(response.meta.count);
+    let message = null;
+
+    if (count === 1) {
+      message = (
+        MailPoet.I18n.t('oneNewsletterTrashed')
+      );
+    } else {
+      message = (
+        MailPoet.I18n.t('multipleNewslettersTrashed')
+      ).replace('%$1d', count.toLocaleString());
+    }
+    MailPoet.Notice.success(message);
+  },
+  onDelete: (response) => {
+    const count = Number(response.meta.count);
+    let message = null;
+
+    if (count === 1) {
+      message = (
+        MailPoet.I18n.t('oneNewsletterDeleted')
+      );
+    } else {
+      message = (
+        MailPoet.I18n.t('multipleNewslettersDeleted')
+      ).replace('%$1d', count.toLocaleString());
+    }
+    MailPoet.Notice.success(message);
+  },
+  onRestore: (response) => {
+    const count = Number(response.meta.count);
+    let message = null;
+
+    if (count === 1) {
+      message = (
+        MailPoet.I18n.t('oneNewsletterRestored')
+      );
+    } else {
+      message = (
+        MailPoet.I18n.t('multipleNewslettersRestored')
+      ).replace('%$1d', count.toLocaleString());
+    }
+    MailPoet.Notice.success(message);
+  },
+};
+
+const bulkActions = [
+  {
+    name: 'trash',
+    label: MailPoet.I18n.t('moveToTrash'),
+    onSuccess: messages.onTrash,
+  },
+];
+
 const newsletterActions = addStatsCTAAction([
   {
     name: 'view',
@@ -125,6 +181,7 @@ const NewsletterListNotificationHistory = (props) => (
       onRenderItem={renderItem}
       columns={columns}
       item_actions={newsletterActions}
+      bulk_actions={bulkActions}
       auto_refresh
       sort_by="sent_at"
       sort_order="desc"
