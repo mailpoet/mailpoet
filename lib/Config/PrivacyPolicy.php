@@ -57,7 +57,8 @@ class PrivacyPolicy {
         '<br>' .
         WPFunctions::get()->__('Cookie expiry: 3,650 days.', 'mailpoet') .
         '<br>' .
-        WPFunctions::get()->__('Cookie description: The purpose of this cookie is to track a user that has abandoned their cart in your WooCommerce store to then be able to send them an abandoned cart newsletter from MailPoet. <br>', 'mailpoet') .
+        WPFunctions::get()->__('Cookie description: The purpose of this cookie is to track a user that has abandoned their cart in your WooCommerce store to then be able to send them an abandoned cart newsletter from MailPoet.', 'mailpoet') .
+        '<br>' .
         '<br>' .
         WPFunctions::get()->__('Note: User must be opted-in and a confirmed subscriber.', 'mailpoet') .
         '</p>'
