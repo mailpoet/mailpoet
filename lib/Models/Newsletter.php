@@ -823,19 +823,17 @@ class Newsletter extends Model {
   static function groups($data = []) {
     $type = isset($data['params']['type']) ? $data['params']['type'] : null;
     $group = (isset($data['params']['group'])) ? $data['params']['group'] : null;
+    $parentId = (isset($data['params']['parent_id'])) ? $data['params']['parent_id'] : null;
 
-    // newsletter types without groups
-    if (in_array($type, [
-      self::TYPE_NOTIFICATION_HISTORY,
-    ])) {
-      return false;
+    $get_published_query = Newsletter::getPublished();
+    if (!is_null($parentId)) {
+      $get_published_query->where('parent_id', $parentId);
     }
-
     $groups = [
       [
         'name' => 'all',
         'label' => WPFunctions::get()->__('All', 'mailpoet'),
-        'count' => Newsletter::getPublished()
+        'count' => $get_published_query
           ->filter('filterType', $type, $group)
           ->count(),
       ],
@@ -879,6 +877,29 @@ class Newsletter extends Model {
         ]);
         break;
 
+      case self::TYPE_NOTIFICATION_HISTORY:
+        $groups = array_merge($groups, [
+          [
+            'name' => self::STATUS_SENDING,
+            'label' => WPFunctions::get()->__('Sending', 'mailpoet'),
+            'count' => Newsletter::getPublished()
+              ->where('parent_id', $parentId)
+              ->filter('filterType', $type, $group)
+              ->filter('filterStatus', self::STATUS_SENDING)
+              ->count(),
+          ],
+          [
+            'name' => self::STATUS_SENT,
+            'label' => WPFunctions::get()->__('Sent', 'mailpoet'),
+            'count' => Newsletter::getPublished()
+              ->where('parent_id', $parentId)
+              ->filter('filterType', $type, $group)
+              ->filter('filterStatus', self::STATUS_SENT)
+              ->count(),
+          ],
+        ]);
+        break;
+
       case self::TYPE_WELCOME:
       case self::TYPE_NOTIFICATION:
       case self::TYPE_AUTOMATIC:
@@ -903,10 +924,14 @@ class Newsletter extends Model {
         break;
     }
 
+    $get_trashed_query = Newsletter::getTrashed();
+    if (!is_null($parentId)) {
+      $get_trashed_query->where('parent_id', $parentId);
+    }
     $groups[] = [
       'name' => 'trash',
       'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
-      'count' => Newsletter::getTrashed()
+      'count' => $get_trashed_query
         ->filter('filterType', $type, $group)
         ->count(),
     ];
