@@ -43,9 +43,11 @@ class LogHandlerTest extends \MailPoetTest {
       'created_at' => Carbon::create()->subDays(100)->toDateTimeString(),
     ]);
     $model->save();
+    $random = function() {
+      return 0;
+    };
 
-    $log_handler = new LogHandler();
-    $log_handler = Mock::double($log_handler, ['getRandom' => 0]);
+    $log_handler = new LogHandler(\MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
     $log_handler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
@@ -67,9 +69,11 @@ class LogHandlerTest extends \MailPoetTest {
       'created_at' => Carbon::create()->subDays(100)->toDateTimeString(),
     ]);
     $model->save();
+    $random = function() {
+      return 100;
+    };
 
-    $log_handler = new LogHandler();
-    $log_handler = Mock::double($log_handler, ['getRandom' => 100]);
+    $log_handler = new LogHandler(\MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
     $log_handler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],

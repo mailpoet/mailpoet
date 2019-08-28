@@ -19,6 +19,20 @@ class LogHandler extends AbstractProcessingHandler {
    */
   const DAYS_TO_KEEP_LOGS = 30;
 
+  /** @var callable */
+  private $rand_function;
+
+  public function __construct($level = \MailPoetVendor\Monolog\Logger::DEBUG, $bubble = \true, $rand_function = null) {
+    parent::__construct($level, $bubble);
+    if (!$rand_function) {
+      $this->rand_function = function($min, $max) {
+        return rand($min, $max);
+      };
+    } else {
+      $this->rand_function = $rand_function;
+    }
+  }
+
   protected function write(array $record) {
     $model = $this->createNewLogModel();
     $model->hydrate([
@@ -39,7 +53,7 @@ class LogHandler extends AbstractProcessingHandler {
   }
 
   private function getRandom() {
-    return rand(0, 100);
+    return call_user_func($this->rand_function, 0, 100);
   }
 
   private function purgeOldLogs() {
