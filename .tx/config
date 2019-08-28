@@ -2,8 +2,8 @@
 host = https://www.transifex.com
 
 [mp3.mailpoet]
-source_file = lang/mailpoet.pot
 file_filter = lang/mailpoet-<lang>.po
+minimum_perc = 30
+source_file = lang/mailpoet.pot
 source_lang = en_US
 type = PO
-minimum_perc = 75
