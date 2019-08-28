@@ -12,7 +12,7 @@ use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
@@ -343,7 +343,8 @@ class Subscribers extends APIEndpoint {
     }
 
     if (!empty($new_segments)) {
-      Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $new_segments);
+      $scheduler = new WelcomeScheduler();
+      $scheduler->scheduleSubscriberWelcomeNotification($subscriber->id, $new_segments);
     }
 
     return $this->successResponse(

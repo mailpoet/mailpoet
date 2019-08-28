@@ -7,6 +7,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 
@@ -24,17 +25,22 @@ class SubscriberActions {
   /** @var BulkActionFactory */
   private $bulk_action_factory;
 
+  /** @var WelcomeScheduler */
+  private $welcome_scheduler;
+
   public function __construct(
     SettingsController $settings,
     NewSubscriberNotificationMailer $new_subscriber_notification_mailer,
     ConfirmationEmailMailer $confirmation_email_mailer,
-    BulkActionFactory $bulk_action_factory
+    BulkActionFactory $bulk_action_factory,
+    WelcomeScheduler $welcome_scheduler
   ) {
     $this->settings = $settings;
     $this->new_subscriber_notification_mailer = $new_subscriber_notification_mailer;
     $this->confirmation_email_mailer = $confirmation_email_mailer;
     $this->bulk_action_factory = $bulk_action_factory;
     $this->bulk_action_factory->registerAction('\MailPoet\Models\Subscriber', 'bulkSendConfirmationEmail', $this);
+    $this->welcome_scheduler = $welcome_scheduler;
   }
 
   function subscribe($subscriber_data = [], $segment_ids = []) {
@@ -91,7 +97,7 @@ class SubscriberActions {
       if ($subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
         $this->new_subscriber_notification_mailer->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
 
-        Scheduler::scheduleSubscriberWelcomeNotification(
+        $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
           $subscriber->id,
           $segment_ids
         );
