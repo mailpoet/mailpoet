@@ -24,6 +24,10 @@ class Notice {
     $this->render_in_paragraph = $render_in_paragraph;
   }
 
+  function getMessage() {
+    return $this->message;
+  }
+
   static function displayError($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true, $show_error_title = true) {
     if ($show_error_title) {
       $message = sprintf(
@@ -36,7 +40,7 @@ class Notice {
   }
 
   static function displayWarning($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
-    self::createNotice(self::TYPE_WARNING, $message, $classes, $data_notice_name, $render_in_paragraph);
+    return self::createNotice(self::TYPE_WARNING, $message, $classes, $data_notice_name, $render_in_paragraph);
   }
 
   static function displaySuccess($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
@@ -50,6 +54,7 @@ class Notice {
   protected static function createNotice($type, $message, $classes, $data_notice_name, $render_in_paragraph) {
     $notice = new Notice($type, $message, $classes, $data_notice_name, $render_in_paragraph);
     WPFunctions::get()->addAction('admin_notices', [$notice, 'displayWPNotice']);
+    return $notice;
   }
 
   function displayWPNotice() {
