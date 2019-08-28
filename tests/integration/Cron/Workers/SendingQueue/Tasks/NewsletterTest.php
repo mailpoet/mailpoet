@@ -23,6 +23,21 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class NewsletterTest extends \MailPoetTest {
+  /** @var NewsletterTask */
+  private $newsletter_task;
+
+  /** @var Subscriber */
+  private $subscriber;
+
+  /** @var Newsletter */
+  private $newsletter;
+
+  /** @var Newsletter */
+  private $parent_newsletter;
+
+  /** @var SendingTask */
+  private $queue;
+
   function _before() {
     parent::_before();
     $this->newsletter_task = new NewsletterTask();
