@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Cron\Workers\SendingQueue;
 
-use AspectMock\Test as Mock;
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Stub;
@@ -622,10 +621,14 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
-    $sending_task = Mock::double(SendingTask::create(), [
-      'updateProcessedSubscribers' => false,
-    ]);
-    $sending_task->id = 100;
+    $sending_task = $this->createMock(SendingTask::class);
+    $sending_task
+      ->method('updateProcessedSubscribers')
+      ->will($this->returnValue(false));
+    $sending_task
+      ->method('__get')
+      ->with('id')
+      ->will($this->returnValue(100));
     $sending_queue_worker = Stub::make(new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker));
     $sending_queue_worker->__construct(
       $this->sending_error_handler,
@@ -640,7 +643,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     try {
       $sending_queue_worker->sendNewsletters(
-        $sending_task->getObject(),
+        $sending_task,
         $prepared_subscribers = [],
         $prepared_newsletters = [],
         $prepared_subscribers = [],
