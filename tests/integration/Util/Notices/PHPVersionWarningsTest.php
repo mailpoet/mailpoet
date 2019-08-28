@@ -2,8 +2,6 @@
 
 namespace MailPoet\Util\Notices;
 
-use AspectMock\Test as Mock;
-
 class PHPVersionWarningsTest extends \MailPoetTest {
 
   /** @var PHPVersionWarnings */
@@ -17,7 +15,6 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   function _after() {
     delete_transient('dismissed-php-version-outdated-notice');
-    Mock::clean();
   }
 
   function testPHP55IsOutdated() {
@@ -33,15 +30,9 @@ class PHPVersionWarningsTest extends \MailPoetTest {
   }
 
   function testItPrintsWarningFor56() {
-    $mock = Mock::double('MailPoet\WP\Notice', [
-      'displayWarning' => function($message, $classes, $data_notice_name) {
-        return $message;
-      },
-    ]);
     $warning = $this->phpVersionWarning->init('5.6.3', true);
-    $mock->verifyInvoked('displayWarning');
-    expect($warning)->contains('Your website is running on PHP 5.6.3');
-    expect($warning)->contains('https://www.mailpoet.com/let-us-handle-your-php-upgrade/');
+    expect($warning->getMessage())->contains('Your website is running on PHP 5.6.3');
+    expect($warning->getMessage())->contains('https://www.mailpoet.com/let-us-handle-your-php-upgrade/');
   }
 
   function testItPrintsNoWarningFor70() {
@@ -56,7 +47,7 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   function testItPrintsNoWarningWhenDismised() {
     $this->phpVersionWarning->init('5.5.3', true);
-    do_action('wp_ajax_dismissed_notice_handler');
+    $this->phpVersionWarning->disable();
     $warning = $this->phpVersionWarning->init('5.5.3', true);
     expect($warning)->null();
   }
