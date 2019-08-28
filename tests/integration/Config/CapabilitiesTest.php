@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Test\Config;
 
-use AspectMock\Test as Mock;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Helper\WordPressHooks as WPHooksHelper;
@@ -15,11 +14,14 @@ class CapabilitiesTest extends \MailPoetTest {
   /** @var AccessControl */
   private $access_control;
 
+  /** @var Capabilities */
+  private $caps;
+
   function _before() {
     parent::_before();
     $renderer = new Renderer();
     $this->caps = new Capabilities($renderer);
-    $this->access_control = new AccessControl(new WPFunctions());
+    $this->access_control = new AccessControl();
   }
 
   function testItInitializes() {
@@ -125,7 +127,5 @@ class CapabilitiesTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
-    Mock::clean();
-  }
 }
+
