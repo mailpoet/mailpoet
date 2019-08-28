@@ -54,6 +54,9 @@ let newsletterActions = [
       );
     },
   },
+  {
+    name: 'trash',
+  },
 ];
 newsletterActions = addStatsCTAAction(newsletterActions);
 
