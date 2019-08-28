@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\API\MP;
 
-use AspectMock\Test as Mock;
 use Codeception\Util\Fixtures;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
@@ -12,6 +11,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -26,7 +26,8 @@ class APITest extends \MailPoetTest {
       Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
       Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate'),
-      Stub::makeEmpty(ApiDataSanitizer::class)
+      Stub::makeEmpty(ApiDataSanitizer::class),
+      Stub::makeEmpty(WelcomeScheduler::class)
     );
   }
 
@@ -280,7 +281,8 @@ class APITest extends \MailPoetTest {
       $notificationMailer,
       $this->makeEmpty(ConfirmationEmailMailer::class),
       $this->makeEmpty(RequiredCustomFieldValidator::class),
-      $this->makeEmpty(ApiDataSanitizer::class)
+      $this->makeEmpty(ApiDataSanitizer::class),
+      Stub::makeEmpty(WelcomeScheduler::class)
     );
     $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => true]);
 
@@ -291,7 +293,8 @@ class APITest extends \MailPoetTest {
       $notificationMailer,
       $this->makeEmpty(ConfirmationEmailMailer::class),
       $this->makeEmpty(RequiredCustomFieldValidator::class),
-      $this->makeEmpty(ApiDataSanitizer::class)
+      $this->makeEmpty(ApiDataSanitizer::class),
+      Stub::makeEmpty(WelcomeScheduler::class)
     );
     $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => false]);
   }
@@ -532,7 +535,7 @@ class APITest extends \MailPoetTest {
     $task->type = 'sending';
     $task->setError("Big Error");
     $sendingStub = Sending::create($task, SendingQueue::create());
-    Mock::double('MailPoet\Newsletter\Scheduler\Scheduler', [
+    $welcome_scheduler = $this->make('MailPoet\Newsletter\Scheduler\WelcomeScheduler', [
       'scheduleSubscriberWelcomeNotification' => [$sendingStub],
     ]);
     $segment = Segment::createOrUpdate(
@@ -541,7 +544,13 @@ class APITest extends \MailPoetTest {
         'type' => Segment::TYPE_DEFAULT,
       ]
     );
-    $API = $this->getApi();
+    $API = new \MailPoet\API\MP\v1\API(
+      Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+      Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
+      Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate'),
+      Stub::makeEmpty(ApiDataSanitizer::class),
+      $welcome_scheduler
+    );
     $subscriber = [
       'email' => 'test@example.com',
     ];
@@ -857,7 +866,6 @@ class APITest extends \MailPoetTest {
   }
 
   function _after() {
-    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);

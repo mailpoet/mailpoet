@@ -6,7 +6,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -30,16 +30,21 @@ class API {
   /** @var ApiDataSanitizer */
   private $custom_fields_data_sanitizer;
 
+  /** @var WelcomeScheduler */
+  private $welcome_scheduler;
+
   public function __construct(
     NewSubscriberNotificationMailer $new_subscriber_notification_mailer,
     ConfirmationEmailMailer $confirmation_email_mailer,
     RequiredCustomFieldValidator $required_custom_field_validator,
-    ApiDataSanitizer $custom_fields_data_sanitizer
+    ApiDataSanitizer $custom_fields_data_sanitizer,
+    WelcomeScheduler $welcome_scheduler
   ) {
     $this->new_subscriber_notification_mailer = $new_subscriber_notification_mailer;
     $this->confirmation_email_mailer = $confirmation_email_mailer;
     $this->required_custom_field_validator = $required_custom_field_validator;
     $this->custom_fields_data_sanitizer = $custom_fields_data_sanitizer;
+    $this->welcome_scheduler = $welcome_scheduler;
   }
 
   function getSubscriberFields() {
@@ -361,7 +366,7 @@ class API {
   }
 
   protected function _scheduleWelcomeNotification(Subscriber $subscriber, array $segments) {
-    $result = Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $segments);
+    $result = $this->welcome_scheduler->scheduleSubscriberWelcomeNotification($subscriber->id, $segments);
     if (is_array($result)) {
       foreach ($result as $queue) {
         if ($queue instanceof Sending && $queue->getErrors()) {

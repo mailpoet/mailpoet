@@ -2,12 +2,11 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
-use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Util\Helpers;
@@ -42,18 +41,23 @@ class Pages {
   /** @var CaptchaRenderer */
   private $captcha_renderer;
 
+  /** @var WelcomeScheduler */
+  private $welcome_scheduler;
+
   function __construct(
     NewSubscriberNotificationMailer $new_subscriber_notification_sender,
     WPFunctions $wp,
     SettingsController $settings,
     UrlHelper $url_helper,
-    CaptchaRenderer $captcha_renderer
+    CaptchaRenderer $captcha_renderer,
+    WelcomeScheduler $welcome_scheduler
   ) {
     $this->wp = $wp;
     $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
     $this->settings = $settings;
     $this->url_helper = $url_helper;
     $this->captcha_renderer = $captcha_renderer;
+    $this->welcome_scheduler = $welcome_scheduler;
   }
 
   function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
@@ -122,7 +126,7 @@ class Pages {
       // send welcome notification
       $subscriber_segments = $this->subscriber->segments()->findMany();
       if ($subscriber_segments) {
-        Scheduler::scheduleSubscriberWelcomeNotification(
+        $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
           $this->subscriber->id,
           array_map(function ($segment) {
             return $segment->get('id');

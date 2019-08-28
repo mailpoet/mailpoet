@@ -7,7 +7,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 
@@ -73,7 +73,8 @@ class WP {
 
           // welcome email
           if ($schedule_welcome_newsletter === true) {
-            Scheduler::scheduleWPUserWelcomeNotification(
+            $scheduler = new WelcomeScheduler();
+            $scheduler->scheduleWPUserWelcomeNotification(
               $subscriber->id,
               (array)$wp_user,
               (array)$old_wp_user_data
