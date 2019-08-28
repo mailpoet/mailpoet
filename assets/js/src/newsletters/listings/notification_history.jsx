@@ -43,7 +43,7 @@ const columns = [
   },
 ];
 
-let newsletterActions = [
+const newsletterActions = addStatsCTAAction([
   {
     name: 'view',
     link: function link(newsletter) {
@@ -57,94 +57,91 @@ let newsletterActions = [
   {
     name: 'trash',
   },
-];
-newsletterActions = addStatsCTAAction(newsletterActions);
+]);
 
-class NewsletterListNotificationHistory extends React.Component {
-  static displayName = 'NewsletterListNotificationHistory';
+const renderItem = (newsletter, actions, meta) => {
+  const rowClasses = classNames(
+    'manage-column',
+    'column-primary',
+    'has-row-actions'
+  );
 
-  static propTypes = {
-    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    match: PropTypes.shape({
-      params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    }).isRequired,
-  };
+  const segments = newsletter.segments.map((segment) => segment.name).join(', ');
 
-  renderItem = (newsletter, actions, meta) => {
-    const rowClasses = classNames(
-      'manage-column',
-      'column-primary',
-      'has-row-actions'
-    );
-
-    const segments = newsletter.segments.map((segment) => segment.name).join(', ');
-
-    return (
-      <div>
-        <td className={rowClasses}>
-          <strong>
-            <a
-              href={newsletter.preview_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
-            </a>
-          </strong>
-          { actions }
+  return (
+    <>
+      <td className={rowClasses}>
+        <strong>
+          <a
+            href={newsletter.preview_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
+          </a>
+        </strong>
+        { actions }
+      </td>
+      <td className="column" data-colname={MailPoet.I18n.t('status')}>
+        <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
+      </td>
+      <td className="column" data-colname={MailPoet.I18n.t('lists')}>
+        { segments }
+      </td>
+      { (mailpoetTrackingEnabled === true) ? (
+        <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
+          <Statistics newsletter={newsletter} currentTime={meta.current_time} />
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
-        </td>
-        <td className="column" data-colname={MailPoet.I18n.t('lists')}>
-          { segments }
-        </td>
-        { (mailpoetTrackingEnabled === true) ? (
-          <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
-            <Statistics newsletter={newsletter} currentTime={meta.current_time} />
-          </td>
-        ) : null }
-        <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
-          { (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet') }
-        </td>
-      </div>
-    );
-  };
+      ) : null }
+      <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
+        { (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet') }
+      </td>
+    </>
+  );
+};
 
-  render() {
-    return (
-      <div>
-        <ListingHeading />
+const NewsletterListNotificationHistory = (props) => (
+  <>
+    <ListingHeading />
 
-        <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+    <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
 
-        <ListingTabs tab="notification" />
+    <ListingTabs tab="notification" />
 
-        <Link
-          className="page-title-action"
-          to="/notification"
-        >
-          {MailPoet.I18n.t('backToPostNotifications')}
-        </Link>
+    <Link
+      className="page-title-action"
+      to="/notification"
+    >
+      {MailPoet.I18n.t('backToPostNotifications')}
+    </Link>
 
-        <Listing
-          limit={window.mailpoet_listing_per_page}
-          location={this.props.location}
-          params={this.props.match.params}
-          endpoint="newsletters"
-          type="notification_history"
-          base_url="notification/history/:parent_id"
-          onRenderItem={this.renderItem}
-          columns={columns}
-          item_actions={newsletterActions}
-          auto_refresh
-          sort_by="sent_at"
-          sort_order="desc"
-          afterGetItems={(state) => { checkMailerStatus(state); checkCronStatus(state); }}
-        />
-      </div>
-    );
-  }
-}
+    <Listing
+      limit={window.mailpoet_listing_per_page}
+      location={props.location}
+      params={props.match.params}
+      endpoint="newsletters"
+      type="notification_history"
+      base_url="notification/history/:parent_id"
+      onRenderItem={renderItem}
+      columns={columns}
+      item_actions={newsletterActions}
+      auto_refresh
+      sort_by="sent_at"
+      sort_order="desc"
+      afterGetItems={(state) => { checkMailerStatus(state); checkCronStatus(state); }}
+    />
+  </>
+);
+
+NewsletterListNotificationHistory.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }).isRequired,
+};
 
 export default NewsletterListNotificationHistory;
