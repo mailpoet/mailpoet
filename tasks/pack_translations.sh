@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 echo "Getting translations from Transifex..."
-tx pull -a -f
+tx pull -a -f --parallel
 
 echo "Generating MO files..."
 for file in `find ./lang/ -name "*.po"` ; do
