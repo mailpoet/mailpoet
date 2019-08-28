@@ -248,6 +248,7 @@ Module.SaveView = Marionette.View.extend({
   },
   validateNewsletter: function (jsonObject) {
     var body = '';
+    var newsletter;
     if (!App._contentContainer.isValid()) {
       this.showValidationError(App._contentContainer.validationError);
       return;
@@ -263,7 +264,8 @@ Module.SaveView = Marionette.View.extend({
       return;
     }
 
-    if ((App.getNewsletter().get('type') === 'notification')
+    newsletter = App.getNewsletter();
+    if ((newsletter.get('type') === 'notification')
         && body.indexOf('"type":"automatedLatestContent"') < 0
         && body.indexOf('"type":"automatedLatestContentLayout"') < 0
     ) {
@@ -271,11 +273,16 @@ Module.SaveView = Marionette.View.extend({
       return;
     }
 
+    if (newsletter.get('type') === 'standard' && newsletter.get('status') === 'sent') {
+      this.showValidationError(MailPoet.I18n.t('emailAlreadySent'));
+      return;
+    }
+
     this.hideValidationError();
   },
   showValidationError: function (message) {
     var $el = this.$('.mailpoet_save_error');
-    $el.text(message);
+    $el.html(message.replace(/\. /g, '.<br>'));
     $el.removeClass('mailpoet_hidden');
 
     this.$('.mailpoet_save_next').addClass('button-disabled');
