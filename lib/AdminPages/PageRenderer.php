@@ -6,7 +6,9 @@ use MailPoet\Config\Renderer;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\WP\Notice as WPNotice;
+use Tracy\Debugger;
 
 if (!defined('ABSPATH')) exit;
 
@@ -41,6 +43,9 @@ class PageRenderer {
       'referral_id' => $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME),
     ];
     try {
+      if (class_exists(Debugger::class)) {
+        DIPanel::init();
+      }
       echo $this->renderer->render($template, $data + $defaults);
     } catch (\Exception $e) {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());

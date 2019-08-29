@@ -1,0 +1,38 @@
+<?php
+
+namespace MailPoet\Tracy\DIPanel;
+
+/**
+ * @var DIPanel $this
+ */
+
+?>
+<h1>Dependency Injection</h1>
+<div class="tracy-inner">
+  <h2>Free (<?= count($this->free_services) ?> services)</h2>
+  <table>
+    <tr>
+      <th>Service</th>
+      <th>Used In</th>
+    </tr>
+    <?php foreach ($this->free_services as $item): ?>
+      <tr>
+        <td><?php $this->printItem($item) ?></td>
+        <td><?php $this->printUsages($item) ?></td>
+      </tr>
+    <?php endforeach ?>
+  </table>
+  <h2>Premium (<?= count($this->premium_services) ?> services)</h2>
+  <table>
+    <tr>
+      <th>Service</th>
+      <th>Used In</th>
+    </tr>
+    <?php foreach ($this->premium_services as $item): ?>
+      <tr>
+        <td><?php $this->printItem($item) ?></td>
+        <td><?php $this->printUsages($item) ?></td>
+      </tr>
+    <?php endforeach ?>
+  </table>
+</div>
