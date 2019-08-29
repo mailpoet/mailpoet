@@ -5,6 +5,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Tracy\ApiPanel\ApiPanel;
+use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -169,6 +170,7 @@ class API {
 
       if (class_exists(Debugger::class)) {
         ApiPanel::init($endpoint, $this->_request_method, $this->_request_data);
+        DIPanel::init();
       }
 
       // check the accessibility of the requested endpoint's action
