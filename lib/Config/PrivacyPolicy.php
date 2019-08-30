@@ -48,14 +48,14 @@ class PrivacyPolicy {
         '<p>' .
         sprintf(WPFunctions::get()->__('Cookie name: %s', 'mailpoet'), 'mailpoet_revenue_tracking' ) .
         '<br>' .
-        sprintf(WPFunctions::get()->__('Cookie expiry: %s days.', 'mailpoet'), '14' ) .
+        sprintf(WPFunctions::get()->__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(14) ) .
         '<br>' .
         WPFunctions::get()->__('Cookie description: The purpose of this cookie is to track which newsletter sent from your website has acquired a click-through and a subsequent purchase in your WooCommerce store.', 'mailpoet') .
         '</p> ' .
         '<p>' .
         sprintf(WPFunctions::get()->__('Cookie name: %s', 'mailpoet'), 'mailpoet_abandoned_cart_tracking' ) .
         '<br>' .
-        sprintf(WPFunctions::get()->__('Cookie expiry: %s days.', 'mailpoet'), '3,650' ) .
+        sprintf(WPFunctions::get()->__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(3650) ) .
         '<br>' .
         WPFunctions::get()->__('Cookie description: The purpose of this cookie is to track a user that has abandoned their cart in your WooCommerce store to then be able to send them an abandoned cart newsletter from MailPoet.', 'mailpoet') .
         '<br>' .
