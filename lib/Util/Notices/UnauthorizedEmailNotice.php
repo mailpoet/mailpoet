@@ -49,7 +49,7 @@ class UnauthorizedEmailNotice {
       && !empty($validation_error['invalid_confirmation_address'])
       && $validation_error['invalid_sender_address'] !== $validation_error['invalid_confirmation_address']
     ) {
-      $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email addresses %default-sender-address and %signup-confirmation-address have not been authorized yet.</b>',
+      $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email addresses %default-sender-address and %signup-confirmation-address have not been authorized yet.',
         'Email addresses have to be authorized to be used to send emails. %default-sender-address and %signup-confirmation-address will be replaced by email addresses.'
       );
       $message = str_replace('%default-sender-address', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $text);
