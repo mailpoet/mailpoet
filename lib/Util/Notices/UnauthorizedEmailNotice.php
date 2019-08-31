@@ -49,17 +49,17 @@ class UnauthorizedEmailNotice {
       && !empty($validation_error['invalid_confirmation_address'])
       && $validation_error['invalid_sender_address'] !== $validation_error['invalid_confirmation_address']
     ) {
-      $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email addresses %default-sender-address and %signup-confirmation-address have not been authorized yet.</b>',
-        'Email addresses have to be authorized to be used to send emails. %default-sender-address and %signup-confirmation-address will be replaced by email addresses.'
+      $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email addresses %1$s and %2$s have not been authorized yet.</b>',
+        'Email addresses have to be authorized to be used to send emails. %1$s and %2$s will be replaced by email addresses.'
       );
-      $message = str_replace('%default-sender-address', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $text);
-      $message = str_replace('%signup-confirmation-address', EscapeHelper::escapeHtmlText($validation_error['invalid_confirmation_address']), $message);
+      $message = str_replace('%1$s', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $text);
+      $message = str_replace('%2$s', EscapeHelper::escapeHtmlText($validation_error['invalid_confirmation_address']), $message);
     } else {
-      $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email address %email-address hasn’t been authorized yet.</b>',
-        'Email addresses have to be authorized to be used to send emails. %email-address will be replaced by an email address.'
+      $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email address %s hasn’t been authorized yet.</b>',
+        'Email addresses have to be authorized to be used to send emails. %s will be replaced by an email address.'
       );
       $email = isset($validation_error['invalid_sender_address']) ? $validation_error['invalid_sender_address'] : $validation_error['invalid_confirmation_address'];
-      $message = str_replace('%email-address', EscapeHelper::escapeHtmlText($email), $text);
+      $message = str_replace('%s', EscapeHelper::escapeHtmlText($email), $text);
     }
     return "<p>$message</p>";
   }
@@ -85,13 +85,13 @@ class UnauthorizedEmailNotice {
       && !empty($validation_error['invalid_confirmation_address'])
       && $validation_error['invalid_sender_address'] !== $validation_error['invalid_confirmation_address']
     ) {
-      $authorize_link = $this->wp->_x('Authorize %email1 and %email2', 'Link for user to authorize their email address');
-      $authorize_link = str_replace('%email1', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $authorize_link);
-      $authorize_link = str_replace('%email2', EscapeHelper::escapeHtmlText($validation_error['invalid_confirmation_address']), $authorize_link);
+      $authorize_link = $this->wp->_x('Authorize %1$s and %2$s', 'Link for user to authorize their email address');
+      $authorize_link = str_replace('%1$s', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $authorize_link);
+      $authorize_link = str_replace('%2$s', EscapeHelper::escapeHtmlText($validation_error['invalid_confirmation_address']), $authorize_link);
     } else {
       $email = isset($validation_error['invalid_sender_address']) ? $validation_error['invalid_sender_address'] : $validation_error['invalid_confirmation_address'];
-      $authorize_link = $this->wp->_x('Authorize %email', 'Link for user to authorize their email address');
-      $authorize_link = str_replace('%email', EscapeHelper::escapeHtmlText($email), $authorize_link);
+      $authorize_link = $this->wp->_x('Authorize %s', 'Link for user to authorize their email address');
+      $authorize_link = str_replace('%s', EscapeHelper::escapeHtmlText($email), $authorize_link);
     }
     $authorize_link = Helpers::replaceLinkTags("[link]{$authorize_link}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
     $html = '<p><b>' . $this->wp->_x('OR', 'User has to choose between two options') . '</b></p>';
