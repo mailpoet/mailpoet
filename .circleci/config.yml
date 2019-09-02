@@ -376,7 +376,9 @@ workflows:
             - php5_unit
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - release
       - acceptance_tests:
           index: 2
           multisite: 1
@@ -385,7 +387,9 @@ workflows:
             - php5_unit
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - release
       - acceptance_tests:
           index: 3
           multisite: 1
@@ -394,7 +398,9 @@ workflows:
             - php5_unit
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - release
       - acceptance_tests:
           index: 4
           multisite: 1
@@ -403,7 +409,9 @@ workflows:
             - php5_unit
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - release
       - acceptance_tests:
           index: 5
           multisite: 1
@@ -412,13 +420,17 @@ workflows:
             - php5_unit
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - release
       - php7_integration_multisite:
           requires:
             - php7_unit
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - release
       - build_release_zip:
           requires:
             - build_and_code_qa
