@@ -761,6 +761,9 @@
       $('.mailpoet_sending_service_activate').on('click', function(e, navigateToTab) {
         $('#mta_group').val('mailpoet');
         saveSendingMethodConfiguration('mailpoet', navigateToTab);
+        if (MailPoetLib && MailPoetLib.checkSPFRecord) {
+          MailPoetLib.checkSPFRecord.default();
+        }
       });
       $('.mailpoet_mta_setup_save').on('click', function() {
         $('#mailpoet_smtp_method').trigger("change");
