@@ -154,6 +154,9 @@ jobs:
     parameters:
       index:
         type: integer
+      multisite:
+        type: integer
+        default: 0
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -165,7 +168,7 @@ jobs:
           command: |
               mkdir -m 777 -p tests/_output/exceptions
               cd tests/docker
-              docker-compose run -e SKIP_DEPS=1 codeception -g acceptance_group_<< parameters.index >> --steps --debug -vvv --html --xml
+              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=<< parameters.multisite >> codeception -g acceptance_group_<< parameters.index >> --steps --debug -vvv --html --xml
       - run:
           name: Check exceptions
           command: |
@@ -173,35 +176,6 @@ jobs:
                 echo "There were some exceptions during the tests run"
                 exit 1
               fi
-      - store_artifacts:
-          path: tests/_output
-      - store_test_results:
-          path: tests/_output
-  acceptance_tests_multisite:
-    working_directory: /home/circleci/mailpoet
-    machine: true
-    parameters:
-      index:
-        type: integer
-    steps:
-      - attach_workspace:
-          at: /home/circleci/mailpoet
-      - run:
-          name: "Set up virtual host"
-          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-      - run:
-          name: Run acceptance tests
-          command: |
-              mkdir -m 777 -p tests/_output/exceptions
-              cd tests/docker
-              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=1 codeception -g acceptance_group_<< parameters.index >> --steps --debug -vvv --html --xml
-      - run:
-          name: Check exceptions
-          command: |
-            if [ "$(ls tests/_output/exceptions/*.html)" ]; then
-              echo "There were some exceptions during the tests run"
-              exit 1
-            fi
       - store_artifacts:
           path: tests/_output
       - store_test_results:
@@ -394,36 +368,46 @@ workflows:
       - php7_integration:
           requires:
             - php7_unit
-      - acceptance_tests_multisite:
+      - acceptance_tests:
           index: 1
+          multisite: 1
+          name: acceptance_tests_multisite_1
           requires:
             - php5_unit
           filters:
             branches:
               only: master
-      - acceptance_tests_multisite:
+      - acceptance_tests:
           index: 2
+          multisite: 1
+          name: acceptance_tests_multisite_2
           requires:
             - php5_unit
           filters:
             branches:
               only: master
-      - acceptance_tests_multisite:
+      - acceptance_tests:
           index: 3
+          multisite: 1
+          name: acceptance_tests_multisite_3
           requires:
             - php5_unit
           filters:
             branches:
               only: master
-      - acceptance_tests_multisite:
+      - acceptance_tests:
           index: 4
+          multisite: 1
+          name: acceptance_tests_multisite_4
           requires:
             - php5_unit
           filters:
             branches:
               only: master
-      - acceptance_tests_multisite:
+      - acceptance_tests:
           index: 5
+          multisite: 1
+          name: acceptance_tests_multisite_5
           requires:
             - php5_unit
           filters:
