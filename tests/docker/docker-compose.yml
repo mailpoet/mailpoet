@@ -30,8 +30,9 @@ services:
   wordpress:
     image: mailpoet/wordpress:wp-5.0_20181218.1
     depends_on:
-      - mysql
       - chrome
+      - mailhog
+      - mysql
     volumes:
       - wp-core:/var/www/html
       - ../..:/var/www/html/wp-content/plugins/mailpoet
