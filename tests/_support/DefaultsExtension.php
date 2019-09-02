@@ -1,16 +1,18 @@
 <?php
 
-use \Codeception\Events;
+use Codeception\Event\SuiteEvent;
+use Codeception\Events;
+use Codeception\Extension;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\UserFlags;
 
-class DefaultsExtension extends \Codeception\Extension {
+class DefaultsExtension extends Extension {
 
   public static $events = [
     Events::SUITE_BEFORE => 'setupDefaults',
   ];
 
-  public function setupDefaults(\Codeception\Event\SuiteEvent $e) {
+  public function setupDefaults(SuiteEvent $e) {
     $this->setupWordPress();
     $this->setupWooCommerce();
 
