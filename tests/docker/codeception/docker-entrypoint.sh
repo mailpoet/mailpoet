@@ -36,7 +36,7 @@ mysqladmin --host=mysql --user=root --password=wordpress create wordpress --forc
 
 # install WordPress
 WP_CORE_INSTALL_PARAMS="--url=test.local --title=tests --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email"
-if [ -z "${MULTISITE}" ]; then
+if [[ -z "$MULTISITE" || "$MULTISITE" -eq "0" ]]; then
   echo 'Installing WordPress (single site mode)'
   wp core install $WP_CORE_INSTALL_PARAMS
 else
