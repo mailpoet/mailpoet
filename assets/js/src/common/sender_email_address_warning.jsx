@@ -21,7 +21,7 @@ const SenderEmailAddressWarning = ({ emailAddress, mssActive }) => {
         <p className="sender_email_address_warning">
           {ReactStringReplace(
             MailPoet.I18n.t('senderEmailAddressWarning2'),
-            /(%1$s|%2$s|<em>.*<\/em>)/,
+            /(%1\$s|%2\$s|<em>.*<\/em>)/,
             (match) => {
               if (match === '%1$s') return suggestedEmailAddress;
               if (match === '%2$s') return <em key="sender-email">{ emailAddress }</em>;
