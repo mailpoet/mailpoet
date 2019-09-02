@@ -830,13 +830,4 @@ class Subscriber extends Model {
     $service = ContainerWrapper::getInstance()->get(\MailPoet\Subscribers\SubscriberActions::class);
     return $service->subscribe($subscriber_data, $segment_ids);
   }
-
-  /**
-   * @deprecated
-   */
-  static function bulkSendConfirmationEmail($orm) {
-    trigger_error('Calling Subscriber::bulkSendConfirmationEmail() is deprecated and will be removed. Use MailPoet\API\MP\v1\API instead. ', E_USER_DEPRECATED);
-    $service = ContainerWrapper::getInstance()->get(\MailPoet\Subscribers\SubscriberActions::class);
-    return $service->bulkSendConfirmationEmail($orm);
-  }
 }

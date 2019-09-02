@@ -209,16 +209,6 @@ const bulkActions = [
     },
   },
   {
-    name: 'sendConfirmationEmail',
-    label: MailPoet.I18n.t('resendConfirmationEmail'),
-    onSuccess: function onSuccess(response) {
-      MailPoet.Notice.success(
-        MailPoet.I18n.t('multipleConfirmationEmailsSent')
-          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
-      );
-    },
-  },
-  {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
     onSuccess: messages.onTrash,
