@@ -12,8 +12,21 @@ $tracy_path = __DIR__ . '/tools/tracy.phar';
 if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracy_path)) {
   require_once $tracy_path;
 
-  if (getenv('MAILPOET_TEST_TRACY_MODE')) {
-    Debugger::enable(Debugger::PRODUCTION, __DIR__ . '/tests/_output/exceptions');
+  if (getenv('MAILPOET_TRACY_PRODUCTION_MODE')) {
+    $log_dir = getenv('MAILPOET_TRACY_LOG_DIR');
+    if (!$log_dir) {
+      throw new RuntimeException("Environment variable 'MAILPOET_TRACY_LOG_DIR' was not set.");
+    }
+
+    if (!is_dir($log_dir)) {
+      @mkdir($log_dir, 0777, true);
+    }
+
+    if (!is_writable($log_dir)) {
+      throw new RuntimeException("Logging directory '$log_dir' is not writable.'");
+    }
+
+    Debugger::enable(Debugger::PRODUCTION, $log_dir);
     Debugger::$logSeverity = E_ALL & ~E_USER_NOTICE;
   } else {
     function render_tracy() {
