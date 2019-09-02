@@ -39,12 +39,9 @@ WP_CORE_INSTALL_PARAMS="--url=test.local --title=tests --admin_user=admin --admi
 if [ -z "${MULTISITE}" ]; then
   echo 'Installing WordPress (single site mode)'
   wp core install $WP_CORE_INSTALL_PARAMS
-  cp /project/tests/_data/acceptanceDump.sql /project/tests/_data/acceptanceGenerated.sql
 else
   echo 'Installing WordPress (multisite mode)'
   wp core multisite-install $WP_CORE_INSTALL_PARAMS
-  cp /project/tests/_data/acceptanceMultisiteDump.sql /project/tests/_data/acceptanceGenerated.sql
-  cat /project/tests/_data/acceptanceDump.sql >> /project/tests/_data/acceptanceGenerated.sql
 fi
 
 # install WooCommerce (activate & deactivate it to populate DB for backup)
