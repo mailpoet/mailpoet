@@ -28,9 +28,7 @@ services:
       - mailhog-data:/mailhog-data
 
   wordpress:
-    build:
-      context: ../..
-      dockerfile: tests/docker/wordpress/Dockerfile
+    image: mailpoet/wordpress:wp-5.0_20181218.1
     depends_on:
       - mysql
       - chrome
