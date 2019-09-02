@@ -2,17 +2,26 @@ actor: AcceptanceTester
 modules:
     enabled:
         - \Helper\Acceptance
+        - WPDb:
+            dsn: 'mysql:host=mysql;dbname=wordpress'
+            user: wordpress
+            password: wordpress
+            dump: tests/_data/acceptanceGenerated.sql
+            populate: true
+            cleanup: false
+            url: 'http://test.local'
+            urlReplacement: true
+            tablePrefix: 'mp_'
         - WPLoader:
-            loadOnly: false
+            # use 'loadOnly' (as recommended by https://wpbrowser.wptestkit.dev/summary/modules/wploader)
+            # set 'domain' which is needed by multisite (tests fail silently without it)
+            loadOnly: true
+            domain: test.local
             wpRootFolder: /wp-core
-            dbName: wordpress
             dbHost: mysql
+            dbName: wordpress
             dbUser: wordpress
             dbPassword: wordpress
-            domain: wordpress
-            tablePrefix: 'mp_'
-            plugins: ['mailpoet/mailpoet.php']
-            activatePlugins: ['mailpoet/mailpoet.php']
         - WPWebDriver:
             host: chrome
             url: 'http://test.local'
@@ -25,16 +34,6 @@ modules:
             adminPassword: password
             adminPath: /wp-admin
             log_js_errors: true
-        - WPDb:
-            dsn: 'mysql:host=mysql;dbname=wordpress'
-            user: wordpress
-            password: wordpress
-            dump: tests/_data/acceptanceGenerated.sql
-            populate: true
-            cleanup: false
-            url: 'http://test.local'
-            urlReplacement: true
-            tablePrefix: 'mp_'
         - WPCLI:
             path: /wp-core
             throw: true
