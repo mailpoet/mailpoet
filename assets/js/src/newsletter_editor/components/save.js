@@ -248,7 +248,7 @@ Module.SaveView = Marionette.View.extend({
   },
   validateNewsletter: function (jsonObject) {
     var body = '';
-    var newsletter;
+    var newsletter = App.getNewsletter();
     if (!App._contentContainer.isValid()) {
       this.showValidationError(App._contentContainer.validationError);
       return;
@@ -259,12 +259,12 @@ Module.SaveView = Marionette.View.extend({
     }
     if (App.getConfig().get('validation.validateUnsubscribeLinkPresent')
         && body.indexOf('[link:subscription_unsubscribe_url]') < 0
-        && body.indexOf('[link:subscription_unsubscribe]') < 0) {
+        && body.indexOf('[link:subscription_unsubscribe]') < 0
+        && newsletter.get('status') !== 'sent') {
       this.showValidationError(MailPoet.I18n.t('unsubscribeLinkMissing'));
       return;
     }
 
-    newsletter = App.getNewsletter();
     if ((newsletter.get('type') === 'notification')
         && body.indexOf('"type":"automatedLatestContent"') < 0
         && body.indexOf('"type":"automatedLatestContentLayout"') < 0
