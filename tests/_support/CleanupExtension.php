@@ -26,14 +26,6 @@ class CleanupExtension extends Extension {
     parent::__construct($config, $options);
     $this->root_connection = new PDO($this->createDsnConnectionString(), self::DB_USERNAME, self::DB_PASSWORD);
     $this->root_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // purge database immediately (before any Codeception modules are loaded)
-    $database_name = self::DB_NAME;
-    $this->root_connection->exec("
-      DROP DATABASE IF EXISTS $database_name;
-      CREATE DATABASE $database_name;
-      USE $database_name;
-    ");
   }
 
   function backupDatabase(SuiteEvent $event) {
@@ -77,7 +69,7 @@ class CleanupExtension extends Extension {
   }
 
   private function createDsnConnectionString() {
-    return sprintf('mysql:host=%s', self::DB_HOST);
+    return sprintf('mysql:host=%s;dbname=%s', self::DB_HOST, self::DB_NAME);
   }
 
   private function createMysqlDumpCommand() {
