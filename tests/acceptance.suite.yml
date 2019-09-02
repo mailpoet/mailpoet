@@ -6,8 +6,7 @@ modules:
             dsn: 'mysql:host=mysql;dbname=wordpress'
             user: wordpress
             password: wordpress
-            dump: tests/_data/acceptanceGenerated.sql
-            populate: true
+            populate: false
             cleanup: false
             url: 'http://test.local'
             urlReplacement: true
