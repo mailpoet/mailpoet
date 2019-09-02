@@ -45,7 +45,8 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
-      MAILPOET_TEST_TRACY_MODE: 1
+      MAILPOET_TRACY_PRODUCTION_MODE: 1
+      MAILPOET_TRACY_LOG_DIR: /var/www/html/wp-content/plugins/mailpoet/tests/_output/exceptions
     networks:
       default:
         aliases:
