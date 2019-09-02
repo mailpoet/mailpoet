@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Allows WP CLI to run with the right permissions.
-wp-su() {
-    sudo -E -u www-data wp "$@"
+wp() {
+  command wp --allow-root "$@"
 }
 
 # wait for database container to be ready
@@ -18,89 +17,42 @@ while ! bash -c "echo > /dev/tcp/wordpress/80" &>/dev/null; do
   sleep 1
 done
 
-# Make sure permissions are correct.
+# make sure permissions are correct
 cd /wp-core
 chown www-data:www-data wp-content/plugins
 chown www-data:www-data wp-content/uploads
 chmod 755 wp-content/plugins
 chmod -R 777 wp-content/uploads
 
-# Make sure WordPress is installed.
-if ! $(wp-su core is-installed); then
-
-    echo "Installing WordPress"
-
-    if [ -z "${MULTISITE}" ]
-    then
-
-      echo "Running in single site mode"
-
-      wp-su core install --url=test.local --title=tests --admin_user=admin --admin_email=test@test.com
-
-      cp /project/tests/_data/acceptanceDump.sql /project/tests/_data/acceptanceGenerated.sql
-
-    else
-
-      wp-su core multisite-install --url=test.local --title=tests --admin_user=admin --admin_email=test@test.com
-
-      cp /project/tests/_data/acceptanceMultisiteDump.sql /project/tests/_data/acceptanceGenerated.sql
-      cat /project/tests/_data/acceptanceDump.sql >> /project/tests/_data/acceptanceGenerated.sql
-      echo "Running in multi site mode"
-      echo "
-RewriteEngine On
-RewriteBase /
-RewriteRule ^index\.php$ - [L]
-
-# add a trailing slash to /wp-admin
-RewriteRule ^wp-admin$ wp-admin/ [R=301,L]
-
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
-RewriteRule ^(wp-(content|admin|includes).*) $1 [L]
-RewriteRule ^(.*\.php)$ $1 [L]
-RewriteRule . index.php [L]
-" > .htaccess
-    fi
-
-    echo "Installing WooCommerce"
-    wp plugin install woocommerce --allow-root
-
-else
-
-    if [ -z "${MULTISITE}" ] &&  $(wp-su core is-installed --network)
-    then
-      echo "xyxicdufd"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m-------------------------WARNING!!!!!!!!----------------------------"
-      echo -e "\033[0;31m-            You are trying to run tests in single site mode       -"
-      echo -e "\033[0;31m-  But the container has been already installed in multi site mode -"
-      echo -e "\033[0;31m-    You need to delete your installation first. Use ./do d:d      -"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      exit
-
-    fi
-    if [ ! -z "${MULTISITE}" ] && ( ! $(wp-su core is-installed --network) )
-    then
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m-------------------------WARNING!!!!!!!!----------------------------"
-      echo -e "\033[0;31m-            You are trying to run tests in multi site mode        -"
-      echo -e "\033[0;31m- But the container has been already installed in single site mode -"
-      echo -e "\033[0;31m-    You need to delete your installation first. Use ./do d:d      -"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      echo -e "\033[0;31m--------------------------------------------------------------------"
-      exit
-    fi
-
+# backup original 'wp-config.php' created by WordPress image
+if [ ! -f wp-config-original.php ]; then
+  cp wp-config.php wp-config-original.php
 fi
 
+# cleanup 'wp-config.php' and database
+rm -f wp-config.php && cp wp-config-original.php wp-config.php
+mysqladmin --host=mysql --user=root --password=wordpress drop wordpress --force
+mysqladmin --host=mysql --user=root --password=wordpress create wordpress --force
+
+# install WordPress
+WP_CORE_INSTALL_PARAMS="--url=test.local --title=tests --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email"
+if [ -z "${MULTISITE}" ]; then
+  echo 'Installing WordPress (single site mode)'
+  wp core install $WP_CORE_INSTALL_PARAMS
+  cp /project/tests/_data/acceptanceDump.sql /project/tests/_data/acceptanceGenerated.sql
+else
+  echo 'Installing WordPress (multisite mode)'
+  wp core multisite-install $WP_CORE_INSTALL_PARAMS
+  cp /project/tests/_data/acceptanceMultisiteDump.sql /project/tests/_data/acceptanceGenerated.sql
+  cat /project/tests/_data/acceptanceDump.sql >> /project/tests/_data/acceptanceGenerated.sql
+fi
+
+# install WooCommerce (activate & deactivate it to populate DB for backup)
+wp plugin install woocommerce
+wp plugin activate woocommerce
+wp plugin deactivate woocommerce
+
+# add configuration
 CONFIG=''
 CONFIG+="define('WP_DEBUG', true);\n"
 CONFIG+="define('WP_DEBUG_DISPLAY', true);\n"
@@ -121,6 +73,9 @@ if [[ -z "${SKIP_DEPS}" ]]; then
   cd /project
   php composer.phar install
 fi
+
+# activate MailPoet
+wp plugin activate mailpoet/mailpoet.php
 
 cd /wp-core/wp-content/plugins/mailpoet
 
