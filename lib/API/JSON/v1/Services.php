@@ -8,6 +8,8 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Installer;
 use MailPoet\Services\Bridge;
+use MailPoet\Services\SPFCheck;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -16,6 +18,9 @@ if (!defined('ABSPATH')) exit;
 class Services extends APIEndpoint {
   public $bridge;
   public $date_time;
+  public $settings;
+  public $spf_check;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
@@ -23,6 +28,24 @@ class Services extends APIEndpoint {
   function __construct() {
     $this->bridge = new Bridge();
     $this->date_time = new DateTime();
+    $this->settings = new SettingsController();
+    $this->spf_check = new SPFCheck();
+  }
+
+  function checkSPFRecord($data = []) {
+    $sender_address = $this->settings->get('sender.address');
+    $domain_name = mb_substr($sender_address, mb_strpos($sender_address, '@') + 1);
+
+    $result = $this->spf_check->checkSPFRecord($domain_name);
+
+    if (!$result) {
+      return $this->errorResponse(
+        [APIError::BAD_REQUEST => WPFunctions::get()->__('SPF check has failed.', 'mailpoet')],
+        ['sender_address' => $sender_address, 'domain_name' => $domain_name]
+      );
+    }
+
+    return $this->successResponse();
   }
 
   function checkMSSKey($data = []) {

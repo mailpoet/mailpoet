@@ -7,6 +7,7 @@ use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\Installer;
 use MailPoet\Services\Bridge;
+use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
 
 class ServicesTest extends \MailPoetTest {
@@ -18,6 +19,30 @@ class ServicesTest extends \MailPoetTest {
     $this->services_endpoint = new Services();
     $this->data = ['key' => '1234567890abcdef'];
     $this->settings = new SettingsController();
+  }
+
+  function testItRespondsWithErrorIfSPFCheckFails() {
+    $email = 'spf_test@example.com';
+    $this->settings->set('sender.address', $email);
+    $this->services_endpoint->spf_check = Stub::make(
+      SPFCheck::class,
+      ['checkSPFRecord' => false],
+      $this
+    );
+    $response = $this->services_endpoint->checkSPFRecord([]);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->meta['sender_address'])->equals($email);
+    expect($response->meta['domain_name'])->equals('example.com');
+  }
+
+  function testItRespondsWithSuccessIfSPFCheckPasses() {
+    $this->services_endpoint->spf_check = Stub::make(
+      SPFCheck::class,
+      ['checkSPFRecord' => true],
+      $this
+    );
+    $response = $this->services_endpoint->checkSPFRecord([]);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
   function testItRespondsWithErrorIfNoMSSKeyIsGiven() {
