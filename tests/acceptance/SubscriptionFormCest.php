@@ -17,12 +17,26 @@ class SubscriptionFormCest {
     $this->subscriber_email = 'test-form@example.com';
   }
 
-  function _before() {
+  function _before(\AcceptanceTester $I) {
     $settings = new Settings();
     $settings
       ->withConfirmationEmailSubject()
       ->withConfirmationEmailBody()
       ->withConfirmationEmailEnabled();
+
+    $I->havePostInDatabase([
+      'post_author' => 1,
+      'post_type' => 'page',
+      'post_name' => 'form-test',
+      'post_title' => 'Form Test',
+      'post_content' => '
+        Regular form:
+          [mailpoet_form id="1"]
+        Iframe form:
+          <iframe class="mailpoet_form_iframe" id="mailpoet_form_iframe" tabindex="0" src="http://test.local?mailpoet_form_iframe=1" width="100%" height="100%" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+      ',
+      'post_status' => 'publish',
+    ]);
   }
 
   function subscriptionFormWidget(\AcceptanceTester $I) {
