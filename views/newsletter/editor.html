@@ -1395,6 +1395,7 @@
       },
       validation: {
         validateUnsubscribeLinkPresent: <%= mss_active ? 'true' : 'false' %>,
+        validateSPFRecord: <%= mss_active ? 'true' : 'false' %>,
       },
       urls: {
         send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ (params('id') | intval)) %>',

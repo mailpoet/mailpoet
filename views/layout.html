@@ -75,6 +75,13 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
   'senderEmailAddressWarning2': _x('Use an address like %suggested for the Sender and put %originalSender in the <em>Reply-to</em> field below.', 'In the last step, before sending a newsletter. URL: ?page=mailpoet-newsletters#/send/2'),
   'senderEmailAddressWarning3': _x('Read more.'),
   'mailerSendingResumedNotice': __('Sending has been resumed.'),
+
+  'spfCheckTitle': _x('Oops! You might not receive your own emails.', 'DNS SPF Record check'),
+  'spfCheckMsgWhy': _x("Why? You have an SPF entry for %s, but it's incomplete.", 'DNS SPF Record check'),
+  'spfCheckMsgEdit': _x('If you send with MailPoet, edit the SPF record in your DNS and add %s to it, so it looks like this:', 'DNS SPF Record check'),
+  'spfCheckMsgAllow': _x('This will allow MailPoet to send emails from %s addresses.', 'DNS SPF Record check'),
+  'spfCheckReadMore':  _x('Read more about SPF', 'DNS SPF Record check'),
+
 }) %>
 <% block translations %><% endblock %>
 

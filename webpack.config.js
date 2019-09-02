@@ -111,6 +111,11 @@ const baseConfig = {
         use: 'expose-loader?' + globalPrefix + '.Hooks',
       },
       {
+        // Expose for usage in the settings view inline JS
+        include: path.resolve(__dirname, 'assets/js/src/common/check_spf_record.jsx'),
+        use: 'expose-loader?' + globalPrefix + '.checkSPFRecord',
+      },
+      {
         test: /listing.jsx/i,
         use: [
           'expose-loader?' + globalPrefix + '.Listing',
@@ -297,6 +302,7 @@ const adminConfig = {
       'newsletters/types/automatic_emails/events_list.jsx',
       'newsletters/types/automatic_emails/breadcrumb.jsx',
       'newsletters/types/welcome/scheduling.jsx',
+      'common/check_spf_record.jsx',
     ],
     admin: 'webpack_admin_index.jsx',
     form_editor: 'form_editor/webpack_index.jsx',

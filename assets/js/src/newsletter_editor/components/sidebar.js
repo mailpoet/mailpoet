@@ -7,6 +7,7 @@ import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import jQuery from 'jquery';
+import checkSPFRecord from 'common/check_spf_record.jsx';
 
 var Module = {};
 var SidebarView;
@@ -328,6 +329,9 @@ Module.SidebarPreviewView = Marionette.View.extend({
           'MailPoet Free version': window.mailpoet_version,
           'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1),
         });
+        if (App.getConfig().get('validation.validateSPFRecord')) {
+          checkSPFRecord();
+        }
         showSuccessDeliveryPoll = MailPoet.Poll.successDelivery.canShow('preview');
         if (showSuccessDeliveryPoll) {
           MailPoet.Poll.successDelivery.showModal('preview', 'IHedf1');
