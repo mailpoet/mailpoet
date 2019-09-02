@@ -276,7 +276,7 @@ class Subscribers extends APIEndpoint {
         $meta = [];
         $meta['redirect_url'] = SubscriptionUrl::getCaptchaUrl();
         return $this->badRequest([
-          APIError::BAD_REQUEST => WPFunctions::get()->__('Please check the CAPTCHA.', 'mailpoet'),
+          APIError::BAD_REQUEST => WPFunctions::get()->__('Please fill in the CAPTCHA.', 'mailpoet'),
         ], $meta);
       }
     }

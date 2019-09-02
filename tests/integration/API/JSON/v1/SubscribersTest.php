@@ -533,7 +533,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
     ]);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
+    expect($response->errors[0]['message'])->equals('Please fill in the CAPTCHA.');
     $this->settings->set('captcha', []);
   }
 
