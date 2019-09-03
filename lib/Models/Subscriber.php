@@ -781,6 +781,7 @@ class Subscriber extends Model {
       'first_name' => '',
       'last_name' => '',
       'unsubscribe_token' => Security::generateUnsubscribeToken(self::class),
+      'link_token' => Security::generateRandomString(32),
       'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED,
     ];
     foreach ($required_field_default_values as $field => $value) {
