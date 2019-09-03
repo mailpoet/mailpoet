@@ -86,6 +86,7 @@ class Subscription {
         $subscriber,
         [$wc_segment->id]
       );
+      $this->updateSubscriberStatus($subscriber);
       return false;
     }
 
@@ -104,5 +105,13 @@ class Subscription {
     );
 
     return true;
+  }
+
+  private function updateSubscriberStatus(Subscriber $subscriber) {
+    $segmentsCount = $subscriber->segments()->count();
+    if (!$segmentsCount) {
+      $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+      $subscriber->save();
+    }
   }
 }
