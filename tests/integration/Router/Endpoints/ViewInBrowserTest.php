@@ -88,6 +88,7 @@ class ViewInBrowserTest extends \MailPoetTest {
         'queue' => $this->queue,
         'subscriber' => $subscriber,
         'newsletter' => $this->newsletter,
+        'subscriber_token' => 'somewrongtoken',
       ]
     );
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
