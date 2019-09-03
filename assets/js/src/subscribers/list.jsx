@@ -239,16 +239,9 @@ const itemActions = [
         data: {
           id: subscriber.id,
         },
-      }).done(() => {
-        MailPoet.Notice.success(MailPoet.I18n.t('oneConfirmationEmailSent'));
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true }
-          );
-        }
-      });
+      })
+        .done(() => MailPoet.Notice.success(MailPoet.I18n.t('oneConfirmationEmailSent')))
+        .fail((response) => MailPoet.Notice.showApiErrorNotice(response));
     },
   },
   {
