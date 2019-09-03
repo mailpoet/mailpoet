@@ -106,7 +106,8 @@ class Subscriber extends Model {
   function getLinkToken() {
     if ($this->link_token === null) {
       $this->link_token = self::generateToken($this->email);
-      $this->save();
+      // `$this->save()` fails if the subscriber has subscriptions, segments or custom fields
+      \ORM::rawExecute(sprintf('UPDATE %s SET link_token = ? WHERE email = ?', self::$_table), [$this->link_token, $this->email]);
     }
     return $this->link_token;
   }
