@@ -16,6 +16,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
@@ -62,6 +63,9 @@ class Subscribers extends APIEndpoint {
   /** @var CaptchaSession */
   private $captcha_session;
 
+  /** @var ConfirmationEmailMailer; */
+  private $confirmation_email_mailer;
+
   public function __construct(
     Listing\BulkActionController $bulk_action_controller,
     SubscribersListings $subscribers_listings,
@@ -71,7 +75,8 @@ class Subscribers extends APIEndpoint {
     Captcha $subscription_captcha,
     WPFunctions $wp,
     SettingsController $settings,
-    CaptchaSession $captcha_session
+    CaptchaSession $captcha_session,
+    ConfirmationEmailMailer $confirmation_email_mailer
   ) {
     $this->bulk_action_controller = $bulk_action_controller;
     $this->subscribers_listings = $subscribers_listings;
@@ -82,6 +87,7 @@ class Subscribers extends APIEndpoint {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->captcha_session = $captcha_session;
+    $this->confirmation_email_mailer = $confirmation_email_mailer;
   }
 
   function get($data = []) {
@@ -405,6 +411,21 @@ class Subscribers extends APIEndpoint {
     if ($subscriber instanceof Subscriber) {
       $subscriber->delete();
       return $this->successResponse(null, ['count' => 1]);
+    } else {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
+      ]);
+    }
+  }
+
+  function sendConfirmationEmail($data = []) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
+    $subscriber = Subscriber::findOne($id);
+    if ($subscriber instanceof Subscriber) {
+      if ($this->confirmation_email_mailer->sendConfirmationEmail($subscriber)) {
+        return $this->successResponse();
+      }
+      return $this->errorResponse();
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
