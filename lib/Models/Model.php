@@ -130,6 +130,9 @@ class Model extends \Sudzy\ValidModel {
     parent::__construct($validator);
   }
 
+  /**
+   * @return bool|static
+   */
   static function create() {
     return parent::create();
   }
