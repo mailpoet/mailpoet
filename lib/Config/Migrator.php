@@ -208,6 +208,7 @@ class Migrator {
       "source enum('form','imported','administrator','api','wordpress_user','woocommerce_user','woocommerce_checkout','unknown') DEFAULT 'unknown',",
       'count_confirmations int(11) unsigned NOT NULL DEFAULT 0,',
       'unsubscribe_token char(15) NULL,',
+      'link_token varchar(32) NULL,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'UNIQUE KEY unsubscribe_token (unsubscribe_token),',
