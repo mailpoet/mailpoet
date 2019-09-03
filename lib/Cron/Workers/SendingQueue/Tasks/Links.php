@@ -47,7 +47,7 @@ class Links {
       }
       $data = NewsletterLinks::createUrlDataObject(
         $subscriber->id,
-        $subscriber->email,
+        $subscriber->getLinkToken(),
         $queue->id,
         $link_hash->hash,
         false

@@ -678,14 +678,12 @@ class SubscriberTest extends \MailPoetTest {
   }
 
   function testItVerifiesSubscriberToken() {
-    $token = Subscriber::generateToken($this->test_data['email']);
-    expect(Subscriber::verifyToken($this->test_data['email'], $token))->true();
-    expect(Subscriber::verifyToken('fake@email.com', $token))->false();
-  }
-
-  function testItVerifiesTokensOfDifferentLengths() {
-    $token = Subscriber::generateToken($this->test_data['email'], 6);
-    expect(Subscriber::verifyToken($this->test_data['email'], $token))->true();
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => $this->test_data['email'],
+    ]);
+    $token = $subscriber->getLinkToken();
+    expect($subscriber->verifyToken($token))->true();
+    expect($subscriber->verifyToken('faketoken'))->false();
   }
 
   function testItBulkDeletesSubscribers() {

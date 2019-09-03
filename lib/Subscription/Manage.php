@@ -30,10 +30,13 @@ class Manage {
     $subscriber_data = $_POST['data'];
     $subscriber_data = $this->field_name_obfuscator->deobfuscateFormPayload($subscriber_data);
 
-    if (!empty($subscriber_data['email']) && Subscriber::verifyToken($subscriber_data['email'], $token)) {
-      if ($subscriber_data['email'] !== Pages::DEMO_EMAIL) {
-        $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriber_data));
-        $subscriber->getErrors();
+    if (!empty($subscriber_data['email'])) {
+      $subscriber = Subscriber::where('email', $subscriber_data['email'])->findOne();
+      if ($subscriber && $subscriber->verifyToken($token)) {
+        if ($subscriber_data['email'] !== Pages::DEMO_EMAIL) {
+          $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriber_data));
+          $subscriber->getErrors();
+        }
       }
     }
 

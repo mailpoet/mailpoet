@@ -35,7 +35,7 @@ class OpensTest extends \MailPoetTest {
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => Subscriber::generateToken($subscriber->email),
+      'subscriber_token' => $subscriber->getLinkToken(),
       'preview' => false,
     ];
     // instantiate class

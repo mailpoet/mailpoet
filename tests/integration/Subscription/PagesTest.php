@@ -30,7 +30,7 @@ class PagesTest extends \MailPoetTest {
     $this->subscriber->save();
     expect($this->subscriber->getErrors())->false();
     $this->test_data['email'] = $this->subscriber->email;
-    $this->test_data['token'] = Subscriber::generateToken($this->subscriber->email);
+    $this->test_data['token'] = $this->subscriber->getLinkToken();
     $this->pages = ContainerWrapper::getInstance()->get(Pages::class);
   }
 

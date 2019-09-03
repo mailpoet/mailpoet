@@ -70,8 +70,7 @@ class Track {
 
   function _validateTrackData($data) {
     if (!$data->subscriber || !$data->queue || !$data->newsletter) return false;
-    $subscriber_token_match =
-      Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
+    $subscriber_token_match = $data->subscriber->verifyToken($data->subscriber_token);
     if (!$subscriber_token_match) {
       $this->terminate(403);
     }

@@ -46,7 +46,7 @@ class Url {
 
     if ($subscriber !== null) {
       $data = [
-        'token' => Subscriber::generateToken($subscriber->email),
+        'token' => $subscriber->getLinkToken(),
         'email' => $subscriber->email,
       ];
     } elseif (is_null($data)) {

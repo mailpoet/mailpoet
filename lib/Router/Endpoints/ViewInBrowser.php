@@ -60,7 +60,7 @@ class ViewInBrowser {
       false;
     if ($data->subscriber) {
       if (empty($data->subscriber_token) ||
-         !Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token)
+         !$data->subscriber->verifyToken($data->subscriber_token)
       ) return false;
     } else if (!$data->subscriber && !empty($data->preview)) {
       // if this is a preview and subscriber does not exist,
