@@ -726,6 +726,20 @@ class SubscribersTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(0);
   }
 
+  function testItSendsConfirmationEmail() {
+    $response = $this->endpoint->sendConfirmationEmail(['id' => 'non_existent']);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+
+    $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber_1->id()]);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    wp_set_current_user(0);
+    $this->subscriber_1->count_confirmations = ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS;
+    $this->subscriber_1->save();
+    $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber_1->id()]);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+  }
+
   private function _createWelcomeNewsletter() {
     $welcome_newsletter = Newsletter::create();
     $welcome_newsletter->type = Newsletter::TYPE_WELCOME;
