@@ -10,6 +10,7 @@
     var mailpoet_month_names = <%= json_encode(month_names) %>;
     var mailpoet_date_formats = <%= json_encode(date_formats) %>;
     var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
+    var mailpoet_max_confirmation_emails = <%= max_confirmation_emails %>;
     var mss_active = <%= json_encode(mss_active) %>;
   </script>
 <% endblock %>
@@ -84,6 +85,7 @@
     'removeFromAllLists': __('Remove from all lists'),
     'multipleSubscribersRemovedFromAllLists': __('%$1d subscribers were removed from all lists.'),
     'resendConfirmationEmail': __('Resend confirmation email'),
+    'oneConfirmationEmailSent': __('1 confirmation email has been sent.'),
     'listsToWhichSubscriberWasSubscribed': __('Lists to which the subscriber was subscribed.'),
     'WPUsersSegment': __('WordPress Users'),
     'WPUserEditNotice': __('This subscriber is a registered WordPress user. [link]Edit his/her profile[/link] to change his/her email.'),
