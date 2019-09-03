@@ -23,6 +23,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
@@ -60,7 +61,8 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(Captcha::class),
       $container->get(Functions::class),
       $container->get(SettingsController::class),
-      $this->captcha_session
+      $this->captcha_session,
+      $container->get(ConfirmationEmailMailer::class)
     );
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
