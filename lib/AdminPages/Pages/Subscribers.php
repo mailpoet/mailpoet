@@ -8,6 +8,7 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Services\Bridge;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -59,6 +60,8 @@ class Subscribers {
 
     $data['premium_plugin_active'] = License::getLicense();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
+
+    $data['max_confirmation_emails'] = ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS;
 
     $this->page_renderer->displayPage('subscribers/subscribers.html', $data);
   }

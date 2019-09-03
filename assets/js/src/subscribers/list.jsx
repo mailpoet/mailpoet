@@ -226,6 +226,32 @@ const itemActions = [
     },
   },
   {
+    name: 'sendConfirmationEmail',
+    label: MailPoet.I18n.t('resendConfirmationEmail'),
+    display: function display(subscriber) {
+      return subscriber.status === 'unconfirmed' && subscriber.count_confirmations < window.mailpoet_max_confirmation_emails;
+    },
+    onClick: function onClick(subscriber) {
+      return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'subscribers',
+        action: 'sendConfirmationEmail',
+        data: {
+          id: subscriber.id,
+        },
+      }).done(() => {
+        MailPoet.Notice.success(MailPoet.I18n.t('oneConfirmationEmailSent'));
+      }).fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map((error) => error.message),
+            { scroll: true }
+          );
+        }
+      });
+    },
+  },
+  {
     name: 'trash',
     display: function display(subscriber) {
       return Number(subscriber.wp_user_id) === 0 && Number(subscriber.is_woocommerce_user) === 0;
