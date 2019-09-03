@@ -38,7 +38,7 @@ class ViewInBrowserTest extends \MailPoetTest {
       'queue_id' => $queue->id,
       'subscriber_id' => $subscriber->id,
       'newsletter_id' => $newsletter->id,
-      'subscriber_token' => Subscriber::generateToken($subscriber->email),
+      'subscriber_token' => $subscriber->getLinkToken(),
       'preview' => false,
     ];
     // instantiate class

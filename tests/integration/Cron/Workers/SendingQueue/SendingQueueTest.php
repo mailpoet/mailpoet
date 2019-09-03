@@ -99,7 +99,7 @@ class SendingQueueTest extends \MailPoetTest {
   private function getTrackedUnsubscribeURL() {
     $data = Links::createUrlDataObject(
       $this->subscriber->id,
-      $this->subscriber->email,
+      $this->subscriber->getLinkToken(),
       $this->queue->id,
       $this->newsletter_link->hash,
       false

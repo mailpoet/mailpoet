@@ -103,9 +103,8 @@ class Pages {
       return false;
     }
 
-    return (Subscriber::verifyToken($email, $token)) ?
-      Subscriber::findOne($email) :
-      false;
+    $subscriber = Subscriber::where('email', $email)->findOne();
+    return ($subscriber && $subscriber->verifyToken($token)) ? $subscriber : false;
   }
 
   function confirm() {
@@ -283,6 +282,7 @@ class Pages {
         'email' => self::DEMO_EMAIL,
         'first_name' => 'John',
         'last_name' => 'Doe',
+        'link_token' => Subscriber::generateToken(self::DEMO_EMAIL),
       ]);
     } else if ($this->subscriber !== false) {
       $subscriber = $this->subscriber
@@ -438,7 +438,7 @@ class Pages {
       $subscriber->email .
     '" />';
     $form_html .= '<input type="hidden" name="token" value="' .
-      Subscriber::generateToken($subscriber->email) .
+      $subscriber->getLinkToken() .
     '" />';
 
     $form_html .= '<p class="mailpoet_paragraph">';

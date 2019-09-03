@@ -17,7 +17,7 @@ class Url {
     $preview = false
   ) {
     if ($subscriber instanceof SubscriberModel) {
-      $subscriber->token = SubscriberModel::generateToken($subscriber->email);
+      $subscriber->token = $subscriber->getLinkToken();
     }
     switch ($type) {
       case self::TYPE_ARCHIVE:

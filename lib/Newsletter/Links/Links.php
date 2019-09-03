@@ -136,7 +136,7 @@ class Links {
       }
       $data = self::createUrlDataObject(
         $subscriber->id,
-        $subscriber->email,
+        $subscriber->getLinkToken(),
         $queue_id,
         $hash,
         $preview
@@ -197,11 +197,11 @@ class Links {
   }
 
   static function createUrlDataObject(
-    $subscriber_id, $subscriber_email, $queue_id, $link_hash, $preview
+    $subscriber_id, $subscriber_link_token, $queue_id, $link_hash, $preview
   ) {
     return [
       $subscriber_id,
-      Subscriber::generateToken($subscriber_email),
+      $subscriber_link_token,
       $queue_id,
       $link_hash,
       $preview,

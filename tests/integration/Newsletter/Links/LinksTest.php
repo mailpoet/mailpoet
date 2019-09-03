@@ -126,7 +126,7 @@ class LinksTest extends \MailPoetTest {
     ];
     $url_data_object = Links::createUrlDataObject(
       $data['subscriber_id'],
-      $subscriber_email,
+      $data['subscriber_token'],
       $data['queue_id'],
       $data['link_hash'],
       $data['preview']

@@ -53,7 +53,7 @@ class ClicksTest extends \MailPoetTest {
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => Subscriber::generateToken($subscriber->email),
+      'subscriber_token' => $subscriber->getLinkToken(),
       'link' => $link,
       'preview' => false,
     ];

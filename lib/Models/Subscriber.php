@@ -20,6 +20,7 @@ use MailPoet\Util\Security;
  * @property string|null $last_subscribed_at
  * @property string|null $deleted_at
  * @property string|null $source
+ * @property string|null $link_token
  * @property int $count_confirmations
  * @property int $wp_user_id
  * @property array $segments
@@ -102,6 +103,14 @@ class Subscriber extends Model {
     return (bool)$this->is_woocommerce_user;
   }
 
+  function getLinkToken() {
+    if ($this->link_token === null) {
+      $this->link_token = self::generateToken($this->email);
+      $this->save();
+    }
+    return $this->link_token;
+  }
+
   static function getCurrentWPUser() {
     $wp_user = WPFunctions::get()->wpGetCurrentUser();
     if (empty($wp_user->ID)) {
@@ -121,10 +130,10 @@ class Subscriber extends Model {
     return false;
   }
 
-  static function verifyToken($email, $token) {
+  function verifyToken($token) {
     return call_user_func(
       'hash_equals',
-      self::generateToken($email, strlen($token)),
+      $this->getLinkToken(),
       $token
     );
   }
