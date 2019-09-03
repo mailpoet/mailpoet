@@ -21,6 +21,7 @@ use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCh
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Cron\Workers\Beamer as BeamerWorker;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
+use MailPoet\Cron\Workers\SubscriberLinkTokens;
 
 class WordPress {
   const SCHEDULED_IN_THE_PAST = 'past';
@@ -143,6 +144,12 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
+    // subscriber link tokens check
+    $subscriber_link_tokens_tasks = self::getTasksCount([
+      'type' => SubscriberLinkTokens::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
+    ]);
     // WooCommerce sync
     $woo_commerce_sync_tasks = self::getTasksCount([
       'type' => WooCommerceSyncWorker::TASK_TYPE,
@@ -197,6 +204,7 @@ class WordPress {
       || $beamer_active
       || $woo_commerce_orders_tasks
       || $unsubscribe_tokens_tasks
+      || $subscriber_link_tokens_tasks
     );
   }
 

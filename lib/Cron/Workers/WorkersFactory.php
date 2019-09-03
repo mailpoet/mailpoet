@@ -152,6 +152,11 @@ class WorkersFactory {
     return new UnsubscribeTokens($timer);
   }
 
+   /** @return SubscriberLinkTokens */
+  function createSubscriberLinkTokensWorker($timer) {
+    return new SubscriberLinkTokens($timer);
+  }
+
   /** @return AuthorizedSendingEmailsCheck */
   function createAuthorizedSendingEmailsCheckWorker($timer) {
     return new AuthorizedSendingEmailsCheck($this->authorized_emails_controller, $timer);
