@@ -3,6 +3,11 @@ namespace MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * @property int $newsletter_id
+ * @property int $subscriber_id
+ * @property int $queue_id
+ */
 class StatisticsUnsubscribes extends Model {
   public static $_table = MP_STATISTICS_UNSUBSCRIBES_TABLE;
 
