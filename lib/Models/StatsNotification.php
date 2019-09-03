@@ -2,6 +2,11 @@
 
 namespace MailPoet\Models;
 
+/**
+ * @property int $newsletter_id
+ * @property int $task_id
+ * @property string $updated_at
+ */
 class StatsNotification extends Model {
   public static $_table = MP_STATS_NOTIFICATIONS_TABLE;
 
