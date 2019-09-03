@@ -11,6 +11,21 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 
 class SubscriptionTest extends \MailPoetTest {
+  /** @var int */
+  private $order_id;
+
+  /** @var Subscription */
+  private $subscription;
+
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var Segment */
+  private $wc_segment;
+
+  /** @var Subscriber */
+  private $subscriber;
+
   function _before() {
     $this->order_id = 123; // dummy
     $this->subscription = ContainerWrapper::getInstance()->get(Subscription::class);
@@ -20,6 +35,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->is_woocommerce_user = 1;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $this->subscriber = $subscriber->save();
 
     // back up settings
@@ -127,6 +143,9 @@ class SubscriptionTest extends \MailPoetTest {
 
     $subscribed_segments = $this->subscriber->segments()->findArray();
     expect($subscribed_segments)->count(0);
+
+    $subscriber = Subscriber::where('id', $this->subscriber->id)->findOne();
+    expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
   function testItSubscribesIfCheckboxIsChecked() {
