@@ -129,6 +129,10 @@ cp mailpoet_initializer.php $plugin_name
 cp readme.txt $plugin_name
 cp uninstall.php $plugin_name
 
+# Prefix all PHP files with "<?php if (!defined('ABSPATH')) exit; ?>"
+echo '[BUILD] Adding ABSPATH ensuring prefix to all PHP files (to avoid path disclosure)'
+php "$(dirname "$0")"/tasks/fix-full-path-disclosure.php $plugin_name
+
 # Add index files if they don't exist to all folders
 echo '[BUILD] Adding index files to all project folders'
 find $plugin_name -type d -print0 | while read -d $'\0' dir
