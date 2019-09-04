@@ -1,9 +1,11 @@
 <?php
 namespace MailPoet\Cron\Workers;
 
+use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
