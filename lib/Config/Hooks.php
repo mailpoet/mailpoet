@@ -3,6 +3,8 @@
 namespace MailPoet\Config;
 
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
+use MailPoet\Mailer\WordPress\Replacer;
+use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Comment;
@@ -45,6 +47,9 @@ class Hooks {
   /** @var PostNotificationScheduler */
   private $post_notification_scheduler;
 
+  /** @var WordpressMailerReplacer */
+  private $wordpress_mailer_replacer;
+
   function __construct(
     Form $subscription_form,
     Comment $subscription_comment,
@@ -55,7 +60,8 @@ class Hooks {
     WooCommerceSubscription $woocommerce_subscription,
     WooCommerceSegment $woocommerce_segment,
     WooCommercePurchases $woocommerce_purchases,
-    PostNotificationScheduler $post_notification_scheduler
+    PostNotificationScheduler $post_notification_scheduler,
+    WordpressMailerReplacer $wordpress_mailer_replacer
   ) {
     $this->subscription_form = $subscription_form;
     $this->subscription_comment = $subscription_comment;
@@ -67,6 +73,7 @@ class Hooks {
     $this->woocommerce_segment = $woocommerce_segment;
     $this->woocommerce_purchases = $woocommerce_purchases;
     $this->post_notification_scheduler = $post_notification_scheduler;
+    $this->wordpress_mailer_replacer = $wordpress_mailer_replacer;
   }
 
   function init() {
@@ -78,6 +85,7 @@ class Hooks {
     $this->setupSubscriptionEvents();
     $this->setupWooCommerceSubscriptionEvents();
     $this->setupPostNotifications();
+    $this->setupMailer();
   }
 
   function setupSubscriptionEvents() {
@@ -170,6 +178,13 @@ class Hooks {
       'admin_post_nopriv_mailpoet_subscription_form',
       [$this->subscription_form, 'onSubmit']
     );
+  }
+
+  function setupMailer() {
+    $this->wp->addAction('plugins_loaded', [
+      $this->wordpress_mailer_replacer,
+      'replaceWordPressMailer'
+    ]);
   }
 
   function setupWooCommerceSubscriptionEvents() {
