@@ -97,6 +97,18 @@ class PHPMailTest extends \MailPoetTest {
     );
   }
 
+  function testItCanConfigureMailerWithTextEmail() {
+    $mailer = $this->mailer
+      ->configureMailerWithMessage([
+        'subject' => 'testing local method (PHP mail)',
+        'body' => [
+          'text' => 'TEXT body',
+        ],
+      ], $this->subscriber);
+    expect($mailer->ContentType)->equals('text/plain');
+    expect($mailer->Body)->equals('TEXT body');
+  }
+
   function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))->equals(
       [
