@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, email automation
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.35.2
+Stable tag: 3.35.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -146,6 +146,16 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.35.3 - 2019-09-04 =
+* Improved: sent Post Notification UI now allows deleting sent Post Notifications;
+* Improved: translation logic;
+* Improved: subscribers, lists, forms, and subscriber engagement listings doesn't refresh automatically anymore;
+* Improved: read our Knowledge Base articles in the support Beacon, no more new tabs;
+* Improved: processing inactive subscribers;
+* Improved: updated to latest TinyMCE;
+* Fixed: removed WooCommerce checkbox modal for sites where all orders are created with a subscription checkbox on checkout;
+* Fixed: indented lists now display as intended in the designer.
 
 = 3.35.2 - 2019-08-27 =
 * Added: referral tracking capabilities;
