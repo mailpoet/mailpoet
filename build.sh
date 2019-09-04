@@ -133,10 +133,9 @@ cp uninstall.php $plugin_name
 echo '[BUILD] Adding ABSPATH ensuring prefix to all PHP files (to avoid path disclosure)'
 php "$(dirname "$0")"/tasks/fix-full-path-disclosure.php $plugin_name
 
-# Add index files if they don't exist to all folders
-echo '[BUILD] Adding index files to all project folders'
-find $plugin_name -type d -print0 | while read -d $'\0' dir
-do
+# Add index.php files if they don't exist to all folders
+echo '[BUILD] Adding index.php files to all project folders (to avoid directory listing disclosure)'
+find $plugin_name -type d -print0 | while read -d $'\0' dir; do
   if [ ! -f "$dir/Index.php" ]; then
     touch "$dir/index.php"
   fi
