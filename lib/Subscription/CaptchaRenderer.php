@@ -33,7 +33,7 @@ class CaptchaRenderer {
         'id' => 'captcha',
         'type' => 'text',
         'params' => [
-          'label' => $this->wp->__('Type in the input the characters you see in the picture above:', 'mailpoet'),
+          'label' => $this->wp->__('Type in the characters you see in the picture above:', 'mailpoet'),
           'value' => '',
           'obfuscate' => false,
         ],
@@ -113,7 +113,7 @@ class CaptchaRenderer {
   ) {
     $form_html = '<div class="mailpoet_message">';
     $form_html .= '<p class="mailpoet_validate_success" ' . ($show_success_message ? '' : ' style="display:none;"') . '>' . $form_model['settings']['success_message'] . '</p>';
-    $form_html .= '<p class="mailpoet_validate_error" ' . ($show_error_message ? '' : ' style="display:none;"') . '>' . $this->wp->__("An error occurred, make sure you have filled all the required fields.", "mailpoet") . '</p>';
+    $form_html .= '<p class="mailpoet_validate_error" ' . ($show_error_message ? '' : ' style="display:none;"') . '>' . $this->wp->__('The characters you entered did not match the CAPTCHA image. Please try again with this new image.', 'mailpoet') . '</p>';
     $form_html .= '</div>';
     return $form_html;
   }
