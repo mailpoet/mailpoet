@@ -183,7 +183,11 @@ class Hooks {
   function setupMailer() {
     $this->wp->addAction('plugins_loaded', [
       $this->wordpress_mailer_replacer,
-      'replaceWordPressMailer'
+      'replaceWordPressMailer',
+    ]);
+    $this->wp->addAction('login_init', [
+      $this->wordpress_mailer_replacer,
+      'replaceWordPressMailer',
     ]);
   }
 
