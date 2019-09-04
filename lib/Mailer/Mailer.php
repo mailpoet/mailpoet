@@ -174,8 +174,9 @@ class Mailer {
     if (isset($subscriber['address'])) $subscriber['email'] = $subscriber['address'];
     $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
     $last_name = (isset($subscriber['last_name'])) ? $subscriber['last_name'] : '';
-    if (!$first_name && !$last_name) return $subscriber['email'];
-    $full_name = sprintf('%s %s', $first_name, $last_name);
+    $full_name = (isset($subscriber['full_name'])) ? $subscriber['full_name'] : null;
+    if (!$first_name && !$last_name && !$full_name) return $subscriber['email'];
+    $full_name = is_null($full_name) ? sprintf('%s %s', $first_name, $last_name) : $full_name;
     $full_name = trim(preg_replace('!\s\s+!', ' ', $full_name));
     $full_name = $this->encodeAddressNamePart($full_name);
     $subscriber = sprintf(
