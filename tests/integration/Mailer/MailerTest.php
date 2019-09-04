@@ -155,6 +155,12 @@ class MailerTest extends \MailPoetTest {
         'email' => 'test@email.com',
       ])
     )->equals('First Last <test@email.com>');
+    expect($mailer->formatSubscriberNameAndEmailAddress(
+      [
+        'full_name' => 'First Last',
+        'email' => 'test@email.com',
+      ])
+    )->equals('First Last <test@email.com>');
   }
 
   function testItCanConvertNonASCIIEmailAddressString() {
