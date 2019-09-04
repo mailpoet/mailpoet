@@ -12,7 +12,6 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
-use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\Form;
@@ -166,7 +165,6 @@ class Populator {
     $this->enableStatsNotificationsForAutomatedEmails();
 
     $this->scheduleUnsubscribeTokens();
-    $this->scheduleSubscriberLinkTokens();
     $this->detectReferral();
     $this->updateFormsSuccessMessages();
   }
@@ -626,13 +624,6 @@ class Populator {
   private function scheduleUnsubscribeTokens() {
     $this->scheduleTask(
       UnsubscribeTokens::TASK_TYPE,
-      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
-    );
-  }
-
-  private function scheduleSubscriberLinkTokens() {
-    $this->scheduleTask(
-      SubscriberLinkTokens::TASK_TYPE,
       Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
     );
   }

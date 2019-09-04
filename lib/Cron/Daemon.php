@@ -51,10 +51,10 @@ class Daemon {
     yield $this->workers_factory->createBeamerkWorker($this->timer);
     yield $this->workers_factory->createInactiveSubscribersWorker($this->timer);
     yield $this->workers_factory->createUnsubscribeTokensWorker($this->timer);
-    yield $this->workers_factory->createSubscriberLinkTokensWorker($this->timer);
     yield $this->workers_factory->createWooCommerceSyncWorker($this->timer);
     yield $this->workers_factory->createAuthorizedSendingEmailsCheckWorker($this->timer);
     yield $this->workers_factory->createWooCommerceOrdersWorker($this->timer);
     yield $this->workers_factory->createStatsNotificationsWorkerForAutomatedEmails($this->timer);
+    yield $this->workers_factory->createSubscriberLinkTokensWorker($this->timer);
   }
 }
