@@ -8,7 +8,7 @@ use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 
 /**
  * @Entity()
- * @Table(name="feature_flags")
+ * @Table(name="feature_flags", uniqueConstraints={@UniqueConstraint(name="name",columns={"name"})})
  */
 class FeatureFlagEntity {
   use AutoincrementedIdTrait;
