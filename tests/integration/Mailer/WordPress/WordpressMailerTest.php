@@ -129,4 +129,17 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
+  function testItThrowsOnUnknownContentType() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer
+      ->expects($this->never())
+      ->method('send');
+    $wpMailer = new WordpressMailer($mailer);
+    $wpMailer->addAddress('email@example.com');
+    $wpMailer->Body = 'body';
+    $wpMailer->ContentType = 'application/json';
+    $this->expectException(\phpmailerException::class);
+    expect($wpMailer->send());
+  }
+
 }
