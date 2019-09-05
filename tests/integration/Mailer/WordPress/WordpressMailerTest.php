@@ -28,7 +28,7 @@ class WordpressMailerTest extends \MailPoetTest {
         'subject' => 'Subject',
         'body' => [
           'text' => 'Email Text Body',
-        ]
+        ],
       ]))
       ->willReturn(['response' => true]);
     $wpMailer = new WordPressMailer($mailer);
@@ -67,7 +67,7 @@ class WordpressMailerTest extends \MailPoetTest {
         'body' => [
           'text' => 'Email Html Body',
           'html' => 'Email Html Body',
-        ]
+        ],
       ]))
       ->willReturn(['response' => true]);
     $wpMailer = new WordPressMailer($mailer);
@@ -127,19 +127,6 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->Body = 'body';
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
-  }
-
-  function testItThrowsOnUnknownContentType() {
-    $mailer = $this->createMock(Mailer::class);
-    $mailer
-      ->expects($this->never())
-      ->method('send');
-    $wpMailer = new WordpressMailer($mailer);
-    $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body';
-    $wpMailer->ContentType = 'application/json';
-    $this->expectException(\phpmailerException::class);
-    expect($wpMailer->send());
   }
 
 }
