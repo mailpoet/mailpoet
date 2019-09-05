@@ -3,7 +3,7 @@
 use MailPoet\Config\Env;
 use Tracy\Debugger;
 
-if (!defined('ABSPATH') || empty($mailpoet_plugin)) exit;
+if (empty($mailpoet_plugin)) exit;
 
 require_once($mailpoet_plugin['autoloader']);
 

@@ -3,8 +3,6 @@
 namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Env {
   const NEWSLETTER_CONTENT_WIDTH = 1320;
 

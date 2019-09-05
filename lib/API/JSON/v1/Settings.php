@@ -15,8 +15,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Models\Form;
 
-if (!defined('ABSPATH')) exit;
-
 class Settings extends APIEndpoint {
 
   /** @var SettingsController */

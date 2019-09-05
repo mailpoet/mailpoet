@@ -5,8 +5,6 @@ use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Subscriber {
   /**
    * @param \MailPoet\Models\Subscriber|false|mixed $subscriber

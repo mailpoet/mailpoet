@@ -8,8 +8,6 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Models\CustomField;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class CustomFields extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,

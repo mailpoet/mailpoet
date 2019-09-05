@@ -5,8 +5,6 @@ namespace MailPoet\Router\Endpoints;
 use MailPoet\Config\AccessControl;
 use MailPoet\Subscription as UserSubscription;
 
-if (!defined('ABSPATH')) exit;
-
 class Subscription {
   const ENDPOINT = 'subscription';
   const ACTION_CAPTCHA = 'captcha';

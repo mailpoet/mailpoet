@@ -4,8 +4,6 @@ namespace MailPoet\Tasks\Subscribers;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use function MailPoet\Util\array_column;
 
-if (!defined('ABSPATH')) exit;
-
 class BatchIterator implements \Iterator, \Countable {
   private $task_id;
   private $batch_size;

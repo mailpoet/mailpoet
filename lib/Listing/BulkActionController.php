@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Listing;
 
-if (!defined('ABSPATH')) exit;
-
 class BulkActionController {
   /** @var BulkActionFactory */
   private $factory;

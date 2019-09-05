@@ -5,8 +5,6 @@ namespace MailPoet\API\JSON;
 use MailPoet\Config\AccessControl;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 abstract class Endpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,

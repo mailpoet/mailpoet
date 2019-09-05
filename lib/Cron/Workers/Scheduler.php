@@ -16,8 +16,6 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 
-if (!defined('ABSPATH')) exit;
-
 class Scheduler {
   const TASK_BATCH_SIZE = 5;
 

@@ -7,8 +7,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 
-if (!defined('ABSPATH')) exit;
-
 class UnsubscribeTokens extends SimpleWorker {
   const TASK_TYPE = 'unsubscribe_tokens';
   const BATCH_SIZE = 1000;

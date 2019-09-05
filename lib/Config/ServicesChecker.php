@@ -11,9 +11,6 @@ use MailPoet\WP\Notice as WPNotice;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
-
 class ServicesChecker {
 
   /** @var SettingsController */

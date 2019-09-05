@@ -2,8 +2,6 @@
 namespace MailPoet\Newsletter\Editor;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class MetaInformationManager {
 
   function appendMetaInformation($content, $post, $args) {

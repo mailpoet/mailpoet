@@ -6,8 +6,6 @@ use MailPoet\Analytics\Reporter;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
 
-if (!defined('ABSPATH')) exit;
-
 class Analytics extends APIEndpoint {
 
   /** @var Reporter */

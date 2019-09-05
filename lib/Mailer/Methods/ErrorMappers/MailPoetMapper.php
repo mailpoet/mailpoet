@@ -10,9 +10,6 @@ use MailPoet\Util\Helpers;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
-
 class MailPoetMapper {
   use BlacklistErrorMapperTrait;
   use ConnectionErrorMapperTrait;

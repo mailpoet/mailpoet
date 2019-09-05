@@ -6,8 +6,6 @@ use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 
-if (!defined('ABSPATH')) exit;
-
 class Newsletter {
   static function process(
     $shortcode_details,

@@ -7,8 +7,6 @@ use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class SendGrid {
   public $url = 'https://api.sendgrid.com/api/mail.send.json';
   public $api_key;

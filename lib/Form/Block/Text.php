@@ -2,8 +2,6 @@
 
 namespace MailPoet\Form\Block;
 
-if (!defined('ABSPATH')) exit;
-
 class Text extends Base {
 
   static function render($block) {

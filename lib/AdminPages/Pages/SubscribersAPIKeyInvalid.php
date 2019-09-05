@@ -5,8 +5,6 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Models\Subscriber;
 
-if (!defined('ABSPATH')) exit;
-
 class SubscribersAPIKeyInvalid {
   /** @var PageRenderer */
   private $page_renderer;

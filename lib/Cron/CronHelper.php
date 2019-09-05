@@ -8,8 +8,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class CronHelper {
   const DAEMON_EXECUTION_LIMIT = 20; // seconds
   const DAEMON_EXECUTION_TIMEOUT = 35; // seconds

@@ -7,8 +7,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Installer {
   const PREMIUM_PLUGIN_SLUG = 'mailpoet-premium';
 

@@ -4,8 +4,6 @@ namespace MailPoet\Cron\Workers\KeyCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Services\Bridge;
 
-if (!defined('ABSPATH')) exit;
-
 class SendingServiceKeyCheck extends KeyCheckWorker {
   const TASK_TYPE = 'sending_service_key_check';
 

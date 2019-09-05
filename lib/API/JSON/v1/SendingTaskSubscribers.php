@@ -14,8 +14,6 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 
-if (!defined('ABSPATH')) exit;
-
 class SendingTaskSubscribers extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,

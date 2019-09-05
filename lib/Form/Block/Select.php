@@ -3,9 +3,6 @@ namespace MailPoet\Form\Block;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
-
 class Select extends Base {
 
   static function render($block) {

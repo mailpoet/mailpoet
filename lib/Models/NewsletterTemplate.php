@@ -2,8 +2,6 @@
 namespace MailPoet\Models;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property string $name
  * @property int|null $newsletter_id

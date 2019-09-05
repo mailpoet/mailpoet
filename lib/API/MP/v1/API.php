@@ -14,8 +14,6 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Tasks\Sending;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class API {
 
   /** @var NewSubscriberNotificationMailer */

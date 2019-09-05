@@ -5,8 +5,6 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterPost;
 
-if (!defined('ABSPATH')) exit;
-
 class PostsTest extends \MailPoetTest {
 
   /** @var PostsTask */

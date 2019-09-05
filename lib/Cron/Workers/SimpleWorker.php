@@ -7,8 +7,6 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 abstract class SimpleWorker {
   public $timer;
   private $wp;

@@ -5,8 +5,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Newsletter;
 use MailPoet\Util\Helpers;
 
-if (!defined('ABSPATH')) exit;
-
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 // The "created_at" column must be NULL in some tables to avoid "there can be only one

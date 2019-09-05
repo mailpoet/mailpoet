@@ -3,8 +3,6 @@
 namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Localizer {
   function init() {
     $this->loadGlobalText();

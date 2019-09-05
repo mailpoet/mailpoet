@@ -8,8 +8,6 @@ use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Util\Security;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $id
  * @property string $email

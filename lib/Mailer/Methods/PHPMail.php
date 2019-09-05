@@ -6,8 +6,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 
-if (!defined('ABSPATH')) exit;
-
 require_once ABSPATH . WPINC . '/class-phpmailer.php';
 
 class PHPMail {

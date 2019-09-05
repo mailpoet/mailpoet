@@ -18,8 +18,6 @@ use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Settings {
   /** @var PageRenderer */
   private $page_renderer;

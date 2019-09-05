@@ -3,8 +3,6 @@
 namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class AccessControl {
   const PERMISSION_ACCESS_PLUGIN_ADMIN = 'mailpoet_access_plugin_admin';
   const PERMISSION_MANAGE_SETTINGS = 'mailpoet_manage_settings';

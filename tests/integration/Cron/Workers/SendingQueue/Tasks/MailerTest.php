@@ -14,8 +14,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class MailerTest extends \MailPoetTest {
   /** @var MailerTask */
   public $mailer_task;

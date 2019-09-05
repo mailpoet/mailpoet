@@ -10,8 +10,6 @@ use MailPoet\Router\Endpoints\Track;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Models\NewsletterLink as NewsletterLinkModel;
 
-if (!defined('ABSPATH')) exit;
-
 class Links {
   static function process($rendered_newsletter, $newsletter, $queue) {
     list($rendered_newsletter, $links) =

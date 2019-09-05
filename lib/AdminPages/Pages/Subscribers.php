@@ -12,8 +12,6 @@ use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Subscribers {
   /** @var PageRenderer */
   private $page_renderer;

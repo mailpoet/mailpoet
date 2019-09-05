@@ -4,8 +4,6 @@ namespace MailPoet\Tasks;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 
-if (!defined('ABSPATH')) exit;
-
 class Subscribers {
   private $task;
 

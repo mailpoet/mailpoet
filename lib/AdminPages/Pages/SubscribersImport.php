@@ -8,8 +8,6 @@ use MailPoet\Models\ModelValidator;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Installation;
 
-if (!defined('ABSPATH')) exit;
-
 class SubscribersImport {
   /** @var PageRenderer */
   private $page_renderer;

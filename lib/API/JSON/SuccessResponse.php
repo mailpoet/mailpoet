@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\API\JSON;
 
-if (!defined('ABSPATH')) exit;
-
 class SuccessResponse extends Response {
   public $data;
 

@@ -7,8 +7,6 @@ use MailPoet\Config\AccessControl;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 
-if (!defined('ABSPATH')) exit;
-
 class AutomatedLatestContent extends APIEndpoint {
   /** @var \MailPoet\Newsletter\AutomatedLatestContent  */
   public $ALC;

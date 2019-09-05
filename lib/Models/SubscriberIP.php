@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Models;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property string $ip
  */

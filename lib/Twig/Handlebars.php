@@ -5,8 +5,6 @@ namespace MailPoet\Twig;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
 
-if (!defined('ABSPATH')) exit;
-
 class Handlebars extends AbstractExtension {
   public function getFunctions() {
     return [

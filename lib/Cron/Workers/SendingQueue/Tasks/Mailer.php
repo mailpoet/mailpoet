@@ -4,8 +4,6 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Mailer\Mailer as MailerFactory;
 use MailPoet\Mailer\MailerLog;
 
-if (!defined('ABSPATH')) exit;
-
 class Mailer {
   public $mailer;
 

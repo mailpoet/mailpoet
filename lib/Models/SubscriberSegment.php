@@ -2,8 +2,6 @@
 namespace MailPoet\Models;
 
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $id
  * @property int $subscriber_id

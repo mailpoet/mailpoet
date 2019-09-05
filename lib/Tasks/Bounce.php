@@ -5,8 +5,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Subscriber;
 
-if (!defined('ABSPATH')) exit;
-
 class Bounce {
   static function prepareSubscribers(ScheduledTask $task) {
     // Prepare subscribers on the DB side for performance reasons

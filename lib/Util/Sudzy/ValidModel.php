@@ -1,8 +1,6 @@
 <?php
 namespace Sudzy;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @method static ORMWrapper|bool create($data=null)
  */

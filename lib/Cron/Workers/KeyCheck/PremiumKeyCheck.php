@@ -4,8 +4,6 @@ namespace MailPoet\Cron\Workers\KeyCheck;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
-if (!defined('ABSPATH')) exit;
-
 class PremiumKeyCheck extends KeyCheckWorker {
   const TASK_TYPE = 'premium_key_check';
 

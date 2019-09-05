@@ -4,8 +4,6 @@ namespace MailPoet\Models;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @method static array|string getConfig($key = null, $connection_name = self::DEFAULT_CONNECTION)
  * @method static null resetConfig()

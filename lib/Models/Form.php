@@ -4,8 +4,6 @@ namespace MailPoet\Models;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property string|array $settings
  * @property string|array $body

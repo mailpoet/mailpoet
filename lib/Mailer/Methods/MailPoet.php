@@ -10,8 +10,6 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 
-if (!defined('ABSPATH')) exit;
-
 class MailPoet {
   public $api;
   public $sender;

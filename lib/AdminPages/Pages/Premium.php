@@ -6,8 +6,6 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
 use MailPoet\Models\Subscriber;
 
-if (!defined('ABSPATH')) exit;
-
 class Premium {
   /** @var PageRenderer */
   private $page_renderer;

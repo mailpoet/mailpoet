@@ -9,8 +9,6 @@ use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Settings\Pages;
 
-if (!defined('ABSPATH')) exit;
-
 class FormEditor {
   /** @var PageRenderer */
   private $page_renderer;

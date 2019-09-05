@@ -3,8 +3,6 @@
 namespace MailPoet\Services\Release;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class API {
   private $api_key;
   private $wp;

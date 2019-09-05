@@ -4,8 +4,6 @@ namespace MailPoet\Models;
 use MailPoet\Util\Helpers;
 use function MailPoet\Util\array_column;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $subscriber_id
  * @property int $custom_field_id

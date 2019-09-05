@@ -6,8 +6,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
 
-if (!defined('ABSPATH')) exit;
-
 class InactiveSubscribers extends SimpleWorker {
   const TASK_TYPE = 'inactive_subscribers';
   const BATCH_SIZE = 1000;

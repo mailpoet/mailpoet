@@ -4,8 +4,6 @@ namespace MailPoet\Util;
 
 use MailPoet\Config\Env;
 
-if (!defined('ABSPATH')) exit;
-
 if (!class_exists('ProgressBar', false)) {
 
   /**

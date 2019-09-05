@@ -11,8 +11,6 @@ use MailPoet\Services\Bridge;
 use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\State;
 
-if (!defined('ABSPATH')) exit;
-
 class Help {
   /** @var PageRenderer */
   private $page_renderer;

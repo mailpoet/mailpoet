@@ -6,8 +6,6 @@ use Carbon\Carbon;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Settings\SettingsController;
 
-if (!defined('ABSPATH')) exit;
-
 class Analytics {
 
   const SETTINGS_LAST_SENT_KEY = 'analytics_last_sent';

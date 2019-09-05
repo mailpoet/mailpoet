@@ -6,9 +6,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use Tracy\Debugger;
 
-if (!defined('ABSPATH')) exit;
-
-
 class DaemonHttpRunner {
   public $settings_daemon_data;
   public $timer;

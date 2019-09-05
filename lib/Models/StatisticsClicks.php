@@ -3,8 +3,6 @@ namespace MailPoet\Models;
 
 use DateTimeInterface;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $newsletter_id
  * @property int $subscriber_id

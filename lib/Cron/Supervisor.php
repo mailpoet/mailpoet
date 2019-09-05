@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Cron;
 
-if (!defined('ABSPATH')) exit;
-
 class Supervisor {
   public $daemon;
   public $token;

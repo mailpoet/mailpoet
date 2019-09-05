@@ -7,8 +7,6 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Segment;
 use MailPoet\Util\Installation;
 
-if (!defined('ABSPATH')) exit;
-
 class Forms {
   /** @var PageRenderer */
   private $page_renderer;

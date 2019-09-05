@@ -1,7 +1,5 @@
 <?php
 
-if (!defined('ABSPATH')) exit;
-
 /*
  * Plugin Name: MailPoet 3 (New)
  * Version: 3.35.4

@@ -8,8 +8,6 @@ use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper;
 use WC_Order;
 
-if (!defined('ABSPATH')) exit;
-
 class WooCommercePurchases {
   const USE_CLICKS_SINCE_DAYS_AGO = 14;
 

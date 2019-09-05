@@ -6,8 +6,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Beamer extends SimpleWorker {
   const TASK_TYPE = 'beamer';
   const API_URL = 'https://api.getbeamer.com/v0';

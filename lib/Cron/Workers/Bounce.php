@@ -13,8 +13,6 @@ use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use function MailPoet\Util\array_column;
 
-if (!defined('ABSPATH')) exit;
-
 class Bounce extends SimpleWorker {
   const TASK_TYPE = 'bounce';
   const BATCH_SIZE = 100;

@@ -13,8 +13,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class AutomatedEmails extends SimpleWorker {
   const TASK_TYPE = 'stats_notification_automated_emails';
 

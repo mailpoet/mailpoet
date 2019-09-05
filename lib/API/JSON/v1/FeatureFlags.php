@@ -8,8 +8,6 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Features\FeatureFlagsController;
 use MailPoet\Features\FeaturesController;
 
-if (!defined('ABSPATH')) exit;
-
 class FeatureFlags extends APIEndpoint {
 
   public $permissions = [

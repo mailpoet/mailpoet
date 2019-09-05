@@ -3,8 +3,6 @@ namespace MailPoet\Statistics\Track;
 
 use MailPoet\Models\StatisticsOpens;
 
-if (!defined('ABSPATH')) exit;
-
 class Opens {
   function track($data, $display_image = true) {
     if (!$data) {
