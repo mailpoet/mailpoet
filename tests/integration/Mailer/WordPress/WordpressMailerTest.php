@@ -14,11 +14,7 @@ class WordpressMailerTest extends \MailPoetTest {
   function testItdoesNotSendWhenPreSendCheckFails() {
     $mailer = $this->createMock(Mailer::class);
     $mailer->expects($this->never())->method('send');
-<<<<<<< HEAD
     $wpMailer = new WordPressMailer($mailer);
-=======
-    $wpMailer = new WordpressMailer($mailer);
->>>>>>> 6da83b1b7... Send text wordpress emails
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
   }
@@ -33,14 +29,9 @@ class WordpressMailerTest extends \MailPoetTest {
         'body' => [
           'text' => 'Email Text Body',
         ]
-<<<<<<< HEAD
       ]))
       ->willReturn(['response' => true]);
     $wpMailer = new WordPressMailer($mailer);
-=======
-      ]));
-    $wpMailer = new WordpressMailer($mailer);
->>>>>>> 6da83b1b7... Send text wordpress emails
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Text Body';
@@ -56,14 +47,9 @@ class WordpressMailerTest extends \MailPoetTest {
       ->with($this->anything(), [
         'full_name' => 'Full Name',
         'address' => 'email@example.com',
-<<<<<<< HEAD
       ])
       ->willReturn(['response' => true]);
     $wpMailer = new WordPressMailer($mailer);
-=======
-      ]);
-    $wpMailer = new WordpressMailer($mailer);
->>>>>>> 6da83b1b7... Send text wordpress emails
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Body';
@@ -71,10 +57,6 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 257b2fb26... Send WordPress HTML emails
   function testItFormatsHtmlNewsletterForMailer() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
@@ -86,21 +68,15 @@ class WordpressMailerTest extends \MailPoetTest {
           'text' => 'Email Html Body',
           'html' => 'Email Html Body',
         ]
-<<<<<<< HEAD
       ]))
       ->willReturn(['response' => true]);
     $wpMailer = new WordPressMailer($mailer);
-=======
-      ]));
-    $wpMailer = new WordpressMailer($mailer);
->>>>>>> 257b2fb26... Send WordPress HTML emails
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Html Body';
     $wpMailer->isHTML(true);
     $wpMailer->send();
   }
-<<<<<<< HEAD
 
   function testItReturnsOnSuccess() {
     $mailer = $this->createMock(Mailer::class);
@@ -153,8 +129,4 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-=======
->>>>>>> 6da83b1b7... Send text wordpress emails
-=======
->>>>>>> 257b2fb26... Send WordPress HTML emails
 }

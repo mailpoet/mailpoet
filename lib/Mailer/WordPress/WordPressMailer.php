@@ -30,7 +30,12 @@ class WordPressMailer extends \PHPMailer {
     }
 
     $result = $this->mailer->send($this->getEmail(), $this->formatAddress($this->getToAddresses()));
-    // TODO return boolean depending on the result and throw
+
+    if ($result['response']) {
+      return true;
+    } else {
+      throw new \phpmailerException($result['error']);
+    }
   }
 
   private function getEmail() {
