@@ -111,7 +111,7 @@ jobs:
     working_directory: /home/circleci/mailpoet
     docker:
     - image: mailpoet/wordpress:5.6_20190709.3
-    - image: circleci/mysql:5.7-ram
+    - image: circleci/mysql:5.5-ram
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
