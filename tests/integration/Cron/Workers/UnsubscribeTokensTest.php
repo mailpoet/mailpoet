@@ -63,18 +63,6 @@ class UnsubscribeTokensTest extends \MailPoetTest {
     expect(strlen($this->newsletter_without_token->unsubscribe_token))->equals(15);
   }
 
-  function testItSchedulesNextRunWhenFinished() {
-    $worker = new UnsubscribeTokens();
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
-
-    $task = ScheduledTask::where('type', UnsubscribeTokens::TASK_TYPE)
-      ->where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->findOne();
-
-    expect($task)->isInstanceOf(ScheduledTask::class);
-    expect($task->scheduled_at)->greaterThan(new Carbon());
-  }
-
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
