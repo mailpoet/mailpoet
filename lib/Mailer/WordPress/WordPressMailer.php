@@ -29,7 +29,11 @@ class WordPressMailer extends \PHPMailer {
       return false;
     }
 
-    $result = $this->mailer->send($this->getEmail(), $this->formatAddress($this->getToAddresses()));
+    try {
+      $result = $this->mailer->send($this->getEmail(), $this->formatAddress($this->getToAddresses()));
+    } catch (\Exception $e) {
+      throw new \phpmailerException($e->getMessage(), $e->getCode(), $e);
+    }
 
     if ($result['response']) {
       return true;
