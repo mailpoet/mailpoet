@@ -50,6 +50,8 @@ class WordPressMailer extends \PHPMailer {
       $text = @Html2Text::convert(strtolower($this->CharSet) === 'utf-8' ? $this->Body : utf8_encode($this->Body));
       $email['body']['text'] = $text;
       $email['body']['html'] = $this->Body;
+    } else {
+      throw new \phpmailerException('Unsupported email content type has been used. Please use only text or HTML emails.');
     }
     return $email;
   }
@@ -66,3 +68,5 @@ class WordPressMailer extends \PHPMailer {
   }
 
 }
+
+// TODO test different mailers with html && text emails
