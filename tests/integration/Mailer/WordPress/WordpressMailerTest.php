@@ -72,6 +72,9 @@ class WordpressMailerTest extends \MailPoetTest {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 257b2fb26... Send WordPress HTML emails
   function testItFormatsHtmlNewsletterForMailer() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
@@ -83,15 +86,21 @@ class WordpressMailerTest extends \MailPoetTest {
           'text' => 'Email Html Body',
           'html' => 'Email Html Body',
         ]
+<<<<<<< HEAD
       ]))
       ->willReturn(['response' => true]);
     $wpMailer = new WordPressMailer($mailer);
+=======
+      ]));
+    $wpMailer = new WordpressMailer($mailer);
+>>>>>>> 257b2fb26... Send WordPress HTML emails
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Html Body';
     $wpMailer->isHTML(true);
     $wpMailer->send();
   }
+<<<<<<< HEAD
 
   function testItReturnsOnSuccess() {
     $mailer = $this->createMock(Mailer::class);
@@ -146,4 +155,6 @@ class WordpressMailerTest extends \MailPoetTest {
 
 =======
 >>>>>>> 6da83b1b7... Send text wordpress emails
+=======
+>>>>>>> 257b2fb26... Send WordPress HTML emails
 }

@@ -3,6 +3,9 @@
 namespace MailPoet\Mailer\WordPress;
 
 // Load PHPMailer class, so we can subclass it.
+use Html2Text\Html2Text;
+use MailPoet\Mailer\Mailer;
+
 if (!class_exists('PHPMailer')) {
   require_once ABSPATH . WPINC . '/class-phpmailer.php';
 }
@@ -35,8 +38,13 @@ class WordPressMailer extends \PHPMailer {
       'subject' => $this->Subject,
       'body' => [],
     ];
-    if ($this->ContentType === 'text/plain' ) {
+
+    if ($this->ContentType === 'text/plain') {
       $email['body']['text'] = $this->Body;
+    } elseif ($this->ContentType === 'text/html') {
+      $text = @Html2Text::convert(strtolower($this->CharSet) === 'utf-8' ? $this->Body : utf8_encode($this->Body));
+      $email['body']['text'] = $text;
+      $email['body']['html'] = $this->Body;
     }
     return $email;
   }
