@@ -5,8 +5,6 @@ use MailPoet\Logging\Logger;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterPost;
 
-if (!defined('ABSPATH')) exit;
-
 class Posts {
   function extractAndSave($rendered_newsletter, $newsletter) {
     if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) {

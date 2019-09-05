@@ -5,8 +5,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 
-if (!defined('ABSPATH')) exit;
-
 class AuthorizedSendingEmailsCheck extends SimpleWorker {
   const TASK_TYPE = 'authorized_email_addresses_check';
   const AUTOMATIC_SCHEDULING = false;

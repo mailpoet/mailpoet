@@ -3,8 +3,6 @@ namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\WorkersFactory;
 
-if (!defined('ABSPATH')) exit;
-
 class Daemon {
   public $timer;
 

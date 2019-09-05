@@ -5,8 +5,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property array $subscribers_count
  * @property string $name

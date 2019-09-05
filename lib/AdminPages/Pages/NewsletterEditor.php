@@ -11,8 +11,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class NewsletterEditor {
   /** @var PageRenderer */
   private $page_renderer;

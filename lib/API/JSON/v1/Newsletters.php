@@ -27,8 +27,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
 
-if (!defined('ABSPATH')) exit;
-
 class Newsletters extends APIEndpoint {
 
   /** @var Listing\BulkActionController */

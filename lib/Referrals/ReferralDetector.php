@@ -5,8 +5,6 @@ namespace MailPoet\Referrals;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class ReferralDetector {
   const REFERRAL_CONSTANT_NAME = 'MAILPOET_REFERRAL_ID';
   const REFERRAL_SETTING_NAME = 'referral_id';

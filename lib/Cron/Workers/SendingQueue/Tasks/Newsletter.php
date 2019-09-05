@@ -16,8 +16,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Newsletter {
   public $tracking_enabled;
   public $tracking_image_inserted;

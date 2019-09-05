@@ -6,8 +6,6 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class WooCommerceListImport {
   /** @var PageRenderer */
   private $page_renderer;

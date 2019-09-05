@@ -5,8 +5,6 @@ use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Subscribers\ImportExport\Export\Export;
 
-if (!defined('ABSPATH')) exit;
-
 class ExportFilesCleanup extends SimpleWorker {
   const TASK_TYPE = 'export_files_cleanup';
   const DELETE_FILES_AFTER_X_DAYS = 1;

@@ -5,8 +5,6 @@ namespace MailPoet\Config;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 
-if (!defined('ABSPATH')) exit;
-
 class DatabaseInitializer {
   private $di_container;
 

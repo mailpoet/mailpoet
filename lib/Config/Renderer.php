@@ -10,8 +10,6 @@ use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Renderer {
   protected $cache_path;
   protected $caching_enabled;

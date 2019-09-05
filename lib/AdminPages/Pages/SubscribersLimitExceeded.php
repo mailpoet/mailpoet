@@ -5,8 +5,6 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
-if (!defined('ABSPATH')) exit;
-
 class SubscribersLimitExceeded {
   /** @var PageRenderer */
   private $page_renderer;

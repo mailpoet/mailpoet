@@ -18,8 +18,6 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Newsletters {
   /** @var PageRenderer */
   private $page_renderer;

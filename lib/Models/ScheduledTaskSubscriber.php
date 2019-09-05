@@ -3,8 +3,6 @@ namespace MailPoet\Models;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $task_id
  * @property int $subscriber_id

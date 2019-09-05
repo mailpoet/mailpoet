@@ -26,8 +26,6 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
 

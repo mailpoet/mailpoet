@@ -10,8 +10,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class WooCommerce {
   /** @var SettingsController */
   private $settings;

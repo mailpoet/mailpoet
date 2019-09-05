@@ -5,8 +5,6 @@ namespace MailPoet\Twig;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFilter;
 
-if (!defined('ABSPATH')) exit;
-
 class Filters extends AbstractExtension {
 
   function getName() {

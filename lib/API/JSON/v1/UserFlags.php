@@ -8,8 +8,6 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class UserFlags extends APIEndpoint {
 
   /** @var UserFlagsController */

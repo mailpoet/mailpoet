@@ -5,8 +5,6 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\MP2Migrator;
 
-if (!defined('ABSPATH')) exit;
-
 class MP2Migration {
   /** @var PageRenderer */
   private $page_renderer;

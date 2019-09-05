@@ -26,8 +26,6 @@ use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Subscribers extends APIEndpoint {
   const SUBSCRIPTION_LIMIT_COOLDOWN = 60;
 

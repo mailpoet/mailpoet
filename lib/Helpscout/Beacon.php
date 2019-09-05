@@ -10,9 +10,6 @@ use MailPoet\Settings\SettingsController;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
-
 class Beacon {
   static function getData() {
     global $wpdb;

@@ -11,8 +11,6 @@ use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';

@@ -7,8 +7,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Activator;
 
-if (!defined('ABSPATH')) exit;
-
 class Setup extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,

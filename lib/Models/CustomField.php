@@ -4,8 +4,6 @@ namespace MailPoet\Models;
 use MailPoet\Form\Block\Date;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property string $type
  * @property string|array|null $params

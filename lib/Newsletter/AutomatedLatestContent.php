@@ -5,8 +5,6 @@ use MailPoet\Logging\Logger;
 use MailPoet\Newsletter\Editor\Transformer;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class AutomatedLatestContent {
   const DEFAULT_POSTS_PER_PAGE = 10;
 

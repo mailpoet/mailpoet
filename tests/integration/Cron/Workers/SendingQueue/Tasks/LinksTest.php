@@ -5,8 +5,6 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 
-if (!defined('ABSPATH')) exit;
-
 class LinksTest extends \MailPoetTest {
   function testItCanSaveLinks() {
     $links = [

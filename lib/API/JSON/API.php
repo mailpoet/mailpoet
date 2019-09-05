@@ -13,8 +13,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
-if (!defined('ABSPATH')) exit;
-
 class API {
   private $_request_api_version;
   private $_request_endpoint;

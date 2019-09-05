@@ -3,8 +3,6 @@ namespace MailPoet\Models;
 
 use WC_Order;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $newsletter_id
  * @property int $subscriber_id

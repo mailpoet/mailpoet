@@ -7,8 +7,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
 
-if (!defined('ABSPATH')) exit;
-
 class I18n extends AbstractExtension {
 
   private $_text_domain;

@@ -2,8 +2,6 @@
 namespace MailPoet\Newsletter\Editor;
 
 
-if (!defined('ABSPATH')) exit;
-
 class PostListTransformer {
 
   private $args;

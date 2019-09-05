@@ -5,8 +5,6 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 
-if (!defined('ABSPATH')) exit;
-
 class SubscribersExport {
   /** @var PageRenderer */
   private $page_renderer;

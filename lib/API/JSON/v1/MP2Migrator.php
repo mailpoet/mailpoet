@@ -5,8 +5,6 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
 
-if (!defined('ABSPATH')) exit;
-
 class MP2Migrator extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,

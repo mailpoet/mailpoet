@@ -6,8 +6,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
 
-if (!defined('ABSPATH')) exit;
-
 class Polls extends AbstractExtension {
 
   /** @var SettingsController */

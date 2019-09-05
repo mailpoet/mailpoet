@@ -9,8 +9,6 @@ use MailPoet\Models\SendingQueue;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * A facade class containing all necessary models to work with a sending queue
  * @property string|null $status

@@ -8,8 +8,6 @@ use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class WooCommerceOrders extends SimpleWorker {
   const TASK_TYPE = 'woocommerce_orders';
   const BATCH_SIZE = 20;

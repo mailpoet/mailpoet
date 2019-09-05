@@ -7,8 +7,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $id
  * @property string $processed_at

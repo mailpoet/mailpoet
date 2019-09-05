@@ -8,8 +8,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Clicks {
 
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';

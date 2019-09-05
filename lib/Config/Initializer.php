@@ -12,8 +12,6 @@ use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WP\Notice as WPNotice;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {

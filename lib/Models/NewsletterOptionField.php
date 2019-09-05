@@ -2,8 +2,6 @@
 namespace MailPoet\Models;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class NewsletterOptionField extends Model {
   public static $_table = MP_NEWSLETTER_OPTION_FIELDS_TABLE;
 

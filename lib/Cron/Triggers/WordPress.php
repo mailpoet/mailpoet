@@ -22,8 +22,6 @@ use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Cron\Workers\Beamer as BeamerWorker;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 
-if (!defined('ABSPATH')) exit;
-
 class WordPress {
   const SCHEDULED_IN_THE_PAST = 'past';
   const SCHEDULED_IN_THE_FUTURE = 'future';

@@ -11,8 +11,6 @@ use MailPoet\Services\Bridge;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Services extends APIEndpoint {
   public $bridge;
   public $date_time;

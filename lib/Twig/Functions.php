@@ -12,8 +12,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
 
-if (!defined('ABSPATH')) exit;
-
 class Functions extends AbstractExtension {
 
   /** @var SettingsController */

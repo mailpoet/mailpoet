@@ -6,9 +6,6 @@ use MailPoet\WP\Notice as WPNotice;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
-
 class RequirementsChecker {
   const TEST_FOLDER_PERMISSIONS = 'TempAndCacheFolderCreation';
   const TEST_PDO_EXTENSION = 'PDOExtension';

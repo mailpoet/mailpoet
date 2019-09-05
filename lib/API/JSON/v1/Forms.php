@@ -12,8 +12,6 @@ use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Forms extends APIEndpoint {
 
   /** @var Listing\BulkActionController */

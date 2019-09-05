@@ -11,8 +11,6 @@ use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Segments extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,

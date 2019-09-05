@@ -7,8 +7,6 @@ use MailPoet\WP\Emoji;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $count_processed
  * @property int $count_to_process

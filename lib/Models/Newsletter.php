@@ -12,8 +12,6 @@ use MailPoet\WP\Emoji;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 /**
  * @property int $id
  * @property string $type

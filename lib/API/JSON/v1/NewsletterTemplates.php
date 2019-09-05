@@ -8,8 +8,6 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class NewsletterTemplates extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,

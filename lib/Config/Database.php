@@ -5,8 +5,6 @@ namespace MailPoet\Config;
 use ORM;
 use PDO;
 
-if (!defined('ABSPATH')) exit;
-
 class Database {
   function init(PDO $pdo) {
     ORM::setDb($pdo);

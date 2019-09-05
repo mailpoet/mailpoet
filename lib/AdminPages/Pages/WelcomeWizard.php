@@ -9,8 +9,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class WelcomeWizard {
   /** @var PageRenderer */
   private $page_renderer;

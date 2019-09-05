@@ -2,8 +2,6 @@
 
 namespace MailPoet\Config;
 
-if (!defined('ABSPATH')) exit;
-
 class RendererFactory {
 
   /** @var Renderer|null */

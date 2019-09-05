@@ -5,8 +5,6 @@ use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
 
-if (!defined('ABSPATH')) exit;
-
 abstract class KeyCheckWorker extends SimpleWorker {
   public $bridge;
 

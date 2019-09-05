@@ -1,7 +1,5 @@
 <?php
 
-if (!defined('ABSPATH')) exit;
-
 use Symfony\Polyfill\Mbstring\Mbstring as MbstringPolyfill;
 
 if (!function_exists('mb_detect_encoding')) {

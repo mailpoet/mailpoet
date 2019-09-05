@@ -12,8 +12,6 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Widget extends \WP_Widget {
   private $renderer;
   private $wp;

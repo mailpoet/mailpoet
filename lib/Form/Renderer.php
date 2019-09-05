@@ -6,9 +6,6 @@ use MailPoet\Subscription\Captcha;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
-
 class Renderer {
   // public: rendering method
   static function render($form = []) {

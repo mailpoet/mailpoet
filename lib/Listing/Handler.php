@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Listing;
 
-if (!defined('ABSPATH')) exit;
-
 class Handler {
   const DEFAULT_LIMIT_PER_PAGE = 20;
 

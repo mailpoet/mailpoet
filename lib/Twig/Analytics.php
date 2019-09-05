@@ -10,8 +10,6 @@ use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Analytics extends AbstractExtension {
   public function getFunctions() {
     $settings = new SettingsController();

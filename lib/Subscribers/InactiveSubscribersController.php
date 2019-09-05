@@ -11,8 +11,6 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 
-if (!defined('ABSPATH')) exit;
-
 class InactiveSubscribersController {
 
   /**

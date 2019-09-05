@@ -3,8 +3,6 @@ namespace MailPoet\Cron;
 
 use MailPoet\Settings\SettingsController;
 
-if (!defined('ABSPATH')) exit;
-
 class CronTrigger {
   /** @var SettingsController */
   private $settings;

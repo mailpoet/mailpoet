@@ -10,8 +10,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Readme;
 
-if (!defined('ABSPATH')) exit;
-
 class Update {
   /** @var PageRenderer */
   private $page_renderer;

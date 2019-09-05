@@ -7,9 +7,6 @@ use MailPoet\Settings\SettingsController;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
-
 class Updater {
   private $plugin;
   private $slug;

@@ -5,8 +5,6 @@ namespace MailPoet\Models;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class ModelValidator extends \Sudzy\Engine {
   public $validators;
 

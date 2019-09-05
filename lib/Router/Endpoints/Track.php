@@ -13,8 +13,6 @@ use MailPoet\Statistics\Track\Opens;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 
-if (!defined('ABSPATH')) exit;
-
 class Track {
   const ENDPOINT = 'track';
   const ACTION_CLICK = 'click';

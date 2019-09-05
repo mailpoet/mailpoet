@@ -9,8 +9,6 @@ use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
-if (!defined('ABSPATH')) exit;
-
 class Renderer {
   public $blocks_renderer;
   public $columns_renderer;

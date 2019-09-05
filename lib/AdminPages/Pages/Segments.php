@@ -5,8 +5,6 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Listing\PageLimit;
 
-if (!defined('ABSPATH')) exit;
-
 class Segments {
   /** @var PageRenderer */
   private $page_renderer;

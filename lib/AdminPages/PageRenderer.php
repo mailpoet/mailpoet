@@ -10,8 +10,6 @@ use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\WP\Notice as WPNotice;
 use Tracy\Debugger;
 
-if (!defined('ABSPATH')) exit;
-
 class PageRenderer {
   /** @var Renderer */
   private $renderer;
