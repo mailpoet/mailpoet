@@ -122,7 +122,7 @@ jobs:
         command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
     - run:
         name: "Set up test environment"
-        command: source ./.circleci/setup.bash && setup php5
+        command: source ./.circleci/setup.bash && setup php5 4.7
     - run:
         name: "PHP Integration tests"
         command: |
