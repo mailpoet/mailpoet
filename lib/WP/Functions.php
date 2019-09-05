@@ -554,17 +554,41 @@ class Functions {
       return $wpdb->parse_db_host($host);
     } else {
       // Backward compatibility for WP 4.7 and 4.8
-      $port = 3306;
+      $port = null;
       $socket = null;
-      // Peel off the port parameter
-      if (preg_match('/(?=:\d+$)/', $host)) {
-        list($host, $port) = explode(':', $host);
+      $is_ipv6 = false;
+
+      // First peel off the socket parameter from the right, if it exists.
+      $socket_pos = strpos( $host, ':/' );
+      if ($socket_pos !== false) {
+        $socket = substr($host, $socket_pos + 1);
+        $host = substr($host, 0, $socket_pos);
       }
-      // Peel off the socket parameter
-      if (preg_match('/:\//', $host)) {
-        list($host, $socket) = explode(':', $host);
+
+      // We need to check for an IPv6 address first.
+      // An IPv6 address will always contain at least two colons.
+      if (substr_count( $host, ':' ) > 1) {
+        $pattern = '#^(?:\[)?(?P<host>[0-9a-fA-F:]+)(?:\]:(?P<port>[\d]+))?#';
+        $is_ipv6 = true;
+      } else {
+        // We seem to be dealing with an IPv4 address.
+        $pattern = '#^(?P<host>[^:/]*)(?::(?P<port>[\d]+))?#';
       }
-      return [$host, $port, $socket, false];
+
+      $matches = [];
+      $result = preg_match($pattern, $host, $matches);
+      if (1 !== $result) {
+        // Couldn't parse the address, bail.
+        return false;
+      }
+
+      $host = '';
+      foreach (['host', 'port'] as $component) {
+        if (!empty($matches[$component])) {
+          $$component = $matches[$component];
+        }
+      }
+      return [$host, $port, $socket, $is_ipv6];
     }
   }
 
