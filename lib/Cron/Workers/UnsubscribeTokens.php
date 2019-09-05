@@ -1,17 +1,20 @@
 <?php
 namespace MailPoet\Cron\Workers;
 
+use Carbon\Carbon;
 use MailPoet\Util\Security;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class UnsubscribeTokens extends SimpleWorker {
   const TASK_TYPE = 'unsubscribe_tokens';
   const BATCH_SIZE = 1000;
+  const AUTOMATIC_SCHEDULING = false;
 
   function processTaskStrategy(ScheduledTask $task) {
     $subscribers_count = $this->addTokens(Subscriber::class);
@@ -38,4 +41,10 @@ class UnsubscribeTokens extends SimpleWorker {
     }
     return count($instances);
   }
+
+  static function getNextRunDate() {
+    $wp = new WPFunctions;
+    return Carbon::createFromTimestamp($wp->currentTime('timestamp'));
+  }
+
 }
