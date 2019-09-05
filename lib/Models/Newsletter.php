@@ -1109,7 +1109,8 @@ class Newsletter extends Model {
       ->where('tasks.status', SendingQueue::STATUS_COMPLETED)
       ->whereNull('newsletters.deleted_at')
       ->select('tasks.processed_at')
-      ->orderByDesc('tasks.processed_at');
+      ->orderByDesc('tasks.processed_at')
+      ->orderByAsc('tasks.id');
 
     if (!empty($segment_ids)) {
       $orm->join(
