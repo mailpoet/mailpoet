@@ -76,15 +76,12 @@ class Registration {
       'subscribe.on_register.segments',
       []
     );
-
-    if (!empty($segment_ids)) {
-      $this->subscriber_actions->subscribe(
-        [
-          'email' => $email,
-          'first_name' => $name,
-        ],
-        $segment_ids
-      );
-    }
+    $this->subscriber_actions->subscribe(
+      [
+        'email' => $email,
+        'first_name' => $name,
+      ],
+      $segment_ids
+    );
   }
 }
