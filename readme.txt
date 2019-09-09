@@ -65,7 +65,6 @@ With our WooCommerce emails, you can :
 * Welcome your new customers when they make their first purchase
 * Upsell by sending emails to customers who purchased a specific product or a specific product category
 * Convert more customers by reaching those who abandoned their cart
-* Reward and engage your customers who have spent a certain amount on your shop (soon)
 
 = Premium details =
 
@@ -77,7 +76,7 @@ The Premium version adds the following features:
 * All WooCommerce emails features
 * Removes the small MailPoet logo in the footer of your emails
 * Same day support (Monday to Friday)
-* Send to over 2,000 subscribers with your own sending method (host, SendGrid, Amazon SES)
+* Send to over 1,000 subscribers with your own sending method (host, SendGrid, Amazon SES)
 
 See the [short video summary on the Premium](https://kb.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
 
@@ -129,12 +128,25 @@ Have a question for us? Reach us at security@ our domain.
 
 == Frequently Asked Questions ==
 
+Question: Does MailPoet have this feature?
+Answer: Want to know if MailPoet has a specific feature without having to install the plugin? [Try the live demo](https://demo.mailpoet.com).
+
+Question: Does MailPoet store the data of the user's subscribers?
+Answer: We do not store or keep any data from your subscribers. However, if you're sending with us, we do process all the emails to be sent. It means MailPoet only logs email addresses to ensure that our service runs effectively. We do not track anything else.
+
+Question: Is MailPoet GDPR compliant?
+Answer: Yes, we are GDPR compliant. We do not have a Data Processing Agreement though. Our privacy notice can act as an agreement and GDPR takes this into consideration. By using our service, you acknowledge our Privacy Notice.
+
+We suggest that you also add a link to your our Privacy Notice in your own Privacy Notice page. What's important is to make sure that your subscribers are aware that MailPoet delivers your email, if you send with MailPoet that is.
+
+You can also read our [Guide to Conform to GDPR](https://kb.mailpoet.com/article/246-guide-to-conform-to-gdpr).
+
 Question: Is it MailPoet or Mail poet?
 Answer: It’s MailPoet, not mail poet. We’ll answer to either though!
 
 = Need help? =
 
-Stop by our [support site](https://www.mailpoet.com/support).
+Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [support site](https://www.mailpoet.com/support).
 
 == Screenshots ==
 
