@@ -22,6 +22,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
@@ -130,7 +131,8 @@ class NewslettersTest extends \MailPoetTest {
       new SettingsController(),
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class)
+      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
+      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class)
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -172,7 +174,8 @@ class NewslettersTest extends \MailPoetTest {
       new SettingsController(),
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class)
+      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
+      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class)
     );
 
     $response = $this->endpoint->save($valid_data);
@@ -542,7 +545,8 @@ class NewslettersTest extends \MailPoetTest {
       new SettingsController(),
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class)
+      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
+      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class)
     );
 
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);

@@ -20,6 +20,7 @@ if (!defined('ABSPATH')) exit;
  * @property string|object|null $meta
  * @property string|array $subscribers
  * @property string|null $deleted_at
+ * @property string $scheduled_at
  */
 
 class SendingQueue extends Model {

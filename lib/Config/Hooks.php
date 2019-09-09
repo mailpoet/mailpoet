@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Comment;
@@ -41,6 +42,9 @@ class Hooks {
   /** @var WooCommercePurchases */
   private $woocommerce_purchases;
 
+  /** @var PostNotificationScheduler */
+  private $post_notification_scheduler;
+
   function __construct(
     Form $subscription_form,
     Comment $subscription_comment,
@@ -50,7 +54,8 @@ class Hooks {
     WPFunctions $wp,
     WooCommerceSubscription $woocommerce_subscription,
     WooCommerceSegment $woocommerce_segment,
-    WooCommercePurchases $woocommerce_purchases
+    WooCommercePurchases $woocommerce_purchases,
+    PostNotificationScheduler $post_notification_scheduler
   ) {
     $this->subscription_form = $subscription_form;
     $this->subscription_comment = $subscription_comment;
@@ -61,6 +66,7 @@ class Hooks {
     $this->woocommerce_subscription = $woocommerce_subscription;
     $this->woocommerce_segment = $woocommerce_segment;
     $this->woocommerce_purchases = $woocommerce_purchases;
+    $this->post_notification_scheduler = $post_notification_scheduler;
   }
 
   function init() {
@@ -299,7 +305,7 @@ class Hooks {
   function setupPostNotifications() {
     $this->wp->addAction(
       'transition_post_status',
-      '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook',
+      [$this->post_notification_scheduler, 'transitionHook'],
       10, 3
     );
   }
