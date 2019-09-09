@@ -20,6 +20,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -59,6 +60,9 @@ class Newsletters extends APIEndpoint {
   /** @var NewslettersResponseBuilder */
   private $newsletters_response_builder;
 
+  /** @var PostNotificationScheduler */
+  private $post_notification_scheduler;
+
   function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
@@ -67,7 +71,8 @@ class Newsletters extends APIEndpoint {
     SettingsController $settings,
     AuthorizedEmailsController $authorized_emails_controller,
     NewslettersRepository $newsletters_repository,
-    NewslettersResponseBuilder $newsletters_response_builder
+    NewslettersResponseBuilder $newsletters_response_builder,
+    PostNotificationScheduler $post_notification_scheduler
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
@@ -77,6 +82,7 @@ class Newsletters extends APIEndpoint {
     $this->authorized_emails_controller = $authorized_emails_controller;
     $this->newsletters_repository = $newsletters_repository;
     $this->newsletters_response_builder = $newsletters_response_builder;
+    $this->post_notification_scheduler = $post_notification_scheduler;
   }
 
   function get($data = []) {
@@ -208,7 +214,7 @@ class Newsletters extends APIEndpoint {
       // if this is a post notification, process newsletter options and update its schedule
       if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         // generate the new schedule from options and get the new "next run" date
-        $newsletter->schedule = Scheduler::processPostNotificationSchedule($newsletter);
+        $newsletter->schedule = $this->post_notification_scheduler->processPostNotificationSchedule($newsletter);
         $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
         // find previously scheduled jobs and reschedule them using the new "next run" date
         SendingQueue::findTaskByNewsletterId($newsletter->id)
@@ -283,7 +289,7 @@ class Newsletters extends APIEndpoint {
           ->set('scheduled_at', $next_run_date)
           ->save();
       }
-      Scheduler::createPostNotificationSendingTask($newsletter);
+      $this->post_notification_scheduler->createPostNotificationSendingTask($newsletter);
     }
 
     $newsletter = Newsletter::findOne($newsletter->id);
@@ -601,7 +607,7 @@ class Newsletters extends APIEndpoint {
         $data['type'] === Newsletter::TYPE_NOTIFICATION
       ) {
         $newsletter = Newsletter::filter('filterWithOptions', $data['type'])->findOne($newsletter->id);
-        Scheduler::processPostNotificationSchedule($newsletter);
+        $this->post_notification_scheduler->processPostNotificationSchedule($newsletter);
       }
 
       $newsletter = Newsletter::findOne($newsletter->id);
