@@ -54,34 +54,6 @@
 </table>
 <table id="mailpoet_signup_options" class="form-table">
   <tbody>
-    <!-- sign-up confirmation: from name & email -->
-    <tr id="settings_signup_confirmation_sender_container"></tr>
-    <!-- sign-up confirmation: reply_to name & email -->
-    <tr>
-      <th scope="row">
-        <label for="settings[signup_confirmation_reply_name]">
-          <%= __('Reply-to') %>
-        </label>
-      </th>
-      <td>
-        <p>
-          <input
-            type="text"
-            id="settings[signup_confirmation_reply_name]"
-            name="signup_confirmation[reply_to][name]"
-            value="<%= settings.signup_confirmation.reply_to.name %>"
-            placeholder="<%= __('Your name') %>"
-            />
-          <input type="email"
-            id="settings[signup_confirmation_reply_email]"
-            name="signup_confirmation[reply_to][address]"
-            value="<%= settings.signup_confirmation.reply_to.address %>"
-            placeholder="confirmation@mydomain.com"
-            size="28"
-            />
-        </p>
-      </td>
-    </tr>
     <!-- confirmation email: title -->
     <tr>
       <th scope="row">
