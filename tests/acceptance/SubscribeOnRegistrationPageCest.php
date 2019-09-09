@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Segment;
 
 class SubscribeOnRegistrationPageCest {
@@ -41,6 +42,42 @@ class SubscribeOnRegistrationPageCest {
     $I->waitForText('registerpagesignup@fake.fake');
     $I->clickItemRowActionByItemName($regpageuseremail, 'Edit');
     $I->waitForText($regseg);
+  }
+
+  function sendConfirmationEmailOnRegistration(\AcceptanceTester $I) {
+    $I->wantTo('send confirmation email on user registration when no additional lists');
+    $user_email = 'registerpagesignupconfirmation@fake.fake';
+    $I->login();
+    //Go to settings
+    $I->amOnMailPoetPage('Settings');
+    $I->checkOption('#settings[subscribe_on_register]');
+    //save settings
+    $I->click('[data-automation-id="settings-submit-button"]');
+    $I->logOut();
+    $I->amOnPage('/wp-login.php?action=register');
+    $I->waitForElement(['css' => '.registration-form-mailpoet']);
+    if (!getenv('MULTISITE')) {
+      $I->fillField(['name' => 'user_login'], 'registerpagesignup');
+      $I->fillField(['name' => 'user_email'], $user_email);
+      $I->checkOption('#mailpoet_subscribe_on_register');
+      $I->click('#wp-submit');
+      $I->waitForText('Registration complete. Please check your email.');
+    } else {
+      $I->fillField(['name' => 'user_name'], 'muregisterpagesignupconfirmation');
+      $I->fillField(['name' => 'user_email'], $user_email);
+      $I->scrollTo(['css' => '#mailpoet_subscribe_on_register']);
+      $I->checkOption('#mailpoet_subscribe_on_register');
+      $I->click('Next');
+      $I->waitForText('muregisterpagesignupconfirmation is your new username');
+    }
+    $I->amOnMailboxAppPage();
+    $I->waitForElement(Locator::contains('span.subject', 'Confirm your subscription'));
+    $I->click(Locator::contains('span.subject', 'Confirm your subscription'));
+    $I->switchToIframe('preview-html');
+    $I->click('I confirm my subscription!');
+    $I->switchToNextTab();
+    $I->see('You have subscribed');
+    $I->seeNoJSErrors();
   }
 }
 
