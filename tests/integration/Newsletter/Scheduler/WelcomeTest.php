@@ -256,7 +256,7 @@ class WelcomeTest extends \MailPoetTest {
       $newsletter->id,
       [
         'event' => 'user',
-        'role' => Scheduler::WORDPRESS_ALL_ROLES,
+        'role' => WelcomeScheduler::WORDPRESS_ALL_ROLES,
         'afterTimeType' => 'days',
         'afterTimeNumber' => 1,
       ]

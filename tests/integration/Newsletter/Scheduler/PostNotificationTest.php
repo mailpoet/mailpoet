@@ -109,7 +109,7 @@ class PostNotificationTest extends \MailPoetTest {
     // daily notification is scheduled at 14:00
     $newsletter = (object)[
       'id' => 1,
-      'intervalType' => Scheduler::INTERVAL_DAILY,
+      'intervalType' => PostNotificationScheduler::INTERVAL_DAILY,
       'monthDay' => null,
       'nthWeekDay' => null,
       'weekDay' => null,
@@ -133,7 +133,7 @@ class PostNotificationTest extends \MailPoetTest {
     // weekly notification is scheduled every Tuesday at 14:00
     $newsletter = (object)[
       'id' => 1,
-      'intervalType' => Scheduler::INTERVAL_WEEKLY,
+      'intervalType' => PostNotificationScheduler::INTERVAL_WEEKLY,
       'monthDay' => null,
       'nthWeekDay' => null,
       'weekDay' => Carbon::TUESDAY,
@@ -157,7 +157,7 @@ class PostNotificationTest extends \MailPoetTest {
     // monthly notification is scheduled every 20th day at 14:00
     $newsletter = (object)[
       'id' => 1,
-      'intervalType' => Scheduler::INTERVAL_MONTHLY,
+      'intervalType' => PostNotificationScheduler::INTERVAL_MONTHLY,
       'monthDay' => 19, // 20th (count starts from 0)
       'nthWeekDay' => null,
       'weekDay' => null,
@@ -181,7 +181,7 @@ class PostNotificationTest extends \MailPoetTest {
     // monthly notification is scheduled every last Saturday at 14:00
     $newsletter = (object)[
       'id' => 1,
-      'intervalType' => Scheduler::INTERVAL_NTHWEEKDAY,
+      'intervalType' => PostNotificationScheduler::INTERVAL_NTHWEEKDAY,
       'monthDay' => null,
       'nthWeekDay' => 'L', // L = last
       'weekDay' => Carbon::SATURDAY,
@@ -205,7 +205,7 @@ class PostNotificationTest extends \MailPoetTest {
     // notification is scheduled immediately (next minute)
     $newsletter = (object)[
       'id' => 1,
-      'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
+      'intervalType' => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
       'monthDay' => null,
       'nthWeekDay' => null,
       'weekDay' => null,
@@ -229,7 +229,7 @@ class PostNotificationTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       [
-        'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
+        'intervalType' => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
         'schedule' => '* * * * *',
       ]
     );
@@ -263,7 +263,7 @@ class PostNotificationTest extends \MailPoetTest {
     $this->_createNewsletterOptions(
       $newsletter->id,
       [
-        'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
+        'intervalType' => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
         'schedule' => '* * * * *',
       ]
     );

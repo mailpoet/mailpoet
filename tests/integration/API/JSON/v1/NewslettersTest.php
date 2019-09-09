@@ -9,18 +9,18 @@ use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
-use MailPoet\Listing\BulkActionController;
-use MailPoet\Listing\Handler;
 use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Listing\BulkActionController;
+use MailPoet\Listing\Handler;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
@@ -30,8 +30,8 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class NewslettersTest extends \MailPoetTest {
   /** @var Newsletters */
@@ -288,7 +288,7 @@ class NewslettersTest extends \MailPoetTest {
       'type' => Newsletter::TYPE_NOTIFICATION,
       'subject' => 'Newsletter',
       'options' => [
-        'intervalType' => Scheduler::INTERVAL_WEEKLY,
+        'intervalType' => PostNotificationScheduler::INTERVAL_WEEKLY,
         'timeOfDay' => '50400',
         'weekDay' => '1',
         'monthDay' => '0',
@@ -303,7 +303,7 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->data)->equals($saved_newsletter->asArray());
 
     // schedule should be recalculated when options change
-    $newsletter_data['options']['intervalType'] = Scheduler::INTERVAL_IMMEDIATELY;
+    $newsletter_data['options']['intervalType'] = PostNotificationScheduler::INTERVAL_IMMEDIATELY;
     $response = $this->endpoint->save($newsletter_data);
     $saved_newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($response->data['id']);
@@ -347,7 +347,7 @@ class NewslettersTest extends \MailPoetTest {
       'subject' => 'Newsletter',
       'options' => [
         // weekly on Monday @ 7am
-        'intervalType' => Scheduler::INTERVAL_WEEKLY,
+        'intervalType' => PostNotificationScheduler::INTERVAL_WEEKLY,
         'timeOfDay' => '25200',
         'weekDay' => '1',
         'monthDay' => '0',

@@ -14,6 +14,15 @@ use MailPoet\WP\Posts;
 
 class PostNotificationScheduler {
 
+  const SECONDS_IN_HOUR = 3600;
+  const LAST_WEEKDAY_FORMAT = 'L';
+  const INTERVAL_DAILY = 'daily';
+  const INTERVAL_IMMEDIATELY = 'immediately';
+  const INTERVAL_NTHWEEKDAY = 'nthWeekDay';
+  const INTERVAL_WEEKLY = 'weekly';
+  const INTERVAL_IMMEDIATE = 'immediate';
+  const INTERVAL_MONTHLY = 'monthly';
+
   function transitionHook($new_status, $old_status, $post) {
     Logger::getLogger('post-notifications')->addInfo(
       'transition post notification hook initiated',
@@ -88,27 +97,27 @@ class PostNotificationScheduler {
 
   function processPostNotificationSchedule($newsletter) {
     $interval_type = $newsletter->intervalType;
-    $hour = (int)$newsletter->timeOfDay / Scheduler::SECONDS_IN_HOUR;
+    $hour = (int)$newsletter->timeOfDay / self::SECONDS_IN_HOUR;
     $week_day = $newsletter->weekDay;
     $month_day = $newsletter->monthDay;
-    $nth_week_day = ($newsletter->nthWeekDay === Scheduler::LAST_WEEKDAY_FORMAT) ?
+    $nth_week_day = ($newsletter->nthWeekDay === self::LAST_WEEKDAY_FORMAT) ?
       $newsletter->nthWeekDay :
       '#' . $newsletter->nthWeekDay;
     switch ($interval_type) {
-      case Scheduler::INTERVAL_IMMEDIATE:
-      case Scheduler::INTERVAL_DAILY:
+      case self::INTERVAL_IMMEDIATE:
+      case self::INTERVAL_DAILY:
         $schedule = sprintf('0 %s * * *', $hour);
         break;
-      case Scheduler::INTERVAL_WEEKLY:
+      case self::INTERVAL_WEEKLY:
         $schedule = sprintf('0 %s * * %s', $hour, $week_day);
         break;
-      case Scheduler::INTERVAL_NTHWEEKDAY:
+      case self::INTERVAL_NTHWEEKDAY:
         $schedule = sprintf('0 %s ? * %s%s', $hour, $week_day, $nth_week_day);
         break;
-      case Scheduler::INTERVAL_MONTHLY:
+      case self::INTERVAL_MONTHLY:
         $schedule = sprintf('0 %s %s * *', $hour, $month_day);
         break;
-      case Scheduler::INTERVAL_IMMEDIATELY:
+      case self::INTERVAL_IMMEDIATELY:
       default:
         $schedule = '* * * * *';
         break;

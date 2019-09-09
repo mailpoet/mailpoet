@@ -8,6 +8,8 @@ use MailPoet\Tasks\Sending as SendingTask;
 
 class WelcomeScheduler {
 
+  const WORDPRESS_ALL_ROLES = 'mailpoet_all';
+
   function scheduleSubscriberWelcomeNotification($subscriber_id, $segments) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_WELCOME);
     if (empty($newsletters)) return false;
@@ -35,13 +37,13 @@ class WelcomeScheduler {
           // do not schedule welcome newsletter if roles have not changed
           $old_role = $old_user_data['roles'];
           $new_role = $wp_user['roles'];
-          if ($newsletter->role === Scheduler::WORDPRESS_ALL_ROLES ||
+          if ($newsletter->role === self::WORDPRESS_ALL_ROLES ||
             !array_diff($old_role, $new_role)
           ) {
             continue;
           }
         }
-        if ($newsletter->role === Scheduler::WORDPRESS_ALL_ROLES ||
+        if ($newsletter->role === self::WORDPRESS_ALL_ROLES ||
           in_array($newsletter->role, $wp_user['roles'])
         ) {
           $this->createWelcomeNotificationSendingTask($newsletter, $subscriber_id);

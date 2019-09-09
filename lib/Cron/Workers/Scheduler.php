@@ -10,9 +10,11 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
+use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 
 if (!defined('ABSPATH')) exit;
 
@@ -188,7 +190,7 @@ class Scheduler {
       return false;
     }
     $wp_user = (array)get_userdata($subscriber->wp_user_id);
-    if ($newsletter->role !== \MailPoet\Newsletter\Scheduler\Scheduler::WORDPRESS_ALL_ROLES
+    if ($newsletter->role !== WelcomeScheduler::WORDPRESS_ALL_ROLES
       && !in_array($newsletter->role, $wp_user['roles'])
     ) {
       $queue->delete();
@@ -198,7 +200,7 @@ class Scheduler {
   }
 
   function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
-    if ($newsletter->intervalType === NewsletterScheduler::INTERVAL_IMMEDIATELY) {
+    if ($newsletter->intervalType === PostNotificationScheduler::INTERVAL_IMMEDIATELY) {
       $queue->delete();
       return;
     } else {
