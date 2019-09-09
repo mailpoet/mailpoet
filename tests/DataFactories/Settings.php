@@ -60,11 +60,6 @@ class Settings {
     return $this;
   }
 
-  function withConfirmationEmailFrom($name, $address) {
-    $this->settings->set('signup_confirmation.from', ['name' => $name, 'address' => $address]);
-    return $this;
-  }
-
   function withConfirmationEmailDisabled() {
     $this->settings->set('signup_confirmation.enabled', '');
     return $this;
