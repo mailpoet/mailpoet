@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import DefaultSender from 'settings/default_sender.jsx';
-import SignupConfirmationSender from 'settings/signup_confirmation_sender.jsx';
 
 const settingsSenderContainer = document.getElementById('settings_sender_container');
 
@@ -15,18 +14,5 @@ if (settingsSenderContainer) {
       mssActive: window.mailpoet_mss_active,
     }),
     settingsSenderContainer
-  );
-}
-
-const settingsSignupConfirmationSenderContainer = document.getElementById('settings_signup_confirmation_sender_container');
-
-if (settingsSignupConfirmationSenderContainer) {
-  ReactDOM.render(
-    React.createElement(SignupConfirmationSender, {
-      senderAddress: window.mailpoet_settings_signup_confirmation_address,
-      senderName: window.mailpoet_settings_signup_confirmation_name,
-      mssActive: window.mailpoet_mss_active,
-    }),
-    settingsSignupConfirmationSenderContainer
   );
 }
