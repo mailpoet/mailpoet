@@ -26,10 +26,7 @@ class UnauthorizedEmailNotice {
 
   function init($should_display) {
     $validation_error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-    if (
-      $should_display
-      && (isset($validation_error['invalid_sender_address']) || isset($validation_error['invalid_confirmation_address']))
-     ) {
+    if ($should_display && isset($validation_error['invalid_sender_address'])) {
       return $this->display($validation_error);
     }
   }
@@ -44,23 +41,10 @@ class UnauthorizedEmailNotice {
   }
 
   private function getMessageText($validation_error) {
-    if (
-      !empty($validation_error['invalid_sender_address'])
-      && !empty($validation_error['invalid_confirmation_address'])
-      && $validation_error['invalid_sender_address'] !== $validation_error['invalid_confirmation_address']
-    ) {
-      $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email addresses %default-sender-address and %signup-confirmation-address have not been authorized yet.',
-        'Email addresses have to be authorized to be used to send emails. %default-sender-address and %signup-confirmation-address will be replaced by email addresses.'
-      );
-      $message = str_replace('%default-sender-address', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $text);
-      $message = str_replace('%signup-confirmation-address', EscapeHelper::escapeHtmlText($validation_error['invalid_confirmation_address']), $message);
-    } else {
-      $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email address %email-address hasn’t been authorized yet.</b>',
-        'Email addresses have to be authorized to be used to send emails. %email-address will be replaced by an email address.'
-      );
-      $email = isset($validation_error['invalid_sender_address']) ? $validation_error['invalid_sender_address'] : $validation_error['invalid_confirmation_address'];
-      $message = str_replace('%email-address', EscapeHelper::escapeHtmlText($email), $text);
-    }
+    $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email address %email-address hasn’t been authorized yet.</b>',
+      'Email addresses have to be authorized to be used to send emails. %email-address will be replaced by an email address.'
+    );
+    $message = str_replace('%email-address', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $text);
     return "<p>$message</p>";
   }
 
@@ -71,28 +55,13 @@ class UnauthorizedEmailNotice {
       $button = Helpers::replaceLinkTags("[link]{$button}[/link]", 'admin.php?page=mailpoet-settings', ['class' => 'button button-secondary']);
       $buttons .= "<p>$button</p>";
     }
-    if (!empty($validation_error['invalid_confirmation_address'])) {
-      $button = $this->wp->_x('Update my Sign-up Confirmation email address', 'Please reuse the current translation of “Sign-up Confirmation”');
-      $button = Helpers::replaceLinkTags("[link]{$button}[/link]", 'admin.php?page=mailpoet-settings#signup', ['class' => 'button button-secondary']);
-      $buttons .= "<p>$button</p>";
-    }
     return $buttons;
   }
 
   private function getAuthorizationLink($validation_error) {
-    if (
-      !empty($validation_error['invalid_sender_address'])
-      && !empty($validation_error['invalid_confirmation_address'])
-      && $validation_error['invalid_sender_address'] !== $validation_error['invalid_confirmation_address']
-    ) {
-      $authorize_link = $this->wp->_x('Authorize %email1 and %email2', 'Link for user to authorize their email address');
-      $authorize_link = str_replace('%email1', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $authorize_link);
-      $authorize_link = str_replace('%email2', EscapeHelper::escapeHtmlText($validation_error['invalid_confirmation_address']), $authorize_link);
-    } else {
-      $email = isset($validation_error['invalid_sender_address']) ? $validation_error['invalid_sender_address'] : $validation_error['invalid_confirmation_address'];
-      $authorize_link = $this->wp->_x('Authorize %email', 'Link for user to authorize their email address');
-      $authorize_link = str_replace('%email', EscapeHelper::escapeHtmlText($email), $authorize_link);
-    }
+    $email = $validation_error['invalid_sender_address'];
+    $authorize_link = $this->wp->_x('Authorize %email', 'Link for user to authorize their email address');
+    $authorize_link = str_replace('%email', EscapeHelper::escapeHtmlText($email), $authorize_link);
     $authorize_link = Helpers::replaceLinkTags("[link]{$authorize_link}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
     $html = '<p><b>' . $this->wp->_x('OR', 'User has to choose between two options') . '</b></p>';
     $html .= "<p>$authorize_link</p>";

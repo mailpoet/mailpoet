@@ -53,8 +53,7 @@ class AuthorizedEmailsController {
 
   function onSettingsSave($settings) {
     $sender_address_set = !empty($settings['sender']['address']);
-    $confirmation_address_set = !empty($settings['signup_confirmation']['from']['address']);
-    if ($sender_address_set || $confirmation_address_set) {
+    if ($sender_address_set) {
       $this->checkAuthorizedEmailAddresses();
     }
   }
@@ -73,13 +72,9 @@ class AuthorizedEmailsController {
 
   private function validateAddressesInSettings($authorized_emails, $result = []) {
     $default_sender_address = $this->settings->get('sender.address');
-    $signup_confirmation_address = $this->settings->get('signup_confirmation.from.address');
 
     if (!$this->validateAuthorizedEmail($authorized_emails, $default_sender_address)) {
       $result['invalid_sender_address'] = $default_sender_address;
-    }
-    if (!$this->validateAuthorizedEmail($authorized_emails, $signup_confirmation_address)) {
-      $result['invalid_confirmation_address'] = $signup_confirmation_address;
     }
 
     return $result;
