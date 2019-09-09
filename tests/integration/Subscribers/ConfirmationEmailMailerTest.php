@@ -84,7 +84,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     ]);
 
     $settings = new SettingsController;
-    $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_confirmation_address' => 'email@email.com']);
+    $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'email@email.com']);
     $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $sender = new ConfirmationEmailMailer($mailer);
 
