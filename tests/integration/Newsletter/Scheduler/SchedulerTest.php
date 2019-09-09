@@ -18,17 +18,6 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Posts as WPPosts;
 
 class SchedulerTest extends \MailPoetTest {
-  function testItSetsConstants() {
-    expect(Scheduler::SECONDS_IN_HOUR)->notEmpty();
-    expect(Scheduler::LAST_WEEKDAY_FORMAT)->notEmpty();
-    expect(Scheduler::WORDPRESS_ALL_ROLES)->notEmpty();
-    expect(Scheduler::INTERVAL_IMMEDIATELY)->notEmpty();
-    expect(Scheduler::INTERVAL_IMMEDIATE)->notEmpty();
-    expect(Scheduler::INTERVAL_DAILY)->notEmpty();
-    expect(Scheduler::INTERVAL_WEEKLY)->notEmpty();
-    expect(Scheduler::INTERVAL_MONTHLY)->notEmpty();
-    expect(Scheduler::INTERVAL_NTHWEEKDAY)->notEmpty();
-  }
 
   function testItGetsActiveNewslettersFilteredByTypeAndGroup() {
     $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);

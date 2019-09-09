@@ -11,15 +11,6 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Scheduler {
-  const SECONDS_IN_HOUR = 3600;
-  const LAST_WEEKDAY_FORMAT = 'L';
-  const WORDPRESS_ALL_ROLES = 'mailpoet_all';
-  const INTERVAL_IMMEDIATELY = 'immediately';
-  const INTERVAL_IMMEDIATE = 'immediate';
-  const INTERVAL_DAILY = 'daily';
-  const INTERVAL_WEEKLY = 'weekly';
-  const INTERVAL_MONTHLY = 'monthly';
-  const INTERVAL_NTHWEEKDAY = 'nthWeekDay';
 
   static function scheduleAutomaticEmail($group, $event, $scheduling_condition = false, $subscriber_id = false, $meta = false) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);

@@ -10,13 +10,14 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
-use MailPoet\Models\Segment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 
@@ -183,7 +184,8 @@ class SchedulerTest extends \MailPoetTest {
       $this->_createNewsletterOptionField('role', Newsletter::TYPE_WELCOME);
     $newsletter_option = $this->_createNewsletterOption(
       $newsletter_option_field->id, $newsletter->id,
-      \MailPoet\Newsletter\Scheduler\Scheduler::WORDPRESS_ALL_ROLES);
+      WelcomeScheduler::WORDPRESS_ALL_ROLES
+    );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
