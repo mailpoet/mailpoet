@@ -9,6 +9,7 @@ use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Collection;
+use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 use MailPoetVendor\Doctrine\ORM\Mapping\Column;
 
 /**
@@ -310,7 +311,14 @@ class NewsletterEntity {
    * @return NewsletterEntity|null
    */
   function getParent() {
-    return $this->parent;
+    try {
+      if ($this->parent && $this->parent->getId()) {
+        return $this->parent;
+      }
+    } catch (EntityNotFoundException $enf) {
+      $this->setParent(null);
+      return null;
+    }
   }
 
   /**
