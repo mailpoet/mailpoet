@@ -42,7 +42,6 @@ class ConfirmationEmailMailer {
 
   function sendConfirmationEmail(Subscriber $subscriber) {
     $signup_confirmation = $this->settings->get('signup_confirmation');
-
     if ((bool)$signup_confirmation['enabled'] === false) {
       return false;
     }
@@ -52,8 +51,8 @@ class ConfirmationEmailMailer {
     }
 
     $authorization_emails_validation = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-    $unauthorized_confirmation_email = isset($authorization_emails_validation['invalid_confirmation_address']);
-    if (Bridge::isMPSendingServiceEnabled() && $unauthorized_confirmation_email) {
+    $unauthorized_sender_email = isset($authorization_emails_validation['invalid_sender_address']);
+    if (Bridge::isMPSendingServiceEnabled() && $unauthorized_sender_email) {
       return false;
     }
 
@@ -92,18 +91,12 @@ class ConfirmationEmailMailer {
     ];
 
     // set from
-    $from = (
-      !empty($signup_confirmation['from'])
-      && !empty($signup_confirmation['from']['address'])
-    ) ? $signup_confirmation['from']
-      : false;
+    $from = $this->settings->get('sender', false);
+    if (empty($from['address'])) $from = false;
 
     // set reply to
-    $reply_to = (
-      !empty($signup_confirmation['reply_to'])
-      && !empty($signup_confirmation['reply_to']['address'])
-    ) ? $signup_confirmation['reply_to']
-      : false;
+    $reply_to = $this->settings->get('reply_to', false);
+    if (empty($reply_to['address'])) $reply_to = false;
 
     // send email
     try {

@@ -231,11 +231,6 @@ class Populator {
     if (!$this->settings->fetch('signup_confirmation')) {
       $this->settings->set('signup_confirmation', [
         'enabled' => true,
-        'from' => [
-          'name' => $this->wp->getOption('blogname'),
-          'address' => $this->wp->getOption('admin_email'),
-        ],
-        'reply_to' => $sender,
       ]);
     }
 

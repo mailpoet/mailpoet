@@ -1056,10 +1056,6 @@ class MP2Migrator {
       $confirm_email_id = $options['confirm_email_id'];
       $confirm_email = $this->getEmail($confirm_email_id);
       if (!empty($confirm_email)) {
-        $signup_confirmation['from']['name'] = isset($confirm_email['from_name']) ? $confirm_email['from_name'] : '';
-        $signup_confirmation['from']['address'] = isset($confirm_email['from_email']) ? $confirm_email['from_email'] : '';
-        $signup_confirmation['reply_to']['name'] = isset($confirm_email['replyto_name']) ? $confirm_email['replyto_name'] : '';
-        $signup_confirmation['reply_to']['address'] = isset($confirm_email['replyto_email']) ? $confirm_email['replyto_email'] : '';
         $signup_confirmation['subject'] = isset($confirm_email['subject']) ? $confirm_email['subject'] : '';
         $signup_confirmation['body'] = isset($confirm_email['body']) ? $confirm_email['body'] : '';
       }
