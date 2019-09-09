@@ -13,6 +13,7 @@ class EditSignUpConfirmationEmailCest {
 
     // make sure sign up confirmation is enabled
     $settings = new Settings();
+    $settings->withSender('Confirmation Test From', 'from-confirmation-test@example.com');
     $settings->withConfirmationEmailEnabled();
     $forms = new Form();
     $forms->withDefaultSuccessMessage();
@@ -23,8 +24,6 @@ class EditSignUpConfirmationEmailCest {
     $I->waitForText('Enable sign-up confirmation');
 
     // edit confirmation email
-    $I->fillField('[data-automation-id="signup_confirmation_email_from_name"]', 'Confirmation Test From');
-    $I->fillField('[data-automation-id="signup_confirmation_email_from_email"]', 'from-confirmation-test@example.com');
     $I->fillField('[data-automation-id="signup_confirmation_email_subject"]', 'Confirmation email subject');
     $I->fillField('[data-automation-id="signup_confirmation_email_body"]', 'Confirmation email body [activation_link]link[/activation_link]');
 
