@@ -42,37 +42,15 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   function testItSetProperErrorForInvalidDefaultSender() {
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'invalid@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
     expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com']);
   }
 
-  function testItSetProperErrorForInvalidConfirmationSender() {
+  function testItSetEmptyErrorWhenDefaultSenderAddressIsCorrect() {
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'invalid@email.com');
-    $this->setMailPoetSendingMethod();
-    $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
-    $controller->checkAuthorizedEmailAddresses();
-    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_confirmation_address' => 'invalid@email.com']);
-  }
-
-  function testItSetProperErrorForConfirmationAddressAndDefaultSender() {
-    $this->settings->set('installed_at', new Carbon());
-    $this->settings->set('sender.address', 'invalid@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'invalid@email.com');
-    $this->setMailPoetSendingMethod();
-    $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
-    $controller->checkAuthorizedEmailAddresses();
-    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com', 'invalid_confirmation_address' => 'invalid@email.com']);
-  }
-
-  function testItSetEmptyErrorWhenBothAdressesAreCorrect() {
-    $this->settings->set('installed_at', new Carbon());
-    $this->settings->set('sender.address', 'auth@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
@@ -112,7 +90,6 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $newsletter2->save();
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
@@ -125,7 +102,6 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     MailerLog::updateMailerLog($log);
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
@@ -138,7 +114,6 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     MailerLog::updateMailerLog($log);
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
@@ -151,7 +126,6 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     MailerLog::updateMailerLog($log);
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'invalid@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'invalid@email.com');
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
@@ -169,7 +143,6 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $newsletter->save();
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
-    $this->settings->set('signup_confirmation.from.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
