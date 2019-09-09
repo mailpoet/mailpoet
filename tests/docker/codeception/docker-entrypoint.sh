@@ -69,6 +69,7 @@ sed -i "s/define( *'WP_DEBUG', false *);/$CONFIG/" ./wp-config.php
 if [[ -z "${SKIP_DEPS}" ]]; then
   cd /project
   php composer.phar install
+  cd /wp-core
 fi
 
 # activate MailPoet
