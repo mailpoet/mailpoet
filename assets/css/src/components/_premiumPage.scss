@@ -1,0 +1,59 @@
+
+.mailpoet-about-wrap.mailpoet-premium-page {
+  display: flex;
+  flex-direction: column;
+  margin: 25px auto 0;
+  padding: 0 150px;
+
+  .mailpoet-premium-page-intro {
+    display: flex;
+    flex-direction: row;
+
+    img {
+      margin-right: 100px;
+    }
+
+    p {
+      margin: 40px 0;
+    }
+  }
+
+  .mailpoet-premium-page-free-disadvantages {
+    li:before {
+      content: '·';
+      padding-right: 5px;
+    }
+  }
+
+  .mailpoet-premium-page-text {
+    padding-bottom: 4em;
+    text-align: center;
+  }
+
+  .mailpoet-premium-page-features {
+    display: grid;
+    grid-column-gap: 30px;
+    grid-template-columns: 1fr 1fr 1fr;
+
+    .mailpoet-premium-page-feature {
+      p {
+        text-align: left;
+      }
+    }
+  }
+
+  .mailpoet-premium-page-options {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    ul {
+      text-align: left;
+
+      li:before {
+        content: '-';
+        padding-right: 5px;
+      }
+    }
+  }
+}
