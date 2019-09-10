@@ -1,0 +1,163 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+<div class="wrap mailpoet-about-wrap">
+
+  <% if display_discount %>
+  <div class="mailpoet-discount-container">
+    <h1><%= __('Discounts up to 50% for a limited time') %></h1>
+    <p><%= __('Don’t miss out on our only sale of the year which ends on November 30.') %></p>
+    <p><%= __('There’s never been a better time to change gears.') %></p>
+    <a
+      href="<%= add_referral_id('https://account.mailpoet.com/?s=' ~ subscriber_count ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=discount') %>"
+      class="button button-primary"
+      style="font-size: 1.5em; padding: 10px 18px; height: 46px;"
+    >
+      <%= __('Save up to 50%') %>
+    </a>
+  </div>
+  <% endif %>
+
+  <h1 style="text-align: center; margin-right: 0;"><%= __('What is MailPoet Premium?') %></h1>
+
+  <p class="about-text" style="text-align: center; margin-right: 0;"><%= __("Check out the brief video below. Or, keep reading!") %></p>
+
+  <hr>
+
+  <div class="headline-feature feature-video">
+    <div class="videoWrapper">
+      <iframe src="https://player.vimeo.com/video/225337083" width="1050" height="591" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2><%= __("Insightful Statistics") %></h2>
+
+  <div class="feature-section one-col">
+    <p class="lead-description"><%= __("Which links get the most clicks? Which subscribers opened your emails? With MailPoet's stats program, it's easy to find out. Need even more details? Integrating with Google Analytics is as easy as 1-2-3.") %></p>
+    <% set video_url = cdn_url('premium/premium-page-animated-stats.mp4') %>
+    <video autoplay loop width="100%" class="mailpoet_video">
+      <source type="video/mp4" src="<%= video_url %>" />
+      <a href="<%= video_url %>"><%= video_url %></a>
+    </video>
+  </div>
+
+  <hr>
+
+  <h2><%= __("Hello Inbox, Goodbye Spambox!") %></h2>
+
+  <div class="feature-section one-col">
+    <p class="lead-description"><%= __("Having issues with reaching your subscribers? Always ending up in the spam box? Don't panic! You're not alone - over a quarter of our plugin users have sending issues, usually because they are sending emails via their web host. Instead, try using the new MailPoet Sending Service.") %></p>
+    <table class="widefat">
+      <thead>
+        <tr>
+         <td></td>
+         <td><strong><%= __("MailPoet") %></strong></td>
+         <td><strong><%= __("Web host") %></strong></td>
+         <td><strong><%= __("Third party") %></strong></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="alternate">
+         <td><strong><%= __("Speed") %></strong></td>
+         <td><%= __("50,000 / hour") %></td>
+         <td><%= __("300 / hour") %></td>
+         <td><%= __("2,000 / hour") %></td>
+        </tr>
+        <tr>
+         <td><strong><%= __("Daily email limits") %></strong></td>
+         <td><%= __("None") %></td>
+         <td><%= __("Yes") %></td>
+         <td><%= __("Depends") %></td>
+        </tr>
+        <tr class="alternate">
+         <td><strong><%= __("Personal deliverability support") %></strong></td>
+         <td><%= __("Yes!") %></td>
+         <td><%= __("No") %></td>
+         <td><%= __("No") %></td>
+        </tr>
+        <tr>
+         <td><strong><%= __("SPF and DKIM Signatures") %></strong></td>
+         <td><%= __("No need!") %></td>
+         <td><%= __("Update your DNS") %></td>
+         <td><%= __("Depends") %></td>
+        </tr>
+        <tr class="alternate">
+         <td><strong><%= __("Double opt-in") %></strong></td>
+         <td><%= __("Enforced") %></td>
+         <td><%= __("Not enforced") %></td>
+         <td><%= __("Depends") %></td>
+        </tr>
+        <tr>
+          <td colspan="4">
+            <div style="text-align: center">
+              <a
+                href="https://kb.mailpoet.com/article/181-comparison-table-of-sending-methods?utm_source=plugin&utm_medium=premium&utm_campaign=compare"
+                data-beacon-article="58a7182a2c7d3a576d3548c5"
+                target="_blank"
+              >
+                <%= __("View full comparison table") %>
+              </a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><%= __("Spammers are ineligible to use the MailPoet Sending Service. We reserve the right to cancel any sending plan if we detect more than 5% hard bounces. [link]Customers are required to clean their lists before joining MailPoet[/link].")
+      |replaceLinkTags('https://kb.mailpoet.com/article/127-checklist-before-importing-subscribers?utm_source=plugin&utm_medium=premium&utm_campaign=clean-lists', {'target': '_blank', 'data-beacon-article': '57ce07ffc6979108399a044b'})
+      |raw
+    %></p>
+  </div>
+
+  <hr>
+
+  <div class="feature-section">
+    <h2><%= __("We’re Here to Help!") %></h2>
+    <% set video_url = cdn_url('premium/premium-page-animated-support.mp4') %>
+    <video autoplay loop width="100%" class="mailpoet_video half-width-centered">
+      <source type="video/mp4" src="<%= video_url %>" />
+      <a href="<%= video_url %>"><%= video_url %></a>
+    </video>
+    <p><%= __("We pride ourselves on giving nearly round-the-clock support. Our remote team spans several continents, hemispheres, and time-zones! If you’ve got a problem, we will help you fix it!") %></p>
+  </div>
+
+  <hr>
+
+  <h2><%= __("Get Started for Just $15") %></h2>
+
+  <div class="feature-section one-col">
+    <p class="lead-description"><%= __("Our plans start at just $15 per month. Plus, if you pay annually, you’ll get two months for free!") %></p>
+    <br>
+    <p style="text-align: center">
+      <a
+        target="_blank"
+        href="<%= add_referral_id('https://account.mailpoet.com?s=' ~ subscriber_count ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase') %>"
+        class="button button-primary"
+        style="font-size: 1.5em; padding: 10px 18px; height: 46px;"
+      ><%= __("Purchase Now") %></a>
+    </p>
+    <br>
+    <div style="width: 65%; margin: 0 auto;">
+      <p style="text-align: center"><%= __("Already a Premium customer? [link]Add your Key in the Settings page[/link].")
+        |replaceLinkTags(admin_url('admin.php?page=mailpoet-settings#premium'), {'target': '_blank'})
+        |raw
+      %></p>
+      <p style="text-align: center"><%= __("Don’t need to use our sending service? Not a problem; we understand. You can also [link]buy the Premium[/link] features separately. Prices start at $149 per year for 1 website, $249 for 4 sites and $499 for an unlimited number of sites.")
+        |replaceLinkTags(add_referral_id('https://account.mailpoet.com/premium?utm_source=plugin&utm_medium=premium&utm_campaign=buy-premium'), {'target': '_blank'})
+        |raw
+      %></p>
+    </div>
+  </div>
+
+</div>
+
+<% endblock %>
+
+<% block after_javascript %>
+<script type="text/javascript">
+  MailPoet.trackEvent('Premium page viewed', {
+    'MailPoet Free version': window.mailpoet_version
+  });
+</script>
+<% endblock %>

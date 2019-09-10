@@ -8,12 +8,14 @@ class FeaturesController {
   //   const FEATURE_NAME_OF_FEATURE = 'name-of-feature';
   const NEW_DEFAULT_LIST_NAME = 'new-default-list-name';
   const SEND_WORDPRESS_MAILS_WITH_MP3 = 'send-wordpress-mails-with-mp3';
+  const NEW_PREMIUM_PAGE = 'new-premium-page';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::NEW_DEFAULT_LIST_NAME => false,
     self::SEND_WORDPRESS_MAILS_WITH_MP3 => false,
+    self::NEW_PREMIUM_PAGE => false,
   ];
 
   /** @var array */
