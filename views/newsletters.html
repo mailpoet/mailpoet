@@ -395,10 +395,18 @@
 <% block after_javascript %>
 <% if settings.show_intro %>
 <script>
-  HS.beacon.ready(function () {
-    document.querySelector('#hs-beacon iframe').classList.add('mailpoet-chat');
-    MailPoet.showIntro();
-  });
+  const initIntro = () => {
+    const beacon = document.querySelector('#beacon-container iframe');
+    if (beacon) {
+      beacon.classList.add('mailpoet-chat');
+      MailPoet.showIntro();
+    } else {
+      setTimeout(initIntro, 200);
+    }
+  };
+  document.addEventListener('DOMContentLoaded', function(){
+    initIntro();
+  }, false);
 </script>
 <% endif %>
 <% endblock %>
