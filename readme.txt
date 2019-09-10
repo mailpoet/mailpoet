@@ -137,7 +137,7 @@ Answer: We do not store or keep any data from your subscribers. However, if you'
 Question: Is MailPoet GDPR compliant?
 Answer: Yes, we are GDPR compliant. We do not have a Data Processing Agreement though. Our privacy notice can act as an agreement and GDPR takes this into consideration. By using our service, you acknowledge our Privacy Notice.
 
-We suggest that you also add a link to your our Privacy Notice in your own Privacy Notice page. What's important is to make sure that your subscribers are aware that MailPoet delivers your email, if you send with MailPoet that is.
+We suggest that you also add a link to our Privacy Notice in your own Privacy Notice page. What's important is to make sure that your subscribers are aware that MailPoet delivers your email, if you send with MailPoet that is.
 
 You can also read our [Guide to Conform to GDPR](https://kb.mailpoet.com/article/246-guide-to-conform-to-gdpr).
 
