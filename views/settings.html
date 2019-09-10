@@ -255,6 +255,12 @@
       var mailpoet_installed_at = '<%= settings.installed_at %>';
       var mailpoet_mss_active = <%= json_encode(settings.mta_group == 'mailpoet') %>;
     <% endautoescape %>
+    var mailpoet_beacon_articles = [
+      '57f71d49c697911f2d323486',
+      '57fb0e1d9033600277a681ca',
+      '57f49a929033602e61d4b9f4',
+      '57fb134cc697911f2d323e3b',
+    ];
   </script>
 <% endblock %>
 <% block translations %>
