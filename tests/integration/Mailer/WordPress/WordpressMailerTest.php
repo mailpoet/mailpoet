@@ -8,6 +8,7 @@ if (!class_exists('PHPMailer')) {
 }
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 
 class WordpressMailerTest extends \MailPoetTest {
 
@@ -95,7 +96,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->once())
       ->method('send')
-      ->willReturn(['response' => false, 'error' => 'Big Error']);
+      ->willReturn(['response' => false, 'error' => new MailerError('send', 1, 'Big Error')]);
     $wpMailer = new WordPressMailer($mailer);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';

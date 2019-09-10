@@ -158,6 +158,7 @@ class Initializer {
       new DeferredAdminNotices,
       'printAndClean',
     ]);
+    $this->hooks->initEarlyHooks();
   }
 
   function checkRequirements() {

@@ -38,7 +38,7 @@ class WordPressMailer extends \PHPMailer {
     if ($result['response']) {
       return true;
     } else {
-      throw new \phpmailerException($result['error']);
+      throw new \phpmailerException($result['error']->getMessage());
     }
   }
 
