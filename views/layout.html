@@ -105,7 +105,7 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 <script type="text/javascript"></script>
 
 <script type="text/javascript">
-  if(window['Beacon'] !== undefined) {
+  if(window['Beacon'] !== undefined && window.hide_mailpoet_beacon !== true) {
     window.Beacon('init', '<%= helpscout_form_id %>');
 
     // HelpScout Beacon: Configuration
