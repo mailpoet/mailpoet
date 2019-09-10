@@ -85,6 +85,9 @@ class Hooks {
     $this->setupSubscriptionEvents();
     $this->setupWooCommerceSubscriptionEvents();
     $this->setupPostNotifications();
+  }
+
+  function initEarlyHooks() {
     $this->setupMailer();
   }
 
@@ -186,6 +189,10 @@ class Hooks {
       'replaceWordPressMailer',
     ]);
     $this->wp->addAction('login_init', [
+      $this->wordpress_mailer_replacer,
+      'replaceWordPressMailer',
+    ]);
+    $this->wp->addAction('lostpassword_post', [
       $this->wordpress_mailer_replacer,
       'replaceWordPressMailer',
     ]);
