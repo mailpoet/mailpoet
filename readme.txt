@@ -148,7 +148,11 @@ Stop by our [support site](https://www.mailpoet.com/support).
 == Changelog ==
 
 = 3.35.4 - 2019-09-10 =
-* Fixed: WooCommerce list counted in List Listings bulk action UI when list is hidden.
+* Improved: resend confirmation emails is now on a subscriber by subscriber basis;
+* Fixed: CSV export no longers require the ZIP extension;
+* Fixed: WooCommerce list counted in List Listings bulk action UI when list is hidden;
+* Fixed: captcha success not being displayed;
+* Fixed: global subscription status for WooCommerce users.
 
 = 3.35.3 - 2019-09-04 =
 * Improved: sent Post Notification UI now allows deleting sent Post Notifications;
