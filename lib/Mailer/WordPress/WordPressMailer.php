@@ -2,7 +2,6 @@
 
 namespace MailPoet\Mailer\WordPress;
 
-// Load PHPMailer class, so we can subclass it.
 use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
 
@@ -72,5 +71,3 @@ class WordPressMailer extends \PHPMailer {
   }
 
 }
-
-// TODO test different mailers with html && text emails
