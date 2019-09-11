@@ -24,9 +24,7 @@ class WordPressMailer extends \PHPMailer {
     $this->Mailer = 'mail';
 
     // Prepare everything (including the message) for sending.
-    if (!$this->preSend()) {
-      return false;
-    }
+    $this->preSend();
 
     try {
       $result = $this->mailer->send($this->getEmail(), $this->formatAddress($this->getToAddresses()));
