@@ -26,6 +26,7 @@
   </div>
   <hr>
 
+  <% if (subscriber_count < 1000 ) %>
   <div class="mailpoet-premium-page-text">
     <h1><%= _x('MailPoet Premium is actually yours for free', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
     <p>
@@ -40,6 +41,7 @@
     </a>
   </div>
   <hr>
+  <% endif %>
 
   <div class="mailpoet-premium-page-text">
     <h1><%= _x('Does this sound like you?', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
