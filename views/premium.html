@@ -15,13 +15,16 @@
         <%= _x('Ready to take your email to the next level?', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
         <%= _x('You’ve built your email list with our free plugin — now grow your business with Premium and Sending features.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
       </p>
-      <a
-        target="_blank"
-        href="<%= add_referral_id('https://account.mailpoet.com?s=' ~ subscriber_count ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase') %>"
-        class="button button-primary"
-      >
-        <%= _x('Upgrade', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-      </a>
+      <div class="mailpoet-premium-page-intro-link-wrap">
+        <a
+          target="_blank"
+          href="<%= add_referral_id('https://account.mailpoet.com?s=' ~ subscriber_count ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase') %>"
+          class="button button-primary"
+        >
+          <%= _x('Upgrade', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </a>
+      </div>
+
     </div>
   </div>
   <hr>
