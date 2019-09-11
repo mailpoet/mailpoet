@@ -3,6 +3,12 @@ namespace MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * @property int $newsletter_id
+ * @property int $option_field_id
+ * @property string $value
+ * @property string $updated_at
+ */
 class NewsletterOption extends Model {
   public static $_table = MP_NEWSLETTER_OPTION_TABLE;
 

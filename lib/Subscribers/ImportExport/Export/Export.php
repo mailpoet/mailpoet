@@ -65,7 +65,7 @@ class Export {
       if (is_writable($this->export_path) === false) {
         throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
       }
-      if (!extension_loaded('zip')) {
+      if (!extension_loaded('zip') && ($this->export_format_option === 'xlsx')) {
         throw new \Exception(__('Export requires a ZIP extension to be installed on the host.', 'mailpoet'));
       }
       $callback = [

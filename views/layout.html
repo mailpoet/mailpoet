@@ -120,6 +120,10 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
     window.Beacon("identify",
       <%= json_encode(get_helpscout_data()) %>
     );
+
+    if (window.mailpoet_beacon_articles) {
+      window.Beacon('suggest', window.mailpoet_beacon_articles)
+    }
   }
 </script>
 <script>

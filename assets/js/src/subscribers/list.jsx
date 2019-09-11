@@ -209,16 +209,6 @@ const bulkActions = [
     },
   },
   {
-    name: 'sendConfirmationEmail',
-    label: MailPoet.I18n.t('resendConfirmationEmail'),
-    onSuccess: function onSuccess(response) {
-      MailPoet.Notice.success(
-        MailPoet.I18n.t('multipleConfirmationEmailsSent')
-          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
-      );
-    },
-  },
-  {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
     onSuccess: messages.onTrash,
@@ -233,6 +223,25 @@ const itemActions = [
       return (
         <Link to={`/edit/${subscriber.id}`}>{MailPoet.I18n.t('edit')}</Link>
       );
+    },
+  },
+  {
+    name: 'sendConfirmationEmail',
+    label: MailPoet.I18n.t('resendConfirmationEmail'),
+    display: function display(subscriber) {
+      return subscriber.status === 'unconfirmed' && subscriber.count_confirmations < window.mailpoet_max_confirmation_emails;
+    },
+    onClick: function onClick(subscriber) {
+      return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'subscribers',
+        action: 'sendConfirmationEmail',
+        data: {
+          id: subscriber.id,
+        },
+      })
+        .done(() => MailPoet.Notice.success(MailPoet.I18n.t('oneConfirmationEmailSent')))
+        .fail((response) => MailPoet.Notice.showApiErrorNotice(response));
     },
   },
   {

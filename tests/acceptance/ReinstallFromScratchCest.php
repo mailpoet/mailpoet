@@ -57,7 +57,7 @@ class ReinstallFromScratchCest {
     $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 2);
     // Check subscribers
     $I->amOnMailPoetPage('Subscribers');
-    $I->waitForText('admin', 30, '[data-automation-id="listing_item_1"]');
+    $I->waitForText('admin', 30, '.mailpoet_listing_table');
     $wp_users_count = count_users();
     $subscribers_count = (int)$I->grabTextFrom('.displaying-num');
     Asserts::assertEquals($wp_users_count['total_users'], $subscribers_count);

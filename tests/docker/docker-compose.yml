@@ -1,21 +1,20 @@
-version: '2.1'
+version: '3.2'
 
 services:
   codeception:
-    build:
-      context: ../..
-      dockerfile: tests/docker/codeception/Dockerfile
+    image: mailpoet/wordpress:7.2-cli_20181215.1
     depends_on:
-      mailhog:
-        condition: service_started
-      wordpress:
-        condition: service_healthy
+      - mailhog
+      - wordpress
     volumes:
-      - ../..:/project
       - wp-core:/wp-core
       - mailhog-data:/mailhog-data
+      - ../..:/project
       - ../..:/wp-core/wp-content/plugins/mailpoet
+      - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
     entrypoint: /docker-entrypoint.sh
+    environment:
+      WP_ROOT: /wp-core
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
@@ -30,18 +29,16 @@ services:
       - mailhog-data:/mailhog-data
 
   wordpress:
-    build:
-      context: ../..
-      dockerfile: tests/docker/wordpress/Dockerfile
+    image: mailpoet/wordpress:wp-5.0_20181218.1
     depends_on:
-      mysql:
-        condition: service_healthy
-      chrome:
-        condition: service_started
+      - chrome
+      - mailhog
+      - mysql
     volumes:
       - wp-core:/var/www/html
       - ../..:/var/www/html/wp-content/plugins/mailpoet
-      - /tmp:/var/www/html/wp-content/uploads/mailpoet/cache
+    tmpfs:
+      - /var/www/html/wp-content/uploads/mailpoet/cache
     ports:
       - 8080:80
     environment:
@@ -49,13 +46,8 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
-      MAILPOET_TEST_TRACY_MODE: 1
-
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
+      MAILPOET_TRACY_PRODUCTION_MODE: 1
+      MAILPOET_TRACY_LOG_DIR: /var/www/html/wp-content/plugins/mailpoet/tests/_output/exceptions
     networks:
       default:
         aliases:
@@ -68,10 +60,6 @@ services:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
-    healthcheck:
-      test: mysql --user=wordpress --password=wordpress -e 'SELECT 1'
-      timeout: 20s
-      retries: 10
     volumes:
       - /dev/shm:/dev/shm
 
@@ -84,6 +72,7 @@ services:
     ports:
       - 4444
       - 5900:5900
+
 volumes:
   wp-core:
   mailhog-data:

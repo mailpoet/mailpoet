@@ -44,6 +44,7 @@
         var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
       <% endif %>
     <% endautoescape %>
+    var mailpoet_beacon_articles = ['57fdc312c697911f2d324fd7', '5a0257ac2c7d3a272c0d7ad6', '58f671152c7d3a057f8858e8'];
   </script>
 <% endblock %>
 
@@ -319,7 +320,7 @@
 
     'soon': __('Soon'),
     'beta': __('Beta'),
-    'errorWhileTakingScreenshot': __('An error occured while saving the template in "Recently sent"'),
+    'errorWhileTakingScreenshot': __('An error occurred while saving the template in "Recently sent"'),
     'selectAutomaticEmailsEventsHeading': __('Select %$1s events'),
     'cronNotAccessibleNotice': __('Oops! There seems to be an issue with the sending on your website. [link]See our guide[/link] to solve this yourself.'),
 
@@ -395,10 +396,18 @@
 <% block after_javascript %>
 <% if settings.show_intro %>
 <script>
-  HS.beacon.ready(function () {
-    document.querySelector('#hs-beacon iframe').classList.add('mailpoet-chat');
-    MailPoet.showIntro();
-  });
+  const initIntro = () => {
+    const beacon = document.querySelector('#beacon-container iframe');
+    if (beacon) {
+      beacon.classList.add('mailpoet-chat');
+      MailPoet.showIntro();
+    } else {
+      setTimeout(initIntro, 200);
+    }
+  };
+  document.addEventListener('DOMContentLoaded', function(){
+    initIntro();
+  }, false);
 </script>
 <% endif %>
 <% endblock %>

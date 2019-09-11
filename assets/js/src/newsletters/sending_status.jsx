@@ -27,8 +27,11 @@ const messages = {
 };
 
 const SendingStatus = (props) => {
-  const newsletterId = props.match.params.id;
-  const [newsletterSubject, setNewsletterSubject] = React.useState('');
+  const [newsletter, setNewsletter] = React.useState({
+    id: props.match.params.id,
+    subject: '',
+    sent: false,
+  });
 
   React.useEffect(() => {
     MailPoet.Ajax.post({
@@ -36,19 +39,22 @@ const SendingStatus = (props) => {
       endpoint: 'newsletters',
       action: 'get',
       data: {
-        id: newsletterId,
+        id: newsletter.id,
       },
     })
-      .done((res) => setNewsletterSubject(res.data.subject))
+      .done((res) => setNewsletter({
+        id: newsletter.id,
+        subject: res.data.subject,
+        sent: res.data.sent_at !== null,
+      }))
       .fail((res) => MailPoet.Notice.showApiErrorNotice(res));
-  }, [newsletterId]);
+  }, [newsletter.id]);
 
   return (
     <>
       <h1>{MailPoet.I18n.t('sendingStatusTitle')}</h1>
       <StatsLink
-        newsletterId={newsletterId}
-        newsletterSubject={newsletterSubject}
+        newsletter={newsletter}
       />
       <SendingStatusListing location={props.location} params={props.match.params} />
     </>
@@ -99,17 +105,23 @@ SendingStatusListing.propTypes = {
   }).isRequired,
 };
 
-const StatsLink = ({ newsletterId, newsletterSubject }) => {
-  if (!newsletterId || !newsletterSubject) return null;
-  return <p><Link to={`/stats/${newsletterId}`}>{ newsletterSubject }</Link></p>;
+const StatsLink = ({ newsletter }) => {
+  if (!newsletter.id || !newsletter.subject || !newsletter.sent) return null;
+  return <p><Link to={`/stats/${newsletter.id}`}>{ newsletter.subject }</Link></p>;
 };
 StatsLink.propTypes = {
-  newsletterId: PropTypes.string,
-  newsletterSubject: PropTypes.string,
+  newsletter: PropTypes.shape({
+    id: PropTypes.string,
+    subject: PropTypes.string,
+    sent: PropTypes.bool,
+  }),
 };
 StatsLink.defaultProps = {
-  newsletterId: null,
-  newsletterSubject: null,
+  newsletter: {
+    id: null,
+    subject: null,
+    sent: false,
+  },
 };
 
 const ListingItem = ({

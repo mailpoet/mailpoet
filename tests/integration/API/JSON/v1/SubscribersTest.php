@@ -23,6 +23,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
@@ -60,7 +61,8 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(Captcha::class),
       $container->get(Functions::class),
       $container->get(SettingsController::class),
-      $this->captcha_session
+      $this->captcha_session,
+      $container->get(ConfirmationEmailMailer::class)
     );
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
@@ -533,7 +535,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment_1->id, $this->segment_2->id],
     ]);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
+    expect($response->errors[0]['message'])->equals('Please fill in the CAPTCHA.');
     $this->settings->set('captcha', []);
   }
 
@@ -722,6 +724,20 @@ class SubscribersTest extends \MailPoetTest {
 
     $this->endpoint->save($subscriber_data);
     expect(SendingQueue::findMany())->count(0);
+  }
+
+  function testItSendsConfirmationEmail() {
+    $response = $this->endpoint->sendConfirmationEmail(['id' => 'non_existent']);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+
+    $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber_1->id()]);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    wp_set_current_user(0);
+    $this->subscriber_1->count_confirmations = ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS;
+    $this->subscriber_1->save();
+    $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber_1->id()]);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   private function _createWelcomeNewsletter() {

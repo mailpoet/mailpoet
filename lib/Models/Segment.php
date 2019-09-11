@@ -189,11 +189,15 @@ class Segment extends Model {
   }
 
   static function groups() {
+    $all_query = Segment::getPublished();
+    if (!Segment::shouldShowWooCommerceSegment()) {
+      $all_query->whereNotEqual('type', self::TYPE_WC_USERS);
+    }
     return [
       [
         'name' => 'all',
         'label' => WPFunctions::get()->__('All', 'mailpoet'),
-        'count' => Segment::getPublished()->count(),
+        'count' => $all_query->count(),
       ],
       [
         'name' => 'trash',
