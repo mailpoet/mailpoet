@@ -48,6 +48,7 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
     tinymce.init(this.options.configurationFilter({
       target: this.el.querySelector(this.options.selector),
       inline: true,
+      contextmenu: false,
 
       menubar: false,
       toolbar1: this.options.toolbar1,
