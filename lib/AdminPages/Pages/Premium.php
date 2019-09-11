@@ -20,15 +20,17 @@ class Premium {
   }
 
   function render() {
-    $data = [
-      'subscriber_count' => Subscriber::getTotalSubscribers(),
-      'sub_menu' => Menu::MAIN_PAGE_SLUG,
-      'display_discount' => time() <= strtotime('2018-11-30 23:59:59'),
-    ];
-
     if ($this->features_controller->isSupported(FeaturesController::NEW_PREMIUM_PAGE)) {
+      $data = [
+        'subscriber_count' => Subscriber::getTotalSubscribers(),
+      ];
       $this->page_renderer->displayPage('premium.html', $data);
     } else {
+      $data = [
+        'subscriber_count' => Subscriber::getTotalSubscribers(),
+        'sub_menu' => Menu::MAIN_PAGE_SLUG,
+        'display_discount' => time() <= strtotime('2018-11-30 23:59:59'),
+      ];
       $this->page_renderer->displayPage('premium_old.html', $data);
     }
   }
