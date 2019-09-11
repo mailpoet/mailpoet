@@ -69,7 +69,9 @@ class PHPMail {
     $mailer->addAddress($subscriber['email'], $subscriber['name']);
     $mailer->Subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : '';
     $mailer->Body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text'];
-    $mailer->AltBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : '';
+    if ($mailer->ContentType !== 'text/plain') {
+      $mailer->AltBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : '';
+    }
     $mailer->Sender = $this->return_path;
     if (!empty($extra_params['unsubscribe_url'])) {
       $this->mailer->addCustomHeader('List-Unsubscribe', $extra_params['unsubscribe_url']);
