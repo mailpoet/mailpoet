@@ -31,6 +31,9 @@ class Subscription {
   function extendWooCommerceCheckoutForm() {
     $input_name = self::CHECKOUT_OPTIN_INPUT_NAME;
     $checked = $this->isCurrentUserSubscribed();
+    if (!empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
+      $checked = true;
+    }
     $label_string = $this->settings->get(self::OPTIN_MESSAGE_SETTING_NAME);
     $template = $this->wp->applyFilters(
       'mailpoet_woocommerce_checkout_optin_template',
