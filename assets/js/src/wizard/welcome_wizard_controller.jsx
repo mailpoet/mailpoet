@@ -159,7 +159,7 @@ const WelcomeWizardStepsController = (props) => {
           <WelcomeWizardStepLayout
             step={step}
             stepsCount={stepsCount}
-            illustrationUrl={window.wizard_tracking_illustration_url}
+            illustrationUrl={window.wizard_MSS_pitch_illustration_url}
           >
             <WelcomeWizardPitchMSSStep
               next={() => redirect(step)}
