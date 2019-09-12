@@ -45,6 +45,11 @@ class MailPoetAPITest extends \MailPoetTest {
         'text' => 'TEXT body',
       ],
     ];
+    $this->metaInfo = [
+      'email_type' => 'sending_test',
+      'subscriber_status' => 'unknown',
+      'subscriber_source' => 'administrator',
+    ];
   }
 
   function testItCanGenerateBodyForSingleMessage() {
@@ -79,29 +84,29 @@ class MailPoetAPITest extends \MailPoetTest {
   }
 
   function testItCanAddExtraParametersToSingleMessage() {
-    $extra_params = ['unsubscribe_url' => 'http://example.com'];
+    $extra_params = [
+      'unsubscribe_url' => 'http://example.com',
+      'meta' => $this->metaInfo,
+    ];
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $extra_params);
     expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url']);
+    expect($body[0]['meta'])->equals($extra_params['meta']);
   }
 
   function testItCanAddExtraParametersToMultipleMessages() {
-    $extra_params = ['unsubscribe_url' => 'http://example.com'];
     $newsletters = array_fill(0, 10, $this->newsletter);
     $subscribers = array_fill(0, 10, $this->subscriber);
-    $body = $this->mailer->getBody($newsletters, $subscribers, $extra_params);
-    expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][0]);
-    expect($body[9]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][9]);
-  }
-
-  function testItCanAddUnsubscribeUrlToMultipleMessages() {
-    $newsletters = array_fill(0, 10, $this->newsletter);
-    $subscribers = array_fill(0, 10, $this->subscriber);
-    $extra_params = ['unsubscribe_url' => array_fill(0, 10, 'http://example.com')];
+    $extra_params = [
+      'unsubscribe_url' => array_fill(0, 10, 'http://example.com'),
+      'meta' => array_fill(0, 10, $this->metaInfo),
+    ];
 
     $body = $this->mailer->getBody($newsletters, $subscribers, $extra_params);
     expect(count($body))->equals(10);
     expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][0]);
     expect($body[9]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][9]);
+    expect($body[0]['meta'])->equals($extra_params['meta'][0]);
+    expect($body[9]['meta'])->equals($extra_params['meta'][9]);
   }
 
   function testItCanProcessSubscriber() {
