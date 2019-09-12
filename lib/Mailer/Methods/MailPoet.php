@@ -96,20 +96,22 @@ class MailPoet {
         $body[] = $this->composeBody(
           $newsletter[$record],
           $this->processSubscriber($subscriber[$record]),
-          (!empty($extra_params['unsubscribe_url'][$record])) ? $extra_params['unsubscribe_url'][$record] : false
+          (!empty($extra_params['unsubscribe_url'][$record])) ? $extra_params['unsubscribe_url'][$record] : false,
+          (!empty($extra_params['meta'][$record])) ? $extra_params['meta'][$record] : false
         );
       }
     } else {
       $body[] = $this->composeBody(
         $newsletter,
         $this->processSubscriber($subscriber),
-        (!empty($extra_params['unsubscribe_url'])) ? $extra_params['unsubscribe_url'] : false
+        (!empty($extra_params['unsubscribe_url'])) ? $extra_params['unsubscribe_url'] : false,
+        (!empty($extra_params['meta'])) ? $extra_params['meta'] : false
       );
     }
     return $body;
   }
 
-  private function composeBody($newsletter, $subscriber, $unsubscribe_url) {
+  private function composeBody($newsletter, $subscriber, $unsubscribe_url, $meta) {
     $body = [
       'to' => ([
         'address' => $subscriber['email'],
@@ -133,6 +135,9 @@ class MailPoet {
     }
     if ($unsubscribe_url) {
       $body['list_unsubscribe'] = $unsubscribe_url;
+    }
+    if ($meta) {
+      $body['meta'] = $meta;
     }
     return $body;
   }
