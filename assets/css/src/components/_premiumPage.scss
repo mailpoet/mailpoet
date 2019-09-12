@@ -9,10 +9,14 @@
     padding: 0;
   }
 
+  .button.mailpoet-button-bigger {
+    margin: 1em 0;
+  }
+
   .mailpoet-premium-page-intro {
     display: flex;
     flex-direction: row;
-    margin-bottom: 20px;
+    margin-bottom: 3em;
 
     @media screen and (max-width: 500px) {
       flex-wrap: wrap;
@@ -34,10 +38,6 @@
       }
     }
 
-    p {
-      margin: 40px 0;
-    }
-
     @media screen and (max-width: 500px) {
       .mailpoet-premium-page-intro-link-wrap {
         text-align: center;
@@ -55,6 +55,11 @@
   .mailpoet-premium-page-text {
     padding-bottom: 4em;
     text-align: center;
+
+    .button.mailpoet-button-bigger:last-child {
+      margin-bottom: 0;
+    }
+
   }
 
   .mailpoet-premium-page-features {
