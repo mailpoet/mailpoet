@@ -3,10 +3,17 @@
 namespace MailPoet\Test\Acceptance;
 
 use Carbon\Carbon;
+use Codeception\Scenario;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 
 class AuthorizedEmailAddressesValidationCest {
+  function _before(\AcceptanceTester $I, Scenario $scenario) {
+    if (!getenv('WP_TEST_MAILER_MAILPOET_API')) {
+      $scenario->skip("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
+    }
+  }
+
   function authorizedEmailsValidation(\AcceptanceTester $I) {
     $unauthorized_sending_email = 'unauthorized1@email.com';
     $unauthorized_confirmation_email = 'unauthorized2@email.com';
