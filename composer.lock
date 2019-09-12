@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e62b9d7ada8eafe3949099154d9b415",
+    "content-hash": "72852ced0f14ad3aeea43f5ab2165144",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -5911,7 +5911,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -8404,7 +8404,16 @@
     "platform": {
         "php": ">=5.6"
     },
-    "platform-dev": [],
+    "platform-dev": {
+        "ext-gd": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-pcre": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-xml": "*",
+        "ext-zip": "*"
+    },
     "platform-overrides": {
         "php": "5.6.30"
     }
