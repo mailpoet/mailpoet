@@ -19,4 +19,12 @@ class MetaInfoTest extends \MailPoetUnitTest {
       'subscriber_source' => 'administrator',
     ]);
   }
+
+  function testItGetsMetaInfoForPreview() {
+    expect($this->meta->getPreviewMetaInfo())->equals([
+      'email_type' => 'preview',
+      'subscriber_status' => 'unknown',
+      'subscriber_source' => 'administrator',
+    ]);
+  }
 }

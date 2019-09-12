@@ -13,6 +13,7 @@ use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -132,7 +133,8 @@ class NewslettersTest extends \MailPoetTest {
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
-      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class)
+      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
+      ContainerWrapper::getInstance()->get(MetaInfo::class)
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -175,7 +177,8 @@ class NewslettersTest extends \MailPoetTest {
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
-      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class)
+      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
+      ContainerWrapper::getInstance()->get(MetaInfo::class)
     );
 
     $response = $this->endpoint->save($valid_data);
@@ -546,7 +549,8 @@ class NewslettersTest extends \MailPoetTest {
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
-      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class)
+      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
+      ContainerWrapper::getInstance()->get(MetaInfo::class)
     );
 
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);
@@ -798,6 +802,7 @@ class NewslettersTest extends \MailPoetTest {
     $unsubscribeLink = SubscriptionUrl::getUnsubscribeUrl(null);
     $manageLink = SubscriptionUrl::getManageUrl(null);
     $viewInBrowserLink = Url::getViewInBrowserUrl(null, $this->newsletter, false, false, true);
+    $mailerMetaInfo = new MetaInfo;
     $data = [
       'subscriber' => $subscriber,
       'id' => $this->newsletter->id,
@@ -805,12 +810,14 @@ class NewslettersTest extends \MailPoetTest {
         '\MailPoet\Mailer\Mailer',
         [
           'send' => function($newsletter, $subscriber, $extra_params)
-            use ($unsubscribeLink, $manageLink, $viewInBrowserLink)
+            use ($unsubscribeLink, $manageLink, $viewInBrowserLink, $mailerMetaInfo)
           {
+
             expect(is_array($newsletter))->true();
             expect($newsletter['body']['text'])->contains('Hello test');
             expect($subscriber)->equals($subscriber);
             expect($extra_params['unsubscribe_url'])->equals(home_url());
+            expect($extra_params['meta'])->equals($mailerMetaInfo->getPreviewMetaInfo());
             // system links are replaced with hashes
             expect($newsletter['body']['html'])->contains('href="' . $viewInBrowserLink . '">View in browser');
             expect($newsletter['body']['html'])->contains('href="' . $unsubscribeLink . '">Unsubscribe');
