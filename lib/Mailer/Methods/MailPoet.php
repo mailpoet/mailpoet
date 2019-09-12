@@ -90,49 +90,49 @@ class MailPoet {
   }
 
   function getBody($newsletter, $subscriber, $extra_params = []) {
-    $_this = $this;
-    $composeBody = function($newsletter, $subscriber, $unsubscribe_url) use($_this) {
-      $body = [
-        'to' => ([
-          'address' => $subscriber['email'],
-          'name' => $subscriber['name'],
-        ]),
-        'from' => ([
-          'address' => $_this->sender['from_email'],
-          'name' => $_this->sender['from_name'],
-        ]),
-        'reply_to' => ([
-          'address' => $_this->reply_to['reply_to_email'],
-          'name' => $_this->reply_to['reply_to_name'],
-        ]),
-        'subject' => $newsletter['subject'],
-      ];
-      if (!empty($newsletter['body']['html'])) {
-        $body['html'] = $newsletter['body']['html'];
-      }
-      if (!empty($newsletter['body']['text'])) {
-        $body['text'] = $newsletter['body']['text'];
-      }
-      if ($unsubscribe_url) {
-        $body['list_unsubscribe'] = $unsubscribe_url;
-      }
-      return $body;
-    };
     if (is_array($newsletter) && is_array($subscriber)) {
       $body = [];
       for ($record = 0; $record < count($newsletter); $record++) {
-        $body[] = $composeBody(
+        $body[] = $this->composeBody(
           $newsletter[$record],
           $this->processSubscriber($subscriber[$record]),
           (!empty($extra_params['unsubscribe_url'][$record])) ? $extra_params['unsubscribe_url'][$record] : false
         );
       }
     } else {
-      $body[] = $composeBody(
+      $body[] = $this->composeBody(
         $newsletter,
         $this->processSubscriber($subscriber),
         (!empty($extra_params['unsubscribe_url'])) ? $extra_params['unsubscribe_url'] : false
       );
+    }
+    return $body;
+  }
+
+  private function composeBody($newsletter, $subscriber, $unsubscribe_url) {
+    $body = [
+      'to' => ([
+        'address' => $subscriber['email'],
+        'name' => $subscriber['name'],
+      ]),
+      'from' => ([
+        'address' => $this->sender['from_email'],
+        'name' => $this->sender['from_name'],
+      ]),
+      'reply_to' => ([
+        'address' => $this->reply_to['reply_to_email'],
+        'name' => $this->reply_to['reply_to_name'],
+      ]),
+      'subject' => $newsletter['subject'],
+    ];
+    if (!empty($newsletter['body']['html'])) {
+      $body['html'] = $newsletter['body']['html'];
+    }
+    if (!empty($newsletter['body']['text'])) {
+      $body['text'] = $newsletter['body']['text'];
+    }
+    if ($unsubscribe_url) {
+      $body['list_unsubscribe'] = $unsubscribe_url;
     }
     return $body;
   }
