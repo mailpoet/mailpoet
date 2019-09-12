@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
+import { partial } from 'underscore';
 import MailPoet from 'mailpoet';
 import WelcomeWizardSenderStep from './steps/sender_step.jsx';
 import WelcomeWizardMigratedUserStep from './steps/migrated_user_step.jsx';
@@ -9,9 +10,10 @@ import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
 import WelcomeWizardStepLayout from './steps/step_layout.jsx';
 
 import CreateSenderSettings from './create_sender_settings.jsx';
+import { getStepsCount, redirectToNextStep } from './steps_numbers.jsx';
 
 const WelcomeWizardStepsController = (props) => {
-  const stepsCount = window.is_woocommerce_active ? 4 : 3;
+  const stepsCount = getStepsCount();
   const shouldSetSender = !window.is_mp2_migration_complete;
   const step = parseInt(props.match.params.step, 10);
 
@@ -29,13 +31,7 @@ const WelcomeWizardStepsController = (props) => {
     window.location = window.finish_wizard_url;
   }
 
-  function showWooCommerceStepOrFinish() {
-    if (stepsCount === 4) {
-      props.history.push('/steps/4');
-    } else {
-      finishWizard();
-    }
-  }
+  const redirect = partial(redirectToNextStep, props.history, finishWizard);
 
   function updateSettings(data) {
     setLoading(true);
@@ -57,7 +53,7 @@ const WelcomeWizardStepsController = (props) => {
 
   function activateTracking() {
     updateSettings({ analytics: { enabled: true } }).then(() => (
-      showWooCommerceStepOrFinish()));
+      redirect(step)));
   }
 
   function updateSender(data) {
@@ -66,7 +62,7 @@ const WelcomeWizardStepsController = (props) => {
 
   function submitSender() {
     updateSettings(CreateSenderSettings(sender))
-      .then(() => (props.history.push('/steps/2')));
+      .then(() => (redirect(step)));
   }
 
   function skipSenderStep() {
@@ -103,7 +99,7 @@ const WelcomeWizardStepsController = (props) => {
             illustrationUrl={window.wizard_sender_illustration_url}
           >
             <WelcomeWizardMigratedUserStep
-              next={() => props.history.push('/steps/2')}
+              next={() => redirect(step)}
             />
           </WelcomeWizardStepLayout>
         ) : null
@@ -117,7 +113,7 @@ const WelcomeWizardStepsController = (props) => {
             illustrationUrl={window.wizard_email_course_illustration_url}
           >
             <WelcomeWizardEmailCourseStep
-              next={() => props.history.push('/steps/3')}
+              next={() => redirect(step)}
             />
           </WelcomeWizardStepLayout>
         ) : null
@@ -131,9 +127,9 @@ const WelcomeWizardStepsController = (props) => {
             illustrationUrl={window.wizard_tracking_illustration_url}
           >
             <WelcomeWizardUsageTrackingStep
-              skip_action={showWooCommerceStepOrFinish}
+              skip_action={() => redirect(step)}
               allow_action={activateTracking}
-              allow_text={stepsCount === 4
+              allow_text={stepsCount > 3
                 ? MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
               loading={loading}
             />
@@ -149,7 +145,7 @@ const WelcomeWizardStepsController = (props) => {
             illustrationUrl={window.wizard_woocommerce_illustration_url}
           >
             <WelcomeWizardWooCommerceStep
-              next={finishWizard}
+              next={() => redirect(step)}
               screenshot_src={window.wizard_woocommerce_box_url}
               loading={loading}
             />
