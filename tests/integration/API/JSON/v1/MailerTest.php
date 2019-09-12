@@ -5,6 +5,7 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\v1\Mailer;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -20,7 +21,7 @@ class MailerTest extends \MailPoetTest {
     $authorized_emails_controller = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::never()]);
     // resumeSending() method should clear the mailer log's status
     $bridge = new Bridge($settings);
-    $mailer_endpoint = new Mailer($authorized_emails_controller, $settings, $bridge);
+    $mailer_endpoint = new Mailer($authorized_emails_controller, $settings, $bridge, new MetaInfo);
     $response = $mailer_endpoint->resumeSending();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $mailer_log = MailerLog::getMailerLog();
@@ -32,7 +33,7 @@ class MailerTest extends \MailPoetTest {
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'a@b.c']);
     $authorized_emails_controller = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]);
     $bridge = new Bridge($settings);
-    $mailer_endpoint = new Mailer($authorized_emails_controller, $settings, $bridge);
+    $mailer_endpoint = new Mailer($authorized_emails_controller, $settings, $bridge, new MetaInfo);
     $mailer_endpoint->resumeSending();
   }
 }
