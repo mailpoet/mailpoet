@@ -14,6 +14,7 @@
   var sender_data = <%= json_encode(sender) %>;
   var admin_email = <%= json_encode(admin_email) %>;
   var hide_mailpoet_beacon = true;
+  var subscribers_count = <%= subscribers_count %>;
 </script>
 
 <div id="mailpoet_wizard_container"></div>
@@ -43,6 +44,8 @@
 'welcomeWizardWooCommerceEmailsText': __('Create a new email to find the WooCommerce type of emails:'),
 'welcomeWizardEmailCourseTitle': __('Sign up to our 4-part email course'),
 'welcomeWizardEmailCourseText': __('A must for every beginner (in English only)'),
+'welcomeWizardMSSFreeTitle': __('MailPoet Premium is entirely free for you. Sign up!'),
+'welcomeWizardMSSNotFreeTitle': __('It’s now time to take your MailPoet to the next level'),
 'seeVideoGuide': _x('See video guide', 'A label on a button'),
 'skip': _x('Skip', 'A label on a skip button'),
 'noThanksSkip': _x('No thanks. Skip.', 'A label on a skip button'),
