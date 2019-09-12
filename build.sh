@@ -1,9 +1,15 @@
 #!/bin/bash -e
 
 # Translations (npm ci & composer install need to be run before)
-echo '[BUILD] Generating translations'
-./do translations:build
-./do translations:pack
+# On CircleCI (when $CIRCLE_BRANCH is set) build them only on 'release' branch.
+mkdir -p lang
+if [[ -n ${CIRCLE_BRANCH} && ${CIRCLE_BRANCH} != 'release' ]]; then
+  echo '[BUILD] Skipping translations'
+else
+  echo '[BUILD] Generating translations'
+  ./do translations:build
+  ./do translations:pack
+fi
 
 plugin_name='mailpoet'
 
