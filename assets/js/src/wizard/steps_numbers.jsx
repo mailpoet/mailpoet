@@ -8,24 +8,10 @@ export const getStepsCount = () => {
 };
 
 export const redirectToNextStep = (history, finishWizard, currentStep) => {
-  if (currentStep === 1) {
-    history.push('/steps/2');
-    return;
-  }
-  if (currentStep === 2) {
-    history.push('/steps/3');
-    return;
-  }
   const stepsCount = getStepsCount();
-  if (currentStep === 3 && stepsCount > 3) {
-    history.push('/steps/4');
-    return;
-  }
-  if (currentStep === 3 && stepsCount === 3) {
-    finishWizard();
-    return;
-  }
-  if (currentStep === 4) {
+  if (currentStep < stepsCount) {
+    history.push(`/steps/${currentStep + 1}`);
+  } else {
     finishWizard();
   }
 };
