@@ -2,9 +2,33 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
+const BenefitsList = () => (
+  <ul className="welcome_wizard_tracking_list">
+    <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
+    <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
+    <li>{MailPoet.I18n.t('welcomeWizardMSSList3WooCommerce')}</li>
+    <li>{MailPoet.I18n.t('welcomeWizardMSSList4')}</li>
+    <li>{MailPoet.I18n.t('welcomeWizardMSSList5')}</li>
+  </ul>
+);
+
 const FreePlanSubscribers = () => (
   <>
     <h1>{MailPoet.I18n.t('welcomeWizardMSSFreeTitle')}</h1>
+    <p>{MailPoet.I18n.t('welcomeWizardMSSFreeSubtitle')}</p>
+    <p>
+      {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
+      :
+    </p>
+    <BenefitsList />
+    <a
+      href="https://account.mailpoet.com/?s={number_of_subscribers}"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="button button-primary"
+    >
+      {MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
+    </a>
   </>
 );
 
