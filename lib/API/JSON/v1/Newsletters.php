@@ -10,6 +10,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\Listing;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -61,6 +62,9 @@ class Newsletters extends APIEndpoint {
   /** @var PostNotificationScheduler */
   private $post_notification_scheduler;
 
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
   function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
@@ -70,7 +74,8 @@ class Newsletters extends APIEndpoint {
     AuthorizedEmailsController $authorized_emails_controller,
     NewslettersRepository $newsletters_repository,
     NewslettersResponseBuilder $newsletters_response_builder,
-    PostNotificationScheduler $post_notification_scheduler
+    PostNotificationScheduler $post_notification_scheduler,
+    MetaInfo $mailerMetaInfo
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
@@ -81,6 +86,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletters_repository = $newsletters_repository;
     $this->newsletters_response_builder = $newsletters_response_builder;
     $this->post_notification_scheduler = $post_notification_scheduler;
+    $this->mailerMetaInfo = $mailerMetaInfo;
   }
 
   function get($data = []) {
@@ -455,7 +461,10 @@ class Newsletters extends APIEndpoint {
         $mailer = (!empty($data['mailer'])) ?
           $data['mailer'] :
           new \MailPoet\Mailer\Mailer();
-        $extra_params = ['unsubscribe_url' => WPFunctions::get()->homeUrl()];
+        $extra_params = [
+          'unsubscribe_url' => WPFunctions::get()->homeUrl(),
+          'meta' => $this->mailerMetaInfo->getPreviewMetaInfo(),
+        ];
         $result = $mailer->send($rendered_newsletter, $data['subscriber'], $extra_params);
 
         if ($result['response'] === false) {
