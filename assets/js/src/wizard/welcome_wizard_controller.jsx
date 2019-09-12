@@ -7,6 +7,7 @@ import WelcomeWizardMigratedUserStep from './steps/migrated_user_step.jsx';
 import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
 import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
 import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
+import WelcomeWizardPitchMSSStep from './steps/pitch_mss/step.jsx';
 import WelcomeWizardStepLayout from './steps/step_layout.jsx';
 
 import CreateSenderSettings from './create_sender_settings.jsx';
@@ -148,6 +149,20 @@ const WelcomeWizardStepsController = (props) => {
               next={() => redirect(step)}
               screenshot_src={window.wizard_woocommerce_box_url}
               loading={loading}
+            />
+          </WelcomeWizardStepLayout>
+        ) : null
+      }
+
+      { step === 5
+        ? (
+          <WelcomeWizardStepLayout
+            step={step}
+            stepsCount={stepsCount}
+            illustrationUrl={window.wizard_tracking_illustration_url}
+          >
+            <WelcomeWizardPitchMSSStep
+              next={() => redirect(step)}
             />
           </WelcomeWizardStepLayout>
         ) : null
