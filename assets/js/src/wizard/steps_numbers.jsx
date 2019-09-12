@@ -1,6 +1,6 @@
 
 export const getStepsCount = () => {
-  let stepsCount = 3;
+  let stepsCount = 4;
   if (window.is_woocommerce_active) {
     stepsCount += 1;
   }
