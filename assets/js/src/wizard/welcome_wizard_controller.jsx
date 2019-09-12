@@ -163,6 +163,7 @@ const WelcomeWizardStepsController = (props) => {
           >
             <WelcomeWizardPitchMSSStep
               next={() => redirect(step)}
+              subscribersCount={window.subscribers_count}
             />
           </WelcomeWizardStepLayout>
         ) : null
