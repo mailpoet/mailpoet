@@ -50,7 +50,7 @@ jobs:
       - run:
           name: Dump tests ENV variables for acceptance tests
           command: |
-            printenv | grep WP_TEST_ > .env
+            (printenv | grep WP_TEST_ > .env) || true
       - run:
           name: "QA Scripts"
           command: ./do qa
