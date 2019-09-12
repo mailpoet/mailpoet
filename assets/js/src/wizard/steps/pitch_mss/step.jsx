@@ -35,6 +35,23 @@ const FreePlanSubscribers = () => (
 const NotFreePlanSubscribers = () => (
   <>
     <h1>{MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}</h1>
+    <p>
+      {MailPoet.I18n.t('welcomeWizardMSSNotFreeSubtitle')}
+      :
+    </p>
+    <p>
+      {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
+      :
+    </p>
+    <BenefitsList />
+    <a
+      href="https://account.mailpoet.com/?s={number_of_subscribers}"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="button button-primary"
+    >
+      {MailPoet.I18n.t('welcomeWizardMSSNotFreeButton')}
+    </a>
   </>
 );
 
@@ -47,6 +64,22 @@ const Step = (props) => (
         <NotFreePlanSubscribers />
       )
     }
+    <p>
+      <a
+        onClick={props.next}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+          ) {
+            event.preventDefault();
+            props.next();
+          }
+        }}
+      >
+        {MailPoet.I18n.t('welcomeWizardMSSNoThanks')}
+      </a>
+    </p>
   </div>
 );
 
