@@ -25,8 +25,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function update() {
-    $this->say(getenv('WP_TEST_URL'));
-
     return $this->taskExecStack()
       ->stopOnFail()
       ->exec('./composer.phar update')
