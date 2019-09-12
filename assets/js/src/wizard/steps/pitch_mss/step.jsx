@@ -12,7 +12,7 @@ const BenefitsList = () => (
   </ul>
 );
 
-const FreePlanSubscribers = () => (
+const FreePlanSubscribers = (props) => (
   <>
     <h1>{MailPoet.I18n.t('welcomeWizardMSSFreeTitle')}</h1>
     <p>{MailPoet.I18n.t('welcomeWizardMSSFreeSubtitle')}</p>
@@ -22,7 +22,7 @@ const FreePlanSubscribers = () => (
     </p>
     <BenefitsList />
     <a
-      href="https://account.mailpoet.com/?s={number_of_subscribers}"
+      href={props.mailpoetAccountUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="button button-primary"
@@ -32,7 +32,11 @@ const FreePlanSubscribers = () => (
   </>
 );
 
-const NotFreePlanSubscribers = () => (
+FreePlanSubscribers.propTypes = {
+  mailpoetAccountUrl: PropTypes.string.isRequired,
+};
+
+const NotFreePlanSubscribers = (props) => (
   <>
     <h1>{MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}</h1>
     <p>
@@ -45,7 +49,7 @@ const NotFreePlanSubscribers = () => (
     </p>
     <BenefitsList />
     <a
-      href="https://account.mailpoet.com/?s={number_of_subscribers}"
+      href={props.mailpoetAccountUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="button button-primary"
@@ -55,13 +59,21 @@ const NotFreePlanSubscribers = () => (
   </>
 );
 
+NotFreePlanSubscribers.propTypes = {
+  mailpoetAccountUrl: PropTypes.string.isRequired,
+};
+
 const Step = (props) => (
   <div className="mailpoet_welcome_wizard_step_content">
     { props.subscribersCount < 1000
       ? (
-        <FreePlanSubscribers />
+        <FreePlanSubscribers
+          mailpoetAccountUrl={props.mailpoetAccountUrl}
+        />
       ) : (
-        <NotFreePlanSubscribers />
+        <NotFreePlanSubscribers
+          mailpoetAccountUrl={props.mailpoetAccountUrl}
+        />
       )
     }
     <p>
@@ -86,6 +98,7 @@ const Step = (props) => (
 Step.propTypes = {
   next: PropTypes.func.isRequired,
   subscribersCount: PropTypes.number.isRequired,
+  mailpoetAccountUrl: PropTypes.string.isRequired,
 };
 
 export default Step;
