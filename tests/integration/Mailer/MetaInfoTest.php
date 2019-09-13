@@ -59,6 +59,14 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
+  function testItGetsMetaInfoForNewSubscriberNotifications() {
+    expect($this->meta->getNewSubscriberNotificationMetaInfo())->equals([
+      'email_type' => 'new_subscriber_notification',
+      'subscriber_status' => 'unknown',
+      'subscriber_source' => 'administrator',
+    ]);
+  }
+
   function _after() {
     Subscriber::deleteMany();
   }
