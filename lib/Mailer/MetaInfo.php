@@ -14,6 +14,10 @@ class MetaInfo {
     return $this->makeMetaInfo('email_stats_notification', 'unknown', 'administrator');
   }
 
+  function getWordPressTransactionalMetaInfo() {
+    return $this->makeMetaInfo('transactional', 'unknown', 'administrator');
+  }
+
   private function makeMetaInfo($email_type,  $subscriber_status, $subscriber_source) {
     return [
       'email_type' => $email_type,

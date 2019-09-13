@@ -4,6 +4,7 @@ namespace MailPoet\Mailer\WordPress;
 
 use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 
 class WordpressMailerReplacer {
 
@@ -13,9 +14,13 @@ class WordpressMailerReplacer {
   /** @var Mailer */
   private $mailer;
 
-  function __construct(FeaturesController $features_controller, Mailer $mailer) {
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
+  function __construct(FeaturesController $features_controller, Mailer $mailer, MetaInfo $mailerMetaInfo) {
     $this->features_controller = $features_controller;
     $this->mailer = $mailer;
+    $this->mailerMetaInfo = $mailerMetaInfo;
   }
 
   public function replaceWordPressMailer() {
@@ -28,7 +33,7 @@ class WordpressMailerReplacer {
   }
 
   private function replaceWithCustomPhpMailer(&$obj = null) {
-    $obj = new WordPressMailer($this->mailer);
+    $obj = new WordPressMailer($this->mailer, $this->mailerMetaInfo);
     return $obj;
   }
 }
