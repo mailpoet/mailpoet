@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
@@ -45,7 +46,7 @@ class WorkerTest extends \MailPoetTest {
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = new SettingsController();
-    $this->stats_notifications = new Worker($this->mailer, $this->renderer, $this->settings, $this->makeEmpty(WCHelper::class));
+    $this->stats_notifications = new Worker($this->mailer, $this->renderer, $this->settings, $this->makeEmpty(WCHelper::class), new MetaInfo);
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
       'address' => 'email@example.com',

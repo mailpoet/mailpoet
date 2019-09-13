@@ -7,6 +7,7 @@ use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
@@ -28,6 +29,9 @@ class AutomatedEmails extends SimpleWorker {
   /** @var WCHelper */
   private $woocommerce_helper;
 
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
   /** @var float */
   public $timer;
 
@@ -36,6 +40,7 @@ class AutomatedEmails extends SimpleWorker {
     Renderer $renderer,
     SettingsController $settings,
     WCHelper $woocommerce_helper,
+    MetaInfo $mailerMetaInfo,
     $timer = false
   ) {
     parent::__construct($timer);
@@ -43,6 +48,7 @@ class AutomatedEmails extends SimpleWorker {
     $this->settings = $settings;
     $this->renderer = $renderer;
     $this->woocommerce_helper = $woocommerce_helper;
+    $this->mailerMetaInfo = $mailerMetaInfo;
     $this->timer = $timer ?: microtime(true);
   }
 
@@ -71,7 +77,10 @@ class AutomatedEmails extends SimpleWorker {
       $settings = $this->settings->get(Worker::SETTINGS_KEY);
       $newsletters = $this->getNewsletters();
       if ($newsletters) {
-        $this->mailer->send($this->constructNewsletter($newsletters), $settings['address']);
+        $extra_params = [
+          'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
+        ];
+        $this->mailer->send($this->constructNewsletter($newsletters), $settings['address'], $extra_params);
       }
     } catch (\Exception $e) {
       if (WP_DEBUG) {
