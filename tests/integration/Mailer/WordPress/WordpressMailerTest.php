@@ -9,13 +9,14 @@ if (!class_exists('PHPMailer')) {
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\MetaInfo;
 
 class WordpressMailerTest extends \MailPoetTest {
 
   function testItdoesNotSendWhenPreSendCheckFails() {
     $mailer = $this->createMock(Mailer::class);
     $mailer->expects($this->never())->method('send');
-    $wpMailer = new WordPressMailer($mailer);
+    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
   }
@@ -32,7 +33,7 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $wpMailer = new WordPressMailer($mailer);
+    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Text Body';
@@ -50,7 +51,7 @@ class WordpressMailerTest extends \MailPoetTest {
         'address' => 'email@example.com',
       ])
       ->willReturn(['response' => true]);
-    $wpMailer = new WordPressMailer($mailer);
+    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Body';
@@ -71,7 +72,7 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $wpMailer = new WordPressMailer($mailer);
+    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Html Body';
@@ -85,7 +86,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => true]);
-    $wpMailer = new WordPressMailer($mailer);
+    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
     expect($wpMailer->send())->true();
@@ -97,7 +98,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => false, 'error' => new MailerError('send', 1, 'Big Error')]);
-    $wpMailer = new WordPressMailer($mailer);
+    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
     $this->expectException(\phpmailerException::class);
@@ -109,7 +110,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->never())
       ->method('send');
-    $wpMailer = new WordPressMailer($mailer);
+    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
     $wpMailer->ContentType = 'application/json';
@@ -123,7 +124,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willThrowException(new \Exception('Big Error'));
-    $wpMailer = new WordPressMailer($mailer);
+    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
     $this->expectException(\phpmailerException::class);

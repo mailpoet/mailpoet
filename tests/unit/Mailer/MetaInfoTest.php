@@ -36,4 +36,12 @@ class MetaInfoTest extends \MailPoetUnitTest {
     ]);
   }
 
+  function testItGetsMetaInfoForWordPressTransactionalEmails() {
+    expect($this->meta->getWordPressTransactionalMetaInfo())->equals([
+      'email_type' => 'transactional',
+      'subscriber_status' => 'unknown',
+      'subscriber_source' => 'administrator',
+    ]);
+  }
+
 }

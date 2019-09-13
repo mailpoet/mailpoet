@@ -4,6 +4,7 @@ namespace MailPoet\Mailer\WordPress;
 
 use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 
 if (!class_exists('PHPMailer')) {
   require_once ABSPATH . WPINC . '/class-phpmailer.php';
@@ -14,9 +15,13 @@ class WordPressMailer extends \PHPMailer {
   /** @var Mailer */
   private $mailer;
 
-  function __construct(Mailer $mailer) {
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
+  function __construct(Mailer $mailer, MetaInfo $mailerMetaInfo) {
     parent::__construct(true);
     $this->mailer = $mailer;
+    $this->mailerMetaInfo = $mailerMetaInfo;
   }
 
   function send() {
@@ -27,7 +32,10 @@ class WordPressMailer extends \PHPMailer {
     $this->preSend();
 
     try {
-      $result = $this->mailer->send($this->getEmail(), $this->formatAddress($this->getToAddresses()));
+      $extra_params = [
+        'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo(),
+      ];
+      $result = $this->mailer->send($this->getEmail(), $this->formatAddress($this->getToAddresses()), $extra_params);
     } catch (\Exception $e) {
       throw new \phpmailerException($e->getMessage(), $e->getCode(), $e);
     }
