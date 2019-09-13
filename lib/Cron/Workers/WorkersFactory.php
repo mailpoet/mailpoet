@@ -20,6 +20,7 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -61,6 +62,9 @@ class WorkersFactory {
   /** @var SubscribersFinder */
   private $subscribers_finder;
 
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
   public function __construct(
     SendingErrorHandler $sending_error_handler,
     StatsNotificationScheduler $statsNotificationsScheduler,
@@ -72,7 +76,8 @@ class WorkersFactory {
     WooCommerceHelper $woocommerce_helper,
     WooCommercePurchases $woocommerce_purchases,
     AuthorizedEmailsController $authorized_emails_controller,
-    SubscribersFinder $subscribers_finder
+    SubscribersFinder $subscribers_finder,
+    MetaInfo $mailerMetaInfo
   ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->statsNotificationsScheduler = $statsNotificationsScheduler;
@@ -85,6 +90,7 @@ class WorkersFactory {
     $this->woocommerce_purchases = $woocommerce_purchases;
     $this->authorized_emails_controller = $authorized_emails_controller;
     $this->subscribers_finder = $subscribers_finder;
+    $this->mailerMetaInfo = $mailerMetaInfo;
   }
 
   /** @return SchedulerWorker */
@@ -99,12 +105,12 @@ class WorkersFactory {
 
   /** @return StatsNotificationsWorker */
   function createStatsNotificationsWorker($timer) {
-    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $timer);
+    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $this->mailerMetaInfo, $timer);
   }
 
   /** @return StatsNotificationsWorkerForAutomatedEmails */
   function createStatsNotificationsWorkerForAutomatedEmails($timer) {
-    return new StatsNotificationsWorkerForAutomatedEmails($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $timer);
+    return new StatsNotificationsWorkerForAutomatedEmails($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $this->mailerMetaInfo, $timer);
   }
 
   /** @return SendingServiceKeyCheckWorker */

@@ -27,4 +27,13 @@ class MetaInfoTest extends \MailPoetUnitTest {
       'subscriber_source' => 'administrator',
     ]);
   }
+
+  function testItGetsMetaInfoForStatsNotifications() {
+    expect($this->meta->getStatsNotificationMetaInfo())->equals([
+      'email_type' => 'email_stats_notification',
+      'subscriber_status' => 'unknown',
+      'subscriber_source' => 'administrator',
+    ]);
+  }
+
 }

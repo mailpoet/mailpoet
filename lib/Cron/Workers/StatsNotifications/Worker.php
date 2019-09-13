@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
@@ -35,11 +36,15 @@ class Worker {
   /** @var WCHelper */
   private $woocommerce_helper;
 
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
   function __construct(
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
     WCHelper $woocommerce_helper,
+    MetaInfo $mailerMetaInfo,
     $timer = false
   ) {
     $this->timer = $timer ?: microtime(true);
@@ -47,6 +52,7 @@ class Worker {
     $this->mailer = $mailer;
     $this->settings = $settings;
     $this->woocommerce_helper = $woocommerce_helper;
+    $this->mailerMetaInfo = $mailerMetaInfo;
   }
 
   /** @throws \Exception */
@@ -54,7 +60,10 @@ class Worker {
     $settings = $this->settings->get(self::SETTINGS_KEY);
     foreach (self::getDueTasks() as $task) {
       try {
-        $this->mailer->send($this->constructNewsletter($task), $settings['address']);
+        $extra_params = [
+          'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
+        ];
+        $this->mailer->send($this->constructNewsletter($task), $settings['address'], $extra_params);
       } catch (\Exception $e) {
         if (WP_DEBUG) {
           throw $e;

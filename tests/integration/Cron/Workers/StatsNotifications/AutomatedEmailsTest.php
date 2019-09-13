@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
@@ -43,6 +44,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
         $this->renderer,
         $this->settings,
         $this->makeEmpty(WCHelper::class),
+        new MetaInfo,
       ])
       ->setMethods(['getNewsletters'])
       ->getMock();

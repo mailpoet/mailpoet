@@ -10,6 +10,10 @@ class MetaInfo {
     return $this->makeMetaInfo('preview', 'unknown', 'administrator');
   }
 
+  function getStatsNotificationMetaInfo() {
+    return $this->makeMetaInfo('email_stats_notification', 'unknown', 'administrator');
+  }
+
   private function makeMetaInfo($email_type,  $subscriber_status, $subscriber_source) {
     return [
       'email_type' => $email_type,
