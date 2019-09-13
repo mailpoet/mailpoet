@@ -3,12 +3,14 @@ namespace MailPoet\Test\Mailer;
 
 use Codeception\Stub;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Models\Subscriber;
 
-class MetaInfoTest extends \MailPoetUnitTest {
+class MetaInfoTest extends \MailPoetTest {
   /** @var MetaInfo */
   private $meta;
 
   function _before() {
+    parent::_before();
     $this->meta = new MetaInfo;
   }
 
@@ -44,4 +46,20 @@ class MetaInfoTest extends \MailPoetUnitTest {
     ]);
   }
 
+  function testItGetsMetaInfoForConfirmationEmails() {
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'meta@test.fake',
+      'status' => 'unconfirmed',
+      'source' => 'form',
+    ]);
+    expect($this->meta->getConfirmationMetaInfo($subscriber))->equals([
+      'email_type' => 'confirmation',
+      'subscriber_status' => 'unconfirmed',
+      'subscriber_source' => 'form',
+    ]);
+  }
+
+  function _after() {
+    Subscriber::deleteMany();
+  }
 }
