@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Mailer;
 
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 
 class MetaInfo {
@@ -26,6 +27,28 @@ class MetaInfo {
 
   function getNewSubscriberNotificationMetaInfo() {
     return $this->makeMetaInfo('new_subscriber_notification', 'unknown', 'administrator');
+  }
+
+  function getNewsletterMetaInfo($newsletter, Subscriber $subscriber) {
+    $type = 'unknown';
+    switch ($newsletter->type) {
+      case Newsletter::TYPE_AUTOMATIC:
+        $group = isset($newsletter->options['group']) ? $newsletter->options['group'] : 'unknown';
+        $event = isset($newsletter->options['event']) ? $newsletter->options['event'] : 'unknown';
+        $type = sprintf('automatic_%s_%s', $group, $event);
+        break;
+      case Newsletter::TYPE_STANDARD:
+        $type = 'newsletter';
+        break;
+      case Newsletter::TYPE_WELCOME:
+        $type = 'welcome';
+        break;
+      case Newsletter::TYPE_NOTIFICATION:
+      case Newsletter::TYPE_NOTIFICATION_HISTORY:
+        $type = 'post_notification';
+        break;
+    }
+    return $this->makeMetaInfo($type, $subscriber->status, $subscriber->source);
   }
 
   private function makeMetaInfo($email_type,  $subscriber_status, $subscriber_source) {
