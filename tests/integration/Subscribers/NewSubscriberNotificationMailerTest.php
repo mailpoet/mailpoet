@@ -65,7 +65,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
-        Expected::once(function($newsletter, $subscriber) {
+        Expected::once(function($newsletter, $subscriber, $extra_params) {
           expect($subscriber)->equals('a@b.c');
           expect($newsletter)->hasKey('subject');
           expect($newsletter)->hasKey('body');
@@ -76,6 +76,11 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
           expect($newsletter['body'])->count(2);
           expect($newsletter['body']['text'])->contains('subscriber@example.com');
           expect($newsletter['body']['html'])->contains('subscriber@example.com');
+          expect($extra_params['meta'])->equals([
+            'email_type' => 'new_subscriber_notification',
+            'subscriber_status' => 'unknown',
+            'subscriber_source' => 'administrator',
+          ]);
         }),
     ], $this);
 

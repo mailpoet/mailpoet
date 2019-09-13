@@ -3,6 +3,7 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
@@ -21,6 +22,9 @@ class NewSubscriberNotificationMailer {
   /** @var SettingsController */
   private $settings;
 
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
   /**
    * @param \MailPoet\Mailer\Mailer|null $mailer
    * @param Renderer|null $renderer
@@ -35,6 +39,7 @@ class NewSubscriberNotificationMailer {
     }
     $this->mailer = $mailer;
     $this->settings = new SettingsController();
+    $this->mailerMetaInfo = new MetaInfo();
   }
 
   /**
@@ -49,7 +54,10 @@ class NewSubscriberNotificationMailer {
       return;
     }
     try {
-      $this->getMailer()->send($this->constructNewsletter($subscriber, $segments), $settings['address']);
+      $extra_params = [
+        'meta' => $this->mailerMetaInfo->getNewSubscriberNotificationMetaInfo(),
+      ];
+      $this->getMailer()->send($this->constructNewsletter($subscriber, $segments), $settings['address'], $extra_params);
     } catch (\Exception $e) {
       if (WP_DEBUG) {
         throw $e;
