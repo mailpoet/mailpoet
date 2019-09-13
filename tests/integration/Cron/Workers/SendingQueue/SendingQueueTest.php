@@ -60,6 +60,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->subscriber->first_name = 'John';
     $this->subscriber->last_name = 'Doe';
     $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $this->subscriber->source = 'administrator';
     $this->subscriber->save();
     $this->segment = Segment::create();
     $this->segment->name = 'segment';
@@ -250,6 +251,12 @@ class SendingQueueTest extends \MailPoetTest {
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extra_params) use ($directUnsubscribeURL) {
             expect(isset($extra_params['unsubscribe_url']))->true();
             expect($extra_params['unsubscribe_url'])->equals($directUnsubscribeURL);
+            expect(isset($extra_params['meta']))->true();
+            expect($extra_params['meta'])->equals([
+              'email_type' => 'newsletter',
+              'subscriber_status' => 'subscribed',
+              'subscriber_source' => 'administrator',
+            ]);
             return true;
           }),
         ],
@@ -272,6 +279,12 @@ class SendingQueueTest extends \MailPoetTest {
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extra_params) use ($trackedUnsubscribeURL) {
             expect(isset($extra_params['unsubscribe_url']))->true();
             expect($extra_params['unsubscribe_url'])->equals($trackedUnsubscribeURL);
+            expect(isset($extra_params['meta']))->true();
+            expect($extra_params['meta'])->equals([
+              'email_type' => 'newsletter',
+              'subscriber_status' => 'subscribed',
+              'subscriber_source' => 'administrator',
+            ]);
             return true;
           }),
         ],

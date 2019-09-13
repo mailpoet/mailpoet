@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsSche
 use MailPoet\Logging\Logger;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
@@ -31,12 +32,16 @@ class SendingQueue {
   /** @var SendingErrorHandler */
   private $error_handler;
 
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
   function __construct(SendingErrorHandler $error_handler, StatsNotificationsScheduler $stats_notifications_scheduler, $timer = false, $mailer_task = false, $newsletter_task = false) {
     $this->error_handler = $error_handler;
     $this->stats_notifications_scheduler = $stats_notifications_scheduler;
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
     $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
+    $this->mailerMetaInfo = new MetaInfo;
     $wp = new WPFunctions;
     $this->batch_size = $wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
   }
@@ -67,6 +72,11 @@ class SendingQueue {
       }
       // clone the original object to be used for processing
       $_newsletter = (object)$newsletter->asArray();
+      $options = $newsletter->options()->findMany();
+      if (!empty($options)) {
+        $options = array_column($options, 'value', 'name');
+      }
+      $_newsletter->options = $options;
       // configure mailer
       $this->mailer_task->configureMailer($newsletter);
       // get newsletter segments
@@ -139,6 +149,7 @@ class SendingQueue {
     $prepared_subscribers_ids = [];
     $unsubscribe_urls = [];
     $statistics = [];
+    $metas = [];
     foreach ($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
       $prepared_newsletters[] =
@@ -154,6 +165,7 @@ class SendingQueue {
       $prepared_subscribers_ids[] = $subscriber->id;
       // save personalized unsubsribe link
       $unsubscribe_urls[] = Links::getUnsubscribeUrl($queue, $subscriber->id);
+      $metas[] = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriber);
       // keep track of values for statistics purposes
       $statistics[] = [
         'newsletter_id' => $newsletter->id,
@@ -167,7 +179,7 @@ class SendingQueue {
           $prepared_newsletters[0],
           $prepared_subscribers[0],
           $statistics[0],
-          ['unsubscribe_url' => $unsubscribe_urls[0]]
+          ['unsubscribe_url' => $unsubscribe_urls[0], 'meta' => $metas[0]]
         );
         $prepared_newsletters = [];
         $prepared_subscribers = [];
@@ -183,7 +195,7 @@ class SendingQueue {
         $prepared_newsletters,
         $prepared_subscribers,
         $statistics,
-        ['unsubscribe_url' => $unsubscribe_urls]
+        ['unsubscribe_url' => $unsubscribe_urls, 'meta' => $metas]
       );
     }
     return $queue;

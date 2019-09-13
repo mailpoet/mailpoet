@@ -3,6 +3,7 @@ namespace MailPoet\Test\Mailer;
 
 use Codeception\Stub;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 
 class MetaInfoTest extends \MailPoetTest {
@@ -47,8 +48,8 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   function testItGetsMetaInfoForConfirmationEmails() {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'meta@test.fake',
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
       'status' => 'unconfirmed',
       'source' => 'form',
     ]);
@@ -64,6 +65,94 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 'new_subscriber_notification',
       'subscriber_status' => 'unknown',
       'subscriber_source' => 'administrator',
+    ]);
+  }
+
+  function testItGetsMetaInfoForStandardNewsletter() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'status' => 'subscribed',
+      'source' => 'form',
+    ]);
+    $newsletter = (object)[
+      'type' => Newsletter::TYPE_STANDARD,
+    ];
+    expect($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
+      'email_type' => 'newsletter',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+  }
+
+  function testItGetsMetaInfoForWelcomeEmail() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'status' => 'subscribed',
+      'source' => 'form',
+    ]);
+    $newsletter = (object)[
+      'type' => Newsletter::TYPE_WELCOME,
+    ];
+    expect($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
+      'email_type' => 'welcome',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+  }
+
+  function testItGetsMetaInfoForPostNotification() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'status' => 'subscribed',
+      'source' => 'form',
+    ]);
+    $newsletter1 = (object)[
+      'type' => Newsletter::TYPE_NOTIFICATION,
+    ];
+    $newsletter2 = (object)[
+      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+    ];
+    expect($this->meta->getNewsletterMetaInfo($newsletter1, $subscriber))->equals([
+      'email_type' => 'post_notification',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+    expect($this->meta->getNewsletterMetaInfo($newsletter2, $subscriber))->equals([
+      'email_type' => 'post_notification',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+  }
+
+  function testItGetsMetaInfoForAutomaticEmails() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'status' => 'subscribed',
+      'source' => 'form',
+    ]);
+    $newsletter1 = (object)[
+      'type' => Newsletter::TYPE_AUTOMATIC,
+      'options' => [
+        'group' => 'woocommerce',
+        'event' => 'woocommerce_first_purchase',
+      ],
+    ];
+    $newsletter2 = (object)[
+      'type' => Newsletter::TYPE_AUTOMATIC,
+      'options' => [
+        'group' => 'woocommerce',
+        'event' => 'woocommerce_purchased_in_category',
+      ],
+    ];
+    expect($this->meta->getNewsletterMetaInfo($newsletter1, $subscriber))->equals([
+      'email_type' => 'automatic_woocommerce_woocommerce_first_purchase',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+    expect($this->meta->getNewsletterMetaInfo($newsletter2, $subscriber))->equals([
+      'email_type' => 'automatic_woocommerce_woocommerce_purchased_in_category',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
     ]);
   }
 
