@@ -23,13 +23,20 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'first_name' => 'John',
       'last_name' => 'Mailer',
       'email' => 'john@mailpoet.com',
+      'status' => 'unconfirmed',
+      'source' => 'api',
     ]);
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
-        Stub\Expected::once(function($email) {
+        Stub\Expected::once(function($email, $subscriber, $extra_params) {
           expect($email['body']['html'])->contains('<strong>Test segment</strong>');
           expect($email['body']['html'])->contains('<a target="_blank" href="http://example.com">I confirm my subscription!</a>');
+          expect($extra_params['meta'])->equals([
+            'email_type' => 'confirmation',
+            'subscriber_status' => 'unconfirmed',
+            'subscriber_source' => 'api',
+          ]);
         }),
     ], $this);
 

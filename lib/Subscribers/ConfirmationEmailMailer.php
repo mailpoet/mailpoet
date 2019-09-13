@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers;
 
 use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
@@ -25,6 +26,9 @@ class ConfirmationEmailMailer {
   /** @var SettingsController */
   private $settings;
 
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
+
   /**
    * @param Mailer|null $mailer
    */
@@ -38,6 +42,7 @@ class ConfirmationEmailMailer {
       $this->wp = new WPFunctions;
     }
     $this->settings = new SettingsController();
+    $this->mailerMetaInfo = new MetaInfo;
   }
 
   function sendConfirmationEmail(Subscriber $subscriber) {
@@ -96,7 +101,10 @@ class ConfirmationEmailMailer {
         $this->mailer = new Mailer();
       }
       $this->mailer->init();
-      $result = $this->mailer->send($email, $subscriber);
+      $extra_params = [
+        'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
+      ];
+      $result = $this->mailer->send($email, $subscriber, $extra_params);
       if ($result['response'] === false) {
         $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
         return false;

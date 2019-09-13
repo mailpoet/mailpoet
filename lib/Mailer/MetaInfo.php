@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Mailer;
 
+use MailPoet\Models\Subscriber;
+
 class MetaInfo {
   function getSendingTestMetaInfo() {
     return $this->makeMetaInfo('sending_test', 'unknown', 'administrator');
@@ -16,6 +18,10 @@ class MetaInfo {
 
   function getWordPressTransactionalMetaInfo() {
     return $this->makeMetaInfo('transactional', 'unknown', 'administrator');
+  }
+
+  function getConfirmationMetaInfo(Subscriber $subscriber) {
+    return $this->makeMetaInfo('confirmation', $subscriber->status, $subscriber->source);
   }
 
   private function makeMetaInfo($email_type,  $subscriber_status, $subscriber_source) {
