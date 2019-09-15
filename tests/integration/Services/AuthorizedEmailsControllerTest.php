@@ -31,15 +31,16 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
-  function testItResetsAuthorisedEmailsErrorIfIntalationDateIsOlderThanAuthEmailsFeature() {
+  function testItSetsProperErrorForOldUsers() {
     $this->settings->set('installed_at', '2018-03-04');
+    $this->settings->set('sender.address', 'invalid@email.com');
     $this->setMailPoetSendingMethod();
-    $controller = $this->getController($authorized_emails_from_api = null);
+    $controller = $this->getController($authorized_emails_from_api = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
-    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
+    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com']);
   }
 
-  function testItSetProperErrorForInvalidDefaultSender() {
+  function testItSetsProperErrorForInvalidDefaultSender() {
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'invalid@email.com');
     $this->setMailPoetSendingMethod();
