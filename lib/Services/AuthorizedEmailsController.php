@@ -29,9 +29,7 @@ class AuthorizedEmailsController {
   }
 
   function checkAuthorizedEmailAddresses() {
-    $installed_at = new Carbon($this->settings->get('installed_at'));
-    $authorized_emails_release_date = new Carbon('2019-03-06');
-    if (!Bridge::isMPSendingServiceEnabled() || $installed_at < $authorized_emails_release_date) {
+    if (!Bridge::isMPSendingServiceEnabled()) {
       $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
       $this->updateMailerLog();
       return;
