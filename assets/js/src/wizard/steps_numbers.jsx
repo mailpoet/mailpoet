@@ -1,7 +1,10 @@
 
 export const getStepsCount = () => {
-  let stepsCount = 4;
+  let stepsCount = 3;
   if (window.is_woocommerce_active) {
+    stepsCount += 1;
+  }
+  if (!window.has_premium_key) {
     stepsCount += 1;
   }
   return stepsCount;
