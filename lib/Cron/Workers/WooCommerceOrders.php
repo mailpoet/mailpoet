@@ -42,7 +42,8 @@ class WooCommerceOrders extends SimpleWorker {
     $meta = $task->getMeta();
     $last_id = isset($meta['last_id']) ? $meta['last_id'] : 0;
     add_filter('posts_where', function ($where = '') use ($last_id) {
-      return $where . ' AND wp_posts.ID > ' . $last_id;
+      global $wpdb;
+      return $where . " AND {$wpdb->prefix}posts.ID > " . $last_id;
     }, 10, 2);
 
     $order_ids = $this->woocommerce_helper->wcGetOrders([
