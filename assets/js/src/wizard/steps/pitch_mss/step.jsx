@@ -28,6 +28,10 @@ const Controlls = (props) => (
         target="_blank"
         rel="noopener noreferrer"
         className="button button-primary"
+        onClick={() => {
+          window.open(props.mailpoetAccountUrl);
+          props.next();
+        }}
       >
         {props.nextButtonText}
       </a>
