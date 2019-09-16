@@ -15,3 +15,24 @@ export const redirectToNextStep = (history, finishWizard, currentStep) => {
     finishWizard();
   }
 };
+
+export const mapStepNumberToStepName = (stepNumber) => {
+  const shouldSetSender = !window.is_mp2_migration_complete;
+  const isWoocommerceActive = window.is_woocommerce_active;
+  if (stepNumber === 1 && shouldSetSender) {
+    return 'WelcomeWizardSenderStep';
+  }
+  if (stepNumber === 1 && !shouldSetSender) {
+    return 'WelcomeWizardMigratedUserStep';
+  }
+  if (stepNumber === 2) {
+    return 'WelcomeWizardEmailCourseStep';
+  }
+  if (stepNumber === 3) {
+    return 'WelcomeWizardUsageTrackingStep';
+  }
+  if (stepNumber === 4 && isWoocommerceActive) {
+    return 'WelcomeWizardWooCommerceStep';
+  }
+  return 'WelcomeWizardPitchMSSStep';
+};
