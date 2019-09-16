@@ -11,11 +11,10 @@ import WelcomeWizardPitchMSSStep from './steps/pitch_mss/step.jsx';
 import WelcomeWizardStepLayout from './steps/step_layout.jsx';
 
 import CreateSenderSettings from './create_sender_settings.jsx';
-import { getStepsCount, redirectToNextStep } from './steps_numbers.jsx';
+import { getStepsCount, redirectToNextStep, mapStepNumberToStepName } from './steps_numbers.jsx';
 
 const WelcomeWizardStepsController = (props) => {
   const stepsCount = getStepsCount();
-  const shouldSetSender = !window.is_mp2_migration_complete;
   const step = parseInt(props.match.params.step, 10);
 
   const [loading, setLoading] = useState(false);
@@ -72,9 +71,11 @@ const WelcomeWizardStepsController = (props) => {
       .then(finishWizard);
   }
 
+  const stepName = mapStepNumberToStepName(step);
+
   return (
     <div className="mailpoet_welcome_wizard_steps">
-      {step === 1 && shouldSetSender
+      { stepName === 'WelcomeWizardSenderStep'
         ? (
           <WelcomeWizardStepLayout
             step={step}
@@ -92,7 +93,7 @@ const WelcomeWizardStepsController = (props) => {
         ) : null
       }
 
-      { step === 1 && !shouldSetSender
+      { stepName === 'WelcomeWizardMigratedUserStep'
         ? (
           <WelcomeWizardStepLayout
             step={step}
@@ -106,7 +107,7 @@ const WelcomeWizardStepsController = (props) => {
         ) : null
       }
 
-      { step === 2
+      { stepName === 'WelcomeWizardEmailCourseStep'
         ? (
           <WelcomeWizardStepLayout
             step={step}
@@ -120,7 +121,7 @@ const WelcomeWizardStepsController = (props) => {
         ) : null
       }
 
-      { step === 3
+      { stepName === 'WelcomeWizardUsageTrackingStep'
         ? (
           <WelcomeWizardStepLayout
             step={step}
@@ -138,7 +139,7 @@ const WelcomeWizardStepsController = (props) => {
         ) : null
       }
 
-      { step === 4
+      { stepName === 'WelcomeWizardWooCommerceStep'
         ? (
           <WelcomeWizardStepLayout
             step={step}
@@ -154,7 +155,7 @@ const WelcomeWizardStepsController = (props) => {
         ) : null
       }
 
-      { step === 5
+      { stepName === 'WelcomeWizardPitchMSSStep'
         ? (
           <WelcomeWizardStepLayout
             step={step}
