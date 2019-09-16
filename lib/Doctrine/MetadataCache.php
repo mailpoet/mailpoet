@@ -22,7 +22,9 @@ class MetadataCache extends CacheProvider {
   function __construct($dir) {
     $this->is_dev_mode = defined('WP_DEBUG') && WP_DEBUG && class_exists(SimpleAnnotationReader::class);
     $this->directory = rtrim($dir, '/\\');
-    @mkdir($this->directory);
+    if (!file_exists($this->directory)) {
+      mkdir($this->directory);
+    }
   }
 
   protected function doFetch($id) {
