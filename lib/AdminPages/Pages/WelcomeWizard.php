@@ -5,6 +5,7 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
 use MailPoet\Config\MP2Migrator;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -23,16 +24,21 @@ class WelcomeWizard {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var ServicesChecker */
+  private $services_checker;
+
   function __construct(
     PageRenderer $page_renderer,
     SettingsController $settings,
     WooCommerceHelper $woocommerce_helper,
-    WPFunctions $wp
+    WPFunctions $wp,
+    ServicesChecker $services_checker
   ) {
     $this->page_renderer = $page_renderer;
     $this->settings = $settings;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->wp = $wp;
+    $this->services_checker = $services_checker;
   }
 
   function render() {
@@ -44,6 +50,7 @@ class WelcomeWizard {
       'sender' => $this->settings->get('sender'),
       'admin_email' => $this->wp->getOption('admin_email'),
       'subscribers_count' => Subscriber::count(),
+      'has_premium_key' => $this->services_checker->isPremiumKeyValid(),
     ];
     $this->page_renderer->displayPage('welcome_wizard.html', $data);
   }
