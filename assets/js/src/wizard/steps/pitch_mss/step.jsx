@@ -2,15 +2,23 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-const BenefitsList = () => (
+const BenefitsList = (props) => (
   <ul className="welcome_wizard_tracking_list">
     <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
     <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
-    <li>{MailPoet.I18n.t('welcomeWizardMSSList3WooCommerce')}</li>
+    {
+      props.isWoocommerceActive ? (
+        <li>{MailPoet.I18n.t('welcomeWizardMSSList3WooCommerce')}</li>
+      ) : null
+    }
     <li>{MailPoet.I18n.t('welcomeWizardMSSList4')}</li>
     <li>{MailPoet.I18n.t('welcomeWizardMSSList5')}</li>
   </ul>
 );
+
+BenefitsList.propTypes = {
+  isWoocommerceActive: PropTypes.bool.isRequired,
+};
 
 const Controlls = (props) => (
   <div className="mailpoet_welcome_wizard_step_controls">
@@ -57,7 +65,9 @@ const FreePlanSubscribers = (props) => (
       {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
       :
     </p>
-    <BenefitsList />
+    <BenefitsList
+      isWoocommerceActive={props.isWoocommerceActive}
+    />
     <Controlls
       mailpoetAccountUrl={props.mailpoetAccountUrl}
       next={props.next}
@@ -69,6 +79,7 @@ const FreePlanSubscribers = (props) => (
 FreePlanSubscribers.propTypes = {
   mailpoetAccountUrl: PropTypes.string.isRequired,
   next: PropTypes.func.isRequired,
+  isWoocommerceActive: PropTypes.bool.isRequired,
 };
 
 const NotFreePlanSubscribers = (props) => (
@@ -82,7 +93,9 @@ const NotFreePlanSubscribers = (props) => (
       {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
       :
     </p>
-    <BenefitsList />
+    <BenefitsList
+      isWoocommerceActive={props.isWoocommerceActive}
+    />
     <Controlls
       mailpoetAccountUrl={props.mailpoetAccountUrl}
       next={props.next}
@@ -94,6 +107,7 @@ const NotFreePlanSubscribers = (props) => (
 NotFreePlanSubscribers.propTypes = {
   mailpoetAccountUrl: PropTypes.string.isRequired,
   next: PropTypes.func.isRequired,
+  isWoocommerceActive: PropTypes.bool.isRequired,
 };
 
 const Step = (props) => (
@@ -103,11 +117,13 @@ const Step = (props) => (
         <FreePlanSubscribers
           mailpoetAccountUrl={props.mailpoetAccountUrl}
           next={props.next}
+          isWoocommerceActive={props.isWoocommerceActive}
         />
       ) : (
         <NotFreePlanSubscribers
           mailpoetAccountUrl={props.mailpoetAccountUrl}
           next={props.next}
+          isWoocommerceActive={props.isWoocommerceActive}
         />
       )
     }
@@ -118,6 +134,7 @@ Step.propTypes = {
   next: PropTypes.func.isRequired,
   subscribersCount: PropTypes.number.isRequired,
   mailpoetAccountUrl: PropTypes.string.isRequired,
+  isWoocommerceActive: PropTypes.bool.isRequired,
 };
 
 export default Step;

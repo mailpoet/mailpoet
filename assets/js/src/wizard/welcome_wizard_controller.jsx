@@ -165,6 +165,7 @@ const WelcomeWizardStepsController = (props) => {
               next={() => redirect(step)}
               subscribersCount={window.subscribers_count}
               mailpoetAccountUrl={window.mailpoet_account_url}
+              isWoocommerceActive={window.is_woocommerce_active}
             />
           </WelcomeWizardStepLayout>
         ) : null
