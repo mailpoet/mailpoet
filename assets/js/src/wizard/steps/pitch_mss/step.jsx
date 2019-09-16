@@ -12,70 +12,18 @@ const BenefitsList = () => (
   </ul>
 );
 
-const FreePlanSubscribers = (props) => (
-  <>
-    <h1>{MailPoet.I18n.t('welcomeWizardMSSFreeTitle')}</h1>
-    <p>{MailPoet.I18n.t('welcomeWizardMSSFreeSubtitle')}</p>
+const Controlls = (props) => (
+  <div className="mailpoet_welcome_wizard_step_controls">
     <p>
-      {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
-      :
+      <a
+        href={props.mailpoetAccountUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="button button-primary"
+      >
+        {props.nextButtonText}
+      </a>
     </p>
-    <BenefitsList />
-    <a
-      href={props.mailpoetAccountUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="button button-primary"
-    >
-      {MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
-    </a>
-  </>
-);
-
-FreePlanSubscribers.propTypes = {
-  mailpoetAccountUrl: PropTypes.string.isRequired,
-};
-
-const NotFreePlanSubscribers = (props) => (
-  <>
-    <h1>{MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}</h1>
-    <p>
-      {MailPoet.I18n.t('welcomeWizardMSSNotFreeSubtitle')}
-      :
-    </p>
-    <p>
-      {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
-      :
-    </p>
-    <BenefitsList />
-    <a
-      href={props.mailpoetAccountUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="button button-primary"
-    >
-      {MailPoet.I18n.t('welcomeWizardMSSNotFreeButton')}
-    </a>
-  </>
-);
-
-NotFreePlanSubscribers.propTypes = {
-  mailpoetAccountUrl: PropTypes.string.isRequired,
-};
-
-const Step = (props) => (
-  <div className="mailpoet_welcome_wizard_step_content">
-    { props.subscribersCount < 1000
-      ? (
-        <FreePlanSubscribers
-          mailpoetAccountUrl={props.mailpoetAccountUrl}
-        />
-      ) : (
-        <NotFreePlanSubscribers
-          mailpoetAccountUrl={props.mailpoetAccountUrl}
-        />
-      )
-    }
     <p>
       <a
         onClick={props.next}
@@ -92,6 +40,77 @@ const Step = (props) => (
         {MailPoet.I18n.t('welcomeWizardMSSNoThanks')}
       </a>
     </p>
+  </div>
+);
+
+Controlls.propTypes = {
+  mailpoetAccountUrl: PropTypes.string.isRequired,
+  next: PropTypes.func.isRequired,
+  nextButtonText: PropTypes.string.isRequired,
+};
+
+const FreePlanSubscribers = (props) => (
+  <>
+    <h1>{MailPoet.I18n.t('welcomeWizardMSSFreeTitle')}</h1>
+    <p>{MailPoet.I18n.t('welcomeWizardMSSFreeSubtitle')}</p>
+    <p>
+      {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
+      :
+    </p>
+    <BenefitsList />
+    <Controlls
+      mailpoetAccountUrl={props.mailpoetAccountUrl}
+      next={props.next}
+      nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
+    />
+  </>
+);
+
+FreePlanSubscribers.propTypes = {
+  mailpoetAccountUrl: PropTypes.string.isRequired,
+  next: PropTypes.func.isRequired,
+};
+
+const NotFreePlanSubscribers = (props) => (
+  <>
+    <h1>{MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}</h1>
+    <p>
+      {MailPoet.I18n.t('welcomeWizardMSSNotFreeSubtitle')}
+      :
+    </p>
+    <p>
+      {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
+      :
+    </p>
+    <BenefitsList />
+    <Controlls
+      mailpoetAccountUrl={props.mailpoetAccountUrl}
+      next={props.next}
+      nextButtonText={MailPoet.I18n.t('welcomeWizardMSSNotFreeButton')}
+    />
+  </>
+);
+
+NotFreePlanSubscribers.propTypes = {
+  mailpoetAccountUrl: PropTypes.string.isRequired,
+  next: PropTypes.func.isRequired,
+};
+
+const Step = (props) => (
+  <div className="mailpoet_welcome_wizard_step_content">
+    { props.subscribersCount < 1000
+      ? (
+        <FreePlanSubscribers
+          mailpoetAccountUrl={props.mailpoetAccountUrl}
+          next={props.next}
+        />
+      ) : (
+        <NotFreePlanSubscribers
+          mailpoetAccountUrl={props.mailpoetAccountUrl}
+          next={props.next}
+        />
+      )
+    }
   </div>
 );
 
