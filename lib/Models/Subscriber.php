@@ -38,6 +38,7 @@ class Subscriber extends Model {
   const STATUS_BOUNCED = 'bounced';
   const STATUS_INACTIVE = 'inactive';
 
+  const LINK_TOKEN_LENGTH = 32;
   /** @var string|bool */
   public $token;
 
@@ -791,7 +792,7 @@ class Subscriber extends Model {
       'first_name' => '',
       'last_name' => '',
       'unsubscribe_token' => Security::generateUnsubscribeToken(self::class),
-      'link_token' => Security::generateRandomString(32),
+      'link_token' => Security::generateRandomString(self::LINK_TOKEN_LENGTH),
       'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED,
     ];
     foreach ($required_field_default_values as $field => $value) {
