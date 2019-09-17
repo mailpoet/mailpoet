@@ -8,7 +8,7 @@ const WelcomeWizardStepLayoutBody = (props) => (
       <img src={props.illustrationUrl} alt="" />
     </div>
     <div className="mailpoet_welcome_wizard_step">
-      { props.step <= props.stepsCount
+      { props.displayProgressBar && (props.step <= props.stepsCount)
         ? (
           <SteppedProgressBar steps_count={props.stepsCount} step={props.step} />
         ) : null
@@ -20,12 +20,19 @@ const WelcomeWizardStepLayoutBody = (props) => (
 
 WelcomeWizardStepLayoutBody.propTypes = {
   illustrationUrl: PropTypes.string.isRequired,
-  step: PropTypes.number.isRequired,
-  stepsCount: PropTypes.number.isRequired,
+  displayProgressBar: PropTypes.bool,
+  step: PropTypes.number,
+  stepsCount: PropTypes.number,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]).isRequired,
+};
+
+WelcomeWizardStepLayoutBody.defaultProps = {
+  displayProgressBar: true,
+  step: 0,
+  stepsCount: -1,
 };
 
 export default WelcomeWizardStepLayoutBody;
