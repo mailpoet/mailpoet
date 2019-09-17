@@ -19,7 +19,7 @@ class SubscriberLinkTokens extends SimpleWorker {
       $auth_key = defined('AUTH_KEY') ? AUTH_KEY : '';
       \ORM::rawExecute(
         sprintf('UPDATE %s SET link_token = SUBSTRING(MD5(CONCAT(?, email)), 1, ?) WHERE link_token IS NULL LIMIT ?', Subscriber::$_table),
-        [$auth_key, Subscriber::DEPRECATED_LINK_TOKEN_LENGTH, self::BATCH_SIZE]
+        [$auth_key, Subscriber::OBSOLETE_LINK_TOKEN_LENGTH, self::BATCH_SIZE]
       );
       self::schedule();
     }
