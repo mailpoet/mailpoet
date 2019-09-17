@@ -13,6 +13,7 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
+use MailPoet\WooCommerce\TransactionalEmails;
 
 class SetupTest extends \MailPoetTest {
   function _before() {
@@ -30,7 +31,8 @@ class SetupTest extends \MailPoetTest {
 
     $settings = new SettingsController();
     $referral_detector = new ReferralDetector($wp, $settings);
-    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, $features_controller);
+    $wc_transactional_emails = new TransactionalEmails($wp, $settings);
+    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, $features_controller, $wc_transactional_emails);
     $router = new Setup($wp, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
