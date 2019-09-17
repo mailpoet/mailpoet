@@ -57,8 +57,8 @@ MSSUserSuccess.propTypes = {
 
 function PitchMss() {
   return (
-    <div>
-      DISPLAY MSS PITCH HERE
+    <div className="mailpoet_congratulate_success">
+      <h1>{MailPoet.I18n.t('congratulationsMSSPitchHeader')}</h1>
     </div>
   );
 }
