@@ -30,6 +30,7 @@ function renderSuccess(newsletter, testingPassed) {
   return (
     <Success
       illustrationImageUrl={window.mailpoet_congratulations_success_image}
+      MSSPitchIllustrationUrl={window.MSS_pitch_illustration_url}
       successClicked={successPageClosed}
       newsletter={newsletter}
     />
