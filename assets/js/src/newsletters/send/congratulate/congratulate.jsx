@@ -33,6 +33,7 @@ function renderSuccess(newsletter, testingPassed) {
       MSSPitchIllustrationUrl={window.MSS_pitch_illustration_url}
       successClicked={successPageClosed}
       newsletter={newsletter}
+      isWoocommerceActive={window.mailpoet_woocommerce_active}
     />
   );
 }

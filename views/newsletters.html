@@ -24,8 +24,10 @@
       var mailpoet_date_storage_format = "Y-m-d";
       var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
       var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
+
       var has_premium_key = <%= json_encode(has_premium_key) %>;
       var MSS_pitch_illustration_url = '<%= cdn_url('welcome-wizard/illu-pitch-mss.20190912.png') %>';
+
       var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
       var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
       var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;

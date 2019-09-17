@@ -17,7 +17,7 @@ function PitchMss(props) {
           next={props.onFinish}
           subscribersCount={25}
           mailpoetAccountUrl="http://xxx"
-          isWoocommerceActive={true}
+          isWoocommerceActive={props.isWoocommerceActive}
         />
       </WelcomeWizardStepLayoutBody>
     </div>
@@ -27,6 +27,7 @@ function PitchMss(props) {
 PitchMss.propTypes = {
   MSSPitchIllustrationUrl: PropTypes.string.isRequired,
   onFinish: PropTypes.func.isRequired,
+  isWoocommerceActive: PropTypes.bool.isRequired,
 };
 
 
