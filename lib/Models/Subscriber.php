@@ -38,7 +38,7 @@ class Subscriber extends Model {
   const STATUS_BOUNCED = 'bounced';
   const STATUS_INACTIVE = 'inactive';
 
-  const DEPRECATED_LINK_TOKEN_LENGTH = 6;
+  const OBSOLETE_LINK_TOKEN_LENGTH = 6;
   const LINK_TOKEN_LENGTH = 32;
 
   /** @var string|bool */
@@ -124,9 +124,9 @@ class Subscriber extends Model {
   }
 
   /**
-   * @deprecated Only for backward compatibility for old tokens
+   * Only for backward compatibility for old tokens
    */
-  static function generateToken($email = null, $length = self::DEPRECATED_LINK_TOKEN_LENGTH) {
+  static function generateToken($email = null, $length = self::OBSOLETE_LINK_TOKEN_LENGTH) {
     if ($email !== null) {
       $auth_key = '';
       if (defined('AUTH_KEY')) {
