@@ -35,6 +35,7 @@ function renderSuccess(newsletter, testingPassed) {
       newsletter={newsletter}
       isWoocommerceActive={window.mailpoet_woocommerce_active}
       subscribersCount={window.mailpoet_subscribers_count}
+      mailpoetAccountUrl={window.mailpoet_account_url}
     />
   );
 }
