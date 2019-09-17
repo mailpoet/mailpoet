@@ -12,7 +12,7 @@ class RoboFile extends \Robo\Tasks {
     $xdebug_handler->setPersistent();
     $xdebug_handler->check();
 
-    $dotenv = new Dotenv\Dotenv(__DIR__);
+    $dotenv = Dotenv\Dotenv::create(__DIR__);
     $dotenv->load();
   }
 
