@@ -8,7 +8,7 @@ import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
 import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
 import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
 import WelcomeWizardPitchMSSStep from './steps/pitch_mss_step.jsx';
-import WelcomeWizardStepLayout from './steps/step_layout.jsx';
+import WelcomeWizardStepLayout from './layout/step_layout.jsx';
 
 import CreateSenderSettings from './create_sender_settings.jsx';
 import { getStepsCount, redirectToNextStep, mapStepNumberToStepName } from './steps_numbers.jsx';
