@@ -38,11 +38,11 @@
     "guzzlehttp/guzzle": "6.3.3",
     "henrikbjorn/lurker": "^1.2",
     "kint-php/kint": "^3.0",
-    "lucatume/wp-browser": "2.2.0",
+    "lucatume/wp-browser": "2.2.28",
     "phpunit/phpunit": "5.7.27",
     "redcomponent/teststatistics": "^2.2",
     "sensiolabs/security-checker": "^5.0",
-    "vlucas/phpdotenv": "^2.4.0"
+    "vlucas/phpdotenv": "3.6.0"
   },
   "autoload": {
     "classmap": [
