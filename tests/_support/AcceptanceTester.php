@@ -47,6 +47,14 @@ class AcceptanceTester extends \Codeception\Actor {
     if ($I->loadSessionSnapshot('login')) {
       return;
     }
+
+    // remove any other WP auth & login cookies to avoid login/logout errors
+    $auth_cookies = $I->grabCookiesWithPattern('/^wordpress_[a-z0-9]{32}$/') ?: [];
+    $login_cookies = $I->grabCookiesWithPattern('/^wordpress_logged_in_[a-z0-9]{32}$/') ?: [];
+    foreach (array_merge($auth_cookies, $login_cookies) as $cookie) {
+      $I->resetCookie($cookie->getName());
+    }
+
     $I->wait(1);// this needs to be here, Username is not filled properly without this line
     $I->fillField('Username', 'admin');
     $I->fillField('Password', 'password');
@@ -62,7 +70,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $I = $this;
     $I->amOnPage('/wp-login.php?action=logout');
     $I->click('log out');
-    $I->wait(1);
+    $I->waitForText('You are now logged out.');
     $I->deleteSessionSnapshot('login');
   }
 
@@ -260,6 +268,9 @@ class AcceptanceTester extends \Codeception\Actor {
       $I->optOutOfSubscription();
     }
     $I->placeOrder();
+    if ($do_register) {
+      $I->logOut();
+    }
   }
 
   /**
