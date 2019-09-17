@@ -12,6 +12,7 @@ function Success(props) {
         onFinish={props.successClicked}
         isWoocommerceActive={props.isWoocommerceActive}
         subscribersCount={props.subscribersCount}
+        mailpoetAccountUrl={props.mailpoetAccountUrl}
       />
     );
   }
@@ -34,6 +35,7 @@ Success.propTypes = {
   }).isRequired,
   isWoocommerceActive: PropTypes.bool.isRequired,
   subscribersCount: PropTypes.number.isRequired,
+  mailpoetAccountUrl: PropTypes.string.isRequired,
 };
 
 
