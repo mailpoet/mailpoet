@@ -356,19 +356,6 @@
     'congratulationsLoadingHeader': __('Congrats, you’re sending your first newsletter! We’re doing a quick verification to make sure everything works fine.'),
 
     'congratulationsMSSPitchHeader': __('Your email has been sent'),
-    'welcomeWizardMSSFreeTitle': _x('MailPoet Premium is entirely free for you. Sign up!', 'Promotion for our email sending service: Title'),
-    'welcomeWizardMSSFreeSubtitle': _x('Did you know? Users with 1,000 subscribers or less get the Premium for free.', 'Promotion for our email sending service: Paragraph'),
-    'welcomeWizardMSSFreeListTitle': _x('You’ll get', 'Promotion for our email sending service: Paragraph'),
-    'welcomeWizardMSSList1': _x('Access to detailed analytics', 'Promotion for our email sending service: Feature item'),
-    'welcomeWizardMSSList2': _x('MailPoet sends your emails for great deliverability', 'Promotion for our email sending service: Feature item'),
-    'welcomeWizardMSSList3WooCommerce': _x('Email marketing for WooCommerce', 'Promotion for our email sending service: Feature item'),
-    'welcomeWizardMSSList4': _x('Fast, priority support', 'Promotion for our email sending service: Feature item'),
-    'welcomeWizardMSSList5': _x('Remove the MailPoet logo from the footer of your emails', 'Promotion for our email sending service: Feature item'),
-    'welcomeWizardMSSFreeButton': _x('Sign up for free!', 'Promotion for our email sending service: Button'),
-    'welcomeWizardMSSNotFreeTitle': _x('It’s now time to take your MailPoet to the next level', 'Promotion for our email sending service: Title'),
-    'welcomeWizardMSSNotFreeSubtitle': _x('Starting at only $13 per month, MailPoet Premium offers the following features', 'Promotion for our email sending service: Paragraph'),
-    'welcomeWizardMSSNotFreeButton': _x('Sign up now', 'Promotion for our email sending service: Button'),
-    'welcomeWizardMSSNoThanks': _x('No thanks!', 'Promotion for our email sending service: Skip link'),
 
     'reviewRequestHeading': _x('Thank you! Time to tell the world?', 'After a user gives us positive feedback via the NPS poll, we ask them to review our plugin on WordPress.org.'),
     'reviewRequestDidYouKnow': __('[username], did you know that hundreds of WordPress users read the reviews on the plugin repository? They’re also a source of inspiration for our team.'),
@@ -408,6 +395,7 @@
     'premiumBannerCtaPremium': __('Purchase Now', 'mailpoet'),
     'premiumBannerLink': __('Learn more about Premium', 'mailpoet'),
   }) %>
+  <% include('mss_pitch_translations.html') %>
 <% endblock %>
 
 <% block after_translations %>
