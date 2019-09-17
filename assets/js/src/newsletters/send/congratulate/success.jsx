@@ -18,7 +18,7 @@ function renderHeader(newsletter) {
   return MailPoet.I18n.t('congratulationsSendSuccessHeader');
 }
 
-function Success(props) {
+function MSSUserSuccess(props) {
   const showSuccessDeliveryPoll = (
     props.newsletter.type === 'standard'
     && props.newsletter.status !== 'scheduled'
@@ -43,6 +43,38 @@ function Success(props) {
       }
       <button type="button" className="button" onClick={props.successClicked}>{MailPoet.I18n.t('close')}</button>
     </div>
+  );
+}
+
+MSSUserSuccess.propTypes = {
+  successClicked: PropTypes.func.isRequired,
+  illustrationImageUrl: PropTypes.string.isRequired,
+  newsletter: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
+function PitchMss() {
+  return (
+    <div>
+      DISPLAY MSS PITCH HERE
+    </div>
+  );
+}
+
+function Success(props) {
+  if (!window.has_premium_key) {
+    return (
+      <PitchMss />
+    );
+  }
+  return (
+    <MSSUserSuccess
+      successClicked={props.successClicked}
+      illustrationImageUrl={props.illustrationImageUrl}
+      newsletter={props.newsletter}
+    />
   );
 }
 
