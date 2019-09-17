@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, email automation
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.35.4
+Stable tag: 3.36.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -158,6 +158,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.36.0 - 2019-09-17 =
+* Added: SPF check when sending a preview email;
+* Improved: display relevant articles in beacon;
+* Improved: simplified settings for confirmation emails;
+* Fixed: spell check now works in the newsletter editor;
+* Fixed: newsletter editor not loading when parent_id was set to 0.
 
 = 3.35.4 - 2019-09-10 =
 * Improved: resend confirmation emails is now on a subscriber by subscriber basis;
