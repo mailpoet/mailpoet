@@ -686,6 +686,18 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->verifyToken('faketoken'))->false();
   }
 
+  function testItVerifiesOldVersionOfSubscriberToken() {
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => $this->test_data['email'],
+    ]);
+    $subscriber->link_token = 'abcdef';
+    $token = $subscriber->getLinkToken();
+    expect($subscriber->verifyToken($token))->true();
+    expect($subscriber->verifyToken('abcdefghijk'))->true();
+    expect($subscriber->verifyToken('faketoken'))->false();
+    expect($subscriber->verifyToken('fake'))->false();
+  }
+
   function testItBulkDeletesSubscribers() {
     $segment = Segment::createOrUpdate(
       [
@@ -823,6 +835,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($values['last_name'])->equals('');
     expect($values['status'])->equals(Subscriber::STATUS_UNCONFIRMED);
     expect(strlen($values['unsubscribe_token']))->equals(15);
+    expect(strlen($values['link_token']))->equals(32);
   }
 
   function testItSetsDefaultStatusDependingOnSingupConfirmationOption() {

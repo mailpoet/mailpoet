@@ -138,10 +138,12 @@ class Subscriber extends Model {
   }
 
   function verifyToken($token) {
+    $database_token = $this->getLinkToken();
+    $request_token = substr($token, 0, strlen($database_token));
     return call_user_func(
       'hash_equals',
-      $this->getLinkToken(),
-      $token
+      $database_token,
+      $request_token
     );
   }
 
