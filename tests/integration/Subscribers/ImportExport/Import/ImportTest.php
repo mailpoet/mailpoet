@@ -436,7 +436,7 @@ class ImportTest extends \MailPoetTest {
     expect($updated_subscriber->status)->equals('unsubscribed');
   }
 
-  function testItImportsNewsSubscribersWithSubscribedStatusAndLastSubscribedAt() {
+  function testItImportsNewsSubscribersWithAllAdditionalParameters() {
     $data = $this->test_data;
     $data['columns']['status'] = ['index' => 4];
     $data['subscribers'][0][] = 'unsubscribed';
@@ -453,6 +453,8 @@ class ImportTest extends \MailPoetTest {
     expect($new_subscribers[1]->status)->equals('subscribed');
     expect($new_subscribers[0]->source)->equals('imported');
     expect($new_subscribers[1]->source)->equals('imported');
+    expect(strlen($new_subscribers[0]->link_token))->equals(Subscriber::LINK_TOKEN_LENGTH);
+    expect(strlen($new_subscribers[1]->link_token))->equals(Subscriber::LINK_TOKEN_LENGTH);
     $test_time = date('Y-m-d H:i:s', $this->test_data['timestamp']);
     expect($new_subscribers[0]->last_subscribed_at)->equals($test_time);
     expect($new_subscribers[1]->last_subscribed_at)->equals($test_time);
