@@ -185,7 +185,7 @@ class MailerTest extends \MailPoetTest {
   }
 
   function testItCanSend() {
-    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->sender['address'] = 'staff@mailpoet.com';
     $mailer = new Mailer();
     $mailer->init($this->mailer, $this->sender, $this->reply_to);
