@@ -215,7 +215,7 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   function testItCannotSendWithoutProperAccessKey() {
-    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->mailer->aws_access_key = 'somekey';
     $result = $this->mailer->send(
       $this->newsletter,
@@ -253,7 +253,7 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   function testItCanSend() {
-    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber
