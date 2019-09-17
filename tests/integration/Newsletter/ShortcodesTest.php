@@ -15,6 +15,7 @@ use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
@@ -31,7 +32,8 @@ class ShortcodesTest extends \MailPoetTest {
     $this->settings = new SettingsController();
     $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
     $features_controller = Stub::makeEmpty(FeaturesController::class);
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller);
+    $wc_transactional_emails = new TransactionalEmails(WPFunctions::get(), $this->settings);
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller, $wc_transactional_emails);
     $populator->up();
     $this->WP_user = $this->_createWPUser();
     $this->WP_post = $this->_createWPPost();
